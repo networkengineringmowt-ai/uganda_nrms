@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 # Allow only one concurrent deployment
 concurrency:
   group: github-pages-deploy

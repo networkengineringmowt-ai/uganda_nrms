@@ -5,6 +5,9 @@ on:
     - cron: '0 6 * * 1'   # Every Monday at 06:00 UTC
   workflow_dispatch:        # Allow manual trigger
 
+permissions:
+  contents: write
+
 concurrency:
   group: github-pages-deploy
   cancel-in-progress: true
