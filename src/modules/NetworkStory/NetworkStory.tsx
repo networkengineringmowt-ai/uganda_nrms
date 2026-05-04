@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
+﻿import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import {
   AreaChart, Area, BarChart, Bar, LineChart, Line, PieChart, Pie,
   XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine,
@@ -826,7 +826,7 @@ export default function NetworkStory() {
 
   // Load data + inject slider CSS
   useEffect(() => {
-    fetch('/network_story_data.json')
+    fetch(`${import.meta.env.BASE_URL}network_story_data.json`)
       .then(r => { if (!r.ok) throw new Error(); return r.json(); })
       .then((d: StoryData) => { setData(d); setLoading(false); })
       .catch(() => { setError(true); setLoading(false); });
@@ -1121,8 +1121,8 @@ export default function NetworkStory() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 10 }}>
             <AssetCard label="Paved Roads" value={fmtT(data.total_paved_km * 5_000_000_000)} unit="Trillion UGX" detail={`${data.total_paved_km.toLocaleString()} km × UGX 5B/km`} color={C.green} icon={<TrendingUp size={13}/>} />
             <AssetCard label="Unpaved Roads" value={fmtT(data.total_unpaved_km * 1_200_000_000)} unit="Trillion UGX" detail={`${data.total_unpaved_km.toLocaleString()} km × UGX 1.2B/km`} color={C.yellow} icon={<Layers size={13}/>} />
-            <AssetCard label="Bridges (434)" value={fmtT(434 * 12_000_000_000)} unit="Trillion UGX" detail="434 bridges × UGX 12B avg replacement" color={C.pink} icon={<Wrench size={13}/>} />
-            <AssetCard label="Culverts (~500)" value={fmtT(500 * 500_000_000)} unit="Trillion UGX" detail="500 structures × UGX 500M unit cost" color={C.purple} icon={<DollarSign size={13}/>} />
+            <AssetCard label="Bridges (534)" value={fmtT(534 * 12_000_000_000)} unit="Trillion UGX" detail="534 bridges × UGX 12B avg replacement" color={C.pink} icon={<Wrench size={13}/>} />
+            <AssetCard label="Culverts (485)" value={fmtT(485 * 500_000_000)} unit="Trillion UGX" detail="485 major culverts × UGX 500M unit cost" color={C.purple} icon={<DollarSign size={13}/>} />
           </div>
           <div style={{
             padding: '8px 12px', borderRadius: 7, fontSize: 9,
@@ -1731,7 +1731,7 @@ export default function NetworkStory() {
         <Section title="Bridge &amp; Structure Inventory" accent={C.teal}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
             {[
-              { label: 'Total Bridges', value: '434', color: C.teal, sub: 'Named inventory' },
+              { label: 'Total Structures', value: '1,019', color: C.teal, sub: '534 bridges · 485 culverts' },
               { label: 'Total Length', value: '8,517 m', color: C.cyan, sub: 'Combined bridge deck' },
               { label: 'Avg Length', value: '19.6 m', color: C.blue, sub: 'Per bridge average' },
               { label: 'Road C-Class', value: '284 (65%)', color: C.green, sub: 'Community road bridges' },

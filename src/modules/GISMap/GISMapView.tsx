@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef, memo, useCallback } from 'react';
+﻿import React, { useState, useEffect, useMemo, useRef, memo, useCallback } from 'react';
 import {
   MapContainer, TileLayer, Marker, Tooltip,
   LayersControl, ZoomControl, GeoJSON, useMap,
@@ -118,7 +118,7 @@ export default function GISMapView() {
 
   // Load road network GeoJSON
   useEffect(() => {
-    fetch('/road_network.geojson')
+    fetch(`${import.meta.env.BASE_URL}road_network.geojson`)
       .then(r => r.json())
       .then(setRoadGeo)
       .catch(() => {});

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Platform-level data loaders for the Uganda National Roads Management Platform.
  * Separate from bridge/culvert data (generateData.ts).
  */
@@ -51,7 +51,7 @@ export interface PlatformAnalytics {
 export async function loadPlatformAnalytics(): Promise<PlatformAnalytics> {
   if (analyticsCache) return analyticsCache;
 
-  const res  = await fetch('/analytics.json');
+  const res  = await fetch(`${import.meta.env.BASE_URL}analytics.json`);
   const data = await res.json();
 
   const { excel_analytics, traffic_year_summary, wtss_2015_2023, dashboard_snapshot } = data;
@@ -103,7 +103,7 @@ export async function loadPlatformAnalytics(): Promise<PlatformAnalytics> {
 export async function loadProjects(): Promise<OngoingProject[]> {
   if (projectsCache) return projectsCache;
 
-  const res  = await fetch('/projects.json');
+  const res  = await fetch(`${import.meta.env.BASE_URL}projects.json`);
   const raw  = await res.json() as Record<string, string>[];
 
   projectsCache = raw.map(r => ({

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * RoadNetworkView — Uganda National Road Network
  * Features:
  *  - Animated timeline 1960–2026 showing road paving progression
@@ -250,10 +250,10 @@ export default function RoadNetworkView() {
   // ── Load data ────────────────────────────────────────────────────────────────
   useEffect(() => {
     Promise.all([
-      fetch('/road_network.geojson').then(r => r.json()),
-      fetch('/road_pave_years.json').then(r => r.json()),
-      fetch('/network_story_data.json').then(r => r.json()),
-      fetch('/road_links_ndpiv.json').then(r => r.json()).catch(() => null),
+      fetch(`${import.meta.env.BASE_URL}road_network.geojson`).then(r => r.json()),
+      fetch(`${import.meta.env.BASE_URL}road_pave_years.json`).then(r => r.json()),
+      fetch(`${import.meta.env.BASE_URL}network_story_data.json`).then(r => r.json()),
+      fetch(`${import.meta.env.BASE_URL}road_links_ndpiv.json`).then(r => r.json()).catch(() => null),
     ]).then(([geo, pave, story, ndpivData]) => {
       setGeoData(geo);
       const map: Record<string, number | null> = {};

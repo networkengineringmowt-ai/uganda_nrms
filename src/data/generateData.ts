@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Loads the real GeoJSON bridge/culvert data from /public and augments each
  * feature with synthetic condition ratings, inspection dates, defects, costs
  * and priority scores — all deterministically generated from the structure's
@@ -120,7 +120,7 @@ function maintenanceCostHistory(seed: number, rating: ConditionRating): { year: 
 // ─── Main loader: bridges ─────────────────────────────────────────────────────
 
 async function loadBridges(): Promise<Structure[]> {
-  const res   = await fetch('/bridges.geojson');
+  const res   = await fetch(`${import.meta.env.BASE_URL}bridges.geojson`);
   const geo   = await res.json() as { features: { id: number; geometry: { coordinates: [number, number] }; properties: BridgeProps }[] };
 
   return geo.features
@@ -187,7 +187,7 @@ async function loadBridges(): Promise<Structure[]> {
 // ─── Main loader: culverts ────────────────────────────────────────────────────
 
 async function loadCulverts(): Promise<Structure[]> {
-  const res  = await fetch('/culverts.geojson');
+  const res  = await fetch(`${import.meta.env.BASE_URL}culverts.geojson`);
   const geo  = await res.json() as { features: { id: number; geometry: { coordinates: [number, number] }; properties: CulvertProps }[] };
 
   return geo.features

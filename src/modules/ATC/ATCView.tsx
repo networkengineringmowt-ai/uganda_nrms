@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ATCView – Automatic Traffic Counter Live Dashboard
  * Uganda National Roads Management Platform · DNR
  *
@@ -125,10 +125,10 @@ export default function ATCView() {
 
   // Load all JSON
   useEffect(() => {
-    fetch('/atc_sites.json').then(r=>r.json()).then(setSites);
-    fetch('/atc_flow.json').then(r=>r.json()).then(setFlow);
-    fetch('/atc_speed.json').then(r=>r.json()).then(setSpeed);
-    fetch('/atc_class.json').then(r=>r.json()).then(setCls);
+    fetch(`${import.meta.env.BASE_URL}atc_sites.json`).then(r=>r.json()).then(setSites);
+    fetch(`${import.meta.env.BASE_URL}atc_flow.json`).then(r=>r.json()).then(setFlow);
+    fetch(`${import.meta.env.BASE_URL}atc_speed.json`).then(r=>r.json()).then(setSpeed);
+    fetch(`${import.meta.env.BASE_URL}atc_class.json`).then(r=>r.json()).then(setCls);
   }, []);
 
   // ── Derived data ────────────────────────────────────────────────────────────

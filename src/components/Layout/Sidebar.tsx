@@ -143,7 +143,7 @@ export default function Sidebar() {
             <div style={{
               padding: '10px 8px 4px',
               fontSize: 8, fontWeight: 900,
-              color: 'rgba(0,245,255,0.35)',
+              color: 'rgba(0,245,255,0.6)',
               textTransform: 'uppercase', letterSpacing: '0.16em',
             }}>
               {section.title}
@@ -161,13 +161,13 @@ export default function Sidebar() {
                   style={{
                     width: '100%', display: 'flex', alignItems: 'center', gap: 8,
                     padding: '7px 10px', borderRadius: 8, marginBottom: 2,
-                    fontSize: 12, fontWeight: isActive ? 700 : 500,
+                    fontSize: 12, fontWeight: isActive ? 800 : 600,
                     cursor: 'pointer', border: 'none', textAlign: 'left',
                     transition: 'all 0.15s',
                     background: isActive
                       ? `rgba(${hexToRgb(accent)}, 0.10)`
                       : 'transparent',
-                    color: isActive ? accent : 'rgba(148,163,184,0.75)',
+                    color: isActive ? accent : 'rgba(200,214,230,0.90)',
                     boxShadow: isActive
                       ? `inset 0 0 0 1px rgba(${hexToRgb(accent)},0.25), 0 0 12px rgba(${hexToRgb(accent)},0.08)`
                       : 'none',
@@ -181,13 +181,13 @@ export default function Sidebar() {
                   onMouseLeave={e => {
                     if (!isActive) {
                       (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-                      (e.currentTarget as HTMLButtonElement).style.color = 'rgba(148,163,184,0.75)';
+                      (e.currentTarget as HTMLButtonElement).style.color = 'rgba(200,214,230,0.90)';
                     }
                   }}
                 >
                   {/* Icon */}
                   <span style={{
-                    color: isActive ? accent : 'rgba(100,116,139,0.8)',
+                    color: isActive ? accent : 'rgba(180,195,215,0.85)',
                     flexShrink: 0,
                     filter: isActive ? `drop-shadow(0 0 6px ${accent})` : 'none',
                     transition: 'all 0.15s',

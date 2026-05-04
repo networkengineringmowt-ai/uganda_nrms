@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MapContainer, TileLayer, GeoJSON, ZoomControl } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -107,9 +107,9 @@ export default function RoadVideoView() {
     probeServer();
 
     Promise.all([
-      fetch('/roads.geojson').then(r => r.json()),
-      fetch('/road_links_ndpiv.json').then(r => r.json()),
-      fetch('/romdas_index.json').then(r => r.json()),
+      fetch(`${import.meta.env.BASE_URL}roads.geojson`).then(r => r.json()),
+      fetch(`${import.meta.env.BASE_URL}road_links_ndpiv.json`).then(r => r.json()),
+      fetch(`${import.meta.env.BASE_URL}romdas_index.json`).then(r => r.json()),
     ]).then(([geo, ndpiv, romdas]) => {
       setGeoJsonData(geo as FeatureCollection);
       setLinksData((ndpiv as { links: LinkMeta[] }).links);
