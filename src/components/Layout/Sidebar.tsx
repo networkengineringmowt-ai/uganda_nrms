@@ -65,6 +65,8 @@ export default function Sidebar() {
         { id: 'priority',    label: 'Priority Ranking',      icon: <AlertTriangle size={15}/>,    color: N.pink   },
         { id: 'documents',   label: 'Document Store',        icon: <FolderOpen size={15}/>,       color: N.blue   },
         { id: 'phototwin',   label: 'Photo & Digital Twin',  icon: <Camera size={15}/>,           color: N.green  },
+        { id: 'images',      label: 'Images Gallery',        icon: <Camera size={15}/>,            color: N.cyan   },
+        { id: 'videos',      label: 'Survey Videos',         icon: <Video size={15}/>,             color: N.orange },
         { id: 'downloads',   label: 'Downloads & Exports',   icon: <Download size={15}/>,          color: N.yellow },
       ],
     },
@@ -83,10 +85,10 @@ export default function Sidebar() {
       style={{
         width: 240,
         minWidth: 240,
-        background: 'rgba(2,5,8,0.95)',
-        backdropFilter: 'blur(24px) saturate(160%)',
-        WebkitBackdropFilter: 'blur(24px) saturate(160%)',
-        borderRight: '1px solid rgba(0,245,255,0.10)',
+        background: 'rgba(8,14,28,0.72)',
+        backdropFilter: 'blur(28px) saturate(200%)',
+        WebkitBackdropFilter: 'blur(28px) saturate(200%)',
+        borderRight: '1px solid rgba(255,255,255,0.06)',
         boxShadow: '4px 0 32px rgba(0,0,0,0.6), 1px 0 0 rgba(0,245,255,0.05)',
       }}
     >

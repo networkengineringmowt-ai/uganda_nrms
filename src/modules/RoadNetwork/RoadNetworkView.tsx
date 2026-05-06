@@ -398,16 +398,16 @@ export default function RoadNetworkView() {
 
         <MapContainer center={[1.4, 32.3]} zoom={7}
           style={{ width:'100%', height:'100%' }} zoomControl={false}>
-          {/* Dark base */}
+          {/* Satellite imagery base */}
           <TileLayer
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-            attribution='&copy; <a href="https://carto.com">CARTO</a>'
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+            attribution='Esri, Maxar'
           />
-          {/* Hillshade overlay for terrain depth */}
+          {/* Reference labels overlay */}
           <TileLayer
-            url="https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade_Dark/MapServer/tile/{z}/{y}/{x}"
-            attribution='Esri World Hillshade'
-            opacity={0.22}
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
+            opacity={0.85}
+            attribution='Esri'
           />
           <ZoomControl position="bottomright"/>
           <ZoomWatcher onZoom={setMapZoom}/>
