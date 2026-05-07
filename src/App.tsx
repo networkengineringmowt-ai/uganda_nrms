@@ -25,8 +25,6 @@ const PhotoTwin            = lazy(() => import('./modules/PhotoTwin/PhotoTwin'))
 const RoadVideoView        = lazy(() => import('./modules/RoadVideoView/RoadVideoView'));
 const ATCView              = lazy(() => import('./modules/ATC/ATCView'));
 const DownloadsView        = lazy(() => import('./modules/Downloads/DownloadsView'));
-const ImagesSection        = lazy(() => import('./components/sections/ImagesSection'));
-const VideosSection        = lazy(() => import('./components/sections/VideosSection'));
 
 // Views that hide the header and own the full content rectangle
 const FULL_VIEWS = new Set(['gismap', 'roadnetwork', 'roadvideoview']);
@@ -127,8 +125,6 @@ function AppShell() {
                 {activeView === 'priority'      && <PriorityRanking />}
                 {activeView === 'documents'     && <DocumentStore />}
                 {activeView === 'phototwin'     && <PhotoTwin />}
-                {activeView === 'images'        && <ImagesSection />}
-                {activeView === 'videos'        && <VideosSection />}
                 {activeView === 'downloads'     && <DownloadsView />}
               </div>
             )}

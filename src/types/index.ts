@@ -144,9 +144,7 @@ export type ActiveView =
   | 'networkstory'   // Uganda Road Network historical story (1986–present)
   | 'roadvideoview'  // Road survey video + frame player
   | 'atc'            // Automatic Traffic Counter live dashboard
-  | 'downloads'      // Downloads & Exports
-  | 'images'         // Inspection photo gallery
-  | 'videos';        // Road survey video player
+  | 'downloads';     // Downloads & Exports
 
 // ─── Road network types ───────────────────────────────────────────────────────
 export type RoadClass   = 'A' | 'B' | 'C' | 'M';
