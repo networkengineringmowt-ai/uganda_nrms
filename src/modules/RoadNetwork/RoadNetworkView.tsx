@@ -57,11 +57,25 @@ interface NdpivData {
 
 // ── Colour palette ────────────────────────────────────────────────────────────
 const C = {
-  paved:   '#00f5ff',   // neon cyan
-  unsealed:'#ff8c00',  // amber-orange
+  paved:   '#00f5ff',   // neon cyan  (charts/stats only)
+  unsealed:'#ff8c00',  // amber-orange (charts/stats only)
   bgVoid:  '#020508',
   glass:   'rgba(6,13,24,0.88)',
 };
+
+// ── Road line symbology ───────────────────────────────────────────────────────
+const ROAD_SYM = {
+  paved:   { color: '#F97316', weight: 2.5, opacity: 0.9,  dash: undefined as string | undefined },
+  unpaved: { color: '#A16207', weight: 1.5, opacity: 0.75, dash: '4 3'    as string | undefined },
+  unknown: { color: '#6B7280', weight: 1.5, opacity: 0.65, dash: '2 4'    as string | undefined },
+};
+
+function surfaceCat(surface: string): 'paved' | 'unpaved' | 'unknown' {
+  if (['Bituminous','Paved','Asphalt','Concrete','Bitumen'].includes(surface)) return 'paved';
+  if (['Unsealed','Gravel','Earth'].includes(surface))                          return 'unpaved';
+  return 'unknown';
+}
+
 const REGION_COLORS: Record<string,string> = {
   'Central':      '#00f5ff',
   'Eastern':      '#ffd23f',
@@ -150,41 +164,27 @@ function makeInfraIcon(type: 'ferry'|'weighbridge'|'airport'|'port', sz: number)
 
 // ── Structure icon helpers (bridges & culverts) ───────────────────────────────
 const structIconCache = new Map<string, L.DivIcon>();
-function getStructIconSize(zoom: number): number { return Math.max(12, Math.min(32, Math.round(6 + zoom * 1.5))); }
 
-function makeRNBridgeIcon(critical: boolean, sz: number): L.DivIcon {
-  const key = `rnbridge|${sz}|${critical}`;
+function makeRNBridgeIcon(critical: boolean, _sz: number): L.DivIcon {
+  const key = `rnbridge|${critical}`;
   if (structIconCache.has(key)) return structIconCache.get(key)!;
-  const id = `rnb${sz}${critical ? 'c' : ''}`;
-  const html = `<svg viewBox="0 0 32 32" width="${sz}" height="${sz}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;display:block">
-    <defs><filter id="${id}sh"><feDropShadow dx="0" dy="1.5" stdDeviation="1.8" flood-color="#0369a1" flood-opacity="0.75"/></filter></defs>
-    <rect x="1" y="18" width="4" height="8" rx="0.5" fill="#075985"/>
-    <rect x="27" y="18" width="4" height="8" rx="0.5" fill="#075985"/>
-    <path d="M 3,18 Q 16,5 29,18" fill="none" stroke="#22d3ee" stroke-width="2.8" stroke-linecap="round"/>
-    <line x1="10" y1="11" x2="10" y2="18" stroke="#67e8f9" stroke-width="1" opacity="0.75"/>
-    <line x1="16" y1="7" x2="16" y2="18" stroke="#67e8f9" stroke-width="1.3" opacity="0.9"/>
-    <line x1="22" y1="11" x2="22" y2="18" stroke="#67e8f9" stroke-width="1" opacity="0.75"/>
-    <rect x="1" y="17" width="30" height="5" rx="1.5" fill="#0891b2" stroke="#67e8f9" stroke-width="1.2" filter="url(#${id}sh)"/>
-    <rect x="4" y="17.8" width="24" height="1.5" rx="0.5" fill="rgba(255,255,255,0.3)"/>
-    ${critical ? `<circle cx="16" cy="18" r="19" fill="none" stroke="#ff2d78" stroke-width="2" stroke-dasharray="5 3" opacity="0.9"/>` : ''}
+  const html = `<svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;display:block">
+    <circle cx="6" cy="6" r="5" fill="#3B82F6" stroke="white" stroke-width="1.5"/>
+    ${critical ? `<circle cx="6" cy="6" r="5" fill="none" stroke="#ff2d78" stroke-width="1.5" stroke-dasharray="3 2" opacity="0.9"/>` : ''}
   </svg>`;
-  const icon = L.divIcon({ className: '', html, iconSize: [sz, sz], iconAnchor: [sz / 2, sz / 2] });
+  const icon = L.divIcon({ className: '', html, iconSize: [12, 12], iconAnchor: [6, 6] });
   structIconCache.set(key, icon);
   return icon;
 }
 
-function makeRNCulvertIcon(critical: boolean, sz: number): L.DivIcon {
-  const key = `rnculvert|${sz}|${critical}`;
+function makeRNCulvertIcon(critical: boolean, _sz: number): L.DivIcon {
+  const key = `rnculvert|${critical}`;
   if (structIconCache.has(key)) return structIconCache.get(key)!;
-  const html = `<svg viewBox="0 0 24 24" width="${sz}" height="${sz}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;display:block">
-    <circle cx="12" cy="12" r="11" fill="#b45309" stroke="#fef3c7" stroke-width="1.2"/>
-    <circle cx="12" cy="12" r="7.5" fill="#92400e"/>
-    <circle cx="12" cy="12" r="5.5" fill="#0c0601"/>
-    <ellipse cx="12" cy="15.5" rx="3.5" ry="1.5" fill="#1e40af" opacity="0.55"/>
-    <ellipse cx="9.5" cy="9" rx="2.5" ry="1.5" fill="rgba(255,255,255,0.22)" transform="rotate(-30,9.5,9)"/>
-    ${critical ? `<circle cx="12" cy="12" r="14" fill="none" stroke="#ff2d78" stroke-width="2" stroke-dasharray="5 3" opacity="0.9"/>` : ''}
+  const html = `<svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;display:block">
+    <rect x="1" y="1" width="10" height="10" rx="2" fill="#F59E0B" stroke="white" stroke-width="1.5"/>
+    ${critical ? `<rect x="0.75" y="0.75" width="10.5" height="10.5" rx="2.5" fill="none" stroke="#ff2d78" stroke-width="1.5" stroke-dasharray="3 2" opacity="0.9"/>` : ''}
   </svg>`;
-  const icon = L.divIcon({ className: '', html, iconSize: [sz, sz], iconAnchor: [sz / 2, sz / 2] });
+  const icon = L.divIcon({ className: '', html, iconSize: [12, 12], iconAnchor: [6, 6] });
   structIconCache.set(key, icon);
   return icon;
 }
@@ -319,14 +319,10 @@ export default function RoadNetworkView() {
 
     if (animMode) {
       // Historical animation: paved if pave_year <= animYear
-      const roadKey = p.road;
-      const paveYr  = paveYears[roadKey] ?? null;
-      const isPaved = paveYr !== null ? paveYr <= animYear : p.surface === 'Bituminous';
-      return {
-        color:   isPaved ? C.paved : C.unsealed,
-        weight:  isPaved ? (CLASS_WEIGHT[p.road_class] ?? 2) : 1.5,
-        opacity: isPaved ? 0.9 : 0.55,
-      };
+      const paveYr  = paveYears[p.road] ?? null;
+      const isPaved = paveYr !== null ? paveYr <= animYear : surfaceCat(p.surface) === 'paved';
+      const sym = ROAD_SYM[isPaved ? 'paved' : 'unpaved'];
+      return { color: sym.color, weight: sym.weight, opacity: sym.opacity, dashArray: sym.dash };
     }
 
     // Current mode with filters
@@ -334,16 +330,15 @@ export default function RoadNetworkView() {
     if (clsFilter  !== 'all' && p.road_class !== clsFilter)  return { opacity: 0, fillOpacity: 0 };
     if (regFilter  !== 'all' && p.region !== regFilter)      return { opacity: 0, fillOpacity: 0 };
 
-    let color: string;
-    if (colorBy === 'surface') color = p.surface === 'Bituminous' ? C.paved : C.unsealed;
-    else if (colorBy === 'class') color = CLASS_COLORS[p.road_class] ?? '#64748b';
-    else color = REGION_COLORS[p.region] ?? '#64748b';
+    if (colorBy === 'surface') {
+      const sym = ROAD_SYM[surfaceCat(p.surface)];
+      return { color: sym.color, weight: sym.weight, opacity: sym.opacity, dashArray: sym.dash };
+    }
 
-    return {
-      color,
-      weight:  CLASS_WEIGHT[p.road_class] ?? 2,
-      opacity: 0.88,
-    };
+    const color = colorBy === 'class'
+      ? (CLASS_COLORS[p.road_class] ?? '#64748b')
+      : (REGION_COLORS[p.region]   ?? '#64748b');
+    return { color, weight: CLASS_WEIGHT[p.road_class] ?? 2, opacity: 0.88 };
   }, [animMode, animYear, paveYears, colorBy, surfFilter, clsFilter, regFilter]);
 
   const onEachFeature = useCallback((feature: GeoJSON.Feature, layer: L.Layer) => {
@@ -469,16 +464,15 @@ export default function RoadNetworkView() {
             </Marker>
           ))}
           {/* ── Bridges & Culverts ── */}
-          {showStructures && structures.map(s => {
+          {showStructures && mapZoom >= 10 && structures.map(s => {
             const isCritical = s.conditionRating === 1;
             const isBridge   = s.type === 'bridge';
-            const sz         = getStructIconSize(mapZoom);
             const icon       = isBridge
-              ? makeRNBridgeIcon(isCritical, sz)
-              : makeRNCulvertIcon(isCritical, sz);
+              ? makeRNBridgeIcon(isCritical, 12)
+              : makeRNCulvertIcon(isCritical, 12);
             return (
               <Marker key={s.id} position={[s.lat, s.lng]} icon={icon}>
-                <LeafletTooltip direction="top" offset={[0, -sz / 2 - 2]} opacity={1}>
+                <LeafletTooltip direction="top" offset={[0, -8]} opacity={1}>
                   <div style={{fontSize:12,fontWeight:900,color:'#111827',marginBottom:2}}>{s.name}</div>
                   <div style={{fontSize:10,fontWeight:700,color: isBridge ? '#0891b2' : '#b45309'}}>
                     {isBridge ? '🌉 Bridge' : '🔵 Major Culvert'} · {s.road}
@@ -511,8 +505,9 @@ export default function RoadNetworkView() {
             </div>
             {animMode ? (
               <>
-                <LegRow color={C.paved}   label="Paved" val={yearStats ? `${yearStats.pavKm.toFixed(0)} km` : ''}/>
-                <LegRow color={C.unsealed} label="Unsealed" val={yearStats ? `${yearStats.unsKm.toFixed(0)} km` : ''}/>
+                <LegRow color={ROAD_SYM.paved.color}   label="Paved"             val={yearStats ? `${yearStats.pavKm.toFixed(0)} km` : ''}/>
+                <LegRow color={ROAD_SYM.unpaved.color} label="Unpaved / Gravel"  val={yearStats ? `${yearStats.unsKm.toFixed(0)} km` : ''} dash="4 3"/>
+                <LegRow color={ROAD_SYM.unknown.color} label="Unknown / Constr." val="" dash="2 4"/>
                 {yearStats && (
                   <div style={{ marginTop:8, paddingTop:6, borderTop:'1px solid rgba(0,245,255,0.08)' }}>
                     <div style={{ fontSize:9, color:'rgba(0,245,255,0.5)', marginBottom:3 }}>Paved proportion</div>
@@ -529,8 +524,9 @@ export default function RoadNetworkView() {
             ) : (
               colorBy === 'surface' ? (
                 <>
-                  <LegRow color={C.paved}    label="Paved (Bituminous)" val={currentStats ? `${currentStats.pavKm.toFixed(0)} km` : ''}/>
-                  <LegRow color={C.unsealed} label="Unsealed / Gravel"  val={currentStats ? `${currentStats.unsKm.toFixed(0)} km` : ''}/>
+                  <LegRow color={ROAD_SYM.paved.color}   label="Paved (Bituminous)" val={currentStats ? `${currentStats.pavKm.toFixed(0)} km` : ''}/>
+                  <LegRow color={ROAD_SYM.unpaved.color} label="Unsealed / Gravel"  val={currentStats ? `${currentStats.unsKm.toFixed(0)} km` : ''} dash="4 3"/>
+                  <LegRow color={ROAD_SYM.unknown.color} label="Unknown / Constr."  val="" dash="2 4"/>
                 </>
               ) : colorBy === 'class' ? (
                 Object.entries(CLASS_COLORS).map(([k,v]) => (
@@ -592,11 +588,12 @@ export default function RoadNetworkView() {
             <div style={sectionHead}>Infrastructure Layers</div>
             {(
               [
-                { key:'ferry',       label:'Ferry Crossings', show:showFerries,      toggle:()=>setShowFerries(v=>!v),      color:'#60a5fa', rgb:'96,165,250',  icon:'⚓' },
-                { key:'weighbridge', label:'Weighbridges',    show:showWeighbridges, toggle:()=>setShowWeighbridges(v=>!v), color:'#fcd34d', rgb:'252,211,77',  icon:'⚖' },
-                { key:'airport',     label:'Airports',        show:showAirports,     toggle:()=>setShowAirports(v=>!v),     color:'#c084fc', rgb:'192,132,252', icon:'✈' },
-                { key:'port',        label:'Ports',           show:showPorts,        toggle:()=>setShowPorts(v=>!v),        color:'#34d399', rgb:'52,211,153',  icon:'⛵' },
-                { key:'structures',  label:'Bridges & Culverts', show:showStructures, toggle:()=>setShowStructures(v=>!v),  color:'#22d3ee', rgb:'34,211,238',  icon:'🌉' },
+                { key:'ferry',       label:'Ferry Crossings', show:showFerries,      toggle:()=>setShowFerries(v=>!v),      color:'#60a5fa', rgb:'96,165,250',  icon:<span style={{fontSize:13}}>⚓</span> },
+                { key:'weighbridge', label:'Weighbridges',    show:showWeighbridges, toggle:()=>setShowWeighbridges(v=>!v), color:'#fcd34d', rgb:'252,211,77',  icon:<span style={{fontSize:13}}>⚖</span> },
+                { key:'airport',     label:'Airports',        show:showAirports,     toggle:()=>setShowAirports(v=>!v),     color:'#c084fc', rgb:'192,132,252', icon:<span style={{fontSize:13}}>✈</span> },
+                { key:'port',        label:'Ports',           show:showPorts,        toggle:()=>setShowPorts(v=>!v),        color:'#34d399', rgb:'52,211,153',  icon:<span style={{fontSize:13}}>⛵</span> },
+                { key:'bridge',      label:'Bridge',          show:showStructures,   toggle:()=>setShowStructures(v=>!v),   color:'#3B82F6', rgb:'59,130,246',  icon:<svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="#3B82F6" stroke="white" strokeWidth="1.5"/></svg> },
+                { key:'culvert',     label:'Culvert',         show:showStructures,   toggle:()=>setShowStructures(v=>!v),   color:'#F59E0B', rgb:'245,158,11',  icon:<svg width="12" height="12" viewBox="0 0 12 12"><rect x="1" y="1" width="10" height="10" rx="2" fill="#F59E0B" stroke="white" strokeWidth="1.5"/></svg> },
               ]
             ).map(item => (
               <button key={item.key} onClick={item.toggle} style={{
@@ -605,7 +602,7 @@ export default function RoadNetworkView() {
                 background: item.show ? `rgba(${item.rgb},0.08)` : 'transparent',
                 border: item.show ? `1px solid ${item.color}44` : '1px solid transparent',
               }}>
-                <span style={{fontSize:13}}>{item.icon}</span>
+                {item.icon}
                 <span style={{fontSize:10,fontWeight:600,color: item.show ? item.color : 'rgba(100,116,139,0.5)',flex:1}}>{item.label}</span>
                 <span style={{width:8,height:8,borderRadius:'50%',background: item.show ? item.color : 'rgba(100,116,139,0.2)',
                   boxShadow: item.show ? `0 0 6px ${item.color}` : 'none',flexShrink:0}}/>
@@ -1112,11 +1109,15 @@ function hexRgb(h: string) {
   const c = h.replace('#','');
   return `${parseInt(c.slice(0,2),16)},${parseInt(c.slice(2,4),16)},${parseInt(c.slice(4,6),16)}`;
 }
-function LegRow({ color, label, val, thick }: { color:string; label:string; val:string; thick?:boolean }) {
+function LegRow({ color, label, val, thick, dash }: { color:string; label:string; val:string; thick?:boolean; dash?: string }) {
   return (
     <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:5 }}>
-      <div style={{ width:20, height: thick ? 4 : 2.5, borderRadius:2, background:color,
-        boxShadow:`0 0 5px ${color}60`, flexShrink:0 }}/>
+      <svg width="20" height="8" style={{ flexShrink:0, overflow:'visible' }}>
+        <line x1="1" y1="4" x2="19" y2="4"
+          stroke={color} strokeWidth={thick ? 4 : 2.5}
+          strokeDasharray={dash} strokeLinecap="round"
+          style={{ filter:`drop-shadow(0 0 2px ${color}80)` }}/>
+      </svg>
       <span style={{ fontSize:10, color:'rgba(203,213,225,0.8)', flex:1 }}>{label}</span>
       {val && <span style={{ fontSize:9, color:'rgba(100,116,139,0.6)' }}>{val}</span>}
     </div>
