@@ -1,9 +1,12 @@
 ﻿import React, { useState, useEffect, useMemo, useRef, memo, useCallback } from 'react';
 import {
-  MapContainer, TileLayer, Marker, Tooltip,
+  MapContainer, TileLayer, CircleMarker, Tooltip,
   ZoomControl, GeoJSON, useMap,
 } from 'react-leaflet';
-import { ESRI_TILE_URLS, ESRI_ATTRIBUTIONS } from '../../shared/mapSymbols';
+import {
+  ESRI_TILE_URLS, ESRI_ATTRIBUTIONS,
+  ROAD_STYLES, STRUCTURE_STYLES, surfaceCategory,
+} from '../../shared/mapSymbols';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import {
@@ -23,72 +26,9 @@ const YEARS = [2018, 2019, 2020, 2021, 2022, 2023, 2024];
 const CENTER: [number, number] = [1.373, 32.29];
 type LayerFilter = 'all' | 'bridge' | 'culvert';
 
-// ── Bold road symbology by surface & class ───────────────────────────────────
-const ROAD_SURFACE_COLORS: Record<string, string> = {
-  Bituminous: '#ef4444',   // Bold red — paved/tarmac
-  Unsealed:   '#f59e0b',   // Warm amber — gravel/earth
-};
-const ROAD_CLASS_WEIGHTS: Record<string, number> = { A: 3.5, B: 2.5, C: 1.8, M: 3 };
-
 type DisplayStructure = Structure & { displayRating: number };
 
 // (Infrastructure layers — ferries, airports, weighbridges, ports — are shown on the Road Network Map)
-
-// ── Icon helpers ──────────────────────────────────────────────────────────────
-const iconCache = new Map<string, L.DivIcon>();
-
-/** Map zoom level → icon pixel size (scales naturally with zoom). */
-function getIconSize(zoom: number): number {
-  return Math.max(12, Math.min(36, Math.round(6 + zoom * 1.5)));
-  // z6→15 z7→16 z8→18 z10→21 z12→24 z14→27 z16→30
-}
-
-/**
- * Arch bridge silhouette — arch rib over deck with hangers.
- * Same base size for all bridges at a given zoom; critical adds a dashed ring.
- */
-function makeBridgeIcon(critical: boolean, sz: number): L.DivIcon {
-  const key = `bridge|${sz}|${critical}`;
-  if (iconCache.has(key)) return iconCache.get(key)!;
-  const id = `bf${sz}${critical ? 'c' : ''}`;
-  const html = `<svg viewBox="0 0 32 32" width="${sz}" height="${sz}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;display:block">
-    <defs>
-      <filter id="${id}sh"><feDropShadow dx="0" dy="1.5" stdDeviation="1.8" flood-color="#0369a1" flood-opacity="0.75"/></filter>
-    </defs>
-    <rect x="1" y="18" width="4" height="8" rx="0.5" fill="#075985"/>
-    <rect x="27" y="18" width="4" height="8" rx="0.5" fill="#075985"/>
-    <path d="M 3,18 Q 16,5 29,18" fill="none" stroke="#22d3ee" stroke-width="2.8" stroke-linecap="round"/>
-    <line x1="10" y1="11" x2="10" y2="18" stroke="#67e8f9" stroke-width="1" opacity="0.75"/>
-    <line x1="16" y1="7" x2="16" y2="18" stroke="#67e8f9" stroke-width="1.3" opacity="0.9"/>
-    <line x1="22" y1="11" x2="22" y2="18" stroke="#67e8f9" stroke-width="1" opacity="0.75"/>
-    <rect x="1" y="17" width="30" height="5" rx="1.5" fill="#0891b2" stroke="#67e8f9" stroke-width="1.2" filter="url(#${id}sh)"/>
-    <rect x="4" y="17.8" width="24" height="1.5" rx="0.5" fill="rgba(255,255,255,0.3)"/>
-    ${critical ? `<circle cx="16" cy="18" r="19" fill="none" stroke="#ff2d78" stroke-width="2" stroke-dasharray="5 3" opacity="0.9"/>` : ''}
-  </svg>`;
-  const icon = L.divIcon({ className: '', html, iconSize: [sz, sz], iconAnchor: [sz / 2, sz / 2] });
-  iconCache.set(key, icon);
-  return icon;
-}
-
-/**
- * Culvert pipe cross-section — concentric rings showing barrel opening.
- * Same base size for all culverts at a given zoom; critical adds a dashed ring.
- */
-function makeCulvertIcon(critical: boolean, sz: number): L.DivIcon {
-  const key = `culvert|${sz}|${critical}`;
-  if (iconCache.has(key)) return iconCache.get(key)!;
-  const html = `<svg viewBox="0 0 24 24" width="${sz}" height="${sz}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;display:block">
-    <circle cx="12" cy="12" r="11" fill="#b45309" stroke="#fef3c7" stroke-width="1.2"/>
-    <circle cx="12" cy="12" r="7.5" fill="#92400e"/>
-    <circle cx="12" cy="12" r="5.5" fill="#0c0601"/>
-    <ellipse cx="12" cy="15.5" rx="3.5" ry="1.5" fill="#1e40af" opacity="0.55"/>
-    <ellipse cx="9.5" cy="9" rx="2.5" ry="1.5" fill="rgba(255,255,255,0.22)" transform="rotate(-30,9.5,9)"/>
-    ${critical ? `<circle cx="12" cy="12" r="14" fill="none" stroke="#ff2d78" stroke-width="2" stroke-dasharray="5 3" opacity="0.9"/>` : ''}
-  </svg>`;
-  const icon = L.divIcon({ className: '', html, iconSize: [sz, sz], iconAnchor: [sz / 2, sz / 2] });
-  iconCache.set(key, icon);
-  return icon;
-}
 
 
 // ── Zoom tracker — child component inside MapContainer ────────────────────────
@@ -126,16 +66,9 @@ export default function GISMapView() {
   }, []);
 
   const roadStyle = useCallback((feature?: GeoJSON.Feature): L.PathOptions => {
-    const surf   = (feature?.properties as { surface?: string })?.surface ?? 'Unsealed';
-    const cls    = (feature?.properties as { road_class?: string })?.road_class ?? 'C';
-    const paved  = surf === 'Bituminous';
-    const weight = ROAD_CLASS_WEIGHTS[cls] ?? 1.5;
-    return {
-      color:     ROAD_SURFACE_COLORS[surf] ?? '#64748b',
-      weight,
-      opacity:   paved ? 0.82 : 0.65,
-      dashArray: paved ? undefined : '5 5',
-    };
+    const surf = (feature?.properties as { surface?: string })?.surface ?? '';
+    const s    = ROAD_STYLES[surfaceCategory(surf)];
+    return { color: s.color, weight: s.weight, opacity: s.opacity, dashArray: s.dashArray };
   }, []);
 
   // Time-series animation
@@ -201,32 +134,42 @@ export default function GISMapView() {
           />
         )}
 
-        {/* ── Structures — type-based 3D icons (condition only in filter/panel) ── */}
-        {displayStructures.map(s => (
-          <Marker
-            key={s.id}
-            position={[s.lat, s.lng]}
-            icon={s.type === 'bridge' ? makeBridgeIcon(s.displayRating <= 2, getIconSize(zoom)) : makeCulvertIcon(s.displayRating <= 2, getIconSize(zoom))}
-            eventHandlers={{ click: () => setSelected(s) }}
-            zIndexOffset={s.displayRating <= 2 ? 1000 : s.type === 'bridge' ? 500 : 0}
-          >
-            <Tooltip direction="top" offset={[0, -10]} opacity={1}>
-              <div style={{ fontSize: 12, fontWeight: 900, color: '#111827', marginBottom: 2 }}>{s.name}</div>
-              <div style={{ fontSize: 10, fontWeight: 700, color: '#374151' }}>
-                {s.type === 'bridge' ? '⬤ Bridge' : '◆ Major Culvert'} · {s.road}
-              </div>
-              <div style={{ fontSize: 10, fontWeight: 700, color: '#6b7280', marginTop: 1 }}>
-                {s.region} · Built {s.yearBuilt} · {s.spanLength * s.noOfSpans}m
-              </div>
-              <div style={{ fontSize: 10, fontWeight: 800, marginTop: 3,
-                padding: '2px 6px', borderRadius: 4, display: 'inline-block',
-                background: s.displayRating <= 2 ? '#fee2e2' : s.displayRating === 3 ? '#fef3c7' : '#dcfce7',
-                color: s.displayRating <= 2 ? '#dc2626' : s.displayRating === 3 ? '#d97706' : '#16a34a' }}>
-                Rating {s.displayRating} — {conditionLabel(s.displayRating)}
-              </div>
-            </Tooltip>
-          </Marker>
-        ))}
+        {/* ── Structures — simple circles/squares; hidden below zoom 10 ── */}
+        {zoom >= STRUCTURE_STYLES.bridge.minZoom && displayStructures.map(s => {
+          const isBridge = s.type === 'bridge';
+          const sym      = isBridge ? STRUCTURE_STYLES.bridge : STRUCTURE_STYLES.culvert;
+          const isCrit   = s.displayRating <= 2;
+          return (
+            <CircleMarker
+              key={s.id}
+              center={[s.lat, s.lng]}
+              radius={sym.radius}
+              pathOptions={{
+                fillColor:   sym.color,
+                fillOpacity: 0.9,
+                color:       isCrit ? '#ef4444' : 'white',
+                weight:      isCrit ? 2 : 1.5,
+              }}
+              eventHandlers={{ click: () => setSelected(s) }}
+            >
+              <Tooltip direction="top" offset={[0, -8]} opacity={1}>
+                <div style={{ fontSize: 12, fontWeight: 900, color: '#111827', marginBottom: 2 }}>{s.name}</div>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#374151' }}>
+                  {isBridge ? '● Bridge' : '■ Major Culvert'} · {s.road}
+                </div>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#6b7280', marginTop: 1 }}>
+                  {s.region} · Built {s.yearBuilt} · {s.spanLength * s.noOfSpans}m
+                </div>
+                <div style={{ fontSize: 10, fontWeight: 800, marginTop: 3,
+                  padding: '2px 6px', borderRadius: 4, display: 'inline-block',
+                  background: isCrit ? '#fee2e2' : s.displayRating === 3 ? '#fef3c7' : '#dcfce7',
+                  color:      isCrit ? '#dc2626' : s.displayRating === 3 ? '#d97706' : '#16a34a' }}>
+                  Rating {s.displayRating} — {conditionLabel(s.displayRating)}
+                </div>
+              </Tooltip>
+            </CircleMarker>
+          );
+        })}
 
       </MapContainer>
 
@@ -278,25 +221,43 @@ export default function GISMapView() {
         <div className="bg-slate-900/92 backdrop-blur border border-slate-700 rounded-xl p-3">
           <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Symbol Key</div>
           <div className="space-y-1.5">
+            {/* Bridge — blue circle */}
             <div className="flex items-center gap-2">
-              <svg viewBox="0 0 32 32" width="20" height="20" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="18" width="4" height="8" rx="0.5" fill="#075985"/><rect x="27" y="18" width="4" height="8" rx="0.5" fill="#075985"/><path d="M 3,18 Q 16,5 29,18" fill="none" stroke="#22d3ee" strokeWidth="2.8" strokeLinecap="round"/><line x1="10" y1="11" x2="10" y2="18" stroke="#67e8f9" strokeWidth="1" opacity="0.75"/><line x1="16" y1="7" x2="16" y2="18" stroke="#67e8f9" strokeWidth="1.3" opacity="0.9"/><line x1="22" y1="11" x2="22" y2="18" stroke="#67e8f9" strokeWidth="1" opacity="0.75"/><rect x="1" y="17" width="30" height="5" rx="1.5" fill="#0891b2" stroke="#67e8f9" strokeWidth="1.2"/></svg>
-              <span className="text-[10px] text-slate-300">Bridge (arch silhouette)</span>
+              <svg viewBox="0 0 12 12" width="12" height="12" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="6" cy="6" r="5" fill="#3B82F6" stroke="white" strokeWidth="1.5"/>
+              </svg>
+              <span className="text-[10px] text-slate-300">Bridge</span>
             </div>
+            {/* Culvert — amber square */}
             <div className="flex items-center gap-2">
-              <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="11" fill="#b45309" stroke="#fef3c7" strokeWidth="1.2"/><circle cx="12" cy="12" r="7.5" fill="#92400e"/><circle cx="12" cy="12" r="5.5" fill="#0c0601"/><ellipse cx="12" cy="15.5" rx="3.5" ry="1.5" fill="#1e40af" opacity="0.55"/><ellipse cx="9.5" cy="9" rx="2.5" ry="1.5" fill="rgba(255,255,255,0.22)" transform="rotate(-30,9.5,9)"/></svg>
-              <span className="text-[10px] text-slate-300">Major Culvert (pipe section)</span>
+              <svg viewBox="0 0 10 10" width="10" height="10" xmlns="http://www.w3.org/2000/svg">
+                <rect x="1" y="1" width="8" height="8" rx="1" fill="#F59E0B" stroke="white" strokeWidth="1.5"/>
+              </svg>
+              <span className="text-[10px] text-slate-300">Major Culvert</span>
             </div>
+            {/* Road network */}
             <div className="border-t border-slate-700 pt-1.5 mt-1">
               <div className="flex items-center gap-2 mb-1">
-                <div className="w-5 h-1.5 rounded" style={{background:'#ef4444'}}/>
-                <span className="text-[9px] text-slate-400">Paved road (solid · bold)</span>
+                <svg viewBox="0 0 20 6" width="20" height="6" xmlns="http://www.w3.org/2000/svg">
+                  <line x1="1" y1="3" x2="19" y2="3" stroke="#111111" strokeWidth="3.5" strokeLinecap="round"/>
+                  <line x1="1" y1="3" x2="19" y2="3" stroke="#555555" strokeWidth="1.5" strokeLinecap="round" opacity="0.5"/>
+                </svg>
+                <span className="text-[9px] text-slate-400">Paved road (tarmac)</span>
+              </div>
+              <div className="flex items-center gap-2 mb-1">
+                <svg viewBox="0 0 20 6" width="20" height="6" xmlns="http://www.w3.org/2000/svg">
+                  <line x1="1" y1="3" x2="19" y2="3" stroke="#A16207" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="4 3"/>
+                </svg>
+                <span className="text-[9px] text-slate-400">Unpaved / Gravel</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-5 h-1.5 rounded" style={{background:'#f59e0b', backgroundImage:'repeating-linear-gradient(90deg,#f59e0b,#f59e0b 4px,transparent 4px,transparent 7px)'}}/>
-                <span className="text-[9px] text-slate-400">Unpaved road (dashed)</span>
+                <svg viewBox="0 0 20 6" width="20" height="6" xmlns="http://www.w3.org/2000/svg">
+                  <line x1="1" y1="3" x2="19" y2="3" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="2 4"/>
+                </svg>
+                <span className="text-[9px] text-slate-400">Unknown / Construction</span>
               </div>
             </div>
-            <div className="text-[9px] text-slate-600 pt-0.5">Icon size scales with zoom · Critical = red dashed ring</div>
+            <div className="text-[9px] text-slate-600 pt-0.5">Visible at zoom ≥ 10 · Critical = red outline</div>
           </div>
         </div>
 
