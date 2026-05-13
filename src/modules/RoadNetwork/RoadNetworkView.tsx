@@ -65,10 +65,11 @@ const C = {
 
 // ── Road line symbology ───────────────────────────────────────────────────────
 const ROAD_SYM = {
-  paved:   { color: '#F97316', weight: 2.5, opacity: 0.9,  dash: undefined as string | undefined },
+  paved:   { color: '#111111', weight: 3.5, opacity: 0.95, dash: undefined as string | undefined },
   unpaved: { color: '#A16207', weight: 1.5, opacity: 0.75, dash: '4 3'    as string | undefined },
   unknown: { color: '#6B7280', weight: 1.5, opacity: 0.65, dash: '2 4'    as string | undefined },
 };
+const PAVED_SHIMMER = { color: '#555555', weight: 1.5, opacity: 0.5 };
 
 function surfaceCat(surface: string): 'paved' | 'unpaved' | 'unknown' {
   if (['Bituminous','Paved','Asphalt','Concrete','Bitumen'].includes(surface)) return 'paved';
@@ -341,6 +342,29 @@ export default function RoadNetworkView() {
     return { color, weight: CLASS_WEIGHT[p.road_class] ?? 2, opacity: 0.88 };
   }, [animMode, animYear, paveYears, colorBy, surfFilter, clsFilter, regFilter]);
 
+  // ── Shimmer layer — only renders on paved roads in surface/history modes ──────
+  const styleFeatureShimmer = useCallback((feature?: GeoJSON.Feature): L.PathOptions => {
+    if (!feature) return {};
+    const p = feature.properties as LinkProps;
+    const hidden: L.PathOptions = { opacity: 0, fillOpacity: 0 };
+
+    if (animMode) {
+      const paveYr  = paveYears[p.road] ?? null;
+      const isPaved = paveYr !== null ? paveYr <= animYear : surfaceCat(p.surface) === 'paved';
+      return isPaved
+        ? { color: PAVED_SHIMMER.color, weight: PAVED_SHIMMER.weight, opacity: PAVED_SHIMMER.opacity }
+        : hidden;
+    }
+
+    if (colorBy !== 'surface') return hidden;
+    if (surfFilter !== 'all' && p.surface !== surfFilter)   return hidden;
+    if (clsFilter  !== 'all' && p.road_class !== clsFilter) return hidden;
+    if (regFilter  !== 'all' && p.region !== regFilter)     return hidden;
+    return surfaceCat(p.surface) === 'paved'
+      ? { color: PAVED_SHIMMER.color, weight: PAVED_SHIMMER.weight, opacity: PAVED_SHIMMER.opacity }
+      : hidden;
+  }, [animMode, animYear, paveYears, colorBy, surfFilter, clsFilter, regFilter]);
+
   const onEachFeature = useCallback((feature: GeoJSON.Feature, layer: L.Layer) => {
     const p = feature.properties as LinkProps;
     layer.on({
@@ -407,13 +431,22 @@ export default function RoadNetworkView() {
           <ZoomControl position="bottomright"/>
           <ZoomWatcher onZoom={setMapZoom}/>
           {geoData && (
-            <GeoJSON
-              key={geojsonKey}
-              data={geoData as GeoJSON.GeoJsonObject}
-              style={(f: unknown) => styleFeature(f as GeoJSON.Feature)}
-              onEachFeature={(f: unknown, l: L.Layer) => onEachFeature(f as GeoJSON.Feature, l)}
-              ref={geoRef as React.RefObject<L.GeoJSON>}
-            />
+            <>
+              {/* Base road layer */}
+              <GeoJSON
+                key={geojsonKey}
+                data={geoData as GeoJSON.GeoJsonObject}
+                style={(f: unknown) => styleFeature(f as GeoJSON.Feature)}
+                onEachFeature={(f: unknown, l: L.Layer) => onEachFeature(f as GeoJSON.Feature, l)}
+                ref={geoRef as React.RefObject<L.GeoJSON>}
+              />
+              {/* Shimmer highlight — paved roads only, rendered above base */}
+              <GeoJSON
+                key={`${geojsonKey}-shimmer`}
+                data={geoData as GeoJSON.GeoJsonObject}
+                style={(f: unknown) => styleFeatureShimmer(f as GeoJSON.Feature)}
+              />
+            </>
           )}
           {/* ── Ferries ── */}
           {showFerries && FERRIES.map(f => (
@@ -505,7 +538,7 @@ export default function RoadNetworkView() {
             </div>
             {animMode ? (
               <>
-                <LegRow color={ROAD_SYM.paved.color}   label="Paved"             val={yearStats ? `${yearStats.pavKm.toFixed(0)} km` : ''}/>
+                <LegRow color={ROAD_SYM.paved.color}   label="Paved"             val={yearStats ? `${yearStats.pavKm.toFixed(0)} km` : ''} thick shimmer={PAVED_SHIMMER.color}/>
                 <LegRow color={ROAD_SYM.unpaved.color} label="Unpaved / Gravel"  val={yearStats ? `${yearStats.unsKm.toFixed(0)} km` : ''} dash="4 3"/>
                 <LegRow color={ROAD_SYM.unknown.color} label="Unknown / Constr." val="" dash="2 4"/>
                 {yearStats && (
@@ -524,7 +557,7 @@ export default function RoadNetworkView() {
             ) : (
               colorBy === 'surface' ? (
                 <>
-                  <LegRow color={ROAD_SYM.paved.color}   label="Paved (Bituminous)" val={currentStats ? `${currentStats.pavKm.toFixed(0)} km` : ''}/>
+                  <LegRow color={ROAD_SYM.paved.color}   label="Paved (Bituminous)" val={currentStats ? `${currentStats.pavKm.toFixed(0)} km` : ''} thick shimmer={PAVED_SHIMMER.color}/>
                   <LegRow color={ROAD_SYM.unpaved.color} label="Unsealed / Gravel"  val={currentStats ? `${currentStats.unsKm.toFixed(0)} km` : ''} dash="4 3"/>
                   <LegRow color={ROAD_SYM.unknown.color} label="Unknown / Constr."  val="" dash="2 4"/>
                 </>
@@ -1109,7 +1142,7 @@ function hexRgb(h: string) {
   const c = h.replace('#','');
   return `${parseInt(c.slice(0,2),16)},${parseInt(c.slice(2,4),16)},${parseInt(c.slice(4,6),16)}`;
 }
-function LegRow({ color, label, val, thick, dash }: { color:string; label:string; val:string; thick?:boolean; dash?: string }) {
+function LegRow({ color, label, val, thick, dash, shimmer }: { color:string; label:string; val:string; thick?:boolean; dash?: string; shimmer?: string }) {
   return (
     <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:5 }}>
       <svg width="20" height="8" style={{ flexShrink:0, overflow:'visible' }}>
@@ -1117,6 +1150,11 @@ function LegRow({ color, label, val, thick, dash }: { color:string; label:string
           stroke={color} strokeWidth={thick ? 4 : 2.5}
           strokeDasharray={dash} strokeLinecap="round"
           style={{ filter:`drop-shadow(0 0 2px ${color}80)` }}/>
+        {shimmer && (
+          <line x1="1" y1="4" x2="19" y2="4"
+            stroke={shimmer} strokeWidth={1.5}
+            strokeLinecap="round" opacity={0.5}/>
+        )}
       </svg>
       <span style={{ fontSize:10, color:'rgba(203,213,225,0.8)', flex:1 }}>{label}</span>
       {val && <span style={{ fontSize:9, color:'rgba(100,116,139,0.6)' }}>{val}</span>}
