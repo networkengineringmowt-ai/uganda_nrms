@@ -19,6 +19,7 @@ import {
   Bar3D, GlowDefs, Chart3DWrap, AreaGradDefs, hexRgb,
 } from '../../lib/chart3d';
 import { Activity, Gauge, MapPin, Truck, Zap, TrendingUp, Wind, BarChart3 } from 'lucide-react';
+import PredictionsPanel from './PredictionsPanel';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Site   { id: string; road: string; lat: number; lng: number; }
@@ -199,7 +200,7 @@ export default function ATCView() {
   const [speed,   setSpeed]   = useState<SpeedRow[]>([]);
   const [cls,     setCls]     = useState<ClassRow[]>([]);
   const [selSite,    setSelSite]    = useState<string>('STA-A00107');
-  const [activeTab,  setActiveTab]  = useState<'dashboard'|'stationmap'>('dashboard');
+  const [activeTab,  setActiveTab]  = useState<'dashboard'|'stationmap'|'predictions'>('dashboard');
   const [allStations,setAllStations]= useState<any[]>([]);
   const [now,        setNow]        = useState(new Date());
 
@@ -299,19 +300,20 @@ export default function ATCView() {
       <style>{pulseStyle}</style>
 
       {/* ── TAB BAR ──────────────────────────────────────────────────────── */}
-      <div style={{ display:'flex', gap:8, alignItems:'center' }}>
-        {(['dashboard','stationmap'] as const).map(tab => {
-          const label = tab === 'dashboard' ? 'Live Dashboard' : `Station Map (${allStations.length||298} sites)`;
-          return (
-            <button key={tab} onClick={()=>setActiveTab(tab)} style={{
-              fontSize:11, fontWeight:800, padding:'6px 16px', borderRadius:8, cursor:'pointer',
-              background: activeTab===tab ? `rgba(0,245,255,0.15)` : 'rgba(255,255,255,0.04)',
-              border:`1px solid ${activeTab===tab ? C.cyan : 'rgba(255,255,255,0.1)'}`,
-              color: activeTab===tab ? C.cyan : 'rgba(148,163,184,0.6)', transition:'all 0.15s',
-              letterSpacing:'0.05em',
-            }}>{label}</button>
-          );
-        })}
+      <div style={{ display:'flex', gap:8, alignItems:'center', flexWrap:'wrap' }}>
+        {([
+          ['dashboard',   'Live Dashboard',                              C.cyan],
+          ['stationmap',  `Station Map (${allStations.length||298})`,   C.green],
+          ['predictions', 'Traffic Forecast Map',                       C.purple],
+        ] as [typeof activeTab, string, string][]).map(([tab, label, accent]) => (
+          <button key={tab} onClick={()=>setActiveTab(tab)} style={{
+            fontSize:11, fontWeight:800, padding:'6px 16px', borderRadius:8, cursor:'pointer',
+            background: activeTab===tab ? `rgba(${accent.replace('#','').match(/../g)!.map(h=>parseInt(h,16)).join(',')},0.15)` : 'rgba(255,255,255,0.04)',
+            border:`1px solid ${activeTab===tab ? accent : 'rgba(255,255,255,0.1)'}`,
+            color: activeTab===tab ? accent : 'rgba(148,163,184,0.6)',
+            transition:'all 0.15s', letterSpacing:'0.05em',
+          }}>{label}</button>
+        ))}
       </div>
 
       {activeTab === 'dashboard' && (<>
@@ -684,6 +686,11 @@ export default function ATCView() {
       {/* ── STATION MAP TAB (all 298 traffic count stations) ─────────────── */}
       {activeTab === 'stationmap' && (
         <StationMapPanel allStations={allStations} />
+      )}
+
+      {/* ── TRAFFIC FORECAST PREDICTIONS TAB ────────────────────────────── */}
+      {activeTab === 'predictions' && (
+        <PredictionsPanel />
       )}
 
     </div>
