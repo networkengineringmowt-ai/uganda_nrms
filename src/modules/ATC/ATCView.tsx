@@ -200,7 +200,7 @@ export default function ATCView() {
   const [speed,   setSpeed]   = useState<SpeedRow[]>([]);
   const [cls,     setCls]     = useState<ClassRow[]>([]);
   const [selSite,    setSelSite]    = useState<string>('STA-A00107');
-  const [activeTab,  setActiveTab]  = useState<'dashboard'|'stationmap'|'predictions'>('dashboard');
+  const [activeTab,  setActiveTab]  = useState<'dashboard'|'stationmap'|'predictions'>('predictions');
   const [allStations,setAllStations]= useState<any[]>([]);
   const [now,        setNow]        = useState(new Date());
 
