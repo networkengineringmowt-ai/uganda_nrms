@@ -1,12 +1,67 @@
 import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
-import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Popup, useMap, GeoJSON as GeoJSONLayer, Polyline } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { ESRI_TILE_URLS, ESRI_ATTRIBUTIONS } from '../../shared/mapSymbols';
+import { ESRI_TILE_URLS, ESRI_ATTRIBUTIONS, ROAD_STYLES, surfaceCategory } from '../../shared/mapSymbols';
 import {
   Construction, AlertTriangle, CheckCircle2, Clock,
   Search, X, ChevronLeft, ChevronRight, Camera,
 } from 'lucide-react';
 import { loadEnhancedProjects, type Project } from '../../data/appStore';
+
+// ── Under-construction corridor definitions ───────────────────────────────────
+interface UCorridor {
+  id: string; name: string; km: number;
+  funder: string; contractor: string; lot: string;
+  completion: string; status: string;
+  positions: [number, number][];  // [lat, lng] pairs for Leaflet Polyline
+}
+
+const UNDER_CONSTRUCTION: UCorridor[] = [
+  {
+    id: 'neramp-lot1',
+    name: 'Kamdini – Lira – Soroti – Koloin',
+    km: 216,
+    funder: 'World Bank (NERAMP)',
+    contractor: 'Mota-Engil Consortium',
+    lot: 'OPRC Lot 1',
+    completion: 'June 2027',
+    status: 'Under Construction',
+    positions: [[2.22, 32.27], [2.25, 32.90], [1.95, 33.25], [1.72, 33.61], [1.42, 33.82]],
+  },
+  {
+    id: 'hoima-wanseko',
+    name: 'Hoima – Butiaba – Wanseko (Oil Road)',
+    km: 111,
+    funder: 'GoU / TotalEnergies',
+    contractor: 'China Harbour Engineering',
+    lot: 'Albertine Oil Road',
+    completion: 'December 2026',
+    status: 'Under Construction',
+    positions: [[1.43, 31.35], [1.62, 31.38], [1.83, 31.40], [2.05, 31.42], [2.19, 31.39]],
+  },
+  {
+    id: 'northern-bypass',
+    name: 'Kampala Northern Bypass (Phase 2)',
+    km: 17,
+    funder: 'African Development Bank',
+    contractor: 'China Harbour Engineering',
+    lot: 'Urban Bypass',
+    completion: 'March 2027',
+    status: 'Under Construction',
+    positions: [[0.35, 32.68], [0.41, 32.68], [0.44, 32.62], [0.44, 32.52], [0.43, 32.46], [0.36, 32.46]],
+  },
+  {
+    id: 'kla-jinja-exp',
+    name: 'Kampala – Jinja Expressway',
+    km: 76,
+    funder: 'GoU / PPP',
+    contractor: 'China Road & Bridge Corp.',
+    lot: 'Expressway',
+    completion: 'TBD 2028',
+    status: 'Under Construction',
+    positions: [[0.32, 32.58], [0.36, 32.72], [0.40, 32.90], [0.43, 33.06], [0.45, 33.20]],
+  },
+];
 
 // ── Colour helpers ────────────────────────────────────────────────────────────
 const FUNDER_COLORS: Record<string, string> = {
@@ -183,11 +238,28 @@ export default function ProjectsView() {
   const [lightbox,   setLightbox]   = useState<{ photos: string[]; idx: number; caption: string } | null>(null);
 
   const cardListRef = useRef<HTMLDivElement>(null);
+  const [roadsGeo, setRoadsGeo] = useState<GeoJSON.FeatureCollection | null>(null);
 
+  // Load projects and road network base layer
   useEffect(() => {
     loadEnhancedProjects()
       .then(p => { setProjects(p); setLoading(false); })
       .catch(() => setLoading(false));
+
+    fetch(`${import.meta.env.BASE_URL}road_network.geojson`)
+      .then(r => r.json())
+      .then(setRoadsGeo)
+      .catch(() => {/* road base layer optional */});
+
+    // Inject CSS for marching-ants animation on under-construction corridors
+    const s = document.createElement('style');
+    s.id = 'uc-road-anim';
+    s.textContent = `
+      @keyframes pv-march { to { stroke-dashoffset: -24; } }
+      .uc-road-line { animation: pv-march 0.9s linear infinite !important; }
+    `;
+    document.head.appendChild(s);
+    return () => { document.getElementById('uc-road-anim')?.remove(); };
   }, []);
 
   const regions = useMemo(() => {
@@ -277,6 +349,57 @@ export default function ProjectsView() {
           ))}
         </div>
 
+        {/* ── OPRC + NDP IV info cards ── */}
+        <div className="grid grid-cols-2 gap-2">
+
+          {/* OPRC Card */}
+          <div style={{
+            background: 'rgba(253,211,77,0.05)',
+            border: '1px solid rgba(253,211,77,0.25)',
+            borderLeft: '3px solid #fcd34d',
+            borderRadius: 8, padding: '8px 12px',
+          }}>
+            <div style={{ fontSize: 9, fontWeight: 900, color: '#fcd34d', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 5 }}>
+              🚧 NERAMP OPRC — Output-Performance Road Contracts
+            </div>
+            <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.8)', lineHeight: 1.5 }}>
+              <span style={{ color: '#fcd34d', fontWeight: 700 }}>Lot 1 (216 km)</span>
+              {' '}Kamdini–Lira–Soroti–Koloin · Mota-Engil · World Bank · Completion Jun 2027
+            </div>
+            <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.8)', lineHeight: 1.5, marginTop: 2 }}>
+              <span style={{ color: '#fcd34d', fontWeight: 700 }}>Lot 2 (307 km)</span>
+              {' '}Soroti–Moroto–Kotido · In procurement · World Bank NERAMP
+            </div>
+            <div style={{ fontSize: 8, color: 'rgba(100,116,139,0.5)', marginTop: 4 }}>
+              NERAMP = North East Road Asset Management Programme · 10-yr performance contracts
+            </div>
+          </div>
+
+          {/* NDP IV Card */}
+          <div style={{
+            background: 'rgba(77,159,255,0.05)',
+            border: '1px solid rgba(77,159,255,0.25)',
+            borderLeft: '3px solid #4d9fff',
+            borderRadius: 8, padding: '8px 12px',
+          }}>
+            <div style={{ fontSize: 9, fontWeight: 900, color: '#4d9fff', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 5 }}>
+              📋 NDP IV Targets · FY 2025/26 – 2029/30
+            </div>
+            <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.8)', lineHeight: 1.5 }}>
+              <span style={{ color: '#00ff88', fontWeight: 700 }}>1,200+ km</span>
+              {' '}new paved roads (upgrading gravel-to-bituminous)
+            </div>
+            <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.8)', lineHeight: 1.5, marginTop: 2 }}>
+              <span style={{ color: '#00f5ff', fontWeight: 700 }}>Key priorities:</span>
+              {' '}Albertine oil roads · GKMA improvements · Northern Bypass Ph 2 · border connectivity
+            </div>
+            <div style={{ fontSize: 8, color: 'rgba(100,116,139,0.5)', marginTop: 4 }}>
+              Target: 35% paved network by 2030 · Current baseline: ~30.1% (6,405 km)
+            </div>
+          </div>
+
+        </div>
+
         {/* Filters */}
         <div className="flex flex-wrap gap-2 items-center">
           <div className="relative flex-1 min-w-[160px]">
@@ -315,6 +438,63 @@ export default function ProjectsView() {
             <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery}/>
             <TileLayer url={ESRI_TILE_URLS.labels}  attribution={ESRI_ATTRIBUTIONS.labels} opacity={0.7}/>
             <MapController target={flyTarget} />
+
+            {/* ── Road network base layer ── */}
+            {roadsGeo && (
+              <GeoJSONLayer
+                key="roads-base"
+                data={roadsGeo as GeoJSON.GeoJsonObject}
+                style={(feature) => {
+                  const surface: string = (feature?.properties as { surface?: string })?.surface ?? '';
+                  const cat = surfaceCategory(surface);
+                  const sym = ROAD_STYLES[cat === 'unknown' ? 'unknown' : cat];
+                  return {
+                    color: sym.color,
+                    weight: sym.weight,
+                    opacity: sym.opacity,
+                    dashArray: sym.dashArray,
+                  };
+                }}
+              />
+            )}
+
+            {/* ── Under-construction corridors (animated yellow dashes) ── */}
+            {UNDER_CONSTRUCTION.map(c => (
+              <Polyline
+                key={c.id}
+                positions={c.positions}
+                pathOptions={{
+                  color: '#FCD34D',
+                  weight: 5,
+                  opacity: 0.92,
+                  dashArray: '12 6',
+                  className: 'uc-road-line',
+                }}
+              >
+                <Popup>
+                  <div style={{ fontSize: 11, minWidth: 210, maxWidth: 250 }}>
+                    <div style={{ fontWeight: 800, fontSize: 12, color: '#1e293b', borderBottom: '1.5px solid #fcd34d', paddingBottom: 4, marginBottom: 6 }}>
+                      🚧 {c.name}
+                    </div>
+                    <table style={{ fontSize: 10, borderCollapse: 'collapse', width: '100%' }}>
+                      {[
+                        ['Lot / Category', c.lot],
+                        ['Length', `${c.km} km`],
+                        ['Funder', c.funder],
+                        ['Contractor', c.contractor],
+                        ['Status', c.status],
+                        ['Est. Completion', c.completion],
+                      ].map(([k, v]) => (
+                        <tr key={k}>
+                          <td style={{ color: '#64748b', paddingRight: 8, paddingBottom: 3, fontWeight: 600, verticalAlign: 'top' }}>{k}</td>
+                          <td style={{ color: '#111827', fontWeight: 700 }}>{v}</td>
+                        </tr>
+                      ))}
+                    </table>
+                  </div>
+                </Popup>
+              </Polyline>
+            ))}
 
             {filtered.map(p => {
               const isSelected = selectedId === p.id;
@@ -369,6 +549,26 @@ export default function ProjectsView() {
                 <span style={{ fontSize: 9, color: '#94a3b8', textTransform: 'capitalize' }}>{s}</span>
               </div>
             ))}
+            <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)', marginTop: 5, paddingTop: 5 }}>
+              <div className="flex items-center gap-1.5 mb-1">
+                <svg width="18" height="5" style={{ flexShrink: 0 }}>
+                  <line x1="0" y1="2.5" x2="18" y2="2.5" stroke={ROAD_STYLES.paved.color} strokeWidth="2.5"/>
+                </svg>
+                <span style={{ fontSize: 9, color: '#94a3b8' }}>Paved road</span>
+              </div>
+              <div className="flex items-center gap-1.5 mb-1">
+                <svg width="18" height="5" style={{ flexShrink: 0 }}>
+                  <line x1="0" y1="2.5" x2="18" y2="2.5" stroke={ROAD_STYLES.unpaved.color} strokeWidth="1.5" strokeDasharray="3 2"/>
+                </svg>
+                <span style={{ fontSize: 9, color: '#94a3b8' }}>Unpaved</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <svg width="18" height="5" style={{ flexShrink: 0 }}>
+                  <line x1="0" y1="2.5" x2="18" y2="2.5" stroke="#FCD34D" strokeWidth="3" strokeDasharray="5 2"/>
+                </svg>
+                <span style={{ fontSize: 9, color: '#fcd34d' }}>Under construction</span>
+              </div>
+            </div>
           </div>
         </div>
 
