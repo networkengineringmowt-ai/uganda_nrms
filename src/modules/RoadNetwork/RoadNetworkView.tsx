@@ -23,6 +23,7 @@ import {
 } from 'recharts';
 import { useBMS } from '../../store/BMSContext';
 import type { Structure } from '../../types';
+import { ROAD_STYLES, surfaceCategory } from '../../shared/mapSymbols';
 import FeatureAnalyticsPanel from '../../shared/FeatureAnalyticsPanel';
 import type { FeatureData } from '../../shared/FeatureAnalyticsPanel';
 
@@ -65,19 +66,11 @@ const C = {
   glass:   'rgba(6,13,24,0.88)',
 };
 
-// ── Road line symbology ───────────────────────────────────────────────────────
-const ROAD_SYM = {
-  paved:   { color: '#111111', weight: 3.5, opacity: 0.95, dash: undefined as string | undefined },
-  unpaved: { color: '#A16207', weight: 1.5, opacity: 0.75, dash: '4 3'    as string | undefined },
-  unknown: { color: '#6B7280', weight: 1.5, opacity: 0.65, dash: '2 4'    as string | undefined },
-};
-const PAVED_SHIMMER = { color: '#555555', weight: 1.5, opacity: 0.5 };
-
-function surfaceCat(surface: string): 'paved' | 'unpaved' | 'unknown' {
-  if (['Bituminous','Paved','Asphalt','Concrete','Bitumen'].includes(surface)) return 'paved';
-  if (['Unsealed','Gravel','Earth'].includes(surface))                          return 'unpaved';
-  return 'unknown';
-}
+// ── Road line symbology — sourced from shared/mapSymbols.ts ──────────────────
+// ROAD_STYLES and surfaceCategory are imported above; use them directly.
+// Local alias for brevity within this module.
+const ROAD_SYM    = ROAD_STYLES;                         // { paved, unpaved, unknown, shimmer }
+const PAVED_SHIMMER = ROAD_STYLES.shimmer;               // { color, weight, opacity }
 
 const REGION_COLORS: Record<string,string> = {
   'Central':      '#00f5ff',
@@ -324,9 +317,9 @@ export default function RoadNetworkView() {
     if (animMode) {
       // Historical animation: paved if pave_year <= animYear
       const paveYr  = paveYears[p.road] ?? null;
-      const isPaved = paveYr !== null ? paveYr <= animYear : surfaceCat(p.surface) === 'paved';
+      const isPaved = paveYr !== null ? paveYr <= animYear : surfaceCategory(p.surface) === 'paved';
       const sym = ROAD_SYM[isPaved ? 'paved' : 'unpaved'];
-      return { color: sym.color, weight: sym.weight, opacity: sym.opacity, dashArray: sym.dash };
+      return { color: sym.color, weight: sym.weight, opacity: sym.opacity, dashArray: sym.dashArray };
     }
 
     // Current mode with filters
@@ -335,8 +328,8 @@ export default function RoadNetworkView() {
     if (regFilter  !== 'all' && p.region !== regFilter)      return { opacity: 0, fillOpacity: 0 };
 
     if (colorBy === 'surface') {
-      const sym = ROAD_SYM[surfaceCat(p.surface)];
-      return { color: sym.color, weight: sym.weight, opacity: sym.opacity, dashArray: sym.dash };
+      const sym = ROAD_SYM[surfaceCategory(p.surface)];
+      return { color: sym.color, weight: sym.weight, opacity: sym.opacity, dashArray: sym.dashArray };
     }
 
     const color = colorBy === 'class'
@@ -353,7 +346,7 @@ export default function RoadNetworkView() {
 
     if (animMode) {
       const paveYr  = paveYears[p.road] ?? null;
-      const isPaved = paveYr !== null ? paveYr <= animYear : surfaceCat(p.surface) === 'paved';
+      const isPaved = paveYr !== null ? paveYr <= animYear : surfaceCategory(p.surface) === 'paved';
       return isPaved
         ? { color: PAVED_SHIMMER.color, weight: PAVED_SHIMMER.weight, opacity: PAVED_SHIMMER.opacity }
         : hidden;
@@ -363,7 +356,7 @@ export default function RoadNetworkView() {
     if (surfFilter !== 'all' && p.surface !== surfFilter)   return hidden;
     if (clsFilter  !== 'all' && p.road_class !== clsFilter) return hidden;
     if (regFilter  !== 'all' && p.region !== regFilter)     return hidden;
-    return surfaceCat(p.surface) === 'paved'
+    return surfaceCategory(p.surface) === 'paved'
       ? { color: PAVED_SHIMMER.color, weight: PAVED_SHIMMER.weight, opacity: PAVED_SHIMMER.opacity }
       : hidden;
   }, [animMode, animYear, paveYears, colorBy, surfFilter, clsFilter, regFilter]);
@@ -837,11 +830,23 @@ function NetworkStatsPanel({ stats, ndpiv, storyData, animYear, animMode }: {
   animYear: number;
   animMode: boolean;
 }) {
-  // Use authoritative inventory figures when available, fall back to geojson-computed
-  const totalKm = ndpiv?.summary.total_km    ?? stats?.totalKm ?? 0;
-  const pavKm   = ndpiv?.summary.paved_km    ?? stats?.pavKm   ?? 0;
-  const unsKm   = ndpiv?.summary.unsealed_km ?? stats?.unsKm   ?? 0;
-  const pavPct  = ndpiv?.summary.paved_pct   ?? (stats ? stats.pavKm/stats.totalKm*100 : 0);
+  // Derive KPIs — reactive to animYear in history mode, static (inventory) in current mode
+  const { totalKm, pavKm, unsKm, pavPct } = useMemo(() => {
+    const netTotal = ndpiv?.summary.total_km ?? stats?.totalKm ?? 21292;
+    if (animMode && storyData) {
+      // Interpolate cumulative paved at the current timeline year
+      const cp    = storyData.cumulative_paved;
+      const entry = [...cp].reverse().find(e => e.year <= animYear);
+      const pav   = Math.min(entry?.cum_paved_km ?? 0, netTotal);
+      const uns   = Math.max(netTotal - pav, 0);
+      return { totalKm: netTotal, pavKm: pav, unsKm: uns, pavPct: (pav / netTotal) * 100 };
+    }
+    // Current mode — use authoritative inventory figures when available
+    const pav  = ndpiv?.summary.paved_km    ?? stats?.pavKm   ?? 0;
+    const uns  = ndpiv?.summary.unsealed_km ?? stats?.unsKm   ?? 0;
+    const pct  = ndpiv?.summary.paved_pct   ?? (stats ? stats.pavKm / stats.totalKm * 100 : 0);
+    return { totalKm: netTotal, pavKm: pav, unsKm: uns, pavPct: pct };
+  }, [animMode, animYear, storyData, ndpiv, stats]);
 
   if (!stats && !ndpiv) return <div style={{ color:'rgba(100,116,139,0.5)', fontSize:12, textAlign:'center', marginTop:40 }}>Loading…</div>;
 
