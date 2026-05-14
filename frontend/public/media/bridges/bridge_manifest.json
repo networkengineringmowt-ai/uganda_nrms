@@ -21,13 +21,6 @@
     "index": 3
   },
   {
-    "id": "b001_4.jpg",
-    "file": "media/bridges/b001_4.jpg",
-    "bridge": "B001",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b002_1.jpg",
     "file": "media/bridges/b002_1.jpg",
     "bridge": "B002",
@@ -47,13 +40,6 @@
     "bridge": "B002",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b002_4.jpg",
-    "file": "media/bridges/b002_4.jpg",
-    "bridge": "B002",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b003_1.jpg",
@@ -96,13 +82,6 @@
     "bridge": "B006",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b006_4.jpg",
-    "file": "media/bridges/b006_4.jpg",
-    "bridge": "B006",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b007_1.jpg",
@@ -203,13 +182,6 @@
     "index": 3
   },
   {
-    "id": "b017_4.jpg",
-    "file": "media/bridges/b017_4.jpg",
-    "bridge": "B017",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b018_1.jpg",
     "file": "media/bridges/b018_1.jpg",
     "bridge": "B018",
@@ -280,13 +252,6 @@
     "index": 3
   },
   {
-    "id": "b025_4.jpg",
-    "file": "media/bridges/b025_4.jpg",
-    "bridge": "B025",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b026_1.jpg",
     "file": "media/bridges/b026_1.jpg",
     "bridge": "B026",
@@ -306,13 +271,6 @@
     "bridge": "B026",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b026_4.jpg",
-    "file": "media/bridges/b026_4.jpg",
-    "bridge": "B026",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b028_1.jpg",
@@ -336,13 +294,6 @@
     "index": 3
   },
   {
-    "id": "b028_4.jpg",
-    "file": "media/bridges/b028_4.jpg",
-    "bridge": "B028",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b029_1.jpg",
     "file": "media/bridges/b029_1.jpg",
     "bridge": "B029",
@@ -362,13 +313,6 @@
     "bridge": "B029",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b029_4.jpg",
-    "file": "media/bridges/b029_4.jpg",
-    "bridge": "B029",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b030_1.jpg",
@@ -392,34 +336,6 @@
     "index": 2
   },
   {
-    "id": "b032_1.jpg",
-    "file": "media/bridges/b032_1.jpg",
-    "bridge": "B032",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "b032_2.jpg",
-    "file": "media/bridges/b032_2.jpg",
-    "bridge": "B032",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "b032_3.jpg",
-    "file": "media/bridges/b032_3.jpg",
-    "bridge": "B032",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "b032_4.jpg",
-    "file": "media/bridges/b032_4.jpg",
-    "bridge": "B032",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b033_1.jpg",
     "file": "media/bridges/b033_1.jpg",
     "bridge": "B033",
@@ -439,13 +355,6 @@
     "bridge": "B033",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b033_4.jpg",
-    "file": "media/bridges/b033_4.jpg",
-    "bridge": "B033",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b034_1.jpg",
@@ -469,13 +378,6 @@
     "index": 3
   },
   {
-    "id": "b034_4.jpg",
-    "file": "media/bridges/b034_4.jpg",
-    "bridge": "B034",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b035_1.jpg",
     "file": "media/bridges/b035_1.jpg",
     "bridge": "B035",
@@ -495,13 +397,6 @@
     "bridge": "B035",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b035_4.jpg",
-    "file": "media/bridges/b035_4.jpg",
-    "bridge": "B035",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b036_1.jpg",
@@ -525,13 +420,6 @@
     "index": 3
   },
   {
-    "id": "b036_4.jpg",
-    "file": "media/bridges/b036_4.jpg",
-    "bridge": "B036",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b037_1.jpg",
     "file": "media/bridges/b037_1.jpg",
     "bridge": "B037",
@@ -551,13 +439,6 @@
     "bridge": "B037",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b037_4.jpg",
-    "file": "media/bridges/b037_4.jpg",
-    "bridge": "B037",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b038_1.jpg",
@@ -581,13 +462,6 @@
     "index": 3
   },
   {
-    "id": "b038_4.jpg",
-    "file": "media/bridges/b038_4.jpg",
-    "bridge": "B038",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b039_1.jpg",
     "file": "media/bridges/b039_1.jpg",
     "bridge": "B039",
@@ -609,13 +483,6 @@
     "index": 3
   },
   {
-    "id": "b039_4.jpg",
-    "file": "media/bridges/b039_4.jpg",
-    "bridge": "B039",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b040_1.jpg",
     "file": "media/bridges/b040_1.jpg",
     "bridge": "B040",
@@ -635,13 +502,6 @@
     "bridge": "B040",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b040_4.jpg",
-    "file": "media/bridges/b040_4.jpg",
-    "bridge": "B040",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b041_1.jpg",
@@ -670,13 +530,6 @@
     "bridge": "B042",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b042_4.jpg",
-    "file": "media/bridges/b042_4.jpg",
-    "bridge": "B042",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b046_1.jpg",
@@ -728,13 +581,6 @@
     "index": 3
   },
   {
-    "id": "b050_4.jpg",
-    "file": "media/bridges/b050_4.jpg",
-    "bridge": "B050",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b051_1.jpg",
     "file": "media/bridges/b051_1.jpg",
     "bridge": "B051",
@@ -754,13 +600,6 @@
     "bridge": "B051",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b051_4.jpg",
-    "file": "media/bridges/b051_4.jpg",
-    "bridge": "B051",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b053_1.jpg",
@@ -784,13 +623,6 @@
     "index": 3
   },
   {
-    "id": "b053_4.jpg",
-    "file": "media/bridges/b053_4.jpg",
-    "bridge": "B053",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b054_1.jpg",
     "file": "media/bridges/b054_1.jpg",
     "bridge": "B054",
@@ -810,13 +642,6 @@
     "bridge": "B054",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b054_4.jpg",
-    "file": "media/bridges/b054_4.jpg",
-    "bridge": "B054",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b055_1.jpg",
@@ -840,13 +665,6 @@
     "index": 3
   },
   {
-    "id": "b055_4.jpg",
-    "file": "media/bridges/b055_4.jpg",
-    "bridge": "B055",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b056_1.jpg",
     "file": "media/bridges/b056_1.jpg",
     "bridge": "B056",
@@ -868,13 +686,6 @@
     "index": 3
   },
   {
-    "id": "b056_4.jpg",
-    "file": "media/bridges/b056_4.jpg",
-    "bridge": "B056",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b057_1.jpg",
     "file": "media/bridges/b057_1.jpg",
     "bridge": "B057",
@@ -894,13 +705,6 @@
     "bridge": "B057",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b057_4.jpg",
-    "file": "media/bridges/b057_4.jpg",
-    "bridge": "B057",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b061_1.jpg",
@@ -957,13 +761,6 @@
     "bridge": "B073",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b073_4.jpg",
-    "file": "media/bridges/b073_4.jpg",
-    "bridge": "B073",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b074_1.jpg",
@@ -1092,13 +889,6 @@
     "index": 3
   },
   {
-    "id": "b087_4.jpg",
-    "file": "media/bridges/b087_4.jpg",
-    "bridge": "B087",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b088_1.jpg",
     "file": "media/bridges/b088_1.jpg",
     "bridge": "B088",
@@ -1118,13 +908,6 @@
     "bridge": "B088",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b088_4.jpg",
-    "file": "media/bridges/b088_4.jpg",
-    "bridge": "B088",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b091_1.jpg",
@@ -1162,13 +945,6 @@
     "index": 3
   },
   {
-    "id": "b092_4.jpg",
-    "file": "media/bridges/b092_4.jpg",
-    "bridge": "B092",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b094_1.jpg",
     "file": "media/bridges/b094_1.jpg",
     "bridge": "B094",
@@ -1188,13 +964,6 @@
     "bridge": "B094",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b094_4.jpg",
-    "file": "media/bridges/b094_4.jpg",
-    "bridge": "B094",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b095_1.jpg",
@@ -1218,13 +987,6 @@
     "index": 3
   },
   {
-    "id": "b095_4.jpg",
-    "file": "media/bridges/b095_4.jpg",
-    "bridge": "B095",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b096_1.jpg",
     "file": "media/bridges/b096_1.jpg",
     "bridge": "B096",
@@ -1244,13 +1006,6 @@
     "bridge": "B096",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b096_4.jpg",
-    "file": "media/bridges/b096_4.jpg",
-    "bridge": "B096",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b097_1.jpg",
@@ -1274,13 +1029,6 @@
     "index": 3
   },
   {
-    "id": "b097_4.jpg",
-    "file": "media/bridges/b097_4.jpg",
-    "bridge": "B097",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b098_1.jpg",
     "file": "media/bridges/b098_1.jpg",
     "bridge": "B098",
@@ -1300,13 +1048,6 @@
     "bridge": "B098",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b098_4.jpg",
-    "file": "media/bridges/b098_4.jpg",
-    "bridge": "B098",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b099_1.jpg",
@@ -1330,13 +1071,6 @@
     "index": 3
   },
   {
-    "id": "b099_4.jpg",
-    "file": "media/bridges/b099_4.jpg",
-    "bridge": "B099",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b100_1.jpg",
     "file": "media/bridges/b100_1.jpg",
     "bridge": "B100",
@@ -1356,13 +1090,6 @@
     "bridge": "B100",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b100_4.jpg",
-    "file": "media/bridges/b100_4.jpg",
-    "bridge": "B100",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b101_1.jpg",
@@ -1386,13 +1113,6 @@
     "index": 3
   },
   {
-    "id": "b101_4.jpg",
-    "file": "media/bridges/b101_4.jpg",
-    "bridge": "B101",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b102_1.jpg",
     "file": "media/bridges/b102_1.jpg",
     "bridge": "B102",
@@ -1412,13 +1132,6 @@
     "bridge": "B102",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b102_4.jpg",
-    "file": "media/bridges/b102_4.jpg",
-    "bridge": "B102",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b103_1.jpg",
@@ -1442,13 +1155,6 @@
     "index": 3
   },
   {
-    "id": "b103_4.jpg",
-    "file": "media/bridges/b103_4.jpg",
-    "bridge": "B103",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b104_1.jpg",
     "file": "media/bridges/b104_1.jpg",
     "bridge": "B104",
@@ -1468,13 +1174,6 @@
     "bridge": "B104",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b104_4.jpg",
-    "file": "media/bridges/b104_4.jpg",
-    "bridge": "B104",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b105_1.jpg",
@@ -1498,13 +1197,6 @@
     "index": 3
   },
   {
-    "id": "b105_4.jpg",
-    "file": "media/bridges/b105_4.jpg",
-    "bridge": "B105",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b106_1.jpg",
     "file": "media/bridges/b106_1.jpg",
     "bridge": "B106",
@@ -1524,13 +1216,6 @@
     "bridge": "B106",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b106_4.jpg",
-    "file": "media/bridges/b106_4.jpg",
-    "bridge": "B106",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b107_1.jpg",
@@ -1554,13 +1239,6 @@
     "index": 3
   },
   {
-    "id": "b107_4.jpg",
-    "file": "media/bridges/b107_4.jpg",
-    "bridge": "B107",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b108_1.jpg",
     "file": "media/bridges/b108_1.jpg",
     "bridge": "B108",
@@ -1582,13 +1260,6 @@
     "index": 3
   },
   {
-    "id": "b108_4.jpg",
-    "file": "media/bridges/b108_4.jpg",
-    "bridge": "B108",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b109_1.jpg",
     "file": "media/bridges/b109_1.jpg",
     "bridge": "B109",
@@ -1608,13 +1279,6 @@
     "bridge": "B109",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b109_4.jpg",
-    "file": "media/bridges/b109_4.jpg",
-    "bridge": "B109",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b110_1.jpg",
@@ -1645,13 +1309,6 @@
     "index": 3
   },
   {
-    "id": "b112_4.jpg",
-    "file": "media/bridges/b112_4.jpg",
-    "bridge": "B112",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b113_1.jpg",
     "file": "media/bridges/b113_1.jpg",
     "bridge": "B113",
@@ -1671,13 +1328,6 @@
     "bridge": "B113",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b113_4.jpg",
-    "file": "media/bridges/b113_4.jpg",
-    "bridge": "B113",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b114_1.jpg",
@@ -1701,13 +1351,6 @@
     "index": 3
   },
   {
-    "id": "b114_4.jpg",
-    "file": "media/bridges/b114_4.jpg",
-    "bridge": "B114",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b117_1.jpg",
     "file": "media/bridges/b117_1.jpg",
     "bridge": "B117",
@@ -1727,237 +1370,6 @@
     "bridge": "B117",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b117_4.jpg",
-    "file": "media/bridges/b117_4.jpg",
-    "bridge": "B117",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "b119_1.jpg",
-    "file": "media/bridges/b119_1.jpg",
-    "bridge": "B119",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "b119_2.jpg",
-    "file": "media/bridges/b119_2.jpg",
-    "bridge": "B119",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "b119_3.jpg",
-    "file": "media/bridges/b119_3.jpg",
-    "bridge": "B119",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "b119_4.jpg",
-    "file": "media/bridges/b119_4.jpg",
-    "bridge": "B119",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "b120_1.jpg",
-    "file": "media/bridges/b120_1.jpg",
-    "bridge": "B120",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "b120_2.jpg",
-    "file": "media/bridges/b120_2.jpg",
-    "bridge": "B120",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "b120_3.jpg",
-    "file": "media/bridges/b120_3.jpg",
-    "bridge": "B120",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "b120_4.jpg",
-    "file": "media/bridges/b120_4.jpg",
-    "bridge": "B120",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "b121_1.jpg",
-    "file": "media/bridges/b121_1.jpg",
-    "bridge": "B121",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "b121_2.jpg",
-    "file": "media/bridges/b121_2.jpg",
-    "bridge": "B121",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "b121_3.jpg",
-    "file": "media/bridges/b121_3.jpg",
-    "bridge": "B121",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "b121_4.jpg",
-    "file": "media/bridges/b121_4.jpg",
-    "bridge": "B121",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "b122_1.jpg",
-    "file": "media/bridges/b122_1.jpg",
-    "bridge": "B122",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "b122_2.jpg",
-    "file": "media/bridges/b122_2.jpg",
-    "bridge": "B122",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "b122_3.jpg",
-    "file": "media/bridges/b122_3.jpg",
-    "bridge": "B122",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "b122_4.jpg",
-    "file": "media/bridges/b122_4.jpg",
-    "bridge": "B122",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "b123_1.jpg",
-    "file": "media/bridges/b123_1.jpg",
-    "bridge": "B123",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "b123_2.jpg",
-    "file": "media/bridges/b123_2.jpg",
-    "bridge": "B123",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "b123_3.jpg",
-    "file": "media/bridges/b123_3.jpg",
-    "bridge": "B123",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "b123_4.jpg",
-    "file": "media/bridges/b123_4.jpg",
-    "bridge": "B123",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "b124_1.jpg",
-    "file": "media/bridges/b124_1.jpg",
-    "bridge": "B124",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "b124_2.jpg",
-    "file": "media/bridges/b124_2.jpg",
-    "bridge": "B124",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "b124_3.jpg",
-    "file": "media/bridges/b124_3.jpg",
-    "bridge": "B124",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "b124_4.jpg",
-    "file": "media/bridges/b124_4.jpg",
-    "bridge": "B124",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "b125_1.jpg",
-    "file": "media/bridges/b125_1.jpg",
-    "bridge": "B125",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "b125_2.jpg",
-    "file": "media/bridges/b125_2.jpg",
-    "bridge": "B125",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "b125_3.jpg",
-    "file": "media/bridges/b125_3.jpg",
-    "bridge": "B125",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "b125_4.jpg",
-    "file": "media/bridges/b125_4.jpg",
-    "bridge": "B125",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "b126_1.jpg",
-    "file": "media/bridges/b126_1.jpg",
-    "bridge": "B126",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "b126_2.jpg",
-    "file": "media/bridges/b126_2.jpg",
-    "bridge": "B126",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "b126_3.jpg",
-    "file": "media/bridges/b126_3.jpg",
-    "bridge": "B126",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "b126_4.jpg",
-    "file": "media/bridges/b126_4.jpg",
-    "bridge": "B126",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b129_1.jpg",
@@ -2009,55 +1421,6 @@
     "index": 3
   },
   {
-    "id": "b143_1.jpg",
-    "file": "media/bridges/b143_1.jpg",
-    "bridge": "B143",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "b143_2.jpg",
-    "file": "media/bridges/b143_2.jpg",
-    "bridge": "B143",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "b143_3.jpg",
-    "file": "media/bridges/b143_3.jpg",
-    "bridge": "B143",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "b143_4.jpg",
-    "file": "media/bridges/b143_4.jpg",
-    "bridge": "B143",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "b144_1.jpg",
-    "file": "media/bridges/b144_1.jpg",
-    "bridge": "B144",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "b144_2.jpg",
-    "file": "media/bridges/b144_2.jpg",
-    "bridge": "B144",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "b144_3.jpg",
-    "file": "media/bridges/b144_3.jpg",
-    "bridge": "B144",
-    "type": "image",
-    "index": 3
-  },
-  {
     "id": "b146_1.jpg",
     "file": "media/bridges/b146_1.jpg",
     "bridge": "B146",
@@ -2077,13 +1440,6 @@
     "bridge": "B146",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b146_4.jpg",
-    "file": "media/bridges/b146_4.jpg",
-    "bridge": "B146",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b147_1.jpg",
@@ -2135,13 +1491,6 @@
     "index": 3
   },
   {
-    "id": "b151_4.jpg",
-    "file": "media/bridges/b151_4.jpg",
-    "bridge": "B151",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b157_1.jpg",
     "file": "media/bridges/b157_1.jpg",
     "bridge": "B157",
@@ -2177,13 +1526,6 @@
     "index": 3
   },
   {
-    "id": "b158_4.jpg",
-    "file": "media/bridges/b158_4.jpg",
-    "bridge": "B158",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b159_1.jpg",
     "file": "media/bridges/b159_1.jpg",
     "bridge": "B159",
@@ -2203,13 +1545,6 @@
     "bridge": "B159",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b159_4.jpg",
-    "file": "media/bridges/b159_4.jpg",
-    "bridge": "B159",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b160_1.jpg",
@@ -2233,13 +1568,6 @@
     "index": 3
   },
   {
-    "id": "b160_4.jpg",
-    "file": "media/bridges/b160_4.jpg",
-    "bridge": "B160",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b161_1.jpg",
     "file": "media/bridges/b161_1.jpg",
     "bridge": "B161",
@@ -2259,13 +1587,6 @@
     "bridge": "B161",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b161_4.jpg",
-    "file": "media/bridges/b161_4.jpg",
-    "bridge": "B161",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b163_1.jpg",
@@ -2289,13 +1610,6 @@
     "index": 3
   },
   {
-    "id": "b163_4.jpg",
-    "file": "media/bridges/b163_4.jpg",
-    "bridge": "B163",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b164_1.jpg",
     "file": "media/bridges/b164_1.jpg",
     "bridge": "B164",
@@ -2317,13 +1631,6 @@
     "index": 3
   },
   {
-    "id": "b164_4.jpg",
-    "file": "media/bridges/b164_4.jpg",
-    "bridge": "B164",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b173_1.jpg",
     "file": "media/bridges/b173_1.jpg",
     "bridge": "B173",
@@ -2343,13 +1650,6 @@
     "bridge": "B173",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b173_4.jpg",
-    "file": "media/bridges/b173_4.jpg",
-    "bridge": "B173",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b177_1.jpg",
@@ -2380,13 +1680,6 @@
     "index": 3
   },
   {
-    "id": "b180_4.jpg",
-    "file": "media/bridges/b180_4.jpg",
-    "bridge": "B180",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b181_1.jpg",
     "file": "media/bridges/b181_1.jpg",
     "bridge": "B181",
@@ -2406,13 +1699,6 @@
     "bridge": "B181",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b181_4.jpg",
-    "file": "media/bridges/b181_4.jpg",
-    "bridge": "B181",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b183_1.jpg",
@@ -2492,13 +1778,6 @@
     "index": 3
   },
   {
-    "id": "b196_4.jpg",
-    "file": "media/bridges/b196_4.jpg",
-    "bridge": "B196",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b197_1.jpg",
     "file": "media/bridges/b197_1.jpg",
     "bridge": "B197",
@@ -2555,13 +1834,6 @@
     "index": 3
   },
   {
-    "id": "b202_4.jpg",
-    "file": "media/bridges/b202_4.jpg",
-    "bridge": "B202",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b203_1.jpg",
     "file": "media/bridges/b203_1.jpg",
     "bridge": "B203",
@@ -2590,20 +1862,6 @@
     "index": 2
   },
   {
-    "id": "b204_3.jpg",
-    "file": "media/bridges/b204_3.jpg",
-    "bridge": "B204",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "b204_4.jpg",
-    "file": "media/bridges/b204_4.jpg",
-    "bridge": "B204",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b205_1.jpg",
     "file": "media/bridges/b205_1.jpg",
     "bridge": "B205",
@@ -2616,34 +1874,6 @@
     "bridge": "B205",
     "type": "image",
     "index": 2
-  },
-  {
-    "id": "b206_1.jpg",
-    "file": "media/bridges/b206_1.jpg",
-    "bridge": "B206",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "b206_2.jpg",
-    "file": "media/bridges/b206_2.jpg",
-    "bridge": "B206",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "b206_3.jpg",
-    "file": "media/bridges/b206_3.jpg",
-    "bridge": "B206",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "b206_4.jpg",
-    "file": "media/bridges/b206_4.jpg",
-    "bridge": "B206",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b207_1.jpg",
@@ -2667,13 +1897,6 @@
     "index": 3
   },
   {
-    "id": "b207_4.jpg",
-    "file": "media/bridges/b207_4.jpg",
-    "bridge": "B207",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b208_1.jpg",
     "file": "media/bridges/b208_1.jpg",
     "bridge": "B208",
@@ -2693,13 +1916,6 @@
     "bridge": "B208",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b208_4.jpg",
-    "file": "media/bridges/b208_4.jpg",
-    "bridge": "B208",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b209_1.jpg",
@@ -2723,13 +1939,6 @@
     "index": 3
   },
   {
-    "id": "b209_4.jpg",
-    "file": "media/bridges/b209_4.jpg",
-    "bridge": "B209",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b210_1.jpg",
     "file": "media/bridges/b210_1.jpg",
     "bridge": "B210",
@@ -2751,13 +1960,6 @@
     "index": 3
   },
   {
-    "id": "b210_4.jpg",
-    "file": "media/bridges/b210_4.jpg",
-    "bridge": "B210",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b212_1.jpg",
     "file": "media/bridges/b212_1.jpg",
     "bridge": "B212",
@@ -2777,13 +1979,6 @@
     "bridge": "B212",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b212_4.jpg",
-    "file": "media/bridges/b212_4.jpg",
-    "bridge": "B212",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b214_1.jpg",
@@ -2933,13 +2128,6 @@
     "index": 3
   },
   {
-    "id": "b228_4.jpg",
-    "file": "media/bridges/b228_4.jpg",
-    "bridge": "B228",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b229_1.jpg",
     "file": "media/bridges/b229_1.jpg",
     "bridge": "B229",
@@ -3031,13 +2219,6 @@
     "index": 3
   },
   {
-    "id": "b238_4.jpg",
-    "file": "media/bridges/b238_4.jpg",
-    "bridge": "B238",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b240_1.jpg",
     "file": "media/bridges/b240_1.jpg",
     "bridge": "B240",
@@ -3064,13 +2245,6 @@
     "bridge": "B241",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b241_4.jpg",
-    "file": "media/bridges/b241_4.jpg",
-    "bridge": "B241",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b246_1.jpg",
@@ -3115,13 +2289,6 @@
     "index": 3
   },
   {
-    "id": "b248_4.jpg",
-    "file": "media/bridges/b248_4.jpg",
-    "bridge": "B248",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b250_1.jpg",
     "file": "media/bridges/b250_1.jpg",
     "bridge": "B250",
@@ -3157,13 +2324,6 @@
     "index": 3
   },
   {
-    "id": "b252_4.jpg",
-    "file": "media/bridges/b252_4.jpg",
-    "bridge": "B252",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b253_1.jpg",
     "file": "media/bridges/b253_1.jpg",
     "bridge": "B253",
@@ -3183,13 +2343,6 @@
     "bridge": "B253",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b253_4.jpg",
-    "file": "media/bridges/b253_4.jpg",
-    "bridge": "B253",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b254_1.jpg",
@@ -3227,13 +2380,6 @@
     "index": 3
   },
   {
-    "id": "b255_4.jpg",
-    "file": "media/bridges/b255_4.jpg",
-    "bridge": "B255",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b256_1.jpg",
     "file": "media/bridges/b256_1.jpg",
     "bridge": "B256",
@@ -3253,13 +2399,6 @@
     "bridge": "B256",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b256_4.jpg",
-    "file": "media/bridges/b256_4.jpg",
-    "bridge": "B256",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b257_1.jpg",
@@ -3304,13 +2443,6 @@
     "index": 3
   },
   {
-    "id": "b258_4.jpg",
-    "file": "media/bridges/b258_4.jpg",
-    "bridge": "B258",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b259_1.jpg",
     "file": "media/bridges/b259_1.jpg",
     "bridge": "B259",
@@ -3330,13 +2462,6 @@
     "bridge": "B259",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b259_4.jpg",
-    "file": "media/bridges/b259_4.jpg",
-    "bridge": "B259",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b260_1.jpg",
@@ -3360,13 +2485,6 @@
     "index": 3
   },
   {
-    "id": "b260_4.jpg",
-    "file": "media/bridges/b260_4.jpg",
-    "bridge": "B260",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b261_1.jpg",
     "file": "media/bridges/b261_1.jpg",
     "bridge": "B261",
@@ -3386,13 +2504,6 @@
     "bridge": "B261",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b261_4.jpg",
-    "file": "media/bridges/b261_4.jpg",
-    "bridge": "B261",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b262_1.jpg",
@@ -3458,13 +2569,6 @@
     "index": 3
   },
   {
-    "id": "b265_4.jpg",
-    "file": "media/bridges/b265_4.jpg",
-    "bridge": "B265",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b268_1.jpg",
     "file": "media/bridges/b268_1.jpg",
     "bridge": "B268",
@@ -3505,13 +2609,6 @@
     "bridge": "B269",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b269_4.jpg",
-    "file": "media/bridges/b269_4.jpg",
-    "bridge": "B269",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b270_1.jpg",
@@ -3577,13 +2674,6 @@
     "index": 3
   },
   {
-    "id": "b278_4.jpg",
-    "file": "media/bridges/b278_4.jpg",
-    "bridge": "B278",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b279_1.jpg",
     "file": "media/bridges/b279_1.jpg",
     "bridge": "B279",
@@ -3603,13 +2693,6 @@
     "bridge": "B279",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b279_4.jpg",
-    "file": "media/bridges/b279_4.jpg",
-    "bridge": "B279",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b280_1.jpg",
@@ -3633,13 +2716,6 @@
     "index": 3
   },
   {
-    "id": "b280_4.jpg",
-    "file": "media/bridges/b280_4.jpg",
-    "bridge": "B280",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b281_1.jpg",
     "file": "media/bridges/b281_1.jpg",
     "bridge": "B281",
@@ -3659,13 +2735,6 @@
     "bridge": "B281",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b281_4.jpg",
-    "file": "media/bridges/b281_4.jpg",
-    "bridge": "B281",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b282_1.jpg",
@@ -3710,13 +2779,6 @@
     "index": 3
   },
   {
-    "id": "b283_4.jpg",
-    "file": "media/bridges/b283_4.jpg",
-    "bridge": "B283",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b284_1.jpg",
     "file": "media/bridges/b284_1.jpg",
     "bridge": "B284",
@@ -3736,13 +2798,6 @@
     "bridge": "B284",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b284_4.jpg",
-    "file": "media/bridges/b284_4.jpg",
-    "bridge": "B284",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b285_1.jpg",
@@ -3766,13 +2821,6 @@
     "index": 3
   },
   {
-    "id": "b285_4.jpg",
-    "file": "media/bridges/b285_4.jpg",
-    "bridge": "B285",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b286_1.jpg",
     "file": "media/bridges/b286_1.jpg",
     "bridge": "B286",
@@ -3792,13 +2840,6 @@
     "bridge": "B286",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b286_4.jpg",
-    "file": "media/bridges/b286_4.jpg",
-    "bridge": "B286",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b287_1.jpg",
@@ -3822,13 +2863,6 @@
     "index": 3
   },
   {
-    "id": "b287_4.jpg",
-    "file": "media/bridges/b287_4.jpg",
-    "bridge": "B287",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b288_1.jpg",
     "file": "media/bridges/b288_1.jpg",
     "bridge": "B288",
@@ -3848,13 +2882,6 @@
     "bridge": "B288",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b288_4.jpg",
-    "file": "media/bridges/b288_4.jpg",
-    "bridge": "B288",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b289_1.jpg",
@@ -3878,13 +2905,6 @@
     "index": 3
   },
   {
-    "id": "b289_4.jpg",
-    "file": "media/bridges/b289_4.jpg",
-    "bridge": "B289",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b290_1.jpg",
     "file": "media/bridges/b290_1.jpg",
     "bridge": "B290",
@@ -3904,13 +2924,6 @@
     "bridge": "B290",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b290_4.jpg",
-    "file": "media/bridges/b290_4.jpg",
-    "bridge": "B290",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b291_1.jpg",
@@ -3934,13 +2947,6 @@
     "index": 3
   },
   {
-    "id": "b291_4.jpg",
-    "file": "media/bridges/b291_4.jpg",
-    "bridge": "B291",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b294_1.jpg",
     "file": "media/bridges/b294_1.jpg",
     "bridge": "B294",
@@ -3960,13 +2966,6 @@
     "bridge": "B294",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b294_4.jpg",
-    "file": "media/bridges/b294_4.jpg",
-    "bridge": "B294",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b296_1.jpg",
@@ -3990,13 +2989,6 @@
     "index": 3
   },
   {
-    "id": "b296_4.jpg",
-    "file": "media/bridges/b296_4.jpg",
-    "bridge": "B296",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b297_1.jpg",
     "file": "media/bridges/b297_1.jpg",
     "bridge": "B297",
@@ -4016,13 +3008,6 @@
     "bridge": "B297",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b297_4.jpg",
-    "file": "media/bridges/b297_4.jpg",
-    "bridge": "B297",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b298_1.jpg",
@@ -4046,13 +3031,6 @@
     "index": 3
   },
   {
-    "id": "b298_4.jpg",
-    "file": "media/bridges/b298_4.jpg",
-    "bridge": "B298",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b299_1.jpg",
     "file": "media/bridges/b299_1.jpg",
     "bridge": "B299",
@@ -4074,13 +3052,6 @@
     "index": 3
   },
   {
-    "id": "b299_4.jpg",
-    "file": "media/bridges/b299_4.jpg",
-    "bridge": "B299",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b300_1.jpg",
     "file": "media/bridges/b300_1.jpg",
     "bridge": "B300",
@@ -4100,13 +3071,6 @@
     "bridge": "B300",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b300_4.jpg",
-    "file": "media/bridges/b300_4.jpg",
-    "bridge": "B300",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b301_1.jpg",
@@ -4158,13 +3122,6 @@
     "index": 3
   },
   {
-    "id": "b308_4.jpg",
-    "file": "media/bridges/b308_4.jpg",
-    "bridge": "B308",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b309_1.jpg",
     "file": "media/bridges/b309_1.jpg",
     "bridge": "B309",
@@ -4184,13 +3141,6 @@
     "bridge": "B309",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b309_4.jpg",
-    "file": "media/bridges/b309_4.jpg",
-    "bridge": "B309",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b310_1.jpg",
@@ -4214,13 +3164,6 @@
     "index": 3
   },
   {
-    "id": "b310_4.jpg",
-    "file": "media/bridges/b310_4.jpg",
-    "bridge": "B310",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b311_1.jpg",
     "file": "media/bridges/b311_1.jpg",
     "bridge": "B311",
@@ -4240,13 +3183,6 @@
     "bridge": "B311",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b311_4.jpg",
-    "file": "media/bridges/b311_4.jpg",
-    "bridge": "B311",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b312_1.jpg",
@@ -4270,13 +3206,6 @@
     "index": 3
   },
   {
-    "id": "b312_4.jpg",
-    "file": "media/bridges/b312_4.jpg",
-    "bridge": "B312",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b313_1.jpg",
     "file": "media/bridges/b313_1.jpg",
     "bridge": "B313",
@@ -4296,13 +3225,6 @@
     "bridge": "B313",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b313_4.jpg",
-    "file": "media/bridges/b313_4.jpg",
-    "bridge": "B313",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b314_1.jpg",
@@ -4326,13 +3248,6 @@
     "index": 3
   },
   {
-    "id": "b314_4.jpg",
-    "file": "media/bridges/b314_4.jpg",
-    "bridge": "B314",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b315_1.jpg",
     "file": "media/bridges/b315_1.jpg",
     "bridge": "B315",
@@ -4354,13 +3269,6 @@
     "index": 3
   },
   {
-    "id": "b315_4.jpg",
-    "file": "media/bridges/b315_4.jpg",
-    "bridge": "B315",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b316_1.jpg",
     "file": "media/bridges/b316_1.jpg",
     "bridge": "B316",
@@ -4380,13 +3288,6 @@
     "bridge": "B316",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b316_4.jpg",
-    "file": "media/bridges/b316_4.jpg",
-    "bridge": "B316",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b317_1.jpg",
@@ -4431,13 +3332,6 @@
     "index": 3
   },
   {
-    "id": "b318_4.jpg",
-    "file": "media/bridges/b318_4.jpg",
-    "bridge": "B318",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b319_1.jpg",
     "file": "media/bridges/b319_1.jpg",
     "bridge": "B319",
@@ -4457,13 +3351,6 @@
     "bridge": "B319",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b319_4.jpg",
-    "file": "media/bridges/b319_4.jpg",
-    "bridge": "B319",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b320_1.jpg",
@@ -4487,13 +3374,6 @@
     "index": 3
   },
   {
-    "id": "b320_4.jpg",
-    "file": "media/bridges/b320_4.jpg",
-    "bridge": "B320",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b321_1.jpg",
     "file": "media/bridges/b321_1.jpg",
     "bridge": "B321",
@@ -4513,13 +3393,6 @@
     "bridge": "B321",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b321_4.jpg",
-    "file": "media/bridges/b321_4.jpg",
-    "bridge": "B321",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b322_1.jpg",
@@ -4543,13 +3416,6 @@
     "index": 3
   },
   {
-    "id": "b322_4.jpg",
-    "file": "media/bridges/b322_4.jpg",
-    "bridge": "B322",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b323_1.jpg",
     "file": "media/bridges/b323_1.jpg",
     "bridge": "B323",
@@ -4564,60 +3430,11 @@
     "index": 2
   },
   {
-    "id": "b324_1.jpg",
-    "file": "media/bridges/b324_1.jpg",
-    "bridge": "B324",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "b324_2.jpg",
-    "file": "media/bridges/b324_2.jpg",
-    "bridge": "B324",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "b324_3.jpg",
-    "file": "media/bridges/b324_3.jpg",
-    "bridge": "B324",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "b324_4.jpg",
-    "file": "media/bridges/b324_4.jpg",
-    "bridge": "B324",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b325_1.jpg",
     "file": "media/bridges/b325_1.jpg",
     "bridge": "B325",
     "type": "image",
     "index": 1
-  },
-  {
-    "id": "b325_2.jpg",
-    "file": "media/bridges/b325_2.jpg",
-    "bridge": "B325",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "b325_3.jpg",
-    "file": "media/bridges/b325_3.jpg",
-    "bridge": "B325",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "b325_4.jpg",
-    "file": "media/bridges/b325_4.jpg",
-    "bridge": "B325",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b326_1.jpg",
@@ -4634,74 +3451,11 @@
     "index": 2
   },
   {
-    "id": "b326_3.jpg",
-    "file": "media/bridges/b326_3.jpg",
-    "bridge": "B326",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "b326_4.jpg",
-    "file": "media/bridges/b326_4.jpg",
-    "bridge": "B326",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "b327_1.jpg",
-    "file": "media/bridges/b327_1.jpg",
-    "bridge": "B327",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "b327_2.jpg",
-    "file": "media/bridges/b327_2.jpg",
-    "bridge": "B327",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "b327_3.jpg",
-    "file": "media/bridges/b327_3.jpg",
-    "bridge": "B327",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "b327_4.jpg",
-    "file": "media/bridges/b327_4.jpg",
-    "bridge": "B327",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b328_1.jpg",
     "file": "media/bridges/b328_1.jpg",
     "bridge": "B328",
     "type": "image",
     "index": 1
-  },
-  {
-    "id": "b328_2.jpg",
-    "file": "media/bridges/b328_2.jpg",
-    "bridge": "B328",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "b328_3.jpg",
-    "file": "media/bridges/b328_3.jpg",
-    "bridge": "B328",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "b328_4.jpg",
-    "file": "media/bridges/b328_4.jpg",
-    "bridge": "B328",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b330_1.jpg",
@@ -4744,13 +3498,6 @@
     "bridge": "B332",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b332_4.jpg",
-    "file": "media/bridges/b332_4.jpg",
-    "bridge": "B332",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b333_1.jpg",
@@ -4823,13 +3570,6 @@
     "index": 3
   },
   {
-    "id": "b340_4.jpg",
-    "file": "media/bridges/b340_4.jpg",
-    "bridge": "B340",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b342_1.jpg",
     "file": "media/bridges/b342_1.jpg",
     "bridge": "B342",
@@ -4849,13 +3589,6 @@
     "bridge": "B342",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b342_4.jpg",
-    "file": "media/bridges/b342_4.jpg",
-    "bridge": "B342",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b343_1.jpg",
@@ -4900,13 +3633,6 @@
     "index": 3
   },
   {
-    "id": "b348_4.jpg",
-    "file": "media/bridges/b348_4.jpg",
-    "bridge": "B348",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b349_1.jpg",
     "file": "media/bridges/b349_1.jpg",
     "bridge": "B349",
@@ -4933,13 +3659,6 @@
     "bridge": "B351",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b351_4.jpg",
-    "file": "media/bridges/b351_4.jpg",
-    "bridge": "B351",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b352_1.jpg",
@@ -4977,13 +3696,6 @@
     "index": 3
   },
   {
-    "id": "b354_4.jpg",
-    "file": "media/bridges/b354_4.jpg",
-    "bridge": "B354",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b355_1.jpg",
     "file": "media/bridges/b355_1.jpg",
     "bridge": "B355",
@@ -5003,13 +3715,6 @@
     "bridge": "B355",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b355_4.jpg",
-    "file": "media/bridges/b355_4.jpg",
-    "bridge": "B355",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b357_1.jpg",
@@ -5040,13 +3745,6 @@
     "index": 3
   },
   {
-    "id": "b359_4.jpg",
-    "file": "media/bridges/b359_4.jpg",
-    "bridge": "B359",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b360_1.jpg",
     "file": "media/bridges/b360_1.jpg",
     "bridge": "B360",
@@ -5066,13 +3764,6 @@
     "bridge": "B360",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b360_4.jpg",
-    "file": "media/bridges/b360_4.jpg",
-    "bridge": "B360",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b361_1.jpg",
@@ -5096,13 +3787,6 @@
     "index": 3
   },
   {
-    "id": "b361_4.jpg",
-    "file": "media/bridges/b361_4.jpg",
-    "bridge": "B361",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b362_1.jpg",
     "file": "media/bridges/b362_1.jpg",
     "bridge": "B362",
@@ -5122,13 +3806,6 @@
     "bridge": "B362",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b362_4.jpg",
-    "file": "media/bridges/b362_4.jpg",
-    "bridge": "B362",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b363_1.jpg",
@@ -5152,13 +3829,6 @@
     "index": 3
   },
   {
-    "id": "b363_4.jpg",
-    "file": "media/bridges/b363_4.jpg",
-    "bridge": "B363",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b364_1.jpg",
     "file": "media/bridges/b364_1.jpg",
     "bridge": "B364",
@@ -5178,13 +3848,6 @@
     "bridge": "B364",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b364_4.jpg",
-    "file": "media/bridges/b364_4.jpg",
-    "bridge": "B364",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b365_1.jpg",
@@ -5208,13 +3871,6 @@
     "index": 3
   },
   {
-    "id": "b365_4.jpg",
-    "file": "media/bridges/b365_4.jpg",
-    "bridge": "B365",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b366_1.jpg",
     "file": "media/bridges/b366_1.jpg",
     "bridge": "B366",
@@ -5234,13 +3890,6 @@
     "bridge": "B366",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b366_4.jpg",
-    "file": "media/bridges/b366_4.jpg",
-    "bridge": "B366",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b367_1.jpg",
@@ -5264,13 +3913,6 @@
     "index": 3
   },
   {
-    "id": "b367_4.jpg",
-    "file": "media/bridges/b367_4.jpg",
-    "bridge": "B367",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b368_1.jpg",
     "file": "media/bridges/b368_1.jpg",
     "bridge": "B368",
@@ -5290,13 +3932,6 @@
     "bridge": "B368",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b368_4.jpg",
-    "file": "media/bridges/b368_4.jpg",
-    "bridge": "B368",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b369_1.jpg",
@@ -5327,13 +3962,6 @@
     "index": 3
   },
   {
-    "id": "b370_4.jpg",
-    "file": "media/bridges/b370_4.jpg",
-    "bridge": "B370",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b371_1.jpg",
     "file": "media/bridges/b371_1.jpg",
     "bridge": "B371",
@@ -5355,13 +3983,6 @@
     "index": 3
   },
   {
-    "id": "b371_4.jpg",
-    "file": "media/bridges/b371_4.jpg",
-    "bridge": "B371",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b372_1.jpg",
     "file": "media/bridges/b372_1.jpg",
     "bridge": "B372",
@@ -5381,13 +4002,6 @@
     "bridge": "B372",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b372_4.jpg",
-    "file": "media/bridges/b372_4.jpg",
-    "bridge": "B372",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b373_1.jpg",
@@ -5416,13 +4030,6 @@
     "bridge": "B376",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b376_4.jpg",
-    "file": "media/bridges/b376_4.jpg",
-    "bridge": "B376",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b377_1.jpg",
@@ -5474,13 +4081,6 @@
     "index": 3
   },
   {
-    "id": "b380_4.jpg",
-    "file": "media/bridges/b380_4.jpg",
-    "bridge": "B380",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b381_1.jpg",
     "file": "media/bridges/b381_1.jpg",
     "bridge": "B381",
@@ -5507,13 +4107,6 @@
     "bridge": "B382",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b382_4.jpg",
-    "file": "media/bridges/b382_4.jpg",
-    "bridge": "B382",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b383_1.jpg",
@@ -5563,13 +4156,6 @@
     "bridge": "B386",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b386_4.jpg",
-    "file": "media/bridges/b386_4.jpg",
-    "bridge": "B386",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b388_1.jpg",
@@ -5635,13 +4221,6 @@
     "index": 3
   },
   {
-    "id": "b406_4.jpg",
-    "file": "media/bridges/b406_4.jpg",
-    "bridge": "B406",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b407_1.jpg",
     "file": "media/bridges/b407_1.jpg",
     "bridge": "B407",
@@ -5661,13 +4240,6 @@
     "bridge": "B407",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b407_4.jpg",
-    "file": "media/bridges/b407_4.jpg",
-    "bridge": "B407",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b408_1.jpg",
@@ -5691,13 +4263,6 @@
     "index": 3
   },
   {
-    "id": "b408_4.jpg",
-    "file": "media/bridges/b408_4.jpg",
-    "bridge": "B408",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b410_1.jpg",
     "file": "media/bridges/b410_1.jpg",
     "bridge": "B410",
@@ -5719,13 +4284,6 @@
     "index": 3
   },
   {
-    "id": "b410_4.jpg",
-    "file": "media/bridges/b410_4.jpg",
-    "bridge": "B410",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b411_1.jpg",
     "file": "media/bridges/b411_1.jpg",
     "bridge": "B411",
@@ -5745,13 +4303,6 @@
     "bridge": "B411",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b411_4.jpg",
-    "file": "media/bridges/b411_4.jpg",
-    "bridge": "B411",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b412_1.jpg",
@@ -5789,13 +4340,6 @@
     "index": 3
   },
   {
-    "id": "b413_4.jpg",
-    "file": "media/bridges/b413_4.jpg",
-    "bridge": "B413",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b414_1.jpg",
     "file": "media/bridges/b414_1.jpg",
     "bridge": "B414",
@@ -5817,13 +4361,6 @@
     "index": 3
   },
   {
-    "id": "b414_4.jpg",
-    "file": "media/bridges/b414_4.jpg",
-    "bridge": "B414",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b415_1.jpg",
     "file": "media/bridges/b415_1.jpg",
     "bridge": "B415",
@@ -5843,13 +4380,6 @@
     "bridge": "B415",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b415_4.jpg",
-    "file": "media/bridges/b415_4.jpg",
-    "bridge": "B415",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b416_1.jpg",
@@ -5878,13 +4408,6 @@
     "bridge": "B417",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b417_4.jpg",
-    "file": "media/bridges/b417_4.jpg",
-    "bridge": "B417",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b418_1.jpg",
@@ -5927,13 +4450,6 @@
     "bridge": "B451",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b451_4.jpg",
-    "file": "media/bridges/b451_4.jpg",
-    "bridge": "B451",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b452_1.jpg",
@@ -6013,13 +4529,6 @@
     "index": 3
   },
   {
-    "id": "b458_4.jpg",
-    "file": "media/bridges/b458_4.jpg",
-    "bridge": "B458",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b549_1.jpg",
     "file": "media/bridges/b549_1.jpg",
     "bridge": "B549",
@@ -6083,13 +4592,6 @@
     "index": 3
   },
   {
-    "id": "b602_4.jpg",
-    "file": "media/bridges/b602_4.jpg",
-    "bridge": "B602",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b603_1.jpg",
     "file": "media/bridges/b603_1.jpg",
     "bridge": "B603",
@@ -6109,13 +4611,6 @@
     "bridge": "B603",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b603_4.jpg",
-    "file": "media/bridges/b603_4.jpg",
-    "bridge": "B603",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b605_1.jpg",
@@ -6139,13 +4634,6 @@
     "index": 3
   },
   {
-    "id": "b605_4.jpg",
-    "file": "media/bridges/b605_4.jpg",
-    "bridge": "B605",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b609_1.jpg",
     "file": "media/bridges/b609_1.jpg",
     "bridge": "B609",
@@ -6165,13 +4653,6 @@
     "bridge": "B609",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b609_4.jpg",
-    "file": "media/bridges/b609_4.jpg",
-    "bridge": "B609",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b611_1.jpg",
@@ -6195,13 +4676,6 @@
     "index": 3
   },
   {
-    "id": "b611_4.jpg",
-    "file": "media/bridges/b611_4.jpg",
-    "bridge": "B611",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b612_1.jpg",
     "file": "media/bridges/b612_1.jpg",
     "bridge": "B612",
@@ -6223,20 +4697,6 @@
     "index": 3
   },
   {
-    "id": "b612_4.jpg",
-    "file": "media/bridges/b612_4.jpg",
-    "bridge": "B612",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "b636_1.jpg",
-    "file": "media/bridges/b636_1.jpg",
-    "bridge": "B636",
-    "type": "image",
-    "index": 1
-  },
-  {
     "id": "b639_1.jpg",
     "file": "media/bridges/b639_1.jpg",
     "bridge": "B639",
@@ -6256,13 +4716,6 @@
     "bridge": "B639",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b639_4.jpg",
-    "file": "media/bridges/b639_4.jpg",
-    "bridge": "B639",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b761_1.jpg",
@@ -6293,13 +4746,6 @@
     "index": 3
   },
   {
-    "id": "b861_4.jpg",
-    "file": "media/bridges/b861_4.jpg",
-    "bridge": "B861",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b862_1.jpg",
     "file": "media/bridges/b862_1.jpg",
     "bridge": "B862",
@@ -6319,13 +4765,6 @@
     "bridge": "B862",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b862_4.jpg",
-    "file": "media/bridges/b862_4.jpg",
-    "bridge": "B862",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b863_1.jpg",
@@ -6349,13 +4788,6 @@
     "index": 3
   },
   {
-    "id": "b863_4.jpg",
-    "file": "media/bridges/b863_4.jpg",
-    "bridge": "B863",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b864_1.jpg",
     "file": "media/bridges/b864_1.jpg",
     "bridge": "B864",
@@ -6375,13 +4807,6 @@
     "bridge": "B864",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b864_4.jpg",
-    "file": "media/bridges/b864_4.jpg",
-    "bridge": "B864",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b866_1.jpg",
@@ -6405,13 +4830,6 @@
     "index": 3
   },
   {
-    "id": "b866_4.jpg",
-    "file": "media/bridges/b866_4.jpg",
-    "bridge": "B866",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b867_1.jpg",
     "file": "media/bridges/b867_1.jpg",
     "bridge": "B867",
@@ -6431,13 +4849,6 @@
     "bridge": "B867",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b867_4.jpg",
-    "file": "media/bridges/b867_4.jpg",
-    "bridge": "B867",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b869_1.jpg",
@@ -6475,13 +4886,6 @@
     "index": 3
   },
   {
-    "id": "b870_4.jpg",
-    "file": "media/bridges/b870_4.jpg",
-    "bridge": "B870",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b872_1.jpg",
     "file": "media/bridges/b872_1.jpg",
     "bridge": "B872",
@@ -6501,13 +4905,6 @@
     "bridge": "B872",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b872_4.jpg",
-    "file": "media/bridges/b872_4.jpg",
-    "bridge": "B872",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b873_1.jpg",
@@ -6531,13 +4928,6 @@
     "index": 3
   },
   {
-    "id": "b873_4.jpg",
-    "file": "media/bridges/b873_4.jpg",
-    "bridge": "B873",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b874_1.jpg",
     "file": "media/bridges/b874_1.jpg",
     "bridge": "B874",
@@ -6557,13 +4947,6 @@
     "bridge": "B874",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b874_4.jpg",
-    "file": "media/bridges/b874_4.jpg",
-    "bridge": "B874",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b877_1.jpg",
@@ -6587,13 +4970,6 @@
     "index": 3
   },
   {
-    "id": "b877_4.jpg",
-    "file": "media/bridges/b877_4.jpg",
-    "bridge": "B877",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b881_1.jpg",
     "file": "media/bridges/b881_1.jpg",
     "bridge": "B881",
@@ -6613,13 +4989,6 @@
     "bridge": "B881",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b881_4.jpg",
-    "file": "media/bridges/b881_4.jpg",
-    "bridge": "B881",
-    "type": "image",
-    "index": 4
   },
   {
     "id": "b882_1.jpg",
@@ -6643,13 +5012,6 @@
     "index": 3
   },
   {
-    "id": "b882_4.jpg",
-    "file": "media/bridges/b882_4.jpg",
-    "bridge": "B882",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b883_1.jpg",
     "file": "media/bridges/b883_1.jpg",
     "bridge": "B883",
@@ -6671,13 +5033,6 @@
     "index": 3
   },
   {
-    "id": "b883_4.jpg",
-    "file": "media/bridges/b883_4.jpg",
-    "bridge": "B883",
-    "type": "image",
-    "index": 4
-  },
-  {
     "id": "b885_1.jpg",
     "file": "media/bridges/b885_1.jpg",
     "bridge": "B885",
@@ -6697,3764 +5052,5 @@
     "bridge": "B885",
     "type": "image",
     "index": 3
-  },
-  {
-    "id": "b885_4.jpg",
-    "file": "media/bridges/b885_4.jpg",
-    "bridge": "B885",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c002_1.jpg",
-    "file": "media/bridges/c002_1.jpg",
-    "bridge": "C002",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c002_2.jpg",
-    "file": "media/bridges/c002_2.jpg",
-    "bridge": "C002",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c002_3.jpg",
-    "file": "media/bridges/c002_3.jpg",
-    "bridge": "C002",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c002_4.jpg",
-    "file": "media/bridges/c002_4.jpg",
-    "bridge": "C002",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c003_1.jpg",
-    "file": "media/bridges/c003_1.jpg",
-    "bridge": "C003",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c004_1.jpg",
-    "file": "media/bridges/c004_1.jpg",
-    "bridge": "C004",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c004_2.jpg",
-    "file": "media/bridges/c004_2.jpg",
-    "bridge": "C004",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c005_1.jpg",
-    "file": "media/bridges/c005_1.jpg",
-    "bridge": "C005",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c005_2.jpg",
-    "file": "media/bridges/c005_2.jpg",
-    "bridge": "C005",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c005_3.jpg",
-    "file": "media/bridges/c005_3.jpg",
-    "bridge": "C005",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c006_1.jpg",
-    "file": "media/bridges/c006_1.jpg",
-    "bridge": "C006",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c006_2.jpg",
-    "file": "media/bridges/c006_2.jpg",
-    "bridge": "C006",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c007_1.jpg",
-    "file": "media/bridges/c007_1.jpg",
-    "bridge": "C007",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c008_1.jpg",
-    "file": "media/bridges/c008_1.jpg",
-    "bridge": "C008",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c009_1.jpg",
-    "file": "media/bridges/c009_1.jpg",
-    "bridge": "C009",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c010_1.jpg",
-    "file": "media/bridges/c010_1.jpg",
-    "bridge": "C010",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c010_2.jpg",
-    "file": "media/bridges/c010_2.jpg",
-    "bridge": "C010",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c012_1.jpg",
-    "file": "media/bridges/c012_1.jpg",
-    "bridge": "C012",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c012_2.jpg",
-    "file": "media/bridges/c012_2.jpg",
-    "bridge": "C012",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c013_1.jpg",
-    "file": "media/bridges/c013_1.jpg",
-    "bridge": "C013",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c014_1.jpg",
-    "file": "media/bridges/c014_1.jpg",
-    "bridge": "C014",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c014_2.jpg",
-    "file": "media/bridges/c014_2.jpg",
-    "bridge": "C014",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c015_1.jpg",
-    "file": "media/bridges/c015_1.jpg",
-    "bridge": "C015",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c017_1.jpg",
-    "file": "media/bridges/c017_1.jpg",
-    "bridge": "C017",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c018_1.jpg",
-    "file": "media/bridges/c018_1.jpg",
-    "bridge": "C018",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c018_2.jpg",
-    "file": "media/bridges/c018_2.jpg",
-    "bridge": "C018",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c020_1.jpg",
-    "file": "media/bridges/c020_1.jpg",
-    "bridge": "C020",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c021_1.jpg",
-    "file": "media/bridges/c021_1.jpg",
-    "bridge": "C021",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c021_2.jpg",
-    "file": "media/bridges/c021_2.jpg",
-    "bridge": "C021",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c021_3.jpg",
-    "file": "media/bridges/c021_3.jpg",
-    "bridge": "C021",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c151_1.jpg",
-    "file": "media/bridges/c151_1.jpg",
-    "bridge": "C151",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c151_2.jpg",
-    "file": "media/bridges/c151_2.jpg",
-    "bridge": "C151",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c151_3.jpg",
-    "file": "media/bridges/c151_3.jpg",
-    "bridge": "C151",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c151_4.jpg",
-    "file": "media/bridges/c151_4.jpg",
-    "bridge": "C151",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c152_1.jpg",
-    "file": "media/bridges/c152_1.jpg",
-    "bridge": "C152",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c152_2.jpg",
-    "file": "media/bridges/c152_2.jpg",
-    "bridge": "C152",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c157_1.jpg",
-    "file": "media/bridges/c157_1.jpg",
-    "bridge": "C157",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c158_1.jpg",
-    "file": "media/bridges/c158_1.jpg",
-    "bridge": "C158",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c158_2.jpg",
-    "file": "media/bridges/c158_2.jpg",
-    "bridge": "C158",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c158_3.jpg",
-    "file": "media/bridges/c158_3.jpg",
-    "bridge": "C158",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c158_4.jpg",
-    "file": "media/bridges/c158_4.jpg",
-    "bridge": "C158",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c159_1.jpg",
-    "file": "media/bridges/c159_1.jpg",
-    "bridge": "C159",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c160_1.jpg",
-    "file": "media/bridges/c160_1.jpg",
-    "bridge": "C160",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c160_2.jpg",
-    "file": "media/bridges/c160_2.jpg",
-    "bridge": "C160",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c161_1.jpg",
-    "file": "media/bridges/c161_1.jpg",
-    "bridge": "C161",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c161_2.jpg",
-    "file": "media/bridges/c161_2.jpg",
-    "bridge": "C161",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c164_1.jpg",
-    "file": "media/bridges/c164_1.jpg",
-    "bridge": "C164",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c164_2.jpg",
-    "file": "media/bridges/c164_2.jpg",
-    "bridge": "C164",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c166_1.jpg",
-    "file": "media/bridges/c166_1.jpg",
-    "bridge": "C166",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c171_1.jpg",
-    "file": "media/bridges/c171_1.jpg",
-    "bridge": "C171",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c176_1.jpg",
-    "file": "media/bridges/c176_1.jpg",
-    "bridge": "C176",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c180_1.jpg",
-    "file": "media/bridges/c180_1.jpg",
-    "bridge": "C180",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c181_1.jpg",
-    "file": "media/bridges/c181_1.jpg",
-    "bridge": "C181",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c182_1.jpg",
-    "file": "media/bridges/c182_1.jpg",
-    "bridge": "C182",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c182_2.jpg",
-    "file": "media/bridges/c182_2.jpg",
-    "bridge": "C182",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c182_3.jpg",
-    "file": "media/bridges/c182_3.jpg",
-    "bridge": "C182",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c183_1.jpg",
-    "file": "media/bridges/c183_1.jpg",
-    "bridge": "C183",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c184_1.jpg",
-    "file": "media/bridges/c184_1.jpg",
-    "bridge": "C184",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c186_1.jpg",
-    "file": "media/bridges/c186_1.jpg",
-    "bridge": "C186",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c188_1.jpg",
-    "file": "media/bridges/c188_1.jpg",
-    "bridge": "C188",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c193_1.jpg",
-    "file": "media/bridges/c193_1.jpg",
-    "bridge": "C193",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c193_2.jpg",
-    "file": "media/bridges/c193_2.jpg",
-    "bridge": "C193",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c195_1.jpg",
-    "file": "media/bridges/c195_1.jpg",
-    "bridge": "C195",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c196_1.jpg",
-    "file": "media/bridges/c196_1.jpg",
-    "bridge": "C196",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c196_2.jpg",
-    "file": "media/bridges/c196_2.jpg",
-    "bridge": "C196",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c196_3.jpg",
-    "file": "media/bridges/c196_3.jpg",
-    "bridge": "C196",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c204_1.jpg",
-    "file": "media/bridges/c204_1.jpg",
-    "bridge": "C204",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c209_1.jpg",
-    "file": "media/bridges/c209_1.jpg",
-    "bridge": "C209",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c211_1.jpg",
-    "file": "media/bridges/c211_1.jpg",
-    "bridge": "C211",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c214_1.jpg",
-    "file": "media/bridges/c214_1.jpg",
-    "bridge": "C214",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c215_1.jpg",
-    "file": "media/bridges/c215_1.jpg",
-    "bridge": "C215",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c215_2.jpg",
-    "file": "media/bridges/c215_2.jpg",
-    "bridge": "C215",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c220_1.jpg",
-    "file": "media/bridges/c220_1.jpg",
-    "bridge": "C220",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c226_1.jpg",
-    "file": "media/bridges/c226_1.jpg",
-    "bridge": "C226",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c226_2.jpg",
-    "file": "media/bridges/c226_2.jpg",
-    "bridge": "C226",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c227_1.jpg",
-    "file": "media/bridges/c227_1.jpg",
-    "bridge": "C227",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c229_1.jpg",
-    "file": "media/bridges/c229_1.jpg",
-    "bridge": "C229",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c230_1.jpg",
-    "file": "media/bridges/c230_1.jpg",
-    "bridge": "C230",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c352_1.jpg",
-    "file": "media/bridges/c352_1.jpg",
-    "bridge": "C352",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c352_2.jpg",
-    "file": "media/bridges/c352_2.jpg",
-    "bridge": "C352",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c353_1.jpg",
-    "file": "media/bridges/c353_1.jpg",
-    "bridge": "C353",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c354_1.jpg",
-    "file": "media/bridges/c354_1.jpg",
-    "bridge": "C354",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c354_2.jpg",
-    "file": "media/bridges/c354_2.jpg",
-    "bridge": "C354",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c355_1.jpg",
-    "file": "media/bridges/c355_1.jpg",
-    "bridge": "C355",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c355_2.jpg",
-    "file": "media/bridges/c355_2.jpg",
-    "bridge": "C355",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c355_3.jpg",
-    "file": "media/bridges/c355_3.jpg",
-    "bridge": "C355",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c355_4.jpg",
-    "file": "media/bridges/c355_4.jpg",
-    "bridge": "C355",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c361_1.jpg",
-    "file": "media/bridges/c361_1.jpg",
-    "bridge": "C361",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c361_2.jpg",
-    "file": "media/bridges/c361_2.jpg",
-    "bridge": "C361",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c362_1.jpg",
-    "file": "media/bridges/c362_1.jpg",
-    "bridge": "C362",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c362_2.jpg",
-    "file": "media/bridges/c362_2.jpg",
-    "bridge": "C362",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c362_3.jpg",
-    "file": "media/bridges/c362_3.jpg",
-    "bridge": "C362",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c365_1.jpg",
-    "file": "media/bridges/c365_1.jpg",
-    "bridge": "C365",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c365_2.jpg",
-    "file": "media/bridges/c365_2.jpg",
-    "bridge": "C365",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c365_3.jpg",
-    "file": "media/bridges/c365_3.jpg",
-    "bridge": "C365",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c366_1.jpg",
-    "file": "media/bridges/c366_1.jpg",
-    "bridge": "C366",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c366_2.jpg",
-    "file": "media/bridges/c366_2.jpg",
-    "bridge": "C366",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c366_3.jpg",
-    "file": "media/bridges/c366_3.jpg",
-    "bridge": "C366",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c366_4.jpg",
-    "file": "media/bridges/c366_4.jpg",
-    "bridge": "C366",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c367_1.jpg",
-    "file": "media/bridges/c367_1.jpg",
-    "bridge": "C367",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c367_2.jpg",
-    "file": "media/bridges/c367_2.jpg",
-    "bridge": "C367",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c368_1.jpg",
-    "file": "media/bridges/c368_1.jpg",
-    "bridge": "C368",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c369_1.jpg",
-    "file": "media/bridges/c369_1.jpg",
-    "bridge": "C369",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c369_2.jpg",
-    "file": "media/bridges/c369_2.jpg",
-    "bridge": "C369",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c369_3.jpg",
-    "file": "media/bridges/c369_3.jpg",
-    "bridge": "C369",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c370_1.jpg",
-    "file": "media/bridges/c370_1.jpg",
-    "bridge": "C370",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c370_2.jpg",
-    "file": "media/bridges/c370_2.jpg",
-    "bridge": "C370",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c370_3.jpg",
-    "file": "media/bridges/c370_3.jpg",
-    "bridge": "C370",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c370_4.jpg",
-    "file": "media/bridges/c370_4.jpg",
-    "bridge": "C370",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c371_1.jpg",
-    "file": "media/bridges/c371_1.jpg",
-    "bridge": "C371",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c371_2.jpg",
-    "file": "media/bridges/c371_2.jpg",
-    "bridge": "C371",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c371_3.jpg",
-    "file": "media/bridges/c371_3.jpg",
-    "bridge": "C371",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c371_4.jpg",
-    "file": "media/bridges/c371_4.jpg",
-    "bridge": "C371",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c372_1.jpg",
-    "file": "media/bridges/c372_1.jpg",
-    "bridge": "C372",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c372_2.jpg",
-    "file": "media/bridges/c372_2.jpg",
-    "bridge": "C372",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c400_1.jpg",
-    "file": "media/bridges/c400_1.jpg",
-    "bridge": "C400",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c400_2.jpg",
-    "file": "media/bridges/c400_2.jpg",
-    "bridge": "C400",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c400_3.jpg",
-    "file": "media/bridges/c400_3.jpg",
-    "bridge": "C400",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c400_4.jpg",
-    "file": "media/bridges/c400_4.jpg",
-    "bridge": "C400",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c401_1.jpg",
-    "file": "media/bridges/c401_1.jpg",
-    "bridge": "C401",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c401_2.jpg",
-    "file": "media/bridges/c401_2.jpg",
-    "bridge": "C401",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c406_1.jpg",
-    "file": "media/bridges/c406_1.jpg",
-    "bridge": "C406",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c409_1.jpg",
-    "file": "media/bridges/c409_1.jpg",
-    "bridge": "C409",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c412_1.jpg",
-    "file": "media/bridges/c412_1.jpg",
-    "bridge": "C412",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c412_2.jpg",
-    "file": "media/bridges/c412_2.jpg",
-    "bridge": "C412",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c412_3.jpg",
-    "file": "media/bridges/c412_3.jpg",
-    "bridge": "C412",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c413_1.jpg",
-    "file": "media/bridges/c413_1.jpg",
-    "bridge": "C413",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c413_2.jpg",
-    "file": "media/bridges/c413_2.jpg",
-    "bridge": "C413",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c414_1.jpg",
-    "file": "media/bridges/c414_1.jpg",
-    "bridge": "C414",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c414_2.jpg",
-    "file": "media/bridges/c414_2.jpg",
-    "bridge": "C414",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c415_1.jpg",
-    "file": "media/bridges/c415_1.jpg",
-    "bridge": "C415",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c415_2.jpg",
-    "file": "media/bridges/c415_2.jpg",
-    "bridge": "C415",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c415_3.jpg",
-    "file": "media/bridges/c415_3.jpg",
-    "bridge": "C415",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c415_4.jpg",
-    "file": "media/bridges/c415_4.jpg",
-    "bridge": "C415",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c416_1.jpg",
-    "file": "media/bridges/c416_1.jpg",
-    "bridge": "C416",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c416_2.jpg",
-    "file": "media/bridges/c416_2.jpg",
-    "bridge": "C416",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c416_3.jpg",
-    "file": "media/bridges/c416_3.jpg",
-    "bridge": "C416",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c416_4.jpg",
-    "file": "media/bridges/c416_4.jpg",
-    "bridge": "C416",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c417_1.jpg",
-    "file": "media/bridges/c417_1.jpg",
-    "bridge": "C417",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c417_2.jpg",
-    "file": "media/bridges/c417_2.jpg",
-    "bridge": "C417",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c417_3.jpg",
-    "file": "media/bridges/c417_3.jpg",
-    "bridge": "C417",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c417_4.jpg",
-    "file": "media/bridges/c417_4.jpg",
-    "bridge": "C417",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c418_1.jpg",
-    "file": "media/bridges/c418_1.jpg",
-    "bridge": "C418",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c418_2.jpg",
-    "file": "media/bridges/c418_2.jpg",
-    "bridge": "C418",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c419_1.jpg",
-    "file": "media/bridges/c419_1.jpg",
-    "bridge": "C419",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c419_2.jpg",
-    "file": "media/bridges/c419_2.jpg",
-    "bridge": "C419",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c420_1.jpg",
-    "file": "media/bridges/c420_1.jpg",
-    "bridge": "C420",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c425_1.jpg",
-    "file": "media/bridges/c425_1.jpg",
-    "bridge": "C425",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c459_1.jpg",
-    "file": "media/bridges/c459_1.jpg",
-    "bridge": "C459",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c463_1.jpg",
-    "file": "media/bridges/c463_1.jpg",
-    "bridge": "C463",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c466_1.jpg",
-    "file": "media/bridges/c466_1.jpg",
-    "bridge": "C466",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c470_1.jpg",
-    "file": "media/bridges/c470_1.jpg",
-    "bridge": "C470",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c470_2.jpg",
-    "file": "media/bridges/c470_2.jpg",
-    "bridge": "C470",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c523_1.jpg",
-    "file": "media/bridges/c523_1.jpg",
-    "bridge": "C523",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c524_1.jpg",
-    "file": "media/bridges/c524_1.jpg",
-    "bridge": "C524",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c562_1.jpg",
-    "file": "media/bridges/c562_1.jpg",
-    "bridge": "C562",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c564_1.jpg",
-    "file": "media/bridges/c564_1.jpg",
-    "bridge": "C564",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c564_2.jpg",
-    "file": "media/bridges/c564_2.jpg",
-    "bridge": "C564",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c564_3.jpg",
-    "file": "media/bridges/c564_3.jpg",
-    "bridge": "C564",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c564_4.jpg",
-    "file": "media/bridges/c564_4.jpg",
-    "bridge": "C564",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c621_1.jpg",
-    "file": "media/bridges/c621_1.jpg",
-    "bridge": "C621",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c621_2.jpg",
-    "file": "media/bridges/c621_2.jpg",
-    "bridge": "C621",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c623_1.jpg",
-    "file": "media/bridges/c623_1.jpg",
-    "bridge": "C623",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c624_1.jpg",
-    "file": "media/bridges/c624_1.jpg",
-    "bridge": "C624",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c625_1.jpg",
-    "file": "media/bridges/c625_1.jpg",
-    "bridge": "C625",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c625_2.jpg",
-    "file": "media/bridges/c625_2.jpg",
-    "bridge": "C625",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c625_3.jpg",
-    "file": "media/bridges/c625_3.jpg",
-    "bridge": "C625",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c625_4.jpg",
-    "file": "media/bridges/c625_4.jpg",
-    "bridge": "C625",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c628_1.jpg",
-    "file": "media/bridges/c628_1.jpg",
-    "bridge": "C628",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c628_2.jpg",
-    "file": "media/bridges/c628_2.jpg",
-    "bridge": "C628",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c628_3.jpg",
-    "file": "media/bridges/c628_3.jpg",
-    "bridge": "C628",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c628_4.jpg",
-    "file": "media/bridges/c628_4.jpg",
-    "bridge": "C628",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c629_1.jpg",
-    "file": "media/bridges/c629_1.jpg",
-    "bridge": "C629",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c629_2.jpg",
-    "file": "media/bridges/c629_2.jpg",
-    "bridge": "C629",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c700_1.jpg",
-    "file": "media/bridges/c700_1.jpg",
-    "bridge": "C700",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c700_2.jpg",
-    "file": "media/bridges/c700_2.jpg",
-    "bridge": "C700",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c700_3.jpg",
-    "file": "media/bridges/c700_3.jpg",
-    "bridge": "C700",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c700_4.jpg",
-    "file": "media/bridges/c700_4.jpg",
-    "bridge": "C700",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c701_1.jpg",
-    "file": "media/bridges/c701_1.jpg",
-    "bridge": "C701",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c701_2.jpg",
-    "file": "media/bridges/c701_2.jpg",
-    "bridge": "C701",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c701_3.jpg",
-    "file": "media/bridges/c701_3.jpg",
-    "bridge": "C701",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c701_4.jpg",
-    "file": "media/bridges/c701_4.jpg",
-    "bridge": "C701",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c702_1.jpg",
-    "file": "media/bridges/c702_1.jpg",
-    "bridge": "C702",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c702_2.jpg",
-    "file": "media/bridges/c702_2.jpg",
-    "bridge": "C702",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c702_3.jpg",
-    "file": "media/bridges/c702_3.jpg",
-    "bridge": "C702",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c702_4.jpg",
-    "file": "media/bridges/c702_4.jpg",
-    "bridge": "C702",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c703_1.jpg",
-    "file": "media/bridges/c703_1.jpg",
-    "bridge": "C703",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c703_2.jpg",
-    "file": "media/bridges/c703_2.jpg",
-    "bridge": "C703",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c703_3.jpg",
-    "file": "media/bridges/c703_3.jpg",
-    "bridge": "C703",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c703_4.jpg",
-    "file": "media/bridges/c703_4.jpg",
-    "bridge": "C703",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c704_1.jpg",
-    "file": "media/bridges/c704_1.jpg",
-    "bridge": "C704",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c704_2.jpg",
-    "file": "media/bridges/c704_2.jpg",
-    "bridge": "C704",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c704_3.jpg",
-    "file": "media/bridges/c704_3.jpg",
-    "bridge": "C704",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c704_4.jpg",
-    "file": "media/bridges/c704_4.jpg",
-    "bridge": "C704",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c705_1.jpg",
-    "file": "media/bridges/c705_1.jpg",
-    "bridge": "C705",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c705_2.jpg",
-    "file": "media/bridges/c705_2.jpg",
-    "bridge": "C705",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c705_3.jpg",
-    "file": "media/bridges/c705_3.jpg",
-    "bridge": "C705",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c705_4.jpg",
-    "file": "media/bridges/c705_4.jpg",
-    "bridge": "C705",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c715_1.jpg",
-    "file": "media/bridges/c715_1.jpg",
-    "bridge": "C715",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c715_2.jpg",
-    "file": "media/bridges/c715_2.jpg",
-    "bridge": "C715",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c715_3.jpg",
-    "file": "media/bridges/c715_3.jpg",
-    "bridge": "C715",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c715_4.jpg",
-    "file": "media/bridges/c715_4.jpg",
-    "bridge": "C715",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c716_1.jpg",
-    "file": "media/bridges/c716_1.jpg",
-    "bridge": "C716",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c716_2.jpg",
-    "file": "media/bridges/c716_2.jpg",
-    "bridge": "C716",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c716_3.jpg",
-    "file": "media/bridges/c716_3.jpg",
-    "bridge": "C716",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c716_4.jpg",
-    "file": "media/bridges/c716_4.jpg",
-    "bridge": "C716",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c751_1.jpg",
-    "file": "media/bridges/c751_1.jpg",
-    "bridge": "C751",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c751_2.jpg",
-    "file": "media/bridges/c751_2.jpg",
-    "bridge": "C751",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c751_3.jpg",
-    "file": "media/bridges/c751_3.jpg",
-    "bridge": "C751",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c751_4.jpg",
-    "file": "media/bridges/c751_4.jpg",
-    "bridge": "C751",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c752_1.jpg",
-    "file": "media/bridges/c752_1.jpg",
-    "bridge": "C752",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c752_2.jpg",
-    "file": "media/bridges/c752_2.jpg",
-    "bridge": "C752",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c752_3.jpg",
-    "file": "media/bridges/c752_3.jpg",
-    "bridge": "C752",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c752_4.jpg",
-    "file": "media/bridges/c752_4.jpg",
-    "bridge": "C752",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c753_1.jpg",
-    "file": "media/bridges/c753_1.jpg",
-    "bridge": "C753",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c753_2.jpg",
-    "file": "media/bridges/c753_2.jpg",
-    "bridge": "C753",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c753_3.jpg",
-    "file": "media/bridges/c753_3.jpg",
-    "bridge": "C753",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c753_4.jpg",
-    "file": "media/bridges/c753_4.jpg",
-    "bridge": "C753",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c754_1.jpg",
-    "file": "media/bridges/c754_1.jpg",
-    "bridge": "C754",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c754_2.jpg",
-    "file": "media/bridges/c754_2.jpg",
-    "bridge": "C754",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c754_3.jpg",
-    "file": "media/bridges/c754_3.jpg",
-    "bridge": "C754",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c754_4.jpg",
-    "file": "media/bridges/c754_4.jpg",
-    "bridge": "C754",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c755_1.jpg",
-    "file": "media/bridges/c755_1.jpg",
-    "bridge": "C755",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c755_2.jpg",
-    "file": "media/bridges/c755_2.jpg",
-    "bridge": "C755",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c755_3.jpg",
-    "file": "media/bridges/c755_3.jpg",
-    "bridge": "C755",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c755_4.jpg",
-    "file": "media/bridges/c755_4.jpg",
-    "bridge": "C755",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c756_1.jpg",
-    "file": "media/bridges/c756_1.jpg",
-    "bridge": "C756",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c756_2.jpg",
-    "file": "media/bridges/c756_2.jpg",
-    "bridge": "C756",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c756_3.jpg",
-    "file": "media/bridges/c756_3.jpg",
-    "bridge": "C756",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c756_4.jpg",
-    "file": "media/bridges/c756_4.jpg",
-    "bridge": "C756",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c757_1.jpg",
-    "file": "media/bridges/c757_1.jpg",
-    "bridge": "C757",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c757_2.jpg",
-    "file": "media/bridges/c757_2.jpg",
-    "bridge": "C757",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c757_3.jpg",
-    "file": "media/bridges/c757_3.jpg",
-    "bridge": "C757",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c757_4.jpg",
-    "file": "media/bridges/c757_4.jpg",
-    "bridge": "C757",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c758_1.jpg",
-    "file": "media/bridges/c758_1.jpg",
-    "bridge": "C758",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c758_2.jpg",
-    "file": "media/bridges/c758_2.jpg",
-    "bridge": "C758",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c758_3.jpg",
-    "file": "media/bridges/c758_3.jpg",
-    "bridge": "C758",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c758_4.jpg",
-    "file": "media/bridges/c758_4.jpg",
-    "bridge": "C758",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c759_1.jpg",
-    "file": "media/bridges/c759_1.jpg",
-    "bridge": "C759",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c759_2.jpg",
-    "file": "media/bridges/c759_2.jpg",
-    "bridge": "C759",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c759_3.jpg",
-    "file": "media/bridges/c759_3.jpg",
-    "bridge": "C759",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c759_4.jpg",
-    "file": "media/bridges/c759_4.jpg",
-    "bridge": "C759",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c760_1.jpg",
-    "file": "media/bridges/c760_1.jpg",
-    "bridge": "C760",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c760_2.jpg",
-    "file": "media/bridges/c760_2.jpg",
-    "bridge": "C760",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c760_3.jpg",
-    "file": "media/bridges/c760_3.jpg",
-    "bridge": "C760",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c760_4.jpg",
-    "file": "media/bridges/c760_4.jpg",
-    "bridge": "C760",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c761_1.jpg",
-    "file": "media/bridges/c761_1.jpg",
-    "bridge": "C761",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c761_2.jpg",
-    "file": "media/bridges/c761_2.jpg",
-    "bridge": "C761",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c761_3.jpg",
-    "file": "media/bridges/c761_3.jpg",
-    "bridge": "C761",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c761_4.jpg",
-    "file": "media/bridges/c761_4.jpg",
-    "bridge": "C761",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c762_1.jpg",
-    "file": "media/bridges/c762_1.jpg",
-    "bridge": "C762",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c762_2.jpg",
-    "file": "media/bridges/c762_2.jpg",
-    "bridge": "C762",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c762_3.jpg",
-    "file": "media/bridges/c762_3.jpg",
-    "bridge": "C762",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c762_4.jpg",
-    "file": "media/bridges/c762_4.jpg",
-    "bridge": "C762",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c763_1.jpg",
-    "file": "media/bridges/c763_1.jpg",
-    "bridge": "C763",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c763_2.jpg",
-    "file": "media/bridges/c763_2.jpg",
-    "bridge": "C763",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c763_3.jpg",
-    "file": "media/bridges/c763_3.jpg",
-    "bridge": "C763",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c763_4.jpg",
-    "file": "media/bridges/c763_4.jpg",
-    "bridge": "C763",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c764_1.jpg",
-    "file": "media/bridges/c764_1.jpg",
-    "bridge": "C764",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c764_2.jpg",
-    "file": "media/bridges/c764_2.jpg",
-    "bridge": "C764",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c764_3.jpg",
-    "file": "media/bridges/c764_3.jpg",
-    "bridge": "C764",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c764_4.jpg",
-    "file": "media/bridges/c764_4.jpg",
-    "bridge": "C764",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c765_1.jpg",
-    "file": "media/bridges/c765_1.jpg",
-    "bridge": "C765",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c765_2.jpg",
-    "file": "media/bridges/c765_2.jpg",
-    "bridge": "C765",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c765_3.jpg",
-    "file": "media/bridges/c765_3.jpg",
-    "bridge": "C765",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c765_4.jpg",
-    "file": "media/bridges/c765_4.jpg",
-    "bridge": "C765",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c766_1.jpg",
-    "file": "media/bridges/c766_1.jpg",
-    "bridge": "C766",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c766_2.jpg",
-    "file": "media/bridges/c766_2.jpg",
-    "bridge": "C766",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c766_3.jpg",
-    "file": "media/bridges/c766_3.jpg",
-    "bridge": "C766",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c766_4.jpg",
-    "file": "media/bridges/c766_4.jpg",
-    "bridge": "C766",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c767_1.jpg",
-    "file": "media/bridges/c767_1.jpg",
-    "bridge": "C767",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c767_2.jpg",
-    "file": "media/bridges/c767_2.jpg",
-    "bridge": "C767",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c767_3.jpg",
-    "file": "media/bridges/c767_3.jpg",
-    "bridge": "C767",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c767_4.jpg",
-    "file": "media/bridges/c767_4.jpg",
-    "bridge": "C767",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c768_1.jpg",
-    "file": "media/bridges/c768_1.jpg",
-    "bridge": "C768",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c768_2.jpg",
-    "file": "media/bridges/c768_2.jpg",
-    "bridge": "C768",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c768_3.jpg",
-    "file": "media/bridges/c768_3.jpg",
-    "bridge": "C768",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c768_4.jpg",
-    "file": "media/bridges/c768_4.jpg",
-    "bridge": "C768",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c769_1.jpg",
-    "file": "media/bridges/c769_1.jpg",
-    "bridge": "C769",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c769_2.jpg",
-    "file": "media/bridges/c769_2.jpg",
-    "bridge": "C769",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c769_3.jpg",
-    "file": "media/bridges/c769_3.jpg",
-    "bridge": "C769",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c769_4.jpg",
-    "file": "media/bridges/c769_4.jpg",
-    "bridge": "C769",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c770_1.jpg",
-    "file": "media/bridges/c770_1.jpg",
-    "bridge": "C770",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c770_2.jpg",
-    "file": "media/bridges/c770_2.jpg",
-    "bridge": "C770",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c770_3.jpg",
-    "file": "media/bridges/c770_3.jpg",
-    "bridge": "C770",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c770_4.jpg",
-    "file": "media/bridges/c770_4.jpg",
-    "bridge": "C770",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c771_1.jpg",
-    "file": "media/bridges/c771_1.jpg",
-    "bridge": "C771",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c771_2.jpg",
-    "file": "media/bridges/c771_2.jpg",
-    "bridge": "C771",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c771_3.jpg",
-    "file": "media/bridges/c771_3.jpg",
-    "bridge": "C771",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c771_4.jpg",
-    "file": "media/bridges/c771_4.jpg",
-    "bridge": "C771",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c772_1.jpg",
-    "file": "media/bridges/c772_1.jpg",
-    "bridge": "C772",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c772_2.jpg",
-    "file": "media/bridges/c772_2.jpg",
-    "bridge": "C772",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c772_3.jpg",
-    "file": "media/bridges/c772_3.jpg",
-    "bridge": "C772",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c772_4.jpg",
-    "file": "media/bridges/c772_4.jpg",
-    "bridge": "C772",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c773_1.jpg",
-    "file": "media/bridges/c773_1.jpg",
-    "bridge": "C773",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c773_2.jpg",
-    "file": "media/bridges/c773_2.jpg",
-    "bridge": "C773",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c773_3.jpg",
-    "file": "media/bridges/c773_3.jpg",
-    "bridge": "C773",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c773_4.jpg",
-    "file": "media/bridges/c773_4.jpg",
-    "bridge": "C773",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c774_1.jpg",
-    "file": "media/bridges/c774_1.jpg",
-    "bridge": "C774",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c774_2.jpg",
-    "file": "media/bridges/c774_2.jpg",
-    "bridge": "C774",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c774_3.jpg",
-    "file": "media/bridges/c774_3.jpg",
-    "bridge": "C774",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c774_4.jpg",
-    "file": "media/bridges/c774_4.jpg",
-    "bridge": "C774",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c775_1.jpg",
-    "file": "media/bridges/c775_1.jpg",
-    "bridge": "C775",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c775_2.jpg",
-    "file": "media/bridges/c775_2.jpg",
-    "bridge": "C775",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c775_3.jpg",
-    "file": "media/bridges/c775_3.jpg",
-    "bridge": "C775",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c775_4.jpg",
-    "file": "media/bridges/c775_4.jpg",
-    "bridge": "C775",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c776_1.jpg",
-    "file": "media/bridges/c776_1.jpg",
-    "bridge": "C776",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c776_2.jpg",
-    "file": "media/bridges/c776_2.jpg",
-    "bridge": "C776",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c776_3.jpg",
-    "file": "media/bridges/c776_3.jpg",
-    "bridge": "C776",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c776_4.jpg",
-    "file": "media/bridges/c776_4.jpg",
-    "bridge": "C776",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c777_1.jpg",
-    "file": "media/bridges/c777_1.jpg",
-    "bridge": "C777",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c777_2.jpg",
-    "file": "media/bridges/c777_2.jpg",
-    "bridge": "C777",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c777_3.jpg",
-    "file": "media/bridges/c777_3.jpg",
-    "bridge": "C777",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c777_4.jpg",
-    "file": "media/bridges/c777_4.jpg",
-    "bridge": "C777",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c778_1.jpg",
-    "file": "media/bridges/c778_1.jpg",
-    "bridge": "C778",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c778_2.jpg",
-    "file": "media/bridges/c778_2.jpg",
-    "bridge": "C778",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c778_3.jpg",
-    "file": "media/bridges/c778_3.jpg",
-    "bridge": "C778",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c778_4.jpg",
-    "file": "media/bridges/c778_4.jpg",
-    "bridge": "C778",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c779_1.jpg",
-    "file": "media/bridges/c779_1.jpg",
-    "bridge": "C779",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c779_2.jpg",
-    "file": "media/bridges/c779_2.jpg",
-    "bridge": "C779",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c779_3.jpg",
-    "file": "media/bridges/c779_3.jpg",
-    "bridge": "C779",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c779_4.jpg",
-    "file": "media/bridges/c779_4.jpg",
-    "bridge": "C779",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c780_1.jpg",
-    "file": "media/bridges/c780_1.jpg",
-    "bridge": "C780",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c780_2.jpg",
-    "file": "media/bridges/c780_2.jpg",
-    "bridge": "C780",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c780_3.jpg",
-    "file": "media/bridges/c780_3.jpg",
-    "bridge": "C780",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c780_4.jpg",
-    "file": "media/bridges/c780_4.jpg",
-    "bridge": "C780",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c781_1.jpg",
-    "file": "media/bridges/c781_1.jpg",
-    "bridge": "C781",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c781_2.jpg",
-    "file": "media/bridges/c781_2.jpg",
-    "bridge": "C781",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c781_3.jpg",
-    "file": "media/bridges/c781_3.jpg",
-    "bridge": "C781",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c781_4.jpg",
-    "file": "media/bridges/c781_4.jpg",
-    "bridge": "C781",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c782_1.jpg",
-    "file": "media/bridges/c782_1.jpg",
-    "bridge": "C782",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c782_2.jpg",
-    "file": "media/bridges/c782_2.jpg",
-    "bridge": "C782",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c782_3.jpg",
-    "file": "media/bridges/c782_3.jpg",
-    "bridge": "C782",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c782_4.jpg",
-    "file": "media/bridges/c782_4.jpg",
-    "bridge": "C782",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c783_1.jpg",
-    "file": "media/bridges/c783_1.jpg",
-    "bridge": "C783",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c783_2.jpg",
-    "file": "media/bridges/c783_2.jpg",
-    "bridge": "C783",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c783_3.jpg",
-    "file": "media/bridges/c783_3.jpg",
-    "bridge": "C783",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c783_4.jpg",
-    "file": "media/bridges/c783_4.jpg",
-    "bridge": "C783",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c784_1.jpg",
-    "file": "media/bridges/c784_1.jpg",
-    "bridge": "C784",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c784_2.jpg",
-    "file": "media/bridges/c784_2.jpg",
-    "bridge": "C784",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c784_3.jpg",
-    "file": "media/bridges/c784_3.jpg",
-    "bridge": "C784",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c784_4.jpg",
-    "file": "media/bridges/c784_4.jpg",
-    "bridge": "C784",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c786_1.jpg",
-    "file": "media/bridges/c786_1.jpg",
-    "bridge": "C786",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c786_2.jpg",
-    "file": "media/bridges/c786_2.jpg",
-    "bridge": "C786",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c786_3.jpg",
-    "file": "media/bridges/c786_3.jpg",
-    "bridge": "C786",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c786_4.jpg",
-    "file": "media/bridges/c786_4.jpg",
-    "bridge": "C786",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c787_1.jpg",
-    "file": "media/bridges/c787_1.jpg",
-    "bridge": "C787",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c787_2.jpg",
-    "file": "media/bridges/c787_2.jpg",
-    "bridge": "C787",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c787_3.jpg",
-    "file": "media/bridges/c787_3.jpg",
-    "bridge": "C787",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c787_4.jpg",
-    "file": "media/bridges/c787_4.jpg",
-    "bridge": "C787",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c788_1.jpg",
-    "file": "media/bridges/c788_1.jpg",
-    "bridge": "C788",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c788_2.jpg",
-    "file": "media/bridges/c788_2.jpg",
-    "bridge": "C788",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c788_3.jpg",
-    "file": "media/bridges/c788_3.jpg",
-    "bridge": "C788",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c788_4.jpg",
-    "file": "media/bridges/c788_4.jpg",
-    "bridge": "C788",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c789_1.jpg",
-    "file": "media/bridges/c789_1.jpg",
-    "bridge": "C789",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c789_2.jpg",
-    "file": "media/bridges/c789_2.jpg",
-    "bridge": "C789",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c789_3.jpg",
-    "file": "media/bridges/c789_3.jpg",
-    "bridge": "C789",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c789_4.jpg",
-    "file": "media/bridges/c789_4.jpg",
-    "bridge": "C789",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c790_1.jpg",
-    "file": "media/bridges/c790_1.jpg",
-    "bridge": "C790",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c790_2.jpg",
-    "file": "media/bridges/c790_2.jpg",
-    "bridge": "C790",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c790_3.jpg",
-    "file": "media/bridges/c790_3.jpg",
-    "bridge": "C790",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c790_4.jpg",
-    "file": "media/bridges/c790_4.jpg",
-    "bridge": "C790",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c791_1.jpg",
-    "file": "media/bridges/c791_1.jpg",
-    "bridge": "C791",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c791_2.jpg",
-    "file": "media/bridges/c791_2.jpg",
-    "bridge": "C791",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c791_3.jpg",
-    "file": "media/bridges/c791_3.jpg",
-    "bridge": "C791",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c791_4.jpg",
-    "file": "media/bridges/c791_4.jpg",
-    "bridge": "C791",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c792_1.jpg",
-    "file": "media/bridges/c792_1.jpg",
-    "bridge": "C792",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c792_2.jpg",
-    "file": "media/bridges/c792_2.jpg",
-    "bridge": "C792",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c792_3.jpg",
-    "file": "media/bridges/c792_3.jpg",
-    "bridge": "C792",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c792_4.jpg",
-    "file": "media/bridges/c792_4.jpg",
-    "bridge": "C792",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c794_1.jpg",
-    "file": "media/bridges/c794_1.jpg",
-    "bridge": "C794",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c794_2.jpg",
-    "file": "media/bridges/c794_2.jpg",
-    "bridge": "C794",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c794_3.jpg",
-    "file": "media/bridges/c794_3.jpg",
-    "bridge": "C794",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c794_4.jpg",
-    "file": "media/bridges/c794_4.jpg",
-    "bridge": "C794",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c795_1.jpg",
-    "file": "media/bridges/c795_1.jpg",
-    "bridge": "C795",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c795_2.jpg",
-    "file": "media/bridges/c795_2.jpg",
-    "bridge": "C795",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c795_3.jpg",
-    "file": "media/bridges/c795_3.jpg",
-    "bridge": "C795",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c795_4.jpg",
-    "file": "media/bridges/c795_4.jpg",
-    "bridge": "C795",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c796_1.jpg",
-    "file": "media/bridges/c796_1.jpg",
-    "bridge": "C796",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c796_2.jpg",
-    "file": "media/bridges/c796_2.jpg",
-    "bridge": "C796",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c796_3.jpg",
-    "file": "media/bridges/c796_3.jpg",
-    "bridge": "C796",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c796_4.jpg",
-    "file": "media/bridges/c796_4.jpg",
-    "bridge": "C796",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c797_1.jpg",
-    "file": "media/bridges/c797_1.jpg",
-    "bridge": "C797",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c798_1.jpg",
-    "file": "media/bridges/c798_1.jpg",
-    "bridge": "C798",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c798_2.jpg",
-    "file": "media/bridges/c798_2.jpg",
-    "bridge": "C798",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c798_3.jpg",
-    "file": "media/bridges/c798_3.jpg",
-    "bridge": "C798",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c798_4.jpg",
-    "file": "media/bridges/c798_4.jpg",
-    "bridge": "C798",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c799_1.jpg",
-    "file": "media/bridges/c799_1.jpg",
-    "bridge": "C799",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c799_2.jpg",
-    "file": "media/bridges/c799_2.jpg",
-    "bridge": "C799",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c799_3.jpg",
-    "file": "media/bridges/c799_3.jpg",
-    "bridge": "C799",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c799_4.jpg",
-    "file": "media/bridges/c799_4.jpg",
-    "bridge": "C799",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c800_1.jpg",
-    "file": "media/bridges/c800_1.jpg",
-    "bridge": "C800",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c800_2.jpg",
-    "file": "media/bridges/c800_2.jpg",
-    "bridge": "C800",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c800_3.jpg",
-    "file": "media/bridges/c800_3.jpg",
-    "bridge": "C800",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c800_4.jpg",
-    "file": "media/bridges/c800_4.jpg",
-    "bridge": "C800",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c803_1.jpg",
-    "file": "media/bridges/c803_1.jpg",
-    "bridge": "C803",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c803_2.jpg",
-    "file": "media/bridges/c803_2.jpg",
-    "bridge": "C803",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c824_1.jpg",
-    "file": "media/bridges/c824_1.jpg",
-    "bridge": "C824",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c825_1.jpg",
-    "file": "media/bridges/c825_1.jpg",
-    "bridge": "C825",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c825_2.jpg",
-    "file": "media/bridges/c825_2.jpg",
-    "bridge": "C825",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c829_1.jpg",
-    "file": "media/bridges/c829_1.jpg",
-    "bridge": "C829",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c829_2.jpg",
-    "file": "media/bridges/c829_2.jpg",
-    "bridge": "C829",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c829_3.jpg",
-    "file": "media/bridges/c829_3.jpg",
-    "bridge": "C829",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c829_4.jpg",
-    "file": "media/bridges/c829_4.jpg",
-    "bridge": "C829",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c830_1.jpg",
-    "file": "media/bridges/c830_1.jpg",
-    "bridge": "C830",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c830_2.jpg",
-    "file": "media/bridges/c830_2.jpg",
-    "bridge": "C830",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c830_3.jpg",
-    "file": "media/bridges/c830_3.jpg",
-    "bridge": "C830",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c830_4.jpg",
-    "file": "media/bridges/c830_4.jpg",
-    "bridge": "C830",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c831_1.jpg",
-    "file": "media/bridges/c831_1.jpg",
-    "bridge": "C831",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c831_2.jpg",
-    "file": "media/bridges/c831_2.jpg",
-    "bridge": "C831",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c831_3.jpg",
-    "file": "media/bridges/c831_3.jpg",
-    "bridge": "C831",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c831_4.jpg",
-    "file": "media/bridges/c831_4.jpg",
-    "bridge": "C831",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c832_1.jpg",
-    "file": "media/bridges/c832_1.jpg",
-    "bridge": "C832",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c832_2.jpg",
-    "file": "media/bridges/c832_2.jpg",
-    "bridge": "C832",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c832_3.jpg",
-    "file": "media/bridges/c832_3.jpg",
-    "bridge": "C832",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c832_4.jpg",
-    "file": "media/bridges/c832_4.jpg",
-    "bridge": "C832",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c833_1.jpg",
-    "file": "media/bridges/c833_1.jpg",
-    "bridge": "C833",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c833_2.jpg",
-    "file": "media/bridges/c833_2.jpg",
-    "bridge": "C833",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c833_3.jpg",
-    "file": "media/bridges/c833_3.jpg",
-    "bridge": "C833",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c833_4.jpg",
-    "file": "media/bridges/c833_4.jpg",
-    "bridge": "C833",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c834_1.jpg",
-    "file": "media/bridges/c834_1.jpg",
-    "bridge": "C834",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c834_2.jpg",
-    "file": "media/bridges/c834_2.jpg",
-    "bridge": "C834",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c834_3.jpg",
-    "file": "media/bridges/c834_3.jpg",
-    "bridge": "C834",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c834_4.jpg",
-    "file": "media/bridges/c834_4.jpg",
-    "bridge": "C834",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c835_1.jpg",
-    "file": "media/bridges/c835_1.jpg",
-    "bridge": "C835",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c835_2.jpg",
-    "file": "media/bridges/c835_2.jpg",
-    "bridge": "C835",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c835_3.jpg",
-    "file": "media/bridges/c835_3.jpg",
-    "bridge": "C835",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c835_4.jpg",
-    "file": "media/bridges/c835_4.jpg",
-    "bridge": "C835",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c839_1.jpg",
-    "file": "media/bridges/c839_1.jpg",
-    "bridge": "C839",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c839_2.jpg",
-    "file": "media/bridges/c839_2.jpg",
-    "bridge": "C839",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c839_3.jpg",
-    "file": "media/bridges/c839_3.jpg",
-    "bridge": "C839",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c839_4.jpg",
-    "file": "media/bridges/c839_4.jpg",
-    "bridge": "C839",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c840_1.jpg",
-    "file": "media/bridges/c840_1.jpg",
-    "bridge": "C840",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c840_2.jpg",
-    "file": "media/bridges/c840_2.jpg",
-    "bridge": "C840",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c840_3.jpg",
-    "file": "media/bridges/c840_3.jpg",
-    "bridge": "C840",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c840_4.jpg",
-    "file": "media/bridges/c840_4.jpg",
-    "bridge": "C840",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c841_1.jpg",
-    "file": "media/bridges/c841_1.jpg",
-    "bridge": "C841",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c841_2.jpg",
-    "file": "media/bridges/c841_2.jpg",
-    "bridge": "C841",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c841_3.jpg",
-    "file": "media/bridges/c841_3.jpg",
-    "bridge": "C841",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c841_4.jpg",
-    "file": "media/bridges/c841_4.jpg",
-    "bridge": "C841",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c842_1.jpg",
-    "file": "media/bridges/c842_1.jpg",
-    "bridge": "C842",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c842_2.jpg",
-    "file": "media/bridges/c842_2.jpg",
-    "bridge": "C842",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c842_3.jpg",
-    "file": "media/bridges/c842_3.jpg",
-    "bridge": "C842",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c842_4.jpg",
-    "file": "media/bridges/c842_4.jpg",
-    "bridge": "C842",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c844_1.jpg",
-    "file": "media/bridges/c844_1.jpg",
-    "bridge": "C844",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c844_2.jpg",
-    "file": "media/bridges/c844_2.jpg",
-    "bridge": "C844",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c844_3.jpg",
-    "file": "media/bridges/c844_3.jpg",
-    "bridge": "C844",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c844_4.jpg",
-    "file": "media/bridges/c844_4.jpg",
-    "bridge": "C844",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c845_1.jpg",
-    "file": "media/bridges/c845_1.jpg",
-    "bridge": "C845",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c845_2.jpg",
-    "file": "media/bridges/c845_2.jpg",
-    "bridge": "C845",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c845_3.jpg",
-    "file": "media/bridges/c845_3.jpg",
-    "bridge": "C845",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c845_4.jpg",
-    "file": "media/bridges/c845_4.jpg",
-    "bridge": "C845",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c846_1.jpg",
-    "file": "media/bridges/c846_1.jpg",
-    "bridge": "C846",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c846_2.jpg",
-    "file": "media/bridges/c846_2.jpg",
-    "bridge": "C846",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c846_3.jpg",
-    "file": "media/bridges/c846_3.jpg",
-    "bridge": "C846",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c846_4.jpg",
-    "file": "media/bridges/c846_4.jpg",
-    "bridge": "C846",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c847_1.jpg",
-    "file": "media/bridges/c847_1.jpg",
-    "bridge": "C847",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c847_2.jpg",
-    "file": "media/bridges/c847_2.jpg",
-    "bridge": "C847",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c847_3.jpg",
-    "file": "media/bridges/c847_3.jpg",
-    "bridge": "C847",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c847_4.jpg",
-    "file": "media/bridges/c847_4.jpg",
-    "bridge": "C847",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c851_1.jpg",
-    "file": "media/bridges/c851_1.jpg",
-    "bridge": "C851",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c854_1.jpg",
-    "file": "media/bridges/c854_1.jpg",
-    "bridge": "C854",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c854_2.jpg",
-    "file": "media/bridges/c854_2.jpg",
-    "bridge": "C854",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c854_3.jpg",
-    "file": "media/bridges/c854_3.jpg",
-    "bridge": "C854",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c854_4.jpg",
-    "file": "media/bridges/c854_4.jpg",
-    "bridge": "C854",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c855_1.jpg",
-    "file": "media/bridges/c855_1.jpg",
-    "bridge": "C855",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c855_2.jpg",
-    "file": "media/bridges/c855_2.jpg",
-    "bridge": "C855",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c855_3.jpg",
-    "file": "media/bridges/c855_3.jpg",
-    "bridge": "C855",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c855_4.jpg",
-    "file": "media/bridges/c855_4.jpg",
-    "bridge": "C855",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c861_1.jpg",
-    "file": "media/bridges/c861_1.jpg",
-    "bridge": "C861",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c861_2.jpg",
-    "file": "media/bridges/c861_2.jpg",
-    "bridge": "C861",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c863_1.jpg",
-    "file": "media/bridges/c863_1.jpg",
-    "bridge": "C863",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c863_2.jpg",
-    "file": "media/bridges/c863_2.jpg",
-    "bridge": "C863",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c863_3.jpg",
-    "file": "media/bridges/c863_3.jpg",
-    "bridge": "C863",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c863_4.jpg",
-    "file": "media/bridges/c863_4.jpg",
-    "bridge": "C863",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c864_1.jpg",
-    "file": "media/bridges/c864_1.jpg",
-    "bridge": "C864",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c870_1.jpg",
-    "file": "media/bridges/c870_1.jpg",
-    "bridge": "C870",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c870_2.jpg",
-    "file": "media/bridges/c870_2.jpg",
-    "bridge": "C870",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c870_3.jpg",
-    "file": "media/bridges/c870_3.jpg",
-    "bridge": "C870",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c870_4.jpg",
-    "file": "media/bridges/c870_4.jpg",
-    "bridge": "C870",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c871_1.jpg",
-    "file": "media/bridges/c871_1.jpg",
-    "bridge": "C871",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c871_2.jpg",
-    "file": "media/bridges/c871_2.jpg",
-    "bridge": "C871",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c871_3.jpg",
-    "file": "media/bridges/c871_3.jpg",
-    "bridge": "C871",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c871_4.jpg",
-    "file": "media/bridges/c871_4.jpg",
-    "bridge": "C871",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c900_1.jpg",
-    "file": "media/bridges/c900_1.jpg",
-    "bridge": "C900",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c900_2.jpg",
-    "file": "media/bridges/c900_2.jpg",
-    "bridge": "C900",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c900_3.jpg",
-    "file": "media/bridges/c900_3.jpg",
-    "bridge": "C900",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c900_4.jpg",
-    "file": "media/bridges/c900_4.jpg",
-    "bridge": "C900",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c906_1.jpg",
-    "file": "media/bridges/c906_1.jpg",
-    "bridge": "C906",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c906_2.jpg",
-    "file": "media/bridges/c906_2.jpg",
-    "bridge": "C906",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c906_3.jpg",
-    "file": "media/bridges/c906_3.jpg",
-    "bridge": "C906",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c906_4.jpg",
-    "file": "media/bridges/c906_4.jpg",
-    "bridge": "C906",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c907_1.jpg",
-    "file": "media/bridges/c907_1.jpg",
-    "bridge": "C907",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c907_2.jpg",
-    "file": "media/bridges/c907_2.jpg",
-    "bridge": "C907",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c907_3.jpg",
-    "file": "media/bridges/c907_3.jpg",
-    "bridge": "C907",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c907_4.jpg",
-    "file": "media/bridges/c907_4.jpg",
-    "bridge": "C907",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c908_1.jpg",
-    "file": "media/bridges/c908_1.jpg",
-    "bridge": "C908",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c908_2.jpg",
-    "file": "media/bridges/c908_2.jpg",
-    "bridge": "C908",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c908_3.jpg",
-    "file": "media/bridges/c908_3.jpg",
-    "bridge": "C908",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c908_4.jpg",
-    "file": "media/bridges/c908_4.jpg",
-    "bridge": "C908",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c911_1.jpg",
-    "file": "media/bridges/c911_1.jpg",
-    "bridge": "C911",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c911_2.jpg",
-    "file": "media/bridges/c911_2.jpg",
-    "bridge": "C911",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c911_3.jpg",
-    "file": "media/bridges/c911_3.jpg",
-    "bridge": "C911",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c911_4.jpg",
-    "file": "media/bridges/c911_4.jpg",
-    "bridge": "C911",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c912_1.jpg",
-    "file": "media/bridges/c912_1.jpg",
-    "bridge": "C912",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c912_2.jpg",
-    "file": "media/bridges/c912_2.jpg",
-    "bridge": "C912",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c912_3.jpg",
-    "file": "media/bridges/c912_3.jpg",
-    "bridge": "C912",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c912_4.jpg",
-    "file": "media/bridges/c912_4.jpg",
-    "bridge": "C912",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c913_1.jpg",
-    "file": "media/bridges/c913_1.jpg",
-    "bridge": "C913",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c913_2.jpg",
-    "file": "media/bridges/c913_2.jpg",
-    "bridge": "C913",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c913_3.jpg",
-    "file": "media/bridges/c913_3.jpg",
-    "bridge": "C913",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c913_4.jpg",
-    "file": "media/bridges/c913_4.jpg",
-    "bridge": "C913",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c914_1.jpg",
-    "file": "media/bridges/c914_1.jpg",
-    "bridge": "C914",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c914_2.jpg",
-    "file": "media/bridges/c914_2.jpg",
-    "bridge": "C914",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c914_3.jpg",
-    "file": "media/bridges/c914_3.jpg",
-    "bridge": "C914",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c914_4.jpg",
-    "file": "media/bridges/c914_4.jpg",
-    "bridge": "C914",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c915_1.jpg",
-    "file": "media/bridges/c915_1.jpg",
-    "bridge": "C915",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c915_2.jpg",
-    "file": "media/bridges/c915_2.jpg",
-    "bridge": "C915",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c915_3.jpg",
-    "file": "media/bridges/c915_3.jpg",
-    "bridge": "C915",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c915_4.jpg",
-    "file": "media/bridges/c915_4.jpg",
-    "bridge": "C915",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c916_1.jpg",
-    "file": "media/bridges/c916_1.jpg",
-    "bridge": "C916",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c916_2.jpg",
-    "file": "media/bridges/c916_2.jpg",
-    "bridge": "C916",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c916_3.jpg",
-    "file": "media/bridges/c916_3.jpg",
-    "bridge": "C916",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c916_4.jpg",
-    "file": "media/bridges/c916_4.jpg",
-    "bridge": "C916",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c917_1.jpg",
-    "file": "media/bridges/c917_1.jpg",
-    "bridge": "C917",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c917_2.jpg",
-    "file": "media/bridges/c917_2.jpg",
-    "bridge": "C917",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c917_3.jpg",
-    "file": "media/bridges/c917_3.jpg",
-    "bridge": "C917",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c917_4.jpg",
-    "file": "media/bridges/c917_4.jpg",
-    "bridge": "C917",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c918_1.jpg",
-    "file": "media/bridges/c918_1.jpg",
-    "bridge": "C918",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c918_2.jpg",
-    "file": "media/bridges/c918_2.jpg",
-    "bridge": "C918",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c918_3.jpg",
-    "file": "media/bridges/c918_3.jpg",
-    "bridge": "C918",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c918_4.jpg",
-    "file": "media/bridges/c918_4.jpg",
-    "bridge": "C918",
-    "type": "image",
-    "index": 4
-  },
-  {
-    "id": "c919_1.jpg",
-    "file": "media/bridges/c919_1.jpg",
-    "bridge": "C919",
-    "type": "image",
-    "index": 1
-  },
-  {
-    "id": "c919_2.jpg",
-    "file": "media/bridges/c919_2.jpg",
-    "bridge": "C919",
-    "type": "image",
-    "index": 2
-  },
-  {
-    "id": "c919_3.jpg",
-    "file": "media/bridges/c919_3.jpg",
-    "bridge": "C919",
-    "type": "image",
-    "index": 3
-  },
-  {
-    "id": "c919_4.jpg",
-    "file": "media/bridges/c919_4.jpg",
-    "bridge": "C919",
-    "type": "image",
-    "index": 4
   }
 ]

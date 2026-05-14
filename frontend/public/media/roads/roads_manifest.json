@@ -1,0 +1,107 @@
+{
+  "generated": "2026-05-14",
+  "photos": [
+    {
+      "id": "road_a001_link03_1.jpg",
+      "file": "media/roads/road_a001_link03_1.jpg",
+      "location": "A001_Link03",
+      "type": "image",
+      "index": 1
+    },
+    {
+      "id": "road_a001_link03_2.jpg",
+      "file": "media/roads/road_a001_link03_2.jpg",
+      "location": "A001_Link03",
+      "type": "image",
+      "index": 2
+    },
+    {
+      "id": "road_a001_link03_3.jpg",
+      "file": "media/roads/road_a001_link03_3.jpg",
+      "location": "A001_Link03",
+      "type": "image",
+      "index": 3
+    },
+    {
+      "id": "road_a012_link01_1.jpg",
+      "file": "media/roads/road_a012_link01_1.jpg",
+      "location": "A012_Link01",
+      "type": "image",
+      "index": 1
+    },
+    {
+      "id": "road_a012_link01_2.jpg",
+      "file": "media/roads/road_a012_link01_2.jpg",
+      "location": "A012_Link01",
+      "type": "image",
+      "index": 2
+    },
+    {
+      "id": "road_a012_link01_3.jpg",
+      "file": "media/roads/road_a012_link01_3.jpg",
+      "location": "A012_Link01",
+      "type": "image",
+      "index": 3
+    },
+    {
+      "id": "road_a012_link02_1.jpg",
+      "file": "media/roads/road_a012_link02_1.jpg",
+      "location": "A012_Link02",
+      "type": "image",
+      "index": 1
+    },
+    {
+      "id": "road_a012_link02_2.jpg",
+      "file": "media/roads/road_a012_link02_2.jpg",
+      "location": "A012_Link02",
+      "type": "image",
+      "index": 2
+    },
+    {
+      "id": "road_a012_link02_3.jpg",
+      "file": "media/roads/road_a012_link02_3.jpg",
+      "location": "A012_Link02",
+      "type": "image",
+      "index": 3
+    },
+    {
+      "id": "road_a012_link03_1.jpg",
+      "file": "media/roads/road_a012_link03_1.jpg",
+      "location": "A012_Link03",
+      "type": "image",
+      "index": 1
+    },
+    {
+      "id": "road_a012_link03_2.jpg",
+      "file": "media/roads/road_a012_link03_2.jpg",
+      "location": "A012_Link03",
+      "type": "image",
+      "index": 2
+    },
+    {
+      "id": "road_a012_link03_3.jpg",
+      "file": "media/roads/road_a012_link03_3.jpg",
+      "location": "A012_Link03",
+      "type": "image",
+      "index": 3
+    }
+  ],
+  "skipped_folders": [
+    {
+      "folder": "ROMDAS Videos 2025-26",
+      "drive": "Y:",
+      "reason": "ROMDAS bulk dump - not suitable for per-location selection"
+    },
+    {
+      "folder": "ROMDAS Videos 2025-26 240328",
+      "drive": "Z:",
+      "reason": "Single flat ROMDAS dump \u2014 238,885 images / 533 GB, no location substructure",
+      "estimated_images": 238885,
+      "estimated_gb": 533
+    }
+  ],
+  "notes": [
+    "Y:\\ROMDAS Videos 2025-26 folder skipped \u2014 bulk pavement survey data, not road photos",
+    "Z:\\ROMDAS Videos 2025-26 240328 skipped \u2014 533 GB flat ROMDAS dump"
+  ]
+}
