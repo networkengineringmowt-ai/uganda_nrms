@@ -51,7 +51,7 @@ export default function Sidebar() {
         { id: 'trafficsummary',  label: 'Traffic Tables',   icon: <Table2 size={15}/>,   color: N.yellow },
         { id: 'roadcondition', label: 'Road Condition',      icon: <Activity size={15}/>,      color: N.blue   },
         { id: 'projects',      label: 'Projects & Works',    icon: <Construction size={15}/>,  color: N.pink   },
-        { id: 'media',         label: 'Media Gallery',       icon: <Camera size={15}/>,        color: N.purple },
+        { id: 'media',         label: 'Media & Doc Gallery', icon: <Camera size={15}/>,        color: N.purple },
       ],
     },
     {

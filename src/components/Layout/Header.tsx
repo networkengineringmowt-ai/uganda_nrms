@@ -22,6 +22,7 @@ const VIEW_TITLES: Record<string, { title: string; sub: string; color?: string }
   analytics:     { title: 'Analytics & Reports',          sub: 'Condition trends, cost analysis and network insights',  color: '#00f5ff' },
   priority:      { title: 'Priority Ranking',             sub: 'Risk-based intervention priority scores',               color: '#ff2d78' },
   documents:     { title: 'Document Store',               sub: 'Drawings, reports, contracts and records',             color: '#4d9fff' },
+  media:         { title: 'Media and Document Gallery',   sub: 'Photography, video surveys, field reports & documents · Uganda national roads', color: '#b967ff' },
   phototwin:     { title: 'Photo Gallery & Digital Twin', sub: 'Inspection photos and structural schematics',          color: '#00ff88' },
 };
 
