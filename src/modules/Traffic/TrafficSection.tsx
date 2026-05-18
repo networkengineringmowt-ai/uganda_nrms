@@ -360,11 +360,12 @@ export default function TrafficSection() {
                border:1px solid;transition:all .15s;letter-spacing:.04em;background:transparent;}
       `}</style>
 
-      {/* ── LEFT SIDEBAR ──────────────────────────────────────────────────── */}
+      {/* ── RIGHT SIDEBAR (moved from left) ───────────────────────────────── */}
       <div style={{
         width:280, flexShrink:0, display:'flex', flexDirection:'column', gap:8,
         padding:'10px 10px 14px', background:'rgba(2,5,8,0.90)',
-        borderRight:'1px solid rgba(0,245,255,0.07)', overflowY:'auto',
+        borderLeft:'1px solid rgba(0,245,255,0.07)', overflowY:'auto',
+        order:2,
       }}>
         {/* Header */}
         <div style={{ padding:'4px 2px 2px' }}>
