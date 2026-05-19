@@ -134,7 +134,7 @@ function StationMapPanel({ allStations, aadtRows, monthlyRows }: {
 
   return (
     <div style={{ ...glass(C.green), padding:14 }}>
-      {sectionHead(`Traffic Count Station Network · ${allStations.length} Stations`, <MapPin size={15}/>, C.green)}
+      {sectionHead(`Manual TIS Station Network · ${allStations.length} Stations`, <MapPin size={15}/>, C.green)}
       <div style={{ fontSize:10, color:'rgba(148,163,184,0.55)', marginBottom:8 }}>
         National road network · Click marker for details · Coloured by region
       </div>
@@ -338,7 +338,7 @@ export default function ATCView() {
       <div style={{ display:'flex', gap:8, alignItems:'center', flexWrap:'wrap' }}>
         {([
           ['dashboard',   'Live Dashboard',                              C.cyan],
-          ['stationmap',  `Station Map (${allStations.length||298})`,   C.green],
+          ['stationmap',  `Station Map (${allStations.length||308})`,   C.green],
           ['predictions', 'Traffic Forecast Map',                       C.purple],
         ] as [typeof activeTab, string, string][]).map(([tab, label, accent]) => (
           <button key={tab} onClick={()=>setActiveTab(tab)} style={{
@@ -712,7 +712,7 @@ export default function ATCView() {
       </div>
       </>)} {/* end dashboard tab */}
 
-      {/* ── STATION MAP TAB (all 298 traffic count stations) ─────────────── */}
+      {/* ── STATION MAP TAB (298 manual TIS stations + 10 new ATC = 308 total) ── */}
       {activeTab === 'stationmap' && (
         <StationMapPanel allStations={allStations} aadtRows={aadtRows} monthlyRows={monthly} />
       )}

@@ -829,7 +829,7 @@ function StrategicTab({ features, stations }: { features: PredFeature[]; station
     { label:'Vehicle-km / Day',        val:`${(totalVkm/1e6).toFixed(0)}M`, sub:'network total', col:C.teal   },
     { label:'Critical Congestion',     val:String(critical), sub:'links at capacity risk', col:C.pink   },
     { label:'2040 Growth Projection',  val:`+${growPct.toFixed(0)}%`, sub:'vs 2025 baseline', col:C.green  },
-    { label:'ATC Station Coverage',    val:String(stations.length), sub:'monitoring stations', col:C.yellow },
+    { label:'ATC Stations',             val:'25',                   sub:'15 legacy + 10 new', col:C.yellow },
     { label:'Survey Node Count',       val:String(features.length), sub:'road links monitored', col:C.blue   },
   ];
 
@@ -860,7 +860,7 @@ function StrategicTab({ features, stations }: { features: PredFeature[]; station
           { head:'Heavy Vehicle Network Pressure', col:C.orange,
             body:`Heavy vehicle traffic represents a disproportionate share of pavement wear on Class B and C roads. The Northern corridor (A1/A2) carries significant freight traffic to South Sudan and DRC, with heavy vehicle percentages exceeding 25% on several links.` },
           { head:'ATC Station Coverage', col:C.teal,
-            body:`The ${stations.length}-station automatic traffic count network provides real-time monitoring across all 6 maintenance regions. Station density is highest in the Central region but expansion is recommended for Eastern and North Eastern regions to support ML model accuracy.` },
+            body:`The 25-station automatic traffic count network (15 legacy 2016–22 + 10 new 2025+) provides real-time monitoring across all 6 maintenance regions. An additional ${stations.length} manual TIS survey stations supplement the ATC network. Station density is highest in the Central region but expansion is recommended for Eastern and North Eastern regions to support ML model accuracy.` },
         ].map(s=>(
           <div key={s.head} style={{ marginBottom:14, paddingLeft:12,
             borderLeft:`2px solid rgba(${hexRgb(s.col)},0.4)` }}>
@@ -959,7 +959,7 @@ export default function TrafficAnalytics() {
           </select>
         </div>
         <div style={{ fontSize:11, color:'rgba(148,163,184,0.5)', marginTop:4 }}>
-          {filteredFeatures.length.toLocaleString()} road links · {filteredStations.length} ATC stations
+          {filteredFeatures.length.toLocaleString()} road links · 25 ATC + {filteredStations.length} TIS survey stations
           {target!=='GLOBAL' && ` · filtered: ${target}`}
         </div>
       </div>
