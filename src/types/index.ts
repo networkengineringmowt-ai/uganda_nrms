@@ -146,7 +146,8 @@ export type ActiveView =
   | 'downloads'          // Downloads & Exports
   | 'media'              // Media gallery — images + videos
   | 'trafficanalytics'  // Traffic demand analytics dashboard
-  | 'trafficsummary';   // Traffic summary tables (Road Links + Stations)
+  | 'trafficsummary'   // Traffic summary tables (Road Links + Stations)
+  | 'oprcndpiv';       // OPRC contracts + NDP IV investment dashboard
 
 // ─── Road network types ───────────────────────────────────────────────────────
 export type RoadClass   = 'A' | 'B' | 'C' | 'M';

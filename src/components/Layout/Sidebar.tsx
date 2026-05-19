@@ -2,7 +2,7 @@ import {
   LayoutDashboard, Map, Table2, ClipboardCheck, Activity,
   Wrench, BarChart3, BarChart2, AlertTriangle, FolderOpen, ChevronRight,
   Shield, Camera, Globe, Construction, Layers, Network, BookOpen,
-  Video, Download,
+  Video, Download, TrendingUp,
 } from 'lucide-react';
 import { useBMS } from '../../store/BMSContext';
 import type { ActiveView } from '../../types';
@@ -51,6 +51,7 @@ export default function Sidebar() {
         { id: 'trafficsummary',  label: 'Traffic Tables',   icon: <Table2 size={15}/>,   color: N.yellow },
         { id: 'roadcondition', label: 'Road Condition',      icon: <Activity size={15}/>,      color: N.blue   },
         { id: 'projects',      label: 'Projects & Works',    icon: <Construction size={15}/>,  color: N.pink   },
+        { id: 'oprcndpiv',     label: 'OPRC & NDP IV',       icon: <TrendingUp size={15}/>,    color: N.purple },
         { id: 'media',         label: 'Media & Doc Gallery', icon: <Camera size={15}/>,        color: N.purple },
       ],
     },

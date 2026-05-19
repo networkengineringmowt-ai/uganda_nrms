@@ -1,0 +1,102 @@
+{
+  "oprc_lots": [
+    {
+      "lot_id": "OPRC-N-01", "name": "Northern Lot 1", "region": "Northern",
+      "roads": ["A001", "A002", "A003"], "total_km": 312,
+      "contractor": "China Communications Construction", "contract_value_usd": 48500000,
+      "start_date": "2022-01-15", "end_date": "2026-01-14",
+      "performance_score": 78, "status": "Active",
+      "paved_km": 180, "unpaved_km": 132, "centroid": [2.77, 32.29]
+    },
+    {
+      "lot_id": "OPRC-N-02", "name": "Northern Lot 2", "region": "Northern",
+      "roads": ["A004", "A005"], "total_km": 287,
+      "contractor": "CICO Construction", "contract_value_usd": 39200000,
+      "start_date": "2022-03-01", "end_date": "2026-02-28",
+      "performance_score": 82, "status": "Active",
+      "paved_km": 210, "unpaved_km": 77, "centroid": [3.62, 31.67]
+    },
+    {
+      "lot_id": "OPRC-E-01", "name": "Eastern Lot 1", "region": "Eastern",
+      "roads": ["B100", "C035"], "total_km": 198,
+      "contractor": "Stirling Civil Engineering", "contract_value_usd": 28700000,
+      "start_date": "2021-07-01", "end_date": "2025-06-30",
+      "performance_score": 65, "status": "Active",
+      "paved_km": 95, "unpaved_km": 103, "centroid": [0.96, 33.95]
+    },
+    {
+      "lot_id": "OPRC-C-01", "name": "Central Lot 1", "region": "Central",
+      "roads": ["A001", "M20"], "total_km": 145,
+      "contractor": "Bituma Uganda", "contract_value_usd": 22100000,
+      "start_date": "2023-01-01", "end_date": "2026-12-31",
+      "performance_score": 91, "status": "Active",
+      "paved_km": 145, "unpaved_km": 0, "centroid": [0.34, 32.58]
+    },
+    {
+      "lot_id": "OPRC-W-01", "name": "Western Lot 1", "region": "Western",
+      "roads": ["A109", "B301"], "total_km": 356,
+      "contractor": "Dott Services", "contract_value_usd": 51000000,
+      "start_date": "2022-06-15", "end_date": "2026-06-14",
+      "performance_score": 73, "status": "Active",
+      "paved_km": 220, "unpaved_km": 136, "centroid": [-0.61, 30.66]
+    },
+    {
+      "lot_id": "OPRC-SW-01", "name": "South-Western Lot 1", "region": "South-Western",
+      "roads": ["A109", "B203"], "total_km": 267,
+      "contractor": "Norken International", "contract_value_usd": 35600000,
+      "start_date": "2023-04-01", "end_date": "2027-03-31",
+      "performance_score": 88, "status": "Active",
+      "paved_km": 180, "unpaved_km": 87, "centroid": [-1.29, 29.98]
+    }
+  ],
+  "ndpiv_projects": [
+    {
+      "project_id": "NDP4-001", "name": "Kampala Northern Bypass Phase 2",
+      "road_links": ["M20Int2_S1"], "region": "Central", "priority": "High",
+      "type": "Upgrade", "status": "Procurement",
+      "budget_usd": 120000000, "disbursed_usd": 12000000,
+      "length_km": 17, "completion_pct": 8,
+      "target_year": 2027, "centroid": [0.38, 32.56]
+    },
+    {
+      "project_id": "NDP4-002", "name": "Gulu-Atiak Road Rehabilitation",
+      "road_links": ["A001"], "region": "Northern", "priority": "High",
+      "type": "Rehabilitation", "status": "Construction",
+      "budget_usd": 85000000, "disbursed_usd": 52000000,
+      "length_km": 74, "completion_pct": 61,
+      "target_year": 2026, "centroid": [3.28, 32.34]
+    },
+    {
+      "project_id": "NDP4-003", "name": "Mbale-Soroti Road Upgrade",
+      "road_links": ["B100"], "region": "Eastern", "priority": "Medium",
+      "type": "Upgrade", "status": "Construction",
+      "budget_usd": 67000000, "disbursed_usd": 31000000,
+      "length_km": 89, "completion_pct": 46,
+      "target_year": 2026, "centroid": [1.32, 34.10]
+    },
+    {
+      "project_id": "NDP4-004", "name": "Mbarara-Kikagati Road",
+      "road_links": ["A109"], "region": "Western", "priority": "High",
+      "type": "New Construction", "status": "Design",
+      "budget_usd": 145000000, "disbursed_usd": 8700000,
+      "length_km": 123, "completion_pct": 5,
+      "target_year": 2029, "centroid": [-0.60, 30.62]
+    },
+    {
+      "project_id": "NDP4-005", "name": "Fort Portal-Bundibugyo Road",
+      "road_links": ["B301"], "region": "Western", "priority": "Medium",
+      "type": "Rehabilitation", "status": "Construction",
+      "budget_usd": 43000000, "disbursed_usd": 28000000,
+      "length_km": 51, "completion_pct": 65,
+      "target_year": 2025, "centroid": [0.67, 30.27]
+    },
+    {
+      "project_id": "NDP4-006", "name": "Jinja-Iganga Expressway Study",
+      "road_links": ["A109"], "region": "Eastern", "priority": "Low",
+      "type": "Feasibility", "status": "Planning",
+      "budget_usd": 3500000, "disbursed_usd": 3500000,
+      "length_km": 45, "completion_pct": 100,
+      "target_year": 2024, "centroid": [0.47, 33.29]
+    }
+  ]
+}
