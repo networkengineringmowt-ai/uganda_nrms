@@ -137,7 +137,7 @@ export default function OprcNdpivSection() {
     fetch(`${base}data/oprc_ndpiv.json`)
       .then(r => r.json())
       .then((d: OprcNdpivData) => setData(d))
-      .catch(err => console.error('[OprcNdpiv] fetch error:', err));
+      .catch(() => {});
   }, []);
 
   const regions = useMemo(() =>

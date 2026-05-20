@@ -261,12 +261,12 @@ function StoryCard({ image, accentCol, onClick }: {
 // ─── Media library (manifest-driven) ─────────────────────────────────────────
 
 interface MediaItem {
-  id: string; file: string; type: 'image' | 'video' | 'pdf';
+  id: string; file: string; type: 'image' | 'pdf';
   title: string; source: string; category: string;
 }
 
 const FILTER_LABELS: Record<string, string> = {
-  all: 'All', image: 'Images', video: 'Videos', pdf: 'PDFs',
+  all: 'All', image: 'Images', pdf: 'PDFs',
   drone: 'Drone', landmark: 'Landmark', structures: 'Structures',
   condition: 'Condition', reports: 'Reports', 'field-video': 'Field Video',
   traffic: 'Traffic', documents: 'Documents', investment: 'Investment',
@@ -276,7 +276,7 @@ const CAT_ACCENT: Record<string, string> = {
   drone: '#00f5ff', landmark: '#ff6b35', structures: '#3B82F6',
   condition: '#ffd23f', reports: '#b967ff', 'field-video': '#00ff88',
   traffic: '#4d9fff', documents: '#94a3b8', investment: '#ffd23f',
-  admin: '#94a3b8', general: '#64748b', image: '#00f5ff', video: '#00ff88', pdf: '#ff6b35',
+  admin: '#94a3b8', general: '#64748b', image: '#00f5ff', pdf: '#ff6b35',
 };
 
 function MediaLightbox({ items, index, onClose, onPrev, onNext }: {
@@ -307,15 +307,9 @@ function MediaLightbox({ items, index, onClose, onPrev, onNext }: {
         style={{ position: 'relative', maxWidth: '90vw', maxHeight: '90vh',
           display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
-        {item.type === 'video' ? (
-          <video src={url} controls autoPlay
-            style={{ maxWidth: '88vw', maxHeight: '82vh', borderRadius: 12, outline: 'none',
-              boxShadow: '0 0 60px rgba(0,0,0,0.8)' }} />
-        ) : (
-          <img src={url} alt={item.title}
-            style={{ maxWidth: '88vw', maxHeight: '82vh', borderRadius: 12, objectFit: 'contain',
-              boxShadow: '0 0 60px rgba(0,0,0,0.8)' }} />
-        )}
+        <img src={url} alt={item.title}
+          style={{ maxWidth: '88vw', maxHeight: '82vh', borderRadius: 12, objectFit: 'contain',
+            boxShadow: '0 0 60px rgba(0,0,0,0.8)' }} />
 
         <div style={{ marginTop: 12, fontSize: 12, fontWeight: 700, color: '#e2eaf4',
           textAlign: 'center', maxWidth: 600, textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>
@@ -373,7 +367,6 @@ function MediaCard({ item, onOpen, accent }: { item: MediaItem; onOpen: () => vo
   const rgb = hexRgb(accent);
   const url = `${BASE}media/${item.file}`;
   const isPdf = item.type === 'pdf';
-  const isVideo = item.type === 'video';
 
   return (
     <div
@@ -411,17 +404,6 @@ function MediaCard({ item, onOpen, accent }: { item: MediaItem; onOpen: () => vo
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2,
         background: `linear-gradient(90deg, ${accent}, rgba(${rgb},0))`,
         opacity: hov ? 1 : 0.4, transition: 'opacity 0.2s' }} />
-
-      {isVideo && (
-        <div style={{ position: 'absolute', top: '50%', left: '50%',
-          transform: 'translate(-50%, -60%)',
-          width: 40, height: 40, borderRadius: '50%',
-          background: 'rgba(255,255,255,0.18)', border: '2px solid rgba(255,255,255,0.4)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          backdropFilter: 'blur(4px)' }}>
-          <span style={{ color: 'white', fontSize: 18, marginLeft: 3 }}>▶</span>
-        </div>
-      )}
 
       <div style={{ position: 'absolute', top: 8, right: 8,
         fontSize: 8, fontWeight: 800, color: accent, letterSpacing: '0.08em', textTransform: 'uppercase',
@@ -474,7 +456,7 @@ function MediaLibrary() {
   useEffect(() => {
     fetch(`${BASE}media/manifest.json`)
       .then(r => r.json())
-      .then((data: MediaItem[]) => { setItems(data); setLoading(false); })
+      .then((data: MediaItem[]) => { setItems(data.filter(i => (i.type as string) !== 'video')); setLoading(false); })
       .catch(() => setLoading(false));
   }, []);
 
@@ -512,7 +494,6 @@ function MediaLibrary() {
         {[
           { label: 'Total',  count: items.length,                          color: '#00f5ff' },
           { label: 'Images', count: items.filter(i => i.type === 'image').length, color: '#00f5ff' },
-          { label: 'Videos', count: items.filter(i => i.type === 'video').length, color: '#00ff88' },
           { label: 'PDFs',   count: items.filter(i => i.type === 'pdf').length,   color: '#ff6b35' },
         ].map(s => (
           <div key={s.label} style={{ fontSize: 10, color: 'rgba(148,163,184,0.5)' }}>
@@ -523,7 +504,7 @@ function MediaLibrary() {
 
       {/* Type filter: Images → Videos → PDFs/Documents */}
       <div style={{ display: 'flex', gap: 5, marginBottom: 8, flexWrap: 'wrap' }}>
-        {['all', 'image', 'video', 'pdf'].map(t => {
+        {['all', 'image', 'pdf'].map(t => {
           const active = typeFilter === t;
           const col = CAT_ACCENT[t] ?? '#94a3b8';
           const rgb = hexRgb(col);
@@ -626,7 +607,7 @@ export default function MediaSection() {
         </div>
         <p style={{ color: 'rgba(148,163,184,0.6)', fontSize: 12, marginTop: 6,
           maxWidth: 680, lineHeight: 1.55 }}>
-          Road network imagery, bridge inspection photography, ROMDAS pavement surveys, video field records,
+          Road network imagery, bridge inspection photography, ROMDAS pavement surveys,
           and annual monitoring reports from across Uganda's 21,292 km national road network.
         </p>
       </div>
@@ -695,7 +676,7 @@ export default function MediaSection() {
               Full Media &amp; Document Archive
             </div>
             <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.5)', marginTop: 2 }}>
-              Drone imagery, field photographs, video surveys, and annual monitoring reports — filter by type or category
+              Drone imagery, field photographs, and annual monitoring reports — filter by type or category
             </div>
           </div>
         </div>

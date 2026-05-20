@@ -18,7 +18,7 @@ export default function PlatformDashboard() {
   const [analytics, setAnalytics] = useState<PlatformAnalytics | null>(null);
 
   useEffect(() => {
-    loadPlatformAnalytics().then(setAnalytics).catch(console.error);
+    loadPlatformAnalytics().then(setAnalytics).catch(() => {});
   }, []);
 
   const bridgeStats = useMemo(() => {

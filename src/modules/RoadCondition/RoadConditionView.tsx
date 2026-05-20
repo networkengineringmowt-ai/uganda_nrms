@@ -11,7 +11,7 @@ export default function RoadConditionView() {
   const [analytics, setAnalytics] = useState<PlatformAnalytics | null>(null);
 
   useEffect(() => {
-    loadPlatformAnalytics().then(setAnalytics).catch(console.error);
+    loadPlatformAnalytics().then(setAnalytics).catch(() => {});
   }, []);
 
   const a = analytics;

@@ -821,7 +821,7 @@ export default function NetworkStory() {
       .then((d: StoryData) => { setData(d); setLoading(false); })
       .catch(() => { setError(true); setLoading(false); });
 
-    loadPlatformAnalytics().then(setAnalytics).catch(console.error);
+    loadPlatformAnalytics().then(setAnalytics).catch(() => {});
 
     const style = document.createElement('style');
     style.textContent = `

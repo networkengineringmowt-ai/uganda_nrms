@@ -362,8 +362,7 @@ export default function PredictionsPanel() {
       setFeatures((gj.features ?? []) as PredFeature[]);
       setSummary(summ as PredSummary);
       setLoading(false);
-    }).catch(err => {
-      console.error('Prediction data load error:', err);
+    }).catch(() => {
       setLoading(false);
     });
   }, []);

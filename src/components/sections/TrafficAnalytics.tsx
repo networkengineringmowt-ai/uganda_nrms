@@ -902,7 +902,7 @@ export default function TrafficAnalytics() {
     ]).then(([gj, stGJ]) => {
       setFeatures((gj.features??[]) as PredFeature[]);
       setStations((stGJ.features??[]) as StationFeature[]);
-    }).catch(err => console.error('TrafficAnalytics load:', err))
+    }).catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 

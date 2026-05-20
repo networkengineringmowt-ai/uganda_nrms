@@ -115,7 +115,7 @@ export default function RoadVideoView() {
       setGeoJsonData(geo as FeatureCollection);
       setLinksData((ndpiv as { links: LinkMeta[] }).links);
       setRomdasIndex(romdas as Record<string, RomdasEntry>);
-    }).catch(console.error);
+    }).catch(() => {});
   }, [probeServer]);
 
   // ── Build normalised lookup: normStr(link_name) → RomdasEntry + key ────────

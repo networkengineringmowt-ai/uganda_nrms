@@ -337,7 +337,7 @@ export default function TrafficSection() {
       setFeatures((gj.features ?? []) as PredFeature[]);
       setSurfMap(surf as Record<string, string>);
       setStations((stGJ.features ?? []) as any[]);
-    }).catch(err => console.error('TrafficSection load:', err))
+    }).catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 

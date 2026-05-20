@@ -157,7 +157,6 @@ export function BMSProvider({ children }: { children: React.ReactNode }) {
         dispatch({ type: 'SEED_ALL_DATA', payload: { inspections, workOrders, documents } });
 
       } catch (err) {
-        console.error('BMS data load error:', err);
         dispatch({ type: 'SET_LOADING', payload: false });
       }
     }

@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
-import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Popup, GeoJSON } from 'react-leaflet';
+import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip as ReTooltip,
   Cell, PieChart, Pie, Legend, ResponsiveContainer,
 } from 'recharts';
-import { ESRI_TILE_URLS, ESRI_ATTRIBUTIONS } from '../../shared/mapSymbols';
+import { ESRI_TILE_URLS, ESRI_ATTRIBUTIONS, ROAD_STYLES, surfaceCategory } from '../../shared/mapSymbols';
 import { TrendingUp } from 'lucide-react';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -27,6 +28,12 @@ function perfColor(score: number): string {
 function hexRgb(hex: string): string {
   const h = hex.replace('#', '');
   return `${parseInt(h.slice(0,2),16)},${parseInt(h.slice(2,4),16)},${parseInt(h.slice(4,6),16)}`;
+}
+
+function roadStyle(feature?: GeoJSON.Feature): L.PathOptions {
+  const surf = (feature?.properties as { surface?: string })?.surface ?? '';
+  const s = ROAD_STYLES[surfaceCategory(surf)];
+  return { color: s.color, weight: s.weight, opacity: s.opacity, dashArray: s.dashArray };
 }
 
 const GLASS: React.CSSProperties = {
@@ -64,13 +71,21 @@ export default function OprcSection() {
   const [data,         setData]         = useState<OprcNdpivData | null>(null);
   const [regionFilter, setRegionFilter] = useState('All');
   const [selectedLot,  setSelectedLot]  = useState<OprcLot | null>(null);
+  const [roadGeo,      setRoadGeo]      = useState<GeoJSON.FeatureCollection | null>(null);
+
+  useEffect(() => {
+    fetch(`${import.meta.env.BASE_URL}road_network.geojson`)
+      .then(r => r.json())
+      .then(setRoadGeo)
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const base = import.meta.env.BASE_URL;
     fetch(`${base}data/oprc_ndpiv.json`)
       .then(r => r.json())
       .then((d: OprcNdpivData) => setData(d))
-      .catch(err => console.error('[OprcSection] fetch error:', err));
+      .catch(() => {});
   }, []);
 
   const regions = useMemo(() =>
@@ -202,6 +217,7 @@ export default function OprcSection() {
           <MapContainer center={[1.373, 32.29]} zoom={7} style={{ width: '100%', height: '100%' }} zoomControl>
             <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery} />
             <TileLayer url={ESRI_TILE_URLS.labels}  attribution={ESRI_ATTRIBUTIONS.labels}  />
+            {roadGeo && <GeoJSON key="roads" data={roadGeo} style={roadStyle} />}
 
             {lots.map(lot => {
               const pc    = perfColor(lot.performance_score);

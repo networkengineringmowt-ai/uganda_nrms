@@ -413,7 +413,7 @@ export default function TrafficSummary() {
     ]).then(([gj, stGJ]) => {
       setFeatures((gj.features??[]) as PredFeature[]);
       setStations((stGJ.features??[]) as StationFeature[]);
-    }).catch(err => console.error('TrafficSummary load:', err))
+    }).catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 

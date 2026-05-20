@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import {
   PieChart, Pie, Cell, Legend, Tooltip as ReTooltip, ResponsiveContainer,
 } from 'recharts';
-import { ESRI_TILE_URLS, ESRI_ATTRIBUTIONS } from '../../shared/mapSymbols';
+import { ESRI_TILE_URLS, ESRI_ATTRIBUTIONS, ROAD_STYLES, surfaceCategory } from '../../shared/mapSymbols';
 import { BarChart2 } from 'lucide-react';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -48,6 +48,12 @@ function diamondIcon(status: string): L.DivIcon {
   return ICONS[status] ?? ICONS['_default'];
 }
 
+function roadStyle(feature?: GeoJSON.Feature): L.PathOptions {
+  const surf = (feature?.properties as { surface?: string })?.surface ?? '';
+  const s = ROAD_STYLES[surfaceCategory(surf)];
+  return { color: s.color, weight: s.weight, opacity: s.opacity, dashArray: s.dashArray };
+}
+
 const GLASS: React.CSSProperties = {
   background: 'rgba(15,23,42,0.55)',
   backdropFilter: 'blur(20px)',
@@ -83,13 +89,21 @@ export default function NdpivSection() {
   const [data,            setData]            = useState<OprcNdpivData | null>(null);
   const [regionFilter,    setRegionFilter]    = useState('All');
   const [selectedProject, setSelectedProject] = useState<NdpivProject | null>(null);
+  const [roadGeo,         setRoadGeo]         = useState<GeoJSON.FeatureCollection | null>(null);
+
+  useEffect(() => {
+    fetch(`${import.meta.env.BASE_URL}road_network.geojson`)
+      .then(r => r.json())
+      .then(setRoadGeo)
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const base = import.meta.env.BASE_URL;
     fetch(`${base}data/oprc_ndpiv.json`)
       .then(r => r.json())
       .then((d: OprcNdpivData) => setData(d))
-      .catch(err => console.error('[NdpivSection] fetch error:', err));
+      .catch(() => {});
   }, []);
 
   const regions = useMemo(() =>
@@ -199,6 +213,7 @@ export default function NdpivSection() {
           <MapContainer center={[1.373, 32.29]} zoom={7} style={{ width: '100%', height: '100%' }} zoomControl>
             <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery} />
             <TileLayer url={ESRI_TILE_URLS.labels}  attribution={ESRI_ATTRIBUTIONS.labels}  />
+            {roadGeo && <GeoJSON key="roads" data={roadGeo} style={roadStyle} />}
 
             {projects.map(proj => (
               <Marker key={proj.project_id}
