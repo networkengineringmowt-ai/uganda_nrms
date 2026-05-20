@@ -148,7 +148,8 @@ export type ActiveView =
   | 'trafficanalytics'  // Traffic demand analytics dashboard
   | 'trafficsummary'   // Traffic summary tables (Road Links + Stations)
   | 'oprc'             // OPRC contracts dashboard
-  | 'ndpiv';           // NDP IV investment dashboard
+  | 'ndpiv'            // NDP IV investment dashboard
+  | 'growthfactors';   // Monthly/seasonal/annual growth factors
 
 // ─── Road network types ───────────────────────────────────────────────────────
 export type RoadClass   = 'A' | 'B' | 'C' | 'M';
