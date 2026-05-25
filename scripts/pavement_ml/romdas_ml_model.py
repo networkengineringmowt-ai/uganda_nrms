@@ -308,8 +308,8 @@ def load_real_sections(db_path: str) -> pd.DataFrame:
         FROM   deterioration_curves WHERE projected_year=2024
     ) dc ON rs.link_id = dc.link_id
     WHERE  rs.mean_iri IS NOT NULL
-      AND  rs.link_id  != ''
-      AND  rs.survey_year = 2020
+      AND  rs.link_id  GLOB '*_Link*'
+      AND  rs.survey_year IN (2020, 2021)
     """
     df = pd.read_sql(sql, conn)
     conn.close()
@@ -333,28 +333,30 @@ def load_real_sections(db_path: str) -> pd.DataFrame:
     df['class_enc']   = df['road_class'].apply(lambda x: encode(x, ROAD_CLASSES))
     df['region_enc']  = df['region'].apply(lambda x: encode(x, REGIONS))
 
-    # Project IRI targets from 2020 baseline using HDM-4
-    base_age = 8   # approximate pavement age in 2020
+    # Project IRI targets from survey baseline using HDM-4
+    # base_age: pavement age at time of survey (2020 ~ age 8, 2021 ~ age 9)
+    BASE_AGE = {2020: 8, 2021: 9}
 
-    def proj(iri_base: float, surf: str, cesal: float, y_ahead: int) -> float:
+    def proj(iri_base: float, surf: str, cesal: float, y_ahead: int, base_age: int) -> float:
         iri = iri_base
         vci = iri_to_vci(iri)
         for age in range(base_age, base_age + y_ahead):
             if surf == 'unpaved':
-                vci  = max(0.0, vci + delta_vci(3000, age))
-                iri  = vci_to_iri(vci)
+                vci = max(0.0, vci + delta_vci(3000, age))
+                iri = vci_to_iri(vci)
             else:
-                iri  = min(16.0, iri + delta_iri(surf, cesal, age))
+                iri = min(16.0, iri + delta_iri(surf, cesal, age))
         return round(min(20.0, max(1.2, iri)), 3)
 
-    surfs   = df['surface_type'].tolist()
-    cesals  = df['cesal_ann'].tolist()
+    surfs     = df['surface_type'].tolist()
+    cesals    = df['cesal_ann'].tolist()
     base_iris = df['mean_iri'].tolist()
+    ages      = df['survey_year'].map(BASE_AGE).fillna(8).astype(int).tolist()
 
-    df['iri_2024']         = df['mean_iri'].clip(1.2, 16.0)  # approximate 2024 IRI
-    df['target_iri_1yr']   = [proj(b, s, c, 1) for b, s, c in zip(base_iris, surfs, cesals)]
-    df['target_iri_3yr']   = [proj(b, s, c, 3) for b, s, c in zip(base_iris, surfs, cesals)]
-    df['target_iri_5yr']   = [proj(b, s, c, 5) for b, s, c in zip(base_iris, surfs, cesals)]
+    df['iri_2024']       = df['mean_iri'].clip(1.2, 16.0)
+    df['target_iri_1yr'] = [proj(b, s, c, 1, a) for b, s, c, a in zip(base_iris, surfs, cesals, ages)]
+    df['target_iri_3yr'] = [proj(b, s, c, 3, a) for b, s, c, a in zip(base_iris, surfs, cesals, ages)]
+    df['target_iri_5yr'] = [proj(b, s, c, 5, a) for b, s, c, a in zip(base_iris, surfs, cesals, ages)]
     df['deterioration_rate'] = ((df['target_iri_5yr'] - df['iri_2024']) / 5.0).clip(0.0, 3.0)
 
     df['rut_max_mm']   = df['max_rut_mm'].fillna(df['iri_2024'] * 1.5).clip(0.0, 30.0)
@@ -363,15 +365,15 @@ def load_real_sections(db_path: str) -> pd.DataFrame:
     df['esals_base']   = 0.0
 
     # Intervention horizon from the HDM-4 threshold
-    def yrs_until_thresh(b, s, c):
+    def yrs_until_thresh(b, s, c, a):
         for y in range(0, 12):
             thresh = 14.0 if s == 'unpaved' else 12.0
-            if proj(b, s, c, y) >= thresh:
+            if proj(b, s, c, y, a) >= thresh:
                 return y
         return 11
 
     df['years_until_intervention'] = [
-        yrs_until_thresh(b, s, c) for b, s, c in zip(base_iris, surfs, cesals)
+        yrs_until_thresh(b, s, c, a) for b, s, c, a in zip(base_iris, surfs, cesals, ages)
     ]
     df['condition_class'] = df['iri_2024'].apply(iri_band)
 

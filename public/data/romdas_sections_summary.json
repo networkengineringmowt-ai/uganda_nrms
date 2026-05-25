@@ -1,16 +1,27 @@
 {
-  "generated_at": "2026-05-21T19:13:27",
-  "total_measurements": 85489,
-  "good_measurements": 80675,
-  "unique_links": 29389,
-  "section_rows": 206,
+  "generated_at": "2026-05-25T12:15:20",
+  "total_measurements": 95625,
+  "good_measurements": 89708,
+  "unique_links": 130,
+  "section_rows": 136,
   "survey_year_2020": {
-    "mean_iri": 3.21,
+    "measurements": 55265,
+    "mean_iri": 3.15,
     "min_iri": 1.5,
     "max_iri": 5.51,
     "condition_distribution": {
-      "Fair": 41,
-      "Good": 59
+      "Fair": 42,
+      "Good": 67
+    }
+  },
+  "survey_year_2021": {
+    "measurements": 10136,
+    "mean_iri": 2.63,
+    "min_iri": 1.41,
+    "max_iri": 4.1,
+    "condition_distribution": {
+      "Fair": 2,
+      "Good": 25
     }
   }
 }

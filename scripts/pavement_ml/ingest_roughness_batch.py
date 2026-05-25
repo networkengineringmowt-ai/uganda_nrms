@@ -177,7 +177,7 @@ def build_romdas_sections(conn: sqlite3.Connection):
     FROM   romdas_measurements
     WHERE  data_quality = 'good'
       AND  iri_mean IS NOT NULL
-      AND  link_id  != ''
+      AND  link_id  GLOB '*_Link*'
     GROUP  BY link_id, survey_year
     HAVING n_intervals >= 3
     """
@@ -190,7 +190,7 @@ def build_romdas_sections(conn: sqlite3.Connection):
     cur.execute("""
         SELECT link_id, survey_year, iri_mean
         FROM   romdas_measurements
-        WHERE  data_quality='good' AND iri_mean IS NOT NULL AND link_id != ''
+        WHERE  data_quality='good' AND iri_mean IS NOT NULL AND link_id GLOB '*_Link*'
     """)
     from collections import defaultdict
     raw: dict = defaultdict(list)
