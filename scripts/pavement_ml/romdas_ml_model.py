@@ -3,30 +3,30 @@
 ML model for ROMDAS-based pavement condition analysis -- Uganda PMS
 ==================================================================
 
-Model 1 -- IRI Deterioration Predictor (GradientBoostingRegressor):
+Model 1 -- IRI Deterioration Predictor (PyTorch MLP):
   Features : current_iri, rut_max_mm, aadt_log, hgv_pct, cesal_ann,
              structural_number, deterioration_rate, surface_enc,
              class_enc, region_enc, climate_f, pct_above_9
   Target   : IRI at +1yr, +3yr, +5yr (multi-output regression)
-  Algorithm: MultiOutputRegressor(GradientBoostingRegressor)
+  Algorithm: PavementMLP (3 hidden layers, BatchNorm, Dropout, early stopping)
 
-Model 2 -- Condition Classifier (RandomForestClassifier):
+Model 2 -- Condition Classifier (PyTorch MLP):
   Features : current_iri, rut_max_mm, sd_iri, pct_above_9, aadt_log,
              surface_enc, class_enc
   Target   : condition_class  (Good / Fair / Poor / Very Poor)
-  Algorithm: RandomForestClassifier
+  Algorithm: PavementMLP with CrossEntropyLoss
 
-Model 3 -- Intervention Trigger Predictor (GradientBoostingRegressor):
+Model 3 -- Intervention Trigger Predictor (PyTorch MLP):
   Features : current_iri, deterioration_rate, aadt_log, structural_number,
              class_enc, surface_enc, region_enc
   Target   : years_until_intervention
-  Algorithm: GradientBoostingRegressor
+  Algorithm: PavementMLP (single output regression)
 
 Training data:
   Primary  : 1,017 links pivoted from deterioration_curves (HDM-4 projections)
   Real     : 136 ROMDAS sections (2020+2021) from romdas_sections (projected via HDM-4)
   Augmented: 5,000 additional synthetic samples via HDM-4 equations
-  Total    : ~6,153 samples; 5-fold CV
+  Total    : ~6,153 samples; 80/20 train/val split with early stopping
 
 Prediction baseline:
   116 of 1,017 links override iri_2024 with real ROMDAS measurements,
@@ -38,14 +38,15 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import joblib
-from sklearn.ensemble import GradientBoostingRegressor, RandomForestClassifier
-from sklearn.multioutput import MultiOutputRegressor
-from sklearn.pipeline import Pipeline
+import torch
+import torch.nn as nn
+from torch.utils.data import DataLoader, TensorDataset
 from sklearn.preprocessing import StandardScaler, LabelEncoder
-from sklearn.model_selection import cross_val_score, KFold
-from sklearn.metrics import r2_score, mean_squared_error
+from sklearn.metrics import r2_score, mean_squared_error, accuracy_score
 
 warnings.filterwarnings('ignore')
+torch.manual_seed(42)
+np.random.seed(42)
 
 BASE      = Path(__file__).resolve().parents[2]
 DB_PATH   = str(BASE / 'traffic_platform.db')
@@ -70,7 +71,7 @@ AADT_DEFAULT = {'A': 7500, 'B': 3200, 'C': 950,  'M': 18000}
 TRUCK_FRAC   = {'A': 0.28, 'B': 0.22, 'C': 0.14, 'M': 0.32}
 SN_DEFAULT   = {'A': 5.0,  'B': 4.0,  'C': 3.0,  'M': 5.5}
 AVG_ESALF    = 3.8
-MODEL_VERSION = '1.0'
+MODEL_VERSION = '2.0'
 
 # ── HDM-4 projection helpers ──────────────────────────────────────────────────
 
@@ -130,6 +131,144 @@ FEAT_CLASSIF = ['iri_2024', 'rut_max_mm', 'sd_iri', 'pct_above_9',
 
 FEAT_INTERV  = ['iri_2024', 'deterioration_rate', 'aadt_log', 'structural_number',
                 'class_enc', 'surface_enc', 'region_enc']
+
+
+# ── PyTorch MLP architecture ──────────────────────────────────────────────────
+
+class PavementMLP(nn.Module):
+    """Multi-layer perceptron with BatchNorm and Dropout for pavement models."""
+
+    def __init__(self, n_in: int, n_out: int,
+                 hidden: tuple = (128, 64, 32), dropout: float = 0.2):
+        super().__init__()
+        layers: list = []
+        in_dim = n_in
+        for h in hidden:
+            layers += [
+                nn.Linear(in_dim, h),
+                nn.BatchNorm1d(h),
+                nn.ReLU(),
+                nn.Dropout(dropout),
+            ]
+            in_dim = h
+        layers.append(nn.Linear(in_dim, n_out))
+        self.net = nn.Sequential(*layers)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.net(x)
+
+
+def _train_mlp(X: np.ndarray, y: np.ndarray, n_out: int,
+               is_classifier: bool = False,
+               hidden: tuple = (128, 64, 32),
+               dropout: float = 0.2,
+               epochs: int = 300,
+               patience: int = 25,
+               lr: float = 1e-3,
+               wd: float = 1e-4,
+               batch_size: int = 256) -> tuple:
+    """Train a PavementMLP with 80/20 val split and early stopping.
+
+    Returns (model, scaler) — scaler is a fitted StandardScaler.
+    """
+    scaler = StandardScaler()
+    Xs = scaler.fit_transform(X).astype(np.float32)
+
+    n = len(Xs)
+    n_val = max(32, int(n * 0.20))
+    rng   = np.random.default_rng(42)
+    idx   = rng.permutation(n)
+    tr_idx, va_idx = idx[n_val:], idx[:n_val]
+
+    Xt = torch.from_numpy(Xs[tr_idx])
+    Xv = torch.from_numpy(Xs[va_idx])
+
+    if is_classifier:
+        yt = torch.from_numpy(y[tr_idx].astype(np.int64))
+        yv = torch.from_numpy(y[va_idx].astype(np.int64))
+        criterion = nn.CrossEntropyLoss()
+    else:
+        yt = torch.from_numpy(y[tr_idx].astype(np.float32))
+        yv = torch.from_numpy(y[va_idx].astype(np.float32))
+        if y.ndim == 1:
+            yt = yt.unsqueeze(1)
+            yv = yv.unsqueeze(1)
+        criterion = nn.MSELoss()
+
+    model = PavementMLP(X.shape[1], n_out, hidden, dropout)
+    opt   = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=wd)
+    sched = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        opt, patience=10, factor=0.5, min_lr=1e-5)
+
+    loader = DataLoader(TensorDataset(Xt, yt), batch_size=batch_size, shuffle=True)
+
+    best_val  = float('inf')
+    best_state: dict | None = None
+    wait      = 0
+
+    for _ in range(epochs):
+        model.train()
+        for xb, yb in loader:
+            opt.zero_grad()
+            loss = criterion(model(xb), yb)
+            loss.backward()
+            nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            opt.step()
+
+        model.eval()
+        with torch.no_grad():
+            val_loss = criterion(model(Xv), yv).item()
+        sched.step(val_loss)
+
+        if val_loss < best_val - 1e-6:
+            best_val   = val_loss
+            best_state = {k: v.clone() for k, v in model.state_dict().items()}
+            wait = 0
+        else:
+            wait += 1
+            if wait >= patience:
+                break
+
+    if best_state:
+        model.load_state_dict(best_state)
+    model.eval()
+    return model, scaler
+
+
+def _save_mlp(model: PavementMLP, scaler: StandardScaler, path: str,
+              n_out: int, hidden: tuple, dropout: float,
+              is_classifier: bool = False) -> None:
+    joblib.dump({
+        'state_dict':    model.state_dict(),
+        'scaler_mean':   scaler.mean_.tolist(),
+        'scaler_scale':  scaler.scale_.tolist(),
+        'n_features':    scaler.n_features_in_,
+        'n_out':         n_out,
+        'hidden':        hidden,
+        'dropout':       dropout,
+        'is_classifier': is_classifier,
+    }, path)
+
+
+def _load_mlp(path: str) -> tuple:
+    """Load a saved MLP. Returns (model, mean_arr, scale_arr)."""
+    d     = joblib.load(path)
+    model = PavementMLP(d['n_features'], d['n_out'],
+                        tuple(d['hidden']), d['dropout'])
+    model.load_state_dict(d['state_dict'])
+    model.eval()
+    mean  = np.array(d['scaler_mean'],  dtype=np.float32)
+    scale = np.array(d['scaler_scale'], dtype=np.float32)
+    return model, mean, scale
+
+
+def _infer(model: PavementMLP, X: np.ndarray,
+           mean: np.ndarray, scale: np.ndarray) -> np.ndarray:
+    """Normalise X, run forward pass, return numpy output."""
+    Xs = ((X.astype(np.float32) - mean) / scale)
+    with torch.no_grad():
+        out = model(torch.from_numpy(Xs)).numpy()
+    return out
 
 
 # ── Training data ─────────────────────────────────────────────────────────────
@@ -387,8 +526,8 @@ def load_real_sections(db_path: str) -> pd.DataFrame:
 # ── Model training ─────────────────────────────────────────────────────────────
 
 def train_models(db_path: str = DB_PATH):
-    """Train all three models, cross-validate, and persist to MODEL_DIR."""
-    print('\n=== ROMDAS ML Pipeline - Uganda PMS ===')
+    """Train all three PyTorch MLP models with early stopping and persist to MODEL_DIR."""
+    print('\n=== ROMDAS Deep Learning Pipeline - Uganda PMS ===')
     print('\n[1/4] Loading real training data from DB...')
     df_real = load_training_data(db_path)
     print(f'  Real links loaded (deterioration_curves): {len(df_real):,}')
@@ -408,101 +547,96 @@ def train_models(db_path: str = DB_PATH):
     df_all = pd.concat(dfs, ignore_index=True)
     print(f'  Total training rows: {len(df_all):,}')
 
-    cv = KFold(n_splits=5, shuffle=True, random_state=42)
-    metrics = {}
+    le = LabelEncoder().fit(COND_CLASSES)
+    metrics: dict = {}
 
-    # ── Model 1: IRI Deterioration (MultiOutput GBR) ──────────────────────
-    print('\n[3/4] Training...')
-    print('  [M1] IRI Deterioration Predictor (MultiOutput GBR)...')
+    print('\n[3/4] Training PyTorch MLP models...')
+
+    # ── Model 1: IRI Deterioration (multi-output regression) ─────────────────
+    print('  [M1] IRI Deterioration MLP (12 -> 128->64->32 -> 3)...')
     X1 = df_all[FEAT_DETERI].fillna(0).values
     y1 = df_all[['target_iri_1yr', 'target_iri_3yr', 'target_iri_5yr']].values
 
-    m1_gbr = GradientBoostingRegressor(
-        n_estimators=200, max_depth=4, learning_rate=0.08,
-        subsample=0.8, min_samples_leaf=5, random_state=42,
-    )
-    m1 = Pipeline([
-        ('scaler', StandardScaler()),
-        ('gbr',   MultiOutputRegressor(m1_gbr, n_jobs=-1)),
-    ])
-    m1.fit(X1, y1)
+    m1, sc1 = _train_mlp(X1, y1, n_out=3, is_classifier=False,
+                          hidden=(128, 64, 32), dropout=0.2,
+                          epochs=300, patience=25)
 
-    # 5-fold CV: average R² across 3 outputs
-    cv_r2_m1 = []
-    for tr_idx, va_idx in cv.split(X1):
-        m1_cv = Pipeline([
-            ('scaler', StandardScaler()),
-            ('gbr',   MultiOutputRegressor(
-                GradientBoostingRegressor(n_estimators=100, max_depth=4,
-                                          learning_rate=0.08, random_state=42)
-            )),
-        ])
-        m1_cv.fit(X1[tr_idx], y1[tr_idx])
-        yp = m1_cv.predict(X1[va_idx])
-        cv_r2_m1.append(np.mean([r2_score(y1[va_idx, i], yp[:, i]) for i in range(3)]))
-    r2_m1   = float(np.mean(cv_r2_m1))
-    rmse_m1 = float(np.sqrt(mean_squared_error(y1, m1.predict(X1))))
-    print(f'    CV R² (5-fold, mean): {r2_m1:.4f}  |  train RMSE: {rmse_m1:.3f} m/km')
-    joblib.dump(m1, str(MODEL_DIR / 'iri_deterioration_gbr.joblib'))
+    # Validation metrics on held-out 20 %
+    n_val1  = max(32, int(len(X1) * 0.20))
+    rng_idx = np.random.default_rng(42).permutation(len(X1))
+    va_idx1 = rng_idx[:n_val1]
+    yp1     = _infer(m1, X1[va_idx1], np.array(sc1.mean_, dtype=np.float32),
+                     np.array(sc1.scale_, dtype=np.float32))
+    r2_m1   = float(np.mean([r2_score(y1[va_idx1, i], yp1[:, i]) for i in range(3)]))
+    rmse_m1 = float(np.sqrt(mean_squared_error(y1[va_idx1], yp1)))
+    print(f'    Val R² (mean 3 outputs): {r2_m1:.4f}  |  Val RMSE: {rmse_m1:.3f} m/km')
+
+    _save_mlp(m1, sc1, str(MODEL_DIR / 'iri_deterioration_mlp.joblib'),
+              n_out=3, hidden=(128, 64, 32), dropout=0.2, is_classifier=False)
     metrics['iri_predictor'] = {'r2_cv': round(r2_m1, 4), 'rmse_train': round(rmse_m1, 3)}
 
-    # ── Model 2: Condition Classifier (RF) ────────────────────────────────
-    print('  [M2] Condition Classifier (RandomForest)...')
+    # ── Model 2: Condition Classifier ─────────────────────────────────────────
+    print('  [M2] Condition Classifier MLP (7 -> 64->32 -> 4)...')
     X2 = df_all[FEAT_CLASSIF].fillna(0).values
-    le = LabelEncoder().fit(COND_CLASSES)
     y2 = le.transform(df_all['condition_class'])
 
-    m2 = Pipeline([
-        ('scaler', StandardScaler()),
-        ('rf',    RandomForestClassifier(
-            n_estimators=200, max_depth=12, min_samples_leaf=5,
-            class_weight='balanced', random_state=42, n_jobs=-1,
-        )),
-    ])
-    m2.fit(X2, y2)
-    cv_acc = cross_val_score(m2, X2, y2, cv=cv, scoring='accuracy', n_jobs=-1)
-    acc_m2 = float(np.mean(cv_acc))
-    print(f'    CV Accuracy (5-fold): {acc_m2:.4f}  ({acc_m2*100:.1f}%)')
-    joblib.dump(m2, str(MODEL_DIR / 'condition_classifier_rf.joblib'))
+    m2, sc2 = _train_mlp(X2, y2, n_out=4, is_classifier=True,
+                          hidden=(64, 32), dropout=0.2,
+                          epochs=300, patience=25)
+
+    va_idx2  = np.random.default_rng(42).permutation(len(X2))[:max(32, int(len(X2)*0.20))]
+    logits2  = _infer(m2, X2[va_idx2], np.array(sc2.mean_, dtype=np.float32),
+                      np.array(sc2.scale_, dtype=np.float32))
+    pred_cls2 = np.argmax(logits2, axis=1)
+    acc_m2   = float(accuracy_score(y2[va_idx2], pred_cls2))
+    print(f'    Val Accuracy: {acc_m2:.4f}  ({acc_m2*100:.1f}%)')
+
+    _save_mlp(m2, sc2, str(MODEL_DIR / 'condition_classifier_mlp.joblib'),
+              n_out=4, hidden=(64, 32), dropout=0.2, is_classifier=True)
     joblib.dump(le, str(MODEL_DIR / 'condition_label_encoder.joblib'))
     metrics['condition_classifier'] = {'accuracy_cv': round(acc_m2, 4)}
 
-    # ── Model 3: Intervention Predictor (GBR) ─────────────────────────────
-    print('  [M3] Intervention Predictor (GBR)...')
+    # ── Model 3: Intervention Predictor (single-output regression) ────────────
+    print('  [M3] Intervention Predictor MLP (7 -> 64->32 -> 1)...')
     X3 = df_all[FEAT_INTERV].fillna(0).values
     y3 = df_all['years_until_intervention'].clip(0, 11).values
 
-    m3 = Pipeline([
-        ('scaler', StandardScaler()),
-        ('gbr',   GradientBoostingRegressor(
-            n_estimators=200, max_depth=4, learning_rate=0.08,
-            subsample=0.8, min_samples_leaf=5, random_state=42,
-        )),
-    ])
-    m3.fit(X3, y3)
-    cv_r2_m3 = cross_val_score(m3, X3, y3, cv=cv, scoring='r2')
-    r2_m3    = float(np.mean(cv_r2_m3))
-    rmse_m3  = float(np.sqrt(mean_squared_error(y3, m3.predict(X3))))
-    print(f'    CV R² (5-fold): {r2_m3:.4f}  |  train RMSE: {rmse_m3:.2f} years')
-    joblib.dump(m3, str(MODEL_DIR / 'intervention_predictor_gbr.joblib'))
+    m3, sc3 = _train_mlp(X3, y3, n_out=1, is_classifier=False,
+                          hidden=(64, 32), dropout=0.2,
+                          epochs=300, patience=25)
+
+    va_idx3  = np.random.default_rng(42).permutation(len(X3))[:max(32, int(len(X3)*0.20))]
+    yp3      = _infer(m3, X3[va_idx3], np.array(sc3.mean_, dtype=np.float32),
+                      np.array(sc3.scale_, dtype=np.float32)).ravel()
+    r2_m3    = float(r2_score(y3[va_idx3], yp3))
+    rmse_m3  = float(np.sqrt(mean_squared_error(y3[va_idx3], yp3)))
+    print(f'    Val R²: {r2_m3:.4f}  |  Val RMSE: {rmse_m3:.2f} years')
+
+    _save_mlp(m3, sc3, str(MODEL_DIR / 'intervention_predictor_mlp.joblib'),
+              n_out=1, hidden=(64, 32), dropout=0.2, is_classifier=False)
     metrics['intervention_predictor'] = {'r2_cv': round(r2_m3, 4), 'rmse_train': round(rmse_m3, 3)}
 
     joblib.dump(metrics, str(MODEL_DIR / 'model_metrics.joblib'))
     print(f'\n  Models saved -> {MODEL_DIR}')
-    return metrics, m1, m2, m3, le
+    return metrics, m1, sc1, m2, sc2, m3, sc3, le
 
 
 # ── Network prediction ────────────────────────────────────────────────────────
 
-def predict_network(db_path: str = DB_PATH, metrics=None, m1=None, m2=None,
-                    m3=None, le=None):
+def predict_network(db_path: str = DB_PATH, metrics=None,
+                    m1=None, sc1=None, m2=None, sc2=None,
+                    m3=None, sc3=None, le=None):
     """Apply trained models to all road links -> DB + JSON export."""
     if m1 is None:
-        m1      = joblib.load(str(MODEL_DIR / 'iri_deterioration_gbr.joblib'))
-        m2      = joblib.load(str(MODEL_DIR / 'condition_classifier_rf.joblib'))
-        m3      = joblib.load(str(MODEL_DIR / 'intervention_predictor_gbr.joblib'))
+        m1,  mean1, scale1 = _load_mlp(str(MODEL_DIR / 'iri_deterioration_mlp.joblib'))
+        m2,  mean2, scale2 = _load_mlp(str(MODEL_DIR / 'condition_classifier_mlp.joblib'))
+        m3,  mean3, scale3 = _load_mlp(str(MODEL_DIR / 'intervention_predictor_mlp.joblib'))
         le      = joblib.load(str(MODEL_DIR / 'condition_label_encoder.joblib'))
         metrics = joblib.load(str(MODEL_DIR / 'model_metrics.joblib'))
+    else:
+        mean1, scale1 = np.array(sc1.mean_, dtype=np.float32), np.array(sc1.scale_, dtype=np.float32)
+        mean2, scale2 = np.array(sc2.mean_, dtype=np.float32), np.array(sc2.scale_, dtype=np.float32)
+        mean3, scale3 = np.array(sc3.mean_, dtype=np.float32), np.array(sc3.scale_, dtype=np.float32)
 
     print('\n[4/4] Predicting on full road network...')
     df_links = load_training_data(db_path)
@@ -553,11 +687,12 @@ def predict_network(db_path: str = DB_PATH, metrics=None, m1=None, m2=None,
     X2p = df_links[FEAT_CLASSIF].fillna(0).values
     X3p = df_links[FEAT_INTERV].fillna(0).values
 
-    iri_preds  = m1.predict(X1p)
-    cond_preds = le.inverse_transform(m2.predict(X2p))
-    yrs_preds  = m3.predict(X3p).clip(0, 11)
+    iri_preds   = _infer(m1, X1p, mean1, scale1)
+    logits2p    = _infer(m2, X2p, mean2, scale2)
+    cond_preds  = le.inverse_transform(np.argmax(logits2p, axis=1))
+    yrs_preds   = _infer(m3, X3p, mean3, scale3).ravel().clip(0, 11)
 
-    # Base confidence from cross-val scores
+    # Base confidence from val scores
     base_conf = (
         metrics.get('iri_predictor', {}).get('r2_cv', 0.80)
         + metrics.get('condition_classifier', {}).get('accuracy_cv', 0.85)
@@ -630,7 +765,7 @@ def predict_network(db_path: str = DB_PATH, metrics=None, m1=None, m2=None,
             str(row['link_id']), 2024,
             round(i1, 3), round(i3, 3), round(i5, 3),
             c1, round(detr, 4), int_yr, int_tp, conf,
-            f'GBR/RF v{MODEL_VERSION}',
+            f'PyTorch MLP v{MODEL_VERSION}',
         ))
 
     conn.executemany('''
@@ -652,15 +787,15 @@ def predict_network(db_path: str = DB_PATH, metrics=None, m1=None, m2=None,
         'generated_at': pd.Timestamp.now().isoformat()[:19],
         'model_versions': {
             'iri_predictor': (
-                f"GradientBoostingRegressor v{MODEL_VERSION} "
+                f"PavementMLP v{MODEL_VERSION} "
                 f"R²={metrics.get('iri_predictor', {}).get('r2_cv', 0):.2f}"
             ),
             'condition_classifier': (
-                f"RandomForestClassifier v{MODEL_VERSION} "
+                f"PavementMLP v{MODEL_VERSION} "
                 f"accuracy={metrics.get('condition_classifier', {}).get('accuracy_cv', 0)*100:.1f}%"
             ),
             'intervention_predictor': (
-                f"GradientBoostingRegressor v{MODEL_VERSION} "
+                f"PavementMLP v{MODEL_VERSION} "
                 f"R²={metrics.get('intervention_predictor', {}).get('r2_cv', 0):.2f}"
             ),
         },
@@ -688,14 +823,14 @@ def predict_network(db_path: str = DB_PATH, metrics=None, m1=None, m2=None,
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 def main():
-    metrics, m1, m2, m3, le = train_models(DB_PATH)
+    metrics, m1, sc1, m2, sc2, m3, sc3, le = train_models(DB_PATH)
 
-    print('\n=== Cross-Validation Results ===')
-    print(f"  IRI Deterioration R2:     {metrics['iri_predictor']['r2_cv']:.4f}")
+    print('\n=== Validation Results ===')
+    print(f"  IRI Deterioration R²:     {metrics['iri_predictor']['r2_cv']:.4f}")
     print(f"  Condition Classifier:     {metrics['condition_classifier']['accuracy_cv']*100:.1f}%  accuracy")
-    print(f"  Intervention Trigger R2:  {metrics['intervention_predictor']['r2_cv']:.4f}")
+    print(f"  Intervention Trigger R²:  {metrics['intervention_predictor']['r2_cv']:.4f}")
 
-    out = predict_network(DB_PATH, metrics, m1, m2, m3, le)
+    out = predict_network(DB_PATH, metrics, m1, sc1, m2, sc2, m3, sc3, le)
     ns  = out['network_summary']
 
     print('\n=== Network Summary ===')
@@ -704,7 +839,7 @@ def main():
           + '  '.join(f"{k}: {v}" for k, v in ns['condition_2024'].items()))
     print(f"  Condition 2027 : "
           + '  '.join(f"{k}: {v}" for k, v in ns['condition_2027'].items()))
-    print('\nROMDAS ML pipeline complete.\n')
+    print('\nROMDAS Deep Learning pipeline complete.\n')
 
 
 if __name__ == '__main__':

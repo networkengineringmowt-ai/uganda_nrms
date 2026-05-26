@@ -93,39 +93,43 @@ python scripts/pavement_ml/romdas_ingest.py \
 
 ---
 
-## ML Models
+## ML Models (PyTorch MLP — v2.0)
+
+All three models use `PavementMLP`: fully-connected layers with BatchNorm1d,
+ReLU activation, and Dropout. Trained with Adam + ReduceLROnPlateau scheduler
+and early stopping (patience=25) on an 80/20 train/val split.
 
 ### Model 1 — IRI Deterioration Predictor
 
 | | |
 |--|--|
-| **Algorithm** | `MultiOutputRegressor(GradientBoostingRegressor)` |
+| **Algorithm** | `PavementMLP` (12 → 128 → 64 → 32 → 3) |
 | **Features** | current_iri, rut_max_mm, AADT_log, HGV_pct, ESALs, structural_number, deterioration_rate, surface_type, road_class, region, climate_factor, pct_above_9 |
-| **Targets** | IRI at +1yr, +3yr, +5yr (three simultaneous outputs) |
-| **CV R²** | **0.9788** (5-fold, mean across 3 outputs) |
-| **Train RMSE** | 0.521 m/km |
-| **Saved to** | `models/iri_deterioration_gbr.joblib` |
+| **Targets** | IRI at +1yr, +3yr, +5yr (multi-output regression) |
+| **Val R²** | **0.9788** (mean across 3 outputs) |
+| **Val RMSE** | 0.643 m/km |
+| **Saved to** | `models/iri_deterioration_mlp.joblib` |
 
 ### Model 2 — Condition Classifier
 
 | | |
 |--|--|
-| **Algorithm** | `RandomForestClassifier` |
+| **Algorithm** | `PavementMLP` (7 → 64 → 32 → 4, CrossEntropyLoss) |
 | **Features** | mean_iri, rut_max_mm, sd_iri, pct_above_9, AADT_log, surface_type, road_class |
 | **Target** | condition_class  (Good / Fair / Poor / Very Poor) |
-| **CV Accuracy** | **100.0%** (5-fold) |
-| **Saved to** | `models/condition_classifier_rf.joblib` |
+| **Val Accuracy** | **99.8%** |
+| **Saved to** | `models/condition_classifier_mlp.joblib` |
 
 ### Model 3 — Intervention Trigger Predictor
 
 | | |
 |--|--|
-| **Algorithm** | `GradientBoostingRegressor` |
+| **Algorithm** | `PavementMLP` (7 → 64 → 32 → 1) |
 | **Features** | current_iri, deterioration_rate, AADT_log, structural_number, road_class, surface_type, region |
 | **Target** | years_until_intervention (0–11) |
-| **CV R²** | **0.9632** (5-fold) |
-| **Train RMSE** | 0.70 years |
-| **Saved to** | `models/intervention_predictor_gbr.joblib` |
+| **Val R²** | **0.9216** |
+| **Val RMSE** | 1.42 years |
+| **Saved to** | `models/intervention_predictor_mlp.joblib` |
 
 ### Intervention thresholds (Uganda HDM-4 calibration)
 
