@@ -1,5 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { X, ChevronRight, Cpu, Database, GitBranch, BarChart3, Layers, Target, ArrowRight } from 'lucide-react';
+
+const BASE = import.meta.env.BASE_URL;
 
 // ── Color palette ─────────────────────────────────────────────────────────────
 const C = {
@@ -357,11 +359,105 @@ const SVG_H = 520;
 
 function px(pct: number, dim: number) { return (pct / 100) * dim; }
 
+// ── Feature importance types ──────────────────────────────────────────────────
+interface FeatEntry { feature: string; label: string; importance_mean: number; importance_std: number }
+interface FeatModel  { model: string; metric: string; features: FeatEntry[] }
+interface FeatData   { generated_at: string; models: Record<string, FeatModel> }
+
+const MODEL_KEY_LABELS: Record<string, string> = {
+  iri_deterioration:     'IRI Deterioration',
+  condition_classifier:  'Condition Classifier',
+  intervention_predictor:'Intervention Predictor',
+};
+const MODEL_KEY_COLORS: Record<string, string> = {
+  iri_deterioration:     '#00f5ff',
+  condition_classifier:  '#00ff88',
+  intervention_predictor:'#ffd23f',
+};
+
+function FeatureImportancePanel({ data }: { data: FeatData }) {
+  const [activeModel, setActiveModel] = useState<string>(Object.keys(data.models)[0]);
+  const modelData = data.models[activeModel];
+  if (!modelData) return null;
+
+  const maxImp = Math.max(...modelData.features.map(f => Math.max(0, f.importance_mean)));
+  const color = MODEL_KEY_COLORS[activeModel] ?? '#4d9fff';
+
+  return (
+    <div style={{ padding: '16px 20px' }}>
+      {/* Model selector */}
+      <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
+        {Object.keys(data.models).map(k => (
+          <button key={k} onClick={() => setActiveModel(k)}
+            style={{
+              padding: '5px 12px', borderRadius: 8, fontSize: 10, fontWeight: 700,
+              border: `1px solid ${activeModel === k
+                ? MODEL_KEY_COLORS[k] : 'rgba(148,163,184,0.2)'}`,
+              background: activeModel === k
+                ? (MODEL_KEY_COLORS[k] ?? '#4d9fff') + '22' : 'transparent',
+              color: activeModel === k ? MODEL_KEY_COLORS[k] : '#94a3b8',
+              cursor: 'pointer',
+            }}>
+            {MODEL_KEY_LABELS[k] ?? k}
+          </button>
+        ))}
+      </div>
+
+      <div style={{ fontSize: 10, color: '#64748b', marginBottom: 14 }}>
+        Metric: <span style={{ color: '#94a3b8' }}>{modelData.metric}</span>
+        <span style={{ marginLeft: 12 }}>
+          Higher bar = larger R² / accuracy drop when feature is shuffled = more important
+        </span>
+      </div>
+
+      {/* Feature bars */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+        {modelData.features.map((f, i) => {
+          const imp  = Math.max(0, f.importance_mean);
+          const barW = maxImp > 0 ? (imp / maxImp) * 100 : 0;
+          const opacity = 1 - (i / modelData.features.length) * 0.55;
+          return (
+            <div key={f.feature} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ width: 160, fontSize: 10, color: '#94a3b8',
+                textAlign: 'right', flexShrink: 0, opacity }}>
+                {f.label}
+              </div>
+              <div style={{ flex: 1, height: 14, background: 'rgba(255,255,255,0.04)',
+                borderRadius: 4, overflow: 'hidden', position: 'relative' }}>
+                <div style={{
+                  width: `${barW}%`, height: '100%', borderRadius: 4,
+                  background: `linear-gradient(90deg, ${color}cc, ${color}44)`,
+                  boxShadow: barW > 5 ? `0 0 8px ${color}55` : 'none',
+                  transition: 'width 0.4s ease',
+                }}/>
+              </div>
+              <div style={{ width: 60, fontSize: 9, color, textAlign: 'right',
+                fontVariantNumeric: 'tabular-nums', flexShrink: 0, opacity }}>
+                {imp > 0 ? imp.toFixed(4) : '< 0.0001'}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div style={{ marginTop: 14, fontSize: 9, color: '#475569' }}>
+        Permutation importance · 10 repeats · 20% validation split · Generated {data.generated_at}
+      </div>
+    </div>
+  );
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 export default function MLArchitectureDiagram() {
   const [selected, setSelected] = useState<NodeDef | null>(null);
-  const [view, setView] = useState<'arch' | 'flow'>('arch');
+  const [view, setView] = useState<'arch' | 'flow' | 'importance'>('arch');
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [featData, setFeatData] = useState<FeatData | null>(null);
+
+  useEffect(() => {
+    fetch(BASE + 'data/model_feature_importance.json')
+      .then(r => r.json()).then(setFeatData).catch(() => {});
+  }, []);
 
   const nodeMap = Object.fromEntries(NODES.map(n => [n.id, n]));
 
@@ -405,7 +501,7 @@ export default function MLArchitectureDiagram() {
         {/* View toggle */}
         <div style={{ display: 'flex', background: 'rgba(0,0,0,0.3)', borderRadius: 8,
           padding: 3, gap: 3 }}>
-          {(['arch', 'flow'] as const).map(v => (
+          {(['arch', 'flow', 'importance'] as const).map(v => (
             <button key={v} onClick={() => setView(v)} style={{
               padding: '5px 14px', borderRadius: 6, fontSize: 11, fontWeight: 700,
               border: 'none', cursor: 'pointer', transition: 'all 0.15s',
@@ -413,30 +509,42 @@ export default function MLArchitectureDiagram() {
               color: view === v ? C.data : 'rgba(148,163,184,0.6)',
               boxShadow: view === v ? `inset 0 0 0 1px rgba(0,245,255,0.25)` : 'none',
             }}>
-              {v === 'arch' ? 'Architecture View' : 'Data Flow View'}
+              {v === 'arch' ? 'Architecture' : v === 'flow' ? 'Data Flow' : 'Feature Importance'}
             </button>
           ))}
         </div>
       </div>
 
       {/* ── Legend ── */}
-      <div style={{ display: 'flex', gap: 16, padding: '8px 18px',
-        borderBottom: `1px solid ${C.border}`, flexWrap: 'wrap' }}>
-        {Object.entries(LAYER_LABELS).map(([layer, label]) => (
-          <div key={layer} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-            <div style={{ width: 8, height: 8, borderRadius: 2, background: LAYER_COLORS[layer],
-              boxShadow: `0 0 6px ${LAYER_COLORS[layer]}80` }}/>
-            <span style={{ fontSize: 9, fontWeight: 700, color: 'rgba(148,163,184,0.7)',
-              textTransform: 'uppercase', letterSpacing: '0.08em' }}>{label}</span>
+      {view !== 'importance' && (
+        <div style={{ display: 'flex', gap: 16, padding: '8px 18px',
+          borderBottom: `1px solid ${C.border}`, flexWrap: 'wrap' }}>
+          {Object.entries(LAYER_LABELS).map(([layer, label]) => (
+            <div key={layer} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <div style={{ width: 8, height: 8, borderRadius: 2, background: LAYER_COLORS[layer],
+                boxShadow: `0 0 6px ${LAYER_COLORS[layer]}80` }}/>
+              <span style={{ fontSize: 9, fontWeight: 700, color: 'rgba(148,163,184,0.7)',
+                textTransform: 'uppercase', letterSpacing: '0.08em' }}>{label}</span>
+            </div>
+          ))}
+          <div style={{ marginLeft: 'auto', fontSize: 9, color: 'rgba(100,116,139,0.5)', alignSelf: 'center' }}>
+            Click any node to inspect details
           </div>
-        ))}
-        <div style={{ marginLeft: 'auto', fontSize: 9, color: 'rgba(100,116,139,0.5)', alignSelf: 'center' }}>
-          Click any node to inspect details
         </div>
-      </div>
+      )}
+
+      {/* ── Feature Importance view ── */}
+      {view === 'importance' && (
+        featData
+          ? <FeatureImportancePanel data={featData} />
+          : <div style={{ padding: 40, textAlign: 'center', color: '#475569', fontSize: 12 }}>
+              Loading feature importance data…
+            </div>
+      )}
 
       {/* ── SVG diagram ── */}
-      <div style={{ position: 'relative', overflowX: 'auto' }}>
+      <div style={{ position: 'relative', overflowX: 'auto',
+        display: view === 'importance' ? 'none' : 'block' }}>
         <svg width={SVG_W} height={SVG_H} viewBox={`0 0 ${SVG_W} ${SVG_H}`}
           style={{ display: 'block', minWidth: SVG_W }}>
 
