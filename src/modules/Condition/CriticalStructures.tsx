@@ -79,7 +79,7 @@ export default function CriticalStructures() {
   const criticalCount = rows.filter(r => r.rating === 1).length;
 
   return (
-    <div style={{ padding: '18px 18px' }}>
+    <div style={{ padding: '12px 12px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
         <AlertTriangle size={16} style={{ color: '#ff3366' }} />
         <div style={{ fontSize: 14, fontWeight: 900, color: '#e2eaf4' }}>Critical Structures</div>

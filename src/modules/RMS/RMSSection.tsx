@@ -453,7 +453,7 @@ function KpiCard({ label, value, unit, color, tooltip, navChips }: {
 function RMSDashboard({ navigate }: { navigate: (v: ActiveView) => void }) {
   const net = useNetworkStats();
   return (
-    <div style={{ padding: '20px 18px', maxWidth: 1200, margin: '0 auto' }}>
+    <div style={{ padding: '12px 14px' }}>
 
       {/* Capture screen launcher */}
       <CaptureButton capture="condition" label="road condition survey" accent="#00f5ff" />
@@ -612,7 +612,7 @@ function RMSArchitecture({ navigate }: { navigate: (v: ActiveView) => void }) {
   const [hovered, setHovered] = useState<number | null>(null);
 
   return (
-    <div style={{ padding: '20px 18px' }}>
+    <div style={{ padding: '12px 14px' }}>
       <style>{`
         @keyframes flowDown { 0%,100%{opacity:0.3;transform:translateY(0)} 50%{opacity:1;transform:translateY(6px)} }
         @keyframes glow { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 18px rgba(0,245,255,0.25)} }
@@ -706,7 +706,7 @@ function GlobalCaseStudies() {
   );
 
   return (
-    <div style={{ padding: '20px 18px' }}>
+    <div style={{ padding: '12px 14px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
         <div>
           <div style={{ fontSize: 18, fontWeight: 900, color: '#e2eaf4' }}>Global RMS Case Studies</div>
@@ -802,7 +802,7 @@ function GlobalCaseStudies() {
 
 function StandardsEvidence() {
   return (
-    <div style={{ padding: '20px 18px' }}>
+    <div style={{ padding: '12px 14px' }}>
       <div style={{ marginBottom: 28 }}>
         <div style={{ fontSize: 14, fontWeight: 900, color: '#e2eaf4', marginBottom: 14 }}>
           International Standards &amp; Frameworks
@@ -980,7 +980,7 @@ function UNRARMSArchitecture({ navigate }: { navigate: (v: ActiveView) => void }
   const [expanded, setExpanded] = useState<number | null>(null);
 
   return (
-    <div style={{ padding: '20px 18px', overflowY: 'auto' }}>
+    <div style={{ padding: '12px 14px', overflowY: 'auto' }}>
       <style>{`
         @keyframes unra-flow { 0%,100%{opacity:0.25;transform:translateY(-2px)} 50%{opacity:0.8;transform:translateY(4px)} }
         @keyframes unra-pulse { 0%,100%{opacity:0.6;transform:scale(1)} 50%{opacity:1;transform:scale(1.05)} }
@@ -1198,7 +1198,8 @@ function SectionHeader({ title, color }: { title: string; color: string }) {
   );
 }
 
-function DTIMSArchitecture({ navigate }: { navigate: (v: ActiveView) => void }) {
+// Kept for reference but no longer wired to a tab (RMS Architecture tab removed).
+export function DTIMSArchitecture({ navigate }: { navigate: (v: ActiveView) => void }) {
   // Auto-play staggered entrance animation when this tab/view mounts
   const [play, setPlay] = useState(false);
   useEffect(() => {
@@ -1214,7 +1215,7 @@ function DTIMSArchitecture({ navigate }: { navigate: (v: ActiveView) => void }) 
   });
 
   return (
-    <div style={{ padding: '20px 18px', overflowY: 'auto' }}>
+    <div style={{ padding: '12px 14px', overflowY: 'auto' }}>
 
       {/* Header */}
       <div style={{ marginBottom: 20 }}>
@@ -1478,7 +1479,6 @@ const TABS = [
   { id: 'roadmap'       as const, label: 'Road Network Map',  icon: <Map size={13}/> },
   { id: 'inventory'     as const, label: 'Road Inventory',    icon: <Database size={13}/> },
   { id: 'networkstory'  as const, label: 'Network Story',     icon: <BookOpen size={13}/> },
-  { id: 'rmsarch'       as const, label: 'RMS Architecture',  icon: <Network size={13}/> },
 ];
 type TabId = typeof TABS[number]['id'];
 
@@ -1568,10 +1568,6 @@ export default function RMSSection() {
               <NET_NetworkStory />
             </div>
           </Suspense>
-        )}
-
-        {tab === 'rmsarch' && (
-          <DTIMSArchitecture navigate={navigate} />
         )}
 
       </div>
