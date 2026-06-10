@@ -1,13 +1,14 @@
 /**
- * BMSSection — Bridge Management System unified 4-tab view.
- * Consolidates Dashboard, Structure Map, Inventory & Condition,
- * and Analytics & Digital Twin into a single component.
+ * BMSSection — Bridge Management System unified view.
+ * Main tabs: Dashboard · Structure Map · Inventory & Condition · Bridge Works.
+ * Analytics, Priority Ranking and the Digital Twin live as sub-tabs under
+ * Inventory & Condition (merged from the former Analytics & Digital Twin tab).
  */
 import { lazy, Suspense, useState } from 'react';
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
 import {
   LayoutDashboard, Map, Table2, BarChart3,
-  ClipboardCheck, Activity, Wrench, AlertTriangle, Camera, Hammer,
+  ClipboardCheck, Activity, Wrench, AlertTriangle, Camera, Hammer, ListOrdered,
 } from 'lucide-react';
 
 // ── Lazy-load all BMS sub-modules ─────────────────────────────────────────────
@@ -75,27 +76,23 @@ const MAIN_TABS = [
   { id: 'map',        label: 'Structure Map',              icon: <Map size={13}/> },
   { id: 'inventory',  label: 'Inventory & Condition',      icon: <Table2 size={13}/> },
   { id: 'works',      label: 'Bridge Works',               icon: <Hammer size={13}/> },
-  { id: 'analytics',  label: 'Analytics & Digital Twin',   icon: <BarChart3 size={13}/> },
 ];
 
+// Analytics & Digital Twin merged in here as sub-tabs (no separate main tab).
 const INVENTORY_TABS: SubTab[] = [
   { id: 'registry',    label: 'Registry',    icon: <Table2 size={11}/> },
   { id: 'inspections', label: 'Inspections', icon: <ClipboardCheck size={11}/> },
   { id: 'condition',   label: 'Condition',   icon: <Activity size={11}/> },
   { id: 'critical',    label: 'Critical Structures', icon: <AlertTriangle size={11}/> },
+  { id: 'priority',    label: 'Priority Ranking',    icon: <ListOrdered size={11}/> },
   { id: 'maintenance', label: 'Maintenance', icon: <Wrench size={11}/> },
-];
-
-const ANALYTICS_TABS: SubTab[] = [
-  { id: 'analytics',  label: 'Analytics & Reports', icon: <BarChart3 size={11}/> },
-  { id: 'priority',   label: 'Priority Ranking',     icon: <AlertTriangle size={11}/> },
-  { id: 'phototwin',  label: 'Photo & Digital Twin', icon: <Camera size={11}/> },
+  { id: 'analytics',   label: 'Analytics',   icon: <BarChart3 size={11}/> },
+  { id: 'phototwin',   label: 'Digital Twin', icon: <Camera size={11}/> },
 ];
 
 export default function BMSSection() {
   const [mainTab, setMainTab]         = useState('overview');
   const [inventoryTab, setInventoryTab] = useState('registry');
-  const [analyticsTab, setAnalyticsTab] = useState('analytics');
 
   // Map tab needs no overflow (fills its own container)
   const contentStyle: React.CSSProperties =
@@ -139,14 +136,9 @@ export default function BMSSection() {
         })}
       </div>
 
-      {/* ── Sub-tab bar for Inventory & Condition ── */}
+      {/* ── Sub-tab bar for Inventory & Condition (incl. Analytics & Digital Twin) ── */}
       {mainTab === 'inventory' && (
         <SubTabBar tabs={INVENTORY_TABS} active={inventoryTab} onSelect={setInventoryTab} />
-      )}
-
-      {/* ── Sub-tab bar for Analytics ── */}
-      {mainTab === 'analytics' && (
-        <SubTabBar tabs={ANALYTICS_TABS} active={analyticsTab} onSelect={setAnalyticsTab} />
       )}
 
       {/* ── Content area ── */}
@@ -163,32 +155,26 @@ export default function BMSSection() {
             </div>
           )}
 
-          {/* Tab 3: Inventory & Condition */}
+          {/* Tab 3: Inventory & Condition (incl. merged Analytics & Digital Twin) */}
           {mainTab === 'inventory' && (
             <>
               {inventoryTab === 'registry'    && <BMS_Registry />}
               {inventoryTab === 'inspections' && <BMS_Inspections />}
               {inventoryTab === 'condition'   && <BMS_Condition />}
               {inventoryTab === 'critical'    && <BMS_Critical />}
+              {inventoryTab === 'priority'    && <BMS_Priority />}
               {inventoryTab === 'maintenance' && <BMS_Maintenance />}
-            </>
-          )}
-
-          {/* Tab 4: Bridge Works (MOWT bridges development projects) */}
-          {mainTab === 'works' && <BMS_BridgeWorks />}
-
-          {/* Tab 4: Analytics & Digital Twin */}
-          {mainTab === 'analytics' && (
-            <>
-              {analyticsTab === 'analytics' && <BMS_Analytics />}
-              {analyticsTab === 'priority'  && <BMS_Priority />}
-              {analyticsTab === 'phototwin' && (
+              {inventoryTab === 'analytics'   && <BMS_Analytics />}
+              {inventoryTab === 'phototwin'   && (
                 <div style={{ position: 'relative', minHeight: '100%' }}>
                   <BMS_PhotoTwin />
                 </div>
               )}
             </>
           )}
+
+          {/* Tab 4: Bridge Works (MOWT bridges development projects) */}
+          {mainTab === 'works' && <BMS_BridgeWorks />}
 
         </Suspense>
       </div>
