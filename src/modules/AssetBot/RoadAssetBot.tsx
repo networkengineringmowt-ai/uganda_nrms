@@ -3,6 +3,7 @@ import { useBMS } from '../../store/BMSContext';
 import { BotHighlightContext, type BotMessage, type Row, type MLPrediction } from './types';
 import { matchIntentFull, QUICK_QUERIES } from './intentMatcher';
 import { LINK_ID_EXPLAINER } from './linkIdKnowledge';
+import { askFable, getApiKey, setApiKey, type FableTurn } from './fable';
 
 const BASE = import.meta.env.BASE_URL;
 const GLASS: React.CSSProperties = {
@@ -17,6 +18,18 @@ const ACCENT = '#6366f1';
 const NETWORK_SUMMARY_RESPONSE = 'The national road network is **21,302 km** (FY 2025/26), comprising **6,405 km paved (30.1%)** and **14,897 km unpaved (69.9%)**, covering **1,013 mapped links** across **6 regions** and **23 maintenance stations**. Source: NDPIV FY 2025/26 official figures, MoWT/DNR.';
 
 const NETWORK_KEYWORDS = /\b(network size|how big|total km|total length|how long|total roads|network total|national road network|road network is|size of|coverage)\b/i;
+
+// ── LLM grounding context: compact snapshot of the loaded datasets ────────────
+function buildDataContext(botResults: Record<string, Row[]>): string {
+  const parts: string[] = [NETWORK_SUMMARY_RESPONSE];
+  for (const [qid, rows] of Object.entries(botResults)) {
+    if (!rows?.length) continue;
+    const sample = rows.slice(0, 4);
+    parts.push(`${qid} (${rows.length} rows, sample): ${JSON.stringify(sample)}`);
+    if (parts.join('\n').length > 6000) break;
+  }
+  return parts.join('\n');
+}
 
 // ── Confidence level logic ─────────────────────────────────────────────────────
 function getConfidence(queryId: string, hasRows: boolean): { conf: '🟢' | '🟡' | '🔴'; label: string } {
@@ -153,6 +166,18 @@ export default function RoadAssetBot() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef  = useRef<HTMLInputElement>(null);
 
+  // Rolling conversation history for the Fable 5 LLM (last 10 turns).
+  const historyRef = useRef<FableTurn[]>([]);
+  useEffect(() => {
+    historyRef.current = messages
+      .filter(m => m.text && !m.text.startsWith('🧠'))
+      .slice(-10)
+      .map(m => ({
+        role: m.role === 'user' ? 'user' as const : 'assistant' as const,
+        content: m.text.slice(0, 1500),
+      }));
+  }, [messages]);
+
   useEffect(() => {
     Promise.all([
       fetch(`${BASE}data/bot_results.json`).then(r => r.json()).catch(() => ({} as Record<string, Row[]>)),
@@ -249,12 +274,38 @@ export default function RoadAssetBot() {
           confidenceLabel: 'Low — no data found',
         }]);
       } else {
+        // No rule matched — hand the question to Claude Fable 5 (LLM) when a
+        // route is available (local server proxy or operator-supplied key).
+        const history: FableTurn[] = [...historyRef.current];
+        while (history.length && history[0].role === 'assistant') history.shift();
+        if (!history.length || history[history.length - 1].content !== text) {
+          history.push({ role: 'user', content: text });
+        }
         setMessages(prev => [...prev, {
-          role: 'bot',
-          text: 'I didn\'t recognise that query. Try: "roads needing rehab", "budget by region", "top risk links", "overloading hotspots", "bridge condition", or "What is link A001_Link01?"',
-          confidence: '🔴',
-          confidenceLabel: 'Low — query not matched',
+          role: 'bot', text: '🧠 Asking **Fable 5**…',
+          confidence: '🟡', confidenceLabel: 'Fable 5 — generating',
         }]);
+        askFable(history, buildDataContext(botResults))
+          .then(answer => {
+            setMessages(prev => [...prev.slice(0, -1), answer ? {
+              role: 'bot', text: answer,
+              confidence: '🟢',
+              confidenceLabel: 'Fable 5 — LLM answer grounded in platform data',
+            } : {
+              role: 'bot',
+              text: 'I didn\'t recognise that query, and Fable 5 isn\'t connected (start the local data-entry server, or set an API key with the 🔑 button). Try: "roads needing rehab", "budget by region", "top risk links", "overloading hotspots", "bridge condition", or "What is link A001_Link01?"',
+              confidence: '🔴',
+              confidenceLabel: 'Low — query not matched',
+            }]);
+          })
+          .catch((err: unknown) => {
+            const msg = err instanceof Error ? err.message : String(err);
+            setMessages(prev => [...prev.slice(0, -1), {
+              role: 'bot',
+              text: `Fable 5 request failed: ${msg}. Check the API key (🔑) or the local server.`,
+              confidence: '🔴', confidenceLabel: 'Fable 5 — error',
+            }]);
+          });
       }
     }, 280);
   }, [botResults, setHighlightedLinks]);
@@ -422,6 +473,27 @@ export default function RoadAssetBot() {
               }}
             >
               Send
+            </button>
+            <button
+              title={getApiKey() ? 'Fable 5 LLM connected (browser key set) — click to change/clear' : 'Connect Fable 5 LLM: paste an Anthropic API key (stored in this browser only)'}
+              onClick={() => {
+                const cur = getApiKey();
+                const v = window.prompt(
+                  cur
+                    ? 'Anthropic API key is set (this browser only). Paste a new key, or clear the field and press OK to remove it.'
+                    : 'Paste your Anthropic API key to enable Fable 5 chat.\nStored ONLY in this browser (localStorage); never sent anywhere except api.anthropic.com.',
+                  cur ?? '',
+                );
+                if (v !== null) setApiKey(v);
+              }}
+              style={{
+                padding: '8px 10px', borderRadius: 8, fontSize: 12, cursor: 'pointer',
+                background: getApiKey() ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.06)',
+                border: `1px solid ${getApiKey() ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.1)'}`,
+                color: getApiKey() ? '#22c55e' : '#94a3b8', flexShrink: 0,
+              }}
+            >
+              🔑
             </button>
           </div>
         </div>

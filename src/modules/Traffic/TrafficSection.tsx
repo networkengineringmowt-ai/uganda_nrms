@@ -716,164 +716,6 @@ export default function TrafficSection() {
       {activeTab === 'map' &&
       <div style={{ flex: 1, minHeight: 0, display: 'flex', overflow: 'hidden' }}>
 
-      {/* ══ LEFT SIDEBAR — KPIs ════════════════════════════════════════════════ */}
-      <div style={{
-        width: 280, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 8,
-        padding: '10px 10px 14px',
-        background: 'rgba(10,15,30,0.92)',
-        borderRight: '1px solid rgba(99,102,241,0.1)',
-        overflowY: 'auto',
-      }}>
-        {/* Header */}
-        <div style={{ padding: '4px 2px 2px' }}>
-          <div style={{
-            fontSize: 8, fontWeight: 800, color: 'rgba(0,212,170,0.55)',
-            letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 2,
-          }}>Uganda National Roads · Department of National Roads</div>
-          <div style={{
-            fontSize: 14, fontWeight: 900, color: C.teal, lineHeight: 1.2,
-            textShadow: `0 0 18px rgba(0,212,170,0.45)`,
-          }}>National Traffic Prediction</div>
-          <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.5)', marginTop: 3, lineHeight: 1.5 }}>
-            Multiparametric Network Diagnostics
-            <br /><span style={{ color: 'rgba(0,212,170,0.65)' }}>{dateStr}</span>
-          </div>
-          <div style={{
-            marginTop: 8, height: 1,
-            background: 'linear-gradient(90deg,transparent,rgba(0,212,170,0.28),transparent)',
-          }} />
-        </div>
-
-        {/* KPI 1 – Total Network ADT */}
-        <div style={{ ...KPI_GLASS, borderColor: 'rgba(0,245,255,0.14)' }}>
-          <div style={{
-            fontSize: 8, fontWeight: 700, color: 'rgba(0,245,255,0.45)',
-            textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 2,
-          }}>Total Network ADT</div>
-          <div style={{
-            fontSize: 26, fontWeight: 900, color: C.cyan, lineHeight: 1,
-            textShadow: `0 0 22px rgba(0,245,255,0.4)`,
-          }}>
-            {kpis ? `${Math.round(kpis.totalAdt / 1000)}k` : '—'}
-          </div>
-          <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.42)', marginTop: 3 }}>
-            vehicles / day · {features.length} survey nodes
-          </div>
-        </div>
-
-        {/* KPI 2 – Network Growth Ratio */}
-        <div style={{ ...KPI_GLASS, borderColor: 'rgba(0,255,136,0.14)' }}>
-          <div style={{
-            fontSize: 8, fontWeight: 700, color: 'rgba(0,255,136,0.45)',
-            textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 2,
-          }}>Network Growth Ratio 2025 → 2040</div>
-          <div style={{
-            fontSize: 26, fontWeight: 900, color: C.green, lineHeight: 1,
-            textShadow: `0 0 22px rgba(0,255,136,0.4)`,
-          }}>
-            {kpis ? `+${kpis.growthRatio.toFixed(0)}%` : '—'}
-          </div>
-          <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.42)', marginTop: 3 }}>
-            ML-modelled forecast to 2040
-          </div>
-        </div>
-
-        {/* KPI 3 – Sparkline trajectory */}
-        <div style={{ ...KPI_GLASS, borderColor: 'rgba(0,212,170,0.12)' }}>
-          <div style={{
-            fontSize: 8, fontWeight: 700, color: 'rgba(0,212,170,0.45)',
-            textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6,
-          }}>Network Trajectory Envelope (2016 – Now)</div>
-          {kpis && <SparklineArea avgAadt={kpis.avgAadt} />}
-        </div>
-
-        {/* KPI 4 – ATC Stations split */}
-        <div style={{ ...KPI_GLASS, borderColor: 'rgba(0,195,255,0.14)' }}>
-          <div style={{
-            fontSize: 7, fontWeight: 700, color: 'rgba(0,195,255,0.45)',
-            textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6,
-          }}>ATC Station Network</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 22, fontWeight: 900, color: C.atcCyan, lineHeight: 1 }}>
-                {ATC_TOTAL}
-              </div>
-              <div style={{ fontSize: 8, color: 'rgba(148,163,184,0.4)', marginTop: 1 }}>
-                ATC stations total
-              </div>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: 10, color: C.atcCyan, fontWeight: 700 }}>
-                <Wifi size={9} style={{ display: 'inline', marginRight: 3 }} />
-                {ATC_LEGACY_COUNT} legacy (2016–22)
-              </div>
-              <div style={{ fontSize: 10, color: '#00ea90', fontWeight: 700, marginTop: 2 }}>
-                <Wifi size={9} style={{ display: 'inline', marginRight: 3 }} />
-                {ATC_NEW_COUNT} new (2025+)
-              </div>
-            </div>
-          </div>
-          <div style={{ height: 1, background: 'rgba(0,195,255,0.1)', margin: '6px 0' }} />
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Radio size={10} style={{ color: C.tisCyan, flexShrink: 0 }} />
-            <div>
-              <span style={{ fontSize: 18, fontWeight: 900, color: C.tisCyan, lineHeight: 1 }}>
-                {stations.length || 298}
-              </span>
-              <span style={{ fontSize: 8, color: 'rgba(148,163,184,0.4)', marginLeft: 5 }}>
-                manual TIS stations
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* KPI 5 – Survey Nodes */}
-        <div style={{ ...KPI_GLASS, borderColor: 'rgba(77,159,255,0.14)' }}>
-          <div style={{
-            fontSize: 7, fontWeight: 700, color: 'rgba(77,159,255,0.45)',
-            textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2,
-          }}>Total Survey Nodes</div>
-          <div style={{ fontSize: 22, fontWeight: 900, color: C.blue, lineHeight: 1 }}>
-            {features.length}
-          </div>
-          <div style={{ fontSize: 8, color: 'rgba(148,163,184,0.4)', marginTop: 2 }}>road links monitored</div>
-        </div>
-
-        {/* KPI 6 – Surface Paving Index */}
-        <div style={{ ...KPI_GLASS, borderColor: 'rgba(185,103,255,0.14)' }}>
-          <div style={{
-            fontSize: 8, fontWeight: 700, color: 'rgba(185,103,255,0.45)',
-            textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4,
-          }}>Surface Paving Index</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ fontSize: 22, fontWeight: 900, color: C.purple, lineHeight: 1 }}>
-              {kpis ? `${kpis.pavingIndex.toFixed(0)}%` : '—'}
-            </div>
-            <div style={{
-              flex: 1, height: 7, background: 'rgba(185,103,255,0.1)',
-              borderRadius: 4, overflow: 'hidden',
-            }}>
-              <div style={{
-                height: '100%', width: `${kpis?.pavingIndex ?? 0}%`,
-                background: 'linear-gradient(90deg,#b967ff,#00d4aa)', borderRadius: 4,
-              }} />
-            </div>
-          </div>
-          <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.42)', marginTop: 3 }}>
-            links with Bituminous / Asphalt surface
-          </div>
-        </div>
-
-        {/* KPI 7 – Class Node Spread */}
-        <div style={{ ...KPI_GLASS, borderColor: 'rgba(148,163,184,0.08)' }}>
-          <div style={{
-            fontSize: 8, fontWeight: 700, color: 'rgba(148,163,184,0.4)',
-            textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8,
-          }}>Class Node Spread</div>
-          {kpis && <ClassSpreadBars counts={kpis.classCounts} />}
-        </div>
-      </div>
-
       {/* ══ RIGHT — CONTROLS + MAP + TIMELINE ════════════════════════════════ */}
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
@@ -1134,6 +976,166 @@ export default function TrafficSection() {
 
       {/* ══ Trends & Risk tab ════════════════════════════════════════════════ */}
       {activeTab === 'trends' && (
+        <div style={{ flex:1, minHeight:0, display:'flex', overflow:'hidden' }}>
+      {/* ══ LEFT SIDEBAR — KPIs ════════════════════════════════════════════════ */}
+      <div style={{
+        width: 280, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 8,
+        padding: '10px 10px 14px',
+        background: 'rgba(10,15,30,0.92)',
+        borderRight: '1px solid rgba(99,102,241,0.1)',
+        overflowY: 'auto',
+      }}>
+        {/* Header */}
+        <div style={{ padding: '4px 2px 2px' }}>
+          <div style={{
+            fontSize: 8, fontWeight: 800, color: 'rgba(0,212,170,0.55)',
+            letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 2,
+          }}>Uganda National Roads · Department of National Roads</div>
+          <div style={{
+            fontSize: 14, fontWeight: 900, color: C.teal, lineHeight: 1.2,
+            textShadow: `0 0 18px rgba(0,212,170,0.45)`,
+          }}>National Traffic Prediction</div>
+          <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.5)', marginTop: 3, lineHeight: 1.5 }}>
+            Multiparametric Network Diagnostics
+            <br /><span style={{ color: 'rgba(0,212,170,0.65)' }}>{dateStr}</span>
+          </div>
+          <div style={{
+            marginTop: 8, height: 1,
+            background: 'linear-gradient(90deg,transparent,rgba(0,212,170,0.28),transparent)',
+          }} />
+        </div>
+
+        {/* KPI 1 – Total Network ADT */}
+        <div style={{ ...KPI_GLASS, borderColor: 'rgba(0,245,255,0.14)' }}>
+          <div style={{
+            fontSize: 8, fontWeight: 700, color: 'rgba(0,245,255,0.45)',
+            textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 2,
+          }}>Total Network ADT</div>
+          <div style={{
+            fontSize: 26, fontWeight: 900, color: C.cyan, lineHeight: 1,
+            textShadow: `0 0 22px rgba(0,245,255,0.4)`,
+          }}>
+            {kpis ? `${Math.round(kpis.totalAdt / 1000)}k` : '—'}
+          </div>
+          <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.42)', marginTop: 3 }}>
+            vehicles / day · {features.length} survey nodes
+          </div>
+        </div>
+
+        {/* KPI 2 – Network Growth Ratio */}
+        <div style={{ ...KPI_GLASS, borderColor: 'rgba(0,255,136,0.14)' }}>
+          <div style={{
+            fontSize: 8, fontWeight: 700, color: 'rgba(0,255,136,0.45)',
+            textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 2,
+          }}>Network Growth Ratio 2025 → 2040</div>
+          <div style={{
+            fontSize: 26, fontWeight: 900, color: C.green, lineHeight: 1,
+            textShadow: `0 0 22px rgba(0,255,136,0.4)`,
+          }}>
+            {kpis ? `+${kpis.growthRatio.toFixed(0)}%` : '—'}
+          </div>
+          <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.42)', marginTop: 3 }}>
+            ML-modelled forecast to 2040
+          </div>
+        </div>
+
+        {/* KPI 3 – Sparkline trajectory */}
+        <div style={{ ...KPI_GLASS, borderColor: 'rgba(0,212,170,0.12)' }}>
+          <div style={{
+            fontSize: 8, fontWeight: 700, color: 'rgba(0,212,170,0.45)',
+            textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6,
+          }}>Network Trajectory Envelope (2016 – Now)</div>
+          {kpis && <SparklineArea avgAadt={kpis.avgAadt} />}
+        </div>
+
+        {/* KPI 4 – ATC Stations split */}
+        <div style={{ ...KPI_GLASS, borderColor: 'rgba(0,195,255,0.14)' }}>
+          <div style={{
+            fontSize: 7, fontWeight: 700, color: 'rgba(0,195,255,0.45)',
+            textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6,
+          }}>ATC Station Network</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 22, fontWeight: 900, color: C.atcCyan, lineHeight: 1 }}>
+                {ATC_TOTAL}
+              </div>
+              <div style={{ fontSize: 8, color: 'rgba(148,163,184,0.4)', marginTop: 1 }}>
+                ATC stations total
+              </div>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: 10, color: C.atcCyan, fontWeight: 700 }}>
+                <Wifi size={9} style={{ display: 'inline', marginRight: 3 }} />
+                {ATC_LEGACY_COUNT} legacy (2016–22)
+              </div>
+              <div style={{ fontSize: 10, color: '#00ea90', fontWeight: 700, marginTop: 2 }}>
+                <Wifi size={9} style={{ display: 'inline', marginRight: 3 }} />
+                {ATC_NEW_COUNT} new (2025+)
+              </div>
+            </div>
+          </div>
+          <div style={{ height: 1, background: 'rgba(0,195,255,0.1)', margin: '6px 0' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <Radio size={10} style={{ color: C.tisCyan, flexShrink: 0 }} />
+            <div>
+              <span style={{ fontSize: 18, fontWeight: 900, color: C.tisCyan, lineHeight: 1 }}>
+                {stations.length || 298}
+              </span>
+              <span style={{ fontSize: 8, color: 'rgba(148,163,184,0.4)', marginLeft: 5 }}>
+                manual TIS stations
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* KPI 5 – Survey Nodes */}
+        <div style={{ ...KPI_GLASS, borderColor: 'rgba(77,159,255,0.14)' }}>
+          <div style={{
+            fontSize: 7, fontWeight: 700, color: 'rgba(77,159,255,0.45)',
+            textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2,
+          }}>Total Survey Nodes</div>
+          <div style={{ fontSize: 22, fontWeight: 900, color: C.blue, lineHeight: 1 }}>
+            {features.length}
+          </div>
+          <div style={{ fontSize: 8, color: 'rgba(148,163,184,0.4)', marginTop: 2 }}>road links monitored</div>
+        </div>
+
+        {/* KPI 6 – Surface Paving Index */}
+        <div style={{ ...KPI_GLASS, borderColor: 'rgba(185,103,255,0.14)' }}>
+          <div style={{
+            fontSize: 8, fontWeight: 700, color: 'rgba(185,103,255,0.45)',
+            textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4,
+          }}>Surface Paving Index</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ fontSize: 22, fontWeight: 900, color: C.purple, lineHeight: 1 }}>
+              {kpis ? `${kpis.pavingIndex.toFixed(0)}%` : '—'}
+            </div>
+            <div style={{
+              flex: 1, height: 7, background: 'rgba(185,103,255,0.1)',
+              borderRadius: 4, overflow: 'hidden',
+            }}>
+              <div style={{
+                height: '100%', width: `${kpis?.pavingIndex ?? 0}%`,
+                background: 'linear-gradient(90deg,#b967ff,#00d4aa)', borderRadius: 4,
+              }} />
+            </div>
+          </div>
+          <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.42)', marginTop: 3 }}>
+            links with Bituminous / Asphalt surface
+          </div>
+        </div>
+
+        {/* KPI 7 – Class Node Spread */}
+        <div style={{ ...KPI_GLASS, borderColor: 'rgba(148,163,184,0.08)' }}>
+          <div style={{
+            fontSize: 8, fontWeight: 700, color: 'rgba(148,163,184,0.4)',
+            textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8,
+          }}>Class Node Spread</div>
+          {kpis && <ClassSpreadBars counts={kpis.classCounts} />}
+        </div>
+      </div>
+
+
         <div style={{ flex:1, minHeight:0, overflowY:'auto' }}>
           <Suspense fallback={<TabSpinner/>}>
             {trendsTab === 'growthfactors' && <GrowthFactorsView />}
@@ -1189,6 +1191,7 @@ export default function TrafficSection() {
               </div>
             )}
           </Suspense>
+        </div>
         </div>
       )}
 

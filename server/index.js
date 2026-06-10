@@ -203,6 +203,41 @@ app.patch('/api/admin/road-reserve/records/:id', async (req, res) => {
   }
 });
 
+// ── Fable 5 chat proxy ────────────────────────────────────────────────────────
+// Proxies the Road Asset Bot's LLM chat to the Claude API so the Anthropic key
+// stays server-side (set ANTHROPIC_API_KEY in server/.env). Body:
+//   { messages: [{role:'user'|'assistant', content:string}, ...], system: string }
+app.post('/api/bot/chat', async (req, res) => {
+  try {
+    if (!process.env.ANTHROPIC_API_KEY) {
+      return res.status(503).json({ error: 'ANTHROPIC_API_KEY not configured in server/.env' });
+    }
+    const { messages, system } = req.body ?? {};
+    if (!Array.isArray(messages) || messages.length === 0) {
+      return res.status(400).json({ error: 'Body must include non-empty "messages"' });
+    }
+    let Anthropic;
+    try {
+      ({ default: Anthropic } = await import('@anthropic-ai/sdk'));
+    } catch {
+      return res.status(503).json({ error: 'Run "npm install" in server/ (missing @anthropic-ai/sdk)' });
+    }
+    const anthropic = new Anthropic(); // reads ANTHROPIC_API_KEY from env
+    const response = await anthropic.messages.create({
+      model: 'claude-fable-5',
+      max_tokens: 2048,
+      thinking: { type: 'adaptive' },
+      output_config: { effort: 'low' },
+      system: typeof system === 'string' ? system : undefined,
+      messages,
+    });
+    const block = response.content.find(b => b.type === 'text');
+    res.json({ text: block ? block.text : '', usage: response.usage });
+  } catch (err) {
+    handleError(res, err);
+  }
+});
+
 // ── Error helper ──────────────────────────────────────────────────────────────
 function handleError(res, err) {
   const status = err.status || 500;

@@ -56,21 +56,22 @@ export default function Sidebar() {
       {/* Brand header */}
       <div style={{ padding: '14px 14px 12px', borderBottom: '1px solid rgba(0,245,255,0.08)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-          <div style={{
-            width: 32, height: 32, borderRadius: 9, flexShrink: 0,
-            background: 'linear-gradient(135deg, rgba(0,245,255,0.2), rgba(77,159,255,0.15))',
-            border: '1px solid rgba(0,245,255,0.3)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 0 16px rgba(0,245,255,0.15)',
-          }}>
-            <Shield size={15} style={{ color: '#00f5ff' }}/>
-          </div>
+          <img
+            src={`${import.meta.env.BASE_URL}mowt.jpg`}
+            alt="Ministry of Works and Transport"
+            style={{
+              width: 34, height: 34, borderRadius: 9, flexShrink: 0, objectFit: 'contain',
+              background: '#fff', padding: 2,
+              border: '1px solid rgba(0,245,255,0.3)',
+              boxShadow: '0 0 16px rgba(0,245,255,0.15)',
+            }}
+          />
           <div style={{ minWidth: 0 }}>
             <div style={{ fontSize: 10, fontWeight: 900, color: '#00f5ff',
               letterSpacing: '0.12em', lineHeight: 1.2,
               textShadow: '0 0 12px rgba(0,245,255,0.5)' }}>UGROADS</div>
             <div style={{ fontSize: 8, color: 'rgba(148,163,184,0.6)', letterSpacing: '0.04em' }}>
-              Asset Management · DNR
+              Ministry of Works & Transport · DNR
             </div>
           </div>
         </div>
