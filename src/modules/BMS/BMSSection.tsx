@@ -7,7 +7,7 @@ import { lazy, Suspense, useState } from 'react';
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
 import {
   LayoutDashboard, Map, Table2, BarChart3,
-  ClipboardCheck, Activity, Wrench, AlertTriangle, Camera,
+  ClipboardCheck, Activity, Wrench, AlertTriangle, Camera, Hammer,
 } from 'lucide-react';
 
 // ── Lazy-load all BMS sub-modules ─────────────────────────────────────────────
@@ -20,6 +20,7 @@ const BMS_Maintenance = lazy(() => import('../Maintenance/MaintenanceWorks'));
 const BMS_Analytics   = lazy(() => import('../Analytics/Analytics'));
 const BMS_Priority    = lazy(() => import('../Priority/PriorityRanking'));
 const BMS_PhotoTwin   = lazy(() => import('../PhotoTwin/PhotoTwin'));
+const BMS_BridgeWorks = lazy(() => import('../BridgeWorks/BridgeWorksSection'));
 
 function Spinner() {
   return (
@@ -72,6 +73,7 @@ const MAIN_TABS = [
   { id: 'overview',   label: 'Dashboard',                 icon: <LayoutDashboard size={13}/> },
   { id: 'map',        label: 'Structure Map',              icon: <Map size={13}/> },
   { id: 'inventory',  label: 'Inventory & Condition',      icon: <Table2 size={13}/> },
+  { id: 'works',      label: 'Bridge Works',               icon: <Hammer size={13}/> },
   { id: 'analytics',  label: 'Analytics & Digital Twin',   icon: <BarChart3 size={13}/> },
 ];
 
@@ -168,6 +170,9 @@ export default function BMSSection() {
               {inventoryTab === 'maintenance' && <BMS_Maintenance />}
             </>
           )}
+
+          {/* Tab 4: Bridge Works (MOWT bridges development projects) */}
+          {mainTab === 'works' && <BMS_BridgeWorks />}
 
           {/* Tab 4: Analytics & Digital Twin */}
           {mainTab === 'analytics' && (

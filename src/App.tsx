@@ -52,7 +52,6 @@ const DataCaptureHub     = lazy(() => import('./modules/DataEntry/DataCaptureHub
 
 // ── BMS unified view ──────────────────────────────────────────────────────────
 const BMSSection = lazy(() => import('./modules/BMS/BMSSection'));
-const BridgeWorksSection = lazy(() => import('./modules/BridgeWorks/BridgeWorksSection'));
 
 // ── RMS top-level hub ─────────────────────────────────────────────────────────
 const RMSSection            = lazy(() => import('./modules/RMS/RMSSection'));
@@ -216,7 +215,6 @@ function AppShell() {
                 )}
 
                 {activeView === 'bms' && <BMSSection />}
-                {activeView === 'bridgeworks' && <BridgeWorksSection />}
               </div>
             )}
 
