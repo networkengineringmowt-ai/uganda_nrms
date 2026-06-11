@@ -1679,84 +1679,6 @@ function CaseStudiesTab() {
 // ── Tab 3: Comparative Analytics ─────────────────────────────────────────────
 
 function AnalyticsTab() {
-  // Sort by network size desc for chart 1, others independently
-  const CHART_TOP = 30;
-
-  const byNetwork = useMemo(() =>
-    [...CASE_STUDIES].sort((a, b) => b.networkKm - a.networkKm).slice(0, CHART_TOP).map(cs => ({
-      name: cs.flag + ' ' + cs.agency,
-      value: cs.networkKm,
-      color: REGION_COLOR[cs.region],
-    })), []);
-
-  const byPaved = useMemo(() =>
-    [...CASE_STUDIES].sort((a, b) => b.pavedPct - a.pavedPct).slice(0, CHART_TOP).map(cs => ({
-      name: cs.flag + ' ' + cs.agency,
-      value: cs.pavedPct,
-      color: REGION_COLOR[cs.region],
-    })), []);
-
-  const byYears = useMemo(() =>
-    [...CASE_STUDIES].sort((a, b) => b.rmsYears - a.rmsYears).slice(0, CHART_TOP).map(cs => ({
-      name: cs.flag + ' ' + cs.agency,
-      value: cs.rmsYears,
-      color: REGION_COLOR[cs.region],
-    })), []);
-
-  const byBudget = useMemo(() =>
-    [...CASE_STUDIES].sort((a, b) => b.budgetPerKmUsd - a.budgetPerKmUsd).slice(0, CHART_TOP).map(cs => ({
-      name: cs.flag + ' ' + cs.agency,
-      value: cs.budgetPerKmUsd,
-      color: REGION_COLOR[cs.region],
-    })), []);
-
-  const chartH = 400;
-  const barSize = 14;
-
-  function HorizBarChart({ data, unit, color }: {
-    data: { name: string; value: number; color: string }[];
-    unit: string;
-    color?: string;
-  }) {
-    return (
-      <Chart3DWrap tilt={0.8}>
-        <ResponsiveContainer width="100%" height={chartH}>
-          <BarChart
-            data={data}
-            layout="vertical"
-            margin={{ top: 4, right: 28, left: 4, bottom: 4 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.06)" horizontal={false} />
-            <XAxis
-              type="number"
-              tick={TICK}
-              axisLine={{ stroke: 'rgba(148,163,184,0.08)' }}
-              tickLine={false}
-              tickFormatter={v => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)}
-            />
-            <YAxis
-              dataKey="name"
-              type="category"
-              width={130}
-              tick={{ fill: 'rgba(148,163,184,0.6)', fontSize: 9 }}
-              axisLine={false}
-              tickLine={false}
-            />
-            <ReTooltip
-              {...TT_NEON}
-              formatter={(val: number) => [`${val.toLocaleString()} ${unit}`, '']}
-            />
-            <Bar dataKey="value" barSize={barSize} shape={<Bar3D />}>
-              {data.map((d, i) => (
-                <Cell key={i} fill={d.color} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </Chart3DWrap>
-    );
-  }
-
   const handleExportCSV = () => {
     const headers = ['Agency', 'Country', 'Region', 'Network (km)', 'System', 'Paved (%)', 'RMS Years', 'Budget/km (USD)', 'Metrics'];
     const rows = CASE_STUDIES.map(cs => [
@@ -1775,50 +1697,6 @@ function AnalyticsTab() {
 
   return (
     <div style={S.sectionPad}>
-      {/* 2×2 chart grid */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(480px, 1fr))',
-        gap: 14,
-        marginBottom: 20,
-      }}>
-        {/* Chart 1 — Network size */}
-        <div style={S.card()}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#00f5ff', marginBottom: 2 }}>
-            Network Size by Agency (km) — Top {CHART_TOP}
-          </div>
-          <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.45)', marginBottom: 8 }}>of {CASE_STUDIES.length} agencies total</div>
-          <HorizBarChart data={byNetwork} unit="km" />
-        </div>
-
-        {/* Chart 2 — Paved % */}
-        <div style={S.card()}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#00ff88', marginBottom: 2 }}>
-            Paved Network (%) — Top {CHART_TOP}
-          </div>
-          <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.45)', marginBottom: 8 }}>highest paved percentage of {CASE_STUDIES.length} agencies</div>
-          <HorizBarChart data={byPaved} unit="%" />
-        </div>
-
-        {/* Chart 3 — RMS Years */}
-        <div style={S.card()}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#ffd23f', marginBottom: 2 }}>
-            Years of RMS Operation — Top {CHART_TOP}
-          </div>
-          <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.45)', marginBottom: 8 }}>most experienced agencies of {CASE_STUDIES.length} total</div>
-          <HorizBarChart data={byYears} unit="yrs" />
-        </div>
-
-        {/* Chart 4 — Budget/km */}
-        <div style={S.card()}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#b967ff', marginBottom: 2 }}>
-            Maintenance Budget per km (USD) — Top {CHART_TOP}
-          </div>
-          <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.45)', marginBottom: 8 }}>highest spending agencies of {CASE_STUDIES.length} total</div>
-          <HorizBarChart data={byBudget} unit="USD/km" />
-        </div>
-      </div>
-
       {/* Full comparison table */}
       <div style={S.card()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
@@ -2219,7 +2097,7 @@ function LiteratureMatrixTab() {
     : selected ? [selected] : [];
 
   return (
-    <div style={{ ...S.sectionPad, display: 'flex', flexDirection: 'column', gap: 10 }}>
+    <div style={{ ...S.sectionPad, position: 'absolute', inset: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 10 }}>
       {radarOpen && radarCountries.length > 0 && (
         <RadarPanel countries={radarCountries} onClose={closeRadar} />
       )}
