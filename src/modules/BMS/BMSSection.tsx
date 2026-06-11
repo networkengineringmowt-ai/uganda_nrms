@@ -80,10 +80,8 @@ const MAIN_TABS = [
 // Analytics & Digital Twin merged in here as sub-tabs (no separate main tab).
 const INVENTORY_TABS: SubTab[] = [
   { id: 'registry',    label: 'Registry',    icon: <Table2 size={11}/> },
-  { id: 'inspections', label: 'Inspections', icon: <ClipboardCheck size={11}/> },
-  { id: 'condition',   label: 'Condition',   icon: <Activity size={11}/> },
+  { id: 'inspections', label: 'Inspections & Condition', icon: <ClipboardCheck size={11}/> },
   { id: 'critical',    label: 'Critical Structures', icon: <AlertTriangle size={11}/> },
-  { id: 'maintenance', label: 'Maintenance', icon: <Wrench size={11}/> },
   { id: 'analytics',   label: 'Analytics',   icon: <BarChart3 size={11}/> },
   { id: 'phototwin',   label: 'Digital Twin', icon: <Camera size={11}/> },
 ];
@@ -157,10 +155,8 @@ export default function BMSSection() {
           {mainTab === 'inventory' && (
             <>
               {inventoryTab === 'registry'    && <BMS_Registry />}
-              {inventoryTab === 'inspections' && <BMS_Inspections />}
-              {inventoryTab === 'condition'   && <BMS_Condition />}
+              {inventoryTab === 'inspections' && (<><BMS_Inspections /><BMS_Condition /></>)}
               {inventoryTab === 'critical'    && <BMS_Critical />}
-              {inventoryTab === 'maintenance' && <BMS_Maintenance />}
               {inventoryTab === 'analytics'   && <BMS_Analytics />}
               {inventoryTab === 'phototwin'   && (
                 <div style={{ position: 'relative', minHeight: '100%' }}>
@@ -171,7 +167,7 @@ export default function BMSSection() {
           )}
 
           {/* Tab 4: Bridge Works (MOWT bridges development projects) */}
-          {mainTab === 'works' && <BMS_BridgeWorks />}
+          {mainTab === 'works' && (<><BMS_BridgeWorks /><BMS_Maintenance /></>)}
 
         </Suspense>
       </div>
