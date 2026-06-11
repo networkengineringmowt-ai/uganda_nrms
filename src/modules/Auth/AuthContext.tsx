@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import type { User } from './authTypes';
 import { ALLOWED_USERS, LEVEL_PASSWORDS } from './allowedUsers';
+import { logEvent } from './auditLog';
 
 interface AuthCtx {
   user: User | null;
@@ -37,12 +38,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       };
       setUser(withLogin);
       localStorage.setItem('dnr_user', JSON.stringify(withLogin));
+      logEvent('login', { level: found.role });
       return true;
     }
+    logEvent('login_failed', { attempted: id });
     return false;
   }
 
   function logout() {
+    logEvent('logout');
     setUser(null);
     localStorage.removeItem('dnr_user');
   }

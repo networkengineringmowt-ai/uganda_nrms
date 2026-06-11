@@ -5,10 +5,11 @@ import type { UserRole } from './authTypes';
  * Email format: first.lastname@unra.go.ug. The part before the @ also works
  * as a username at the login screen (e.g. "prisca.nanjehe").
  *
- * Passwords are per LEVEL, not per user (hardcoded as requested):
- *   rms   → rms2025     field data capture ONLY (mobile-friendly shell)
- *   super → super2025   dashboards & reports of everything, read-only
- *   admin → admin2025   everything, all at once
+ * Passwords are per LEVEL, not per user (hardcoded as requested —
+ * the password is simply the level name):
+ *   rms   → rms     field data capture ONLY (mobile-friendly shell)
+ *   super → super   dashboards & reports of everything, read-only
+ *   admin → admin   everything, all at once
  *
  * Edit the rows below to add/remove staff. NOTE: this ships in the public
  * bundle — it is an access-tier gate for trusted staff, not real security.
@@ -22,9 +23,9 @@ export interface AllowedUser {
 }
 
 export const LEVEL_PASSWORDS: Record<UserRole, string> = {
-  rms:   'rms2025',
-  super: 'super2025',
-  admin: 'admin2025',
+  rms:   'rms',
+  super: 'super',
+  admin: 'admin',
 };
 
 export const ALLOWED_USERS: AllowedUser[] = [

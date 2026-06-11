@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../Auth/AuthContext';
+import { logEvent } from '../Auth/auditLog';
 import { ProtectedRoute } from '../Auth/ProtectedRoute';
 import { supabase } from '../../lib/supabase';
 import { vciRating, VCI_RATING_COLOR } from '../../shared/vci';
@@ -96,22 +97,32 @@ function SurveyFormInner({ onClose }: Props) {
       // Preferred: trusted write-back server (service_role key stays server-side).
       const ctrl = new AbortController();
       const t = setTimeout(() => ctrl.abort(), 2500);
+      const who = (() => {
+        try { return JSON.parse(localStorage.getItem('dnr_user') ?? 'null') ?? {}; }
+        catch { return {}; }
+      })();
       const r = await fetch('http://localhost:3001/api/admin/road_link_condition?upsert=link_id,survey_year', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-email': who.email ?? 'unknown',
+          'x-user-role':  who.role ?? '',
+        },
         body: JSON.stringify({ record: dbRow }), signal: ctrl.signal,
       }).finally(() => clearTimeout(t));
       if (!r.ok) throw new Error(`server ${r.status}`);
-      setSync(`Synced via data-entry server ✓ — ${form.link_id} condition updated across the platform.`);
+      setSync(`Saved to G: Drive repository ✓ — ${form.link_id} condition updated across the platform.`);
     } catch {
       // Fallback: direct anon write (works only while anon retains INSERT/UPDATE;
-      // after running supabase_secure_grants.sql this degrades to local-queue).
+      // after running supabase_enable_rls.sql this degrades to local-queue).
       try {
         const { error } = await supabase
           .from('road_link_condition')
           .upsert(dbRow, { onConflict: 'link_id,survey_year' });
+        if (!error) logEvent('change', { table: 'road_link_condition', link: form.link_id, via: 'supabase-fallback' });
         setSync(error
           ? `Saved locally — sync failed (${error.message}). Start the data-entry server to sync.`
-          : `Synced to Supabase ✓ — ${form.link_id} condition updated across the platform.`);
+          : `Synced to Supabase mirror ✓ — ${form.link_id} condition updated across the platform.`);
       } catch {
         setSync('Saved locally — offline; will sync on next connection.');
       }

@@ -73,9 +73,9 @@ export function LoginPage() {
             ACCESS LEVELS — allowed users only (first.lastname@unra.go.ug)
           </div>
           {[
-            ['RMS',   '#22c55e', 'Field data entry only · mobile interface', 'robert.okello@unra.go.ug',  'rms2025'],
-            ['SUPER', '#f59e0b', 'All dashboards & reports · no input/admin', 'grace.namuli@unra.go.ug',   'super2025'],
-            ['ADMIN', '#ef4444', 'Everything, all at once',                   'prisca.nanjehe@unra.go.ug', 'admin2025'],
+            ['RMS',   '#22c55e', 'Field data entry only · mobile interface', 'robert.okello@unra.go.ug',  'rms'],
+            ['SUPER', '#f59e0b', 'All dashboards & reports · no input/admin', 'grace.namuli@unra.go.ug',   'super'],
+            ['ADMIN', '#ef4444', 'Everything, all at once',                   'prisca.nanjehe@unra.go.ug', 'admin'],
           ].map(([level, color, desc, em, pw]) => (
             <div key={level} style={{ fontSize:10, color:'rgba(148,163,184,0.6)', marginBottom:5, lineHeight:1.5 }}>
               <span style={{ color, fontWeight:800 }}>{level}</span>

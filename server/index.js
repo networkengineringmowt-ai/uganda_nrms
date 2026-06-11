@@ -67,6 +67,30 @@ function persistDrive(table, op, records) {
   return file;
 }
 
+// ── Audit log (G: Drive) — all logins + every change made through this server ─
+// Appended to logs/audit_YYYY-MM.jsonl next to the captures directory.
+const LOG_DIR = path.join(DRIVE_DIR, '..', 'logs');
+
+function persistAudit(events) {
+  fs.mkdirSync(LOG_DIR, { recursive: true });
+  const file = path.join(LOG_DIR, `audit_${new Date().toISOString().slice(0, 7)}.jsonl`);
+  const stamp = new Date().toISOString();
+  const lines = events.map(e => JSON.stringify({ _logged: stamp, ...e })).join('\n') + '\n';
+  fs.appendFileSync(file, lines, 'utf-8');
+  return file;
+}
+
+function auditChange(req, op, table, detail) {
+  try {
+    persistAudit([{
+      type: 'change', op, table,
+      user: req.get('x-user-email') || 'unknown',
+      role: req.get('x-user-role') || '',
+      ...detail,
+    }]);
+  } catch (e) { console.warn(`[audit] ${e.message}`); }
+}
+
 const app = express();
 app.use(cors({ origin: CORS_ORIGIN }));
 app.use(express.json({ limit: '2mb' }));
@@ -75,6 +99,24 @@ app.use(express.json({ limit: '2mb' }));
 app.use((req, _res, next) => {
   console.log(`${new Date().toISOString()}  ${req.method}  ${req.path}`);
   next();
+});
+
+// ── Audit ingestion: POST /api/audit ─────────────────────────────────────────
+// Body: { events: [{type, at, user, role, detail}, ...] } — the React app
+// sends logins/logouts here (with any events queued while offline).
+app.post('/api/audit', (req, res) => {
+  try {
+    const events = Array.isArray(req.body?.events) ? req.body.events : [];
+    if (events.length === 0) {
+      return res.status(400).json({ error: 'Body must include non-empty "events"' });
+    }
+    const file = persistAudit(events.slice(0, 1000).map(e => ({
+      type: String(e.type || 'event'), at: e.at, user: e.user, role: e.role, detail: e.detail,
+    })));
+    res.status(201).json({ logged: events.length, file });
+  } catch (err) {
+    handleError(res, err);
+  }
 });
 
 // ── Health check ──────────────────────────────────────────────────────────────
@@ -145,6 +187,7 @@ app.post('/api/admin/:table', async (req, res) => {
     }
     // Canonical store: append to the G: Drive JSONL for this table.
     const file = persistDrive(table, 'insert', payload);
+    auditChange(req, 'insert', table, { rows: payload.length });
     // Optional Supabase mirror (SUPABASE_MIRROR=on in server/.env)
     let mirrored = false;
     if (MIRROR) {
@@ -173,6 +216,7 @@ app.patch('/api/admin/:table/:id', async (req, res) => {
       return res.status(400).json({ error: 'Request body must include a "patch" object' });
     }
     const file = persistDrive(table, 'update', [{ [cfg.idColumn]: id, ...patch }]);
+    auditChange(req, 'update', table, { id, fields: Object.keys(patch) });
     let mirrored = false;
     if (MIRROR) {
       const { error } = await supabaseAdmin.from(table).update(patch).eq(cfg.idColumn, id).select();
@@ -199,6 +243,7 @@ app.post('/api/admin/road-reserve/records', async (req, res) => {
       return res.status(400).json({ error: 'Request body must include "record" or non-empty "records"' });
     }
     const file = persistDrive('road_reserve_records', 'insert', payload);
+    auditChange(req, 'insert', 'road_reserve_records', { rows: payload.length });
     let mirrored = false;
     if (MIRROR) {
       const { error } = await supabaseAdmin.from('road_reserve_records').insert(payload).select();
@@ -220,6 +265,7 @@ app.patch('/api/admin/road-reserve/records/:id', async (req, res) => {
       return res.status(400).json({ error: 'Request body must include a "patch" object' });
     }
     const file = persistDrive('road_reserve_records', 'update', [{ [cfg.idColumn]: id, ...patch }]);
+    auditChange(req, 'update', 'road_reserve_records', { id, fields: Object.keys(patch) });
     let mirrored = false;
     if (MIRROR) {
       const { error } = await supabaseAdmin
