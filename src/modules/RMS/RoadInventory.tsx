@@ -83,37 +83,45 @@ export default function RoadInventory() {
       comment: 'Maintenance station responsible (manual: Inventory Items → Station).' },
   ], []);
 
-  // measured 2022-23 field inventory, filtered to the ACTIVE category:
-  // selecting Drainage shows only drainage features/records, and so on.
-  type InvRow = {
-    link_id: string; link_name: string; region: string; station: string;
-    material: string; road_width_m: number | null; shoulder_pct: number;
-    shoulder_width_m: number | null; reserve_width_m: number | null;
-    lanes: string; terrain: string; cat_records: number; features: string;
-  };
+  // measured 2022-23 field inventory, filtered to the ACTIVE category —
+  // one numeric column PER feature subtype with the actual count per link.
+  type InvRow = Record<string, string | number | null>;
   const keywords = CATEGORY_FEATURES[cat] ?? [];
-  const invRows: InvRow[] = useMemo(() => {
+
+  const { invRows, subtypes, catTotal } = useMemo(() => {
     const match = (name: string) => {
       const n = name.toLowerCase();
       return keywords.some(k => n.includes(k));
     };
-    return (inv?.links ?? []).map(l => {
+    const totals = new Map<string, number>();
+    const rows: InvRow[] = [];
+    for (const l of inv?.links ?? []) {
       const matched = [...Object.entries(l.line_features), ...Object.entries(l.point_features)]
-        .filter(([k]) => match(k))
-        .sort((a, b) => b[1] - a[1]);
-      return {
+        .filter(([k]) => match(k));
+      if (!matched.length) continue;
+      const row: InvRow = {
         link_id: l.link_id, link_name: l.link_name ?? '', region: l.region ?? '',
         station: l.station ?? '', material: l.material_type ?? '',
         road_width_m: l.road_width_m, shoulder_pct: l.has_shoulder_pct,
         shoulder_width_m: l.shoulder_width_m, reserve_width_m: l.road_reserve_width_m,
         lanes: String(l.lanes ?? ''), terrain: l.terrain ?? '',
-        cat_records: matched.reduce((a, [, n]) => a + n, 0),
-        features: matched.map(([k, n]) => `${k} (${n})`).join(' · '),
+        cat_records: 0,
       };
-    }).filter(r => r.cat_records > 0);
+      let sum = 0;
+      for (const [k, n] of matched) {
+        row[k] = ((row[k] as number) ?? 0) + n;
+        sum += n;
+        totals.set(k, (totals.get(k) ?? 0) + n);
+      }
+      row.cat_records = sum;
+      rows.push(row);
+    }
+    const subs = [...totals.entries()].sort((x, y) => y[1] - x[1]).map(([k]) => k);
+    // every row carries every subtype key so sorting/CSV stay consistent
+    for (const r of rows) for (const st of subs) if (r[st] == null) r[st] = 0;
+    return { invRows: rows, subtypes: subs,
+             catTotal: [...totals.values()].reduce((x, y) => x + y, 0) };
   }, [inv, keywords]);
-
-  const catTotal = useMemo(() => invRows.reduce((a, r) => a + r.cat_records, 0), [invRows]);
 
   const invCols: STColumn<InvRow>[] = useMemo(() => {
     const base: STColumn<InvRow>[] = [
@@ -124,24 +132,24 @@ export default function RoadInventory() {
     ];
     const extras: STColumn<InvRow>[] =
       cat === 'shoulders' ? [
-        { key: 'shoulder_pct',     label: 'Shoulder %',  numeric: true, comment: 'Share of survey records reporting a shoulder.' },
-        { key: 'shoulder_width_m', label: 'Shldr W (m)', numeric: true, comment: 'Median measured shoulder width.' },
+        { key: 'shoulder_pct',     label: 'Shoulder %',  numeric: true },
+        { key: 'shoulder_width_m', label: 'Shldr W (m)', numeric: true },
         { key: 'material',         label: 'Material' },
       ] : cat === 'environs' ? [
-        { key: 'terrain',          label: 'Terrain',       comment: 'Dominant terrain class recorded by the field team.' },
-        { key: 'reserve_width_m',  label: 'Reserve W (m)', numeric: true, comment: 'Median measured road-reserve width.' },
-      ] : cat === 'drainage' || cat === 'structures' ? [
-        { key: 'road_width_m',     label: 'Road W (m)',    numeric: true },
-      ] : [
-        { key: 'lanes',            label: 'Lanes' },
-      ];
+        { key: 'terrain',          label: 'Terrain' },
+        { key: 'reserve_width_m',  label: 'Reserve W (m)', numeric: true },
+      ] : [];
+    const perSubtype: STColumn<InvRow>[] = subtypes.map(st => ({
+      key: st, label: st, numeric: true, total: 'sum' as const,
+      comment: `Count of "${st}" inventory records on the link (2022-23 survey).`,
+    }));
     return [
-      ...base, ...extras,
-      { key: 'cat_records', label: `${active.label} records`, numeric: true, total: 'sum',
-        comment: 'Line + point records on this link matching the selected category.' },
-      { key: 'features',    label: `${active.label} features (count)` },
+      ...base, ...extras, ...perSubtype,
+      { key: 'cat_records', label: 'Total', numeric: true, total: 'sum',
+        comment: `All ${active.label} records on the link.` },
     ];
-  }, [cat, active.label]);
+  }, [cat, active.label, subtypes]);
+
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
