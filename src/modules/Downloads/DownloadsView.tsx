@@ -71,7 +71,7 @@ export default function DownloadsView() {
     {
       icon: <FileJson size={18} />,
       title: 'GeoJSON — Static (pre-built)',
-      description: 'Server-generated GeoJSON with all 1,019 structures. Use for full dataset including offline.',
+      description: 'Server-generated GeoJSON with all 1,031 structures. Use for full dataset including offline.',
       badge: 'GeoJSON',
       badgeColor: '#00f5ff',
       action: withFeedback('geojson-static', () =>

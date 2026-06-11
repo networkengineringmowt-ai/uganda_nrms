@@ -113,49 +113,45 @@ export default function BudgetSection() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
       <CrossLinkChipBar sectionId="budget" />
-    <div style={{ padding: '20px 18px', flex: 1 }}>
+    <div style={{ padding: '8px 14px', flex: 1 }}>
       <ModuleNavBar module="Budget" />
-      {/* Header */}
-      <div style={{ marginBottom: 20 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-          <div style={{ width: 38, height: 38, borderRadius: 10,
-            background: `linear-gradient(135deg, rgba(${hexRgb(C.pink)},0.25), rgba(${hexRgb(C.red)},0.1))`,
-            border: `1px solid rgba(${hexRgb(C.pink)},0.4)`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <DollarSign size={16} style={{ color: C.pink }}/>
-          </div>
-          <div>
-            <div style={{ fontSize: 18, fontWeight: 900, color: '#e2eaf4' }}>Budgeting & Maintenance Planning</div>
-            <div style={{ fontSize: 11, color: 'rgba(148,163,184,0.65)', marginTop: 1 }}>
-              Annual M&R budgets · funding gaps · intervention cost matrix · regional allocation
-            </div>
-          </div>
+      {/* Header — compact single strip: title + KPI chips on one row */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap',
+        padding: '8px 12px', marginBottom: 8, borderRadius: 10,
+        background: 'rgba(8,14,28,0.7)', border: `1px solid rgba(${hexRgb(C.pink)},0.2)`,
+      }}>
+        <div style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0,
+          background: `linear-gradient(135deg, rgba(${hexRgb(C.pink)},0.25), rgba(${hexRgb(C.red)},0.1))`,
+          border: `1px solid rgba(${hexRgb(C.pink)},0.4)`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <DollarSign size={14} style={{ color: C.pink }}/>
         </div>
-
-        {/* KPI strip */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
-          {[
-            { label: 'FY24/25 Required', value: `UGX ${totalRequired}B`, sub: 'All maintenance types', color: C.red, icon: <AlertTriangle size={14}/> },
-            { label: 'Allocated FY24/25', value: `UGX ${currentAlloc}B`, sub: 'Approved budget', color: C.yellow, icon: <DollarSign size={14}/> },
-            { label: 'Funding Gap', value: `UGX ${fundingGap.toFixed(0)}B`, sub: `${Math.round(fundingGap/totalRequired*100)}% underfunded`, color: C.pink, icon: <TrendingDown size={14}/> },
-            { label: 'Network Covered', value: `${networkSummary?.total_length_km || 21160} km`, sub: `${networkSummary?.regions_count || 6} regions · 2026`, color: C.green, icon: <Wrench size={14}/> },
-          ].map(k => (
-            <div key={k.label} style={{ background: `rgba(${hexRgb(k.color)},0.06)`,
-              border: `1px solid rgba(${hexRgb(k.color)},0.2)`, borderRadius: 10, padding: '12px 14px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4, color: k.color }}>{k.icon}</div>
-              <div style={{ fontSize: 18, fontWeight: 900, color: k.color, lineHeight: 1 }}>{k.value}</div>
-              <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(148,163,184,0.5)', marginTop: 4, textTransform: 'uppercase' }}>{k.label}</div>
-              <div style={{ fontSize: 9, color: 'rgba(100,116,139,0.5)' }}>{k.sub}</div>
-            </div>
-          ))}
+        <div style={{ minWidth: 170 }}>
+          <div style={{ fontSize: 14, fontWeight: 900, color: '#e2eaf4', lineHeight: 1.15 }}>Budget &amp; Maintenance</div>
+          <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.6)' }}>M&amp;R budgets · funding gaps · cost matrix</div>
         </div>
+        <div style={{ flex: 1 }} />
+        {[
+          { label: 'Required FY24/25', value: `UGX ${totalRequired}B`, color: C.red },
+          { label: 'Allocated', value: `UGX ${currentAlloc}B`, color: C.yellow },
+          { label: 'Funding gap', value: `UGX ${fundingGap.toFixed(0)}B`, color: C.pink },
+          { label: 'Network', value: `${networkSummary?.total_length_km || 21160} km`, color: C.green },
+        ].map(k => (
+          <div key={k.label} style={{ display: 'flex', alignItems: 'baseline', gap: 6,
+            padding: '5px 11px', borderRadius: 8,
+            background: `rgba(${hexRgb(k.color)},0.07)`, border: `1px solid rgba(${hexRgb(k.color)},0.25)` }}>
+            <span style={{ fontSize: 13.5, fontWeight: 900, color: k.color }}>{k.value}</span>
+            <span style={{ fontSize: 8, fontWeight: 700, color: 'rgba(148,163,184,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{k.label}</span>
+          </div>
+        ))}
       </div>
 
       {/* ── BMS-style tab bar ── */}
       <div style={{
-        display: 'flex', gap: 2, padding: '0 0 0 0', marginBottom: 18, flexShrink: 0,
+        display: 'flex', gap: 2, padding: '0 0 0 0', marginBottom: 10, flexShrink: 0,
         borderBottom: '1px solid rgba(77,159,255,0.15)',
-        background: 'rgba(4,9,18,0.85)', marginLeft: -18, marginRight: -18, paddingLeft: 14,
+        background: 'rgba(4,9,18,0.85)', marginLeft: -14, marginRight: -14, paddingLeft: 14,
       }}>
         {TABS.map(t => {
           const isA = tab === t.id;

@@ -663,31 +663,7 @@ export default function LifecycleSection() {
             </MapContainer>
           </div>
 
-          {/* IRI sparkline */}
-          <div style={{
-            height: 148, padding: '6px 10px 4px',
-            borderTop: `1px solid rgba(${hexRgb(C.teal)},0.15)`, flexShrink: 0,
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-              <div style={{ fontSize: 8, fontWeight: 700, color: C.teal, textTransform: 'uppercase',
-                letterSpacing: '0.1em' }}>
-                IRI Trajectory {link.builtYear}–2035
-              </div>
-              <SourceTableButton anchor="tbl-046" />
-            </div>
-            <ResponsiveContainer width="100%" height={112}>
-              <LineChart data={iriSeries} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
-                <CartesianGrid stroke="rgba(255,255,255,0.04)" strokeDasharray="3 3"/>
-                <XAxis dataKey="year" tick={TK} interval={Math.ceil(iriSeries.length / 6)} tickFormatter={v => `'${String(v).slice(2)}`}/>
-                <YAxis tick={TK} width={24} domain={[0, link.surface === 'Unsealed' ? 20 : 14]}/>
-                <ChartTooltip content={<SparkTip/>}/>
-                <ReferenceLine x={2026} stroke={`rgba(${hexRgb(C.cyan)},0.3)`} strokeDasharray="3 3"/>
-                <ReferenceLine y={8.0} stroke={`rgba(${hexRgb(C.red)},0.35)`} strokeDasharray="2 2"/>
-                <Line type="monotone" dataKey="iri" stroke={C.teal} strokeWidth={1.5} dot={false}/>
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>{/* closes map+sparkline column */}
+        </div>{/* closes map column */}
 
         {/* MapDetailPane — right of lifecycle map, 340px */}
         <MapDetailPane

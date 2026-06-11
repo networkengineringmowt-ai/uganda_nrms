@@ -139,8 +139,9 @@ async function loadBridges(): Promise<Structure[]> {
   const res   = await fetch(`${import.meta.env.BASE_URL}data/bridges2026.geojson`);
   const geo   = await res.json() as { features: { geometry: { coordinates: [number, number] } | null; properties: Record<string, any> }[] };
 
+  // Keep ALL bridges (546) — structures without GPS still belong in the
+  // registry/counts; they simply have no map marker (lat/lng 0).
   return geo.features
-    .filter(f => f.geometry?.coordinates?.[0] && f.geometry?.coordinates?.[1])
     .map((f, idx) => {
       const p    = f.properties;
       const id   = String(p.bridge_no ?? `B${idx}`).replace(/\s/g, '');
@@ -169,8 +170,8 @@ async function loadBridges(): Promise<Structure[]> {
         roadNumber:   p.roadno || p.roadnumber || '',
         region:       p.region || 'Central',
         chainage:     parseFloat((p.km ?? 0).toFixed(2)),
-        lat:          parseFloat(f.geometry.coordinates[1].toFixed(6)),
-        lng:          parseFloat(f.geometry.coordinates[0].toFixed(6)),
+        lat:          f.geometry?.coordinates?.[1] != null ? parseFloat(f.geometry.coordinates[1].toFixed(6)) : 0,
+        lng:          f.geometry?.coordinates?.[0] != null ? parseFloat(f.geometry.coordinates[0].toFixed(6)) : 0,
         spanLength:   spanLen,
         noOfSpans:    noSpans,
         noOfLanes:    noLanes,

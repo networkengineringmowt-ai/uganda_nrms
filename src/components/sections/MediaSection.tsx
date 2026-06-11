@@ -51,7 +51,7 @@ const STORIES: StorySection[] = [
   {
     id: 'bridges', color: '#00ff88',
     title: 'Bridge Infrastructure',
-    subtitle: '1,019 registered structures under Bridge Management System monitoring — inspected to NBI standards',
+    subtitle: '1,031 registered structures under Bridge Management System monitoring — inspected to NBI standards',
     images: [
       { src: 'media/bridges/bridge_b001_2.jpg', alt: 'B001 inspection',
         caption: 'B001 Victoria Nile Bridge — Load inspection, Jinja maintenance area' },
@@ -638,7 +638,7 @@ export default function MediaSection() {
       <div style={{ marginBottom: 44 }}>
         <SectionDivider
           title="Bridge Inspection Portfolio"
-          subtitle="Structural photography from the 1,019-structure bridge registry"
+          subtitle="Structural photography from the 1,031-structure bridge registry"
           color="#00d4aa"
         />
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6,1fr)', gap: 8 }}>
