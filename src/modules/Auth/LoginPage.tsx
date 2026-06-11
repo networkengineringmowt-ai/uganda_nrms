@@ -68,25 +68,8 @@ export function LoginPage() {
           </button>
         </form>
 
-        <div style={{ marginTop:24, padding:'14px', background:'rgba(99,102,241,0.08)', borderRadius:8, border:'1px solid rgba(99,102,241,0.15)' }}>
-          <div style={{ color:'rgba(148,163,184,0.7)', fontSize:10, fontWeight:700, marginBottom:8, letterSpacing:'0.05em' }}>
-            ACCESS LEVELS — allowed users only (first.lastname@unra.go.ug)
-          </div>
-          {[
-            ['RMS',   '#22c55e', 'Field data entry only · mobile interface', 'robert.okello@unra.go.ug',  'rms'],
-            ['SUPER', '#f59e0b', 'All dashboards & reports · no input/admin', 'grace.namuli@unra.go.ug',   'super'],
-            ['ADMIN', '#ef4444', 'Everything, all at once',                   'prisca.nanjehe@unra.go.ug', 'admin'],
-          ].map(([level, color, desc, em, pw]) => (
-            <div key={level} style={{ fontSize:10, color:'rgba(148,163,184,0.6)', marginBottom:5, lineHeight:1.5 }}>
-              <span style={{ color, fontWeight:800 }}>{level}</span>
-              <span style={{ color:'rgba(148,163,184,0.45)' }}> — {desc}</span><br/>
-              <span style={{ cursor:'pointer', textDecoration:'underline' }}
-                onClick={() => { setEmail(em); setPassword(pw); }}>{em}</span> / {pw}
-            </div>
-          ))}
-          <div style={{ color:'rgba(148,163,184,0.35)', fontSize:9, marginTop:6 }}>
-            One password per level · click an email to auto-fill · roster: src/modules/Auth/allowedUsers.ts
-          </div>
+        <div style={{ marginTop:22, textAlign:'center', color:'rgba(148,163,184,0.4)', fontSize:10 }}>
+          Authorised UNRA staff only · contact the GIS &amp; Asset Management team for access
         </div>
       </div>
     </div>

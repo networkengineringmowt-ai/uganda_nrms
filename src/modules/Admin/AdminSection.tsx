@@ -4,12 +4,13 @@
  * Follows the exact BMS tab-bar pattern.
  */
 import { lazy, Suspense, useState } from 'react';
-import { Activity, Cpu, ShieldCheck } from 'lucide-react';
+import { Activity, BookOpen, Cpu, ShieldCheck } from 'lucide-react';
 import type { ActiveView } from '../../types';
 
 const ADMIN_Activity  = lazy(() => import('./ActivityLog'));
 const ADMIN_MindMap   = lazy(() => import('../MindMap/MindMapSection'));
 const ADMIN_DataAudit = lazy(() => import('../DataAudit/DataAuditPanel'));
+const ADMIN_Docs      = lazy(() => import('./SystemDocumentation'));
 
 function Spinner() {
   return (
@@ -24,9 +25,10 @@ function Spinner() {
 }
 
 const MAIN_TABS = [
-  { id: 'activity'  as const, label: 'Activity Log',      icon: <Activity size={13}/> },
-  { id: 'mindmap'   as const, label: 'Platform Mind Map', icon: <Cpu size={13}/> },
-  { id: 'dataaudit' as const, label: 'Data Audit',        icon: <ShieldCheck size={13}/> },
+  { id: 'activity'  as const, label: 'Activity Log',       icon: <Activity size={13}/> },
+  { id: 'mindmap'   as const, label: 'Platform Mind Map',  icon: <Cpu size={13}/> },
+  { id: 'dataaudit' as const, label: 'Data Audit',         icon: <ShieldCheck size={13}/> },
+  { id: 'docs'      as const, label: 'Sources & Evidence', icon: <BookOpen size={13}/> },
 ];
 type TabId = typeof MAIN_TABS[number]['id'];
 
@@ -87,6 +89,11 @@ export default function AdminSection({
           {tab === 'dataaudit' && (
             <div style={{ position:'absolute', inset:0, overflowY:'auto' }}>
               <ADMIN_DataAudit />
+            </div>
+          )}
+          {tab === 'docs' && (
+            <div style={{ position:'absolute', inset:0, overflowY:'auto' }}>
+              <ADMIN_Docs />
             </div>
           )}
         </Suspense>
