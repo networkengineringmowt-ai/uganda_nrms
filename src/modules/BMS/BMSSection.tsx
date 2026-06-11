@@ -8,7 +8,7 @@ import { lazy, Suspense, useState } from 'react';
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
 import {
   LayoutDashboard, Map, Table2, BarChart3,
-  ClipboardCheck, Activity, Wrench, AlertTriangle, Camera, Hammer, ListOrdered,
+  ClipboardCheck, Activity, Wrench, AlertTriangle, Camera, Hammer,
 } from 'lucide-react';
 
 // ── Lazy-load all BMS sub-modules ─────────────────────────────────────────────
@@ -19,7 +19,6 @@ const BMS_Inspections = lazy(() => import('../Inspections/InspectionManagement')
 const BMS_Condition   = lazy(() => import('../Condition/ConditionAssessment'));
 const BMS_Maintenance = lazy(() => import('../Maintenance/MaintenanceWorks'));
 const BMS_Analytics   = lazy(() => import('../Analytics/Analytics'));
-const BMS_Priority    = lazy(() => import('../Priority/PriorityRanking'));
 const BMS_PhotoTwin   = lazy(() => import('../PhotoTwin/PhotoTwin'));
 const BMS_BridgeWorks = lazy(() => import('../BridgeWorks/BridgeWorksSection'));
 const BMS_Critical    = lazy(() => import('../Condition/CriticalStructures'));
@@ -84,7 +83,6 @@ const INVENTORY_TABS: SubTab[] = [
   { id: 'inspections', label: 'Inspections', icon: <ClipboardCheck size={11}/> },
   { id: 'condition',   label: 'Condition',   icon: <Activity size={11}/> },
   { id: 'critical',    label: 'Critical Structures', icon: <AlertTriangle size={11}/> },
-  { id: 'priority',    label: 'Priority Ranking',    icon: <ListOrdered size={11}/> },
   { id: 'maintenance', label: 'Maintenance', icon: <Wrench size={11}/> },
   { id: 'analytics',   label: 'Analytics',   icon: <BarChart3 size={11}/> },
   { id: 'phototwin',   label: 'Digital Twin', icon: <Camera size={11}/> },
@@ -162,7 +160,6 @@ export default function BMSSection() {
               {inventoryTab === 'inspections' && <BMS_Inspections />}
               {inventoryTab === 'condition'   && <BMS_Condition />}
               {inventoryTab === 'critical'    && <BMS_Critical />}
-              {inventoryTab === 'priority'    && <BMS_Priority />}
               {inventoryTab === 'maintenance' && <BMS_Maintenance />}
               {inventoryTab === 'analytics'   && <BMS_Analytics />}
               {inventoryTab === 'phototwin'   && (

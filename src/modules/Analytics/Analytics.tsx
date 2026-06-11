@@ -1,4 +1,4 @@
-import { useMemo, useState, useRef, useCallback } from 'react';
+import { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import { toPng } from 'html-to-image';
 import { Download, FileImage, FileText } from 'lucide-react';
 import { useBMS } from '../../store/BMSContext';
@@ -412,29 +412,96 @@ function CostTab({ costTrend, workOrders }: { costTrend: any[]; workOrders: any[
 }
 
 // ─── Region Tab ───────────────────────────────────────────────────────────────
-function RegionTab({ roadData }: { roadData: any[] }) {
+function RegionTab(_props: { roadData: any[] }) {
+  const { state } = useBMS();
+  const [links, setLinks] = useState<Array<{ link_id: string; link_name: string | null;
+    road_class: string | null; length_km: number | null; maintenance_region: string | null }>>([]);
+  const [q, setQ] = useState('');
+  useEffect(() => {
+    fetch(`${import.meta.env.BASE_URL}data/network_links.json`)
+      .then(r => r.json()).then(setLinks).catch(() => setLinks([]));
+  }, []);
+
+  const rows = useMemo(() => {
+    const byRoad = new Map<string, typeof state.structures>();
+    for (const st of state.structures) {
+      const k = (st.road ?? '').trim().toLowerCase();
+      if (!k) continue;
+      const arr = byRoad.get(k) ?? [];
+      arr.push(st); byRoad.set(k, arr);
+    }
+    return links.map(l => {
+      const sts = byRoad.get((l.link_name ?? '').trim().toLowerCase()) ?? [];
+      const bridges = sts.filter(st => st.type === 'bridge');
+      const culverts = sts.filter(st => st.type !== 'bridge');
+      return {
+        link_id: l.link_id, link_name: l.link_name ?? '—',
+        road_class: l.road_class ?? '—', length_km: l.length_km,
+        region: l.maintenance_region ?? '—',
+        nBridges: bridges.length, nCulverts: culverts.length,
+        critical: sts.filter(st => st.conditionRating === 1).length,
+        poor: sts.filter(st => st.conditionRating === 2).length,
+        names: bridges.slice(0, 5).map(st => st.name).join(' · ') + (bridges.length > 5 ? ` · +${bridges.length - 5} more` : ''),
+      };
+    }).sort((x, y) => (y.nBridges + y.nCulverts) - (x.nBridges + x.nCulverts));
+  }, [links, state.structures]);
+
+  const filtered = rows.filter(r => !q.trim()
+    || `${r.link_id} ${r.link_name} ${r.region} ${r.names}`.toLowerCase().includes(q.toLowerCase()));
+
+  const TH: React.CSSProperties = { textAlign: 'left', padding: '6px 10px', fontSize: 9, fontWeight: 800,
+    color: '#94a3b8', textTransform: 'uppercase', whiteSpace: 'nowrap',
+    position: 'sticky', top: 0, background: 'rgba(15,23,42,0.97)', zIndex: 2,
+    borderBottom: '1px solid rgba(148,163,184,0.2)' };
+  const TD: React.CSSProperties = { padding: '5px 10px', fontSize: 10.5,
+    color: 'rgba(203,213,225,0.85)', borderBottom: '1px solid rgba(255,255,255,0.04)', whiteSpace: 'nowrap' };
+
   return (
-    <div className="space-y-6">
-      <div className="bms-card">
-        <h3 className="text-sm font-bold text-white mb-4">Top 20 Roads — Structure Count & Condition Issues</h3>
-        <Chart3DWrap>
-          <ResponsiveContainer width="100%" height={420}>
-            <BarChart data={roadData} layout="vertical" margin={{ top:4, right:40, left:180, bottom:0 }}>
-              <CartesianGrid stroke="rgba(148,163,184,0.06)" strokeDasharray="3 3" />
-              <XAxis type="number" tick={{ ...TICK_SM }} axisLine={false} tickLine={false} />
-              <YAxis type="category" dataKey="road" tick={{ fill:'rgba(148,163,184,0.5)', fontSize:10 }} axisLine={false} tickLine={false} width={175} />
-              <Tooltip {...TT_NEON} />
-              <Legend wrapperStyle={{ fontSize:11, color:'#94a3b8' }} />
-              <Bar dataKey="total"    name="Total"    fill="#4d9fff" radius={[0,0,0,0]} animationDuration={1200} stackId="a" shape={<Bar3D />} />
-              <Bar dataKey="poor"     name="Poor"     fill="#ff6b35" radius={[0,0,0,0]} animationDuration={1200} stackId="b" shape={<Bar3D />} />
-              <Bar dataKey="critical" name="Critical" fill="#ff2d78" radius={[0,4,4,0]} animationDuration={1200} stackId="b" shape={<Bar3D />} />
-            </BarChart>
-          </ResponsiveContainer>
-        </Chart3DWrap>
+    <div style={{ background: 'rgba(15,23,42,0.55)', borderRadius: 12,
+      border: '1px solid rgba(255,255,255,0.07)', padding: '14px 16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
+        <div style={{ flex: 1, minWidth: 200 }}>
+          <div style={{ fontWeight: 800, color: '#e2eaf4', fontSize: 13 }}>
+            Structures by Road Link — all {links.length.toLocaleString()} links
+          </div>
+          <div style={{ fontSize: 9.5, color: 'rgba(148,163,184,0.55)' }}>
+            Bridges &amp; major culverts on each FY25-26 network link · {state.structures.length.toLocaleString()} structures matched by link name
+          </div>
+        </div>
+        <input value={q} onChange={e => setQ(e.target.value)} placeholder="Search link / road / bridge…"
+          style={{ background: 'rgba(10,16,30,0.9)', border: '1px solid rgba(77,159,255,0.25)', borderRadius: 7,
+            color: '#e2e8f0', fontSize: 11, padding: '6px 10px', width: 210 }} />
+        <span style={{ fontSize: 10, color: 'rgba(148,163,184,0.5)' }}>{filtered.length.toLocaleString()} rows</span>
+      </div>
+      <div style={{ maxHeight: 560, overflow: 'auto', borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 980 }}>
+          <thead><tr>
+            {['Link ID', 'Link Name', 'Class', 'Km', 'Region', 'Bridges', 'Major Culverts', 'Critical', 'Poor', 'Bridge names'].map(h => (
+              <th key={h} style={TH}>{h}</th>
+            ))}
+          </tr></thead>
+          <tbody>
+            {filtered.map((r, i) => (
+              <tr key={`${r.link_id}-${i}`} style={{ background: i % 2 === 0 ? 'rgba(15,23,42,0.35)' : 'transparent' }}>
+                <td style={{ ...TD, color: '#00f5ff', fontFamily: 'monospace', fontSize: 9.5 }}>{r.link_id}</td>
+                <td style={{ ...TD, whiteSpace: 'normal', maxWidth: 240 }}>{r.link_name}</td>
+                <td style={{ ...TD, color: '#ffd23f', fontWeight: 700 }}>{r.road_class}</td>
+                <td style={TD}>{r.length_km != null ? Number(r.length_km).toFixed(1) : '—'}</td>
+                <td style={TD}>{r.region}</td>
+                <td style={{ ...TD, color: '#4d9fff', fontWeight: 800 }}>{r.nBridges || '—'}</td>
+                <td style={{ ...TD, color: '#00d4aa', fontWeight: 800 }}>{r.nCulverts || '—'}</td>
+                <td style={{ ...TD, color: r.critical ? '#ff2d78' : TD.color as string, fontWeight: 700 }}>{r.critical || '—'}</td>
+                <td style={{ ...TD, color: r.poor ? '#f97316' : TD.color as string, fontWeight: 700 }}>{r.poor || '—'}</td>
+                <td style={{ ...TD, whiteSpace: 'normal', maxWidth: 340, fontSize: 9.5, color: 'rgba(148,163,184,0.75)' }}>{r.names || '—'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
 }
+
 
 // ─── Radar Tab ────────────────────────────────────────────────────────────────
 function RadarTab({ radarData }: { radarData: any[] }) {

@@ -119,26 +119,42 @@ function maintenanceCostHistory(seed: number, rating: ConditionRating): { year: 
 
 // ─── Main loader: bridges ─────────────────────────────────────────────────────
 
+// Map a BMS overall-rating (text or numeric) to the 1-5 condition scale.
+function ratingFromBms(v: unknown): number | null {
+  if (v == null) return null;
+  const n = Number(v);
+  if (Number.isFinite(n) && n >= 1 && n <= 5) return Math.round(n);
+  const t = String(v).toLowerCase();
+  if (t.includes('excellent') || t.includes('very good')) return 5;
+  if (t.includes('good')) return 4;
+  if (t.includes('fair')) return 3;
+  if (t.includes('poor') && !t.includes('very')) return 2;
+  if (t.includes('critical') || t.includes('very poor') || t.includes('failed')) return 1;
+  return null;
+}
+
 async function loadBridges(): Promise<Structure[]> {
-  const res   = await fetch(`${import.meta.env.BASE_URL}bridges.geojson`);
-  const geo   = await res.json() as { features: { id: number; geometry: { coordinates: [number, number] }; properties: BridgeProps }[] };
+  // Corrected source: the BMS inventory + element conditions CSV
+  // (uganda_bridges_bms_inventory_elements_conditions.csv -> bridges2026.geojson)
+  const res   = await fetch(`${import.meta.env.BASE_URL}data/bridges2026.geojson`);
+  const geo   = await res.json() as { features: { geometry: { coordinates: [number, number] } | null; properties: Record<string, any> }[] };
 
   return geo.features
     .filter(f => f.geometry?.coordinates?.[0] && f.geometry?.coordinates?.[1])
     .map((f, idx) => {
       const p    = f.properties;
-      const id   = `BRG-${(p.bridge_no ?? String(idx)).replace(/\s/g, '')}`;
+      const id   = String(p.bridge_no ?? `B${idx}`).replace(/\s/g, '');
       const seed = hashStr(id + String(idx));
 
-      const yearBuilt    = Number(p.year_compl) || (1970 + seededInt(seed, 0, 45));
-      const condRating   = ratingFromAge(yearBuilt, seed + 3) as ConditionRating;
+      const yearBuilt    = Number(p.completion_year ?? p.year_compl) || (1970 + seededInt(seed, 0, 45));
+      const condRating   = (ratingFromBms(p.overall_rating) ?? ratingFromAge(yearBuilt, seed + 3)) as ConditionRating;
       const { last, next, due } = inspectionDates(seed + 9, condRating);
-      const noSpans      = p.no_of_spans || seededInt(seed + 1, 1, 8);
-      const noLanes      = p.no_of_lanes || seededInt(seed + 2, 1, 4);
+      const noSpans      = Number(p.spans ?? p.no_of_spans) || seededInt(seed + 1, 1, 8);
+      const noLanes      = Number(p.lanes ?? p.no_of_lanes) || seededInt(seed + 2, 1, 4);
       const noP          = p.no_of_piers || Math.max(0, noSpans - 1);
       const crossType    = p.type_cross || 'River';
-      const spanLen      = span(seed + 4, crossType);
-      const w            = parseFloat(width(seed + 5, noLanes).toFixed(1));
+      const spanLen      = Number(p.length_m) ? +(Number(p.length_m) / Math.max(noSpans, 1)).toFixed(1) : span(seed + 4, crossType);
+      const w            = Number(p.width_m) ? +Number(p.width_m).toFixed(1) : parseFloat(width(seed + 5, noLanes).toFixed(1));
       const mat          = material(seed + 6);
       const road         = p.link_name || p.roaddescrp || 'Unknown Road';
       const traffic      = trafficForRoad(road, seed + 7) as TrafficLevel;
@@ -150,7 +166,7 @@ async function loadBridges(): Promise<Structure[]> {
         name:         p.bridge_nam || p.bridgename || `Bridge ${id}`,
         type:         'bridge',
         road,
-        roadNumber:   p.roadnumber || '',
+        roadNumber:   p.roadno || p.roadnumber || '',
         region:       p.region || 'Central',
         chainage:     parseFloat((p.km ?? 0).toFixed(2)),
         lat:          parseFloat(f.geometry.coordinates[1].toFixed(6)),
@@ -164,8 +180,8 @@ async function loadBridges(): Promise<Structure[]> {
         crossingType: crossType,
         surfaceType:  p.surface_ty || 'Bituminous',
         yearBuilt,
-        maintenanceArea: p.maintenanc || 'Kampala',
-        river:        p.river_1 || '',
+        maintenanceArea: p.maintenanc || p.region || 'Kampala',
+        river:        p.river || p.river_1 || '',
         conditionRating: condRating,
         conditionHistory: generateConditionHistory(seed + 10, condRating, yearBuilt),
         lastInspection:   last,
@@ -194,7 +210,7 @@ async function loadCulverts(): Promise<Structure[]> {
     .filter(f => f.geometry?.coordinates?.[0] && f.geometry?.coordinates?.[1])
     .map((f, idx) => {
       const p    = f.properties;
-      const id   = `CUL-${(p.culvert_n || p.link_no || String(idx)).replace(/\s/g, '')}`;
+      const id   = String(p.culvert_n || p.link_no || `C${idx}`).replace(/\s/g, '');
       const seed = hashStr(id + String(idx) + 'C');
 
       const yearBuilt  = 1970 + seededInt(seed, 0, 45);
