@@ -153,7 +153,27 @@ export async function loadNetworkStats(): Promise<NetworkStats> {
 }
 export async function loadTCSStations(): Promise<TCSStation[]> {
   if (_stations) return _stations;
-  if (!_tcP) _tcP = fetch(`${BASE}data/tcs_stations.json`).then(r => r.json()).then(d => { _stations = d; return d; });
+  if (!_tcP) {
+    // Supabase-first (traffic_count_stations — live DB) with bundled-JSON fallback.
+    _tcP = import('../lib/roadsAPI')
+      .then(({ RoadsAPI }) => RoadsAPI.getStations())
+      .then(rows => {
+        if (!rows.length) throw new Error('no live stations');
+        const mapped: TCSStation[] = rows.map(r => ({
+          tcs_no: r.tcs_no != null ? String(r.tcs_no) : null,
+          tcs_name: r.station_name,
+          road_no: r.link_id ? r.link_id.split('_')[0] : null,
+          link_id: r.link_id, link_name: r.link_name,
+          lat: r.latitude, lon: r.longitude,
+          station: r.station_type, region: r.region, surface: null,
+        }));
+        _stations = mapped;
+        return mapped;
+      })
+      .catch(() =>
+        fetch(`${BASE}data/tcs_stations.json`).then(r => r.json()).then(d => { _stations = d; return d; }),
+      );
+  }
   return _tcP;
 }
 
