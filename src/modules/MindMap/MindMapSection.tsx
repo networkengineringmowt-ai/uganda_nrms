@@ -452,12 +452,12 @@ export default function MindMapSection() {
                     filter={isSelected ? 'url(#glow-bp)' : undefined}
                   >
                     {/* Drawing-box fill */}
-                    <rect x={node.x} y={node.y} width={node.w} height={node.h}
-                      fill={isSelected ? `rgba(${rgb},0.16)` : 'rgba(8,18,34,0.82)'}
-                      stroke={isSelected ? node.color : (isHovered ? '#00e5ff' : '#00bcd4')}
-                      strokeWidth={isSelected ? 1.75 : 1}
-                      strokeOpacity={isSelected ? 1 : 0.65}
+                    <rect x={node.x} y={node.y} width={node.w} height={node.h} rx={4}
+                      fill={isSelected ? `rgba(${rgb},0.42)` : `rgba(${rgb},0.22)`}
+                      stroke={node.color}
+                      strokeWidth={isSelected ? 3 : (isHovered ? 2.5 : 2)}
                     />
+                    <rect x={node.x} y={node.y} width={5} height={node.h} fill={node.color} />
                     {/* Corner ticks (drafting-style corner marks) */}
                     {[[0,0,1,1],[1,0,-1,1],[0,1,1,-1],[1,1,-1,-1]].map(([cx,cy,dx,dy], ci) => (
                       <path key={ci}
@@ -474,14 +474,14 @@ export default function MindMapSection() {
                     </text>
                     {/* Label */}
                     <text x={node.x + node.w/2} y={node.y + node.h/2 - 4}
-                      textAnchor="middle" fontSize="10" fontWeight="700" fontFamily={MONO}
-                      fill="#e8f6fa" pointerEvents="none">
+                      textAnchor="middle" fontSize="11" fontWeight="900" fontFamily={MONO}
+                      fill="#ffffff" pointerEvents="none" style={{ letterSpacing: '0.02em' }}>
                       {node.label}
                     </text>
                     {/* Sub-label */}
                     <text x={node.x + node.w/2} y={node.y + node.h/2 + 11}
-                      textAnchor="middle" fontSize="8" fontFamily={MONO}
-                      fill={`rgba(${rgb},0.85)`} pointerEvents="none">
+                      textAnchor="middle" fontSize="8.5" fontWeight="800" fontFamily={MONO}
+                      fill={node.color} pointerEvents="none">
                       {node.sub}
                     </text>
                   </g>
@@ -620,15 +620,32 @@ export default function MindMapSection() {
             <div style={{ flex: 1, overflowY: 'auto', padding: '14px 14px', fontSize: 10, color: 'rgba(207,238,245,0.8)', lineHeight: 1.65 }}>
               {selected.detail}
 
-              {/* Section UI wireframe schematic */}
-              <div style={{ marginTop: 14, paddingTop: 12, borderTop: '1px dashed rgba(0,188,212,0.25)' }}>
-                <div style={{ fontSize: 7.5, fontWeight: 700, color: 'rgba(0,229,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 7 }}>
-                  Section Wireframe
+              {/* Parameters & algorithms */}
+              <div style={{ marginTop: 14, paddingTop: 12, borderTop: `2px solid ${selected.color}55` }}>
+                <div style={{ fontSize: 9, fontWeight: 900, color: selected.color, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 7 }}>
+                  Parameters &amp; Algorithms
                 </div>
-                <WireframeSketch nodeId={selected.id} color={selected.color} />
-                <div style={{ fontSize: 7.5, color: 'rgba(148,163,184,0.4)', marginTop: 5, fontStyle: 'italic' }}>
-                  Schematic of this node's screen — open the live view from the left sidebar →
-                </div>
+                {(() => {
+                  const a = ALGO_DETAILS[selected.id];
+                  if (a) {
+                    return (
+                      <>
+                        <div style={{ fontSize: 10.5, fontWeight: 800, color: '#fff', lineHeight: 1.5, marginBottom: 6 }}>{a.algo}</div>
+                        {a.params.map((x, i) => (
+                          <div key={i} style={{ display: 'flex', gap: 6, fontSize: 9.5, color: 'rgba(226,232,240,0.85)', lineHeight: 1.6 }}>
+                            <span style={{ color: selected.color, fontWeight: 900 }}>▸</span><span>{x}</span>
+                          </div>
+                        ))}
+                      </>
+                    );
+                  }
+                  return (
+                    <div style={{ fontSize: 9.5, color: 'rgba(226,232,240,0.8)', lineHeight: 1.65 }}>
+                      <span style={{ color: selected.color, fontWeight: 900 }}>▸ </span>{selected.sub}
+                      <br /><span style={{ color: selected.color, fontWeight: 900 }}>▸ </span>{selected.detail}
+                    </div>
+                  );
+                })()}
               </div>
             </div>
 
@@ -676,7 +693,53 @@ const tbBtn: React.CSSProperties = {
 };
 
 // ══════════════════════════════════════════════════════════════════════════════
-// Section-UI wireframe schematics — a blueprint sketch of each node's screen.
+
+// Parameters & algorithms per node — shown in the inspector instead of wireframes.
+const ALGO_DETAILS: Record<string, { algo: string; params: string[] }> = {
+  'ag-ml': {
+    algo: 'PyTorch deep neural network + graph neural network over the link network',
+    params: ['Inputs: IRI, rutting, AADT, ESALs, pavement age, rainfall zone',
+             'DNN: 4 hidden layers · ReLU · dropout 0.2 · Adam 1e-3',
+             'GNN: link-adjacency message passing, 2 hops',
+             'Target: next-cycle VCI / IRI per link',
+             'Validation: 80/20 split · early stopping on RMSE'] },
+  'alg-engine': {
+    algo: 'HDM-4 deterioration · ESAL accumulation · life-cycle cost analysis (LCCA)',
+    params: ['HDM-4 RDWE roughness progression: ΔIRI = f(age, ESAL, MMP, SNC)',
+             'ESAL: Σ (axle load / 8.16 t)^4.5 by vehicle class',
+             'LCCA: NPV @ 12% discount, 20-year analysis period',
+             'Calibrated with romdas_calibration.json coefficients'] },
+  'dtree': {
+    algo: 'Rule-based decision trees → maintenance recommendations',
+    params: ['Thresholds: VCI bands (≥85/75/65/55) · IRI > 4.5 → periodic',
+             'Treatment ladder: routine → resealing → overlay → reconstruction',
+             'Bridge rules: element rating ≤ 2 → inspection work order',
+             'Budget guardrail: ranked by stress score within envelope'] },
+  'proc-analytics': {
+    algo: 'Aggregation engine — regional, budget and ESAL summaries',
+    params: ['Km-weighted VCI per region & station',
+             'Growth-factor projections (compound, per ATC class)',
+             'Budget per km by class & treatment',
+             'Outputs feed Tabular Summaries Hub'] },
+  'ag-qc': {
+    algo: 'Schema + range validation before publication',
+    params: ['JSON-schema checks on every exported file',
+             'Range checks: VCI 0–100 · IRI 1–20 · AADT > 0',
+             'Referential: every link_id must exist in the network master',
+             'Failures block the deploy step'] },
+  'ag-audit': {
+    algo: 'Coverage & freshness audit across the data bundle',
+    params: ['Coverage: links with condition / traffic / inventory data',
+             'Freshness: file generation dates vs reporting year',
+             'Cross-source mismatch detection (shapefile vs register)'] },
+  'proc-export': {
+    algo: 'Python ETL chain (pandas + geopandas)',
+    params: ['Sources: NDPIV xlsx · network2026 shapefile · BMS CSV · ATC workbook',
+             'refresh_2026.py · build_fwd_inventory.py · export_bundle.py',
+             'Drive-first: outputs land in public/data (G: canonical)'] },
+};
+
+// Section-UI wireframe schematics (legacy, retained for reference).
 // Declarative: every node maps to a small set of placeholder elements drawn with
 // standard wireframe conventions (diagonal=chart, h-lines=table, circle+crosshair
 // =map). Rendered in the inspect panel by <WireframeSketch/>.

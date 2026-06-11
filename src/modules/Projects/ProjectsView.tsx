@@ -385,160 +385,35 @@ export default function ProjectsView() {
         })}
       </div>
 
-      {/* ── Header + KPIs (Projects Map tab only) ── */}
-      {activeTab === 'map' && <div className="p-4 space-y-3 flex-shrink-0">
-
-        {/* KPI strip */}
-        <div className="grid grid-cols-4 gap-2">
-          {[
-            { label: 'Total km',  value: `${stats.totalKm.toFixed(0)}`, unit: 'km',    color: '#f59e0b' },
-            { label: 'Planned',   value: `${stats.planned}`,            unit: 'proj',  color: '#3b82f6' },
-            { label: 'Ongoing',   value: `${stats.ongoing}`,            unit: 'proj',  color: '#f59e0b' },
-            { label: 'Complete',  value: `${stats.complete}`,           unit: 'proj',  color: '#22c55e' },
-          ].map(k => (
-            <div key={k.label} className="bms-card py-2 px-3 text-center">
-              <div className="text-lg font-black" style={{ color: k.color }}>{k.value}</div>
-              <div className="text-[9px] text-slate-400 font-semibold uppercase tracking-wide">{k.label}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* ── OPRC + NDP IV info cards ── */}
-        <div className="grid grid-cols-2 gap-2">
-
-          {/* OPRC Card */}
-          <div style={{
-            background: 'rgba(253,211,77,0.05)',
-            border: '1px solid rgba(253,211,77,0.25)',
-            borderLeft: '3px solid #fcd34d',
-            borderRadius: 8, padding: '8px 12px',
-          }}>
-            <div style={{ fontSize: 9, fontWeight: 900, color: '#fcd34d', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 5 }}>
-              🚧 NERAMP OPRC — Output-Performance Road Contracts
-            </div>
-            <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.8)', lineHeight: 1.5 }}>
-              <span style={{ color: '#fcd34d', fontWeight: 700 }}>Lot 1 (216 km)</span>
-              {' '}Kamdini–Lira–Soroti–Koloin · Mota-Engil · World Bank · Completion Jun 2027
-            </div>
-            <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.8)', lineHeight: 1.5, marginTop: 2 }}>
-              <span style={{ color: '#fcd34d', fontWeight: 700 }}>Lot 2 (307 km)</span>
-              {' '}Soroti–Moroto–Kotido · In procurement · World Bank NERAMP
-            </div>
-            <div style={{ fontSize: 8, color: 'rgba(100,116,139,0.5)', marginTop: 4 }}>
-              NERAMP = North East Road Asset Management Programme · 10-yr performance contracts
-            </div>
-          </div>
-
-          {/* NDP IV Card */}
-          <div style={{
-            background: 'rgba(77,159,255,0.05)',
-            border: '1px solid rgba(77,159,255,0.25)',
-            borderLeft: '3px solid #4d9fff',
-            borderRadius: 8, padding: '8px 12px',
-          }}>
-            <div style={{ fontSize: 9, fontWeight: 900, color: '#4d9fff', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 5 }}>
-              📋 NDP IV Targets · FY 2025/26 – 2029/30
-            </div>
-            <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.8)', lineHeight: 1.5 }}>
-              <span style={{ color: '#00ff88', fontWeight: 700 }}>1,200+ km</span>
-              {' '}new paved roads (upgrading gravel-to-bituminous)
-            </div>
-            <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.8)', lineHeight: 1.5, marginTop: 2 }}>
-              <span style={{ color: '#00f5ff', fontWeight: 700 }}>Key priorities:</span>
-              {' '}Albertine oil roads · GKMA improvements · Northern Bypass Ph 2 · border connectivity
-            </div>
-            <div style={{ fontSize: 8, color: 'rgba(100,116,139,0.5)', marginTop: 4 }}>
-              Target: 35% paved network by 2030 · Current baseline: ~30.1% (6,405 km)
-            </div>
-          </div>
-
-        </div>
-
-        {/* Works-type clustered bar chart */}
-        {(() => {
-          const wt: Record<string, { count: number; km: number }> = {};
-          projects.forEach(p => {
-            const t = inferWorksType(p.project_name);
-            if (!wt[t]) wt[t] = { count: 0, km: 0 };
-            wt[t].count++;
-            wt[t].km += Math.round(p.parsed_length_km);
-          });
-          const data = Object.entries(wt)
-            .map(([type, v]) => ({ type: type.replace(' ', '\n').split(' ')[0], fullType: type, ...v }))
-            .sort((a, b) => b.km - a.km);
-          return (
-            <div style={{
-              background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(255,255,255,0.07)',
-              borderRadius: 10, padding: '10px 12px',
-            }}>
-              <div style={{ fontSize: 9, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>
-                Projects by Works Type — Count &amp; Length (km)
-              </div>
-              <Chart3DWrap>
-                <ResponsiveContainer width="100%" height={110}>
-                  <BarChart data={data} margin={{ top: 2, right: 6, left: -24, bottom: 0 }}
-                    barCategoryGap="20%" barGap={2}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-                    <XAxis dataKey="fullType" tick={{ fill: '#64748b', fontSize: 8 }}
-                      tickFormatter={(s: string) => s.split(' ')[0]} />
-                    <YAxis yAxisId="cnt" tick={{ fill: '#64748b', fontSize: 8 }} />
-                    <YAxis yAxisId="km" orientation="right" tick={{ fill: '#64748b', fontSize: 8 }} />
-                    <ReTooltip
-                      contentStyle={{ background: 'rgba(8,14,28,0.96)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 10 }}
-                      formatter={(v: number, name: string) => [name === 'count' ? `${v} projects` : `${v} km`, name === 'count' ? 'Projects' : 'Total km']}
-                      labelFormatter={(l: string) => l}
-                    />
-                    <Bar yAxisId="cnt" dataKey="count" name="count" radius={[3,3,0,0]} maxBarSize={28} shape={<Bar3D/>}>
-                      {data.map(d => <Cell key={d.fullType} fill={WORKS_COLOR[d.fullType] ?? '#64748b'} />)}
-                    </Bar>
-                    <Bar yAxisId="km" dataKey="km" name="km" radius={[3,3,0,0]} maxBarSize={28} shape={<Bar3D/>}>
-                      {data.map(d => <Cell key={d.fullType} fill={WORKS_COLOR[d.fullType] ?? '#64748b'} fillOpacity={0.4} />)}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </Chart3DWrap>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 14px', marginTop: 4 }}>
-                {Object.entries(WORKS_COLOR).map(([type, c]) => (
-                  <div key={type} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <div style={{ width: 8, height: 8, borderRadius: 2, background: c, flexShrink: 0 }} />
-                    <span style={{ fontSize: 9, color: '#64748b' }}>{type}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          );
-        })()}
-
-        {/* Filters */}
-        <div className="flex flex-wrap gap-2 items-center">
-          <div className="relative flex-1 min-w-[160px]">
-            <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500" />
-            <input
-              value={search} onChange={e => setSearch(e.target.value)}
-              placeholder="Search projects, location…"
-              className="bms-input pl-7 w-full text-xs"
-            />
-          </div>
-          <select value={regionF} onChange={e => setRegionF(e.target.value)} className="bms-input text-xs">
-            <option value="all">All Regions</option>
-            {regions.map(r => <option key={r} value={r}>{r}</option>)}
-          </select>
-          <select value={statusF} onChange={e => setStatusF(e.target.value as typeof statusF)} className="bms-input text-xs">
-            <option value="all">All Status</option>
-            <option value="planned">Planned</option>
-            <option value="ongoing">Ongoing</option>
-            <option value="complete">Complete</option>
-          </select>
-          <span className="text-[10px] text-slate-500">{filtered.length} / {projects.length}</span>
-        </div>
-
-      </div>}
-
       {/* ── Map + MapDetailPane (Map tab) — flex row, map fills space ── */}
       {activeTab === 'map' && <div className="flex flex-1 min-h-0 overflow-hidden border-t border-slate-800">
 
         {/* Map fills remaining space */}
         <div style={{ flex: 1, minWidth: 0, position: 'relative' }}>
+          {/* Floating filter bar — keeps the whole pane for the map */}
+          <div style={{
+            position: 'absolute', top: 10, left: 54, zIndex: 1000,
+            display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center',
+            background: 'rgba(8,14,28,0.88)', backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(0,245,255,0.2)', borderRadius: 9, padding: '6px 10px',
+          }}>
+            <div className="relative" style={{ minWidth: 170 }}>
+              <Search size={11} className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-500" />
+              <input value={search} onChange={e => setSearch(e.target.value)}
+                placeholder="Search projects…" className="bms-input pl-6 w-full text-xs" style={{ height: 26 }} />
+            </div>
+            <select value={regionF} onChange={e => setRegionF(e.target.value)} className="bms-input text-xs" style={{ height: 26 }}>
+              <option value="all">All Regions</option>
+              {regions.map(r => <option key={r} value={r}>{r}</option>)}
+            </select>
+            <select value={statusF} onChange={e => setStatusF(e.target.value as typeof statusF)} className="bms-input text-xs" style={{ height: 26 }}>
+              <option value="all">All Status</option>
+              <option value="planned">Planned</option>
+              <option value="ongoing">Ongoing</option>
+              <option value="complete">Complete</option>
+            </select>
+            <span className="text-[10px] text-slate-400 font-bold">{filtered.length}/{projects.length}</span>
+          </div>
           <MapContainer
             center={UGANDA_CENTER}
             zoom={7}
@@ -767,6 +642,131 @@ export default function ProjectsView() {
       {/* ── Works Register tab ── */}
       {activeTab === 'register' && (
         <div style={{ flex: 1, overflowY: 'auto', padding: '14px 18px', minHeight: 0 }}>
+          {/* Programme overview — moved here from the map tab so the map fills its pane */}
+          <div className="space-y-3" style={{ marginBottom: 14 }}>
+        {/* KPI strip */}
+        <div className="grid grid-cols-4 gap-2">
+          {[
+            { label: 'Total km',  value: `${stats.totalKm.toFixed(0)}`, unit: 'km',    color: '#f59e0b' },
+            { label: 'Planned',   value: `${stats.planned}`,            unit: 'proj',  color: '#3b82f6' },
+            { label: 'Ongoing',   value: `${stats.ongoing}`,            unit: 'proj',  color: '#f59e0b' },
+            { label: 'Complete',  value: `${stats.complete}`,           unit: 'proj',  color: '#22c55e' },
+          ].map(k => (
+            <div key={k.label} className="bms-card py-2 px-3 text-center">
+              <div className="text-lg font-black" style={{ color: k.color }}>{k.value}</div>
+              <div className="text-[9px] text-slate-400 font-semibold uppercase tracking-wide">{k.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* ── OPRC + NDP IV info cards ── */}
+        <div className="grid grid-cols-2 gap-2">
+
+          {/* OPRC Card */}
+          <div style={{
+            background: 'rgba(253,211,77,0.05)',
+            border: '1px solid rgba(253,211,77,0.25)',
+            borderLeft: '3px solid #fcd34d',
+            borderRadius: 8, padding: '8px 12px',
+          }}>
+            <div style={{ fontSize: 9, fontWeight: 900, color: '#fcd34d', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 5 }}>
+              🚧 NERAMP OPRC — Output-Performance Road Contracts
+            </div>
+            <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.8)', lineHeight: 1.5 }}>
+              <span style={{ color: '#fcd34d', fontWeight: 700 }}>Lot 1 (216 km)</span>
+              {' '}Kamdini–Lira–Soroti–Koloin · Mota-Engil · World Bank · Completion Jun 2027
+            </div>
+            <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.8)', lineHeight: 1.5, marginTop: 2 }}>
+              <span style={{ color: '#fcd34d', fontWeight: 700 }}>Lot 2 (307 km)</span>
+              {' '}Soroti–Moroto–Kotido · In procurement · World Bank NERAMP
+            </div>
+            <div style={{ fontSize: 8, color: 'rgba(100,116,139,0.5)', marginTop: 4 }}>
+              NERAMP = North East Road Asset Management Programme · 10-yr performance contracts
+            </div>
+          </div>
+
+          {/* NDP IV Card */}
+          <div style={{
+            background: 'rgba(77,159,255,0.05)',
+            border: '1px solid rgba(77,159,255,0.25)',
+            borderLeft: '3px solid #4d9fff',
+            borderRadius: 8, padding: '8px 12px',
+          }}>
+            <div style={{ fontSize: 9, fontWeight: 900, color: '#4d9fff', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 5 }}>
+              📋 NDP IV Targets · FY 2025/26 – 2029/30
+            </div>
+            <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.8)', lineHeight: 1.5 }}>
+              <span style={{ color: '#00ff88', fontWeight: 700 }}>1,200+ km</span>
+              {' '}new paved roads (upgrading gravel-to-bituminous)
+            </div>
+            <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.8)', lineHeight: 1.5, marginTop: 2 }}>
+              <span style={{ color: '#00f5ff', fontWeight: 700 }}>Key priorities:</span>
+              {' '}Albertine oil roads · GKMA improvements · Northern Bypass Ph 2 · border connectivity
+            </div>
+            <div style={{ fontSize: 8, color: 'rgba(100,116,139,0.5)', marginTop: 4 }}>
+              Target: 35% paved network by 2030 · Current baseline: ~30.1% (6,405 km)
+            </div>
+          </div>
+
+        </div>
+
+        {/* Works-type clustered bar chart */}
+        {(() => {
+          const wt: Record<string, { count: number; km: number }> = {};
+          projects.forEach(p => {
+            const t = inferWorksType(p.project_name);
+            if (!wt[t]) wt[t] = { count: 0, km: 0 };
+            wt[t].count++;
+            wt[t].km += Math.round(p.parsed_length_km);
+          });
+          const data = Object.entries(wt)
+            .map(([type, v]) => ({ type: type.replace(' ', '\n').split(' ')[0], fullType: type, ...v }))
+            .sort((a, b) => b.km - a.km);
+          return (
+            <div style={{
+              background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(255,255,255,0.07)',
+              borderRadius: 10, padding: '10px 12px',
+            }}>
+              <div style={{ fontSize: 9, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>
+                Projects by Works Type — Count &amp; Length (km)
+              </div>
+              <Chart3DWrap>
+                <ResponsiveContainer width="100%" height={110}>
+                  <BarChart data={data} margin={{ top: 2, right: 6, left: -24, bottom: 0 }}
+                    barCategoryGap="20%" barGap={2}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                    <XAxis dataKey="fullType" tick={{ fill: '#64748b', fontSize: 8 }}
+                      tickFormatter={(s: string) => s.split(' ')[0]} />
+                    <YAxis yAxisId="cnt" tick={{ fill: '#64748b', fontSize: 8 }} />
+                    <YAxis yAxisId="km" orientation="right" tick={{ fill: '#64748b', fontSize: 8 }} />
+                    <ReTooltip
+                      contentStyle={{ background: 'rgba(8,14,28,0.96)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 10 }}
+                      formatter={(v: number, name: string) => [name === 'count' ? `${v} projects` : `${v} km`, name === 'count' ? 'Projects' : 'Total km']}
+                      labelFormatter={(l: string) => l}
+                    />
+                    <Bar yAxisId="cnt" dataKey="count" name="count" radius={[3,3,0,0]} maxBarSize={28} shape={<Bar3D/>}>
+                      {data.map(d => <Cell key={d.fullType} fill={WORKS_COLOR[d.fullType] ?? '#64748b'} />)}
+                    </Bar>
+                    <Bar yAxisId="km" dataKey="km" name="km" radius={[3,3,0,0]} maxBarSize={28} shape={<Bar3D/>}>
+                      {data.map(d => <Cell key={d.fullType} fill={WORKS_COLOR[d.fullType] ?? '#64748b'} fillOpacity={0.4} />)}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Chart3DWrap>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 14px', marginTop: 4 }}>
+                {Object.entries(WORKS_COLOR).map(([type, c]) => (
+                  <div key={type} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <div style={{ width: 8, height: 8, borderRadius: 2, background: c, flexShrink: 0 }} />
+                    <span style={{ fontSize: 9, color: '#64748b' }}>{type}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
+
+          </div>
+
           <div style={{ fontSize: 14, fontWeight: 900, color: '#e2eaf4', marginBottom: 4 }}>Works Register — All Projects</div>
           <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.55)', marginBottom: 12 }}>
             {projects.length} projects · source: appStore / NDPIV Excel
