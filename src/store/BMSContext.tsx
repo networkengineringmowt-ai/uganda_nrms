@@ -13,10 +13,10 @@ const initialState: AppState = {
   inspections:         [],
   workOrders:          [],
   documents:           [],
-  activeView:          'network',
+  activeView:          'rms',
   selectedStructureId: null,
   isLoading:           true,
-  viewHistory:         ['network'],
+  viewHistory:         ['rms'],
   historyIndex:        0,
 };
 
