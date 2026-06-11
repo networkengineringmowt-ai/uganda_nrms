@@ -4,7 +4,6 @@
  *   1. Platform Dashboard  — high-level KPI overview
  *   2. Road Network Map    — full-screen GeoJSON map + timeline
  *   3. Network Story       — scrollytelling 1986-to-now narrative
- *   4. Architecture        — platform / asset-management system architecture diagram
  *
  * Follows the exact BMS tab-bar pattern:
  *   borderBottom '1px solid rgba(77,159,255,0.15)'
@@ -12,13 +11,12 @@
  *   inactive: color 'rgba(148,163,184,0.70)', borderBottom '2px solid transparent'
  */
 import { lazy, Suspense, useState } from 'react';
-import { LayoutDashboard, Map, BookOpen, Network as NetworkIcon } from 'lucide-react';
+import { LayoutDashboard, Map, BookOpen } from 'lucide-react';
 import type { ActiveView } from '../../types';
 
 const NET_PlatformDashboard   = lazy(() => import('../PlatformDashboard/PlatformDashboard'));
 const NET_RoadNetworkView     = lazy(() => import('../RoadNetwork/RoadNetworkView'));
 const NET_NetworkStory        = lazy(() => import('../NetworkStory/NetworkStory'));
-const NET_ArchitectureDiagram = lazy(() => import('../MLArchitecture/MLArchitectureDiagram'));
 
 function Spinner() {
   return (
@@ -36,7 +34,6 @@ const MAIN_TABS = [
   { id: 'dashboard'    as const, label: 'Platform Dashboard', icon: <LayoutDashboard size={13}/> },
   { id: 'roadnetwork'  as const, label: 'Road Network Map',   icon: <Map size={13}/> },
   { id: 'networkstory' as const, label: 'Network Story',      icon: <BookOpen size={13}/> },
-  { id: 'architecture' as const, label: 'Architecture',       icon: <NetworkIcon size={13}/> },
 ];
 
 type TabId = typeof MAIN_TABS[number]['id'];
@@ -106,12 +103,6 @@ export default function NetworkSection() {
             </div>
           )}
 
-          {/* Tab 4: Architecture — system architecture diagram, compact margins */}
-          {tab === 'architecture' && (
-            <div style={{ padding: '12px 14px' }}>
-              <NET_ArchitectureDiagram />
-            </div>
-          )}
 
         </Suspense>
       </div>
