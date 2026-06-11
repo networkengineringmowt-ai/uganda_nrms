@@ -3,6 +3,7 @@ import {
   DollarSign, Clock, Database, ShieldCheck, Route, Globe, Landmark,
 } from 'lucide-react';
 import { useBMS } from '../../store/BMSContext';
+import { useAuth } from '../../modules/Auth/AuthContext';
 import type { ActiveView } from '../../types';
 
 interface Section {
@@ -38,6 +39,10 @@ const SECTIONS: Section[] = [
 export default function Sidebar() {
   const { state, navigate } = useBMS();
   const { structures, activeView } = state;
+  const { user } = useAuth();
+
+  // super level: dashboards & reports only — Admin Tools stays hidden
+  const sections = SECTIONS.filter(s => s.id !== 'admin' || user?.role === 'admin');
 
   const criticalCount = structures.filter(s => s.conditionRating === 1).length;
 
@@ -91,7 +96,7 @@ export default function Sidebar() {
 
       {/* ── Flat Navigation — one click per section ── */}
       <nav style={{ flex: 1, overflowY: 'auto', padding: '8px 6px' }}>
-        {SECTIONS.map(s => {
+        {sections.map(s => {
           const isActive = activeView === s.id;
           const rgb = hexToRgb(s.color);
           return (

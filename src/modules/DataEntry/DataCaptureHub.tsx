@@ -53,7 +53,7 @@ export default function DataCaptureHub() {
         <div>
           <div style={{ fontSize: 18, fontWeight: 900, color: '#e2eaf4' }}>Data Capture</div>
           <div style={{ fontSize: 11, color: 'rgba(148,163,184,0.7)', marginTop: 2 }}>
-            Field data entry · writes to the live Supabase Unified DB · updates the whole platform
+            Field data entry · saved to the G: Drive repository (canonical store) · updates the whole platform
           </div>
         </div>
         <UserBadge />
@@ -62,7 +62,7 @@ export default function DataCaptureHub() {
       {!canSubmit && (
         <div style={{ padding: '10px 14px', marginBottom: 16, borderRadius: 8, fontSize: 12,
           background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.3)', color: '#fca5a5' }}>
-          Your role (<strong>{user?.role}</strong>) is read-only. Submitting surveys requires the inspector role or higher.
+          Your access level (<strong>{user?.role}</strong>) is read-only. Submitting surveys requires the RMS field level or admin.
         </div>
       )}
 

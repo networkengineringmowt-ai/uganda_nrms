@@ -1,4 +1,8 @@
-export type UserRole = 'viewer' | 'inspector' | 'engineer' | 'manager' | 'admin';
+// Three access levels — three interfaces:
+//  rms   → field data-entry ONLY (mobile-friendly capture shell)
+//  super → dashboards/reports of everything, read-only (no input, no admin/audit)
+//  admin → everything, all at once
+export type UserRole = 'rms' | 'super' | 'admin';
 
 export interface User {
   id: string;
@@ -27,11 +31,9 @@ export interface Permission {
 }
 
 export const ROLE_PERMISSIONS: Record<UserRole, Permission> = {
-  viewer:    { canViewMaps:true,  canViewTraffic:true,  canViewBudget:false, canViewBridges:true,  canViewML:false, canEditRoads:false, canEditBridges:false, canSubmitSurvey:false, canApproveMaintenance:false, canManageUsers:false, canExportData:false, canViewConfidential:false },
-  inspector: { canViewMaps:true,  canViewTraffic:true,  canViewBudget:false, canViewBridges:true,  canViewML:false, canEditRoads:false, canEditBridges:false, canSubmitSurvey:true,  canApproveMaintenance:false, canManageUsers:false, canExportData:true,  canViewConfidential:false },
-  engineer:  { canViewMaps:true,  canViewTraffic:true,  canViewBudget:true,  canViewBridges:true,  canViewML:true,  canEditRoads:true,  canEditBridges:true,  canSubmitSurvey:true,  canApproveMaintenance:false, canManageUsers:false, canExportData:true,  canViewConfidential:false },
-  manager:   { canViewMaps:true,  canViewTraffic:true,  canViewBudget:true,  canViewBridges:true,  canViewML:true,  canEditRoads:true,  canEditBridges:true,  canSubmitSurvey:true,  canApproveMaintenance:true,  canManageUsers:false, canExportData:true,  canViewConfidential:true  },
-  admin:     { canViewMaps:true,  canViewTraffic:true,  canViewBudget:true,  canViewBridges:true,  canViewML:true,  canEditRoads:true,  canEditBridges:true,  canSubmitSurvey:true,  canApproveMaintenance:true,  canManageUsers:true,  canExportData:true,  canViewConfidential:true  },
+  rms:   { canViewMaps:false, canViewTraffic:false, canViewBudget:false, canViewBridges:false, canViewML:false, canEditRoads:true,  canEditBridges:true,  canSubmitSurvey:true,  canApproveMaintenance:false, canManageUsers:false, canExportData:false, canViewConfidential:false },
+  super: { canViewMaps:true,  canViewTraffic:true,  canViewBudget:true,  canViewBridges:true,  canViewML:true,  canEditRoads:false, canEditBridges:false, canSubmitSurvey:false, canApproveMaintenance:false, canManageUsers:false, canExportData:true,  canViewConfidential:true  },
+  admin: { canViewMaps:true,  canViewTraffic:true,  canViewBudget:true,  canViewBridges:true,  canViewML:true,  canEditRoads:true,  canEditBridges:true,  canSubmitSurvey:true,  canApproveMaintenance:true,  canManageUsers:true,  canExportData:true,  canViewConfidential:true  },
 };
 
 export function hasPermission(user: User | null, perm: keyof Permission): boolean {

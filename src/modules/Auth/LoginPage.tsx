@@ -43,9 +43,10 @@ export function LoginPage() {
 
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom:16 }}>
-            <label style={{ color:'#94a3b8', fontSize:12, display:'block', marginBottom:6 }}>Email Address</label>
-            <input type="email" value={email} onChange={e => setEmail(e.target.value)} required
-              style={FIELD} placeholder="your.name@unra.go.ug" />
+            <label style={{ color:'#94a3b8', fontSize:12, display:'block', marginBottom:6 }}>UNRA Email</label>
+            <input type="text" value={email} onChange={e => setEmail(e.target.value)} required
+              autoCapitalize="none" autoCorrect="off"
+              style={FIELD} placeholder="first.lastname@unra.go.ug" />
           </div>
           <div style={{ marginBottom:20 }}>
             <label style={{ color:'#94a3b8', fontSize:12, display:'block', marginBottom:6 }}>Password</label>
@@ -68,22 +69,23 @@ export function LoginPage() {
         </form>
 
         <div style={{ marginTop:24, padding:'14px', background:'rgba(99,102,241,0.08)', borderRadius:8, border:'1px solid rgba(99,102,241,0.15)' }}>
-          <div style={{ color:'rgba(148,163,184,0.7)', fontSize:10, fontWeight:700, marginBottom:8, letterSpacing:'0.05em' }}>DEMO CREDENTIALS</div>
+          <div style={{ color:'rgba(148,163,184,0.7)', fontSize:10, fontWeight:700, marginBottom:8, letterSpacing:'0.05em' }}>
+            ACCESS LEVELS — allowed users only (first.lastname@unra.go.ug)
+          </div>
           {[
-            ['Admin',    'admin@unra.go.ug',   'admin2025'],
-            ['Manager',  'pe@unra.go.ug',      'manager2025'],
-            ['Engineer', 'eng@unra.go.ug',     'engineer2025'],
-            ['Inspector','inspect@unra.go.ug', 'inspect2025'],
-            ['Viewer',   'viewer@example.com', 'viewer2025'],
-          ].map(([role, em, pw]) => (
-            <div key={role} style={{ fontSize:10, color:'rgba(148,163,184,0.55)', marginBottom:3 }}>
-              <span style={{ color:'#818cf8', fontWeight:700 }}>{role}:</span>{' '}
+            ['RMS',   '#22c55e', 'Field data entry only · mobile interface', 'robert.okello@unra.go.ug',  'rms2025'],
+            ['SUPER', '#f59e0b', 'All dashboards & reports · no input/admin', 'grace.namuli@unra.go.ug',   'super2025'],
+            ['ADMIN', '#ef4444', 'Everything, all at once',                   'prisca.nanjehe@unra.go.ug', 'admin2025'],
+          ].map(([level, color, desc, em, pw]) => (
+            <div key={level} style={{ fontSize:10, color:'rgba(148,163,184,0.6)', marginBottom:5, lineHeight:1.5 }}>
+              <span style={{ color, fontWeight:800 }}>{level}</span>
+              <span style={{ color:'rgba(148,163,184,0.45)' }}> — {desc}</span><br/>
               <span style={{ cursor:'pointer', textDecoration:'underline' }}
                 onClick={() => { setEmail(em); setPassword(pw); }}>{em}</span> / {pw}
             </div>
           ))}
           <div style={{ color:'rgba(148,163,184,0.35)', fontSize:9, marginTop:6 }}>
-            Click an email to auto-fill credentials
+            One password per level · click an email to auto-fill · roster: src/modules/Auth/allowedUsers.ts
           </div>
         </div>
       </div>

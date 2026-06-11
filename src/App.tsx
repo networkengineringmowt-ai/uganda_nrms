@@ -3,6 +3,9 @@ import { BMSProvider, useBMS } from './store/BMSContext';
 import { BotHighlightContext } from './modules/AssetBot/types';
 import { AuthProvider, useAuth } from './modules/Auth/AuthContext';
 import { LoginPage } from './modules/Auth/LoginPage';
+import { canAccessView } from './modules/Auth/permissions';
+
+const RMSFieldShell = lazy(() => import('./modules/RMS/RMSFieldShell'));
 import Sidebar from './components/Layout/Sidebar';
 import Header  from './components/Layout/Header';
 
@@ -186,31 +189,33 @@ function AppShell() {
 
                 {activeView === 'admin' && (
                   <Suspense fallback={<ModuleSpinner />}>
-                    <RequireLogin label="Admin Tools">
+                    <RequireAdmin label="Admin Tools">
                       <AdminSection onNavigate={navigate} />
-                    </RequireLogin>
+                    </RequireAdmin>
                   </Suspense>
                 )}
 
                 {activeView === 'pendingsurveys' && (
                   <Suspense fallback={<ModuleSpinner />}>
-                    <RequireLogin label="Pending Submissions">
+                    <RequireAdmin label="Pending Submissions">
                       <PendingSubmissions />
-                    </RequireLogin>
+                    </RequireAdmin>
                   </Suspense>
                 )}
 
                 {activeView === 'dataaudit' && (
                   <Suspense fallback={<ModuleSpinner />}>
-                    <RequireLogin label="Data Audit">
+                    <RequireAdmin label="Data Audit">
                       <DataAuditPanel />
-                    </RequireLogin>
+                    </RequireAdmin>
                   </Suspense>
                 )}
 
                 {activeView === 'datacapture' && (
                   <Suspense fallback={<ModuleSpinner />}>
-                    <DataCaptureHub />
+                    <RequireAdmin label="Data Capture">
+                      <DataCaptureHub />
+                    </RequireAdmin>
                   </Suspense>
                 )}
 
@@ -225,17 +230,46 @@ function AppShell() {
   );
 }
 
-// ── Login gate for Admin Tools + all input/capture sections ───────────────────
-function RequireLogin({ label, children }: { label: string; children: React.ReactNode }) {
-  const { isAuthenticated } = useAuth();
-  if (isAuthenticated) return <>{children}</>;
+// ── Admin-only gate for input/audit/admin sections ────────────────────────────
+function RequireAdmin({ label, children }: { label: string; children: React.ReactNode }) {
+  const { user } = useAuth();
+  if (user && canAccessView(user.role, 'admin')) return <>{children}</>;
   return (
-    <div style={{ minHeight: '100%' }}>
-      <div style={{ textAlign: 'center', padding: '18px 0 0', color: 'rgba(148,163,184,0.85)', fontSize: 12.5, fontWeight: 600 }}>
-        🔒 {label} requires sign-in
+    <div style={{ textAlign: 'center', padding: '60px 20px', color: 'rgba(148,163,184,0.85)' }}>
+      <div style={{ fontSize: 28, marginBottom: 10 }}>🔒</div>
+      <div style={{ fontSize: 14, fontWeight: 700, color: '#e2eaf4' }}>{label} is admin-only</div>
+      <div style={{ fontSize: 12, marginTop: 6 }}>
+        Your access level (<strong style={{ color: '#fbbf24' }}>{user?.role}</strong>) is
+        view-and-reports only. Sign in with an admin account to use input, audit or admin tools.
       </div>
-      <LoginPage />
     </div>
+  );
+}
+
+// ── Level gate — three logins, three interfaces ───────────────────────────────
+//  rms   → mobile-first field capture shell (inputs only)
+//  super → full dashboards & reports, no input/audit/admin
+//  admin → everything
+function AppGate() {
+  const { user, isAuthenticated } = useAuth();
+
+  if (!isAuthenticated || !user) return <LoginPage />;
+
+  if (user.role === 'rms') {
+    return (
+      <Suspense fallback={<ModuleSpinner />}>
+        <RMSFieldShell />
+      </Suspense>
+    );
+  }
+
+  return (
+    <>
+      <AppShell />
+      <Suspense fallback={null}>
+        <RoadAssetBot />
+      </Suspense>
+    </>
   );
 }
 
@@ -247,10 +281,7 @@ export default function App() {
     <AuthProvider>
       <BotHighlightContext.Provider value={{ highlightedLinks, setHighlightedLinks }}>
         <BMSProvider>
-          <AppShell />
-          <Suspense fallback={null}>
-            <RoadAssetBot />
-          </Suspense>
+          <AppGate />
         </BMSProvider>
       </BotHighlightContext.Provider>
     </AuthProvider>

@@ -5,6 +5,7 @@
  */
 import { ClipboardPlus, ChevronRight } from 'lucide-react';
 import { useBMS } from '../store/BMSContext';
+import { useAuth } from '../modules/Auth/AuthContext';
 
 interface Props {
   /** Capture form to preselect in the hub, e.g. 'condition' | 'encroachment'. */
@@ -16,6 +17,9 @@ interface Props {
 
 export function CaptureButton({ capture = 'condition', label = 'field data', accent = '#00d4aa' }: Props) {
   const { dispatch } = useBMS();
+  const { user } = useAuth();
+  // super level is strictly view-and-reports — hide every entry point to input
+  if (user?.role !== 'admin') return null;
   const open = () => {
     try { sessionStorage.setItem('capture_target', capture); } catch { /* ignore */ }
     dispatch({ type: 'SET_ACTIVE_VIEW', payload: 'datacapture' as any });

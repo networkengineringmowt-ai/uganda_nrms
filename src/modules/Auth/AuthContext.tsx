@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import type { User } from './authTypes';
+import { ALLOWED_USERS, LEVEL_PASSWORDS } from './allowedUsers';
 
 interface AuthCtx {
   user: User | null;
@@ -17,13 +18,8 @@ const AuthContext = createContext<AuthCtx>({
 
 export const useAuth = () => useContext(AuthContext);
 
-const DEMO_USERS: Array<User & { password: string }> = [
-  { id:'1', name:'Admin User',      email:'admin@unra.go.ug',    password:'admin2025',    role:'admin',    isActive:true },
-  { id:'2', name:'Principal Eng.',  email:'pe@unra.go.ug',       password:'manager2025',  role:'manager',  isActive:true, department:'Maintenance' },
-  { id:'3', name:'Road Engineer',   email:'eng@unra.go.ug',      password:'engineer2025', role:'engineer', isActive:true, region:'Northern', department:'Maintenance' },
-  { id:'4', name:'Field Inspector', email:'inspect@unra.go.ug',  password:'inspect2025',  role:'inspector',isActive:true, region:'Eastern' },
-  { id:'5', name:'Public Viewer',   email:'viewer@example.com',  password:'viewer2025',   role:'viewer',   isActive:true },
-];
+// The allowed-users roster lives in allowedUsers.ts (first.lastname@unra.go.ug
+// emails, one hardcoded password per access level).
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(() => {
@@ -32,10 +28,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   async function login(email: string, password: string): Promise<boolean> {
-    const found = DEMO_USERS.find(u => u.email === email && u.password === password && u.isActive);
+    const id = email.trim().toLowerCase();
+    const found = ALLOWED_USERS.find(u =>
+      (u.email === id || u.email.split('@')[0] === id) && LEVEL_PASSWORDS[u.role] === password);
     if (found) {
-      const { password: _pw, ...safeUser } = found;
-      const withLogin = { ...safeUser, lastLogin: new Date().toISOString() };
+      const withLogin: User = {
+        ...found, id: found.email, isActive: true, lastLogin: new Date().toISOString(),
+      };
       setUser(withLogin);
       localStorage.setItem('dnr_user', JSON.stringify(withLogin));
       return true;

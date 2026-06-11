@@ -2,11 +2,9 @@ import { useState } from 'react';
 import { useAuth } from './AuthContext';
 
 const ROLE_COLORS: Record<string, string> = {
-  admin:     '#ef4444',
-  manager:   '#f59e0b',
-  engineer:  '#6366f1',
-  inspector: '#22c55e',
-  viewer:    '#64748b',
+  admin: '#ef4444',   // everything
+  super: '#f59e0b',   // dashboards & reports, read-only
+  rms:   '#22c55e',   // field data entry
 };
 
 export function UserBadge() {
