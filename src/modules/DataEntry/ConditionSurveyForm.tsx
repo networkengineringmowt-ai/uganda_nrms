@@ -93,14 +93,28 @@ function SurveyFormInner({ onClose }: Props) {
       vci_rating: liveRating,
     };
     try {
-      const { error } = await supabase
-        .from('road_link_condition')
-        .upsert(dbRow, { onConflict: 'link_id,survey_year' });
-      setSync(error
-        ? `Saved locally — Supabase sync failed (${error.message}).`
-        : `Synced to Supabase ✓ — ${form.link_id} condition updated across the platform.`);
-    } catch (err: any) {
-      setSync('Saved locally — offline; will sync on next connection.');
+      // Preferred: trusted write-back server (service_role key stays server-side).
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 2500);
+      const r = await fetch('http://localhost:3001/api/admin/road_link_condition?upsert=link_id,survey_year', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ record: dbRow }), signal: ctrl.signal,
+      }).finally(() => clearTimeout(t));
+      if (!r.ok) throw new Error(`server ${r.status}`);
+      setSync(`Synced via data-entry server ✓ — ${form.link_id} condition updated across the platform.`);
+    } catch {
+      // Fallback: direct anon write (works only while anon retains INSERT/UPDATE;
+      // after running supabase_secure_grants.sql this degrades to local-queue).
+      try {
+        const { error } = await supabase
+          .from('road_link_condition')
+          .upsert(dbRow, { onConflict: 'link_id,survey_year' });
+        setSync(error
+          ? `Saved locally — sync failed (${error.message}). Start the data-entry server to sync.`
+          : `Synced to Supabase ✓ — ${form.link_id} condition updated across the platform.`);
+      } catch {
+        setSync('Saved locally — offline; will sync on next connection.');
+      }
     }
     setBusy(false);
     setSubmitted(true);

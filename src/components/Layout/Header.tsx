@@ -4,6 +4,24 @@ import { useBMS } from '../../store/BMSContext';
 import { UserBadge } from '../../modules/Auth/UserBadge';
 
 const VIEW_TITLES: Record<string, { title: string; sub: string; color?: string }> = {
+  rms:           { title: 'RMS — Road Management System', sub: 'Overview · Road network map · Road inventory · Network story', color: '#00f5ff' },
+  bms:           { title: 'Bridge Management System',     sub: 'Dashboard · Structure map · Inventory & condition · Bridge works', color: '#4d9fff' },
+  lifecycle:     { title: 'Life Cycle Management',        sub: 'Per-link timeline · IRI trajectory · Intervention history · Projected maintenance', color: '#00d4aa' },
+  budget:        { title: 'Budget & Maintenance',         sub: 'Maintenance financing · Unit-cost matrix · MTEF planning', color: '#ff2d78' },
+  pim:           { title: 'Public Investment',            sub: 'PIM funding · PPP projects · Donor vs GoU financing', color: '#ffd23f' },
+  projecttracker:{ title: 'Projects & Works',             sub: 'Execution tracking · Physical vs financial progress', color: '#00ff88' },
+  oprc:          { title: 'OPRC Contracts',               sub: 'Output & performance-based road contracts · 9 lots', color: '#00ff88' },
+  ndpiv:         { title: 'NDP IV Investment',            sub: 'National Development Plan IV road projects & funding', color: '#b967ff' },
+  overloading:   { title: 'Overloading & ESAL',           sub: 'Axle-load risk index · Weighbridge analytics · Hotspot map', color: '#ff3366' },
+  growthfactors: { title: 'Traffic Growth Factors',       sub: 'Monthly / seasonal expansion factors · Annual growth', color: '#00d4aa' },
+  trafficanalytics: { title: 'Traffic Analytics',         sub: 'AADT trends · Vehicle composition · Regional distribution', color: '#00f5ff' },
+  trafficsummary:{ title: 'Traffic Summary Tables',       sub: 'Road links & stations · TIS counts', color: '#00f5ff' },
+  maintenanceprogramme: { title: 'Maintenance Programme', sub: 'Priority-ranked interventions · PMS programme', color: '#ff6b35' },
+  mlarchitecture:{ title: 'ML System Architecture',       sub: 'Model pipeline · Deep learning components', color: '#b967ff' },
+  tabularsummaries: { title: 'Tabular Summaries',         sub: '100 cited tables · Platform data hub', color: '#00f5ff' },
+  dataaudit:     { title: 'Data Audit',                   sub: 'Cross-section KPI validation · Coverage & freshness', color: '#ffd23f' },
+  datacapture:   { title: 'Data Capture',                 sub: 'Field data entry · Writes to the live Supabase database', color: '#00d4aa' },
+  pendingsurveys:{ title: 'Pending Submissions',          sub: 'Queued condition surveys awaiting export', color: '#ffd23f' },
   // Platform
   network:       { title: 'Network Overview',              sub: 'Dashboard · Road Network Map · Network Story · Architecture', color: '#6366f1' },
   admin:         { title: 'Admin Tools',                   sub: 'Platform Mind Map · Data Audit · System Architecture',        color: '#00f5ff' },

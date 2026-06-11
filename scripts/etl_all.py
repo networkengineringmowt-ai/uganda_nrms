@@ -17,6 +17,21 @@ KEY = ("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
        ".eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVkaW9ud21xbWpjZnpiZGhvZXR2Iiwicm9sZSI6Im"
        "Fub24iLCJpYXQiOjE3ODA2NDI3NjcsImV4cCI6MjA5NjIxODc2N30"
        ".EP5bruNS55m2PE1nf0p2KeOxm4Tnae5ESAj6DukqIr0")
+import os as _os
+def _service_key():
+    k = _os.environ.get('SUPABASE_SERVICE_ROLE_KEY')
+    if k: return k
+    for envp in [_os.path.join(_os.path.dirname(__file__), '..', 'server', '.env'),
+                 _os.path.join(_os.path.dirname(__file__), 'uganda-roads', 'server', '.env')]:
+        try:
+            for line in open(envp, encoding='utf-8'):
+                if line.startswith('SUPABASE_SERVICE_ROLE_KEY='):
+                    return line.split('=', 1)[1].strip()
+        except OSError:
+            pass
+    return None
+_sk = _service_key()
+if _sk: KEY = _sk  # service_role: keeps ETL working after anon write-revoke
 HERE = Path(__file__).parent.parent / "public" / "data"   # JSON sources live in public/data
 BATCH = 500
 

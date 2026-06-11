@@ -126,7 +126,12 @@ app.post('/api/admin/:table', async (req, res) => {
     if (!Array.isArray(payload) || payload.length === 0) {
       return res.status(400).json({ error: 'Request body must include "record" or non-empty "records"' });
     }
-    const { data, error } = await supabaseAdmin.from(table).insert(payload).select();
+    // ?upsert=col1,col2 -> upsert on those conflict columns instead of insert
+    const onConflict = typeof req.query.upsert === 'string' && req.query.upsert.trim();
+    const q = onConflict
+      ? supabaseAdmin.from(table).upsert(payload, { onConflict }).select()
+      : supabaseAdmin.from(table).insert(payload).select();
+    const { data, error } = await q;
     if (error) throw Object.assign(new Error(error.message), { status: 400, details: error });
     res.status(201).json({ inserted: data?.length ?? 0, data });
   } catch (err) {

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useContext, useCallback } from 'react';
 import { useBMS } from '../../store/BMSContext';
-import { BotHighlightContext, type BotMessage, type Row, type MLPrediction } from './types';
+import { BotHighlightContext, type BotMessage, type Row } from './types';
 import { matchIntentFull, QUICK_QUERIES } from './intentMatcher';
 import { LINK_ID_EXPLAINER } from './linkIdKnowledge';
 import { askFable, getApiKey, setApiKey, type FableTurn } from './fable';
@@ -179,13 +179,13 @@ export default function RoadAssetBot() {
   }, [messages]);
 
   useEffect(() => {
-    Promise.all([
-      fetch(`${BASE}data/bot_results.json`).then(r => r.json()).catch(() => ({} as Record<string, Row[]>)),
-      fetch(`${BASE}data/deep_ml_predictions.json`).then(r => r.json()).catch(() => [] as MLPrediction[]),
-    ]).then(([results]) => {
-      setBotResults(results);
-      setLoading(false);
-    });
+    fetch(`${BASE}data/bot_results.json`)
+      .then(r => r.json())
+      .catch(() => ({} as Record<string, Row[]>))
+      .then(results => {
+        setBotResults(results);
+        setLoading(false);
+      });
   }, []);
 
   useEffect(() => {
