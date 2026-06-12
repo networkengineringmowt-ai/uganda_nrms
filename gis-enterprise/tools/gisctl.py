@@ -96,25 +96,47 @@ def cmd_reindex(_):
             cur.execute(f'REINDEX SCHEMA {s}')
             print(f'  reindexed {s}')
 
+def _have(exe):
+    from shutil import which
+    return which(exe) is not None
+
+DOCKER_PG = 'gis-enterprise-postgis-1'   # fallback when pg client tools absent on host
+
 def cmd_backup(a):
     stamp = datetime.datetime.now().strftime('%Y%m%d_%H%M')
     out = os.path.join(a.dir, f'ugroads_{stamp}.dump')
     os.makedirs(a.dir, exist_ok=True)
-    envp = dict(os.environ, PGPASSWORD=env('PGPASSWORD', ''))
-    subprocess.check_call(['pg_dump', '-h', env('PGHOST', 'localhost'), '-p', env('PGPORT', '5432'),
-                           '-U', env('PGUSER', 'gis_admin'), '-d', env('PGDATABASE', 'ugroads'),
-                           '-Fc', '-f', out], env=envp)
+    if _have('pg_dump'):
+        envp = dict(os.environ, PGPASSWORD=env('PGPASSWORD', ''))
+        subprocess.check_call(['pg_dump', '-h', env('PGHOST', 'localhost'), '-p', env('PGPORT', '5432'),
+                               '-U', env('PGUSER', 'gis_admin'), '-d', env('PGDATABASE', 'ugroads'),
+                               '-Fc', '-f', out], env=envp)
+    else:  # docker-exec fallback (pg_dump runs inside the postgis container)
+        with open(out, 'wb') as f:
+            subprocess.check_call(['docker', 'exec', DOCKER_PG, 'pg_dump',
+                                   '-U', env('PGUSER', 'gis_admin'), '-d', env('PGDATABASE', 'ugroads'),
+                                   '-Fc'], stdout=f)
     print(f'backup written: {out} ({os.path.getsize(out)/1e6:.1f} MB)')
 
 def cmd_restore(a):
+    use_docker = not _have('pg_restore')
     if a.dry_run:
-        subprocess.check_call(['pg_restore', '--list', a.dump])
+        if use_docker:
+            subprocess.check_call(['docker', 'exec', '-i', DOCKER_PG, 'pg_restore', '--list'],
+                                  stdin=open(a.dump, 'rb'))
+        else:
+            subprocess.check_call(['pg_restore', '--list', a.dump])
         print('\nDRY RUN ok — archive is readable. Re-run without --dry-run to restore.')
         return
-    envp = dict(os.environ, PGPASSWORD=env('PGPASSWORD', ''))
-    subprocess.check_call(['pg_restore', '-h', env('PGHOST', 'localhost'), '-p', env('PGPORT', '5432'),
-                           '-U', env('PGUSER', 'gis_admin'), '-d', env('PGDATABASE', 'ugroads'),
-                           '--clean', '--if-exists', a.dump], env=envp)
+    if use_docker:
+        subprocess.check_call(['docker', 'exec', '-i', DOCKER_PG, 'pg_restore',
+                               '-U', env('PGUSER', 'gis_admin'), '-d', env('PGDATABASE', 'ugroads'),
+                               '--clean', '--if-exists'], stdin=open(a.dump, 'rb'))
+    else:
+        envp = dict(os.environ, PGPASSWORD=env('PGPASSWORD', ''))
+        subprocess.check_call(['pg_restore', '-h', env('PGHOST', 'localhost'), '-p', env('PGPORT', '5432'),
+                               '-U', env('PGUSER', 'gis_admin'), '-d', env('PGDATABASE', 'ugroads'),
+                               '--clean', '--if-exists', a.dump], env=envp)
     print('restore complete')
 
 def cmd_history(a):

@@ -9,7 +9,7 @@ services:
       POSTGRES_DB: ugroads
       POSTGRES_USER: gis_admin
       POSTGRES_PASSWORD: ${PG_ADMIN_PASSWORD:?set in .env}
-    ports: ["5432:5432"]
+    ports: ["5434:5432"]   # 5432=native pg, 5433=road-reserve stack
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./sql:/docker-entrypoint-initdb.d:ro   # auto-runs 01/02/03 on first start
@@ -47,7 +47,7 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@unra.go.ug
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:?set in .env}
-    ports: ["5050:80"]
+    ports: ["5060:80"]
     depends_on: [postgis]
     restart: unless-stopped
 

@@ -38,6 +38,11 @@ def load_json(name):
 def done(schema, table, n):
     print(f'  {schema}.{table:<22} {n:>6} rows')
 
+def truncate(*tables):
+    from sqlalchemy import text as _t
+    with eng.begin() as cx:
+        cx.execute(_t('TRUNCATE ' + ', '.join(tables) + ' CASCADE'))
+
 # ── core.network_links (attributes + network2026 geometry) ───────────────────
 links = pd.DataFrame(load_json('network_links.json')).rename(columns={
     'maintenance_station': 'station', 'maintenance_region': 'region',
@@ -48,11 +53,20 @@ for c in ('completion_yr', 'rehab_yr', 'last_interv'):
 links['pavement_age'] = pd.to_numeric(links['pavement_age'], errors='coerce')
 
 geo = gpd.read_file(os.path.join(DATA, 'network2026.geojson'))[['link_id', 'geometry']]
+import shapely
+geo.geometry = shapely.force_2d(geo.geometry)            # shapefile carried Z
 geo = geo.dissolve(by='link_id').reset_index()           # one MultiLineString per link
+geo.geometry = geo.geometry.apply(
+    lambda g: g if g is None or g.geom_type == 'MultiLineString'
+    else shapely.geometry.MultiLineString([g]) if g.geom_type == 'LineString' else g)
+links = links.drop(columns=['comments'], errors='ignore').rename(columns={
+    'completion_year': 'completion_yr', 'rehab_year': 'rehab_yr',
+    'last_intervention': 'last_interv'})
 gdf = gpd.GeoDataFrame(links.merge(geo, on='link_id', how='left'),
                        geometry='geometry', crs='EPSG:4326')
-gdf = gdf.set_geometry(gdf.geometry.apply(lambda g: g))   # keep None geoms
-gdf.to_postgis('network_links', eng, schema='core', if_exists='replace', index=False)
+gdf = gdf.rename_geometry('geom')
+truncate('core.network_links')        # CASCADE clears bridges + link_condition too
+gdf.to_postgis('network_links', eng, schema='core', if_exists='append', index=False)
 done('core', 'network_links', len(gdf))
 
 # ── core.bridges (BMS inventory + element conditions) ────────────────────────
@@ -80,17 +94,31 @@ for f in bj['features']:
         'geometry': Point(g['coordinates']) if g and g.get('coordinates') else None,
     })
 bdf = gpd.GeoDataFrame(pd.DataFrame(rows), geometry='geometry', crs='EPSG:4326')
-# the bridges FK references network_links — drop link ids not in the master
+bdf = bdf.rename_geometry('geom')
+for c in ('spans', 'lanes', 'completion_yr', 'last_interv'):
+    bdf[c] = pd.to_numeric(bdf[c], errors='coerce').astype('Int64')
+for c in ('chainage_km', 'length_m', 'width_m', 'bms_product', 'growth_rate', 'predicted_aadt'):
+    bdf[c] = pd.to_numeric(bdf[c], errors='coerce')
+# the bridges FK references network_links — null link ids not in the master
 valid = set(links['link_id'])
 bdf.loc[~bdf['link_id'].isin(valid), 'link_id'] = None
-bdf.to_postgis('bridges', eng, schema='core', if_exists='replace', index=False)
+# the BMS CSV contains duplicate bridge numbers — keep the first, report the rest
+dups = bdf[bdf.duplicated('bridge_no', keep='first')]['bridge_no'].tolist()
+if dups:
+    print(f'  WARNING: {len(dups)} duplicate bridge_no in source, keeping first: {dups}')
+    bdf = bdf.drop_duplicates('bridge_no', keep='first')
+bdf.to_postgis('bridges', eng, schema='core', if_exists='append', index=False)
 done('core', 'bridges', len(bdf))
 
 # ── pms.link_condition ────────────────────────────────────────────────────────
 cond = load_json('link_condition_lookup.json')
 cdf = pd.DataFrame([{'link_id': k, **v} for k, v in cond.items()]).rename(
     columns={'year': 'survey_year'})
-cdf.to_sql('link_condition', eng, schema='pms', if_exists='replace', index=False)
+orphan = cdf[~cdf['link_id'].isin(valid)]['link_id'].tolist()
+if orphan:
+    print(f'  NOTE: {len(orphan)} condition rows reference pre-FY25/26 link ids (dropped): {orphan[:6]}…')
+    cdf = cdf[cdf['link_id'].isin(valid)]
+cdf.to_sql('link_condition', eng, schema='pms', if_exists='append', index=False)
 done('pms', 'link_condition', len(cdf))
 
 # ── pms.fwd_bowls ─────────────────────────────────────────────────────────────
@@ -99,7 +127,8 @@ frows = [{'road': s['road'], 'sheet': s['sheet'], 'chainage_km': p['ch'],
           'd0': p['d0'], 'd300': p.get('d300'), 'd600': p.get('d600'),
           'd900': p.get('d900'), 'load_kn': p.get('load')}
          for s in fwd['surveys'] for p in s['points']]
-pd.DataFrame(frows).to_sql('fwd_bowls', eng, schema='pms', if_exists='replace', index=False)
+truncate('pms.fwd_bowls')
+pd.DataFrame(frows).to_sql('fwd_bowls', eng, schema='pms', if_exists='append', index=False)
 done('pms', 'fwd_bowls', len(frows))
 
 # ── traffic.atc_sites ─────────────────────────────────────────────────────────
@@ -114,10 +143,9 @@ for s in atc['sites']:
                   'geometry': Point(s['lon'], s['lat'])
                               if s.get('lon') is not None and s.get('lat') is not None else None})
 adf = gpd.GeoDataFrame(pd.DataFrame(arows), geometry='geometry', crs='EPSG:4326')
-adf.to_postgis('atc_sites', eng, schema='traffic', if_exists='replace', index=False)
-with eng.begin() as cx:
-    cx.execute(text("ALTER TABLE traffic.atc_sites "
-                    "ALTER COLUMN adt_by_class TYPE jsonb USING adt_by_class::jsonb"))
+adf = adf.rename_geometry('geom')
+truncate('traffic.atc_sites')
+adf.to_postgis('atc_sites', eng, schema='traffic', if_exists='append', index=False)
 done('traffic', 'atc_sites', len(adf))
 
 # ── rms.inventory_links ───────────────────────────────────────────────────────
@@ -131,32 +159,8 @@ irows = [{'link_id': l['link_id'], 'link_name': l['link_name'], 'region': l['reg
           'point_features': json.dumps(l['point_features']),
           'line_records': l['line_records'], 'point_records': l['point_records']}
          for l in inv['links']]
-pd.DataFrame(irows).to_sql('inventory_links', eng, schema='rms', if_exists='replace', index=False)
-with eng.begin() as cx:
-    for col in ('line_features', 'point_features'):
-        cx.execute(text(f"ALTER TABLE rms.inventory_links "
-                        f"ALTER COLUMN {col} TYPE jsonb USING {col}::jsonb"))
+truncate('rms.inventory_links')
+pd.DataFrame(irows).to_sql('inventory_links', eng, schema='rms', if_exists='append', index=False)
 done('rms', 'inventory_links', len(irows))
 
-# ── re-apply spatial indexes, grants and audit triggers (to_postgis replaced) ─
-with eng.begin() as cx:
-    cx.execute(text("""
-      CREATE INDEX IF NOT EXISTS network_links_geom_gix ON core.network_links USING gist (geom);
-      CREATE INDEX IF NOT EXISTS bridges_geom_gix ON core.bridges USING gist (geometry);
-      GRANT SELECT ON ALL TABLES IN SCHEMA core, traffic, pms, rms TO gis_viewer, svc_web;
-      GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA core, traffic, pms, rms TO gis_editor;
-    """))
-    # geometry column from to_postgis is named 'geometry'; standardise links to 'geom'
-    cx.execute(text("""
-      DO $$ BEGIN
-        IF EXISTS (SELECT 1 FROM information_schema.columns
-                   WHERE table_schema='core' AND table_name='network_links' AND column_name='geometry') THEN
-          ALTER TABLE core.network_links RENAME COLUMN geometry TO geom;
-        END IF;
-      END $$;
-    """))
-print('reattaching audit triggers…')
-with eng.begin() as cx:
-    cx.execute(text(open(os.path.join(HERE, '..', 'sql', '03_audit_triggers.sql'),
-                         encoding='utf-8').read()))
 print('LOAD COMPLETE — geodatabase is current with the G: masters')
