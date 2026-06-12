@@ -138,10 +138,11 @@ export function SortableFilterableTable<T extends Record<string, any>>({
       </div>
 
       {/* Table */}
-      <div style={{ overflowX: 'auto', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10 }}>
+      <div style={{ overflow: 'auto', maxHeight: 'calc(100vh - 270px)',
+        border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10 }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10.5 }}>
           <thead>
-            <tr style={{ background: `${accent}10`, borderBottom: `1px solid ${accent}33` }}>
+            <tr style={{ borderBottom: `1px solid ${accent}33` }}>
               {columns.map(c => {
                 const active = sortKey === c.key;
                 return (
@@ -150,6 +151,8 @@ export function SortableFilterableTable<T extends Record<string, any>>({
                     color: active ? accent : 'rgba(148,163,184,0.8)', fontWeight: 800,
                     textTransform: 'uppercase', letterSpacing: '0.06em', fontSize: 9.5,
                     cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap', width: c.width,
+                    position: 'sticky', top: 0, zIndex: 2, background: 'rgba(6,12,24,0.97)',
+                    boxShadow: `inset 0 -1px 0 ${accent}33`,
                   }}>
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                       {c.label}
