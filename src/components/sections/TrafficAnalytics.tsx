@@ -3,6 +3,7 @@
  * Tabs: MACRO | REGIONS | CLASSES | ASSETS | ANALYSIS | STATIONS | STRATEGIC
  */
 import { useState, useEffect, useMemo } from 'react';
+import { CURRENT_YEAR } from '../../shared/year';
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis,
   CartesianGrid, Tooltip, Legend,
@@ -28,12 +29,20 @@ const C = {
 };
 const CONG_CLR: Record<string,string> = { Critical:'#ff2d78', High:'#ff6b35', Medium:'#ffd23f', Low:'#00ff88' };
 
+// Growth factors REBASED to the 2016 base year (source: growth_factors_summary
+// year_range 2016-2024; ATC observed through 2024, projected beyond).
+// 2016 = 1.00; observed AADT is anchored at CURRENT_YEAR via factorTo().
+const BASE_YEAR = 2016;
 const GROWTH_FACTORS: Record<number,number> = {
-  2016:0.62, 2017:0.66, 2018:0.71, 2019:0.76, 2020:0.65, 2021:0.74,
-  2022:0.82, 2023:0.90, 2024:0.96, 2025:1.00, 2026:1.05, 2027:1.10,
-  2028:1.16, 2029:1.22, 2030:1.28, 2031:1.33, 2032:1.39, 2033:1.44,
-  2034:1.49, 2035:1.55,
+  2016:1.00, 2017:1.06, 2018:1.15, 2019:1.23, 2020:1.05, 2021:1.19,
+  2022:1.32, 2023:1.45, 2024:1.55, 2025:1.61, 2026:1.69, 2027:1.77,
+  2028:1.87, 2029:1.97, 2030:2.06, 2031:2.15, 2032:2.24, 2033:2.32,
+  2034:2.40, 2035:2.50,
 };
+// Scale a year's factor relative to the current reporting year, so observed
+// mean AADT (a CURRENT_YEAR figure) is carried forward/back correctly.
+const factorTo = (y: number) =>
+  (GROWTH_FACTORS[y] ?? 1) / (GROWTH_FACTORS[CURRENT_YEAR] ?? 1);
 
 const VEHICLE_CLASSES = [
   { id:'mc',  name:'Motorcycles',          abbr:'MC', pct:0.295, color:C.cyan   },
@@ -80,7 +89,7 @@ function donutArc(cx:number, cy:number, ro:number, ri:number, s:number, e:number
 // ─── Chart: Growth Trajectory area (2016-2035) ───────────────────────────────
 function GrowthTrajectory({ avgAadt }: { avgAadt: number }) {
   const years = Object.keys(GROWTH_FACTORS).map(Number).sort((a,b)=>a-b);
-  const vals  = years.map(y => avgAadt * GROWTH_FACTORS[y]);
+  const vals  = years.map(y => avgAadt * factorTo(y));
   const W=600, H=170, PL=46, PR=12, PT=10, PB=24;
   const cW=W-PL-PR, cH=H-PT-PB;
   const min = Math.min(...vals)*0.85, max = Math.max(...vals)*1.08;
@@ -438,7 +447,7 @@ function MacroTab({ features }: { features: PredFeature[] }) {
     features.filter(f => ['Critical','High'].includes(f.properties.congestion_risk ?? '')).length,
     [features]
   );
-  const forecast2030 = Math.round(avgAadt * (GROWTH_FACTORS[2030] ?? 1.28));
+  const forecast2030 = Math.round(avgAadt * factorTo(2030));
   const kpis = [
     { label:'Avg Network ADT',   value: avgAadt > 0 ? Math.round(avgAadt).toLocaleString() : '—',  unit:'vpd',  color: C.cyan,   glow: C.cyan },
     { label:'Road Links',        value: features.length.toLocaleString(),                           unit:'links',color: C.blue,   glow: C.blue },

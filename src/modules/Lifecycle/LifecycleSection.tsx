@@ -580,7 +580,7 @@ export default function LifecycleSection() {
       </div>
 
       {/* ── 3-panel layout ── */}
-      <div style={{ display: 'flex', gap: 12, flex: 1, overflowY: 'auto', minHeight: 0 }}>
+      <div style={{ display: 'flex', gap: 12, flex: 1, height: 'calc(100vh - 245px)', minHeight: 420 }}>
 
         {/* ── Right: Intervention Map + MapDetailPane (definitive flex-row, siblings) ── */}
         <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'row', alignItems: 'stretch', overflow: 'hidden', height: '100%' }}>
