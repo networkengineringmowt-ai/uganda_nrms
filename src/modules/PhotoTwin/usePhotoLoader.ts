@@ -66,6 +66,29 @@ function generateCandidates(folder: string): { url: string; year: string; yearCo
 // ─── Cache: avoid re-probing the same bridge ─────────────────────────────────
 const photoCache = new Map<string, BridgePhoto[]>();
 
+// ─── Photo manifest (deployed site) ──────────────────────────────────────────
+// public/data/photo_manifest.json lists the thumbnails shipped under
+// public/s-photos/ (built by scripts/build_photo_album.py from S:\PHOTOS).
+// Manifest-first means exact files everywhere — including GitHub Pages,
+// where the old S:-drive probing always 404ed.
+type ManifestEntry = { f: string; y: number };
+let manifestPromise: Promise<Record<string, ManifestEntry[]> | null> | null = null;
+function loadManifest(): Promise<Record<string, ManifestEntry[]> | null> {
+  if (!manifestPromise) {
+    manifestPromise = fetch(`${import.meta.env.BASE_URL}data/photo_manifest.json`)
+      .then(r => (r.ok ? r.json() : null))
+      .catch(() => null);
+  }
+  return manifestPromise;
+}
+function photosFromManifest(folder: string, entries: ManifestEntry[]): BridgePhoto[] {
+  return entries.map((e, i) => ({
+    url: `${import.meta.env.BASE_URL}s-photos/${folder}/${e.f}`,
+    year: String(e.y), yearCode: String(e.y).slice(2),
+    index: i + 1, filename: e.f,
+  }));
+}
+
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 export function usePhotoLoader(structureId: string | null): {
   photos:  BridgePhoto[];
@@ -91,6 +114,24 @@ export function usePhotoLoader(structureId: string | null): {
     // Debounce: wait 250ms before launching probe storm (handles rapid list scrolling)
     let cancelled = false;
     const timer = setTimeout(() => {
+      if (cancelled) return;
+
+      // Manifest-first: exact shipped thumbnails (works on the deployed site)
+      setLoading(true);
+      void loadManifest().then(manifest => {
+        if (cancelled) return;
+        const entries = manifest?.[folder];
+        if (entries?.length) {
+          const ph = photosFromManifest(folder, entries);
+          photoCache.set(folder, ph);
+          setPhotos(ph);
+          setLoading(false);
+          return;
+        }
+        runProbe();
+      });
+
+      function runProbe() {
       if (cancelled) return;
 
       setLoading(true);
@@ -134,6 +175,7 @@ export function usePhotoLoader(structureId: string | null): {
         img.onerror = finish;
         img.src = c.url;
       });
+      } // end runProbe
     }, 250);
 
     return () => {

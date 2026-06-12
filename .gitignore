@@ -34,3 +34,4 @@ arcgis-src/
 *.rar
 *.db
 offline-tiles/
+public/s-photos/
