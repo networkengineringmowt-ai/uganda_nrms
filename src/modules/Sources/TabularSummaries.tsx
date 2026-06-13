@@ -4,7 +4,7 @@ import { Table2, Download, ArrowUpRight, FileText, FolderOpen, BarChart3, Extern
   Truck, Shield, Wrench, Clock, Leaf, Globe, Users, Network, DollarSign, Database,
   HardHat, Route, Activity } from 'lucide-react';
 import type { ActiveView } from '../../types';
-import { projectAllClasses, projectAADTByClass, VC_CLASSES } from '../../shared/trafficProjection';
+import { projectAllClasses, projectAADTByClass, VC_CLASSES, NETWORK_BLENDED_GROWTH } from '../../shared/trafficProjection';
 
 const DocumentStore = lazy(() => import('../Documents/DocumentStore'));
 const DownloadsView  = lazy(() => import('../Downloads/DownloadsView'));
@@ -1059,7 +1059,8 @@ function Td({ children, align = 'left', mono = false, style }: { children?: Reac
 // (network2026.geojson — `aadt` property if present, else derived from road class).
 const ADT_PROJECTION_YEARS = [2016, 2020, 2025, 2026, 2030, 2035, 2040];
 const ADT_CLASS_COLOR: Record<string, string> = { A: C.cyan, B: C.green, C: C.yellow, M: C.purple };
-const ADT_BASE_YEAR = 2025; // GeoJSON network survey reference (DNR GIS Jun 2025)
+const ADT_BASE_YEAR = 2016; // base year for ALL traffic statistics
+const ADT_SURVEY_YEAR = 2025; // GeoJSON network survey reference (DNR GIS Jun 2025)
 const ADT_PAGE_SIZE = 50;
 
 interface AdtBaseLink {
@@ -1095,12 +1096,17 @@ function AdtProjectionTable() {
                             : (typeof p.aadt === 'string' && p.aadt.trim() !== '' && !isNaN(Number(p.aadt))) ? Number(p.aadt)
                             : null;
             const yearProp  = typeof p.aadt_year === 'number' ? p.aadt_year : null;
+            // back-cast the survey reading to the 2016 base year
+            const surveyYear = yearProp ?? ADT_SURVEY_YEAR;
+            const reading    = aadtProp ?? adtBaseFor(roadClass);
+            const deflate    = surveyYear > ADT_BASE_YEAR
+              ? Math.pow(1 + NETWORK_BLENDED_GROWTH, surveyYear - ADT_BASE_YEAR) : 1;
             return {
               link_id:    String(p.link_id ?? ''),
               link_name:  p.link_nam_1 != null && String(p.link_nam_1).trim() !== '' ? String(p.link_nam_1) : null,
               road_class: roadClass,
-              base_aadt:  aadtProp ?? adtBaseFor(roadClass),
-              base_year:  yearProp ?? ADT_BASE_YEAR,
+              base_aadt:  Math.round(reading / deflate),
+              base_year:  ADT_BASE_YEAR,
             };
           })
           .filter(r => r.link_id)

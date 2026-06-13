@@ -34,13 +34,17 @@ const GLASS: React.CSSProperties = {
   WebkitBackdropFilter:'blur(20px)', border:'1px solid rgba(99,102,241,0.12)', borderRadius:14,
 };
 
-// Growth factors 2016-2035 (Uganda road network index, 2025 = 1.0)
+// Growth factors 2016-2035 — BASE YEAR 2016 = 1.00 (all traffic statistics
+// are anchored to the 2016 base year; source growth_factors_summary).
 const GF: Record<number,number> = {
-  2016:0.62, 2017:0.66, 2018:0.71, 2019:0.76, 2020:0.65, 2021:0.74,
-  2022:0.82, 2023:0.90, 2024:0.96, 2025:1.00, 2026:1.05, 2027:1.10,
-  2028:1.16, 2029:1.22, 2030:1.28, 2031:1.33, 2032:1.39, 2033:1.44,
-  2034:1.49, 2035:1.55,
+  2016:1.00, 2017:1.06, 2018:1.15, 2019:1.23, 2020:1.05, 2021:1.19,
+  2022:1.32, 2023:1.45, 2024:1.55, 2025:1.61, 2026:1.69, 2027:1.77,
+  2028:1.87, 2029:1.97, 2030:2.06, 2031:2.15, 2032:2.24, 2033:2.32,
+  2034:2.40, 2035:2.50,
 };
+// aadt_predicted is a 2025-anchored reading — scale a year's 2016-base factor
+// relative to 2025 when projecting it.
+const gfTo = (y: number) => (GF[y] ?? 1) / (GF[2025] ?? 1);
 const ALL_YEARS = Object.keys(GF).map(Number).sort((a,b)=>a-b);
 
 function hexRgb(hex: string): string {
@@ -51,7 +55,7 @@ function hexRgb(hex: string): string {
 // â”€â”€â”€ AADT interpolation for a given year â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function aadtForYear(p: PredProps, year: number): number {
   const base = p.aadt_predicted ?? 0;
-  return Math.round(base * (GF[year] ?? 1));
+  return Math.round(base * gfTo(year));
 }
 
 // â”€â”€â”€ Capacity estimate for congestion alert â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -302,7 +306,7 @@ function StationsTab({ stations, features }: { stations: StationFeature[]; featu
     const rows = filtered.map(s => {
       const p    = s.properties;
       const pred = predByLink.get(p.Link_ID??'');
-      const adt  = pred ? Math.round((pred.aadt_predicted??0) * (GF[year]??1)) : 0;
+      const adt  = pred ? Math.round((pred.aadt_predicted??0) * gfTo(year)) : 0;
       return [
         p.TCS_NAME??p.STATION??String(p.TCS_NO??''),
         p.Link_Name??'', p.REGION??'', String(adt),
@@ -364,7 +368,7 @@ function StationsTab({ stations, features }: { stations: StationFeature[]; featu
               {filtered.map((s, i) => {
                 const p    = s.properties;
                 const pred = predByLink.get(p.Link_ID??'');
-                const adt  = pred ? Math.round((pred.aadt_predicted??0) * (GF[year]??1)) : null;
+                const adt  = pred ? Math.round((pred.aadt_predicted??0) * gfTo(year)) : null;
                 const rCol = REGION_CLR[p.REGION??''] ?? 'rgba(148,163,184,0.55)';
                 return (
                   <tr key={i} style={{ borderBottom:'1px solid rgba(255,255,255,0.028)',

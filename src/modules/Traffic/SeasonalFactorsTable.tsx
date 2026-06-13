@@ -26,29 +26,29 @@ interface MEFRow {
 
 const MEF_DATA: MEFRow[] = [
   // National average — All vehicles
-  { region:'National', class:'All',        annualGrowthRate:4.2, baseYear:2019,
+  { region:'National', class:'All',        annualGrowthRate:4.2, baseYear:2016,
     factors:[0.91,0.93,0.97,1.03,1.05,1.04,1.06,1.08,1.04,1.01,0.97,0.91] },
   // By region
-  { region:'Central',  class:'All',        annualGrowthRate:4.8, baseYear:2019,
+  { region:'Central',  class:'All',        annualGrowthRate:4.8, baseYear:2016,
     factors:[0.88,0.90,0.96,1.05,1.08,1.06,1.09,1.12,1.06,1.02,0.95,0.89] },
-  { region:'Eastern',  class:'All',        annualGrowthRate:3.9, baseYear:2019,
+  { region:'Eastern',  class:'All',        annualGrowthRate:3.9, baseYear:2016,
     factors:[0.92,0.94,0.98,1.02,1.04,1.03,1.05,1.07,1.03,1.00,0.96,0.92] },
-  { region:'Northern', class:'All',        annualGrowthRate:5.2, baseYear:2019,
+  { region:'Northern', class:'All',        annualGrowthRate:5.2, baseYear:2016,
     factors:[0.93,0.95,0.99,1.01,1.02,1.01,1.03,1.05,1.02,0.99,0.97,0.93] },
-  { region:'Western',  class:'All',        annualGrowthRate:3.6, baseYear:2019,
+  { region:'Western',  class:'All',        annualGrowthRate:3.6, baseYear:2016,
     factors:[0.90,0.92,0.97,1.04,1.06,1.05,1.07,1.09,1.05,1.01,0.96,0.90] },
-  { region:'Southern', class:'All',        annualGrowthRate:3.3, baseYear:2019,
+  { region:'Southern', class:'All',        annualGrowthRate:3.3, baseYear:2016,
     factors:[0.91,0.93,0.98,1.03,1.05,1.04,1.06,1.08,1.04,1.00,0.95,0.91] },
-  { region:'North Eastern', class:'All',   annualGrowthRate:6.1, baseYear:2019,
+  { region:'North Eastern', class:'All',   annualGrowthRate:6.1, baseYear:2016,
     factors:[0.95,0.97,1.00,1.01,1.02,1.00,1.02,1.04,1.01,0.99,0.98,0.95] },
   // By vehicle class (National average)
-  { region:'National', class:'HGV',        annualGrowthRate:3.5, baseYear:2019,
+  { region:'National', class:'HGV',        annualGrowthRate:3.5, baseYear:2016,
     factors:[1.02,1.04,0.97,0.94,0.93,0.98,1.06,1.09,1.03,0.99,0.97,0.98] },
-  { region:'National', class:'Bus',        annualGrowthRate:3.0, baseYear:2019,
+  { region:'National', class:'Bus',        annualGrowthRate:3.0, baseYear:2016,
     factors:[0.89,0.91,0.95,1.06,1.09,1.07,1.10,1.13,1.07,1.03,0.96,0.90] },
-  { region:'National', class:'Motorcycle', annualGrowthRate:6.0, baseYear:2019,
+  { region:'National', class:'Motorcycle', annualGrowthRate:6.0, baseYear:2016,
     factors:[0.87,0.90,0.96,1.07,1.12,1.08,1.11,1.14,1.08,1.04,0.95,0.88] },
-  { region:'National', class:'Cars',       annualGrowthRate:5.0, baseYear:2019,
+  { region:'National', class:'Cars',       annualGrowthRate:5.0, baseYear:2016,
     factors:[0.92,0.94,0.98,1.03,1.06,1.05,1.07,1.09,1.05,1.01,0.96,0.91] },
 ];
 

@@ -67,8 +67,10 @@ export default function TrafficProjectionTable() {
             road_class: rc,
             region:     String(p.region ?? 'Central'),
             length_km:  Number(p.length_km ?? 10),
-            base_aadt:  classBaseAadt(rc, i),
-            base_year:  2019,
+            // base year 2016 for all traffic statistics — class synthetic base
+            // deflated from the 2019 calibration by blended growth (1.042^3)
+            base_aadt:  Math.round(classBaseAadt(rc, i) / 1.131),
+            base_year:  2016,
           };
         });
         setLinks(rows);
@@ -76,16 +78,16 @@ export default function TrafficProjectionTable() {
       .catch(() => {
         // Fallback synthetic data for 20 representative links
         const synthetic: LinkRow[] = [
-          { link_id:'A001_Link01', link_name:'Kampala–Jinja',         road_class:'A', region:'Central',  length_km:83,  base_aadt:7200, base_year:2019 },
-          { link_id:'A001_Link02', link_name:'Jinja–Tororo',          road_class:'A', region:'Eastern',  length_km:74,  base_aadt:5400, base_year:2019 },
-          { link_id:'A002_Link01', link_name:'Kampala–Mbarara',       road_class:'A', region:'Western',  length_km:262, base_aadt:6800, base_year:2019 },
-          { link_id:'A104_Link01', link_name:'Gulu–Kampala',          road_class:'A', region:'Northern', length_km:360, base_aadt:3200, base_year:2019 },
-          { link_id:'A109_Link01', link_name:'Kampala Northern Bypass',road_class:'A', region:'Central', length_km:17,  base_aadt:9800, base_year:2019 },
-          { link_id:'B001_Link01', link_name:'Tororo–Mbale',          road_class:'B', region:'Eastern',  length_km:55,  base_aadt:2100, base_year:2019 },
-          { link_id:'B064_Link01', link_name:'Mubende–Mityana',       road_class:'B', region:'Central',  length_km:74,  base_aadt:1800, base_year:2019 },
-          { link_id:'B104_Link01', link_name:'Hoima–Masindi',         road_class:'B', region:'Western',  length_km:68,  base_aadt:1400, base_year:2019 },
-          { link_id:'C001_Link01', link_name:'Adjumani–Moyo',         road_class:'C', region:'Northern', length_km:87,  base_aadt: 340, base_year:2019 },
-          { link_id:'C020_Link01', link_name:'Kapchorwa–Mbale',       road_class:'C', region:'Eastern',  length_km:61,  base_aadt: 480, base_year:2019 },
+          { link_id:'A001_Link01', link_name:'Kampala–Jinja',         road_class:'A', region:'Central',  length_km:83,  base_aadt:6364, base_year:2016 },
+          { link_id:'A001_Link02', link_name:'Jinja–Tororo',          road_class:'A', region:'Eastern',  length_km:74,  base_aadt:4774, base_year:2016 },
+          { link_id:'A002_Link01', link_name:'Kampala–Mbarara',       road_class:'A', region:'Western',  length_km:262, base_aadt:6011, base_year:2016 },
+          { link_id:'A104_Link01', link_name:'Gulu–Kampala',          road_class:'A', region:'Northern', length_km:360, base_aadt:2829, base_year:2016 },
+          { link_id:'A109_Link01', link_name:'Kampala Northern Bypass',road_class:'A', region:'Central', length_km:17,  base_aadt:8664, base_year:2016 },
+          { link_id:'B001_Link01', link_name:'Tororo–Mbale',          road_class:'B', region:'Eastern',  length_km:55,  base_aadt:1857, base_year:2016 },
+          { link_id:'B064_Link01', link_name:'Mubende–Mityana',       road_class:'B', region:'Central',  length_km:74,  base_aadt:1591, base_year:2016 },
+          { link_id:'B104_Link01', link_name:'Hoima–Masindi',         road_class:'B', region:'Western',  length_km:68,  base_aadt:1238, base_year:2016 },
+          { link_id:'C001_Link01', link_name:'Adjumani–Moyo',         road_class:'C', region:'Northern', length_km:87,  base_aadt: 301, base_year:2016 },
+          { link_id:'C020_Link01', link_name:'Kapchorwa–Mbale',       road_class:'C', region:'Eastern',  length_km:61,  base_aadt: 424, base_year:2016 },
         ];
         setLinks(synthetic);
       })
@@ -146,7 +148,7 @@ export default function TrafficProjectionTable() {
               ADT by Vehicle Class — 2016 to 2040
             </div>
             <div style={{ fontSize:10, color:'rgba(148,163,184,0.55)' }}>
-              {links.length.toLocaleString()} road links · base year 2019 · per-class compound growth (TIS annual rates) ·
+              {links.length.toLocaleString()} road links · base year 2016 · per-class compound growth (TIS annual rates) ·
               snapshot years shown; CSV export gives full 2016-2040 per class
             </div>
           </div>
@@ -290,7 +292,7 @@ export default function TrafficProjectionTable() {
           ))}
         </div>
         <div style={{ marginTop:8, fontSize:8.5, color:'rgba(148,163,184,0.4)', lineHeight:1.5 }}>
-          Source: Department of National Roads TIS · Base year 2019 · Projected using compound growth formula.
+          Source: Department of National Roads TIS · Base year 2016 · Projected using compound growth formula.
           AADT values for links without ATC/TIS data estimated from road class average distributions.
           Export CSV for full 2016-2040 per-class breakdown.
         </div>

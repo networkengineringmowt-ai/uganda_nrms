@@ -75,15 +75,19 @@ const ATC_NEW_COUNT    = 10;   // post-2025 new sites
 const ATC_TOTAL        = ATC_LEGACY_COUNT + ATC_NEW_COUNT;  // 25
 // TIS manual stations come from atc_stations.geojson (298 features)
 
-// ─── Uganda road growth index (2026 = 1.0 — current platform date June 2026) ─
-// Forward projection uses per-class compound growth (see trafficProjection.ts).
-// Historical (≤2025) values from TIS observations; ≥2026 values are projections.
+// ─── Uganda road growth index — BASE YEAR 2016 = 1.00 (all traffic statistics
+// are anchored to the 2016 base year; source growth_factors_summary 2016-2024,
+// projected beyond). Forward projection uses per-class compound growth.
 const GROWTH_FACTORS: Record<number, number> = {
-  2016: 0.59, 2017: 0.63, 2018: 0.68, 2019: 0.72, 2020: 0.62,
-  2021: 0.71, 2022: 0.78, 2023: 0.86, 2024: 0.91, 2025: 0.95,
-  2026: 1.00, 2027: 1.05, 2028: 1.10, 2029: 1.16, 2030: 1.22,
-  2031: 1.27, 2032: 1.32, 2033: 1.37, 2034: 1.42, 2035: 1.48,
+  2016: 1.00, 2017: 1.06, 2018: 1.15, 2019: 1.23, 2020: 1.05, 2021: 1.19,
+  2022: 1.32, 2023: 1.45, 2024: 1.55, 2025: 1.61, 2026: 1.69, 2027: 1.77,
+  2028: 1.87, 2029: 1.97, 2030: 2.06, 2031: 2.15, 2032: 2.24, 2033: 2.32,
+  2034: 2.40, 2035: 2.50,
 };
+// aadt_predicted is anchored at the current year — scale a year's 2016-base
+// factor relative to the current year's factor when projecting it.
+const gfTo = (y: number) =>
+  (GROWTH_FACTORS[y] ?? 1) / (GROWTH_FACTORS[CURRENT_YEAR] ?? 1);
 const TREND_YEARS = [2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026];
 
 // Re-export VC composition + projection helpers from shared module
@@ -104,7 +108,7 @@ function computeVehicleClasses(aadt: number, baseYear: number = CURRENT_YEAR) {
   return projections.map(p => ({ label: p.label, count: p.projCount }));
 }
 function computeGrowthTrend(aadt2026: number): number[] {
-  return TREND_YEARS.map(y => Math.round(aadt2026 * (GROWTH_FACTORS[y] ?? 1)));
+  return TREND_YEARS.map(y => Math.round(aadt2026 * gfTo(y)));
 }
 
 // ─── Map colour helpers ───────────────────────────────────────────────────────
@@ -162,7 +166,7 @@ function makeStationIcon(color: string, isATC: boolean): L.DivIcon {
 
 function SparklineArea({ avgAadt }: { avgAadt: number }) {
   const years  = TREND_YEARS;
-  const values = years.map(y => avgAadt * (GROWTH_FACTORS[y] ?? 1));
+  const values = years.map(y => avgAadt * gfTo(y));
   const W = 236, H = 58, PL = 4, PR = 4, PT = 8, PB = 14;
   const cW = W - PL - PR, cH = H - PT - PB;
   const min = Math.min(...values) * 0.88;
@@ -234,7 +238,7 @@ function TrafficLayer({
   features: PredFeature[]; mode: MapMode; year: number;
   surfMap: Record<string, string>; onSelect: (p: PredProps) => void;
 }) {
-  const gf = GROWTH_FACTORS[year] ?? 1;
+  const gf = gfTo(year);
 
   const styleFeat = useCallback(
     (feat?: PredFeature) => {
@@ -316,9 +320,11 @@ const KPI_GLASS: React.CSSProperties = {
 
 // ─── Link × Class table ────────────────────────────────────────────────────────
 function LinkClassTable({ features, surfMap: _surfMap }: { features: PredFeature[]; surfMap: Record<string, string> }) {
-  // Base survey year is 2025 (most recent TIS_AADT analysis); project to the
-  // CURRENT INSTANT — fractional year ticking every second (live now-cast).
-  const BASE_YEAR = 2025;
+  // BASE YEAR 2016 — all traffic statistics are anchored to 2016. The TIS
+  // readings (2025 survey) are back-cast to 2016 per vehicle class, then
+  // projected to the CURRENT INSTANT (fractional year, ticking every second).
+  const BASE_YEAR = 2016;
+  const TIS_YEAR  = 2025;   // survey year of the raw TIS AADT readings
   const nowT = useNowTick(1000);
   const sorted = useMemo(
     () => [...features].sort((a, b) => (b.properties.aadt_predicted ?? 0) - (a.properties.aadt_predicted ?? 0)),
@@ -343,7 +349,7 @@ function LinkClassTable({ features, surfMap: _surfMap }: { features: PredFeature
             Traffic by Road Link × Vehicle Class — Now-cast to the Current Instant
           </div>
           <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.55)', marginTop: 3 }}>
-            Base AADT from TIS {BASE_YEAR} · per-class compound growth applied · {features.length} links · sorted by total ↓
+            Base year {BASE_YEAR} · TIS {TIS_YEAR} readings back-cast to {BASE_YEAR} per class · compound growth applied · {features.length} links · sorted by total ↓
           </div>
           <div style={{ fontSize: 9.5, fontWeight: 700, color: '#00ff88', marginTop: 3 }}>
             <span className="animate-pulse" style={{ display:'inline-block', width:6, height:6, borderRadius:'50%', background:'#00ff88', marginRight:5 }} />
@@ -361,8 +367,8 @@ function LinkClassTable({ features, surfMap: _surfMap }: { features: PredFeature
               <th style={{ textAlign: 'center', padding: '6px 6px', color: '#64748b', fontWeight: 700 }}>Cls</th>
               <th style={{ textAlign: 'left', padding: '6px 8px', color: '#64748b', fontWeight: 700 }}>Region</th>
               <th style={{ textAlign: 'right', padding: '6px 8px', color: '#64748b', fontWeight: 700, whiteSpace: 'nowrap' }}>km</th>
-              <th style={{ textAlign: 'center', padding: '6px 6px', color: '#94a3b8', fontWeight: 700, whiteSpace: 'nowrap' }} title="Survey base year">Base Yr</th>
-              <th style={{ textAlign: 'right', padding: '6px 8px', color: '#94a3b8', fontWeight: 700, whiteSpace: 'nowrap' }} title="Base year AADT (raw TIS reading)">Base AADT</th>
+              <th style={{ textAlign: 'center', padding: '6px 6px', color: '#94a3b8', fontWeight: 700, whiteSpace: 'nowrap' }} title="Base year for all traffic statistics (2016)">Base Yr</th>
+              <th style={{ textAlign: 'right', padding: '6px 8px', color: '#94a3b8', fontWeight: 700, whiteSpace: 'nowrap' }} title="AADT at the 2016 base year (TIS reading back-cast per class)">AADT 2016</th>
               <th style={{ textAlign: 'right', padding: '6px 8px', color: '#94a3b8', fontWeight: 700, whiteSpace: 'nowrap' }} title="Blended class-weighted growth p.a.">Growth %</th>
               {VCOLS.map(vc => (
                 <th key={vc.label} style={{ textAlign: 'right', padding: '6px 5px', color: vc.color, fontWeight: 700, minWidth: 50, whiteSpace: 'nowrap' }} title={`${vc.label} — now-cast to the current instant`}>{vc.short}</th>
@@ -373,12 +379,15 @@ function LinkClassTable({ features, surfMap: _surfMap }: { features: PredFeature
           <tbody>
             {sorted.map((f, i) => {
               const p = f.properties;
-              const baseAadt = p.aadt_predicted ?? 0;
-              const projections = projectAllClasses(baseAadt, BASE_YEAR, nowT);
+              const baseAadt = p.aadt_predicted ?? 0;   // raw TIS reading (2025)
+              const projections = projectAllClasses(baseAadt, TIS_YEAR, nowT);
+              // deflate each class to the 2016 base year for the base column
+              const aadt2016 = Math.round(projections.reduce(
+                (s, c) => s + c.baseCount / Math.pow(1 + c.growth, TIS_YEAR - BASE_YEAR), 0));
               const projAadt   = projections.reduce((s, c) => s + c.projCount, 0);
               const rowBg = i % 2 === 0 ? 'rgba(15,23,42,0.35)' : 'transparent';
               const clsColor = CLASS_COLORS[p.road_class ?? ''] ?? '#94a3b8';
-              // Blended growth (weighted by share) up to the current instant
+              // Blended growth (weighted by share) from the 2016 base to now
               const blendedGrowthPct = projections.reduce(
                 (s, c) => s + c.share * (Math.pow(1 + c.growth, nowT - BASE_YEAR) - 1),
                 0,
@@ -391,7 +400,7 @@ function LinkClassTable({ features, surfMap: _surfMap }: { features: PredFeature
                   <td style={{ padding: '5px 8px', color: '#64748b', whiteSpace: 'nowrap' }}>{p.region ?? '—'}</td>
                   <td style={{ padding: '5px 8px', textAlign: 'right', color: '#475569', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{p.length_km?.toFixed(1) ?? '—'}</td>
                   <td style={{ padding: '5px 6px', textAlign: 'center', color: '#94a3b8', fontVariantNumeric: 'tabular-nums' }}>{BASE_YEAR}</td>
-                  <td style={{ padding: '5px 8px', textAlign: 'right', color: '#94a3b8', fontVariantNumeric: 'tabular-nums' }}>{baseAadt.toLocaleString()}</td>
+                  <td style={{ padding: '5px 8px', textAlign: 'right', color: '#94a3b8', fontVariantNumeric: 'tabular-nums' }}>{aadt2016.toLocaleString()}</td>
                   <td style={{ padding: '5px 8px', textAlign: 'right', color: '#fbbf24', fontVariantNumeric: 'tabular-nums', fontWeight: 700 }}>+{blendedGrowthPct.toFixed(1)}%</td>
                   {projections.map(pr => (
                     <td key={pr.key} style={{ padding: '5px 5px', textAlign: 'right', color: '#64748b', fontVariantNumeric: 'tabular-nums' }}>
@@ -410,14 +419,14 @@ function LinkClassTable({ features, surfMap: _surfMap }: { features: PredFeature
               <td colSpan={8} style={{ padding: '6px 10px', color: C.teal, fontWeight: 800, fontSize: 9 }}>Network Total (now-cast to the current instant)</td>
               {VCOLS.map(vc => {
                 const total = sorted.reduce((s, f) => {
-                  const projs = projectAllClasses(f.properties.aadt_predicted ?? 0, BASE_YEAR, nowT);
+                  const projs = projectAllClasses(f.properties.aadt_predicted ?? 0, TIS_YEAR, nowT);
                   return s + projs[vc.idx].projCount;
                 }, 0);
                 return <td key={vc.label} style={{ padding: '6px 5px', textAlign: 'right', color: vc.color, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{total.toLocaleString()}</td>;
               })}
               <td style={{ padding: '6px 10px', textAlign: 'right', color: C.teal, fontWeight: 900, fontVariantNumeric: 'tabular-nums' }}>
                 {sorted.reduce((s, f) => {
-                  const projs = projectAllClasses(f.properties.aadt_predicted ?? 0, BASE_YEAR, nowT);
+                  const projs = projectAllClasses(f.properties.aadt_predicted ?? 0, TIS_YEAR, nowT);
                   return s + projs.reduce((ss, p) => ss + p.projCount, 0);
                 }, 0).toLocaleString()}
               </td>
@@ -853,7 +862,7 @@ export default function TrafficSection() {
             }}>
               <span style={{ fontSize: 11, fontWeight: 900, color: C.yellow }}>YEAR {timelineYear}</span>
               <span style={{ fontSize: 9, color: 'rgba(148,163,184,0.45)', marginLeft: 6 }}>
-                ×{(GROWTH_FACTORS[timelineYear] ?? 1).toFixed(2)} growth factor
+                ×{(GROWTH_FACTORS[timelineYear] ?? 1).toFixed(2)} vs 2016 base year
               </span>
             </div>
           )}
