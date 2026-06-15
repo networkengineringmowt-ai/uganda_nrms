@@ -654,7 +654,7 @@ export default function TrafficSection() {
         .leaflet-tooltip::before { display:none !important; }
       `}</style>
 
-      <CrossLinkChipBar sectionId="traffic" />
+      {!import.meta.env.VITE_STANDALONE && <CrossLinkChipBar sectionId="traffic" />}
 
       {/* ══ BMS-style main tab bar ═════════════════════════════════════════════ */}
       <div style={{

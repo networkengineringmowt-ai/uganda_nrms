@@ -13,7 +13,7 @@ export default defineConfig({
   plugins: [react()],
   base: process.env.NODE_ENV === 'production' ? '/uganda_nbms/' : '/',
   define: {
-    'import.meta.env.VITE_STANDALONE_NBMS': JSON.stringify('1'),
+    'import.meta.env.VITE_STANDALONE': JSON.stringify('1'),
   },
   build: {
     outDir: 'dist-nbms',
