@@ -33,7 +33,16 @@ export function LoginPage() {
         boxShadow: '0 8px 48px rgba(0,0,0,0.6)',
       }}>
         <div style={{ textAlign:'center', marginBottom:32 }}>
-          <div style={{ fontSize:40, marginBottom:8 }}>🏗️</div>
+          <img
+            src={`${import.meta.env.BASE_URL}mowt.jpg`}
+            alt="Ministry of Works and Transport"
+            style={{
+              width: 72, height: 72, borderRadius: 14, objectFit: 'contain',
+              background: '#fff', padding: 4, marginBottom: 10,
+              border: '1px solid rgba(99,102,241,0.35)',
+              boxShadow: '0 0 28px rgba(99,102,241,0.25)',
+            }}
+          />
           <div style={{ color:'#e2e8f0', fontSize:20, fontWeight:700 }}>Uganda National Roads</div>
           <div style={{ color:'#6366f1', fontSize:13, fontWeight:600 }}>Asset Management Platform</div>
           <div style={{ color:'rgba(148,163,184,0.5)', fontSize:11, marginTop:4 }}>

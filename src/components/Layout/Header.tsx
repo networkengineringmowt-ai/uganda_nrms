@@ -143,6 +143,19 @@ export default function Header({ showSearch }: { showSearch?: boolean }) {
         </button>
       </div>
 
+      {/* MoWT crest */}
+      <img
+        src={`${import.meta.env.BASE_URL}mowt.jpg`}
+        alt="Ministry of Works and Transport"
+        style={{
+          width: 30, height: 30, borderRadius: 8, flexShrink: 0, objectFit: 'contain',
+          background: '#fff', padding: 2,
+          border: `1px solid rgba(${accentRgb},0.3)`,
+          boxShadow: `0 0 14px rgba(${accentRgb},0.18)`,
+          transition: 'border-color 0.4s, box-shadow 0.4s',
+        }}
+      />
+
       {/* Page title */}
       <div style={{ flex: 1, minWidth: 0 }}>
         <h1 style={{
