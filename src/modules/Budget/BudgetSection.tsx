@@ -9,6 +9,7 @@ import { ModuleNavBar } from '../../shared/ModuleNavBar';
 import SourceTableButton from '../../shared/SourceTableButton';
 import { useSectionData } from '../../hooks/useSectionData';
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
+import { useTableSort } from '../../shared/useTableSort';
 
 const C = {
   cyan: '#00f5ff', green: '#00ff88', yellow: '#ffd23f',
@@ -85,6 +86,7 @@ const CT = ({ active, payload, label }: any) => {
 
 export default function BudgetSection() {
   const [tab, setTab] = useState<TabId>('gap');
+  const imx = useTableSort(INTERVENTION_MATRIX, 'type');
   const { budgetAlignment, networkSummary } = useSectionData();
   const [regionData, setRegionData] = useState(DEFAULT_REGION_DATA);
   const [wp, setWp] = useState<{ current_fy: string; years: Record<string, { total_planned_ugx_bn: number }> } | null>(null);
@@ -246,16 +248,16 @@ export default function BudgetSection() {
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
               <thead>
                 <tr>
-                  {['Category', 'Intervention', 'Trigger Criteria', 'Paved Cost', 'Unpaved Cost', 'Life Extension'].map(h => (
-                    <th key={h} style={{ padding: '8px 12px', textAlign: 'left', fontSize: 9,
-                      fontWeight: 900, color: `rgba(${hexRgb(C.cyan)},0.8)`,
+                  {([['type','Category'],['label','Intervention'],['trigger','Trigger Criteria'],['paved','Paved Cost'],['unpaved','Unpaved Cost'],['life_ext','Life Extension']] as const).map(([k,h]) => (
+                    <th key={k} onClick={() => imx.toggle(k)} style={{ padding: '8px 12px', textAlign: 'left', fontSize: 9,
+                      fontWeight: 900, color: `rgba(${hexRgb(C.cyan)},0.8)`, cursor: 'pointer', userSelect: 'none',
                       textTransform: 'uppercase', letterSpacing: '0.1em',
-                      borderBottom: `1px solid rgba(${hexRgb(C.cyan)},0.15)`, whiteSpace: 'nowrap' }}>{h}</th>
+                      borderBottom: `1px solid rgba(${hexRgb(C.cyan)},0.15)`, whiteSpace: 'nowrap' }}>{h}<span style={{ opacity: 0.6 }}>{imx.indicator(k)}</span></th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {INTERVENTION_MATRIX.map((r, i) => (
+                {imx.sorted.map((r, i) => (
                   <tr key={i} style={{ background: i % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent' }}>
                     <td style={{ padding: '8px 12px', whiteSpace: 'nowrap' }}>
                       <span style={{ fontSize: 9, padding: '2px 7px', borderRadius: 4, fontWeight: 800,

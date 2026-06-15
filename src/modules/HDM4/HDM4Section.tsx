@@ -6,6 +6,7 @@ import {
 import { Chart3DWrap, Bar3D, TT_NEON, TICK } from '../../lib/chart3d';
 import { Calculator, BookOpen, Table2, TrendingUp, DollarSign, Activity } from 'lucide-react';
 import { ModuleNavBar } from '../../shared/ModuleNavBar';
+import { useTableSort } from '../../shared/useTableSort';
 
 const C = {
   purple: '#b967ff', cyan: '#00f5ff', green: '#00ff88',
@@ -109,6 +110,7 @@ const TICK_STYLE = { fontSize: 9, fill: 'rgba(148,163,184,0.6)' };
 // ─────────────────────────────────────────────────────────────────────────────
 export default function HDM4Section() {
   const [activeTab, setActiveTab] = useState<TabId>('overview');
+  const calib = useTableSort(CALIB_DATA, 'param');
 
   // Deterioration controls
   const [iri0, setIri0]         = useState(2.5);
@@ -340,15 +342,15 @@ export default function HDM4Section() {
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
                 <thead>
                   <tr>
-                    {['Parameter', 'Value', 'Description', 'Reference', 'Road Class'].map(h => (
-                      <th key={h} style={{ padding: '8px 12px', textAlign: 'left', fontSize: 9, fontWeight: 900,
-                        color: 'rgba(0,245,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.1em',
-                        borderBottom: '1px solid rgba(0,245,255,0.15)', whiteSpace: 'nowrap' }}>{h}</th>
+                    {([['param','Parameter'],['value','Value'],['desc','Description'],['ref','Reference'],['road','Road Class']] as const).map(([k,h]) => (
+                      <th key={k} onClick={() => calib.toggle(k)} style={{ padding: '8px 12px', textAlign: 'left', fontSize: 9, fontWeight: 900,
+                        color: 'rgba(0,245,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.1em', cursor: 'pointer', userSelect: 'none',
+                        borderBottom: '1px solid rgba(0,245,255,0.15)', whiteSpace: 'nowrap' }}>{h}<span style={{ opacity: 0.6 }}>{calib.indicator(k)}</span></th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {CALIB_DATA.map((r, i) => (
+                  {calib.sorted.map((r, i) => (
                     <tr key={r.param} style={{ background: i % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent' }}>
                       <td style={{ padding: '9px 12px', fontFamily: 'monospace', fontWeight: 900, color: C.cyan, fontSize: 12 }}>{r.param}</td>
                       <td style={{ padding: '9px 12px', fontWeight: 900, color: C.yellow, textAlign: 'center' }}>{r.value}</td>

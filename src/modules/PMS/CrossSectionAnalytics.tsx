@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ScatterChart, Scatter } from 'recharts';
+import { useTableSort } from '../../shared/useTableSort';
 
 interface AnalyticsData {
   pms_by_region: Array<{
@@ -106,6 +107,7 @@ export default function CrossSectionAnalytics() {
       cost_per_km: Math.round(totalCost / Math.max(totalLength, 1)),
     };
   });
+  const rs = useTableSort(regionalSummary, 'region');
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: '20px', background: 'rgba(8,14,28,0.5)' }}>
@@ -150,16 +152,16 @@ export default function CrossSectionAnalytics() {
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
             <thead>
               <tr style={{ borderBottom: '1px solid rgba(0,245,255,0.2)' }}>
-                <th style={{ textAlign: 'left', padding: '8px', color: '#00f5ff' }}>Region</th>
-                <th style={{ textAlign: 'right', padding: '8px', color: '#00f5ff' }}>Links</th>
-                <th style={{ textAlign: 'right', padding: '8px', color: '#00f5ff' }}>Length (km)</th>
-                <th style={{ textAlign: 'right', padding: '8px', color: '#00f5ff' }}>Avg IRI</th>
-                <th style={{ textAlign: 'right', padding: '8px', color: '#00f5ff' }}>Total Cost (USD)</th>
-                <th style={{ textAlign: 'right', padding: '8px', color: '#00f5ff' }}>Cost/km (k)</th>
+                {([['region','Region','left'],['num_links','Links','right'],['total_length_km','Length (km)','right'],['avg_iri','Avg IRI','right'],['total_cost','Total Cost (USD)','right'],['cost_per_km','Cost/km (k)','right']] as const).map(([k,label,align]) => (
+                  <th key={k} onClick={() => rs.toggle(k)}
+                    style={{ textAlign: align as 'left'|'right', padding: '8px', color: '#00f5ff', cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap' }}>
+                    {label}<span style={{ opacity: 0.6, fontSize: 9 }}>{rs.indicator(k)}</span>
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {regionalSummary.map((row, idx) => (
+              {rs.sorted.map((row, idx) => (
                 <tr
                   key={idx}
                   style={{
