@@ -6,6 +6,7 @@
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { RefreshCw, Download, ShieldAlert } from 'lucide-react';
+import { roleLabel } from '../Auth/authTypes';
 
 interface Ev {
   type?: string;
@@ -199,8 +200,8 @@ export default function ActivityLog() {
               {perUser.map(([u, r]) => (
                 <tr key={u}>
                   <td style={TD}>{u}</td>
-                  <td style={{ ...TD, color: meta(r.role === 'admin' ? 'login_failed' : '').color, fontWeight: 700 }}>
-                    <span style={{ color: r.role === 'admin' ? '#ef4444' : r.role === 'super' ? '#f59e0b' : '#22c55e' }}>{r.role || '—'}</span>
+                  <td style={{ ...TD, fontWeight: 700 }}>
+                    <span style={{ color: r.role === 'admin' ? '#ef4444' : r.role === 'super' ? '#f59e0b' : '#22c55e' }}>{roleLabel(r.role)}</span>
                   </td>
                   <td style={TD}>{r.login}</td>
                   <td style={{ ...TD, color: r.login_failed ? '#ef4444' : TD.color }}>{r.login_failed}</td>
@@ -256,7 +257,7 @@ export default function ActivityLog() {
                       </span>
                     </td>
                     <td style={TD}>{e.user ?? '—'}</td>
-                    <td style={TD}>{e.role ?? '—'}</td>
+                    <td style={TD}>{roleLabel(e.role)}</td>
                     <td style={{ ...TD, whiteSpace: 'normal', fontFamily: 'monospace', fontSize: 10, color: 'rgba(148,163,184,0.75)' }}>
                       {Object.keys(detail).length ? JSON.stringify(detail) : '—'}
                     </td>

@@ -9,6 +9,20 @@ export type UserRole = 'rms' | 'bms' | 'tis' | 'super' | 'admin';
 /** Convenience set of all field-capture roles */
 export const FIELD_ROLES: ReadonlySet<UserRole> = new Set(['rms', 'bms', 'tis']);
 
+/** Human-readable label for each access level (shown in UI / audit tables). */
+export const ROLE_LABELS: Record<UserRole, string> = {
+  admin: 'Admin (full system access)',
+  super: 'Super (dashboard & reports)',
+  rms:   'Field team (NRMS)',
+  bms:   'Field team (NBMS)',
+  tis:   'Field team (NTIS)',
+};
+
+/** Safe lookup: returns the label for a known role, else the raw value. */
+export function roleLabel(role?: string | null): string {
+  return (role && (ROLE_LABELS as Record<string, string>)[role]) || (role ?? '—');
+}
+
 export interface User {
   id: string;
   name: string;

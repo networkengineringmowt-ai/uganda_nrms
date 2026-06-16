@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { useAuth } from './AuthContext';
+import { roleLabel } from './authTypes';
 
 const ROLE_COLORS: Record<string, string> = {
   admin: '#ef4444',   // everything
   super: '#f59e0b',   // dashboards & reports, read-only
-  rms:   '#22c55e',   // field data entry
+  rms:   '#22c55e',   // NRMS field data entry
+  bms:   '#4d9fff',   // NBMS field data entry
+  tis:   '#00f5ff',   // NTIS field data entry
 };
 
 export function UserBadge() {
@@ -19,8 +22,8 @@ export function UserBadge() {
     <div style={{ position: 'relative', display:'flex', alignItems:'center', gap:8, flexShrink:0 }}>
       <div style={{ textAlign:'right', cursor:'pointer' }} onClick={() => setShowMenu(m => !m)}>
         <div style={{ color:'#e2e8f0', fontSize:12, fontWeight:600, lineHeight:1.2 }}>{user.name}</div>
-        <div style={{ fontSize:9, color, textTransform:'uppercase', fontWeight:700, letterSpacing:'0.05em' }}>
-          {user.role}{user.region ? ` · ${user.region}` : ''}
+        <div style={{ fontSize:9, color, fontWeight:700, letterSpacing:'0.03em' }}>
+          {roleLabel(user.role)}{user.region ? ` · ${user.region}` : ''}
         </div>
       </div>
       <div

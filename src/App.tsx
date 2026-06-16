@@ -5,6 +5,7 @@ import { BotHighlightContext } from './modules/AssetBot/types';
 import { AuthProvider, useAuth } from './modules/Auth/AuthContext';
 import { LoginPage } from './modules/Auth/LoginPage';
 import { canAccessView, isFieldRole } from './modules/Auth/permissions';
+import { roleLabel } from './modules/Auth/authTypes';
 
 const RMSFieldShell = lazy(() => import('./modules/RMS/RMSFieldShell'));
 import Sidebar from './components/Layout/Sidebar';
@@ -246,7 +247,7 @@ function RequireAdmin({ label, children }: { label: string; children: React.Reac
       <div style={{ fontSize: 28, marginBottom: 10 }}>🔒</div>
       <div style={{ fontSize: 14, fontWeight: 700, color: '#e2eaf4' }}>{label} is admin-only</div>
       <div style={{ fontSize: 12, marginTop: 6 }}>
-        Your access level (<strong style={{ color: '#fbbf24' }}>{user?.role}</strong>) is
+        Your access level (<strong style={{ color: '#fbbf24' }}>{roleLabel(user?.role)}</strong>) is
         view-and-reports only. Sign in with an admin account to use input, audit or admin tools.
       </div>
     </div>
