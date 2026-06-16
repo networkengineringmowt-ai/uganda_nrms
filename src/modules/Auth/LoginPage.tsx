@@ -61,7 +61,16 @@ export function LoginPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true); setError('');
-    const ok = await login(email, password);
+    // All accounts are @unra.go.ug — auto-append the domain if the user typed
+    // only their username, and reject any other domain.
+    const raw = email.trim().toLowerCase();
+    const normalized = raw.includes('@') ? raw : `${raw}@unra.go.ug`;
+    if (!normalized.endsWith('@unra.go.ug')) {
+      setError('Email must end in @unra.go.ug');
+      setLoading(false);
+      return;
+    }
+    const ok = await login(normalized, password);
     if (!ok) setError('Invalid credentials. Check email and access code.');
     setLoading(false);
   }
