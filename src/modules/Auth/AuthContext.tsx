@@ -29,19 +29,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   async function login(email: string, password: string): Promise<boolean> {
-    const id = email.trim().toLowerCase();
-    const found = ALLOWED_USERS.find(u =>
-      (u.email === id || u.email.split('@')[0] === id) && LEVEL_PASSWORDS[u.role] === password);
-    if (found) {
+    let id = email.trim().toLowerCase();
+    
+    if (!id.includes('@')) {
+      id = `${id}@unra.go.ug`;
+    }
+
+    // Only accept @unra.go.ug emails
+    if (!id.endsWith('@unra.go.ug')) {
+      logEvent('login_failed', { attempted: id, reason: 'Invalid domain' });
+      return false;
+    }
+
+    // Determine role based on password matching LEVEL_PASSWORDS
+    const roleMatch = (Object.keys(LEVEL_PASSWORDS) as (keyof typeof LEVEL_PASSWORDS)[]).find(
+      r => LEVEL_PASSWORDS[r] === password
+    );
+
+    if (roleMatch) {
+      // Generate a formatted name from the email (e.g. first.last@... -> First Last)
+      const nameParts = id.split('@')[0].split('.');
+      const name = nameParts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+
       const withLogin: User = {
-        ...found, id: found.email, isActive: true, lastLogin: new Date().toISOString(),
+        name,
+        email: id,
+        role: roleMatch,
+        id,
+        isActive: true,
+        lastLogin: new Date().toISOString(),
       };
+      
       setUser(withLogin);
       localStorage.setItem('dnr_user', JSON.stringify(withLogin));
-      logEvent('login', { level: found.role });
+      logEvent('login', { level: roleMatch });
       return true;
     }
-    logEvent('login_failed', { attempted: id });
+
+    logEvent('login_failed', { attempted: id, reason: 'Invalid access code' });
     return false;
   }
 
