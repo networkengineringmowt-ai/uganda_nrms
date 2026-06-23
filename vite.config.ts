@@ -67,7 +67,7 @@ export default defineConfig({
   plugins: [react(), photosMiddlewarePlugin, romdasMiddlewarePlugin],
   // GitHub Pages: set base to match the repo name so assets resolve correctly.
   // Change 'BMS_System' here if you name the GitHub repo differently.
-  base: process.env.NODE_ENV === 'production' ? '/uganda-roads/' : '/',
+  base: process.env.NODE_ENV === 'production' ? '/uganda_nrms/' : '/',
   resolve: {
     alias: { '@': path.resolve(__dirname, './src') },
   },

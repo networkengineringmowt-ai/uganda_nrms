@@ -4,6 +4,7 @@ import { BMSProvider, useBMS } from './store/BMSContext';
 import { BotHighlightContext } from './modules/AssetBot/types';
 import { AuthProvider, useAuth } from './modules/Auth/AuthContext';
 import { LoginPage } from './modules/Auth/LoginPage';
+import { AccessPending } from './modules/Auth/AccessPending';
 import { canAccessView, isFieldRole } from './modules/Auth/permissions';
 import { roleLabel } from './modules/Auth/authTypes';
 
@@ -58,6 +59,9 @@ const DataCaptureHub     = lazy(() => import('./modules/DataEntry/DataCaptureHub
 // ── BMS unified view ──────────────────────────────────────────────────────────
 const BMSSection = lazy(() => import('./modules/BMS/BMSSection'));
 
+// ── PMS unified view ──────────────────────────────────────────────────────────
+const PMSSection = lazy(() => import('./modules/PMS/PMSSection'));
+
 // ── RMS top-level hub ─────────────────────────────────────────────────────────
 const RMSSection            = lazy(() => import('./modules/RMS/RMSSection'));
 const GlobalCaseStudiesSection = lazy(() => import('./modules/GlobalCaseStudies/GlobalCaseStudiesSection'));
@@ -67,6 +71,7 @@ const RoadReserveSection    = lazy(() => import('./modules/RoadReserve/RoadReser
 const AdminSection    = lazy(() => import('./modules/Admin/AdminSection'));
 const DataAuditPanel  = lazy(() => import('./modules/DataAudit/DataAuditPanel'));
 const MindMapSection  = lazy(() => import('./modules/MindMap/MindMapSection'));
+const GisEnterpriseSection = lazy(() => import('./modules/GisEnterprise/GisEnterpriseSection'));
 
 const FULL_VIEWS      = new Set(['gismap', 'roadnetwork']);
 const SELF_SCROLL_VIEWS = new Set(['networkstory']);
@@ -194,6 +199,7 @@ function AppShell() {
                 {activeView === 'lifecycle'       && <LifecycleSection />}
                 {activeView === 'sources'         && <SourcesSection />}
                 {activeView === 'tabularsummaries' && <TabularSummaries />}
+                {activeView === 'gisenterprise'    && <GisEnterpriseSection />}
 
                 {activeView === 'admin' && (
                   <Suspense fallback={<ModuleSpinner />}>
@@ -228,6 +234,7 @@ function AppShell() {
                 )}
 
                 {activeView === 'bms' && <BMSSection />}
+                {activeView === 'pms' && <PMSSection />}
               </div>
             )}
 
@@ -262,6 +269,9 @@ function AppGate() {
   const { user, isAuthenticated } = useAuth();
 
   if (!isAuthenticated || !user) return <LoginPage />;
+
+  // Identity Manager: new users await admin approval; revoked users are blocked.
+  if (user.access === 'pending' || user.access === 'revoked') return <AccessPending />;
 
   if (isFieldRole(user.role)) {
     return (

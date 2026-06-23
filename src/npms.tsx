@@ -1,12 +1,11 @@
 /**
- * nbms.tsx — standalone entry for the Uganda National Bridge Management System.
- * Mounts ONLY the BMS section (Dashboard · Structure Map · Inventory & Condition
- * incl. the Digital Twin · Bridge Works) in the providers it needs, with its own
- * branded header. Deployed separately to networkengineringmowt-ai/uganda_nbms.
+ * npms.tsx — standalone entry for the Uganda National Pavement Management System.
+ * Mounts ONLY the PMS section in its own provider stack with a branded header.
+ * Deployed separately to networkengineringmowt-ai/uganda_npms.
  *
  * Three access levels (matching the main NRMS platform):
- *   rms   → mobile-first field capture shell (data entry only)
- *   super → full BMS dashboards & reports (read-only)
+ *   pms   → mobile-first field capture shell (data entry only)
+ *   super → full PMS dashboards & reports (read-only)
  *   admin → everything
  */
 import { StrictMode, Suspense, lazy, useState } from 'react';
@@ -19,7 +18,7 @@ import { LoginPage } from './modules/Auth/LoginPage';
 import { AccessPending } from './modules/Auth/AccessPending';
 import { BotHighlightContext } from './modules/AssetBot/types';
 
-const BMSSection = lazy(() => import('./modules/BMS/BMSSection'));
+const PMSSection = lazy(() => import('./modules/PMS/PMSSection'));
 const RMSFieldShell = lazy(() => import('./modules/RMS/RMSFieldShell'));
 
 function Header() {
@@ -27,17 +26,17 @@ function Header() {
     <header style={{
       display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0,
       padding: '8px 16px', background: 'rgba(2,5,8,0.9)',
-      borderBottom: '1px solid rgba(77,159,255,0.15)',
+      borderBottom: '1px solid rgba(245,158,11,0.15)',
     }}>
       <img src={`${import.meta.env.BASE_URL}mowt.jpg`} alt="MoWT"
         style={{ width: 32, height: 32, borderRadius: 8, objectFit: 'contain',
-          background: '#fff', padding: 2, border: '1px solid rgba(77,159,255,0.3)' }} />
+          background: '#fff', padding: 2, border: '1px solid rgba(245,158,11,0.3)' }} />
       <div style={{ lineHeight: 1.25 }}>
-        <div style={{ fontSize: 14, fontWeight: 900, color: '#4d9fff', letterSpacing: '0.04em' }}>
-          Uganda National Bridge Management System
+        <div style={{ fontSize: 14, fontWeight: 900, color: '#f59e0b', letterSpacing: '0.04em' }}>
+          Uganda National Pavement Management System
         </div>
         <div style={{ fontSize: 9.5, color: 'rgba(148,163,184,0.6)' }}>
-          Ministry of Works &amp; Transport · Department of National Roads · NBMS
+          Ministry of Works &amp; Transport · Department of National Roads · NPMS
         </div>
       </div>
       <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -53,7 +52,7 @@ function ModuleSpinner() {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
       <div style={{ width: 30, height: 30, borderRadius: '50%',
-        border: '2px solid rgba(75,99,130,0.4)', borderTopColor: '#4d9fff',
+        border: '2px solid rgba(245,158,11,0.4)', borderTopColor: '#f59e0b',
         animation: 'bms-spin 0.8s linear infinite' }} />
     </div>
   );
@@ -68,8 +67,8 @@ function AppGate() {
   // Identity Manager: new users await admin approval; revoked users blocked.
   if (user.access === 'pending' || user.access === 'revoked') return <AccessPending />;
 
-  // bms → mobile-first field capture shell (bridge inspection data entry)
-  if (user.role === 'bms') {
+  // pms → mobile-first field capture shell
+  if (user.role === 'pms') {
     return (
       <Suspense fallback={<ModuleSpinner />}>
         <RMSFieldShell />
@@ -77,21 +76,21 @@ function AppGate() {
     );
   }
 
-  // super / admin → full BMS dashboards & reports
+  // super / admin → full PMS dashboard
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column',
       background: '#0a0f1e', overflow: 'hidden' }}>
       <Header />
-      <div style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
+      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
         <Suspense fallback={<ModuleSpinner />}>
-          <BMSSection />
+          <PMSSection />
         </Suspense>
       </div>
     </div>
   );
 }
 
-function NBMSApp() {
+function NPMSApp() {
   const [highlightedLinks, setHighlightedLinks] = useState<string[]>([]);
   return (
     <AuthProvider>
@@ -106,6 +105,6 @@ function NBMSApp() {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <NBMSApp />
+    <NPMSApp />
   </StrictMode>,
 );

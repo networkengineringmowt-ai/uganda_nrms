@@ -158,6 +158,7 @@ export type ActiveView =
   | 'sources'           // Sources & Evidence catalogue
   | 'tabularsummaries'  // Tabular summaries — all data tables aggregated
   | 'bms'               // Bridge Management System — unified view (incl. Bridge Works tab)
+  | 'pms'               // Pavement Management System — unified view (NPMS)
   | 'network'           // Network Overview — 4-tab unified view
   | 'rms'               // RMS — Road Management System hub (4-tab: overview, road map, network story, DNR RMS Engine architecture)
   | 'casestudies'       // Global RMS Case Studies — world map, cards, comparative analytics, lessons
@@ -166,7 +167,8 @@ export type ActiveView =
   | 'pendingsurveys'    // Pending condition survey submissions
   | 'dataaudit'         // Data Audit Panel — admin-only cross-section KPI validation
   | 'datacapture'       // Data Capture Hub — login-gated forms that write to Supabase
-  | 'mindmap';          // Platform Mind Map — 5D architectural schematic
+  | 'mindmap'           // Platform Mind Map — 5D architectural schematic
+  | 'gisenterprise';    // GIS Enterprise Dashboard
 
 // ─── Road network types ───────────────────────────────────────────────────────
 export type RoadClass   = 'A' | 'B' | 'C' | 'M';
