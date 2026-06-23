@@ -1,1 +1,0 @@
-import{b as l,l as s,a as r,e as c}from"./leaflet-BZuhjBta.js";const f=l(function({data:t,...e},n){const o=new s.GeoJSON(t,e);return r(o,c(n,{overlayContainer:o}))},function(t,e,n){e.style!==n.style&&(e.style==null?t.resetStyle():t.setStyle(e.style))});export{f as G};
