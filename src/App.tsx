@@ -72,6 +72,12 @@ const AdminSection    = lazy(() => import('./modules/Admin/AdminSection'));
 const DataAuditPanel  = lazy(() => import('./modules/DataAudit/DataAuditPanel'));
 const MindMapSection  = lazy(() => import('./modules/MindMap/MindMapSection'));
 const GisEnterpriseSection = lazy(() => import('./modules/GisEnterprise/GisEnterpriseSection'));
+const ATCView          = lazy(() => import('./modules/ATC/ATCView'));
+const BridgeWorksSection = lazy(() => import('./modules/BridgeWorks/BridgeWorksSection'));
+const DocumentStore    = lazy(() => import('./modules/Documents/DocumentStore'));
+const DownloadsView    = lazy(() => import('./modules/Downloads/DownloadsView'));
+const RoadAtlasView    = lazy(() => import('./modules/RoadAtlas/RoadAtlasView'));
+const RoadVideoView    = lazy(() => import('./modules/RoadVideoView/RoadVideoView'));
 
 const FULL_VIEWS      = new Set(['gismap', 'roadnetwork']);
 const SELF_SCROLL_VIEWS = new Set(['networkstory']);
@@ -200,6 +206,12 @@ function AppShell() {
                 {activeView === 'sources'         && <SourcesSection />}
                 {activeView === 'tabularsummaries' && <TabularSummaries />}
                 {activeView === 'gisenterprise'    && <GisEnterpriseSection />}
+                {activeView === 'atc'              && <ATCView />}
+                {activeView === 'bridgeworks'      && <BridgeWorksSection />}
+                {activeView === 'documents'        && <DocumentStore />}
+                {activeView === 'downloads'        && <DownloadsView />}
+                {activeView === 'roadatlas'        && <RoadAtlasView />}
+                {activeView === 'roadvideo'        && <RoadVideoView />}
 
                 {activeView === 'admin' && (
                   <Suspense fallback={<ModuleSpinner />}>

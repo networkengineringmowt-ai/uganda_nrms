@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {
   Activity, Shield, Construction, Layers, Network, Building2,
   DollarSign, Clock, Database, ShieldCheck, Route, Globe, Landmark,
-  ChevronDown,
+  ChevronDown, Gauge, Map, Video, Hammer, FileText, Download,
 } from 'lucide-react';
 import { useBMS } from '../../store/BMSContext';
 import { useAuth } from '../../modules/Auth/AuthContext';
@@ -45,15 +45,21 @@ const SECTIONS: Record<string, Section> = {
   sources:       { id: 'sources',       label: 'Sources & Evidence',        icon: <Database size={14}/>,     color: N.gray   },
   admin:         { id: 'admin',         label: 'Admin Tools',               icon: <ShieldCheck size={14}/>,  color: N.cyan   },
   gisenterprise: { id: 'gisenterprise', label: 'GIS Enterprise',            icon: <Layers size={14}/>,       color: N.purple },
+  atc:           { id: 'atc',           label: 'ATC Traffic Counters',      icon: <Gauge size={14}/>,        color: N.orange },
+  roadatlas:     { id: 'roadatlas',     label: 'Road Atlas',                icon: <Map size={14}/>,          color: N.cyan   },
+  roadvideo:     { id: 'roadvideo',     label: 'Road Video Survey',         icon: <Video size={14}/>,        color: N.cyan   },
+  bridgeworks:   { id: 'bridgeworks',   label: 'Bridge Works Programme',    icon: <Hammer size={14}/>,       color: N.blue   },
+  documents:     { id: 'documents',     label: 'Document Store',            icon: <FileText size={14}/>,     color: N.gray   },
+  downloads:     { id: 'downloads',     label: 'Downloads',                 icon: <Download size={14}/>,     color: N.gray   },
 };
 
 // Four top-level tabs — each groups its child sections. Navigation is unchanged
 // (each child still calls navigate(id)); this is a presentation/IA grouping only.
 const GROUPS: Group[] = [
-  { id: 'assets',    label: 'Network & Assets',      icon: <Network size={15}/>,      color: N.cyan,   items: ['rms', 'roadcondition', 'bms', 'roadreserve'] },
-  { id: 'traffic',   label: 'Traffic & Performance', icon: <Activity size={15}/>,     color: N.orange, items: ['traffic'] },
+  { id: 'assets',    label: 'Network & Assets',      icon: <Network size={15}/>,      color: N.cyan,   items: ['rms', 'roadcondition', 'bms', 'bridgeworks', 'roadreserve', 'roadatlas', 'roadvideo'] },
+  { id: 'traffic',   label: 'Traffic & Performance', icon: <Activity size={15}/>,     color: N.orange, items: ['traffic', 'atc'] },
   { id: 'planning',  label: 'Planning & Investment', icon: <Building2 size={15}/>,    color: N.green,  items: ['projects', 'pim', 'budget', 'lifecycle'] },
-  { id: 'knowledge', label: 'Knowledge & Admin',     icon: <Shield size={15}/>,       color: N.purple, items: ['casestudies', 'sources', 'gisenterprise', 'admin'] },
+  { id: 'knowledge', label: 'Knowledge & Admin',     icon: <Shield size={15}/>,       color: N.purple, items: ['casestudies', 'sources', 'documents', 'downloads', 'gisenterprise', 'admin'] },
 ];
 
 export default function Sidebar() {

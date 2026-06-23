@@ -168,7 +168,13 @@ export type ActiveView =
   | 'dataaudit'         // Data Audit Panel — admin-only cross-section KPI validation
   | 'datacapture'       // Data Capture Hub — login-gated forms that write to Supabase
   | 'mindmap'           // Platform Mind Map — 5D architectural schematic
-  | 'gisenterprise';    // GIS Enterprise Dashboard
+  | 'gisenterprise'     // GIS Enterprise Dashboard
+  | 'atc'               // ATC automatic traffic counters
+  | 'bridgeworks'       // Bridge works programme
+  | 'documents'         // Document store
+  | 'downloads'         // Downloads centre
+  | 'roadatlas'         // Road atlas
+  | 'roadvideo';        // Road video survey viewer
 
 // ─── Road network types ───────────────────────────────────────────────────────
 export type RoadClass   = 'A' | 'B' | 'C' | 'M';
