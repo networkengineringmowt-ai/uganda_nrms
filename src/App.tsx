@@ -8,6 +8,7 @@ import { AccessPending } from './modules/Auth/AccessPending';
 import { canAccessView, isFieldRole } from './modules/Auth/permissions';
 import { roleLabel } from './modules/Auth/authTypes';
 import CrossLinkChipBar from './shared/CrossLinkChipBar';
+import { AmbientParticles, useEchoRipple } from './shared/EchoFX';
 
 const RMSFieldShell = lazy(() => import('./modules/RMS/RMSFieldShell'));
 import Sidebar from './components/Layout/Sidebar';
@@ -125,6 +126,7 @@ function AppShell() {
   const { state, navigate } = useBMS();
   const { activeView, isLoading } = state;
   const { user } = useAuth();
+  useEchoRipple();   // global click-ripple (Echo design language)
 
   // Track & trace: every page view goes to the G: Drive audit trail.
   useEffect(() => {
@@ -143,7 +145,8 @@ function AppShell() {
   }
 
   return (
-    <div className="flex h-full w-full overflow-hidden bg-slate-950">
+    <div className="flex h-full w-full overflow-hidden">
+      <AmbientParticles />
       <Sidebar />
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         {!isFullView && <Header showSearch={showHeaderSearch} />}
