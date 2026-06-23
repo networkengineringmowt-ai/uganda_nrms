@@ -50,6 +50,13 @@ const VIEW_TITLES: Record<string, { title: string; sub: string; color?: string }
   documents:     { title: 'Document Store',               sub: 'Drawings, reports, contracts and records',             color: '#4d9fff' },
   media:         { title: 'Media and Document Gallery',   sub: 'Photography, video surveys, field reports & documents · Uganda national roads', color: '#b967ff' },
   phototwin:     { title: 'Photo Gallery & Digital Twin', sub: 'Inspection photos and structural schematics',          color: '#00ff88' },
+  // Newly-wired sections — keep banner chrome consistent with the rest of the platform
+  roadatlas:     { title: 'Road Atlas',                   sub: 'Visual intelligence atlas · 21,160 km mapped national network · DNR GIS', color: '#00d4aa' },
+  roadvideo:     { title: 'Road Video Survey',            sub: 'Georeferenced pavement survey video · frame-by-frame · 2021–2026', color: '#ff6b35' },
+  bridgeworks:   { title: 'Bridge Works Programme',       sub: 'Bridge & major-culvert development projects · MoWT status report', color: '#4d9fff' },
+  downloads:     { title: 'Downloads & Exports',          sub: 'Network, bridge & culvert inventory · WGS84 shapefiles · CSV · GeoJSON', color: '#94a3b8' },
+  gisenterprise: { title: 'GIS Enterprise',               sub: 'Enterprise GIS architecture · client / service / data layers · WMS & tile services', color: '#b967ff' },
+  hdm4:          { title: 'HDM-4 Analysis',               sub: 'Highway Development & Management · works cost matrix · economic appraisal', color: '#00f5ff' },
 };
 
 export default function Header({ showSearch }: { showSearch?: boolean }) {

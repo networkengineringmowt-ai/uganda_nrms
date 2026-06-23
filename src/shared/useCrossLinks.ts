@@ -80,6 +80,120 @@ const CROSS_LINK_MAP: Record<string, CrossLink[]> = {
     { targetView: 'lifecycle',     label: 'Lifecycle',     description: 'HDM-4 feeds lifecycle trajectories', dataField: 'iri_trajectory / treatment_triggers' },
     { targetView: 'budget',        label: 'Budget',        description: 'HDM-4 programme cost outputs',    dataField: 'treatment_cost / nbc_ratio' },
   ],
+  // ── Newly-wired & secondary sections — so the unified chip bar appears platform-wide ──
+  bridgeworks: [
+    { targetView: 'bms',         label: 'BMS',          description: 'Structure inventory & condition for these works', dataField: 'bridge_id / condition_rating' },
+    { targetView: 'projects',    label: 'Projects',     description: 'Bridge works within the development programme', dataField: 'project_type === Bridges' },
+    { targetView: 'budget',      label: 'Budget',       description: 'Contract values & funding for bridge works', dataField: 'contract_value' },
+    { targetView: 'roadnetwork', label: 'Road Network', description: 'Bridge works located on the network', dataField: 'road_no / link_id' },
+  ],
+  atc: [
+    { targetView: 'traffic',          label: 'Traffic',     description: 'AADT & counts from these counters', dataField: 'aadt / station_id' },
+    { targetView: 'trafficanalytics', label: 'Analytics',   description: 'Trend & composition analysis',       dataField: 'aadt_trend' },
+    { targetView: 'overloading',      label: 'Overloading', description: 'ESAL load from counted heavy vehicles', dataField: 'hgv_pct / daily_esals' },
+    { targetView: 'roadnetwork',      label: 'Road Network',description: 'Counter stations on the network',   dataField: 'station_id / link_id' },
+  ],
+  roadatlas: [
+    { targetView: 'roadnetwork',   label: 'Road Network', description: 'Full network geometry & attributes', dataField: 'link_id / geometry' },
+    { targetView: 'roadcondition', label: 'Condition',    description: 'Pavement condition layer',           dataField: 'iri / condition_rating' },
+    { targetView: 'traffic',       label: 'Traffic',      description: 'Traffic demand layer',               dataField: 'aadt_predicted' },
+    { targetView: 'bms',           label: 'BMS',          description: 'Structures layer',                   dataField: 'bridge_count' },
+  ],
+  roadvideo: [
+    { targetView: 'roadcondition', label: 'Condition',    description: 'Pavement condition for surveyed links', dataField: 'iri / link_id' },
+    { targetView: 'roadnetwork',   label: 'Road Network', description: 'Survey route on the network',        dataField: 'link_id / geometry' },
+    { targetView: 'phototwin',     label: 'Photo Twin',   description: 'Inspection photo archive',           dataField: 'link_id / image_set' },
+  ],
+  documents: [
+    { targetView: 'sources',   label: 'Sources',   description: 'Evidence catalogue & citations', dataField: 'document_id' },
+    { targetView: 'downloads', label: 'Downloads', description: 'Export inventory & datasets',     dataField: 'export_set' },
+    { targetView: 'bms',       label: 'BMS',       description: 'Structure drawings & reports',    dataField: 'bridge_id / document_type' },
+  ],
+  downloads: [
+    { targetView: 'documents',   label: 'Documents',    description: 'Source documents & records', dataField: 'document_id' },
+    { targetView: 'sources',     label: 'Sources',      description: 'Data provenance & evidence',  dataField: 'dataset_id' },
+    { targetView: 'roadnetwork', label: 'Road Network', description: 'Network geometry exports',    dataField: 'geojson / shapefile' },
+  ],
+  gisenterprise: [
+    { targetView: 'roadnetwork', label: 'Road Network', description: 'Published network feature service', dataField: 'link_id / geometry' },
+    { targetView: 'roadatlas',   label: 'Road Atlas',   description: 'Visual intelligence layers',        dataField: 'layer_set' },
+    { targetView: 'sources',     label: 'Sources',      description: 'Data services & catalogue',         dataField: 'service_id' },
+  ],
+  pim: [
+    { targetView: 'budget',   label: 'Budget',   description: 'Capital vs maintenance financing', dataField: 'budget_usd' },
+    { targetView: 'projects', label: 'Projects', description: 'Funded development projects',       dataField: 'project_id' },
+    { targetView: 'oprc',     label: 'OPRC',     description: 'Performance-based contracts',       dataField: 'lot_id' },
+  ],
+  casestudies: [
+    { targetView: 'sources',   label: 'Sources',   description: 'Literature & evidence base',          dataField: 'reference_id' },
+    { targetView: 'lifecycle', label: 'Lifecycle', description: 'International asset-management practice', dataField: 'methodology' },
+    { targetView: 'hdm4',      label: 'HDM-4',     description: 'Modelling approaches compared',       dataField: 'model' },
+  ],
+  sources: [
+    { targetView: 'documents',        label: 'Documents', description: 'Underlying source documents', dataField: 'document_id' },
+    { targetView: 'downloads',        label: 'Downloads', description: 'Downloadable datasets',        dataField: 'dataset_id' },
+    { targetView: 'tabularsummaries', label: 'Tables',    description: 'Cited summary tables',         dataField: 'table_id' },
+  ],
+  roadreserve: [
+    { targetView: 'roadnetwork', label: 'Road Network', description: 'Reserve corridor on the network', dataField: 'link_id / reserve_width' },
+    { targetView: 'projects',    label: 'Projects',     description: 'Acquisition for development projects', dataField: 'project_id / rap' },
+    { targetView: 'documents',   label: 'Documents',    description: 'Gazette & legal records',         dataField: 'document_id' },
+  ],
+  trafficanalytics: [
+    { targetView: 'traffic',     label: 'Traffic',     description: 'Underlying counts & stations',   dataField: 'aadt / station_id' },
+    { targetView: 'atc',         label: 'ATC',         description: 'Automatic counter source data',  dataField: 'station_id' },
+    { targetView: 'overloading', label: 'Overloading', description: 'Heavy-vehicle load analysis',     dataField: 'hgv_pct' },
+  ],
+  trafficsummary: [
+    { targetView: 'traffic',          label: 'Traffic',      description: 'Traffic demand detail',     dataField: 'aadt' },
+    { targetView: 'roadnetwork',      label: 'Road Network', description: 'Links & stations geometry', dataField: 'link_id' },
+    { targetView: 'trafficanalytics', label: 'Analytics',    description: 'Trends & composition',      dataField: 'aadt_trend' },
+  ],
+  growthfactors: [
+    { targetView: 'traffic',          label: 'Traffic',   description: 'Base-year counts (2016)',        dataField: 'aadt_2016' },
+    { targetView: 'trafficanalytics', label: 'Analytics', description: 'Projected AADT growth',          dataField: 'growth_rate' },
+    { targetView: 'hdm4',             label: 'HDM-4',     description: 'Growth inputs to deterioration', dataField: 'growth_factor' },
+  ],
+  maintenanceprogramme: [
+    { targetView: 'budget',        label: 'Budget',    description: 'Programme cost & funding',          dataField: 'cost / treatment' },
+    { targetView: 'roadcondition', label: 'Condition', description: 'Condition driving interventions',   dataField: 'iri / urgency' },
+    { targetView: 'lifecycle',     label: 'Lifecycle', description: 'Treatment timing per link',         dataField: 'treatment_year' },
+  ],
+  registry: [
+    { targetView: 'bms',         label: 'BMS',         description: 'Structure management overview',     dataField: 'bridge_id' },
+    { targetView: 'inspections', label: 'Inspections', description: 'Inspection history per structure',  dataField: 'inspection_id' },
+    { targetView: 'condition',   label: 'Condition',   description: 'Component condition ratings',        dataField: 'condition_rating' },
+  ],
+  inspections: [
+    { targetView: 'bms',         label: 'BMS',         description: 'Structure inventory',               dataField: 'bridge_id' },
+    { targetView: 'condition',   label: 'Condition',   description: 'Resulting condition assessment',    dataField: 'condition_rating' },
+    { targetView: 'maintenance', label: 'Maintenance', description: 'Works arising from inspections',    dataField: 'work_order_id' },
+  ],
+  condition: [
+    { targetView: 'bms',         label: 'BMS',         description: 'Structure inventory',               dataField: 'bridge_id' },
+    { targetView: 'inspections', label: 'Inspections', description: 'Source inspection records',          dataField: 'inspection_id' },
+    { targetView: 'priority',    label: 'Priority',    description: 'Risk ranking from condition',        dataField: 'priority_score' },
+  ],
+  maintenance: [
+    { targetView: 'bms',      label: 'BMS',      description: 'Structure inventory',          dataField: 'bridge_id' },
+    { targetView: 'budget',   label: 'Budget',   description: 'Maintenance cost & funding',   dataField: 'repair_cost' },
+    { targetView: 'priority', label: 'Priority', description: 'Intervention priority',         dataField: 'priority_score' },
+  ],
+  priority: [
+    { targetView: 'bms',         label: 'BMS',         description: 'Structure inventory',          dataField: 'bridge_id' },
+    { targetView: 'condition',   label: 'Condition',   description: 'Condition feeding the ranking', dataField: 'condition_rating' },
+    { targetView: 'maintenance', label: 'Maintenance', description: 'Works for prioritised structures', dataField: 'work_order_id' },
+  ],
+  analytics: [
+    { targetView: 'bms',       label: 'BMS',       description: 'Structure inventory',     dataField: 'bridge_id' },
+    { targetView: 'condition', label: 'Condition', description: 'Condition trend inputs',   dataField: 'condition_rating' },
+    { targetView: 'priority',  label: 'Priority',  description: 'Risk-based outputs',       dataField: 'priority_score' },
+  ],
+  dashboard: [
+    { targetView: 'registry',    label: 'Registry',    description: 'Full structure registry', dataField: 'bridge_id' },
+    { targetView: 'inspections', label: 'Inspections', description: 'Inspection scheduling',    dataField: 'inspection_id' },
+    { targetView: 'priority',    label: 'Priority',    description: 'Priority ranking',         dataField: 'priority_score' },
+  ],
 };
 
 /**

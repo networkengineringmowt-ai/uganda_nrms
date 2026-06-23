@@ -7,6 +7,7 @@ import { LoginPage } from './modules/Auth/LoginPage';
 import { AccessPending } from './modules/Auth/AccessPending';
 import { canAccessView, isFieldRole } from './modules/Auth/permissions';
 import { roleLabel } from './modules/Auth/authTypes';
+import CrossLinkChipBar from './shared/CrossLinkChipBar';
 
 const RMSFieldShell = lazy(() => import('./modules/RMS/RMSFieldShell'));
 import Sidebar from './components/Layout/Sidebar';
@@ -81,6 +82,9 @@ const RoadVideoView    = lazy(() => import('./modules/RoadVideoView/RoadVideoVie
 
 const FULL_VIEWS      = new Set(['gismap', 'roadnetwork']);
 const SELF_SCROLL_VIEWS = new Set(['networkstory']);
+// Views whose section component already renders its own CrossLinkChipBar — the
+// global bar below skips these to avoid a duplicate "Related Data" strip.
+const SELF_CHIP_VIEWS = new Set(['rms', 'bms', 'pms', 'roadcondition', 'traffic', 'budget', 'lifecycle', 'projects', 'oprc', 'ndpiv', 'mlarchitecture', 'roadnetwork']);
 
 // ─────────────────────────────────────────────────────────────────────────────
 function LoadingScreen() {
@@ -157,6 +161,8 @@ function AppShell() {
 
             {!isFullView && !SELF_SCROLL_VIEWS.has(activeView) && (
               <div style={{ position: 'absolute', inset: 0, overflowY: 'auto', overflowX: 'hidden', paddingBottom: 12 }}>
+                {/* Unified Related-Data chip bar — shown on every section that doesn't render its own */}
+                {!import.meta.env.VITE_STANDALONE && !SELF_CHIP_VIEWS.has(activeView) && <CrossLinkChipBar sectionId={activeView} />}
                 {activeView === 'network'               && <NetworkSection />}
                 {activeView === 'platform'              && <PlatformDashboard />}
                 {activeView === 'traffic'               && <TrafficSection />}
