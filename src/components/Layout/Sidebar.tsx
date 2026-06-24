@@ -71,14 +71,13 @@ export default function Sidebar() {
 
   // super level: dashboards & reports only — Admin Tools stays hidden
   const isAdmin = user?.role === 'admin';
-  const visibleGroups = GROUPS
-    .map(g => ({ ...g, items: g.items.filter(id => id !== 'admin' || isAdmin) }))
-    .filter(g => g.items.length > 0);
-
-  // Which top-level tab is expanded — defaults to the one holding the active view.
-  const groupOf = (view: string) =>
-    visibleGroups.find(g => g.items.includes(view as ActiveView))?.id ?? visibleGroups[0]?.id;
-  const [openGroup, setOpenGroup] = useState<string | undefined>(groupOf(activeView));
+  // FLAT nav — every section is always visible. No grouping, no accordion/collapse.
+  const FLAT_ORDER: ActiveView[] = [
+    'rms', 'roadcondition', 'bms', 'bridgeworks', 'roadreserve', 'roadatlas', 'roadvideo',
+    'traffic', 'atc', 'projects', 'pim', 'budget', 'lifecycle',
+    'casestudies', 'sources', 'documents', 'downloads', 'gisenterprise', 'admin',
+  ];
+  const navItems = FLAT_ORDER.filter(id => (id !== 'admin' || isAdmin) && SECTIONS[id]);
 
   return (
     <aside
@@ -128,92 +127,43 @@ export default function Sidebar() {
         <StatPill label="Critical" value={String(criticalCount)} color={N.pink} />
       </div>
 
-      {/* ── 4 top-level tabs (accordion groups) ── */}
-      <nav style={{ flex: 1, overflowY: 'auto', padding: '8px 6px' }}>
-        {visibleGroups.map(g => {
-          const grp = hexToRgb(g.color);
-          const isOpen = openGroup === g.id;
-          const hasActive = g.items.includes(activeView as ActiveView);
+      {/* ── Flat section list (no grouping, no collapse) ── */}
+      <nav style={{ flex: 1, overflowY: 'auto', padding: '6px 6px' }}>
+        {navItems.map(id => {
+          const s = SECTIONS[id];
+          const isActive = activeView === id;
+          const rgb = hexToRgb(s.color);
           return (
-            <div key={g.id} style={{ marginBottom: 4 }}>
-              {/* Group header = top-level tab */}
-              <button
-                onClick={() => setOpenGroup(isOpen ? undefined : g.id)}
-                style={{
-                  width: '100%', display: 'flex', alignItems: 'center', gap: 9,
-                  padding: '10px 11px', borderRadius: 8,
-                  fontSize: 11.5, fontWeight: 800, letterSpacing: '0.02em',
-                  cursor: 'pointer', border: 'none', textAlign: 'left',
-                  transition: 'all 0.15s',
-                  background: isOpen || hasActive ? `rgba(${grp},0.13)` : 'rgba(255,255,255,0.02)',
-                  color: isOpen || hasActive ? g.color : 'rgba(203,213,225,0.85)',
-                  borderLeft: hasActive ? `3px solid ${g.color}` : '3px solid transparent',
-                }}
-                onMouseEnter={e => { if (!isOpen && !hasActive) (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.05)'; }}
-                onMouseLeave={e => { if (!isOpen && !hasActive) (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.02)'; }}
-              >
-                <span style={{ color: g.color, flexShrink: 0,
-                  filter: isOpen || hasActive ? `drop-shadow(0 0 6px ${g.color})` : 'none' }}>
-                  {g.icon}
-                </span>
-                <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {g.label}
-                </span>
-                <ChevronDown size={13} style={{
-                  flexShrink: 0, opacity: 0.7,
-                  transform: isOpen ? 'rotate(0deg)' : 'rotate(-90deg)',
-                  transition: 'transform 0.2s',
+            <button
+              key={id}
+              onClick={() => navigate(id)}
+              style={{
+                width: '100%', display: 'flex', alignItems: 'center', gap: 9,
+                padding: '7px 11px', borderRadius: 7, marginBottom: 1,
+                fontSize: 11, fontWeight: isActive ? 800 : 600,
+                cursor: 'pointer', border: 'none', textAlign: 'left',
+                transition: 'all 0.15s',
+                background: isActive ? `rgba(${rgb},0.14)` : 'transparent',
+                color: isActive ? s.color : 'rgba(203,213,225,0.78)',
+                borderLeft: isActive ? `2px solid ${s.color}` : '2px solid transparent',
+              }}
+              onMouseEnter={e => { if (!isActive) { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.05)'; (e.currentTarget as HTMLButtonElement).style.color = '#e2eaf4'; } }}
+              onMouseLeave={e => { if (!isActive) { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.color = 'rgba(203,213,225,0.78)'; } }}
+            >
+              <span style={{ color: isActive ? s.color : 'rgba(148,163,184,0.55)', flexShrink: 0,
+                filter: isActive ? `drop-shadow(0 0 5px ${s.color})` : 'none' }}>
+                {s.icon}
+              </span>
+              <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {s.label}
+              </span>
+              {isActive && (
+                <span style={{
+                  width: 5, height: 5, borderRadius: '50%', background: s.color, flexShrink: 0,
+                  boxShadow: `0 0 8px ${s.color}`, animation: 'pulse 2s ease-in-out infinite',
                 }}/>
-              </button>
-
-              {/* Child sections */}
-              <div style={{
-                overflow: 'hidden',
-                maxHeight: isOpen ? `${g.items.length * 40 + 8}px` : '0px',
-                transition: 'max-height 0.25s ease',
-              }}>
-                <div style={{ padding: '4px 0 4px 8px' }}>
-                  {g.items.map(id => {
-                    const s = SECTIONS[id];
-                    if (!s) return null;
-                    const isActive = activeView === id;
-                    const rgb = hexToRgb(s.color);
-                    return (
-                      <button
-                        key={id}
-                        onClick={() => navigate(id)}
-                        style={{
-                          width: '100%', display: 'flex', alignItems: 'center', gap: 9,
-                          padding: '8px 11px', borderRadius: 7, marginBottom: 2,
-                          fontSize: 10.5, fontWeight: isActive ? 800 : 600,
-                          cursor: 'pointer', border: 'none', textAlign: 'left',
-                          transition: 'all 0.15s',
-                          background: isActive ? `rgba(${rgb},0.14)` : 'transparent',
-                          color: isActive ? s.color : 'rgba(203,213,225,0.7)',
-                          borderLeft: isActive ? `2px solid ${s.color}` : '2px solid transparent',
-                        }}
-                        onMouseEnter={e => { if (!isActive) { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.05)'; (e.currentTarget as HTMLButtonElement).style.color = '#e2eaf4'; } }}
-                        onMouseLeave={e => { if (!isActive) { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.color = 'rgba(203,213,225,0.7)'; } }}
-                      >
-                        <span style={{ color: isActive ? s.color : 'rgba(148,163,184,0.5)', flexShrink: 0,
-                          filter: isActive ? `drop-shadow(0 0 5px ${s.color})` : 'none' }}>
-                          {s.icon}
-                        </span>
-                        <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {s.label}
-                        </span>
-                        {isActive && (
-                          <span style={{
-                            width: 5, height: 5, borderRadius: '50%', background: s.color, flexShrink: 0,
-                            boxShadow: `0 0 8px ${s.color}`, animation: 'pulse 2s ease-in-out infinite',
-                          }}/>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
+              )}
+            </button>
           );
         })}
       </nav>

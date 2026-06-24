@@ -98,7 +98,7 @@ function classifyInt(type: string): IntType {
 const LINKS: LinkDef[] = [];
 
 // ── Helper: build a LinkDef from a GeoJSON feature ─────────────────────────
-function featureToLink(p: Record<string, unknown>, idx: number): LinkDef {
+function featureToLink(p: Record<string, unknown>, idx: number, geom?: { type?: string; coordinates?: unknown }): LinkDef {
   const id        = String(p.link_id        ?? `Link${idx}`);
   const name      = String(p.link_nam_1     ?? p.link_name ?? id);
   const road      = String(p.road_no        ?? id.split('_')[0] ?? '?');
@@ -196,20 +196,25 @@ function featureToLink(p: Record<string, unknown>, idx: number): LinkDef {
     : builtYear < 2010 ? 'Multiple (DBST)'
     : 'NDPIV / OPRC contractor';
 
-  // Coords — straight line between start/end (synthesised)
-  const coords: [number, number][] = [];
-  if (startY && startX && endY && endX) {
-    const steps = 4;
-    for (let i = 0; i <= steps; i++) {
-      const t = i / steps;
-      coords.push([
-        startY + (endY - startY) * t,
-        startX + (endX - startX) * t,
-      ]);
-    }
-  } else {
-    // Fallback to Uganda center
-    coords.push([1.37, 32.29], [1.37, 32.30]);
+  // Coords — prefer the REAL GeoJSON geometry (so every road is mapped to its
+  // true shape); fall back to a start/end straight line, then to centre.
+  let coords: [number, number][] = [];
+  const gType = geom?.type;
+  const gCoords = geom?.coordinates as unknown;
+  if (gType === 'LineString' && Array.isArray(gCoords)) {
+    coords = (gCoords as number[][])
+      .filter(c => Array.isArray(c) && c.length >= 2)
+      .map(c => [c[1], c[0]] as [number, number]);
+  } else if (gType === 'MultiLineString' && Array.isArray(gCoords)) {
+    coords = (gCoords as number[][][])
+      .flat()
+      .filter(c => Array.isArray(c) && c.length >= 2)
+      .map(c => [c[1], c[0]] as [number, number]);
+  }
+  if (coords.length < 2) {
+    coords = (startY && startX && endY && endX)
+      ? [[startY, startX], [endY, endX]]
+      : [[1.37, 32.29], [1.37, 32.30]];
   }
 
   return {
@@ -399,8 +404,8 @@ export default function LifecycleSection() {
     const base = (import.meta as { env: { BASE_URL: string } }).env.BASE_URL;
     fetch(`${base}data/network2026.geojson`)
       .then(r => r.json())
-      .then((g: { features: Array<{ properties: Record<string, unknown> }> }) => {
-        const links: LinkDef[] = g.features.map((f, i) => featureToLink(f.properties ?? {}, i));
+      .then((g: { features: Array<{ properties: Record<string, unknown>; geometry?: { type?: string; coordinates?: unknown } }> }) => {
+        const links: LinkDef[] = g.features.map((f, i) => featureToLink(f.properties ?? {}, i, f.geometry));
         setAllLinks(links);
         if (links.length && !selectedId) setSelectedId(links[0].id);
       })
@@ -617,12 +622,19 @@ export default function LifecycleSection() {
               <ZoomControl position="bottomright"/>
               <MapFlyTo center={center} zoom={mapZoom}/>
 
-              {/* Road link — colored by condition — click opens MapDetailPane */}
-              <Polyline
-                positions={link.coords}
-                pathOptions={{ color: iriColor, weight: 5, opacity: 0.9 }}
-                eventHandlers={{ click: () => setMapClickedLink(link) }}
-              />
+              {/* ALL road links — every road mapped, coloured by condition (IRI).
+                  The selected link is emphasised. Click any to inspect its lifecycle. */}
+              {allLinks.map((l, i) => {
+                const sel = l.id === (mapClickedLink?.id ?? selectedId);
+                return (
+                  <Polyline
+                    key={i}
+                    positions={l.coords}
+                    pathOptions={{ color: conditionColor(l.currentIRI), weight: sel ? 5 : 2, opacity: sel ? 0.95 : 0.55 }}
+                    eventHandlers={{ click: () => { setMapClickedLink(l); setSelectedId(l.id); } }}
+                  />
+                );
+              })}
 
               {/* Intervention markers */}
               {markers.map((m, i) => (
