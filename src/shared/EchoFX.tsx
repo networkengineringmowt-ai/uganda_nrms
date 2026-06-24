@@ -7,7 +7,8 @@
  */
 import { useEffect, useRef, useState } from 'react';
 
-const PALETTE = ['0,245,255', '185,103,255', '0,255,136', '77,159,255'];
+// Multicolored neon palette (matches the neon-dark theme) — rgb triples.
+const PALETTE = ['0,245,255', '0,255,136', '191,0,255', '255,0,110', '255,238,0', '0,136,255', '255,102,0'];
 
 // Pre-render one soft glow sprite per palette colour (cheap drawImage instead of
 // per-frame createRadialGradient).

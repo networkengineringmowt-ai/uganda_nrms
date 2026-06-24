@@ -204,9 +204,122 @@ button, a, [role="button"], [role="tab"], .echo-lift, input, select, textarea,
 /* Re-assert legibility exclusions after the broad rule above */
 .leaflet-container *, svg text, input, textarea, .no-metal, .no-metal * { -webkit-text-fill-color: initial !important; animation: none; }
 
-/* Respect reduced-motion */
+/* ════════════════════════════════════════════════════════════════════════════
+   NEON DARK SYSTEM — pure-black base + multicolored neon (overrides the navy Echo
+   base above). This is the active visual direction.
+   ════════════════════════════════════════════════════════════════════════════ */
+:root {
+  --bg-base:#000000; --bg-surface:#080808; --bg-card:#0d0d0d; --bg-card-hover:#111111; --bg-overlay:#050505;
+  --neon-cyan:#00f5ff; --neon-green:#00ff88; --neon-pink:#ff006e; --neon-purple:#bf00ff;
+  --neon-orange:#ff6600; --neon-yellow:#ffee00; --neon-blue:#0088ff; --neon-red:#ff0040;
+  --neon-gold:#ffd700; --neon-lime:#aaff00;
+  --glow-cyan:0 0 10px #00f5ff,0 0 30px #00f5ff66,0 0 60px #00f5ff33;
+  --glow-green:0 0 10px #00ff88,0 0 30px #00ff8866,0 0 60px #00ff8833;
+  --glow-pink:0 0 10px #ff006e,0 0 30px #ff006e66,0 0 60px #ff006e33;
+  --glow-purple:0 0 10px #bf00ff,0 0 30px #bf00ff66,0 0 60px #bf00ff33;
+  --glow-orange:0 0 10px #ff6600,0 0 30px #ff660066,0 0 60px #ff660033;
+  --glow-yellow:0 0 10px #ffee00,0 0 30px #ffee0066,0 0 60px #ffee0033;
+  --glow-blue:0 0 10px #0088ff,0 0 30px #0088ff66,0 0 60px #0088ff33;
+  --glow-gold:0 0 10px #ffd700,0 0 30px #ffd70066,0 0 60px #ffd70033;
+}
+
+/* Subtle pulse for neon glows (±20% intensity) */
+@keyframes neonPulse { 0%,100%{ filter: brightness(1); } 50%{ filter: brightness(1.18); } }
+
+/* ── BASE — true black, kill the navy gradient + particle tint ──────────────── */
+body, #root, .app-root { background:#000000 !important; color:#e0e0e0; min-height:100vh; }
+.echo-particles { opacity:0.7; }
+
+/* ── CARDS ──────────────────────────────────────────────────────────────────── */
+.glass-panel, .echo-card, [class*="card"], [class*="Card"] {
+  background:#0d0d0d !important; border:1px solid rgba(255,255,255,0.08) !important;
+  box-shadow:0 4px 24px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+  backdrop-filter:none !important;
+}
+.card-good,[class*="good"]    { border-color:var(--neon-green) !important;  box-shadow:0 0 0 1px var(--neon-green),var(--glow-green) !important; }
+.card-fair,[class*="fair"]    { border-color:var(--neon-yellow) !important; box-shadow:0 0 0 1px var(--neon-yellow),var(--glow-yellow) !important; }
+.card-poor,[class*="poor"]    { border-color:var(--neon-orange) !important; box-shadow:0 0 0 1px var(--neon-orange),var(--glow-orange) !important; }
+.card-bad,[class*="bad"],[class*="very-poor"],[class*="veryPoor"] { border-color:var(--neon-red) !important; box-shadow:0 0 0 1px var(--neon-red),var(--glow-pink) !important; }
+.card-primary,[class*="primary"] { border-color:var(--neon-cyan) !important; box-shadow:0 0 0 1px var(--neon-cyan),var(--glow-cyan) !important; }
+.card-info,[class*="info"]    { border-color:var(--neon-blue) !important;   box-shadow:0 0 0 1px var(--neon-blue),var(--glow-blue) !important; }
+.card-bridge,[class*="bridge"]{ border-color:var(--neon-purple) !important; box-shadow:0 0 0 1px var(--neon-purple),var(--glow-purple) !important; }
+.card-traffic,[class*="traffic"]{ border-color:var(--neon-lime) !important; box-shadow:0 0 0 1px var(--neon-lime),var(--glow-green) !important; }
+[class*="card"]:hover, .echo-card:hover { transform:translateY(-3px) scale(1.005); filter:brightness(1.15); }
+
+/* ── SIDEBAR ────────────────────────────────────────────────────────────────── */
+[class*="sidebar"], [class*="Sidebar"], nav { background:#050505 !important; border-right:1px solid rgba(0,245,255,0.15) !important; }
+[class*="sidebar"] [class*="active"], [class*="nav"] [class*="active"] {
+  background:rgba(0,245,255,0.08) !important; border-left:3px solid var(--neon-cyan) !important;
+  box-shadow:var(--glow-cyan) !important; color:var(--neon-cyan) !important;
+}
+
+/* ── TYPOGRAPHY — neon shimmer ──────────────────────────────────────────────── */
+h1, h2 {
+  background:linear-gradient(135deg,var(--neon-cyan) 0%,#fff 40%,var(--neon-purple) 70%,var(--neon-cyan) 100%);
+  background-size:300% 300%; -webkit-background-clip:text; background-clip:text;
+  -webkit-text-fill-color:transparent; animation:metallicShimmer 4s ease infinite;
+  text-shadow:none; filter:drop-shadow(0 0 12px rgba(0,245,255,0.5));
+}
+h3, h4 {
+  background:linear-gradient(135deg,var(--neon-gold) 0%,#fff 40%,var(--neon-orange) 70%,var(--neon-gold) 100%);
+  background-size:300% 300%; -webkit-background-clip:text; background-clip:text;
+  -webkit-text-fill-color:transparent; animation:metallicShimmer 5s ease infinite;
+  filter:drop-shadow(0 0 8px rgba(255,215,0,0.4));
+}
+[class*="stat"], [class*="value"], [class*="kpi"], [class*="metric"], [class*="count"],
+[class*="percentage"], [class*="-pct"], [class*="number"] {
+  color:var(--neon-cyan) !important; text-shadow:var(--glow-cyan) !important; font-variant-numeric:tabular-nums;
+}
+
+/* Section-header neon accents */
+[class*="pavement"]  > h2, [class*="pavement"]  > h3 { filter:drop-shadow(0 0 10px var(--neon-green)); }
+[class*="bridge"]    > h2, [class*="bridge"]    > h3 { filter:drop-shadow(0 0 10px var(--neon-purple)); }
+[class*="traffic"]   > h2, [class*="traffic"]   > h3 { filter:drop-shadow(0 0 10px var(--neon-lime)); }
+[class*="analytics"] > h2, [class*="analytics"] > h3 { filter:drop-shadow(0 0 10px var(--neon-cyan)); }
+[class*="inventory"] > h2, [class*="inventory"] > h3 { filter:drop-shadow(0 0 10px var(--neon-orange)); }
+[class*="safety"]    > h2, [class*="safety"]    > h3 { filter:drop-shadow(0 0 10px var(--neon-red)); }
+[class*="gis"]       > h2, [class*="gis"]       > h3 { filter:drop-shadow(0 0 10px var(--neon-blue)); }
+
+/* ── PROGRESS / BARS ────────────────────────────────────────────────────────── */
+[class*="progress"] > div, [class*="bar"] { box-shadow:0 0 8px currentColor; }
+.progress-good { background:linear-gradient(90deg,#00ff88,#00ffaa) !important; box-shadow:var(--glow-green); }
+.progress-fair { background:linear-gradient(90deg,#ffee00,#ffd700) !important; box-shadow:var(--glow-yellow); }
+.progress-poor { background:linear-gradient(90deg,#ff6600,#ff8800) !important; box-shadow:var(--glow-orange); }
+.progress-bad  { background:linear-gradient(90deg,#ff0040,#ff006e) !important; box-shadow:var(--glow-pink); }
+
+/* ── BUTTONS ────────────────────────────────────────────────────────────────── */
+button, [class*="btn"], [role="button"] {
+  background:transparent !important; border:1px solid var(--neon-cyan) !important;
+  color:var(--neon-cyan) !important; box-shadow:var(--glow-cyan) !important;
+}
+button:hover, [class*="btn"]:hover { background:rgba(0,245,255,0.12) !important; box-shadow:0 0 20px var(--neon-cyan),0 0 60px rgba(0,245,255,0.4) !important; transform:translateY(-1px) !important; }
+
+/* ── TABS ───────────────────────────────────────────────────────────────────── */
+[role="tab"][aria-selected="true"], [class*="tab"][class*="active"] { border-bottom:2px solid var(--neon-cyan) !important; color:var(--neon-cyan) !important; text-shadow:var(--glow-cyan) !important; }
+
+/* ── SCAN-LINE OVERLAY ──────────────────────────────────────────────────────── */
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:9999;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,245,255,0.015) 2px,rgba(0,245,255,0.015) 4px);
+  animation:scanMove 8s linear infinite;
+}
+@keyframes scanMove { from{background-position:0 0;} to{background-position:0 100px;} }
+
+/* ── TOOLTIPS / INPUTS / MAP / SCROLLBAR ────────────────────────────────────── */
+[class*="tooltip"], [role="tooltip"] { background:#0d0d0d !important; border:1px solid var(--neon-cyan) !important; color:#e0e0e0 !important; box-shadow:var(--glow-cyan) !important; }
+input, select, textarea { background:#0d0d0d !important; border:1px solid rgba(0,245,255,0.3) !important; color:#e0e0e0 !important; }
+input:focus, select:focus, textarea:focus { border-color:var(--neon-cyan) !important; box-shadow:var(--glow-cyan) !important; outline:none !important; }
+[class*="map"], .leaflet-container { border:1px solid var(--neon-blue) !important; box-shadow:var(--glow-blue), 0 0 80px rgba(0,136,255,0.1) inset !important; }
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:#050505; }
+::-webkit-scrollbar-thumb { background:var(--neon-cyan); border-radius:3px; box-shadow:var(--glow-cyan); }
+
+/* Numbers/headings legibility on maps stays intact */
+.leaflet-container *, svg text { -webkit-text-fill-color:initial !important; text-shadow:none !important; color:inherit; }
+
+/* Respect reduced-motion (kept LAST so it wins for all animations) */
 @media (prefers-reduced-motion: reduce) {
-  *, .metallic-text, .metallic-gold, .metallic-auto, .metal-stat, .echo-breathe,
-  .echo-map-glow, .echo-hero, .echo-conic-border::before, .echo-ticker-track { animation: none !important; }
+  *, *::before, .metallic-text, .metallic-gold, .metallic-auto, .metal-stat, .echo-breathe,
+  .echo-map-glow, .echo-hero, .echo-conic-border::before, .echo-ticker-track, h1, h2, h3, h4 { animation: none !important; }
   button:hover, [class*="card"]:hover { transform: none !important; }
 }

@@ -1,0 +1,49 @@
+# ══════════════════════════════════════════════════════════════════════════════
+# Custom GeoNode image built FROM SOURCE — Uganda NRMS GIS Enterprise.
+# Builds GeoNode 4.4.x from a cloned ./geonode-source tree (see README-enterprise),
+# layers in GDAL/PostGIS/pgRouting clients, and bakes in the uganda_roads app
+# (ArcGIS-style REST, pgRouting, print, MoWT portal).
+#
+#   docker build -f Dockerfile.custom -t uganda-nrms/geonode:enterprise .
+# ══════════════════════════════════════════════════════════════════════════════
+FROM python:3.11-slim-bookworm
+
+ENV PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1 DEBIAN_FRONTEND=noninteractive
+
+# System deps: GDAL, GEOS, PROJ, PostGIS client (+ pgRouting client tooling), Node
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      gdal-bin libgdal-dev python3-gdal \
+      libgeos-dev libproj-dev binutils \
+      postgresql-client \
+      git build-essential gettext \
+      nodejs npm \
+      curl ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV CPLUS_INCLUDE_PATH=/usr/include/gdal C_INCLUDE_PATH=/usr/include/gdal
+
+WORKDIR /usr/src/geonode
+
+# 1) GeoNode from source (clone into ./geonode-source first — see README)
+COPY geonode-source/ ./
+RUN pip install --upgrade pip setuptools wheel \
+ && pip install -e . \
+ && pip install \
+      geonode-mapstore-client \
+      django-cors-headers \
+      "celery[redis]" \
+      psycopg2-binary \
+      django-auth-ldap \
+      social-auth-app-django \
+      gunicorn \
+      gdal=="$(gdal-config --version).*"
+
+# 2) MoWT branding + enterprise app (ArcGIS REST, routing, print, portal)
+COPY custom/uganda_roads/ ./uganda_roads/
+COPY custom/templates/ ./uganda_roads/templates/
+COPY custom/static/ ./uganda_roads/static/
+
+ENV DJANGO_SETTINGS_MODULE=uganda_roads.settings
+
+EXPOSE 8000
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--timeout", "120", "geonode.wsgi:application"]

@@ -34,6 +34,10 @@ STATICFILES_DIRS = [                                      # noqa: F405
     os.path.join(os.path.dirname(__file__), "static"),
 ] + list(globals().get("STATICFILES_DIRS", []))
 
+# Route through our urlconf (portal home + ArcGIS REST/routing/print), which then
+# falls through to geonode.urls for everything else.
+ROOT_URLCONF = "uganda_roads.urls"
+
 # ── Default map view → centred on Uganda ──────────────────────────────────────
 DEFAULT_MAP_CENTER = (
     float(os.getenv("DEFAULT_MAP_CENTER_X", "32.29")),

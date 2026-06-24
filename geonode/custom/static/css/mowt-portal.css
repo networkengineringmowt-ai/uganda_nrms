@@ -1,0 +1,60 @@
+/* ══════════════════════════════════════════════════════════════════════════════
+   MoWT GIS Enterprise portal — neon-dark Echo theme (matches the React platform).
+   ══════════════════════════════════════════════════════════════════════════════ */
+:root {
+  --neon-cyan:#00f5ff; --neon-green:#00ff88; --neon-purple:#bf00ff; --neon-lime:#aaff00;
+  --neon-blue:#0088ff; --neon-orange:#ff6600; --neon-gold:#ffd700;
+}
+* { box-sizing: border-box; }
+html, body { margin:0; height:100%; background:#000; color:#e0e0e0;
+  font-family: system-ui, "Segoe UI", Roboto, sans-serif; overflow:hidden; }
+
+@keyframes shimmer { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+@keyframes neonPulse { 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.2)} }
+
+.portal-map { position:fixed; inset:0; z-index:0; filter:saturate(1.1); }
+.portal-scrim { position:fixed; inset:0; z-index:1; pointer-events:none;
+  background: radial-gradient(ellipse at 50% 30%, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.88) 70%, #000 100%); }
+
+.portal-header { position:fixed; top:0; left:0; right:0; z-index:3;
+  display:flex; align-items:center; gap:16px; padding:18px 28px;
+  background:linear-gradient(180deg, rgba(0,0,0,0.9), transparent);
+  border-bottom:1px solid rgba(0,245,255,0.18); }
+.portal-logo { height:46px; border-radius:8px; box-shadow:0 0 16px rgba(0,245,255,0.35); }
+.portal-title { margin:0; font-size:24px; font-weight:900; letter-spacing:0.01em;
+  background:linear-gradient(135deg,var(--neon-cyan) 0%,#fff 40%,var(--neon-purple) 70%,var(--neon-cyan) 100%);
+  background-size:300% 300%; -webkit-background-clip:text; background-clip:text;
+  -webkit-text-fill-color:transparent; animation:shimmer 4s ease infinite;
+  filter:drop-shadow(0 0 12px rgba(0,245,255,0.5)); }
+.portal-sub { font-size:11px; letter-spacing:0.14em; color:#8aa0b8; text-transform:uppercase; margin-top:3px; }
+
+.portal-stats { position:fixed; z-index:3; top:96px; left:0; right:0;
+  display:flex; gap:16px; justify-content:center; flex-wrap:wrap; padding:0 20px; }
+.portal-stats .stat { background:#0d0d0d; border:1px solid rgba(0,245,255,0.25);
+  border-radius:14px; padding:12px 22px; min-width:120px; text-align:center;
+  box-shadow:0 0 10px rgba(0,245,255,0.18); animation:neonPulse 4s ease-in-out infinite; }
+.stat-value { font-size:26px; font-weight:900; color:var(--neon-cyan);
+  text-shadow:0 0 10px #00f5ff, 0 0 30px #00f5ff66; font-variant-numeric:tabular-nums; }
+.stat-label { font-size:9px; letter-spacing:0.12em; text-transform:uppercase; color:#8aa0b8; margin-top:4px; }
+
+.portal-cards { position:fixed; z-index:3; left:0; right:0; bottom:64px;
+  display:flex; gap:16px; justify-content:center; flex-wrap:wrap; padding:0 20px; }
+.pcard { display:flex; align-items:center; justify-content:center;
+  width:180px; height:84px; border-radius:16px; text-decoration:none; font-weight:800; font-size:15px;
+  background:#0d0d0d; color:#e0e0e0; border:1px solid rgba(255,255,255,0.08);
+  transition: transform 0.25s, box-shadow 0.25s, filter 0.25s; }
+.pcard:hover { transform:translateY(-4px) scale(1.02); filter:brightness(1.2); }
+.pcard-cyan   { border-color:var(--neon-cyan);   box-shadow:0 0 0 1px var(--neon-cyan),0 0 24px #00f5ff44;   color:var(--neon-cyan); }
+.pcard-purple { border-color:var(--neon-purple); box-shadow:0 0 0 1px var(--neon-purple),0 0 24px #bf00ff44; color:#e6b3ff; }
+.pcard-green  { border-color:var(--neon-green);  box-shadow:0 0 0 1px var(--neon-green),0 0 24px #00ff8844;  color:var(--neon-green); }
+.pcard-lime   { border-color:var(--neon-lime);   box-shadow:0 0 0 1px var(--neon-lime),0 0 24px #aaff0044;   color:var(--neon-lime); }
+.pcard-blue   { border-color:var(--neon-blue);   box-shadow:0 0 0 1px var(--neon-blue),0 0 24px #0088ff44;   color:#7cc0ff; }
+.pcard-orange { border-color:var(--neon-orange); box-shadow:0 0 0 1px var(--neon-orange),0 0 24px #ff660044; color:var(--neon-orange); }
+
+.portal-footer { position:fixed; z-index:3; left:0; right:0; bottom:0;
+  padding:12px 20px; text-align:center; font-size:11px; color:#8aa0b8;
+  background:linear-gradient(0deg, rgba(0,0,0,0.9), transparent); border-top:1px solid rgba(0,245,255,0.12); }
+.portal-footer a { color:var(--neon-cyan); text-decoration:none; }
+.portal-footer a:hover { text-shadow:0 0 8px var(--neon-cyan); }
+
+@media (prefers-reduced-motion: reduce) { *, .portal-title, .portal-stats .stat { animation:none !important; } }

@@ -1,0 +1,106 @@
+# ══════════════════════════════════════════════════════════════════════════════
+# Build-from-source stack — Uganda NRMS GIS Enterprise.
+# Use INSTEAD of docker-compose.yml when you want the custom image built from a
+# cloned GeoNode source tree (./geonode-source) via Dockerfile.custom, with the
+# ArcGIS-REST / routing / print / portal extensions baked in.
+#
+#   git clone -b 4.4.x https://github.com/GeoNode/geonode.git geonode-source
+#   docker compose -f docker-compose.source.yml up -d --build
+# ══════════════════════════════════════════════════════════════════════════════
+version: '3.9'
+
+services:
+  db:
+    image: pgrouting/pgrouting:14-3.3-3.4    # PostGIS + pgRouting (routing endpoints)
+    container_name: uganda_nrms_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-geonode}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-geonode}
+      POSTGRES_DB: ${POSTGRES_DB:-geonode}
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+      - ./scripts:/scripts:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-geonode}"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    volumes: [redisdata:/data]
+
+  geoserver:
+    image: geonode/geoserver:2.24.x
+    container_name: uganda_nrms_geoserver
+    restart: unless-stopped
+    depends_on:
+      db: { condition: service_healthy }
+    env_file: .env
+    environment:
+      # Enable enterprise OGC services + caching
+      GEOSERVER_FEATURE_TYPE_CACHE_SIZE: "5000"
+      WPS_ENABLED: "true"        # Web Processing Service (spatial analysis)
+      CSW_ENABLED: "true"        # Catalogue Service (ISO 19115 metadata)
+      GWC_ENABLED: "true"        # GeoWebCache → WMTS tile caching
+    ports: ["8080:8080"]
+    volumes:
+      - geoserver_data:/geoserver_data/data
+      - ./styles:/imported_styles:ro
+      - ./geoserver/printing:/geoserver_data/data/printing:ro   # MapFish letterhead
+
+  geonode:
+    build:
+      context: .
+      dockerfile: Dockerfile.custom
+    image: uganda-nrms/geonode:enterprise
+    container_name: uganda_nrms_geonode
+    restart: unless-stopped
+    depends_on:
+      db: { condition: service_healthy }
+      geoserver: { condition: service_started }
+    env_file: .env
+    environment:
+      DJANGO_SETTINGS_MODULE: uganda_roads.settings
+    ports: ["8000:8000"]
+    volumes:
+      - ./custom/uganda_roads:/usr/src/geonode/uganda_roads
+      - ./data:/import_data
+      - ./scripts:/import_scripts:ro
+      - statics:/mnt/volumes/statics
+      - geoserver_data:/geoserver_data/data
+
+  celery:
+    image: uganda-nrms/geonode:enterprise
+    restart: unless-stopped
+    depends_on: [geonode, redis]
+    env_file: .env
+    environment:
+      DJANGO_SETTINGS_MODULE: uganda_roads.settings
+    command: celery -A geonode.celery_app:app worker -B -E --loglevel=INFO --concurrency=4 -n worker1@%h
+    volumes:
+      - ./custom/uganda_roads:/usr/src/geonode/uganda_roads
+      - ./data:/import_data
+      - statics:/mnt/volumes/statics
+
+  geonode-nginx:
+    image: geonode/nginx:4.x
+    container_name: uganda_nrms_nginx
+    restart: unless-stopped
+    depends_on: [geonode, geoserver]
+    env_file: .env
+    ports: ["80:80", "443:443"]
+    volumes:
+      - statics:/mnt/volumes/statics
+      - nginx-confd:/etc/nginx/conf.d
+      - nginx-certificates:/geonode-certificates
+
+volumes:
+  dbdata:
+  redisdata:
+  geoserver_data:
+  statics:
+  nginx-confd:
+  nginx-certificates:

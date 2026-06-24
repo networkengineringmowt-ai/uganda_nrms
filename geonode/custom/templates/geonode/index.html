@@ -1,0 +1,67 @@
+{# MoWT GIS Enterprise portal home — replaces GeoNode's default landing.
+   ArcGIS "Portal for ArcGIS" equivalent: full-screen road-network map, neon-dark
+   Echo branding, quick-access cards, and a live stats banner pulled from the
+   ArcGIS-REST emulation (returnCountOnly). #}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Uganda National Roads Management System — GIS Enterprise</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="{% static 'css/mowt-portal.css' %}"/>
+</head>
+<body>
+  <div id="map" class="portal-map"></div>
+  <div class="portal-scrim"></div>
+
+  <header class="portal-header">
+    <img class="portal-logo" src="{% static 'uganda_roads/img/mowt.jpg' %}" alt="MoWT"/>
+    <div>
+      <h1 class="portal-title">Uganda National Roads Management System</h1>
+      <div class="portal-sub">GIS ENTERPRISE · Ministry of Works &amp; Transport · Directorate of National Roads</div>
+    </div>
+  </header>
+
+  <section class="portal-stats" id="stats">
+    <div class="stat"><div class="stat-value" id="s-km">21,302</div><div class="stat-label">km network</div></div>
+    <div class="stat"><div class="stat-value" id="s-paved">30.1%</div><div class="stat-label">paved</div></div>
+    <div class="stat"><div class="stat-value" id="s-bridges">—</div><div class="stat-label">bridges</div></div>
+    <div class="stat"><div class="stat-value" id="s-atc">—</div><div class="stat-label">count stations</div></div>
+  </section>
+
+  <main class="portal-cards">
+    <a class="pcard pcard-cyan"   href="/catalogue/#/search/?f=dataset&title__icontains=road">Road Network</a>
+    <a class="pcard pcard-purple" href="/catalogue/#/search/?f=dataset&title__icontains=bridge">Bridges</a>
+    <a class="pcard pcard-green"  href="/catalogue/#/search/?f=dataset&title__icontains=condition">Condition Survey</a>
+    <a class="pcard pcard-lime"   href="/catalogue/#/search/?f=dataset&title__icontains=traffic">Traffic Analysis</a>
+    <a class="pcard pcard-blue"   href="/maps/new">New Map</a>
+    <a class="pcard pcard-orange" href="/geoserver/web/">GeoServer · OGC</a>
+  </main>
+
+  <footer class="portal-footer">
+    OGC services:
+    <a href="/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities">WMS</a> ·
+    <a href="/geoserver/ows?service=wfs&version=2.0.0&request=GetCapabilities">WFS</a> ·
+    <a href="/arcgis/rest/services/uganda_nrms/MapServer">ArcGIS REST</a> ·
+    Ministry of Works and Transport · UNRA
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // Full-screen dark basemap + the national road network WMS as the hero backdrop.
+    const map = L.map('map', { zoomControl: false, attributionControl: false }).setView([1.37, 32.29], 7);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
+    L.tileLayer.wms('/geoserver/ows', {
+      layers: 'geonode:national_road_network', styles: 'road_network',
+      format: 'image/png', transparent: true, version: '1.3.0',
+    }).addTo(map);
+
+    // Live counts from the ArcGIS-REST emulation (returnCountOnly).
+    const countUrl = id => `/arcgis/rest/services/uganda_nrms/MapServer/${id}/query?where=1=1&returnCountOnly=true&f=json`;
+    fetch(countUrl(2)).then(r => r.json()).then(d => { if (d.count!=null) document.getElementById('s-bridges').textContent = d.count.toLocaleString(); }).catch(()=>{});
+    fetch(countUrl(3)).then(r => r.json()).then(d => { if (d.count!=null) document.getElementById('s-atc').textContent = d.count.toLocaleString(); }).catch(()=>{});
+  </script>
+</body>
+</html>
