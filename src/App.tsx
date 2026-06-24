@@ -8,7 +8,7 @@ import { AccessPending } from './modules/Auth/AccessPending';
 import { canAccessView, isFieldRole } from './modules/Auth/permissions';
 import { roleLabel } from './modules/Auth/authTypes';
 import CrossLinkChipBar from './shared/CrossLinkChipBar';
-import { AmbientParticles, useEchoRipple } from './shared/EchoFX';
+import { AmbientParticles, useEchoRipple, useMetallizeObserver } from './shared/EchoFX';
 
 const RMSFieldShell = lazy(() => import('./modules/RMS/RMSFieldShell'));
 import Sidebar from './components/Layout/Sidebar';
@@ -126,7 +126,8 @@ function AppShell() {
   const { state, navigate } = useBMS();
   const { activeView, isLoading } = state;
   const { user } = useAuth();
-  useEchoRipple();   // global click-ripple (Echo design language)
+  useEchoRipple();           // global click-ripple (Echo design language)
+  useMetallizeObserver();    // platform-wide liquid-metal shimmer on numbers & headings
 
   // Track & trace: every page view goes to the G: Drive audit trail.
   useEffect(() => {

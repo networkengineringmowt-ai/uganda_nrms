@@ -123,8 +123,90 @@ button, a, [role="button"], [role="tab"], .echo-lift, input, select, textarea,
 /* Ambient particles canvas — fixed background layer behind app content */
 .echo-particles { position:fixed; inset:0; width:100vw; height:100vh; pointer-events:none; z-index:-1; opacity:0.5; }
 
+/* ── E. SECTION + CARD + CONTROL GRADIENTS ──────────────────────────────────── */
+.section-overview  { background: linear-gradient(160deg, #0d1b4e 0%, #1a0a3c 40%, #050a1a 100%); }
+.section-pavement  { background: linear-gradient(160deg, #0a2a1a 0%, #0d1b4e 50%, #1a0520 100%); }
+.section-bridges   { background: linear-gradient(160deg, #1a0a2a 0%, #0a1a3c 50%, #050a1a 100%); }
+.section-traffic   { background: linear-gradient(160deg, #0d2a1a 0%, #1a1a0a 50%, #050a1a 100%); }
+.section-analytics { background: linear-gradient(160deg, #2a0a0a 0%, #0d1b4e 50%, #050a1a 100%); }
+
+.section-divider {
+  height: 80px;
+  background: linear-gradient(to bottom, transparent, rgba(5,10,26,0.8), transparent);
+  margin: -40px 0; pointer-events: none; position: relative; z-index: 10;
+}
+
+.card-good    { background: linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(5,150,105,0.05) 100%); border-color: rgba(16,185,129,0.3); }
+.card-fair    { background: linear-gradient(135deg, rgba(245,158,11,0.15) 0%, rgba(217,119,6,0.05) 100%); border-color: rgba(245,158,11,0.3); }
+.card-poor    { background: linear-gradient(135deg, rgba(249,115,22,0.15) 0%, rgba(234,88,12,0.05) 100%); border-color: rgba(249,115,22,0.3); }
+.card-bad     { background: linear-gradient(135deg, rgba(239,68,68,0.15) 0%, rgba(185,28,28,0.05) 100%); border-color: rgba(239,68,68,0.3); }
+.card-primary { background: linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(79,70,229,0.05) 100%); border-color: rgba(99,102,241,0.3); }
+.card-info    { background: linear-gradient(135deg, rgba(14,165,233,0.15) 0%, rgba(2,132,199,0.05) 100%); border-color: rgba(14,165,233,0.3); }
+
+.btn-echo {
+  background: linear-gradient(135deg, rgba(99,102,241,0.6) 0%, rgba(139,92,246,0.4) 100%);
+  border: 1px solid rgba(139,92,246,0.5);
+  box-shadow: 0 0 20px rgba(99,102,241,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.btn-echo:hover {
+  background: linear-gradient(135deg, rgba(99,102,241,0.8) 0%, rgba(139,92,246,0.6) 100%);
+  box-shadow: 0 0 35px rgba(99,102,241,0.5), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.chart-container { background: radial-gradient(ellipse at center top, rgba(99,102,241,0.08) 0%, transparent 60%); border: 1px solid rgba(99,102,241,0.15); }
+
+.progress-good { background: linear-gradient(90deg, #10b981, #34d399, #6ee7b7); }
+.progress-fair { background: linear-gradient(90deg, #f59e0b, #fbbf24, #fde68a); }
+.progress-poor { background: linear-gradient(90deg, #f97316, #fb923c, #fdba74); }
+.progress-bad  { background: linear-gradient(90deg, #ef4444, #f87171, #fca5a5); }
+
+/* Rotating conic gradient border for the map (Echo overview) */
+@keyframes echoConicSpin { to { --echo-angle: 360deg; } }
+@property --echo-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+.echo-conic-border { position: relative; border-radius: 16px; }
+.echo-conic-border::before {
+  content: ''; position: absolute; inset: -2px; border-radius: 18px; z-index: -1;
+  background: conic-gradient(from var(--echo-angle), #00f5ff, #b967ff, #00ff88, #ffd23f, #00f5ff);
+  animation: echoConicSpin 8s linear infinite; filter: blur(1px);
+}
+
+/* Horizontal live-feed ticker */
+@keyframes echoTicker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.echo-ticker { overflow: hidden; white-space: nowrap; }
+.echo-ticker > .echo-ticker-track { display: inline-block; animation: echoTicker 30s linear infinite; }
+
+/* Quick-stat chips drifting in from the right */
+@keyframes echoDriftIn { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: none; } }
+.echo-drift { animation: echoDriftIn 0.6s var(--echo-ease) both; }
+
+/* Animated gradient hero banner */
+@keyframes echoHeroFlow { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+.echo-hero {
+  background: linear-gradient(120deg, #0d1b4e, #1a0a3c, #0a2a3c, #0d1b4e);
+  background-size: 300% 300%; animation: echoHeroFlow 12s ease infinite;
+  border: 1px solid rgba(0,245,255,0.18); border-radius: 18px;
+}
+@keyframes echoTitlePulse { 0%,100%{ filter: drop-shadow(0 0 8px rgba(255,215,0,0.35)); } 50%{ filter: drop-shadow(0 0 18px rgba(255,215,0,0.7)); } }
+.echo-title-pulse { animation: metallicShimmer 3.5s ease infinite, echoTitlePulse 4s ease-in-out infinite; }
+
+/* ── F. AGGRESSIVE TYPOGRAPHY METALLIC (auto + class-pattern) ────────────────── */
+:where(h1,h2,h3,h4,h5,h6):not(.no-metal *),
+[class*="title"]:not(.no-metal *), [class*="heading"]:not(.no-metal *),
+[class*="stat-value"]:not(.no-metal *), [class*="kpi-value"]:not(.no-metal *),
+[class*="metric"]:not(.no-metal *), [class*="legend"]:not(.no-metal *),
+.metallic-auto {
+  background: linear-gradient(135deg, #b8860b 0%, #ffd700 25%, #fffacd 45%, #ffd700 55%, #b8860b 75%, #daa520 100%);
+  background-size: 300% 300%;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: metallicShimmer 4s ease infinite;
+}
+/* Re-assert legibility exclusions after the broad rule above */
+.leaflet-container *, svg text, input, textarea, .no-metal, .no-metal * { -webkit-text-fill-color: initial !important; animation: none; }
+
 /* Respect reduced-motion */
 @media (prefers-reduced-motion: reduce) {
-  *, .metallic-text, .metallic-gold, .echo-breathe, .echo-map-glow { animation: none !important; }
+  *, .metallic-text, .metallic-gold, .metallic-auto, .metal-stat, .echo-breathe,
+  .echo-map-glow, .echo-hero, .echo-conic-border::before, .echo-ticker-track { animation: none !important; }
   button:hover, [class*="card"]:hover { transform: none !important; }
 }

@@ -94,38 +94,50 @@ export function useEchoRipple() {
 }
 
 /**
- * useMetallize — platform-wide liquid-metal shimmer without editing every
- * component. Scans the main content for large/bold "title" and big stat text
- * and tags it with .metal-stat. Conservative on purpose: only large text
- * (>= 19px, weight >= 600), short strings, never badges / inputs / map / svg,
- * so semantic colours on small labels are preserved. Re-runs on view change.
+ * useMetallizeObserver — platform-wide liquid-metal shimmer that survives React
+ * re-renders. A MutationObserver watches the whole app subtree; on any change it
+ * (debounced) re-tags leaf text nodes:
+ *   • numbers / stat values         → .metallic-chrome
+ *   • headings (H1–H6 / STRONG /     → .metallic-gold
+ *     bold text > 16px)
+ * Idempotent (re-applies if React drops the class), and excludes maps, SVG,
+ * inputs and any .no-metal subtree so legibility + semantic colours are kept.
  */
-export function useMetallize(activeView: string) {
+const NUMERIC = /^[~<>≈]?\s*\$?€?\d[\d, ]*\.?\d*\s*(%|km|m\/km|k|M|B|bn|t|vpd|yrs?|UGX)?$/i;
+
+export function useMetallizeObserver() {
   useEffect(() => {
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
     let timer: number;
     const scan = () => {
       const root = document.querySelector('main'); if (!root) return;
-      const els = root.querySelectorAll('h1,h2,h3,h4,div,span,p,strong');
+      const els = root.querySelectorAll('span,div,p,strong,b,h1,h2,h3,h4,h5,h6,td,th,li,a');
       els.forEach((el) => {
         const e = el as HTMLElement;
-        if (e.dataset.metal || e.closest('.leaflet-container,svg,input,textarea,button[style*="background"],.no-metal')) return;
-        // Only leaf-ish text nodes (no element children with their own text)
-        if (e.children.length > 0) return;
+        if (e.children.length > 0) return;                                  // leaf text only
+        if (e.closest('.leaflet-container,svg,input,textarea,.no-metal')) return;
         const txt = (e.textContent || '').trim();
-        if (!txt || txt.length > 42) return;
+        if (!txt || txt.length > 26) return;
+        if (NUMERIC.test(txt)) {
+          if (!e.classList.contains('metallic-chrome')) e.classList.add('metallic-chrome');
+          return;
+        }
+        const tag = e.tagName;
+        if (tag === 'H1' || tag === 'H2' || tag === 'H3' || tag === 'H4' || tag === 'H5' || tag === 'H6' || tag === 'STRONG' || tag === 'B') {
+          if (!e.classList.contains('metallic-gold')) e.classList.add('metallic-gold');
+          return;
+        }
         const cs = getComputedStyle(e);
-        const size = parseFloat(cs.fontSize);
-        const weight = parseInt(cs.fontWeight) || 400;
-        if (size >= 19 && weight >= 600) { e.classList.add('metal-stat'); e.dataset.metal = '1'; }
+        if (parseFloat(cs.fontSize) > 16 && (parseInt(cs.fontWeight) || 400) >= 600) {
+          if (!e.classList.contains('metallic-gold')) e.classList.add('metallic-gold');
+        }
       });
     };
-    timer = window.setTimeout(scan, 350);
-    const mo = new MutationObserver(() => { clearTimeout(timer); timer = window.setTimeout(scan, 400); });
-    const main = document.querySelector('main');
-    if (main) mo.observe(main, { childList: true, subtree: true });
+    timer = window.setTimeout(scan, 400);
+    const mo = new MutationObserver(() => { clearTimeout(timer); timer = window.setTimeout(scan, 120); });
+    mo.observe(document.body, { childList: true, subtree: true, characterData: true });
     return () => { clearTimeout(timer); mo.disconnect(); };
-  }, [activeView]);
+  }, []);
 }
 
 /** Count-up to a numeric target once the element enters the viewport. */

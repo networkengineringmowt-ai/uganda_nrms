@@ -82,18 +82,19 @@ function StatTile({ label, value, unit, color, tooltip, navChips, onNav }: {
   return (
     <div
       title={tooltip}
+      className="echo-breathe echo-lift"
       style={{
-        background: `rgba(${hexRgb(color)},0.06)`,
-        border: `1px solid rgba(${hexRgb(color)},0.2)`,
-        borderRadius: 10, padding: '11px 14px',
+        background: `linear-gradient(135deg, rgba(${hexRgb(color)},0.14) 0%, rgba(${hexRgb(color)},0.03) 100%)`,
+        border: `1px solid rgba(${hexRgb(color)},0.28)`,
+        borderRadius: 12, padding: '11px 14px',
         cursor: tooltip ? 'help' : 'default',
-        transition: 'box-shadow 0.15s',
+        backdropFilter: 'blur(8px)',
       }}
-      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = `0 0 16px rgba(${hexRgb(color)},0.15)`; }}
+      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = `0 0 22px rgba(${hexRgb(color)},0.28)`; }}
       onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = ''; }}
     >
-      <div style={{ fontSize: 21, fontWeight: 900, color, lineHeight: 1 }}>
-        {displayValue}<span style={{ fontSize: 11, fontWeight: 500, marginLeft: 3 }}>{unit}</span>
+      <div style={{ fontSize: 21, fontWeight: 900, lineHeight: 1 }}>
+        <span className="metallic-chrome">{displayValue}</span><span style={{ fontSize: 11, fontWeight: 500, marginLeft: 3, color, WebkitTextFillColor: color }}>{unit}</span>
       </div>
       <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(148,163,184,0.5)',
         marginTop: 3, textTransform: 'uppercase', letterSpacing: '0.09em' }}>{label}</div>
