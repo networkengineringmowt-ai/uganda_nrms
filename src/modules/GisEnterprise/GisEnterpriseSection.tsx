@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Layers, Database, Monitor, Globe, Server, CheckCircle2, AlertCircle } from 'lucide-react';
 import { MapContainer, TileLayer, WMSTileLayer, ZoomControl } from 'react-leaflet';
+import { GEOSERVER_WMS_URL, GEONODE_LAYERS } from '../../shared/geoserver';
 import 'leaflet/dist/leaflet.css';
 
 const N = {
@@ -106,18 +107,28 @@ export default function GisEnterpriseSection() {
               attribution='&copy; CARTO'
               url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
             />
-            {/* GeoServer WMS Layer */}
-            <WMSTileLayer
-              url="http://localhost:8081/geoserver/nrms/wms"
-              layers="nrms:road_links"
-              format="image/png"
-              transparent={true}
-              version="1.1.0"
-              eventHandlers={{
-                tileload: () => setWmsOnline(true),
-                tileerror: () => setWmsOnline(false)
-              }}
-            />
+            {/* GeoNode / GeoServer WMS layers — configurable via VITE_GEOSERVER_WMS_URL.
+                Falls back to a local GeoNode (see geonode/). When offline the tiles
+                simply fail and wmsOnline flips false — the rest of the UI is unaffected. */}
+            {(() => {
+              const base = GEOSERVER_WMS_URL || 'http://localhost/geoserver/ows';
+              const show = GEONODE_LAYERS.filter(l => ['roads', 'condition', 'bridges', 'atc'].includes(l.id));
+              return show.map((l, i) => (
+                <WMSTileLayer
+                  key={l.id}
+                  url={base}
+                  layers={l.layer}
+                  styles={l.style ?? ''}
+                  format="image/png"
+                  transparent={true}
+                  version="1.3.0"
+                  eventHandlers={i === 0 ? {
+                    tileload: () => setWmsOnline(true),
+                    tileerror: () => setWmsOnline(false),
+                  } : undefined}
+                />
+              ));
+            })()}
           </MapContainer>
         </div>
 

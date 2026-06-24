@@ -1,0 +1,55 @@
+/* ══════════════════════════════════════════════════════════════════════════════
+   MoWT GIS Enterprise theme for GeoNode — matches the React NRMS platform palette.
+   Loaded via the site_base.html template override.
+   ══════════════════════════════════════════════════════════════════════════════ */
+:root {
+  --mowt-void:   #020508;
+  --mowt-deep:   #060d18;
+  --mowt-panel:  #0d1f35;
+  --mowt-cyan:   #00f5ff;
+  --mowt-gold:   #ffd23f;
+  --mowt-green:  #00ff88;
+  --mowt-text:   #e2eaf4;
+  --mowt-muted:  #94a3b8;
+}
+
+body, .page-body { background: radial-gradient(ellipse at 20% 0%, #0d1b3e 0%, #050a1a 70%) fixed; color: var(--mowt-text); }
+
+/* Top navbar — MoWT dark glass */
+.navbar, header.header, #header {
+  background: rgba(6,13,24,0.85) !important;
+  backdrop-filter: blur(18px) saturate(160%);
+  border-bottom: 1px solid rgba(0,245,255,0.18) !important;
+}
+.navbar-brand, .navbar a, .nav > li > a { color: var(--mowt-text) !important; }
+
+/* Brand wordmark */
+.gn-brand-title, .navbar-brand strong { color: var(--mowt-cyan); letter-spacing: 0.04em; }
+
+/* Buttons / primary actions */
+.btn-primary, .gn-button-primary {
+  background: linear-gradient(135deg, var(--mowt-cyan), #0aa) !important;
+  border-color: var(--mowt-cyan) !important; color: #02141a !important; font-weight: 700;
+}
+a { color: var(--mowt-cyan); }
+a:hover { color: var(--mowt-gold); }
+
+/* Cards / panels — glass */
+.card, .panel, .gn-card, .well {
+  background: rgba(13,31,53,0.6) !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.4);
+  border-radius: 12px;
+}
+
+/* Footer */
+.footer, #footer {
+  background: var(--mowt-deep) !important;
+  border-top: 1px solid rgba(0,245,255,0.15);
+  color: var(--mowt-muted);
+}
+.mowt-footer { padding: 14px 18px; font-size: 12px; text-align: center; }
+.mowt-footer strong { color: var(--mowt-text); }
+
+/* Logo sizing in header */
+.mowt-logo { height: 34px; width: auto; border-radius: 6px; vertical-align: middle; margin-right: 10px; }

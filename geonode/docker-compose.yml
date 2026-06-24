@@ -1,0 +1,117 @@
+# ══════════════════════════════════════════════════════════════════════════════
+# GeoNode 4.x — Uganda National Roads Management System · GIS Enterprise
+# Full enterprise geospatial stack: Django (GeoNode) + GeoServer (OGC services) +
+# PostgreSQL/PostGIS + NGINX reverse proxy + Celery + Redis.
+#
+#   docker compose up -d           start the whole stack
+#   docker compose logs -f geonode tail the Django app
+#   http://localhost/              the portal (NGINX → Django + MapStore)
+#   http://localhost/geoserver/    OGC services (WMS/WFS/WCS)
+#
+# Configure everything in .env (next to this file).
+# ══════════════════════════════════════════════════════════════════════════════
+version: '3.9'
+
+services:
+  db:
+    image: postgis/postgis:14-3.3
+    container_name: uganda_nrms_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-geonode}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-geonode}
+      POSTGRES_DB: ${POSTGRES_DB:-geonode}
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-geonode}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    container_name: uganda_nrms_redis
+    restart: unless-stopped
+    volumes:
+      - redisdata:/data
+
+  geoserver:
+    image: geonode/geoserver:2.24.x
+    container_name: uganda_nrms_geoserver
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      GEOSERVER_ADMIN_USER: ${GEOSERVER_ADMIN_USER:-admin}
+      GEOSERVER_ADMIN_PASSWORD: ${GEOSERVER_ADMIN_PASSWORD:-geoserver}
+      GEONODE_LB_HOST_IP: ${SITE_HOST:-localhost}
+    ports:
+      - "8080:8080"
+    volumes:
+      - geoserver_data:/geoserver_data/data
+      - ./styles:/imported_styles:ro       # SLD style files (read-only)
+
+  geonode:
+    image: geonode/geonode:4.3.x
+    container_name: uganda_nrms_geonode
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      geoserver:
+        condition: service_started
+    env_file: .env
+    environment:
+      DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-uganda_roads.settings}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./custom/uganda_roads:/usr/src/geonode/uganda_roads   # MoWT branding app
+      - ./data:/import_data                                   # G: layers staged here
+      - ./scripts:/import_scripts:ro
+      - statics:/mnt/volumes/statics
+      - geoserver_data:/geoserver_data/data
+
+  celery:
+    image: geonode/geonode:4.3.x
+    container_name: uganda_nrms_celery
+    restart: unless-stopped
+    depends_on:
+      - geonode
+      - redis
+    env_file: .env
+    environment:
+      DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-uganda_roads.settings}
+    command: celery -A geonode.celery_app:app worker --without-gossip --without-mingle -Ofair -B -E --statedb=/mnt/volumes/statics/worker.state --scheduler=django_celery_beat.schedulers:DatabaseScheduler --loglevel=INFO --concurrency=4 -n worker1@%h
+    volumes:
+      - ./custom/uganda_roads:/usr/src/geonode/uganda_roads
+      - ./data:/import_data
+      - statics:/mnt/volumes/statics
+      - geoserver_data:/geoserver_data/data
+
+  geonode-nginx:
+    image: geonode/nginx:4.x
+    container_name: uganda_nrms_nginx
+    restart: unless-stopped
+    depends_on:
+      - geonode
+      - geoserver
+    env_file: .env
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - statics:/mnt/volumes/statics
+      - nginx-confd:/etc/nginx/conf.d
+      - nginx-certificates:/geonode-certificates
+
+volumes:
+  dbdata:
+  redisdata:
+  geoserver_data:
+  statics:
+  nginx-confd:
+  nginx-certificates:

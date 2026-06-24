@@ -1,0 +1,45 @@
+{# ════════════════════════════════════════════════════════════════════════════
+   MoWT-branded base template override for GeoNode.
+   Extends GeoNode's geonode_base and injects the Uganda NRMS branding:
+   MoWT logo + title in the header, MoWT theme CSS, and a DNR/UNRA footer.
+   ════════════════════════════════════════════════════════════════════════════ #}
+{% extends "geonode_base.html" %}
+{% load static %}
+
+{% block extra_head %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/mowt-theme.css' %}" />
+  <title>Uganda National Roads Management System — GIS Enterprise</title>
+{% endblock %}
+
+{% block header %}
+  <nav class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="/">
+          <img class="mowt-logo" src="{% static 'uganda_roads/img/mowt.jpg' %}" alt="Ministry of Works and Transport" />
+          <strong class="gn-brand-title">Uganda NRMS · GIS Enterprise</strong>
+        </a>
+      </div>
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="/catalogue/">Datasets</a></li>
+          <li><a href="/maps/">Maps</a></li>
+          <li><a href="/geoserver/web/">GeoServer</a></li>
+          <li><a href="/about/">About</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+{% endblock %}
+
+{% block footer %}
+  <footer class="footer mowt-footer">
+    <div>
+      <strong>Uganda National Roads Management System — GIS Enterprise</strong><br/>
+      Ministry of Works and Transport · Directorate of National Roads (UNRA)<br/>
+      OGC services: <a href="/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities">WMS</a> ·
+      <a href="/geoserver/ows?service=wfs&version=2.0.0&request=GetCapabilities">WFS</a>
+    </div>
+  </footer>
+{% endblock %}

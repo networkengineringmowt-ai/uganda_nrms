@@ -1,0 +1,6 @@
+# Local staging of G: shapefiles (populated by scripts/import_layers.sh)
+/data/*
+!/data/.gitkeep
+# Local docker volumes / overrides / secrets
+docker-compose.override.yml
+*.local.env

@@ -1,0 +1,108 @@
+# ══════════════════════════════════════════════════════════════════════════════
+# Layer inventory for GeoNode auto-import — Uganda National Roads Management System
+# Source data: G:\My Drive\MOWT\Uganda National Road Network Repository\8. Shapefiles
+# Consumed by scripts/import_layers.sh. Each entry → one GeoNode dataset + style.
+# ══════════════════════════════════════════════════════════════════════════════
+
+defaults:
+  category: transportation
+  attribution: Ministry of Works and Transport · Directorate of National Roads
+  keywords: [Uganda, roads, MoWT, DNR, transport, NRMS]
+  srs: EPSG:4326
+
+layers:
+  # ── Core road network ──────────────────────────────────────────────────────
+  - name: national_road_network
+    title: National Road Network (FY25/26)
+    source: "8. Shapefiles/Roads/networkfy25_26.shp"
+    alt_source: "8. Shapefiles/nationalroads.shp"
+    style: road_network
+    abstract: >
+      The classified national road network managed by UNRA/DNR — ~21,302 km
+      across 1,013 links. Symbolised by road class (A/B/C/M).
+    keywords: [road network, links, classification]
+
+  - name: road_condition
+    title: Pavement Condition (IRI)
+    source: "public/data/gisnetwork18062025.geojson"
+    style: road_condition
+    abstract: >
+      National road links symbolised by pavement condition class derived from
+      IRI (International Roughness Index): Good / Fair / Poor / Very Poor.
+    keywords: [pavement, condition, IRI, roughness]
+
+  - name: district_roads
+    title: District Roads
+    source: "8. Shapefiles/District Roads/District Roads.shp"
+    style: road_network
+    abstract: District (lower-tier) road network feeding the national network.
+
+  # ── Structures ─────────────────────────────────────────────────────────────
+  - name: bridges
+    title: Bridge Inventory (2025)
+    source: "8. Shapefiles/Bridges/Bridges2025.shp"
+    style: bridges
+    abstract: National bridge inventory with condition-based symbology.
+    keywords: [bridges, structures, BMS, condition]
+
+  - name: major_culverts
+    title: Major Culverts
+    source: "8. Shapefiles/Major Culverts/Major_Culverts.shp"
+    style: bridges
+    abstract: Major culvert structures on the national road network.
+
+  # ── Traffic & enforcement ──────────────────────────────────────────────────
+  - name: traffic_count_stations
+    title: Traffic Count Stations
+    source: "8. Shapefiles/Traffic count stations"
+    alt_source: "13.Dynamic Maps(Google Earth Files)/Traffic_count_stations.kmz"
+    style: traffic_stations
+    abstract: Automatic (ATC) and manual traffic count station locations.
+    keywords: [traffic, ATC, count stations, AADT]
+
+  - name: weighbridges
+    title: Weighbridges
+    source: "8. Shapefiles/Weighbridges/new weigh bridges.shp"
+    style: traffic_stations
+    abstract: Weighbridge / axle-load enforcement station locations.
+
+  - name: mowt_stations
+    title: Maintenance Stations
+    source: "8. Shapefiles/MoWT_Stations/MoWT_Stations.shp"
+    style: traffic_stations
+    abstract: UNRA/MoWT maintenance station network (23 stations).
+
+  # ── Administrative & context ───────────────────────────────────────────────
+  - name: districts
+    title: District Boundaries
+    source: "8. Shapefiles/Districts/districts.shp"
+    style: ""
+    abstract: Uganda district administrative boundaries.
+    category: boundaries
+
+  - name: towns
+    title: Towns
+    source: "8. Shapefiles/Towns/Towns.shp"
+    style: ""
+    abstract: Town / urban centre points.
+    category: location
+
+  - name: protected_areas
+    title: Protected Areas
+    source: "8. Shapefiles/Protected areas/Protected_Areas_Uganda.shp"
+    style: ""
+    abstract: National parks, forest and wildlife reserves (environmental context).
+    category: environment
+
+  - name: ferries
+    title: Ferry Routes & Landings
+    source: "8. Shapefiles/Ferry/Ferry.shp"
+    style: ""
+    abstract: Ferry crossings operated as part of the road network.
+
+  - name: airports
+    title: Airports & Airfields
+    source: "8. Shapefiles/Airport/airport.shp"
+    style: ""
+    abstract: Airports and airfields (multi-modal context).
+    category: transportation
