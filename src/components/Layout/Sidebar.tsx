@@ -106,8 +106,9 @@ export default function Sidebar() {
             }}
           />
           <div style={{ minWidth: 0 }}>
-            <div className="metallic-chrome" style={{ fontSize: 10, fontWeight: 900,
-              letterSpacing: '0.12em', lineHeight: 1.2 }}>UGROADS</div>
+            <div style={{ fontSize: 10, fontWeight: 900, color: '#00f5ff',
+              letterSpacing: '0.12em', lineHeight: 1.2,
+              textShadow: '0 0 12px rgba(0,245,255,0.5)' }}>UGROADS</div>
             <div style={{ fontSize: 8, color: 'rgba(148,163,184,0.6)', letterSpacing: '0.04em' }}>
               Ministry of Works & Transport · DNR
             </div>
