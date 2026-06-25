@@ -159,8 +159,8 @@ export default function BridgeSchematic({ structure: s }: Props) {
         <defs>
           {/* Sky gradient */}
           <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stopColor="#0f172a" />
-            <stop offset="100%" stopColor="#1e293b" />
+            <stop offset="0%"   stopColor="#0d0d0d" />
+            <stop offset="100%" stopColor="#1c1c1c" />
           </linearGradient>
           {/* Water gradient */}
           <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
@@ -384,17 +384,17 @@ export default function BridgeSchematic({ structure: s }: Props) {
 
         {/* ─── Info annotations ─── */}
         {/* Material badge */}
-        <rect x={8} y={8} width={160} height={16} rx={4} fill="#1e293b" opacity={0.9} />
+        <rect x={8} y={8} width={160} height={16} rx={4} fill="#1c1c1c" opacity={0.9} />
         <text x={14} y={20} fill="#94a3b8" fontSize={10} fontFamily="Inter, sans-serif">
           {s.material}
         </text>
         {/* Year built */}
-        <rect x={8} y={28} width={100} height={14} rx={3} fill="#1e293b" opacity={0.8} />
+        <rect x={8} y={28} width={100} height={14} rx={3} fill="#1c1c1c" opacity={0.8} />
         <text x={14} y={39} fill="#64748b" fontSize={9} fontFamily="monospace">
           Built {s.yearBuilt} ({age} yrs)
         </text>
         {/* Crossing type */}
-        <rect x={8} y={46} width={120} height={14} rx={3} fill="#1e293b" opacity={0.8} />
+        <rect x={8} y={46} width={120} height={14} rx={3} fill="#1c1c1c" opacity={0.8} />
         <text x={14} y={57} fill="#64748b" fontSize={9} fontFamily="monospace">
           Crosses: {s.river || s.crossingType || 'N/A'}
         </text>
@@ -444,7 +444,7 @@ export default function BridgeSchematic({ structure: s }: Props) {
                 <rect
                   x={clamp(hot.x - 80, 4, W - 170)} y={hot.y - 34}
                   width={160} height={22} rx={5}
-                  fill="#0f172a" stroke="#ef4444" strokeWidth={1} opacity={0.95}
+                  fill="#0d0d0d" stroke="#ef4444" strokeWidth={1} opacity={0.95}
                 />
                 <text
                   x={clamp(hot.x - 80, 4, W - 170) + 8} y={hot.y - 18}

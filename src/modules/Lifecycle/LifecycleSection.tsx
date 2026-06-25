@@ -314,7 +314,7 @@ function MapFlyTo({ center, zoom }: { center: [number, number]; zoom: number }) 
 function SparkTip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   return (
-    <div style={{ background: 'rgba(8,14,28,0.95)', border: '1px solid rgba(255,255,255,0.1)',
+    <div style={{ background: 'rgba(8,8,8,0.95)', border: '1px solid rgba(255,255,255,0.1)',
       padding: '6px 10px', borderRadius: 6, fontSize: 10 }}>
       <div style={{ color: '#94a3b8', marginBottom: 2 }}>{label}</div>
       <div style={{ color: C.teal, fontWeight: 700 }}>IRI: {payload[0]?.value?.toFixed(2)} m/km</div>
@@ -503,7 +503,7 @@ export default function LifecycleSection() {
       <div style={{
         display: 'flex', gap: 2, padding: '0 14px', flexShrink: 0,
         borderBottom: '1px solid rgba(77,159,255,0.15)',
-        background: 'rgba(4,9,18,0.85)',
+        background: 'rgba(8,8,8,0.85)',
       }}>
         {([
           { id: 'detail', label: 'Selected Link Lifecycle' },
@@ -836,18 +836,18 @@ function AllLinksTable({
             placeholder="Search link_id, road name, road no, station…"
             style={{
               width: '100%', padding: '6px 8px 6px 26px', fontSize: 11,
-              background: 'rgba(15,23,42,0.7)', border: '1px solid rgba(148,163,184,0.18)',
+              background: 'rgba(15,15,15,0.7)', border: '1px solid rgba(148,163,184,0.18)',
               borderRadius: 6, color: '#e2eaf4', outline: 'none',
             }}/>
         </div>
         <select value={regionFilter} onChange={e => setRegionFilter(e.target.value)}
-          style={{ fontSize: 11, padding: '6px 8px', background: 'rgba(15,23,42,0.7)',
+          style={{ fontSize: 11, padding: '6px 8px', background: 'rgba(15,15,15,0.7)',
             border: '1px solid rgba(148,163,184,0.18)', borderRadius: 6, color: '#e2eaf4' }}>
           <option value="All">All Regions</option>
           {allRegions.map(r => <option key={r} value={r}>{r}</option>)}
         </select>
         <select value={classFilter} onChange={e => setClassFilter(e.target.value as RoadClass | 'All')}
-          style={{ fontSize: 11, padding: '6px 8px', background: 'rgba(15,23,42,0.7)',
+          style={{ fontSize: 11, padding: '6px 8px', background: 'rgba(15,15,15,0.7)',
             border: '1px solid rgba(148,163,184,0.18)', borderRadius: 6, color: '#e2eaf4' }}>
           <option value="All">All Classes</option>
           {(['A','B','C','M'] as RoadClass[]).map(c => <option key={c} value={c}>Class {c}</option>)}
@@ -861,7 +861,7 @@ function AllLinksTable({
       <div style={{ overflowX: 'auto', borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)' }}>
         <table style={{ width: '100%', fontSize: 10, borderCollapse: 'collapse', minWidth: 1100 }}>
           <thead>
-            <tr style={{ background: 'rgba(15,23,42,0.85)', borderBottom: '1px solid rgba(148,163,184,0.15)' }}>
+            <tr style={{ background: 'rgba(15,15,15,0.85)', borderBottom: '1px solid rgba(148,163,184,0.15)' }}>
               {([
                 ['id',         'Link ID'],
                 ['name',       'Road Name'],
@@ -890,7 +890,7 @@ function AllLinksTable({
             {sorted.slice(0, 1200).map((l, i) => {
               const condC = conditionColor(l.currentIRI);
               const condL = conditionLabel(l.currentIRI);
-              const bg = i % 2 === 0 ? 'rgba(15,23,42,0.35)' : 'transparent';
+              const bg = i % 2 === 0 ? 'rgba(15,15,15,0.35)' : 'transparent';
               return (
                 <tr key={l.id} style={{ background: bg, borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
                   <td style={{ padding: '5px 10px', color: '#00f5ff', fontFamily: 'monospace', fontSize: 9.5, whiteSpace: 'nowrap' }}>{l.id}</td>

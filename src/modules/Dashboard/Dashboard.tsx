@@ -33,7 +33,7 @@ const COND_LABEL: Record<number,string> = {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const gl = (accent = N.cyan): React.CSSProperties => ({
-  background:   'rgba(2,5,8,0.82)',
+  background:   'rgba(2,2,2,0.82)',
   border:       `1px solid rgba(${hexRgb(accent)},0.18)`,
   borderRadius: 14,
   backdropFilter: 'blur(18px)',

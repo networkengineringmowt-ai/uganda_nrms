@@ -26,7 +26,7 @@ function Header() {
   return (
     <header style={{
       display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0,
-      padding: '8px 16px', background: 'rgba(2,5,8,0.9)',
+      padding: '8px 16px', background: 'rgba(2,2,2,0.9)',
       borderBottom: '1px solid rgba(77,159,255,0.15)',
     }}>
       <img src={`${import.meta.env.BASE_URL}mowt.jpg`} alt="MoWT"

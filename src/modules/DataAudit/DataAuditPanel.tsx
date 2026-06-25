@@ -49,7 +49,7 @@ export default function DataAuditPanel() {
   return (
     <div style={{
       position: 'absolute', inset: 0, overflowY: 'auto',
-      background: 'rgba(2,5,8,0.98)', fontFamily: "'Inter','Segoe UI',sans-serif",
+      background: 'rgba(2,2,2,0.98)', fontFamily: "'Inter','Segoe UI',sans-serif",
       padding: '24px 20px',
     }}>
       {/* Header */}
@@ -101,7 +101,7 @@ export default function DataAuditPanel() {
 
       {/* Network stats summary */}
       <div style={{
-        background: 'rgba(8,14,28,0.55)', border: '1px solid rgba(255,255,255,0.07)',
+        background: 'rgba(8,8,8,0.55)', border: '1px solid rgba(255,255,255,0.07)',
         borderRadius: 12, padding: '14px 16px', marginBottom: 20,
       }}>
         <div style={{ fontSize: 10, fontWeight: 900, color: 'rgba(0,245,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>
@@ -131,7 +131,7 @@ export default function DataAuditPanel() {
           Running audit…
         </div>
       ) : (
-        <div style={{ background: 'rgba(8,14,28,0.55)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, overflow: 'hidden' }}>
+        <div style={{ background: 'rgba(8,8,8,0.55)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ background: 'rgba(0,245,255,0.05)', borderBottom: '1px solid rgba(0,245,255,0.1)' }}>

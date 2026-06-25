@@ -62,7 +62,7 @@ const CONG: Record<string, { color: string; label: string }> = {
 };
 
 const glass = (accent = C.cyan): React.CSSProperties => ({
-  background:     'rgba(2,5,8,0.82)',
+  background:     'rgba(2,2,2,0.82)',
   border:         `1px solid rgba(${hexRgb(accent)},0.18)`,
   borderRadius:   14,
   backdropFilter: 'blur(18px)',
@@ -646,7 +646,7 @@ export default function PredictionsPanel() {
             boxShadow:`0 0 28px rgba(${hexRgb(accentColor)},0.15)` }}>
             {features.length > 0 && (
               <MapContainer center={[1.37, 32.3]} zoom={6} zoomControl={false}
-                style={{ height:'100%', width:'100%', background:'#020508' }}>
+                style={{ height:'100%', width:'100%', background:'#000000' }}>
                 <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery}/>
                 <TileLayer url={ESRI_TILE_URLS.labels}  attribution={ESRI_ATTRIBUTIONS.labels} opacity={0.7}/>
                 <WaterLayers />

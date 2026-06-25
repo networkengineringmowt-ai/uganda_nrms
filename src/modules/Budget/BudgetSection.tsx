@@ -21,7 +21,7 @@ function hexRgb(h: string) {
   return `${parseInt(c.slice(0,2),16)},${parseInt(c.slice(2,4),16)},${parseInt(c.slice(4,6),16)}`;
 }
 const card = (a: string) => ({
-  background: 'rgba(15,23,42,0.7)',
+  background: 'rgba(15,15,15,0.7)',
   border: `1px solid rgba(${hexRgb(a)},0.2)`,
   borderRadius: 12, padding: '18px 20px',
 });
@@ -72,7 +72,7 @@ type TabId = typeof TABS[number]['id'];
 const CT = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
   return (
-    <div style={{ background: 'rgba(8,14,28,0.95)', border: '1px solid rgba(255,255,255,0.1)',
+    <div style={{ background: 'rgba(8,8,8,0.95)', border: '1px solid rgba(255,255,255,0.1)',
       padding: '8px 12px', borderRadius: 7, fontSize: 10 }}>
       <div style={{ color: '#94a3b8', marginBottom: 4 }}>{label}</div>
       {payload.map((p: any) => (
@@ -139,7 +139,7 @@ export default function BudgetSection() {
       <div style={{
         display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap',
         padding: '8px 12px', marginBottom: 8, borderRadius: 10,
-        background: 'rgba(8,14,28,0.7)', border: `1px solid rgba(${hexRgb(C.pink)},0.2)`,
+        background: 'rgba(8,8,8,0.7)', border: `1px solid rgba(${hexRgb(C.pink)},0.2)`,
       }}>
         <div style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0,
           background: `linear-gradient(135deg, rgba(${hexRgb(C.pink)},0.25), rgba(${hexRgb(C.red)},0.1))`,
@@ -171,7 +171,7 @@ export default function BudgetSection() {
       <div style={{
         display: 'flex', gap: 2, padding: '0 0 0 0', marginBottom: 10, flexShrink: 0,
         borderBottom: '1px solid rgba(77,159,255,0.15)',
-        background: 'rgba(4,9,18,0.85)', marginLeft: -14, marginRight: -14, paddingLeft: 14,
+        background: 'rgba(8,8,8,0.85)', marginLeft: -14, marginRight: -14, paddingLeft: 14,
       }}>
         {TABS.map(t => {
           const isA = tab === t.id;

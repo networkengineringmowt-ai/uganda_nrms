@@ -56,7 +56,7 @@ const SITE_COLORS = [C.cyan, C.green, C.orange, C.purple, C.yellow, C.pink, C.bl
 
 // ─── Style helpers ────────────────────────────────────────────────────────────
 const glass = (accent = C.cyan): React.CSSProperties => ({
-  background:  `rgba(2,5,8,0.82)`,
+  background:  `rgba(2,2,2,0.82)`,
   border:      `1px solid rgba(${hexRgb(accent)},0.18)`,
   borderRadius: 14,
   backdropFilter: 'blur(18px)',
@@ -196,7 +196,7 @@ function StationMapPanel({ allStations, aadtRows, monthlyRows }: {
                     }}}>
                     <LeafletTooltip>
                       <div style={{
-                        background:'rgba(2,5,8,0.96)', color:col,
+                        background:'rgba(2,2,2,0.96)', color:col,
                         border:`1px solid ${col}55`, borderRadius:6,
                         padding:'5px 9px', fontSize:9, fontWeight:800, maxWidth:220,
                       }}>
@@ -420,7 +420,7 @@ export default function ATCView() {
               center={[1.37, 32.3]}
               zoom={6}
               zoomControl={false}
-              style={{ height:'100%', width:'100%', background:'#020508' }}
+              style={{ height:'100%', width:'100%', background:'#000000' }}
             >
               <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery}/>
               <TileLayer url={ESRI_TILE_URLS.labels}  attribution={ESRI_ATTRIBUTIONS.labels} opacity={0.7}/>
@@ -447,7 +447,7 @@ export default function ATCView() {
                     eventHandlers={{ click: ()=>setSelSite(s.id) }}
                   >
                     <LeafletTooltip permanent={isActive}>
-                      <div style={{ background:'rgba(2,5,8,0.95)', color:col,
+                      <div style={{ background:'rgba(2,2,2,0.95)', color:col,
                         border:`1px solid ${col}44`, borderRadius:6,
                         padding:'3px 7px', fontSize:9, fontWeight:800 }}>
                         {s.id} · {s.road.split(' - ').join('→')}

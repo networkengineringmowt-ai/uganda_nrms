@@ -50,7 +50,7 @@ export default function MapDetailPane({
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
-    background: 'rgba(4,9,18,0.92)',
+    background: 'rgba(8,8,8,0.92)',
     backdropFilter: 'blur(16px) saturate(160%)',
     WebkitBackdropFilter: 'blur(16px) saturate(160%)',
     borderLeft: `1px solid ${accent}33`,
@@ -129,7 +129,7 @@ export function StatCard({
 }: { label: string; value: string | number; unit?: string; color?: string; sub?: string }) {
   return (
     <div style={{
-      background: 'rgba(15,23,42,0.7)',
+      background: 'rgba(15,15,15,0.7)',
       border: `1px solid ${color}33`,
       borderLeft: `3px solid ${color}`,
       borderRadius: 8, padding: '10px 12px', marginBottom: 8,

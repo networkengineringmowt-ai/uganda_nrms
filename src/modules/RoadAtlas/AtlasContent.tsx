@@ -14,7 +14,7 @@ import { useDashboardBundle } from '../../hooks/useDashboardBundle';
 // ─── Shared chart tooltip style ───────────────────────────────────────────────
 const TT = {
   contentStyle: {
-    background: 'rgba(6,13,24,0.97)',
+    background: 'rgba(8,8,8,0.97)',
     border: '1px solid rgba(0,245,255,0.15)',
     borderRadius: 8, fontSize: 11,
   },

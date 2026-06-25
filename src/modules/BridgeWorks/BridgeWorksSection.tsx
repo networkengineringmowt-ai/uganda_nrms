@@ -76,7 +76,7 @@ export default function BridgeWorksSection() {
 
   return (
     <div style={{ padding: '22px 20px', minHeight: '100%',
-      background: 'radial-gradient(1200px 600px at 80% -10%, rgba(0,212,170,0.10), transparent), linear-gradient(180deg, rgba(8,14,28,0.5), transparent)' }}>
+      background: 'radial-gradient(1200px 600px at 80% -10%, rgba(0,212,170,0.10), transparent), linear-gradient(180deg, rgba(8,8,8,0.5), transparent)' }}>
 
       {/* ── Liquid-glass header ── */}
       <div style={{ ...liquidGlass(C.teal, 20), padding: '18px 22px', marginBottom: 18 }}>

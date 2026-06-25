@@ -27,7 +27,7 @@ function LegendContent({ title, items }: { title?: string; items: LegendItem[] }
 
   return (
     <div style={{
-      background: 'rgba(8,14,28,0.9)',
+      background: 'rgba(8,8,8,0.9)',
       border: '1px solid rgba(255,255,255,0.1)',
       borderRadius: 8,
       padding: collapsible ? '7px 10px' : '10px 12px',

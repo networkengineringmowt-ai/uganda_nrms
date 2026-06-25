@@ -37,7 +37,7 @@ function AtlasSpinner() {
 
 export default function RoadAtlasView() {
   return (
-    <div style={{ position: 'absolute', inset: 0, overflow: 'auto', background: '#030712' }}>
+    <div style={{ position: 'absolute', inset: 0, overflow: 'auto', background: '#000000' }}>
       <Suspense fallback={<AtlasSpinner />}>
         <AtlasContent />
       </Suspense>

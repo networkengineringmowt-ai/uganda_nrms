@@ -84,7 +84,7 @@ export default function Sidebar() {
       className="flex flex-col z-20 flex-shrink-0"
       style={{
         width: 240, minWidth: 240,
-        background: 'rgba(8,14,28,0.72)',
+        background: 'rgba(8,8,8,0.72)',
         backdropFilter: 'blur(28px) saturate(200%)',
         WebkitBackdropFilter: 'blur(28px) saturate(200%)',
         borderRight: '1px solid rgba(255,255,255,0.06)',

@@ -141,7 +141,7 @@ export default function MaintenanceProgrammeView() {
   const interventionTypes = [...new Set(data.all_links.map(l => l.intervention_type))].sort();
 
   return (
-    <div style={{ padding: '24px 28px', background: 'linear-gradient(to bottom, rgba(15,23,42,0.5), rgba(15,23,42,0))', minHeight: '100%' }}>
+    <div style={{ padding: '24px 28px', background: 'linear-gradient(to bottom, rgba(15,15,15,0.5), rgba(15,15,15,0))', minHeight: '100%' }}>
       <div style={{ marginBottom: 28 }}>
         <h1 style={{ fontSize: 24, fontWeight: 900, color: '#e2eaf4', marginBottom: 8 }}>
           PMS Maintenance Programme
@@ -154,7 +154,7 @@ export default function MaintenanceProgrammeView() {
       {/* KPI Strip */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16, marginBottom: 28 }}>
         <div style={{
-          background: 'rgba(15,23,42,0.7)',
+          background: 'rgba(15,15,15,0.7)',
           border: `1px solid rgba(${data.network_summary.total_links > 900 ? '255,51,102' : '0,245,255'},0.2)`,
           borderRadius: 12,
           padding: '16px 18px',
@@ -166,7 +166,7 @@ export default function MaintenanceProgrammeView() {
         </div>
 
         <div style={{
-          background: 'rgba(15,23,42,0.7)',
+          background: 'rgba(15,15,15,0.7)',
           border: `1px solid rgba(255,51,102,0.2)`,
           borderRadius: 12,
           padding: '16px 18px',
@@ -178,7 +178,7 @@ export default function MaintenanceProgrammeView() {
         </div>
 
         <div style={{
-          background: 'rgba(15,23,42,0.7)',
+          background: 'rgba(15,15,15,0.7)',
           border: `1px solid rgba(255,107,53,0.2)`,
           borderRadius: 12,
           padding: '16px 18px',
@@ -190,7 +190,7 @@ export default function MaintenanceProgrammeView() {
         </div>
 
         <div style={{
-          background: 'rgba(15,23,42,0.7)',
+          background: 'rgba(15,15,15,0.7)',
           border: `1px solid rgba(0,255,136,0.2)`,
           borderRadius: 12,
           padding: '16px 18px',
@@ -208,7 +208,7 @@ export default function MaintenanceProgrammeView() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 28 }}>
         {/* Annual Budget */}
         <div style={{
-          background: 'rgba(15,23,42,0.7)',
+          background: 'rgba(15,15,15,0.7)',
           border: '1px solid rgba(0,245,255,0.15)',
           borderRadius: 12,
           padding: 20,
@@ -219,7 +219,7 @@ export default function MaintenanceProgrammeView() {
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.1)" />
               <XAxis dataKey="year" stroke="rgba(148,163,184,0.4)" tick={{ fontSize: 10 }} />
               <YAxis stroke="rgba(148,163,184,0.4)" tick={{ fontSize: 10 }} />
-              <Tooltip contentStyle={{ background: 'rgba(15,23,42,0.95)', border: `1px solid ${C.cyan}`, borderRadius: 6 }}
+              <Tooltip contentStyle={{ background: 'rgba(15,15,15,0.95)', border: `1px solid ${C.cyan}`, borderRadius: 6 }}
                 labelStyle={{ color: C.cyan }} formatter={(v) => `$${v}M`} />
               <Bar dataKey="budget" fill={C.cyan} radius={[4, 4, 0, 0]} />
             </BarChart>
@@ -228,7 +228,7 @@ export default function MaintenanceProgrammeView() {
 
         {/* Condition Distribution */}
         <div style={{
-          background: 'rgba(15,23,42,0.7)',
+          background: 'rgba(15,15,15,0.7)',
           border: '1px solid rgba(185,103,255,0.15)',
           borderRadius: 12,
           padding: 20,
@@ -250,7 +250,7 @@ export default function MaintenanceProgrammeView() {
                   <Cell key={idx} fill={entry.color} />
                 ))}
               </Pie>
-              <Tooltip contentStyle={{ background: 'rgba(15,23,42,0.95)', border: '1px solid rgba(185,103,255,0.5)', borderRadius: 6 }}
+              <Tooltip contentStyle={{ background: 'rgba(15,15,15,0.95)', border: '1px solid rgba(185,103,255,0.5)', borderRadius: 6 }}
                 labelStyle={{ color: '#b967ff' }} />
             </PieChart>
           </ResponsiveContainer>
@@ -259,7 +259,7 @@ export default function MaintenanceProgrammeView() {
 
       {/* Top Interventions */}
       <div style={{
-        background: 'rgba(15,23,42,0.7)',
+        background: 'rgba(15,15,15,0.7)',
         border: '1px solid rgba(255,107,53,0.15)',
         borderRadius: 12,
         padding: 20,
@@ -271,7 +271,7 @@ export default function MaintenanceProgrammeView() {
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.1)" />
             <XAxis type="number" stroke="rgba(148,163,184,0.4)" tick={{ fontSize: 10 }} />
             <YAxis type="category" dataKey="name" stroke="rgba(148,163,184,0.4)" tick={{ fontSize: 10 }} width={150} />
-            <Tooltip contentStyle={{ background: 'rgba(15,23,42,0.95)', border: '1px solid rgba(255,107,53,0.5)', borderRadius: 6 }}
+            <Tooltip contentStyle={{ background: 'rgba(15,15,15,0.95)', border: '1px solid rgba(255,107,53,0.5)', borderRadius: 6 }}
               labelStyle={{ color: C.orange }} formatter={(v) => `$${v}M`} />
             <Bar dataKey="cost" fill={C.orange} radius={[0, 4, 4, 0]} />
           </BarChart>
@@ -280,7 +280,7 @@ export default function MaintenanceProgrammeView() {
 
       {/* Priority Table */}
       <div style={{
-        background: 'rgba(15,23,42,0.7)',
+        background: 'rgba(15,15,15,0.7)',
         border: '1px solid rgba(77,159,255,0.15)',
         borderRadius: 12,
         padding: 20,
@@ -290,7 +290,7 @@ export default function MaintenanceProgrammeView() {
           <div style={{ display: 'flex', gap: 8 }}>
             <select value={filterClass} onChange={(e) => { setFilterClass(e.target.value); setPageIdx(0); }}
               style={{
-                background: 'rgba(15,23,42,0.8)',
+                background: 'rgba(15,15,15,0.8)',
                 border: `1px solid rgba(77,159,255,0.3)`,
                 borderRadius: 6,
                 padding: '6px 10px',
@@ -305,7 +305,7 @@ export default function MaintenanceProgrammeView() {
 
             <select value={filterIntervention} onChange={(e) => { setFilterIntervention(e.target.value); setPageIdx(0); }}
               style={{
-                background: 'rgba(15,23,42,0.8)',
+                background: 'rgba(15,15,15,0.8)',
                 border: `1px solid rgba(77,159,255,0.3)`,
                 borderRadius: 6,
                 padding: '6px 10px',
@@ -320,7 +320,7 @@ export default function MaintenanceProgrammeView() {
 
             <select value={sortBy} onChange={(e) => setSortBy(e.target.value as any)}
               style={{
-                background: 'rgba(15,23,42,0.8)',
+                background: 'rgba(15,15,15,0.8)',
                 border: `1px solid rgba(77,159,255,0.3)`,
                 borderRadius: 6,
                 padding: '6px 10px',

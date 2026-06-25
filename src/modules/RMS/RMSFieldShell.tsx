@@ -26,7 +26,7 @@ export default function RMSFieldShell() {
       {/* Top app bar */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px',
-        background: 'rgba(8,14,28,0.92)', borderBottom: '1px solid rgba(0,245,255,0.12)',
+        background: 'rgba(8,8,8,0.92)', borderBottom: '1px solid rgba(0,245,255,0.12)',
         flexShrink: 0,
       }}>
         <img src={`${import.meta.env.BASE_URL}mowt.jpg`} alt="MoWT"
@@ -53,7 +53,7 @@ export default function RMSFieldShell() {
         <div style={{ maxWidth: 760, margin: '0 auto', width: '100%' }}>
           <Suspense fallback={
             <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}>
-              <div style={{ width: 26, height: 26, borderRadius: '50%', border: '2px solid #1e293b', borderTopColor: '#00f5ff', animation: 'spin 1s linear infinite' }} />
+              <div style={{ width: 26, height: 26, borderRadius: '50%', border: '2px solid #1c1c1c', borderTopColor: '#00f5ff', animation: 'spin 1s linear infinite' }} />
             </div>
           }>
             {tab === 'capture' && <DataCaptureHub />}
@@ -65,7 +65,7 @@ export default function RMSFieldShell() {
       {/* Bottom tab bar — large touch targets */}
       <div style={{
         display: 'flex', flexShrink: 0,
-        background: 'rgba(8,14,28,0.96)', borderTop: '1px solid rgba(0,245,255,0.12)',
+        background: 'rgba(8,8,8,0.96)', borderTop: '1px solid rgba(0,245,255,0.12)',
         paddingBottom: 'env(safe-area-inset-bottom)',
       }}>
         {([

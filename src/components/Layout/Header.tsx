@@ -82,7 +82,7 @@ export default function Header({ showSearch }: { showSearch?: boolean }) {
       className="flex items-center gap-2 flex-shrink-0"
       style={{
         padding: '3px 12px',
-        background: 'rgba(2,5,8,0.88)',
+        background: 'rgba(2,2,2,0.88)',
         backdropFilter: 'blur(20px) saturate(160%)',
         WebkitBackdropFilter: 'blur(20px) saturate(160%)',
         borderBottom: `1px solid rgba(${accentRgb},0.12)`,

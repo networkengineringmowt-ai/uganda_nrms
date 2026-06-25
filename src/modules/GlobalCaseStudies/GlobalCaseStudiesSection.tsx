@@ -1322,7 +1322,7 @@ const REGIONS: RegionFilter[] = ['All', 'Africa', 'Europe', 'Asia-Pacific', 'Ame
 
 const S = {
   wrap: {
-    background: 'rgba(2,5,8,0.97)',
+    background: 'rgba(2,2,2,0.97)',
     minHeight: '100%',
     display: 'flex',
     flexDirection: 'column' as const,
@@ -1333,7 +1333,7 @@ const S = {
     gap: 2,
     padding: '0 14px',
     borderBottom: '1px solid rgba(0,245,255,0.15)',
-    background: 'rgba(2,5,8,0.6)',
+    background: 'rgba(2,2,2,0.6)',
     flexShrink: 0,
   },
   tabBtn: (active: boolean) => ({
@@ -1352,7 +1352,7 @@ const S = {
     whiteSpace: 'nowrap' as const,
   }),
   card: (accent = 'rgba(255,255,255,0.07)') => ({
-    background: 'rgba(8,14,28,0.7)',
+    background: 'rgba(8,8,8,0.7)',
     border: `1px solid ${accent}`,
     borderRadius: 12,
     padding: '16px 18px',
@@ -1392,7 +1392,7 @@ function WorldMapTab() {
       <MapContainer
         center={[20, 20]}
         zoom={2}
-        style={{ width: '100%', height: '100%', background: '#020508' }}
+        style={{ width: '100%', height: '100%', background: '#000000' }}
         zoomControl={true}
         attributionControl={false}
       >
@@ -1421,7 +1421,7 @@ function WorldMapTab() {
           >
             <Popup>
               <div style={{
-                background: 'rgba(2,5,8,0.97)',
+                background: 'rgba(2,2,2,0.97)',
                 color: '#e2e8f0',
                 fontSize: 11,
                 minWidth: 200,
@@ -1452,7 +1452,7 @@ function WorldMapTab() {
         bottom: 24,
         right: 16,
         zIndex: 1000,
-        background: 'rgba(2,5,8,0.88)',
+        background: 'rgba(2,2,2,0.88)',
         border: '1px solid rgba(0,245,255,0.15)',
         borderRadius: 10,
         padding: '10px 14px',
@@ -1511,7 +1511,7 @@ function CaseStudiesTab() {
         {/* Search */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: 6,
-          background: 'rgba(8,14,28,0.8)',
+          background: 'rgba(8,8,8,0.8)',
           border: '1px solid rgba(0,245,255,0.15)',
           borderRadius: 8, padding: '5px 10px', flex: '0 0 auto',
         }}>
@@ -1543,7 +1543,7 @@ function CaseStudiesTab() {
                   fontWeight: active ? 700 : 400,
                   cursor: 'pointer',
                   border: `1px solid rgba(${hexRgb(color)},${active ? '0.5' : '0.2'})`,
-                  background: active ? `rgba(${hexRgb(color)},0.15)` : 'rgba(8,14,28,0.5)',
+                  background: active ? `rgba(${hexRgb(color)},0.15)` : 'rgba(8,8,8,0.5)',
                   color: active ? color : 'rgba(148,163,184,0.7)',
                   transition: 'all 0.15s',
                 }}
@@ -1574,7 +1574,7 @@ function CaseStudiesTab() {
                 borderColor: expanded ? `rgba(${hexRgb(regionColor)},0.4)` : 'rgba(255,255,255,0.07)',
                 background: expanded
                   ? `rgba(${hexRgb(regionColor)},0.05)`
-                  : 'rgba(8,14,28,0.7)',
+                  : 'rgba(8,8,8,0.7)',
                 boxShadow: expanded ? `0 0 18px rgba(${hexRgb(regionColor)},0.08)` : undefined,
                 transition: 'all 0.2s',
               }}
@@ -1846,7 +1846,7 @@ function LessonsTab() {
               style={{
                 ...S.card(),
                 borderColor: open ? `rgba(${hexRgb(theme.color)},0.35)` : 'rgba(255,255,255,0.07)',
-                background: open ? `rgba(${hexRgb(theme.color)},0.04)` : 'rgba(8,14,28,0.7)',
+                background: open ? `rgba(${hexRgb(theme.color)},0.04)` : 'rgba(8,8,8,0.7)',
                 transition: 'all 0.2s',
               }}
             >
@@ -2024,7 +2024,7 @@ function RadarPanel({ countries, onClose }: { countries: CaseStudy[]; onClose: (
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }} onClick={onClose}>
       <div style={{
-        background: 'rgba(8,14,28,0.97)', border: '1px solid rgba(0,245,255,0.2)',
+        background: 'rgba(8,8,8,0.97)', border: '1px solid rgba(0,245,255,0.2)',
         borderRadius: 16, padding: 24, width: 540, maxWidth: '95vw',
       }} onClick={e => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
@@ -2120,7 +2120,7 @@ function LiteratureMatrixTab() {
           style={{
             display: 'flex', alignItems: 'center', gap: 5,
             padding: '5px 12px', borderRadius: 7, cursor: 'pointer',
-            background: compareMode ? 'rgba(255,107,53,0.15)' : 'rgba(8,14,28,0.7)',
+            background: compareMode ? 'rgba(255,107,53,0.15)' : 'rgba(8,8,8,0.7)',
             border: `1px solid ${compareMode ? 'rgba(255,107,53,0.4)' : 'rgba(255,255,255,0.1)'}`,
             color: compareMode ? '#ff6b35' : 'rgba(148,163,184,0.7)', fontSize: 10, fontWeight: 700,
           }}
@@ -2136,7 +2136,7 @@ function LiteratureMatrixTab() {
                 padding: '3px 9px', borderRadius: 14, fontSize: 9, fontWeight: active ? 700 : 400,
                 cursor: 'pointer',
                 border: `1px solid rgba(${hexRgb(color)},${active ? '0.5' : '0.15'})`,
-                background: active ? `rgba(${hexRgb(color)},0.12)` : 'rgba(8,14,28,0.5)',
+                background: active ? `rgba(${hexRgb(color)},0.12)` : 'rgba(8,8,8,0.5)',
                 color: active ? color : 'rgba(148,163,184,0.6)',
               }}>{r}</button>
             );
@@ -2161,8 +2161,8 @@ function LiteratureMatrixTab() {
       <div style={{ flex: 1, overflow: 'auto', borderRadius: 10, border: '1px solid rgba(255,255,255,0.07)' }}>
         <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 900 }}>
           <thead>
-            <tr style={{ background: 'rgba(8,14,28,0.95)', position: 'sticky', top: 0, zIndex: 2 }}>
-              <th style={{ ...thStyle, position: 'sticky', left: 0, zIndex: 3, background: 'rgba(8,14,28,0.97)', minWidth: 160, textAlign: 'left', paddingLeft: 10 }}>
+            <tr style={{ background: 'rgba(8,8,8,0.95)', position: 'sticky', top: 0, zIndex: 2 }}>
+              <th style={{ ...thStyle, position: 'sticky', left: 0, zIndex: 3, background: 'rgba(8,8,8,0.97)', minWidth: 160, textAlign: 'left', paddingLeft: 10 }}>
                 Country / Agency
               </th>
               <th style={{ ...thStyle, minWidth: 60 }}>Region</th>
@@ -2193,7 +2193,7 @@ function LiteratureMatrixTab() {
                   onMouseEnter={e => { if (!highlight) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)'; }}
                   onMouseLeave={e => { if (!highlight) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                 >
-                  <td style={{ ...tdStyle, position: 'sticky', left: 0, background: highlight || 'rgba(8,14,28,0.92)', zIndex: 1, paddingLeft: 10 }}>
+                  <td style={{ ...tdStyle, position: 'sticky', left: 0, background: highlight || 'rgba(8,8,8,0.92)', zIndex: 1, paddingLeft: 10 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                       <span style={{ fontSize: 14 }}>{cs.flag}</span>
                       <div>
@@ -2280,7 +2280,7 @@ export default function GlobalCaseStudiesSection() {
       <div style={{
         padding: '14px 18px 10px',
         borderBottom: '1px solid rgba(0,245,255,0.1)',
-        background: 'rgba(2,5,8,0.8)',
+        background: 'rgba(2,2,2,0.8)',
         flexShrink: 0,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>

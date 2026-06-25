@@ -177,7 +177,7 @@ function PhotoStrip({ photos, onPhotoClick }: {
             src={src}
             alt=""
             className="w-full h-full object-cover rounded"
-            style={{ background: '#1e293b' }}
+            style={{ background: '#1c1c1c' }}
             onError={e => {
               const t = e.currentTarget;
               t.style.display = 'none';
@@ -360,7 +360,7 @@ export default function ProjectsView() {
       <div style={{
         display: 'flex', gap: 2, padding: '0 14px', flexShrink: 0,
         borderBottom: '1px solid rgba(77,159,255,0.15)',
-        background: 'rgba(4,9,18,0.85)',
+        background: 'rgba(8,8,8,0.85)',
       }}>
         {([
           { id: 'map',      label: 'Projects Map',   icon: '🗺️' },
@@ -394,7 +394,7 @@ export default function ProjectsView() {
           <div style={{
             position: 'absolute', top: 10, left: 54, zIndex: 1000,
             display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center',
-            background: 'rgba(8,14,28,0.88)', backdropFilter: 'blur(10px)',
+            background: 'rgba(8,8,8,0.88)', backdropFilter: 'blur(10px)',
             border: '1px solid rgba(0,245,255,0.2)', borderRadius: 9, padding: '6px 10px',
           }}>
             <div className="relative" style={{ minWidth: 170 }}>
@@ -461,7 +461,7 @@ export default function ProjectsView() {
               >
                 <Popup>
                   <div style={{ fontSize: 11, minWidth: 210, maxWidth: 250 }}>
-                    <div style={{ fontWeight: 800, fontSize: 12, color: '#1e293b', borderBottom: '1.5px solid #fcd34d', paddingBottom: 4, marginBottom: 6 }}>
+                    <div style={{ fontWeight: 800, fontSize: 12, color: '#1c1c1c', borderBottom: '1.5px solid #fcd34d', paddingBottom: 4, marginBottom: 6 }}>
                       🚧 {c.name}
                     </div>
                     <table style={{ fontSize: 10, borderCollapse: 'collapse', width: '100%' }}>
@@ -512,7 +512,7 @@ export default function ProjectsView() {
                       {p.actual_progress_pct !== null && (
                         <div style={{ marginTop: 4 }}>
                           <div style={{ fontSize: 9, color: '#64748b' }}>Physical progress</div>
-                          <div style={{ background: '#1e293b', borderRadius: 4, height: 5, marginTop: 2 }}>
+                          <div style={{ background: '#1c1c1c', borderRadius: 4, height: 5, marginTop: 2 }}>
                             <div style={{ background: '#3b82f6', width: `${Math.min(p.actual_progress_pct, 100)}%`, height: '100%', borderRadius: 4 }} />
                           </div>
                           <div style={{ fontSize: 9, color: '#94a3b8', marginTop: 1 }}>{p.actual_progress_pct.toFixed(0)}%</div>
@@ -528,7 +528,7 @@ export default function ProjectsView() {
           {/* Map legend */}
           <div style={{
             position: 'absolute', bottom: 20, left: 8, zIndex: 1000,
-            background: 'rgba(2,5,8,0.85)', backdropFilter: 'blur(8px)',
+            background: 'rgba(2,2,2,0.85)', backdropFilter: 'blur(8px)',
             border: '1px solid rgba(255,255,255,0.08)',
             borderRadius: 8, padding: '6px 10px',
           }}>
@@ -724,7 +724,7 @@ export default function ProjectsView() {
             .sort((a, b) => b.km - a.km);
           return (
             <div style={{
-              background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(255,255,255,0.07)',
+              background: 'rgba(15,15,15,0.6)', border: '1px solid rgba(255,255,255,0.07)',
               borderRadius: 10, padding: '10px 12px',
             }}>
               <div style={{ fontSize: 9, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>
@@ -740,7 +740,7 @@ export default function ProjectsView() {
                     <YAxis yAxisId="cnt" tick={{ fill: '#64748b', fontSize: 8 }} />
                     <YAxis yAxisId="km" orientation="right" tick={{ fill: '#64748b', fontSize: 8 }} />
                     <ReTooltip
-                      contentStyle={{ background: 'rgba(8,14,28,0.96)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 10 }}
+                      contentStyle={{ background: 'rgba(8,8,8,0.96)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 10 }}
                       formatter={(v: number, name: string) => [name === 'count' ? `${v} projects` : `${v} km`, name === 'count' ? 'Projects' : 'Total km']}
                       labelFormatter={(l: string) => l}
                     />
@@ -782,7 +782,7 @@ export default function ProjectsView() {
               </thead>
               <tbody>
                 {filtered.map((p, i) => (
-                  <tr key={p.id} style={{ borderBottom: '1px solid rgba(148,163,184,0.04)', background: i % 2 === 0 ? 'rgba(15,23,42,0.3)' : 'transparent' }}>
+                  <tr key={p.id} style={{ borderBottom: '1px solid rgba(148,163,184,0.04)', background: i % 2 === 0 ? 'rgba(15,15,15,0.3)' : 'transparent' }}>
                     <td style={{ padding: '5px 10px', color: '#e2eaf4', maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.project_name}</td>
                     <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{p.regions ?? '—'}</td>
                     <td style={{ padding: '5px 10px', color: '#f59e0b', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{p.parsed_length_km ? p.parsed_length_km.toFixed(1) : '—'}</td>
@@ -822,7 +822,7 @@ export default function ProjectsView() {
                 {filtered
                   .filter(p => p.project_name.toLowerCase().includes('ndp') || p.funding_agency.toLowerCase().includes('gou'))
                   .map((p, i) => (
-                  <tr key={p.id} style={{ borderBottom: '1px solid rgba(148,163,184,0.04)', background: i % 2 === 0 ? 'rgba(15,23,42,0.3)' : 'transparent' }}>
+                  <tr key={p.id} style={{ borderBottom: '1px solid rgba(148,163,184,0.04)', background: i % 2 === 0 ? 'rgba(15,15,15,0.3)' : 'transparent' }}>
                     <td style={{ padding: '5px 8px', color: '#00f5ff', fontFamily: 'monospace', fontSize: 8 }}>—</td>
                     <td style={{ padding: '5px 8px', color: '#94a3b8' }}>—</td>
                     <td style={{ padding: '5px 8px', color: '#e2eaf4', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.project_name}</td>
@@ -849,7 +849,7 @@ export default function ProjectsView() {
             Long-term performance-based road maintenance contracts · NERAMP & other OPRC programs
           </div>
           {UNDER_CONSTRUCTION.map(uc => (
-            <div key={uc.id} style={{ background: 'rgba(8,14,28,0.55)', border: '1px solid rgba(245,158,11,0.2)', borderLeft: '4px solid #f59e0b', borderRadius: 10, padding: '12px 16px', marginBottom: 10 }}>
+            <div key={uc.id} style={{ background: 'rgba(8,8,8,0.55)', border: '1px solid rgba(245,158,11,0.2)', borderLeft: '4px solid #f59e0b', borderRadius: 10, padding: '12px 16px', marginBottom: 10 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                 <span style={{ fontSize: 12, fontWeight: 900, color: '#f59e0b' }}>{uc.lot}</span>
                 <span style={{ fontSize: 10, background: 'rgba(0,255,136,0.1)', border: '1px solid rgba(0,255,136,0.2)', borderRadius: 4, padding: '1px 6px', color: '#00ff88', fontWeight: 700 }}>{uc.status}</span>

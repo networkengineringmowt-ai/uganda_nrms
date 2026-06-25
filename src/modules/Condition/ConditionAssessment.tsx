@@ -156,13 +156,13 @@ function ConditionDetail({ structure: s }: { structure: Structure }) {
         </div>
         <ResponsiveContainer width="100%" height={200}>
           <LineChart data={histData} margin={{ top: 4, right: 12, left: -16, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#1c1c1c" />
             <XAxis dataKey="year" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
             <YAxis domain={[0, 5.5]} ticks={[1,2,3,4,5]} tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
             <ReferenceLine y={3} stroke="#f59e0b" strokeDasharray="4 4" strokeOpacity={0.6} label={{ value: 'Fair', position: 'insideRight', fill: '#f59e0b', fontSize: 10 }} />
             <ReferenceLine y={2} stroke="#ef4444" strokeDasharray="4 4" strokeOpacity={0.6} label={{ value: 'Poor', position: 'insideRight', fill: '#ef4444', fontSize: 10 }} />
             <Tooltip
-              contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 8, fontSize: 11 }}
+              contentStyle={{ background: '#0d0d0d', border: '1px solid #334155', borderRadius: 8, fontSize: 11 }}
               formatter={(v: number) => [conditionLabel(v), 'Condition Rating']}
             />
             <Line

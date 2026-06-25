@@ -99,7 +99,7 @@ export default function GisEnterpriseSection() {
             center={[1.3733, 32.2903]} 
             zoom={7} 
             zoomControl={false}
-            style={{ height: '100%', width: '100%', backgroundColor: '#0f172a' }}
+            style={{ height: '100%', width: '100%', backgroundColor: '#0d0d0d' }}
           >
             <ZoomControl position="bottomright" />
             {/* Base Map */}

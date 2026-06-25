@@ -157,7 +157,7 @@ export default function RoadInventory() {
       <div style={{
         display: 'flex', gap: 4, padding: '4px 12px 0', flexWrap: 'wrap',
         borderBottom: '1px solid rgba(255,255,255,0.06)',
-        background: 'rgba(4,9,18,0.6)', flexShrink: 0,
+        background: 'rgba(8,8,8,0.6)', flexShrink: 0,
       }}>
         {INVENTORY_CATEGORIES.map(c => {
           const on = c.id === cat;
@@ -199,7 +199,7 @@ export default function RoadInventory() {
           <div style={{
             display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 12,
             padding: '10px 12px', marginBottom: 10, borderRadius: 8,
-            background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(255,255,255,0.07)',
+            background: 'rgba(15,15,15,0.6)', border: '1px solid rgba(255,255,255,0.07)',
           }}>
             <div>
               <div style={{ fontSize: 8.5, fontWeight: 800, color: C.teal, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>
@@ -273,7 +273,7 @@ export default function RoadInventory() {
           </>
         ) : (
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px',
-            borderRadius: 8, background: 'rgba(15,23,42,0.6)', border: '1px dashed rgba(148,163,184,0.3)' }}>
+            borderRadius: 8, background: 'rgba(15,15,15,0.6)', border: '1px dashed rgba(148,163,184,0.3)' }}>
             <Database size={14} style={{ color: C.gray }} />
             <div style={{ fontSize: 10.5, color: 'rgba(148,163,184,0.8)' }}>
               Loading the 2022-23 measured inventory…

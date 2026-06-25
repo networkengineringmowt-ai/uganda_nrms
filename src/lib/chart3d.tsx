@@ -38,7 +38,7 @@ export const AX_LINE = { stroke: 'rgba(148,163,184,0.08)' } as const;
 
 // Neon tooltip styles
 export const TT_NEON = {
-  contentStyle: { background: 'rgba(2,5,8,0.97)', border: '1px solid rgba(0,245,255,0.2)', borderRadius: 10 },
+  contentStyle: { background: 'rgba(2,2,2,0.97)', border: '1px solid rgba(0,245,255,0.2)', borderRadius: 10 },
   labelStyle:   { color: '#00f5ff', fontSize: 11, fontWeight: 700 },
   itemStyle:    { color: '#94a3b8', fontSize: 10 },
 } as const;

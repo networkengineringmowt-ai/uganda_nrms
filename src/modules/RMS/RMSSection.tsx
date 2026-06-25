@@ -733,7 +733,7 @@ function GlobalCaseStudies() {
           const regCol = region === 'Africa' ? C.green : region === 'Europe' ? C.blue : region === 'Asia-Pacific' ? C.cyan : C.orange;
           return (
             <div key={cs.id} style={{
-              background: 'rgba(8,14,28,0.7)',
+              background: 'rgba(8,8,8,0.7)',
               border: `1px solid ${isOpen ? `rgba(${rgb(regCol)},0.4)` : 'rgba(255,255,255,0.07)'}`,
               borderRadius: 12, overflow: 'hidden',
               transition: 'border-color 0.15s',
@@ -839,10 +839,10 @@ function StandardsEvidence() {
         <div style={{ fontSize: 14, fontWeight: 900, color: '#e2eaf4', marginBottom: 14 }}>
           Key Publications &amp; Research Papers
         </div>
-        <div style={{ background: 'rgba(8,14,28,0.6)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, overflow: 'hidden' }}>
+        <div style={{ background: 'rgba(8,8,8,0.6)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10 }}>
             <thead>
-              <tr style={{ background: 'rgba(8,14,28,0.9)' }}>
+              <tr style={{ background: 'rgba(8,8,8,0.9)' }}>
                 {['Ref', 'Title', 'Authors', 'Year', 'Publisher', 'DNR Relevance'].map(h => (
                   <th key={h} style={{
                     padding: '9px 12px', textAlign: 'left',
@@ -1504,7 +1504,7 @@ export default function RMSSection() {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
-      background: 'rgba(2,5,8,0.97)',
+      background: 'rgba(2,2,2,0.97)',
       fontFamily: "'Inter','Segoe UI',sans-serif",
     }}>
       <style>{`
@@ -1518,7 +1518,7 @@ export default function RMSSection() {
       <div style={{
         display: 'flex', gap: 2, padding: '0 14px', flexShrink: 0,
         borderBottom: '1px solid rgba(0,245,255,0.15)',
-        background: 'rgba(4,9,18,0.85)',
+        background: 'rgba(8,8,8,0.85)',
       }}>
         {TABS.map(t => {
           const isActive = t.id === tab;

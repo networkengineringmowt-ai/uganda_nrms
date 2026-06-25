@@ -103,13 +103,13 @@ export default function StructureDetailModal({ structure: s, onClose }: Props) {
                 <div className="mt-1">
                   <ResponsiveContainer width="100%" height={130}>
                     <LineChart data={histData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#1c1c1c" />
                       <XAxis dataKey="year" tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} tickLine={false} />
                       <YAxis domain={[1, 5]} ticks={[1,2,3,4,5]} tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} tickLine={false} />
                       <ReferenceLine y={3} stroke="#f59e0b" strokeDasharray="4 4" strokeOpacity={0.5} />
                       <ReferenceLine y={2} stroke="#ef4444" strokeDasharray="4 4" strokeOpacity={0.5} />
                       <Tooltip
-                        contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 8, fontSize: 11 }}
+                        contentStyle={{ background: '#0d0d0d', border: '1px solid #334155', borderRadius: 8, fontSize: 11 }}
                         formatter={(v: number) => [conditionLabel(v), 'Rating']}
                       />
                       <Line

@@ -22,8 +22,8 @@ const C = {
   model:    '#ff6b35',   // orange — ML Models
   output:   '#00ff88',   // green  — Outputs
   decision: '#4d9fff',   // blue   — Decision Support
-  bg:       'rgba(8,14,28,0.72)',
-  card:     'rgba(15,23,42,0.80)',
+  bg:       'rgba(8,8,8,0.72)',
+  card:     'rgba(15,15,15,0.80)',
   border:   'rgba(255,255,255,0.07)',
 };
 
@@ -654,7 +654,7 @@ export default function MLArchitectureDiagram() {
                 <rect x={0} y={0} width={120} height={36} rx={9}
                   fill={isActive
                     ? `rgba(${hexToRgb(color)},0.18)`
-                    : isHov ? `rgba(${hexToRgb(color)},0.10)` : 'rgba(15,23,42,0.85)'}
+                    : isHov ? `rgba(${hexToRgb(color)},0.10)` : 'rgba(15,15,15,0.85)'}
                   stroke={color}
                   strokeWidth={isActive ? 1.5 : 0.5}
                   strokeOpacity={isActive ? 0.8 : 0.3}
@@ -701,7 +701,7 @@ export default function MLArchitectureDiagram() {
       {selected && (
         <div style={{
           position: 'absolute', top: 0, right: 0, bottom: 0, width: 340,
-          background: 'rgba(8,14,28,0.97)', backdropFilter: 'blur(24px)',
+          background: 'rgba(8,8,8,0.97)', backdropFilter: 'blur(24px)',
           borderLeft: `1px solid rgba(${hexToRgb(LAYER_COLORS[selected.layer])},0.3)`,
           display: 'flex', flexDirection: 'column',
           boxShadow: `-8px 0 40px rgba(0,0,0,0.6), inset 1px 0 0 rgba(${hexToRgb(LAYER_COLORS[selected.layer])},0.1)`,

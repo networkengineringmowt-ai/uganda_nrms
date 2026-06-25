@@ -46,7 +46,7 @@ export default function UnifiedInfrastructureDashboard() {
   // Show loading state
   if (loading || !modelPerformance) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: '20px', background: 'rgba(8,14,28,0.5)' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: '20px', background: 'rgba(8,8,8,0.5)' }}>
         <div style={{ color: '#00f5ff', fontSize: 14 }}>Loading infrastructure dashboard...</div>
       </div>
     );
@@ -54,7 +54,7 @@ export default function UnifiedInfrastructureDashboard() {
 
   if (error) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: '20px', background: 'rgba(8,14,28,0.5)' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: '20px', background: 'rgba(8,8,8,0.5)' }}>
         <div style={{ color: '#ff6b6b', fontSize: 14 }}>Error loading data: {error}</div>
       </div>
     );
@@ -63,7 +63,7 @@ export default function UnifiedInfrastructureDashboard() {
   const COLORS = ['#00f5ff', '#4d9fff', '#00ff88', '#ffd23f', '#ff6b6b'];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: '20px', background: 'rgba(8,14,28,0.5)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: '20px', background: 'rgba(8,8,8,0.5)' }}>
       {/* Header */}
       <div>
         <h2 style={{ color: '#00f5ff', marginBottom: 16, fontSize: 18, fontWeight: 900 }}>
@@ -139,7 +139,7 @@ export default function UnifiedInfrastructureDashboard() {
             <XAxis dataKey="region" stroke="rgba(0,245,255,0.5)" tick={{ fontSize: 11 }} />
             <YAxis stroke="rgba(0,245,255,0.5)" tick={{ fontSize: 11 }} />
             <Tooltip
-              contentStyle={{ background: 'rgba(8,14,28,0.9)', border: '1px solid #00f5ff', color: '#00f5ff', fontSize: 11 }}
+              contentStyle={{ background: 'rgba(8,8,8,0.9)', border: '1px solid #00f5ff', color: '#00f5ff', fontSize: 11 }}
             />
             <Legend wrapperStyle={{ color: '#00f5ff', fontSize: 11 }} />
             <Bar dataKey="measured_links" fill="#4d9fff" name="Measured Links" radius={[4, 4, 0, 0]} />
@@ -190,7 +190,7 @@ export default function UnifiedInfrastructureDashboard() {
             <XAxis type="number" stroke="rgba(0,245,255,0.5)" tick={{ fontSize: 11 }} />
             <YAxis dataKey="feature" type="category" stroke="rgba(0,245,255,0.5)" tick={{ fontSize: 10 }} width={180} />
             <Tooltip
-              contentStyle={{ background: 'rgba(8,14,28,0.9)', border: '1px solid #00f5ff', color: '#00f5ff', fontSize: 11 }}
+              contentStyle={{ background: 'rgba(8,8,8,0.9)', border: '1px solid #00f5ff', color: '#00f5ff', fontSize: 11 }}
             />
             <Bar dataKey="importance" fill="#00ff88" radius={[0, 4, 4, 0]} />
           </BarChart>
@@ -223,7 +223,7 @@ export default function UnifiedInfrastructureDashboard() {
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip contentStyle={{ background: 'rgba(8,14,28,0.9)', border: '1px solid #00f5ff', color: '#00f5ff' }} />
+                <Tooltip contentStyle={{ background: 'rgba(8,8,8,0.9)', border: '1px solid #00f5ff', color: '#00f5ff' }} />
               </PieChart>
             </ResponsiveContainer>
           </div>

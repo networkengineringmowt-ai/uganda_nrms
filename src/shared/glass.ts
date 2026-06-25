@@ -25,12 +25,12 @@ export function glass(accent = '#00f5ff', radius = 16): CSSProperties {
 /** Neumorphism — soft extruded (raised) or pressed (inset) surface. */
 export function neu(radius = 18, raised = true): CSSProperties {
   return {
-    background: 'linear-gradient(145deg, #101c33, #0a1320)',
+    background: 'linear-gradient(145deg, #1a1a1a, #0a0a0a)',
     borderRadius: radius,
     border: '1px solid rgba(255,255,255,0.04)',
     boxShadow: raised
-      ? '7px 7px 16px rgba(0,0,0,0.55), -6px -6px 16px rgba(70,95,140,0.10)'
-      : 'inset 5px 5px 12px rgba(0,0,0,0.6), inset -5px -5px 12px rgba(70,95,140,0.10)',
+      ? '7px 7px 16px rgba(0,0,0,0.55), -6px -6px 16px rgba(120,120,120,0.10)'
+      : 'inset 5px 5px 12px rgba(0,0,0,0.6), inset -5px -5px 12px rgba(120,120,120,0.10)',
   };
 }
 
@@ -51,8 +51,8 @@ export function liquidGlass(accent = '#00f5ff', radius = 22): CSSProperties {
 /** A neumorphic progress track + fill colour. */
 export function neuProgressTrack(): CSSProperties {
   return {
-    height: 9, borderRadius: 999, background: '#0a1320',
-    boxShadow: 'inset 2px 2px 5px rgba(0,0,0,0.7), inset -2px -2px 5px rgba(70,95,140,0.08)',
+    height: 9, borderRadius: 999, background: '#0a0a0a',
+    boxShadow: 'inset 2px 2px 5px rgba(0,0,0,0.7), inset -2px -2px 5px rgba(120,120,120,0.08)',
     overflow: 'hidden',
   };
 }

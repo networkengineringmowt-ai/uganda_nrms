@@ -48,7 +48,7 @@ export default function AIVisionDashboard() {
         
         {/* Video Feed & Detection */}
         <div style={{ background: 'rgba(15,30,50,0.6)', border: '1px solid rgba(0,245,255,0.15)', borderRadius: 8, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ padding: '12px 16px', background: 'rgba(4,9,18,0.8)', borderBottom: '1px solid rgba(0,245,255,0.1)', display: 'flex', justifyContent: 'space-between' }}>
+          <div style={{ padding: '12px 16px', background: 'rgba(8,8,8,0.8)', borderBottom: '1px solid rgba(0,245,255,0.1)', display: 'flex', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#e2eaf4', fontSize: 12, fontWeight: 700 }}>
               <FileVideo size={16} color="#00f5ff" /> Live Inference Stream: A001_Link03
             </div>

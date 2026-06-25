@@ -45,7 +45,7 @@ function hexRgb(hex: string): string {
   const h = hex.replace('#', '');
   return `${parseInt(h.slice(0,2),16)},${parseInt(h.slice(2,4),16)},${parseInt(h.slice(4,6),16)}`;
 }
-const TT_STYLE = { background: 'rgba(8,14,28,0.96)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 11 };
+const TT_STYLE = { background: 'rgba(8,8,8,0.96)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 11 };
 
 function roadStyle(feature?: GeoJSON.Feature): L.PathOptions {
   const surf = (feature?.properties as { surface?: string })?.surface ?? '';
@@ -54,7 +54,7 @@ function roadStyle(feature?: GeoJSON.Feature): L.PathOptions {
 }
 
 const GLASS: React.CSSProperties = {
-  background: 'rgba(15,23,42,0.55)',
+  background: 'rgba(15,15,15,0.55)',
   backdropFilter: 'blur(20px)',
   WebkitBackdropFilter: 'blur(20px)',
   border: '1px solid rgba(255,255,255,0.08)',

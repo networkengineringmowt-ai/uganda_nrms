@@ -105,7 +105,7 @@ export default function DigitalTwin() {
   }, []);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#020508' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#000000' }}>
       <div style={{ padding: '20px 20px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h2 style={{ color: '#00f5ff', marginBottom: 8, fontSize: 18, fontWeight: 900, display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -126,14 +126,14 @@ export default function DigitalTwin() {
 
       <div style={{ flex: 1, position: 'relative', marginTop: 16 }}>
         {!loaded && (
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#020508', zIndex: 20 }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000000', zIndex: 20 }}>
             <Activity size={32} color="#00f5ff" style={{ animation: 'pms-spin 1s infinite linear' }} />
           </div>
         )}
         <div ref={cesiumContainer} style={{ width: '100%', height: '100%' }} />
 
         {/* Floating Legend */}
-        <div style={{ position: 'absolute', bottom: 24, left: 24, background: 'rgba(4,9,18,0.85)', border: '1px solid rgba(0,245,255,0.2)', padding: 16, borderRadius: 8, backdropFilter: 'blur(8px)', zIndex: 10 }}>
+        <div style={{ position: 'absolute', bottom: 24, left: 24, background: 'rgba(8,8,8,0.85)', border: '1px solid rgba(0,245,255,0.2)', padding: 16, borderRadius: 8, backdropFilter: 'blur(8px)', zIndex: 10 }}>
           <h4 style={{ color: '#00f5ff', fontSize: 11, fontWeight: 700, marginBottom: 12, textTransform: 'uppercase' }}>Structural Layers</h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, color: '#fff' }}>

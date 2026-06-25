@@ -110,14 +110,14 @@ export default function PavementAgePanel() {
     [aged, sortDesc]);
 
   const CARD: React.CSSProperties = {
-    background: 'rgba(8,14,28,0.7)', border: '1px solid rgba(255,107,53,0.16)',
+    background: 'rgba(8,8,8,0.7)', border: '1px solid rgba(255,107,53,0.16)',
     borderRadius: 10, padding: '12px 14px',
   };
   const TH: React.CSSProperties = {
     textAlign: 'left', padding: '6px 10px', fontSize: 9.5, fontWeight: 800,
     color: 'rgba(148,163,184,0.7)', textTransform: 'uppercase', letterSpacing: '0.06em',
     borderBottom: '1px solid rgba(255,107,53,0.18)', position: 'sticky', top: 0,
-    background: 'rgba(4,9,18,0.95)',
+    background: 'rgba(8,8,8,0.95)',
   };
   const TD: React.CSSProperties = {
     padding: '5px 10px', fontSize: 11, color: 'rgba(203,213,225,0.85)',

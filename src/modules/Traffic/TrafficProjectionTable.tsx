@@ -129,7 +129,7 @@ export default function TrafficProjectionTable() {
     URL.revokeObjectURL(url);
   }
 
-  const BG = 'rgba(15,23,42,0.55)';
+  const BG = 'rgba(15,15,15,0.55)';
   const classColor: Record<string,string> = { A:'#00f5ff', B:'#00ff88', C:'#ffd23f', M:'#b967ff' };
 
   if (loading) return (
@@ -164,15 +164,15 @@ export default function TrafficProjectionTable() {
         <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
           <input value={search} onChange={e => { setSearch(e.target.value); setPage(0); }}
             placeholder="Search link ID or name…"
-            style={{ fontSize:10, padding:'5px 10px', borderRadius:6, background:'rgba(15,23,42,0.7)',
+            style={{ fontSize:10, padding:'5px 10px', borderRadius:6, background:'rgba(15,15,15,0.7)',
               border:'1px solid rgba(148,163,184,0.18)', color:'#e2eaf4', outline:'none', minWidth:220 }}/>
           <select value={classFilter} onChange={e => { setClass(e.target.value); setPage(0); }}
-            style={{ fontSize:10, padding:'5px 8px', borderRadius:6, background:'rgba(15,23,42,0.7)',
+            style={{ fontSize:10, padding:'5px 8px', borderRadius:6, background:'rgba(15,15,15,0.7)',
               border:'1px solid rgba(148,163,184,0.18)', color:'#e2eaf4' }}>
             {classes.map(c => <option key={c} value={c}>{c === 'All' ? 'All Classes' : `Class ${c}`}</option>)}
           </select>
           <select value={regionFilter} onChange={e => { setReg(e.target.value); setPage(0); }}
-            style={{ fontSize:10, padding:'5px 8px', borderRadius:6, background:'rgba(15,23,42,0.7)',
+            style={{ fontSize:10, padding:'5px 8px', borderRadius:6, background:'rgba(15,15,15,0.7)',
               border:'1px solid rgba(148,163,184,0.18)', color:'#e2eaf4' }}>
             {regions.map(r => <option key={r} value={r}>{r}</option>)}
           </select>
@@ -194,7 +194,7 @@ export default function TrafficProjectionTable() {
       {/* Table */}
       <div style={{ overflowX:'auto', borderRadius:10, border:'1px solid rgba(255,255,255,0.06)' }}>
         <table style={{ fontSize:10, borderCollapse:'collapse', minWidth:1200 }}>
-          <thead style={{ position:'sticky', top:0, background:'rgba(15,23,42,0.97)', zIndex:2 }}>
+          <thead style={{ position:'sticky', top:0, background:'rgba(15,15,15,0.97)', zIndex:2 }}>
             <tr>
               <th style={TH} rowSpan={2}>Link ID</th>
               <th style={{ ...TH, minWidth:160 }} rowSpan={2}>Road Name</th>
@@ -211,7 +211,7 @@ export default function TrafficProjectionTable() {
             </tr>
             <tr>
               {SNAPSHOT_YEARS.map(y => (
-                <th key={y} style={{ ...TH, fontSize:7.5, textAlign:'center', background:'rgba(15,23,42,0.97)',
+                <th key={y} style={{ ...TH, fontSize:7.5, textAlign:'center', background:'rgba(15,15,15,0.97)',
                   color: y===2026?'rgba(0,245,255,0.55)':'rgba(148,163,184,0.35)' }}>
                   Total AADT
                 </th>
@@ -225,7 +225,7 @@ export default function TrafficProjectionTable() {
               const totals = SNAPSHOT_YEARS.map(y => totalAt(l.base_aadt, l.base_year, y));
               return (
                 <>
-                  <tr key={l.link_id} style={{ background: i%2===0?'rgba(15,23,42,0.3)':'transparent',
+                  <tr key={l.link_id} style={{ background: i%2===0?'rgba(15,15,15,0.3)':'transparent',
                     borderBottom:'1px solid rgba(255,255,255,0.03)' }}>
                     <td style={{ padding:'5px 8px', color:'#00f5ff', fontFamily:'monospace', fontSize:9, whiteSpace:'nowrap' }}>{l.link_id}</td>
                     <td style={{ padding:'5px 8px', color:'#e2eaf4', maxWidth:200, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{l.link_name}</td>

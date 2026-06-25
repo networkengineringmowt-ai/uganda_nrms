@@ -327,14 +327,14 @@ export default function MindMapSection() {
     <div style={{
       flex: 1, display: 'flex', flexDirection: 'column',
       height: '100%', width: '100%',
-      background: '#0a1628', overflow: 'hidden',
+      background: '#0a0a0a', overflow: 'hidden',
       fontFamily: "'Inter','Segoe UI',sans-serif",
     }}>
       {/* Toolbar */}
       <div style={{
         flexShrink: 0, display: 'flex', alignItems: 'center', gap: 10,
         padding: '8px 14px', flexWrap: 'wrap', rowGap: 6,
-        background: 'rgba(10,22,40,0.97)',
+        background: 'rgba(16,16,16,0.97)',
         borderBottom: '1px solid rgba(0,188,212,0.18)',
       }}>
         <span style={{ fontSize: 10, fontWeight: 800, color: '#00bcd4', letterSpacing: '0.12em', fontFamily: MONO }}>
@@ -927,7 +927,7 @@ function WireframeSketch({ nodeId, color }: { nodeId: string; color: string }) {
   const tabX0 = wf.sidebar ? 34 : 6;
 
   return (
-    <div style={{ width: '100%', background: '#0a1628', border: `1px solid rgba(${hexFromColor(color)},0.35)`, borderRadius: 3 }}>
+    <div style={{ width: '100%', background: '#0a0a0a', border: `1px solid rgba(${hexFromColor(color)},0.35)`, borderRadius: 3 }}>
       <svg viewBox="0 0 280 180" width="100%" style={{ display: 'block' }}>
         {/* frame */}
         <rect x="1" y="1" width="278" height="178" fill="none" stroke="rgba(0,188,212,0.25)" strokeWidth="1" />

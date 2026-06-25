@@ -107,7 +107,7 @@ export function SortableFilterableTable<T extends Record<string, any>>({
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
         <div style={{
           display: 'flex', alignItems: 'center', gap: 7, flex: '1 1 220px', maxWidth: 360,
-          background: 'rgba(15,23,42,0.7)', border: '1px solid rgba(148,163,184,0.25)',
+          background: 'rgba(15,15,15,0.7)', border: '1px solid rgba(148,163,184,0.25)',
           borderRadius: 8, padding: '7px 11px',
         }}>
           <Search size={13} style={{ color: 'rgba(148,163,184,0.6)', flexShrink: 0 }} />

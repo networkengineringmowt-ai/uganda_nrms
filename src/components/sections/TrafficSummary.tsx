@@ -30,7 +30,7 @@ const REGION_CLR: Record<string,string> = {
   Northern:'#b967ff', 'North Eastern':C.pink,
 };
 const GLASS: React.CSSProperties = {
-  background:'rgba(15,23,42,0.55)', backdropFilter:'blur(20px)',
+  background:'rgba(15,15,15,0.55)', backdropFilter:'blur(20px)',
   WebkitBackdropFilter:'blur(20px)', border:'1px solid rgba(99,102,241,0.12)', borderRadius:14,
 };
 

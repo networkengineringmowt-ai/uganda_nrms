@@ -70,7 +70,7 @@ function diamondIcon(status: string): L.DivIcon {
 
 // ─── Glass card style ─────────────────────────────────────────────────────────
 const GLASS: React.CSSProperties = {
-  background: 'rgba(15,23,42,0.55)',
+  background: 'rgba(15,15,15,0.55)',
   backdropFilter: 'blur(20px)',
   WebkitBackdropFilter: 'blur(20px)',
   border: '1px solid rgba(255,255,255,0.08)',
@@ -395,7 +395,7 @@ export default function OprcNdpivSection() {
                 <XAxis dataKey="name" tick={{ fontSize: 8, fill: '#64748b' }} tickFormatter={(s: string) => s.replace('OPRC-','')} />
                 <YAxis domain={[0, 100]} tick={{ fontSize: 8, fill: '#64748b' }} />
                 <ReTooltip
-                  contentStyle={{ background: 'rgba(15,23,42,0.92)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 11 }}
+                  contentStyle={{ background: 'rgba(15,15,15,0.92)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 11 }}
                   formatter={(v) => [`${v}/100`, 'Score']}
                   labelFormatter={(l: string) => l.replace('OPRC-', 'Lot ')}
                 />
@@ -415,7 +415,7 @@ export default function OprcNdpivSection() {
                   {pieData.map((entry, i) => <Cell key={i} fill={entry.color} stroke="rgba(255,255,255,0.08)" strokeWidth={1} />)}
                 </Pie>
                 <Legend iconSize={8} wrapperStyle={{ fontSize: 9, color: '#94a3b8' }} />
-                <ReTooltip contentStyle={{ background: 'rgba(15,23,42,0.92)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 11 }} />
+                <ReTooltip contentStyle={{ background: 'rgba(15,15,15,0.92)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 11 }} />
               </PieChart>
             </ResponsiveContainer>
           </div>

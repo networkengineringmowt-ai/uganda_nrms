@@ -50,8 +50,8 @@ export default function IdentityManager() {
     return !n || `${r.email} ${r.name ?? ''} ${r.role ?? ''}`.toLowerCase().includes(n);
   }), [rows, filter, q]);
 
-  const CARD: React.CSSProperties = { background: 'rgba(8,14,28,0.7)', border: '1px solid rgba(77,159,255,0.14)', borderRadius: 10, padding: '12px 14px' };
-  const TH: React.CSSProperties = { textAlign: 'left', padding: '8px 11px', fontSize: 9.5, fontWeight: 800, color: 'rgba(148,163,184,0.7)', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid rgba(77,159,255,0.15)', position: 'sticky', top: 0, background: 'rgba(4,9,18,0.95)' };
+  const CARD: React.CSSProperties = { background: 'rgba(8,8,8,0.7)', border: '1px solid rgba(77,159,255,0.14)', borderRadius: 10, padding: '12px 14px' };
+  const TH: React.CSSProperties = { textAlign: 'left', padding: '8px 11px', fontSize: 9.5, fontWeight: 800, color: 'rgba(148,163,184,0.7)', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid rgba(77,159,255,0.15)', position: 'sticky', top: 0, background: 'rgba(8,8,8,0.95)' };
   const TD: React.CSSProperties = { padding: '8px 11px', fontSize: 12, color: 'rgba(203,213,225,0.9)', borderBottom: '1px solid rgba(255,255,255,0.04)', whiteSpace: 'nowrap' };
   const btn = (bg: string): React.CSSProperties => ({ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 10px', borderRadius: 7, fontSize: 10.5, fontWeight: 700, cursor: 'pointer', border: `1px solid ${bg}55`, background: `${bg}1a`, color: bg });
 

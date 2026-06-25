@@ -23,7 +23,7 @@ const C = {
 };
 
 const card = (accent: string) => ({
-  background: 'rgba(15,23,42,0.7)',
+  background: 'rgba(15,15,15,0.7)',
   border: `1px solid rgba(${hexRgb(accent)},0.2)`,
   borderRadius: 12,
   padding: '18px 20px',
@@ -239,7 +239,7 @@ export default function RoadReserveSection() {
 
   return (
     <div style={{ padding: '20px 18px', minHeight: '100%',
-      background: 'linear-gradient(180deg, rgba(8,14,28,0.4) 0%, transparent 100%)' }}>
+      background: 'linear-gradient(180deg, rgba(8,8,8,0.4) 0%, transparent 100%)' }}>
 
       <ModuleNavBar module="Road Reserve" />
 
@@ -270,7 +270,7 @@ export default function RoadReserveSection() {
       <div style={{
         display: 'flex', gap: 2, marginBottom: 20, flexShrink: 0,
         borderBottom: '1px solid rgba(77,159,255,0.15)',
-        background: 'rgba(4,9,18,0.85)', marginLeft: -20, marginRight: -20, paddingLeft: 14,
+        background: 'rgba(8,8,8,0.85)', marginLeft: -20, marginRight: -20, paddingLeft: 14,
       }}>
         {TABS.map(t => {
           const isActive = activeTab === t.id;
@@ -470,7 +470,7 @@ function ReserveMapTab() {
       <div style={{ flex: 1, position: 'relative', borderRadius: 12, overflow: 'hidden',
         border: '1px solid rgba(0,212,170,0.2)' }}>
         <MapContainer center={[1.4, 32.3]} zoom={7} zoomControl={false}
-          style={{ width: '100%', height: '100%', background: '#0a1120' }}>
+          style={{ width: '100%', height: '100%', background: '#0a0a0a' }}>
           <ZoomControl position="bottomright" />
           <TileLayer
             url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
@@ -484,7 +484,7 @@ function ReserveMapTab() {
         {/* Layer toggles */}
         <div style={{
           position: 'absolute', top: 12, left: 12, zIndex: 1000,
-          background: 'rgba(8,14,28,0.92)', border: '1px solid rgba(255,255,255,0.1)',
+          background: 'rgba(8,8,8,0.92)', border: '1px solid rgba(255,255,255,0.1)',
           borderRadius: 10, padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 7,
           fontSize: 10, color: '#d4dde8', minWidth: 178,
         }}>
@@ -509,7 +509,7 @@ function ReserveMapTab() {
         {/* Legend */}
         <div style={{
           position: 'absolute', bottom: 12, left: 12, zIndex: 1000,
-          background: 'rgba(8,14,28,0.92)', border: '1px solid rgba(255,255,255,0.1)',
+          background: 'rgba(8,8,8,0.92)', border: '1px solid rgba(255,255,255,0.1)',
           borderRadius: 10, padding: '8px 12px', display: 'flex', gap: 12, fontSize: 9.5, color: '#d4dde8',
         }}>
           {[
@@ -609,7 +609,7 @@ function EncroachmentRegisterTab() {
     || ENCROACHMENT_RECORDS.filter(r => r.status === 'Resolved').length;
 
   const selStyle: React.CSSProperties = {
-    background: 'rgba(15,23,42,0.7)', border: '1px solid rgba(148,163,184,0.25)',
+    background: 'rgba(15,15,15,0.7)', border: '1px solid rgba(148,163,184,0.25)',
     borderRadius: 7, color: '#d4dde8', fontSize: 10.5, fontWeight: 700, padding: '6px 10px', cursor: 'pointer',
   };
 
@@ -727,7 +727,7 @@ function actionBtnStyle(color: string): React.CSSProperties {
 
 function selectStyle(): React.CSSProperties {
   return {
-    background: 'rgba(15,23,42,0.7)', border: '1px solid rgba(148,163,184,0.25)',
+    background: 'rgba(15,15,15,0.7)', border: '1px solid rgba(148,163,184,0.25)',
     borderRadius: 7, color: '#d4dde8', fontSize: 10.5, fontWeight: 700, padding: '6px 10px', cursor: 'pointer',
   };
 }
@@ -821,7 +821,7 @@ function GazetteTab() {
               <XAxis dataKey="year" tick={{ fontSize: 9, fill: 'rgba(148,163,184,0.6)' }} axisLine={false} tickLine={false} />
               <YAxis allowDecimals={false} tick={{ fontSize: 9, fill: 'rgba(148,163,184,0.6)' }} axisLine={false} tickLine={false} />
               <Tooltip
-                contentStyle={{ background: 'rgba(8,14,28,0.95)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, fontSize: 10 }}
+                contentStyle={{ background: 'rgba(8,8,8,0.95)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, fontSize: 10 }}
                 labelStyle={{ color: '#94a3b8' }}
               />
               <Bar dataKey="gazetted" name="Gazette notices" fill={C.cyan} radius={[4, 4, 0, 0]} />

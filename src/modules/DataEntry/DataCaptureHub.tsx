@@ -74,7 +74,7 @@ export default function DataCaptureHub() {
             <button key={c.id} disabled={!c.live} onClick={() => c.live && setActive(c.id)} style={{
               display: 'flex', alignItems: 'flex-start', gap: 11, padding: '14px 15px', textAlign: 'left',
               cursor: c.live ? 'pointer' : 'not-allowed', opacity: c.live ? 1 : 0.5,
-              background: on ? `rgba(0,212,170,0.14)` : 'rgba(15,23,42,0.7)',
+              background: on ? `rgba(0,212,170,0.14)` : 'rgba(15,15,15,0.7)',
               border: `1px solid ${on ? C.teal : 'rgba(255,255,255,0.1)'}`, borderRadius: 12,
             }}>
               <div style={{ width: 34, height: 34, borderRadius: 9, flexShrink: 0, color: C.teal,
@@ -99,7 +99,7 @@ export default function DataCaptureHub() {
 
       {/* Active capture form */}
       {active === 'condition' && (
-        <div style={{ background: 'rgba(8,14,28,0.6)', border: `1px solid rgba(0,212,170,0.25)`, borderRadius: 14, maxWidth: 640 }}>
+        <div style={{ background: 'rgba(8,8,8,0.6)', border: `1px solid rgba(0,212,170,0.25)`, borderRadius: 14, maxWidth: 640 }}>
           <ConditionSurveyForm onClose={() => setActive(null)} />
         </div>
       )}

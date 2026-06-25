@@ -111,7 +111,7 @@ export default function CrossSectionAnalytics() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: '20px', background: 'rgba(8,14,28,0.5)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: '20px', background: 'rgba(8,8,8,0.5)' }}>
       <div>
         <h2 style={{ color: '#00f5ff', marginBottom: 16, fontSize: 18, fontWeight: 900 }}>
           🎯 CROSS-SECTION ANALYTICS
@@ -214,7 +214,7 @@ export default function CrossSectionAnalytics() {
               />
               <Tooltip
                 cursor={{ fill: 'rgba(0,245,255,0.1)' }}
-                contentStyle={{ background: 'rgba(8,14,28,0.9)', border: '1px solid #00f5ff', color: '#00f5ff' }}
+                contentStyle={{ background: 'rgba(8,8,8,0.9)', border: '1px solid #00f5ff', color: '#00f5ff' }}
                 formatter={(value: any) => {
                   if (value === null || value === undefined) return 'N/A';
                   return typeof value === 'number' ? value.toFixed(2) : value;
@@ -251,7 +251,7 @@ export default function CrossSectionAnalytics() {
               />
               <YAxis stroke="rgba(0,245,255,0.5)" tick={{ fontSize: 11, fill: 'rgba(0,245,255,0.7)' }} />
               <Tooltip
-                contentStyle={{ background: 'rgba(8,14,28,0.9)', border: '1px solid #00f5ff', color: '#00f5ff', fontSize: 11 }}
+                contentStyle={{ background: 'rgba(8,8,8,0.9)', border: '1px solid #00f5ff', color: '#00f5ff', fontSize: 11 }}
                 formatter={(value: any) => {
                   if (typeof value === 'number') {
                     return value > 100 ? `${(value / 1e6).toFixed(1)}M` : value.toLocaleString();

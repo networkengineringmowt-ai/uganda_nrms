@@ -64,7 +64,7 @@ const COND_COLOR: Record<string, string> = {
 };
 const ACCENT = '#3b82f6';
 const BG     = '#0a0f1e';
-const GLASS  = 'rgba(15,23,42,0.55)';
+const GLASS  = 'rgba(15,15,15,0.55)';
 
 function condScore(dist: Record<string, number>): number {
   const W: Record<string, number> = { Good: 4, Fair: 3, Poor: 2, Critical: 1, Unknown: 0 };
@@ -474,7 +474,7 @@ export default function BridgeSection() {
                   {condDonutBr.map((e,i) => <Cell key={i} fill={e.color}/>)}
                 </Pie>
                 <Tooltip
-                  contentStyle={{ background: '#0f172a', border: '1px solid #1e293b',
+                  contentStyle={{ background: '#0d0d0d', border: '1px solid #1c1c1c',
                     borderRadius: 8, fontSize: 12 }}
                   formatter={(v: number, n: string) => [`${v} bridges`, n]}
                 />
@@ -493,7 +493,7 @@ export default function BridgeSection() {
                   {condDonutCu.map((e,i) => <Cell key={i} fill={e.color}/>)}
                 </Pie>
                 <Tooltip
-                  contentStyle={{ background: '#0f172a', border: '1px solid #1e293b',
+                  contentStyle={{ background: '#0d0d0d', border: '1px solid #1c1c1c',
                     borderRadius: 8, fontSize: 12 }}
                   formatter={(v: number, n: string) => [`${v} culverts`, n]}
                 />
@@ -512,7 +512,7 @@ export default function BridgeSection() {
                 <XAxis type="number" tick={{ fontSize: 11, fill: '#64748b' }} />
                 <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: '#94a3b8' }} width={68}/>
                 <Tooltip
-                  contentStyle={{ background:'#0f172a', border:'1px solid #1e293b',
+                  contentStyle={{ background:'#0d0d0d', border:'1px solid #1c1c1c',
                     borderRadius:8, fontSize:12 }}
                 />
                 <Bar dataKey="value" fill={ACCENT} radius={[0,4,4,0]} name="Bridges"/>
@@ -530,7 +530,7 @@ export default function BridgeSection() {
                 <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#94a3b8' }}/>
                 <YAxis tick={{ fontSize: 11, fill: '#64748b' }}/>
                 <Tooltip
-                  contentStyle={{ background:'#0f172a', border:'1px solid #1e293b',
+                  contentStyle={{ background:'#0d0d0d', border:'1px solid #1c1c1c',
                     borderRadius:8, fontSize:12 }}
                 />
                 <Bar dataKey="value" fill="#8b5cf6" radius={[4,4,0,0]} name="Bridges"/>

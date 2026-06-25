@@ -6,11 +6,11 @@
    DESIGN TOKENS — Uganda National Roads Platform · Liquid Glass Dark Theme
    ══════════════════════════════════════════════════════════════════════════════ */
 :root {
-  /* Void background */
+  /* Void background — true neutral black (no blue tint) */
   --bg-void:        #000000;
   --bg-deep:        #050505;
-  --bg-surface:     #0a1628;
-  --bg-panel:       #0d1f35;
+  --bg-surface:     #0a0a0a;
+  --bg-panel:       #0d0d0d;
 
   /* Neon palette */
   --neon-cyan:      #00f5ff;
@@ -23,8 +23,8 @@
   --neon-red:       #ff3366;
 
   /* Glass materials */
-  --glass-bg:       rgba(6, 13, 24, 0.72);
-  --glass-bg-light: rgba(10, 22, 40, 0.55);
+  --glass-bg:       rgba(10, 10, 10, 0.72);
+  --glass-bg-light: rgba(18, 18, 18, 0.55);
   --glass-blur:     blur(20px) saturate(160%);
   --glass-blur-sm:  blur(12px) saturate(140%);
   --glass-border:   rgba(0, 245, 255, 0.12);

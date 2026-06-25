@@ -310,7 +310,7 @@ export default function SystemDocumentation() {
       {visible.map(sec => {
         const isOpen = q.trim() ? true : !closed[sec.id];
         return (
-          <div key={sec.id} style={{ marginBottom: 6, background: 'rgba(8,14,28,0.7)',
+          <div key={sec.id} style={{ marginBottom: 6, background: 'rgba(8,8,8,0.7)',
             border: '1px solid rgba(77,159,255,0.18)', borderRadius: 8, overflow: 'hidden' }}>
             <button onClick={() => setClosed(o => ({ ...o, [sec.id]: isOpen }))} style={{
               width: '100%', display: 'flex', alignItems: 'center', gap: 7, padding: '7px 10px',

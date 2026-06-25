@@ -71,7 +71,7 @@ const VC_COLORS: Record<string, string> = {
 // ─── Colour helpers ───────────────────────────────────────────────────────────
 
 function mefColor(mef: number | undefined): string {
-  if (!mef || mef <= 0) return 'rgba(15,23,42,0.6)';
+  if (!mef || mef <= 0) return 'rgba(15,15,15,0.6)';
   const dev       = mef - 1.0;
   const intensity = Math.min(1, Math.abs(dev) / 0.20);
   if (dev < 0) {
@@ -91,7 +91,7 @@ function mefTextColor(mef: number | undefined): string {
 // ─── Shared styles ────────────────────────────────────────────────────────────
 
 const CARD: React.CSSProperties = {
-  background: 'rgba(15,23,42,0.55)',
+  background: 'rgba(15,15,15,0.55)',
   backdropFilter: 'blur(20px)',
   border: '1px solid rgba(99,102,241,0.12)',
   borderRadius: 14,

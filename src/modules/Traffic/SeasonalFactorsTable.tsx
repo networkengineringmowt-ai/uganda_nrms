@@ -103,7 +103,7 @@ export default function SeasonalFactorsTable() {
     URL.revokeObjectURL(url);
   }
 
-  const BG = 'rgba(15,23,42,0.55)';
+  const BG = 'rgba(15,15,15,0.55)';
 
   return (
     <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
@@ -130,12 +130,12 @@ export default function SeasonalFactorsTable() {
         {/* Filters */}
         <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
           <select value={regionFilter} onChange={e=>setRegion(e.target.value)}
-            style={{ fontSize:10, padding:'5px 8px', borderRadius:6, background:'rgba(15,23,42,0.7)', border:'1px solid rgba(148,163,184,0.18)', color:'#e2eaf4' }}>
+            style={{ fontSize:10, padding:'5px 8px', borderRadius:6, background:'rgba(15,15,15,0.7)', border:'1px solid rgba(148,163,184,0.18)', color:'#e2eaf4' }}>
             <option value="All">All Regions</option>
             {regions.map(r=><option key={r} value={r}>{r}</option>)}
           </select>
           <select value={classFilter} onChange={e=>setClass(e.target.value)}
-            style={{ fontSize:10, padding:'5px 8px', borderRadius:6, background:'rgba(15,23,42,0.7)', border:'1px solid rgba(148,163,184,0.18)', color:'#e2eaf4' }}>
+            style={{ fontSize:10, padding:'5px 8px', borderRadius:6, background:'rgba(15,15,15,0.7)', border:'1px solid rgba(148,163,184,0.18)', color:'#e2eaf4' }}>
             {classes.map(c=><option key={c} value={c}>{c==='All'?'All Vehicle Classes':c}</option>)}
           </select>
         </div>
@@ -155,7 +155,7 @@ export default function SeasonalFactorsTable() {
       {/* Heatmap table */}
       <div style={{ overflowX:'auto', borderRadius:10, border:'1px solid rgba(255,255,255,0.06)' }}>
         <table style={{ fontSize:9.5, borderCollapse:'collapse', minWidth:900, width:'100%' }}>
-          <thead style={{ position:'sticky', top:0, background:'rgba(15,23,42,0.97)', zIndex:2 }}>
+          <thead style={{ position:'sticky', top:0, background:'rgba(15,15,15,0.97)', zIndex:2 }}>
             <tr style={{ borderBottom:'1px solid rgba(148,163,184,0.15)' }}>
               <th style={{ ...TH2, minWidth:140 }}>Region</th>
               <th style={{ ...TH2, minWidth:100 }}>Vehicle Class</th>
@@ -179,7 +179,7 @@ export default function SeasonalFactorsTable() {
             {(filtered.length > 0 ? filtered : MEF_DATA.slice(0,1)).map((row, i) => {
               const avg = (row.factors.reduce((s,v)=>s+v,0)/12).toFixed(2);
               return (
-                <tr key={`${row.region}-${row.class}`} style={{ background: i%2===0?'rgba(15,23,42,0.3)':'transparent',
+                <tr key={`${row.region}-${row.class}`} style={{ background: i%2===0?'rgba(15,15,15,0.3)':'transparent',
                   borderBottom:'1px solid rgba(255,255,255,0.03)' }}>
                   <td style={{ padding:'6px 10px', color:'#d4dde8', fontWeight:600 }}>{row.region}</td>
                   <td style={{ padding:'6px 10px', color:'#94a3b8' }}>{row.class}</td>

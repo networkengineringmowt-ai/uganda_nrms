@@ -176,7 +176,7 @@ function downloadPng(ref: React.RefObject<HTMLDivElement>, fname: string) {
     cv.width = w * 2; cv.height = h * 2;
     const ctx = cv.getContext('2d')!;
     ctx.scale(2, 2);
-    ctx.fillStyle = '#020508';
+    ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, w, h);
     ctx.drawImage(img, 0, 0, w, h);
     const a = document.createElement('a');
@@ -281,7 +281,7 @@ function KpiTile({ icon, label, value, color, sub }: {
   const rgb = hexRgb(color);
   return (
     <div style={{
-      background: `linear-gradient(135deg, rgba(${rgb},0.13) 0%, rgba(${rgb},0.04) 70%, rgba(2,5,8,0.8) 100%)`,
+      background: `linear-gradient(135deg, rgba(${rgb},0.13) 0%, rgba(${rgb},0.04) 70%, rgba(2,2,2,0.8) 100%)`,
       border: `1px solid rgba(${rgb},0.28)`,
       borderRadius: 14, padding: '16px 18px 14px',
       boxShadow: `0 0 28px rgba(${rgb},0.1), inset 0 1px 0 rgba(255,255,255,0.04)`,
@@ -311,7 +311,7 @@ function AssetCard({ label, value, unit, detail, color, icon }: {
   const rgb = hexRgb(color);
   return (
     <div style={{
-      background: `linear-gradient(145deg, rgba(${rgb},0.16) 0%, rgba(${rgb},0.05) 50%, rgba(2,5,8,0.85) 100%)`,
+      background: `linear-gradient(145deg, rgba(${rgb},0.16) 0%, rgba(${rgb},0.05) 50%, rgba(2,2,2,0.85) 100%)`,
       border: `1px solid rgba(${rgb},0.32)`,
       borderRadius: 14, padding: '16px 15px',
       boxShadow: `0 0 32px rgba(${rgb},0.13), inset 0 1px 0 rgba(255,255,255,0.05)`,
@@ -347,7 +347,7 @@ function ChartSection({ title, accent = C.purple, children, note, minHeight = 26
   return (
     <div style={{
       marginBottom: 28,
-      background: `linear-gradient(135deg, rgba(${rgb},0.06) 0%, rgba(2,5,8,0.55) 60%, rgba(${rgb},0.02) 100%)`,
+      background: `linear-gradient(135deg, rgba(${rgb},0.06) 0%, rgba(2,2,2,0.55) 60%, rgba(${rgb},0.02) 100%)`,
       border: `1px solid rgba(${rgb},0.15)`,
       borderLeft: `3px solid ${accent}`,
       borderRadius: 14, padding: '18px 20px',
@@ -397,7 +397,7 @@ function Section({ title, accent = C.purple, children }: {
   return (
     <div style={{
       marginBottom: 28,
-      background: `linear-gradient(135deg, rgba(${rgb},0.06) 0%, rgba(2,5,8,0.55) 60%, rgba(${rgb},0.02) 100%)`,
+      background: `linear-gradient(135deg, rgba(${rgb},0.06) 0%, rgba(2,2,2,0.55) 60%, rgba(${rgb},0.02) 100%)`,
       border: `1px solid rgba(${rgb},0.15)`,
       borderLeft: `3px solid ${accent}`,
       borderRadius: 14, padding: '18px 20px',
@@ -418,7 +418,7 @@ function GlassTooltip({ active, payload, label, color = C.purple }: any) {
   if (!active || !payload?.length) return null;
   return (
     <div style={{
-      background: 'rgba(2,5,8,0.96)', border: `1px solid rgba(${hexRgb(color)},0.35)`,
+      background: 'rgba(2,2,2,0.96)', border: `1px solid rgba(${hexRgb(color)},0.35)`,
       borderRadius: 8, padding: '8px 12px', fontSize: 11,
     }}>
       <div style={{ color, fontWeight: 800, marginBottom: 4 }}>{label}</div>
@@ -504,9 +504,9 @@ function ProjectCard({ p }: { p: typeof PROJECT_GALLERY[number] }) {
       <div style={{
         position: 'absolute', inset: 0,
         background: `linear-gradient(to top,
-          rgba(2,5,8,0.97) 0%,
-          rgba(2,5,8,0.55) 45%,
-          rgba(2,5,8,0.05) 100%)`,
+          rgba(2,2,2,0.97) 0%,
+          rgba(2,2,2,0.55) 45%,
+          rgba(2,2,2,0.05) 100%)`,
       }} />
 
       {/* Top accent bar */}
@@ -592,7 +592,7 @@ function FilterBar({
   return (
     <div style={{
       position: 'sticky', top: 3, zIndex: 20,
-      background: 'rgba(2,5,8,0.95)',
+      background: 'rgba(2,2,2,0.95)',
       borderBottom: '1px solid rgba(255,255,255,0.06)',
       backdropFilter: 'blur(12px)',
       padding: '10px 28px',
@@ -604,7 +604,7 @@ function FilterBar({
         <span style={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Filters</span>
         {filterCount > 0 && (
           <span style={{
-            background: C.purple, color: '#020508', borderRadius: '50%',
+            background: C.purple, color: '#000000', borderRadius: '50%',
             width: 16, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 9, fontWeight: 900,
           }}>{filterCount}</span>
@@ -832,9 +832,9 @@ export default function NetworkStory() {
 
     const style = document.createElement('style');
     style.textContent = `
-      input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:${C.purple};border:2px solid #020508;cursor:pointer;box-shadow:0 0 8px ${C.purple}88;}
+      input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:${C.purple};border:2px solid #000000;cursor:pointer;box-shadow:0 0 8px ${C.purple}88;}
       input[type=range]::-webkit-slider-runnable-track{height:4px;background:transparent;}
-      input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:${C.purple};border:2px solid #020508;cursor:pointer;}
+      input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:${C.purple};border:2px solid #000000;cursor:pointer;}
       @keyframes ns-pulse{0%,100%{opacity:1}50%{opacity:0.45}}
       @keyframes ns-fadeup{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
     `;
@@ -974,7 +974,7 @@ export default function NetworkStory() {
   }, [data, filters.yearRange]);
 
   // ── Loading / Error ───────────────────────────────────────────────────────
-  const CEN: React.CSSProperties = { position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(2,5,8,0.98)' };
+  const CEN: React.CSSProperties = { position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(2,2,2,0.98)' };
   if (loading) return (
     <div style={CEN}>
       <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
@@ -1023,7 +1023,7 @@ export default function NetworkStory() {
 
   // ══════════════════════════════════════════════════════════════════════════
   return (
-    <div style={{ position: 'absolute', inset: 0, overflowY: 'auto', overflowX: 'hidden', background: 'rgba(2,5,8,0.98)', fontFamily: 'inherit' }}>
+    <div style={{ position: 'absolute', inset: 0, overflowY: 'auto', overflowX: 'hidden', background: 'rgba(2,2,2,0.98)', fontFamily: 'inherit' }}>
 
       {/* Top rainbow bar */}
       <div style={{
@@ -1161,7 +1161,7 @@ export default function NetworkStory() {
                     stroke={C.purple} strokeWidth={2.5}
                     fill="url(#pavedGrad)" dot={false}
                     isAnimationActive animationDuration={1400}
-                    activeDot={{ r: 5, fill: C.purple, stroke: 'rgba(2,5,8,0.9)', strokeWidth: 2 }}
+                    activeDot={{ r: 5, fill: C.purple, stroke: 'rgba(2,2,2,0.9)', strokeWidth: 2 }}
                     style={{ filter: 'url(#lineGlow)' } as any}
                   />
                 </AreaChart>
@@ -1209,7 +1209,7 @@ export default function NetworkStory() {
                 <ReferenceLine yAxisId="left" x="2020/21" stroke={C.orange} strokeDasharray="4 4" strokeOpacity={0.6}
                   label={{ value: 'NDP III', position: 'insideTopRight', fill: C.orange, fontSize: 8, fontWeight: 700 }} />
                 <Line yAxisId="left" type="monotone" dataKey="stock" name="Stock km" stroke={C.green} strokeWidth={2.5}
-                  dot={{ r: 4, fill: C.green, stroke: 'rgba(2,5,8,0.9)', strokeWidth: 2 }}
+                  dot={{ r: 4, fill: C.green, stroke: 'rgba(2,2,2,0.9)', strokeWidth: 2 }}
                   isAnimationActive animationDuration={1400}
                   style={{ filter: 'url(#wtssGlow)' } as any} />
                 <Line yAxisId="right" type="monotone" dataKey="pct" name="% paved" stroke={C.yellow} strokeWidth={2}
@@ -1256,7 +1256,7 @@ export default function NetworkStory() {
                   tickFormatter={v => v.toLocaleString()} width={52} />
                 <Tooltip content={(p: any) => <GlassTooltip {...p} color={C.orange} />} />
                 <Line type="monotone" dataKey="motorised" name="Motorised AADT" stroke={C.orange} strokeWidth={3}
-                  dot={{ r: 5, fill: C.orange, stroke: 'rgba(2,5,8,0.9)', strokeWidth: 2 }}
+                  dot={{ r: 5, fill: C.orange, stroke: 'rgba(2,2,2,0.9)', strokeWidth: 2 }}
                   isAnimationActive animationDuration={1400}
                   style={{ filter: 'url(#trafficGlow)' } as any} />
                 <Line type="monotone" dataKey="non_motorised" name="Non-motorised AADT" stroke={C.yellow} strokeWidth={2}
@@ -1346,7 +1346,7 @@ export default function NetworkStory() {
                   <Tooltip
                     formatter={(v: number, name: string, entry: any) =>
                       [`${v.toFixed(1)}% (${entry.payload.km.toLocaleString()} km)`, name]}
-                    contentStyle={{ background: 'rgba(2,5,8,0.95)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 10 }}
+                    contentStyle={{ background: 'rgba(2,2,2,0.95)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 10 }}
                     labelStyle={{ color: C.teal }}
                   />
                   <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 9, color: 'rgba(148,163,184,0.65)' }} />
@@ -1516,8 +1516,8 @@ export default function NetworkStory() {
                   onClick={() => toggleRegion(s.region)}
                   style={{
                     background: hovStation === s.station
-                      ? `linear-gradient(135deg, rgba(${hexRgb(rc)},0.18), rgba(2,5,8,0.8))`
-                      : `linear-gradient(135deg, rgba(${hexRgb(rc)},0.08), rgba(2,5,8,0.6))`,
+                      ? `linear-gradient(135deg, rgba(${hexRgb(rc)},0.18), rgba(2,2,2,0.8))`
+                      : `linear-gradient(135deg, rgba(${hexRgb(rc)},0.08), rgba(2,2,2,0.6))`,
                     border: `1px solid rgba(${hexRgb(rc)},${hovStation === s.station ? 0.4 : 0.18})`,
                     borderRadius: 10, padding: '12px 12px', cursor: 'pointer',
                     transition: 'all 0.15s',
@@ -1701,7 +1701,7 @@ export default function NetworkStory() {
                 }}>
                   <div style={{
                     width: 16, height: 16, borderRadius: '50%', flexShrink: 0,
-                    background: m.color, border: '2px solid rgba(2,5,8,0.85)',
+                    background: m.color, border: '2px solid rgba(2,2,2,0.85)',
                     boxShadow: `0 0 12px ${m.color}, 0 0 24px rgba(${hexRgb(m.color)},0.3)`,
                     marginTop: 1, marginLeft: -8, zIndex: 1,
                   }} />
@@ -1751,7 +1751,7 @@ export default function NetworkStory() {
         {/* ── FOOTER ── */}
         <div style={{
           padding: '12px 16px',
-          background: `linear-gradient(135deg, rgba(${hexRgb(C.purple)},0.04), rgba(2,5,8,0.6))`,
+          background: `linear-gradient(135deg, rgba(${hexRgb(C.purple)},0.04), rgba(2,2,2,0.6))`,
           border: `1px solid rgba(${hexRgb(C.purple)},0.08)`,
           borderRadius: 10,
           fontSize: 9, color: 'rgba(100,116,139,0.45)', lineHeight: 1.8,

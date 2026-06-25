@@ -368,7 +368,7 @@ function PhotosView({ structure: s }: { structure: Structure }) {
                 alt={`thumb ${i + 1}`}
                 className="w-full h-full object-cover"
                 onError={e => {
-                  (e.target as HTMLElement).parentElement!.style.background = '#1e293b';
+                  (e.target as HTMLElement).parentElement!.style.background = '#1c1c1c';
                   (e.target as HTMLImageElement).style.display = 'none';
                 }}
               />

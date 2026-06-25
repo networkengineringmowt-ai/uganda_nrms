@@ -229,7 +229,7 @@ export function InfraLayers() {
             icon={icons.weighbridge}
           >
             <Popup>
-              <div style={{ fontFamily: "'Inter','Segoe UI',sans-serif", fontSize: 12, color: '#1e293b' }}>
+              <div style={{ fontFamily: "'Inter','Segoe UI',sans-serif", fontSize: 12, color: '#1c1c1c' }}>
                 <strong>⚖ {String(p.eng_name ?? 'Weighbridge')}</strong>
                 <div style={{ color: '#64748b' }}>{wbType}</div>
               </div>
@@ -252,7 +252,7 @@ export function InfraLayers() {
             icon={isIntl ? icons.airportIntl : icons.airportDomestic}
           >
             <Popup>
-              <div style={{ fontFamily: "'Inter','Segoe UI',sans-serif", fontSize: 12, color: '#1e293b' }}>
+              <div style={{ fontFamily: "'Inter','Segoe UI',sans-serif", fontSize: 12, color: '#1c1c1c' }}>
                 <strong>✈ {String(p.name ?? p.town ?? 'Airport')}</strong>
                 <div style={{ color: '#64748b' }}>{cls}</div>
                 {p.country && <div style={{ color: '#64748b' }}>{String(p.country)}</div>}
@@ -274,7 +274,7 @@ export function InfraLayers() {
             icon={icons.airfield}
           >
             <Popup>
-              <div style={{ fontFamily: "'Inter','Segoe UI',sans-serif", fontSize: 12, color: '#1e293b' }}>
+              <div style={{ fontFamily: "'Inter','Segoe UI',sans-serif", fontSize: 12, color: '#1c1c1c' }}>
                 <strong>✈ {String(p.f9 ?? p.AIRPNAME ?? 'Airfield')}</strong>
                 {p.category && <div style={{ color: '#64748b' }}>{String(p.category)}</div>}
               </div>
@@ -301,7 +301,7 @@ export function InfraLayers() {
             icon={icon}
           >
             <Popup>
-              <div style={{ fontFamily: "'Inter','Segoe UI',sans-serif", fontSize: 12, color: '#1e293b' }}>
+              <div style={{ fontFamily: "'Inter','Segoe UI',sans-serif", fontSize: 12, color: '#1c1c1c' }}>
                 <strong>🔧 {String(p.name ?? 'Maintenance Station')}</strong>
                 <div style={{ color: '#64748b' }}>{String(p.region ?? '')} · {stationType}</div>
                 {p.district && <div style={{ color: '#94a3b8', fontSize: 11 }}>{String(p.district)}</div>}

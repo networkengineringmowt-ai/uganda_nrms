@@ -21,7 +21,7 @@ function hexRgb(h: string) {
 }
 
 const GLASS: React.CSSProperties = {
-  background: 'rgba(8,14,28,0.55)',
+  background: 'rgba(8,8,8,0.55)',
   border: '1px solid rgba(255,255,255,0.07)',
   borderRadius: 12,
 };
@@ -1150,7 +1150,7 @@ function AdtProjectionTable() {
           onChange={e => { setSearch(e.target.value); setPage(0); }}
           placeholder="Search link ID or road name…"
           style={{
-            background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6,
+            background: 'rgba(15,15,15,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6,
             padding: '5px 10px', fontSize: 10, color: '#e2e8f0', outline: 'none', minWidth: 200,
           }}
         />
@@ -1158,7 +1158,7 @@ function AdtProjectionTable() {
 
       <div style={{ maxHeight: 640, overflow: 'auto' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 8, minWidth: 1100 }}>
-          <thead style={{ position: 'sticky', top: 0, background: 'rgba(4,9,18,0.97)', zIndex: 1 }}>
+          <thead style={{ position: 'sticky', top: 0, background: 'rgba(8,8,8,0.97)', zIndex: 1 }}>
             <tr>
               <Th>Link ID</Th><Th>Road Name</Th><Th>Class</Th>
               {ADT_PROJECTION_YEARS.map(yr => <Th key={yr}>{yr} Total ADT</Th>)}
@@ -1172,7 +1172,7 @@ function AdtProjectionTable() {
             )}
             {pageLinks.flatMap((link, li) => {
               const isOpen = !!expanded[link.link_id];
-              const rowBg = li % 2 === 0 ? 'rgba(15,23,42,0.35)' : 'transparent';
+              const rowBg = li % 2 === 0 ? 'rgba(15,15,15,0.35)' : 'transparent';
               const mainRow = (
                 <tr key={link.link_id} onClick={() => toggleExpand(link.link_id)}
                   style={{ background: rowBg, cursor: 'pointer', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
@@ -1244,14 +1244,14 @@ function AdtProjectionTable() {
           <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={safePage === 0}
             style={{
               padding: '4px 12px', fontSize: 9, fontWeight: 700, borderRadius: 6,
-              border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(15,23,42,0.6)',
+              border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(15,15,15,0.6)',
               color: safePage === 0 ? 'rgba(148,163,184,0.35)' : '#e2e8f0',
               cursor: safePage === 0 ? 'default' : 'pointer',
             }}>← Previous</button>
           <button onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))} disabled={safePage >= pageCount - 1}
             style={{
               padding: '4px 12px', fontSize: 9, fontWeight: 700, borderRadius: 6,
-              border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(15,23,42,0.6)',
+              border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(15,15,15,0.6)',
               color: safePage >= pageCount - 1 ? 'rgba(148,163,184,0.35)' : '#e2e8f0',
               cursor: safePage >= pageCount - 1 ? 'default' : 'pointer',
             }}>Next →</button>
@@ -1350,7 +1350,7 @@ export default function TabularSummaries() {
       <div style={{
         display: 'flex', gap: 2, marginBottom: 20, flexShrink: 0,
         borderBottom: '1px solid rgba(77,159,255,0.15)',
-        background: 'rgba(4,9,18,0.85)', marginLeft: -18, marginRight: -18, paddingLeft: 14,
+        background: 'rgba(8,8,8,0.85)', marginLeft: -18, marginRight: -18, paddingLeft: 14,
       }}>
         {TABS.map(t => (
           <button key={t.id} onClick={() => setTab(t.id)} style={{
@@ -2381,7 +2381,7 @@ export default function TabularSummaries() {
                 <Th>Budget USD/km</Th><Th>Key Innovation</Th><Th>DNR Applicability</Th>
               </tr></thead>
               <tbody>{GLOBAL_CASES_TABLE.map(r => (
-                <tr key={r.id} style={{ background: r.id%2===0?'rgba(15,23,42,0.35)':'transparent', borderBottom:'1px solid rgba(255,255,255,0.03)' }}>
+                <tr key={r.id} style={{ background: r.id%2===0?'rgba(15,15,15,0.35)':'transparent', borderBottom:'1px solid rgba(255,255,255,0.03)' }}>
                   <Td align="center" mono style={{ color:'rgba(148,163,184,0.4)' }}>{r.id}</Td>
                   <Td style={{ color:C.green, fontWeight:700, whiteSpace:'nowrap' }}>{r.flag} {r.agency}</Td>
                   <Td style={{ whiteSpace:'nowrap' }}>{r.country}</Td>
@@ -2412,7 +2412,7 @@ export default function TabularSummaries() {
                 <Th>Year</Th><Th>DNR Modules</Th><Th>Status</Th><Th>DNR Relevance</Th>
               </tr></thead>
               <tbody>{CAT_B_STANDARDS.map((r,i) => (
-                <tr key={r.name} style={{ background: i%2===0?'rgba(15,23,42,0.35)':'transparent', borderBottom:'1px solid rgba(255,255,255,0.03)' }}>
+                <tr key={r.name} style={{ background: i%2===0?'rgba(15,15,15,0.35)':'transparent', borderBottom:'1px solid rgba(255,255,255,0.03)' }}>
                   <Td align="center" mono style={{ color:'rgba(148,163,184,0.4)' }}>{i+1}</Td>
                   <Td style={{ color:C.cyan, fontWeight:600, maxWidth:280, fontSize:8.5 }}>{r.name}</Td>
                   <Td style={{ color:'rgba(148,163,184,0.7)', whiteSpace:'nowrap', fontSize:8.5 }}>{r.body}</Td>
@@ -2442,7 +2442,7 @@ export default function TabularSummaries() {
                 <Th>Year</Th><Th>Key Finding / DNR Application</Th>
               </tr></thead>
               <tbody>{CAT_C_RESEARCH.map((r,i) => (
-                <tr key={r.ref} style={{ background: i%2===0?'rgba(15,23,42,0.35)':'transparent', borderBottom:'1px solid rgba(255,255,255,0.03)' }}>
+                <tr key={r.ref} style={{ background: i%2===0?'rgba(15,15,15,0.35)':'transparent', borderBottom:'1px solid rgba(255,255,255,0.03)' }}>
                   <Td mono style={{ color:C.purple, fontWeight:800, whiteSpace:'nowrap', fontSize:8 }}>{r.ref}</Td>
                   <Td style={{ color:'#d4dde8', fontWeight:600, maxWidth:280, fontSize:8.5 }}>{r.title}</Td>
                   <Td style={{ color:'rgba(148,163,184,0.7)', maxWidth:200, fontSize:8.5 }}>{r.author}</Td>
@@ -2480,7 +2480,7 @@ export default function TabularSummaries() {
             </div>
             <div style={{ maxHeight:600, overflowY:'auto' }}>
               <table style={{ width:'100%', borderCollapse:'collapse', fontSize:8.5 }}>
-                <thead style={{ position:'sticky', top:0, background:'rgba(4,9,18,0.97)' }}>
+                <thead style={{ position:'sticky', top:0, background:'rgba(8,8,8,0.97)' }}>
                   <tr>
                     <Th>Link ID</Th><Th>Name</Th><Th>Road No.</Th><Th>Class</Th>
                     <Th>Length km</Th><Th>Surface</Th><Th>Region</Th><Th>Station</Th>
@@ -2497,7 +2497,7 @@ export default function TabularSummaries() {
                       const cls = String(p.road_class ?? '?');
                       const km = Number(p.length_km1 ?? 0);
                       return (
-                        <tr key={String(p.link_id)} style={{ background: i%2===0?'rgba(15,23,42,0.35)':'transparent', borderBottom:'1px solid rgba(255,255,255,0.02)' }}>
+                        <tr key={String(p.link_id)} style={{ background: i%2===0?'rgba(15,15,15,0.35)':'transparent', borderBottom:'1px solid rgba(255,255,255,0.02)' }}>
                           <Td mono style={{ color:C.teal, fontWeight:700, whiteSpace:'nowrap' }}>{String(p.link_id)}</Td>
                           <Td style={{ maxWidth:200, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{String(p.link_nam_1 ?? '—')}</Td>
                           <Td mono style={{ color:'rgba(148,163,184,0.6)', whiteSpace:'nowrap' }}>{String(p.road_no ?? '—')}</Td>

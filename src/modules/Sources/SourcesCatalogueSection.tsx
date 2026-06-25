@@ -1034,7 +1034,7 @@ export default function SourcesCatalogueSection() {
       <div style={{
         display: 'flex', gap: 2, padding: '0 14px', flexShrink: 0,
         borderBottom: '1px solid rgba(77,159,255,0.15)',
-        background: 'rgba(4,9,18,0.85)',
+        background: 'rgba(8,8,8,0.85)',
       }}>
         <button style={{
           display:'flex', alignItems:'center', gap:6,
@@ -1169,12 +1169,12 @@ export default function SourcesCatalogueSection() {
       </div>
 
       {/* Table */}
-      <div style={{ background: 'rgba(8,14,28,0.6)', border: '1px solid rgba(255,255,255,0.06)',
+      <div style={{ background: 'rgba(8,8,8,0.6)', border: '1px solid rgba(255,255,255,0.06)',
         borderRadius: 12, overflow: 'hidden' }}>
         <div style={{ overflowX: 'auto', overflowY: 'auto', maxHeight: 'calc(100vh - 380px)' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
             <thead style={{ position: 'sticky', top: 0, zIndex: 2 }}>
-              <tr style={{ background: 'rgba(8,14,28,0.95)' }}>
+              <tr style={{ background: 'rgba(8,8,8,0.95)' }}>
                 {['Cat.', 'Source Name', 'Type', 'Owner', 'Year Range', 'Coverage', 'Key Variables', 'Format', 'Status', 'Modules', 'Link'].map(h => (
                   <th key={h} style={{ padding: '10px 12px', textAlign: 'left', fontSize: 8,
                     fontWeight: 900, color: 'rgba(0,245,255,0.65)',

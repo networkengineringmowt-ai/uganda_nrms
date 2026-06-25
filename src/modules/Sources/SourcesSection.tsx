@@ -35,7 +35,7 @@ export default function SourcesSection() {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
-      background: 'rgba(2,5,8,0.97)',
+      background: 'rgba(2,2,2,0.97)',
       fontFamily: "'Inter','Segoe UI',sans-serif",
     }}>
       <style>{`
@@ -46,7 +46,7 @@ export default function SourcesSection() {
       <div style={{
         display: 'flex', gap: 2, padding: '0 14px', flexShrink: 0,
         borderBottom: '1px solid rgba(77,159,255,0.15)',
-        background: 'rgba(4,9,18,0.85)',
+        background: 'rgba(8,8,8,0.85)',
       }}>
         {MAIN_TABS.map(t => {
           const isActive = t.id === tab;

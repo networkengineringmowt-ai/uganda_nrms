@@ -55,7 +55,7 @@ export default function PMSDataView() {
     display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderRadius: 10,
     border: '1px dashed rgba(77,159,255,0.35)', background: 'rgba(77,159,255,0.05)', cursor: 'pointer', color: C.ink, flex: 1,
   };
-  const TH: React.CSSProperties = { textAlign: 'left', padding: '7px 11px', fontSize: 9.5, fontWeight: 800, color: C.dim, textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: `1px solid ${C.line}`, position: 'sticky', top: 0, background: 'rgba(4,9,18,0.95)' };
+  const TH: React.CSSProperties = { textAlign: 'left', padding: '7px 11px', fontSize: 9.5, fontWeight: 800, color: C.dim, textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: `1px solid ${C.line}`, position: 'sticky', top: 0, background: 'rgba(8,8,8,0.95)' };
   const TD: React.CSSProperties = { padding: '6px 11px', fontSize: 11.5, color: C.ink, borderBottom: '1px solid rgba(255,255,255,0.04)', whiteSpace: 'nowrap' };
 
   return (

@@ -15,7 +15,7 @@ const C = {
 };
 
 const card = (accent: string) => ({
-  background: 'rgba(15,23,42,0.7)',
+  background: 'rgba(15,15,15,0.7)',
   border: `1px solid rgba(${hexRgb(accent)},0.2)`,
   borderRadius: 12,
   padding: '18px 20px',
@@ -140,7 +140,7 @@ export default function HDM4Section() {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload?.length) return null;
     return (
-      <div style={{ background: 'rgba(8,14,28,0.95)', border: '1px solid rgba(255,255,255,0.1)',
+      <div style={{ background: 'rgba(8,8,8,0.95)', border: '1px solid rgba(255,255,255,0.1)',
         padding: '8px 12px', borderRadius: 7, fontSize: 10 }}>
         <div style={{ color: '#94a3b8', marginBottom: 4 }}>{label}</div>
         {payload.map((p: any) => (
@@ -154,7 +154,7 @@ export default function HDM4Section() {
 
   return (
     <div style={{ padding: '20px 18px', minHeight: '100%',
-      background: 'linear-gradient(180deg, rgba(8,14,28,0.4) 0%, transparent 100%)' }}>
+      background: 'linear-gradient(180deg, rgba(8,8,8,0.4) 0%, transparent 100%)' }}>
 
       <ModuleNavBar module="HDM4" />
 
@@ -182,7 +182,7 @@ export default function HDM4Section() {
       <div style={{
         display: 'flex', gap: 2, marginBottom: 20, flexShrink: 0,
         borderBottom: '1px solid rgba(77,159,255,0.15)',
-        background: 'rgba(4,9,18,0.85)', marginLeft: -20, marginRight: -20, paddingLeft: 14,
+        background: 'rgba(8,8,8,0.85)', marginLeft: -20, marginRight: -20, paddingLeft: 14,
       }}>
         {TABS.map(t => {
           const isActive = activeTab === t.id;

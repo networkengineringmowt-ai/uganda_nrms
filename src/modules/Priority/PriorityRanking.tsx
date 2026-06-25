@@ -175,12 +175,12 @@ export default function PriorityRanking() {
           <div className="bms-card p-3">
             <ResponsiveContainer width="100%" height={240}>
               <ScatterChart margin={{ top:4, right:8, left:-20, bottom:0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#1c1c1c" />
                 <XAxis dataKey="x" name="Age (yrs)" tick={{ fill:'#64748b', fontSize:9 }} label={{ value:'Age (yrs)', position:'insideBottom', fill:'#475569', fontSize:10, dy:8 }} />
                 <YAxis dataKey="y" name="Priority" tick={{ fill:'#64748b', fontSize:9 }} label={{ value:'Priority', angle:-90, position:'insideLeft', fill:'#475569', fontSize:10 }} />
                 <Tooltip
                   cursor={{ strokeDasharray:'3 3', stroke:'#475569' }}
-                  contentStyle={{ background:'#0f172a', border:'1px solid #334155', borderRadius:8, fontSize:10 }}
+                  contentStyle={{ background:'#0d0d0d', border:'1px solid #334155', borderRadius:8, fontSize:10 }}
                   content={({ payload }) => {
                     if (!payload?.length) return null;
                     const d = payload[0].payload;

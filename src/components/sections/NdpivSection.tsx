@@ -43,7 +43,7 @@ const STATUS_CLR: Record<string, string> = {
 };
 function statusColor(s: string): string { return STATUS_CLR[s] ?? '#6b7280'; }
 
-const TT_STYLE = { background: 'rgba(8,14,28,0.96)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 11 };
+const TT_STYLE = { background: 'rgba(8,8,8,0.96)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 11 };
 
 // ─── Diamond DivIcon factory — colored by project CATEGORY ───────────────────
 const ICONS: Record<string, L.DivIcon> = Object.fromEntries(
@@ -74,7 +74,7 @@ function roadStyle(feature?: GeoJSON.Feature): L.PathOptions {
 }
 
 const GLASS: React.CSSProperties = {
-  background: 'rgba(15,23,42,0.55)',
+  background: 'rgba(15,15,15,0.55)',
   backdropFilter: 'blur(20px)',
   WebkitBackdropFilter: 'blur(20px)',
   border: '1px solid rgba(255,255,255,0.08)',
@@ -432,7 +432,7 @@ function NdpivDetailPane({
       {[...projects].sort((a,b) => b.budget_usd - a.budget_usd).slice(0,3).map(p => (
         <div key={p.project_id} style={{
           padding:'6px 8px', marginBottom:4, fontSize:9.5,
-          background:'rgba(15,23,42,0.6)', border:'1px solid rgba(255,255,255,0.05)', borderRadius:6,
+          background:'rgba(15,15,15,0.6)', border:'1px solid rgba(255,255,255,0.05)', borderRadius:6,
         }}>
           <div style={{ color:'#e2eaf4', fontWeight:700 }}>{p.name}</div>
           <div style={{ color:'#64748b', marginTop:2 }}>

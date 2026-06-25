@@ -36,7 +36,7 @@ export default function Analytics() {
     setExporting(true);
     try {
       const dataUrl = await toPng(chartRef.current, {
-        backgroundColor: '#0f172a',
+        backgroundColor: '#0d0d0d',
         pixelRatio: 2,
       });
       const a = document.createElement('a');
@@ -52,13 +52,13 @@ export default function Analytics() {
     if (!chartRef.current) return;
     setExporting(true);
     try {
-      const dataUrl = await toPng(chartRef.current, { backgroundColor: '#0f172a', pixelRatio: 2 });
+      const dataUrl = await toPng(chartRef.current, { backgroundColor: '#0d0d0d', pixelRatio: 2 });
       const w = window.open('', '_blank');
       if (!w) return;
       const tabLabel = TABS.find(t => t.id === tab)?.label ?? tab;
       w.document.write(`<!DOCTYPE html><html><head><title>Department of National Roads Analytics — ${tabLabel}</title>
         <style>
-          body { margin:0; background:#0f172a; display:flex; flex-direction:column; align-items:center; padding:32px; font-family:sans-serif; color:#e2e8f0; }
+          body { margin:0; background:#0d0d0d; display:flex; flex-direction:column; align-items:center; padding:32px; font-family:sans-serif; color:#e2e8f0; }
           h1 { font-size:18px; margin-bottom:8px; }
           p  { font-size:12px; color:#64748b; margin-bottom:24px; }
           img{ max-width:100%; border-radius:12px; }
@@ -451,13 +451,13 @@ function RegionTab(_props: { roadData: any[] }) {
 
   const TH: React.CSSProperties = { textAlign: 'left', padding: '6px 10px', fontSize: 9, fontWeight: 800,
     color: '#94a3b8', textTransform: 'uppercase', whiteSpace: 'nowrap',
-    position: 'sticky', top: 0, background: 'rgba(15,23,42,0.97)', zIndex: 2,
+    position: 'sticky', top: 0, background: 'rgba(15,15,15,0.97)', zIndex: 2,
     borderBottom: '1px solid rgba(148,163,184,0.2)' };
   const TD: React.CSSProperties = { padding: '5px 10px', fontSize: 10.5,
     color: 'rgba(203,213,225,0.85)', borderBottom: '1px solid rgba(255,255,255,0.04)', whiteSpace: 'nowrap' };
 
   return (
-    <div style={{ background: 'rgba(15,23,42,0.55)', borderRadius: 12,
+    <div style={{ background: 'rgba(15,15,15,0.55)', borderRadius: 12,
       border: '1px solid rgba(255,255,255,0.07)', padding: '14px 16px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
         <div style={{ flex: 1, minWidth: 200 }}>
@@ -482,7 +482,7 @@ function RegionTab(_props: { roadData: any[] }) {
           </tr></thead>
           <tbody>
             {filtered.map((r, i) => (
-              <tr key={`${r.link_id}-${i}`} style={{ background: i % 2 === 0 ? 'rgba(15,23,42,0.35)' : 'transparent' }}>
+              <tr key={`${r.link_id}-${i}`} style={{ background: i % 2 === 0 ? 'rgba(15,15,15,0.35)' : 'transparent' }}>
                 <td style={{ ...TD, color: '#00f5ff', fontFamily: 'monospace', fontSize: 9.5 }}>{r.link_id}</td>
                 <td style={{ ...TD, whiteSpace: 'normal', maxWidth: 240 }}>{r.link_name}</td>
                 <td style={{ ...TD, color: '#ffd23f', fontWeight: 700 }}>{r.road_class}</td>

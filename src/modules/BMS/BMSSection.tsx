@@ -47,7 +47,7 @@ function SubTabBar({
     <div style={{
       display: 'flex', gap: 4, padding: '6px 14px 0',
       borderBottom: '1px solid rgba(255,255,255,0.06)',
-      background: 'rgba(4,9,18,0.6)', flexShrink: 0,
+      background: 'rgba(8,8,8,0.6)', flexShrink: 0,
     }}>
       {tabs.map(t => {
         const isActive = t.id === active;
@@ -99,7 +99,7 @@ export default function BMSSection() {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
-      background: 'rgba(2,5,8,0.97)',
+      background: 'rgba(2,2,2,0.97)',
       fontFamily: "'Inter','Segoe UI',sans-serif",
     }}>
       <style>{`
@@ -113,7 +113,7 @@ export default function BMSSection() {
       <div style={{
         display: 'flex', gap: 2, padding: '0 14px',
         borderBottom: '1px solid rgba(77,159,255,0.15)',
-        background: 'rgba(4,9,18,0.85)', flexShrink: 0,
+        background: 'rgba(8,8,8,0.85)', flexShrink: 0,
       }}>
         {MAIN_TABS.map(t => {
           const isActive = t.id === mainTab;
