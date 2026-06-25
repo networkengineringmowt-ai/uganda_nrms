@@ -165,7 +165,7 @@ export default function AtlasContent() {
 
   return (
     <div style={{
-      maxWidth: 1400, margin: '0 auto',
+      width: '100%',
       padding: '14px 18px 28px',
       fontFamily: '"Aptos Display","Segoe UI Variable Display",Bahnschrift,sans-serif',
     }}>
