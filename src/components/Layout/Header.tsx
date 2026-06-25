@@ -165,27 +165,22 @@ export default function Header({ showSearch }: { showSearch?: boolean }) {
         }}
       />
 
-      {/* Page title */}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <h1 style={{
-          fontSize: 12, fontWeight: 800, lineHeight: 1.15,
-          color: accent,
-          textShadow: `0 0 14px rgba(${accentRgb},0.35)`,
+      {/* Muted breadcrumb + live clock only — the section's own header is the title
+          (this removes the duplicate "double" header). */}
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'baseline', gap: 10 }}>
+        <span style={{
+          fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
+          color: 'rgba(148,163,184,0.45)', flexShrink: 1,
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-          transition: 'color 0.3s',
         }}>
           {meta.title}
-        </h1>
-        <p style={{
-          fontSize: 8.5, color: 'rgba(100,116,139,0.8)', marginTop: 0,
-          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-        }}>
-          {meta.sub} &mdash;{' '}
+        </span>
+        <span style={{ fontSize: 9, color: 'rgba(100,116,139,0.7)', whiteSpace: 'nowrap', flexShrink: 0 }}>
           {now.toLocaleDateString('en-UG', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}{' '}
-          <span style={{ fontFamily: 'monospace', color: accent, opacity: 0.7 }}>
+          <span style={{ fontFamily: 'monospace', color: accent, opacity: 0.75 }}>
             {now.toLocaleTimeString('en-UG', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })} EAT
           </span>
-        </p>
+        </span>
       </div>
 
       {/* Search */}

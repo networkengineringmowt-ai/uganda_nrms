@@ -166,12 +166,12 @@ export default function AtlasContent() {
   return (
     <div style={{
       maxWidth: 1400, margin: '0 auto',
-      padding: '40px 32px 80px',
+      padding: '14px 18px 28px',
       fontFamily: '"Aptos Display","Segoe UI Variable Display",Bahnschrift,sans-serif',
     }}>
       {/* ── Header banner ── */}
       <div style={{
-        marginBottom: 48, padding: '28px 32px',
+        marginBottom: 18, padding: '16px 20px',
         background: 'linear-gradient(135deg, rgba(249,115,22,0.12) 0%, rgba(59,130,246,0.08) 100%)',
         border: '1px solid rgba(249,115,22,0.2)',
         borderRadius: 20,

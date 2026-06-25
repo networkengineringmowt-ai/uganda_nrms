@@ -18,7 +18,7 @@ function AtlasSpinner() {
   return (
     <div style={{
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      height: '100%', background: '#030712',
+      height: '100%', background: '#000',
     }}>
       <div style={{ textAlign: 'center', color: '#94a3b8' }}>
         <div style={{
