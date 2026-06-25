@@ -79,9 +79,9 @@ export default function Header({ showSearch }: { showSearch?: boolean }) {
 
   return (
     <header
-      className="flex items-center gap-3 flex-shrink-0"
+      className="flex items-center gap-2 flex-shrink-0"
       style={{
-        padding: '6px 14px',
+        padding: '3px 12px',
         background: 'rgba(2,5,8,0.88)',
         backdropFilter: 'blur(20px) saturate(160%)',
         WebkitBackdropFilter: 'blur(20px) saturate(160%)',
@@ -157,7 +157,7 @@ export default function Header({ showSearch }: { showSearch?: boolean }) {
         src={`${import.meta.env.BASE_URL}mowt.jpg`}
         alt="Ministry of Works and Transport"
         style={{
-          width: 30, height: 30, borderRadius: 8, flexShrink: 0, objectFit: 'contain',
+          width: 24, height: 24, borderRadius: 7, flexShrink: 0, objectFit: 'contain',
           background: '#fff', padding: 2,
           border: `1px solid rgba(${accentRgb},0.3)`,
           boxShadow: `0 0 14px rgba(${accentRgb},0.18)`,
@@ -168,16 +168,16 @@ export default function Header({ showSearch }: { showSearch?: boolean }) {
       {/* Page title */}
       <div style={{ flex: 1, minWidth: 0 }}>
         <h1 style={{
-          fontSize: 15, fontWeight: 800, lineHeight: 1.2,
+          fontSize: 12, fontWeight: 800, lineHeight: 1.15,
           color: accent,
-          textShadow: `0 0 20px rgba(${accentRgb},0.4)`,
+          textShadow: `0 0 14px rgba(${accentRgb},0.35)`,
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           transition: 'color 0.3s',
         }}>
           {meta.title}
         </h1>
         <p style={{
-          fontSize: 10, color: 'rgba(100,116,139,0.8)', marginTop: 1,
+          fontSize: 8.5, color: 'rgba(100,116,139,0.8)', marginTop: 0,
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>
           {meta.sub} &mdash;{' '}

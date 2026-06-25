@@ -26,7 +26,7 @@ export default function CrossLinkChipBar({ sectionId, navigate: navProp }: Props
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap',
-      padding: '6px 14px', flexShrink: 0,
+      padding: '3px 12px', flexShrink: 0,
       background: 'rgba(0,245,255,0.025)',
       borderBottom: '1px solid rgba(0,245,255,0.06)',
     }}>
