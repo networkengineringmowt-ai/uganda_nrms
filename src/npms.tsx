@@ -17,9 +17,37 @@ import { AuthProvider, useAuth } from './modules/Auth/AuthContext';
 import { LoginPage } from './modules/Auth/LoginPage';
 import { AccessPending } from './modules/Auth/AccessPending';
 import { BotHighlightContext } from './modules/AssetBot/types';
+import { LiveTicker } from './shared/LiveTicker';
+import { usePavementLive } from './shared/liveEngine';
 
 const PMSSection = lazy(() => import('./modules/PMS/PMSSection'));
 const RMSFieldShell = lazy(() => import('./modules/RMS/RMSFieldShell'));
+
+const kfmt = (n: number) =>
+  n >= 1e6 ? (n / 1e6).toFixed(2) + 'M'
+  : n >= 1e3 ? (n / 1e3).toFixed(1) + 'k'
+  : Math.round(n).toLocaleString('en-US');
+
+/** Live pavement strip — carries every link's condition forward to now. */
+function NpmsLiveBar() {
+  const p = usePavementLive();
+  return (
+    <LiveTicker
+      accent="#f59e0b"
+      asOf={p.asOf}
+      ready={p.ready}
+      title="Condition nowcast · 1,013 links"
+      metrics={[
+        { label: 'Network IRI',  value: p.avgIRI.toFixed(3), unit: 'm/km', color: '#f59e0b', sub: 'km-weighted, live' },
+        { label: 'Network VCI',  value: p.avgVCI.toFixed(1), unit: '/100', color: '#00f5ff', sub: 'condition index' },
+        { label: 'Good',         value: kfmt(p.goodKm), unit: 'km', color: '#00ff88', sub: p.pctGood.toFixed(1) + '% of network' },
+        { label: 'Fair',         value: kfmt(p.fairKm), unit: 'km', color: '#ffd23f', sub: p.pctFair.toFixed(1) + '%' },
+        { label: 'Poor',         value: kfmt(p.poorKm), unit: 'km', color: '#ff3366', sub: p.pctPoor.toFixed(1) + '%' },
+        { label: 'Paved age',    value: p.avgAge.toFixed(1), unit: 'yrs', color: '#b967ff', sub: 'since build / rehab' },
+      ]}
+    />
+  );
+}
 
 function Header() {
   return (
@@ -79,8 +107,9 @@ function AppGate() {
   // super / admin → full PMS dashboard
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column',
-      background: '#0a0f1e', overflow: 'hidden' }}>
+      background: '#000000', overflow: 'hidden' }}>
       <Header />
+      <NpmsLiveBar />
       <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
         <Suspense fallback={<ModuleSpinner />}>
           <PMSSection />

@@ -20,9 +20,38 @@ import { AuthProvider, useAuth } from './modules/Auth/AuthContext';
 import { LoginPage } from './modules/Auth/LoginPage';
 import { AccessPending } from './modules/Auth/AccessPending';
 import { BotHighlightContext } from './modules/AssetBot/types';
+import { LiveTicker } from './shared/LiveTicker';
+import { useTrafficLive } from './shared/liveEngine';
 
 const TrafficSection = lazy(() => import('./modules/Traffic/TrafficSection'));
 const RMSFieldShell = lazy(() => import('./modules/RMS/RMSFieldShell'));
+
+// Compact number formatting for the live strip.
+const kfmt = (n: number) =>
+  n >= 1e9 ? (n / 1e9).toFixed(2) + 'B'
+  : n >= 1e6 ? (n / 1e6).toFixed(2) + 'M'
+  : n >= 1e3 ? (n / 1e3).toFixed(1) + 'k'
+  : Math.round(n).toLocaleString('en-US');
+
+/** Live traffic strip — projects every link's AADT to the current instant. */
+function NtisLiveBar() {
+  const t = useTrafficLive();
+  return (
+    <LiveTicker
+      accent="#00f5ff"
+      asOf={t.asOf}
+      ready={t.ready}
+      title="Traffic nowcast · 1,013 links"
+      metrics={[
+        { label: 'Network AADT',     value: kfmt(t.networkAADT), unit: 'veh/day', color: '#00f5ff', sub: 'km-weighted mean' },
+        { label: 'Trips today',      value: kfmt(t.tripsToday),  unit: 'veh',     color: '#00ff88', sub: 'since midnight' },
+        { label: 'Vehicle-km today', value: kfmt(t.vehicleKmToday), unit: 'v·km', color: '#ffd23f', sub: 'accruing live' },
+        { label: 'Daily ESAL',       value: kfmt(t.esalDay),     unit: 'ESAL',    color: '#ff6b35', sub: 'heavy-axle load' },
+        { label: 'Growth vs 2016',   value: '×' + t.growthVs2016.toFixed(3), color: '#b967ff', sub: 'live growth factor' },
+      ]}
+    />
+  );
+}
 
 function Header() {
   return (
@@ -82,8 +111,9 @@ function AppGate() {
   // super / admin → full TIS dashboards & reports
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column',
-      background: '#0a0f1e', overflow: 'hidden' }}>
+      background: '#000000', overflow: 'hidden' }}>
       <Header />
+      <NtisLiveBar />
       <div style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
         <Suspense fallback={<ModuleSpinner />}>
           <TrafficSection />

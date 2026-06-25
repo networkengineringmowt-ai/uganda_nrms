@@ -78,6 +78,15 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
+      // Multi-page build: the main NRMS platform plus the three standalone
+      // sub-systems (NTIS, NPMS, NBMS). All deploy together under the same base;
+      // each is reachable at /uganda_nrms/index.<app>.html.
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        ntis: path.resolve(__dirname, 'index.ntis.html'),
+        npms: path.resolve(__dirname, 'index.npms.html'),
+        nbms: path.resolve(__dirname, 'index.nbms.html'),
+      },
       output: {
         manualChunks: {
           'vendor-leaflet':  ['leaflet', 'react-leaflet'],
