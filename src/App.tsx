@@ -208,7 +208,7 @@ function AppShell() {
                 {activeView === 'rms'             && <RMSSection />}
                 {activeView === 'roadreserve'    && <RoadReserveSection />}
                 {activeView === 'casestudies'    && <GlobalCaseStudiesSection />}
-                {activeView === 'lifecycle'       && <LifecycleSection />}
+                {activeView === 'lifecycle'       && <RoadNetworkView />}
                 {activeView === 'sources'         && <SourcesSection />}
                 {activeView === 'tabularsummaries' && <TabularSummaries />}
                 {activeView === 'gisenterprise'    && <GisEnterpriseSection />}
