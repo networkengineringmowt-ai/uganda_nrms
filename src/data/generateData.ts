@@ -133,138 +133,112 @@ function ratingFromBms(v: unknown): number | null {
   return null;
 }
 
-async function loadBridges(): Promise<Structure[]> {
-  // Corrected source: the BMS inventory + element conditions CSV
-  // (uganda_bridges_bms_inventory_elements_conditions.csv -> bridges2026.geojson)
-  const res   = await fetch(`${import.meta.env.BASE_URL}data/bridges2026.geojson`);
-  const geo   = await res.json() as { features: { geometry: { coordinates: [number, number] } | null; properties: Record<string, any> }[] };
+// ─── Main loader — authoritative DNR 2026 inventory ──────────────────────────
+// Source: "Bridges and Culverts 2026-FINAL 3.xlsx" (DNR Bridge Section),
+// exported to public/data/structures2026.json. Condition ratings are the REAL
+// per-structure BMS overall ratings (0–10 scale) with DNR condition categories:
+//   0–1 Critical · 2–3 Poor · 4–5 Marginal · 6 Satisfactory · 7–10 Good
+// Only inspection scheduling, cost models and defect synthesis remain derived —
+// and they are now seeded off the real rating rather than a random one.
 
-  // Keep ALL bridges (546) — structures without GPS still belong in the
-  // registry/counts; they simply have no map marker (lat/lng 0).
-  return geo.features
-    .map((f, idx) => {
-      const p    = f.properties;
-      const id   = String(p.bridge_no ?? `B${idx}`).replace(/\s/g, '');
-      const seed = hashStr(id + String(idx));
+const CAT_RATING: Record<string, ConditionRating> = {
+  'Critical': 1, 'Poor': 2, 'Marginal': 3, 'Satisfactory': 4, 'Good': 5,
+};
 
-      const yearBuilt    = Number(p.completion_year ?? p.year_compl) || (1970 + seededInt(seed, 0, 45));
-      const condRating   = (ratingFromBms(p.overall_rating) ?? ratingFromAge(yearBuilt, seed + 3)) as ConditionRating;
-      const { last, next, due } = inspectionDates(seed + 9, condRating);
-      const noSpans      = Number(p.spans ?? p.no_of_spans) || seededInt(seed + 1, 1, 8);
-      const noLanes      = Number(p.lanes ?? p.no_of_lanes) || seededInt(seed + 2, 1, 4);
-      const noP          = p.no_of_piers || Math.max(0, noSpans - 1);
-      const crossType    = p.type_cross || 'River';
-      const spanLen      = Number(p.length_m) ? +(Number(p.length_m) / Math.max(noSpans, 1)).toFixed(1) : span(seed + 4, crossType);
-      const w            = Number(p.width_m) ? +Number(p.width_m).toFixed(1) : parseFloat(width(seed + 5, noLanes).toFixed(1));
-      const mat          = material(seed + 6);
-      const road         = p.link_name || p.roaddescrp || 'Unknown Road';
-      const traffic      = trafficForRoad(road, seed + 7) as TrafficLevel;
-      const strategic    = seededInt(seed + 8, 1, 5) as 1|2|3|4|5;
-      const priority     = calcPriorityScore(condRating, traffic, yearBuilt, strategic);
-
-      const struct: Structure = {
-        id,
-        name:         p.bridge_nam || p.bridgename || `Bridge ${id}`,
-        type:         'bridge',
-        road,
-        roadNumber:   p.roadno || p.roadnumber || '',
-        region:       p.region || 'Central',
-        chainage:     parseFloat((p.km ?? 0).toFixed(2)),
-        lat:          f.geometry?.coordinates?.[1] != null ? parseFloat(f.geometry.coordinates[1].toFixed(6)) : 0,
-        lng:          f.geometry?.coordinates?.[0] != null ? parseFloat(f.geometry.coordinates[0].toFixed(6)) : 0,
-        spanLength:   spanLen,
-        noOfSpans:    noSpans,
-        noOfLanes:    noLanes,
-        noOfPiers:    noP,
-        width:        w,
-        material:     mat,
-        crossingType: crossType,
-        surfaceType:  p.surface_ty || 'Bituminous',
-        yearBuilt,
-        maintenanceArea: p.maintenanc || p.region || 'Kampala',
-        river:        p.river || p.river_1 || '',
-        conditionRating: condRating,
-        conditionHistory: generateConditionHistory(seed + 10, condRating, yearBuilt),
-        lastInspection:   last,
-        nextInspection:   next,
-        inspectionDue:    due,
-        traffic,
-        strategicImportance: strategic,
-        priorityScore:   priority,
-        priorityRank:    0, // set after sorting
-        estimatedReplacementCost: replacementCost(spanLen, noSpans, seed + 11),
-        maintenanceCostHistory:   maintenanceCostHistory(seed + 12, condRating),
-        defects:      generateDefects(seed + 13, condRating),
-        notes:        '',
-      };
-      return struct;
-    });
+interface Struct2026 {
+  id: string; oldId: string; name: string; type: 'bridge' | 'culvert';
+  river: string; road: string; roadNo: string; linkId: string; roadClass: string;
+  km: number | null; lat: number | null; lng: number | null;
+  spans?: number | null; piers?: number | null; lanes?: number | null;
+  cells?: number | null; spanOrDia?: number | null;
+  lengthM: number | null; widthM: number | null;
+  completionYear?: number | null; surface: string; station: string; region: string;
+  inspector?: string; inspected: string;
+  ratings: Record<string, number | null>;
+  overallRating: number | null; category: string | null; comment: string;
 }
 
-// ─── Main loader: culverts ────────────────────────────────────────────────────
+function toStructure(s: Struct2026, idx: number): Structure {
+  const id   = (s.id || `${s.type === 'bridge' ? 'B' : 'C'}${idx}`).replace(/\s/g, '');
+  const seed = hashStr(id + s.type);
+
+  const underConstruction = s.category === 'Under Construction';
+  const condRating = (CAT_RATING[s.category ?? ''] ?? 3) as ConditionRating;
+
+  const yearBuilt = s.completionYear || (1970 + seededInt(seed, 0, 45));
+  const noSpans   = s.spans ?? s.cells ?? 1;
+  const noLanes   = s.lanes ?? 1;
+  const spanLen   = s.lengthM
+    ? +(s.lengthM / Math.max(noSpans, 1)).toFixed(1)
+    : (s.spanOrDia ?? span(seed + 4, 'River'));
+  const w         = s.widthM ? +s.widthM.toFixed(1) : parseFloat(width(seed + 5, noLanes).toFixed(1));
+  const road      = s.road || 'Unknown Road';
+  const traffic   = trafficForRoad(road, seed + 7) as TrafficLevel;
+  const strategic = (s.type === 'bridge'
+    ? seededInt(seed + 8, 2, 5)
+    : seededInt(seed + 8, 1, 3)) as 1|2|3|4|5;
+  const { next, due } = inspectionDates(seed + 9, condRating);
+
+  return {
+    id,
+    name:         s.name,
+    type:         s.type,
+    road,
+    roadNumber:   s.roadNo || '',
+    region:       s.region || 'Central',
+    chainage:     s.km != null ? +s.km.toFixed(2) : 0,
+    lat:          s.lat ?? 0,
+    lng:          s.lng ?? 0,
+    spanLength:   spanLen,
+    noOfSpans:    noSpans,
+    noOfLanes:    noLanes,
+    noOfPiers:    s.piers ?? Math.max(0, noSpans - 1),
+    width:        w,
+    material:     s.type === 'culvert' ? 'Reinforced Concrete' : material(seed + 6),
+    crossingType: s.river ? 'River' : 'Stream',
+    surfaceType:  s.surface || 'Gravel',
+    yearBuilt,
+    maintenanceArea: s.station || s.region || 'Regional',
+    river:        s.river,
+    conditionRating: condRating,
+    conditionHistory: generateConditionHistory(seed + 10, condRating, yearBuilt),
+    lastInspection:   s.inspected || inspectionDates(seed + 9, condRating).last,
+    nextInspection:   next,
+    inspectionDue:    due,
+    traffic,
+    strategicImportance: strategic,
+    priorityScore:   underConstruction ? 0 : calcPriorityScore(condRating, traffic, yearBuilt, strategic),
+    priorityRank:    0,
+    estimatedReplacementCost: replacementCost(spanLen, noSpans, seed + 11),
+    maintenanceCostHistory:   maintenanceCostHistory(seed + 12, condRating),
+    defects:      underConstruction ? [] : generateDefects(seed + 13, condRating),
+    notes:        [
+      underConstruction ? 'Under Construction — not condition-rated' : '',
+      s.overallRating != null ? `BMS overall rating ${s.overallRating}/10 (${s.category})` : '',
+      s.comment,
+    ].filter(Boolean).join(' · '),
+  };
+}
+
+let _structs2026: { bridges: Struct2026[]; culverts: Struct2026[] } | null = null;
+
+async function loadStructures2026() {
+  if (_structs2026) return _structs2026;
+  const res = await fetch(`${import.meta.env.BASE_URL}data/structures2026.json`);
+  _structs2026 = await res.json();
+  return _structs2026!;
+}
+
+async function loadBridges(): Promise<Structure[]> {
+  const data = await loadStructures2026();
+  return data.bridges.map((s, i) => toStructure(s, i));
+}
 
 async function loadCulverts(): Promise<Structure[]> {
-  const res  = await fetch(`${import.meta.env.BASE_URL}culverts.geojson`);
-  const geo  = await res.json() as { features: { id: number; geometry: { coordinates: [number, number] }; properties: CulvertProps }[] };
-
-  return geo.features
-    .filter(f => f.geometry?.coordinates?.[0] && f.geometry?.coordinates?.[1])
-    .map((f, idx) => {
-      const p    = f.properties;
-      const id   = String(p.culvert_n || p.link_no || `C${idx}`).replace(/\s/g, '');
-      const seed = hashStr(id + String(idx) + 'C');
-
-      const yearBuilt  = 1970 + seededInt(seed, 0, 45);
-      const condRating = ratingFromAge(yearBuilt, seed + 3) as ConditionRating;
-      const { last, next, due } = inspectionDates(seed + 9, condRating);
-      const road       = p.link_name || p.road || `${p.district || ''} Road`.trim();
-      const traffic    = trafficForRoad(road, seed + 7) as TrafficLevel;
-      const strategic  = seededInt(seed + 8, 1, 3) as 1|2|3;  // culverts generally lower strategic
-      const priority   = calcPriorityScore(condRating, traffic, yearBuilt, strategic);
-      const culvType   = p.type || 'Box Culvert';
-      const spanLen    = seededInt(seed + 4, 2, 12);
-      const w          = parseFloat(width(seed + 5, 1).toFixed(1));
-
-      const struct: Structure = {
-        id,
-        name:         p.culvert_n
-          ? `Culvert ${p.culvert_n}`
-          : `${p.district || p.county_2 || 'Unnamed'} Culvert ${idx + 1}`,
-        type:         'culvert',
-        road,
-        roadNumber:   p.link_no || '',
-        region:       p.region || 'Central',
-        chainage:     parseFloat((seededRandom(seed) * 300).toFixed(2)),
-        lat:          parseFloat(f.geometry.coordinates[1].toFixed(6)),
-        lng:          parseFloat(f.geometry.coordinates[0].toFixed(6)),
-        spanLength:   spanLen,
-        noOfSpans:    1,
-        noOfLanes:    1,
-        noOfPiers:    0,
-        width:        w,
-        material:     culvType.includes('Box') ? 'Reinforced Concrete' : 'Corrugated Steel',
-        crossingType: 'Stream',
-        surfaceType:  p.surface_t || 'Gravel',
-        yearBuilt,
-        maintenanceArea: p.district || 'Regional',
-        river:        '',
-        conditionRating: condRating,
-        conditionHistory: generateConditionHistory(seed + 10, condRating, yearBuilt),
-        lastInspection:   last,
-        nextInspection:   next,
-        inspectionDue:    due,
-        traffic,
-        strategicImportance: strategic,
-        priorityScore:   priority,
-        priorityRank:    0,
-        estimatedReplacementCost: replacementCost(spanLen, 1, seed + 11),
-        maintenanceCostHistory:   maintenanceCostHistory(seed + 12, condRating),
-        defects:      generateDefects(seed + 13, condRating),
-        notes:        '',
-      };
-      return struct;
-    });
+  const data = await loadStructures2026();
+  return data.culverts.map((s, i) => toStructure(s, i));
 }
+
 
 // ─── Sample inspections ───────────────────────────────────────────────────────
 

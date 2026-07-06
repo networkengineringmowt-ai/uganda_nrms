@@ -227,7 +227,7 @@ function NetworkConditionOverview({ structures }: { structures: Structure[] }) {
   const byCond: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
   structures.forEach(s => { byCond[s.conditionRating]++; });
 
-  const labels: Record<number, string> = { 5: 'Excellent', 4: 'Good', 3: 'Fair', 2: 'Poor', 1: 'Critical' };
+  const labels: Record<number, string> = { 5: 'Good', 4: 'Satisfactory', 3: 'Marginal', 2: 'Poor', 1: 'Critical' };
 
   return (
     <div className="space-y-6 animate-fade-in">

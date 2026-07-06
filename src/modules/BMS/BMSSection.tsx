@@ -27,7 +27,7 @@ function Spinner() {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
       <div style={{ width: 28, height: 28, borderRadius: '50%',
-        border: '2px solid rgba(75,99,130,0.4)', borderTopColor: '#4d9fff',
+        border: '2px solid rgba(75,99,130,0.4)', borderTopColor: '#00f5ff',
         animation: 'bms-spin 0.8s linear infinite' }} />
     </div>
   );
@@ -56,8 +56,8 @@ function SubTabBar({
             display: 'flex', alignItems: 'center', gap: 5,
             padding: '5px 12px 7px', fontSize: 10, fontWeight: isActive ? 700 : 500,
             background: 'none', border: 'none', cursor: 'pointer',
-            color: isActive ? '#4d9fff' : 'rgba(148,163,184,0.65)',
-            borderBottom: isActive ? '2px solid #4d9fff' : '2px solid transparent',
+            color: isActive ? '#00f5ff' : 'rgba(148,163,184,0.65)',
+            borderBottom: isActive ? '2px solid #00f5ff' : '2px solid transparent',
             transition: 'all 0.13s',
           }}>
             {t.icon}
@@ -122,8 +122,8 @@ export default function BMSSection() {
               display: 'flex', alignItems: 'center', gap: 6,
               padding: '10px 14px 11px', fontSize: 11, fontWeight: isActive ? 800 : 500,
               background: 'none', border: 'none', cursor: 'pointer',
-              color: isActive ? '#4d9fff' : 'rgba(148,163,184,0.70)',
-              borderBottom: isActive ? '2px solid #4d9fff' : '2px solid transparent',
+              color: isActive ? '#00f5ff' : 'rgba(148,163,184,0.70)',
+              borderBottom: isActive ? '2px solid #00f5ff' : '2px solid transparent',
               transition: 'all 0.13s', flexShrink: 0,
             }}>
               {t.icon}

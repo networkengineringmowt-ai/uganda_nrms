@@ -120,7 +120,7 @@ export function BMSProvider({ children }: { children: React.ReactNode }) {
     async function init() {
       dispatch({ type: 'SET_LOADING', payload: true });
 
-      const STORAGE_KEY = 'bms_structures_v3';
+      const STORAGE_KEY = 'bms_structures_v4';
       const INSP_KEY    = 'bms_inspections_v3';
       const WO_KEY      = 'bms_workorders_v3';
       const DOC_KEY     = 'bms_documents_v3';

@@ -132,11 +132,11 @@ export const LEGEND_STRUCTURES: LegendItem[] = [
 
 // STRUCTURE CONDITION LEGEND — Color-coded by rating (1=worst, 5=best)
 export const LEGEND_STRUCTURE_CONDITION: LegendItem[] = [
-  { color: '#ef4444', label: '1 – Poor (Critical)' },
-  { color: '#f97316', label: '2 – Bad' },
-  { color: '#eab308', label: '3 – Fair' },
-  { color: '#84cc16', label: '4 – Good' },
-  { color: '#22c55e', label: '5 – Excellent' },
+  { color: '#ef4444', label: 'Critical' },
+  { color: '#f97316', label: 'Poor' },
+  { color: '#eab308', label: 'Marginal' },
+  { color: '#84cc16', label: 'Satisfactory' },
+  { color: '#22c55e', label: 'Good' },
 ];
 
 // PAVEMENT CONDITION LEGEND — HDM-4 / SATCC TRH17 IRI thresholds

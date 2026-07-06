@@ -196,7 +196,7 @@ function SurveyFormInner({ onClose }: Props) {
         <div>
           <label style={LABEL}>Drainage Score (1–5)</label>
           <select style={FIELD} value={form.drainage_score} onChange={e => set('drainage_score', e.target.value)}>
-            {[1,2,3,4,5].map(n => <option key={n} value={n}>{n} — {['Very Poor','Poor','Fair','Good','Excellent'][n-1]}</option>)}
+            {[1,2,3,4,5].map(n => <option key={n} value={n}>{n} — {['Critical','Poor','Marginal','Satisfactory','Good'][n-1]}</option>)}
           </select>
         </div>
       </div>

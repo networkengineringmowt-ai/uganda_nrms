@@ -722,7 +722,7 @@ const StructurePanel = memo(function StructurePanel({
                     );
                   })}
                 </div>
-                <div className="text-[9px] text-slate-500 mt-1">Rating 1 Critical → 5 Excellent (BMS scale)</div>
+                <div className="text-[9px] text-slate-500 mt-1">Category 1 Critical → 5 Good (DNR BMS)</div>
               </Section>
               <Section title="Inspection Schedule">
                 <div className="grid grid-cols-2 gap-2 text-[11px]">

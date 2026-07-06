@@ -537,7 +537,7 @@ export default function RoadNetworkView({ showHistory = true, defaultHistory = f
                   <div style={{fontSize:10,fontWeight:600,color:'#374151',marginTop:2}}>
                     {s.spanLength} m span · {s.noOfSpans} span{s.noOfSpans !== 1 ? 's' : ''} ·{' '}
                     Cond: <span style={{color: isCritical ? '#dc2626' : '#166534', fontWeight:800}}>
-                      {['','Critical','Poor','Fair','Good','Excellent'][s.conditionRating]}
+                      {['','Critical','Poor','Marginal','Satisfactory','Good'][s.conditionRating]}
                     </span>
                   </div>
                 </LeafletTooltip>

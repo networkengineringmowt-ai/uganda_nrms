@@ -9,7 +9,7 @@ import { useBMS } from '../../store/BMSContext';
 import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
 
 const RATING_LABEL: Record<number, string> = {
-  1: 'Critical', 2: 'Poor', 3: 'Fair', 4: 'Good', 5: 'Excellent',
+  1: 'Critical', 2: 'Poor', 3: 'Marginal', 4: 'Satisfactory', 5: 'Good',
 };
 const RATING_COLOR: Record<number, string> = {
   1: '#ff3366', 2: '#ff6b35', 3: '#ffd23f', 4: '#00f5ff', 5: '#00ff88',
@@ -56,7 +56,7 @@ export default function CriticalStructures() {
     { key: 'road',   label: 'Road',      comment: 'Road the structure carries (national network).' },
     { key: 'region', label: 'Region' },
     { key: 'ratingLabel', label: 'Condition',
-      comment: 'BMS condition rating: 1 Critical · 2 Poor · 3 Fair · 4 Good · 5 Excellent. This view shows only 1–2.',
+      comment: 'DNR BMS condition category: 1 Critical · 2 Poor · 3 Marginal · 4 Satisfactory · 5 Good (from the 0–10 overall rating: 0–1 Critical, 2–3 Poor, 4–5 Marginal, 6 Satisfactory, 7–10 Good). This view shows only Critical & Poor.',
       render: r => (
       <span style={{ display: 'inline-block', padding: '2px 9px', borderRadius: 999,
         fontSize: 9.5, fontWeight: 800, color: RATING_COLOR[r.rating],

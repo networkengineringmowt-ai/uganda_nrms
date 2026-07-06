@@ -28,7 +28,7 @@ const COND_COLOR: Record<number,string> = {
   1: N.pink, 2: N.orange, 3: N.yellow, 4: N.green, 5: N.cyan,
 };
 const COND_LABEL: Record<number,string> = {
-  1:'Critical', 2:'Poor', 3:'Fair', 4:'Good', 5:'Excellent',
+  1:'Critical', 2:'Poor', 3:'Marginal', 4:'Satisfactory', 5:'Good',
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -200,7 +200,7 @@ export default function Dashboard() {
 
       {/* ── KPI ROW 2 ────────────────────────────────────────────────────── */}
       <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:10}}>
-        <KpiCard label="Condition ≥ Good"   value={stats.byCond[5]+stats.byCond[4]} icon={<CheckCircle2 size={17}/>} color={N.green}  sub="Excellent + Good"/>
+        <KpiCard label="Condition ≥ Satisf." value={stats.byCond[5]+stats.byCond[4]} icon={<CheckCircle2 size={17}/>} color={N.green}  sub="Good + Satisfactory"/>
         <KpiCard label="Fair Condition"     value={stats.byCond[3]}  icon={<Activity size={17}/>} color={N.yellow} sub="Monitoring required"/>
         <KpiCard label="Active Work Orders" value={stats.activeWOs}  icon={<Wrench size={17}/>}   color={N.purple} sub="In progress" onClick={()=>navigate('maintenance')}/>
         <KpiCard label="Maintenance Budget" value={formatUGX(stats.totalCost)} icon={<TrendingUp size={17}/>} color={N.teal} sub="Total committed"/>

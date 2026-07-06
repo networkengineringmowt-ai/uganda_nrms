@@ -130,7 +130,7 @@ export default function StructureRegistry() {
           </div>
           <select className="bms-select text-xs py-1.5" value={condFilter} onChange={e => { setCondFilter(e.target.value as typeof condFilter); setPage(1); }}>
             <option value="all">All Conditions</option>
-            <option value="5">5 - Excellent</option>
+            <option value="5">5 - Good</option>
             <option value="4">4 - Good</option>
             <option value="3">3 - Fair</option>
             <option value="2">2 - Poor</option>
