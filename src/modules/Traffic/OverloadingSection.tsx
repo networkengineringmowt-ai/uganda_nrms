@@ -22,9 +22,8 @@ import {
   REGION_NEON, Bar3D, Chart3DWrap, TT_NEON, TICK,
 } from '../../lib/chart3d';
 import { ESRI_TILE_URLS, ESRI_ATTRIBUTIONS } from '../../shared/mapSymbols';
-import { WaterLayers } from '../../shared/WaterLayers';
 import { InfraLayers } from '../../shared/InfraLayers';
-import { MapLegend, LEGEND_INFRA } from '../../shared/MapLegend';
+import { MapLegend, LEGEND_OVERLOADING } from '../../shared/MapLegend';
 import { ModuleNavBar } from '../../shared/ModuleNavBar';
 import MapDetailPane, { StatCard, AttributeRow, SectionHeader } from '../../shared/MapDetailPane';
 import SourceTableButton from '../../shared/SourceTableButton';
@@ -312,9 +311,8 @@ export default function OverloadingSection() {
               >
                 <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery}/>
                 <TileLayer url={ESRI_TILE_URLS.labels}  attribution={ESRI_ATTRIBUTIONS.labels} opacity={0.65}/>
-                <WaterLayers />
-                <InfraLayers />
-                <MapLegend title="Infrastructure" items={LEGEND_INFRA} />
+                <InfraLayers show={['weighbridges']} />
+                <MapLegend title="Overloading Risk" items={LEGEND_OVERLOADING} />
                 <ZoomControl position="bottomright"/>
                 {geoFeatures.length > 0 && (
                   <RiskLayer

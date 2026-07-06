@@ -27,9 +27,8 @@ import type { Structure } from '../../types';
 import { ROAD_STYLES, surfaceCategory } from '../../shared/mapSymbols';
 import FeatureAnalyticsPanel from '../../shared/FeatureAnalyticsPanel';
 import type { FeatureData } from '../../shared/FeatureAnalyticsPanel';
-import { WaterLayers } from '../../shared/WaterLayers';
 import { InfraLayers } from '../../shared/InfraLayers';
-import { MapLegend, LEGEND_FULL } from "../../shared/MapLegend";
+import { MapLegend, LEGEND_INFRA_POINTS } from "../../shared/MapLegend";
 import SourceTableButton from '../../shared/SourceTableButton';
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
 import { BotHighlightContext } from '../AssetBot/types';
@@ -209,7 +208,15 @@ const ANIM_MAX = 2026;
 const ANIM_STEP = 1;
 
 // ── Main component ─────────────────────────────────────────────────────────────
-export default function RoadNetworkView() {
+interface RoadNetworkViewProps {
+  /** Show the Current/History mode toggle. RMS passes false — current map only;
+   *  the historical timeline lives in Life Cycle Management. */
+  showHistory?: boolean;
+  /** Start in History (timeline) mode — used by Life Cycle Management. */
+  defaultHistory?: boolean;
+}
+
+export default function RoadNetworkView({ showHistory = true, defaultHistory = false }: RoadNetworkViewProps = {}) {
   // Data
   const [geoData,    setGeoData]    = useState<GeoJSON.FeatureCollection | null>(null);
   const [paveYears,  setPaveYears]  = useState<Record<string, number | null>>({});
@@ -226,7 +233,7 @@ export default function RoadNetworkView() {
   const [animYear,   setAnimYear]   = useState(CURRENT_YEAR);
   const [playing,    setPlaying]    = useState(false);
   const [speed,      setSpeed]      = useState(600); // ms per year
-  const [animMode,   setAnimMode]   = useState(false); // false = current state
+  const [animMode,   setAnimMode]   = useState(showHistory && defaultHistory); // false = current state
 
   // Filter (current mode)
   const [colorBy,    setColorBy]    = useState<'surface'|'class'|'region'>('surface');
@@ -442,9 +449,8 @@ export default function RoadNetworkView() {
             opacity={0.85}
             attribution='Esri'
           />
-          <WaterLayers />
           <InfraLayers />
-          <MapLegend title="Road Network" items={LEGEND_FULL} position="bottomleft" />
+          <MapLegend title="Infrastructure" items={LEGEND_INFRA_POINTS} position="bottomleft" />
           <ZoomControl position="bottomright"/>
           <ZoomWatcher onZoom={setMapZoom}/>
           {geoData && (
@@ -543,11 +549,13 @@ export default function RoadNetworkView() {
         {/* ── Map top-left legend/controls ── */}
         <div style={{ position:'absolute', top:12, left:12, zIndex:999, display:'flex', flexDirection:'column', gap:8 }}>
 
-          {/* Mode toggle */}
-          <div style={{ ...glassStyle, padding:'8px 10px', display:'flex', gap:6 }}>
-            <ModeBtn active={!animMode} onClick={() => { setAnimMode(false); setPlaying(false); }} icon={<MapIcon size={12}/>} label="Current"/>
-            <ModeBtn active={animMode}  onClick={() => setAnimMode(true)}  icon={<Play size={12}/>} label="History"/>
-          </div>
+          {/* Mode toggle — hidden in RMS (current-only); history lives in Life Cycle */}
+          {showHistory && (
+            <div style={{ ...glassStyle, padding:'8px 10px', display:'flex', gap:6 }}>
+              <ModeBtn active={!animMode} onClick={() => { setAnimMode(false); setPlaying(false); }} icon={<MapIcon size={12}/>} label="Current"/>
+              <ModeBtn active={animMode}  onClick={() => setAnimMode(true)}  icon={<Play size={12}/>} label="History"/>
+            </div>
+          )}
 
           {/* Legend */}
           <div style={{ ...glassStyle, padding:'10px 12px', minWidth:180 }}>

@@ -2,8 +2,6 @@ import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Popup, useMap, GeoJSON as GeoJSONLayer, Polyline } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { ESRI_TILE_URLS, ESRI_ATTRIBUTIONS, ROAD_STYLES, surfaceCategory } from '../../shared/mapSymbols';
-import { WaterLayers } from '../../shared/WaterLayers';
-import { InfraLayers } from '../../shared/InfraLayers';
 import { MapLegend, LEGEND_PROJECTS } from '../../shared/MapLegend';
 import {
   BarChart, Bar, Cell, XAxis, YAxis, Tooltip as ReTooltip,
@@ -422,8 +420,6 @@ export default function ProjectsView() {
           >
             <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery}/>
             <TileLayer url={ESRI_TILE_URLS.labels}  attribution={ESRI_ATTRIBUTIONS.labels} opacity={0.7}/>
-            <WaterLayers />
-            <InfraLayers />
             <MapLegend title="Projects" items={LEGEND_PROJECTS} />
             <MapController target={flyTarget} />
 

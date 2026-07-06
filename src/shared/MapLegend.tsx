@@ -167,21 +167,38 @@ export const LEGEND_INFRA: LegendItem[] = [
   { color: '#eab308', label: 'Maintenance Station', circle: true },
 ];
 
-// PROJECT STATUS LEGEND — Road project phases
+// PROJECT STATUS LEGEND — matches MARKER_COLOR in ProjectsView
 export const LEGEND_PROJECTS: LegendItem[] = [
   { color: '#22c55e', label: 'Completed', circle: true },
-  { color: '#3b82f6', label: 'Ongoing', circle: true },
-  { color: '#fbbf24', label: 'Planned', circle: true },
-  { color: '#f97316', label: 'Stalled', circle: true },
-  { color: '#64748b', label: 'Not Started', circle: true },
+  { color: '#f59e0b', label: 'Ongoing', circle: true },
+  { color: '#3b82f6', label: 'Planned', circle: true },
 ];
 
-// CONGESTION LEGEND — Traffic congestion levels
+// CONGESTION LEGEND — matches the CONG palette used by the prediction layers
 export const LEGEND_CONGESTION: LegendItem[] = [
-  { color: '#22c55e', label: 'Free Flow', circle: true },
-  { color: '#84cc16', label: 'Moderate', circle: true },
-  { color: '#fbbf24', label: 'Heavy', circle: true },
-  { color: '#ef4444', label: 'Severe', circle: true },
+  { color: '#00ff88', label: 'Low', circle: true },
+  { color: '#ffd23f', label: 'Medium', circle: true },
+  { color: '#ff6b35', label: 'High', circle: true },
+  { color: '#ff2d78', label: 'Critical', circle: true },
+];
+
+// ATC STATION LEGEND — stations coloured by region (matches REGION_CLR in ATCView)
+export const LEGEND_ATC_REGIONS: LegendItem[] = [
+  { color: '#00f5ff', label: 'Central', circle: true },
+  { color: '#ff6b35', label: 'Eastern', circle: true },
+  { color: '#b967ff', label: 'Northern', circle: true },
+  { color: '#ff2d78', label: 'North East', circle: true },
+  { color: '#00ff88', label: 'Western', circle: true },
+  { color: '#ffd23f', label: 'South', circle: true },
+];
+
+// OVERLOADING LEGEND — link risk lines + weighbridge points (matches RISK_COLOR)
+export const LEGEND_OVERLOADING: LegendItem[] = [
+  { color: '#ef4444', label: 'Critical Risk' },
+  { color: '#f97316', label: 'High Risk' },
+  { color: '#eab308', label: 'Medium Risk' },
+  { color: '#22c55e', label: 'Low Risk' },
+  { color: '#f97316', label: 'Weighbridge Station', circle: true },
 ];
 
 // ── ESRI-convention component sets ────────────────────────────────────────────
@@ -226,17 +243,18 @@ export const LEGEND_WATER: LegendItem[] = [
   { color: '#1d4ed8', label: 'River / Stream', dash: true },
 ];
 
-// LEGEND_FULL — all feature types in ESRI cartographic order for maps with
-// roads + InfraLayers + WaterLayers:
-//   1. Roads (by class/condition — most important)
-//   2. Points of interest (stations, airports, ferries)
-//   3. Area features (regions, districts, reserves)
-//   4. Linear features (rivers, railways, ferry routes)
-//   5. Base reference (scale bar / north arrow rendered separately on the map)
-export const LEGEND_FULL: LegendItem[] = [
-  ...LEGEND_ROAD_CLASSES,
+// LEGEND_INFRA_POINTS — infrastructure reference layers only (points + lines).
+// Road symbology is covered by each map's own dedicated legend, and water /
+// vegetation now come from the basemap itself, so neither appears here.
+export const LEGEND_INFRA_POINTS: LegendItem[] = [
   ...LEGEND_POINTS_FULL,
-  ...LEGEND_AREAS,
   ...LEGEND_LINES,
-  ...LEGEND_WATER,
+];
+
+// LEGEND_FULL — kept as an alias for maps that still want the combined key.
+// Water and protected-area entries removed: those layers were dropped in
+// favour of the basemap's own rendering.
+export const LEGEND_FULL: LegendItem[] = [
+  ...LEGEND_POINTS_FULL,
+  ...LEGEND_LINES,
 ];

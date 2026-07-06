@@ -1551,7 +1551,7 @@ export default function RMSSection() {
         {tab === 'roadmap' && (
           <Suspense fallback={<Spinner />}>
             <div style={{ position: 'absolute', inset: 0 }}>
-              <NET_RoadNetworkView />
+              <NET_RoadNetworkView showHistory={false} />
             </div>
           </Suspense>
         )}

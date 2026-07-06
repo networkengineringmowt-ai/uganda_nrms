@@ -2,13 +2,12 @@ import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { GeoJSON, CircleMarker, Popup } from 'react-leaflet';
 import L from 'leaflet';
-import { AirportPopup, FerryPopup, ProtectedAreaPopup } from './EnhancedPointPopups';
+import { AirportPopup, FerryPopup } from './EnhancedPointPopups';
 
 /**
  * InfrastructureLayersComponent - Renders all infrastructure features from unified DB
  * - Airports (point features) with enhanced popups
  * - Ferry routes (line/point features) with enhanced popups
- * - Protected areas (polygon features) with enhanced popups
  *
  * All data is sourced from unified_db via exported GeoJSON files
  */
@@ -16,7 +15,6 @@ import { AirportPopup, FerryPopup, ProtectedAreaPopup } from './EnhancedPointPop
 export function ImprovedInfraLayers() {
   const [airports, setAirports] = useState<GeoJSON.FeatureCollection | null>(null);
   const [ferries, setFerries] = useState<GeoJSON.FeatureCollection | null>(null);
-  const [protectedAreas, setProtectedAreas] = useState<GeoJSON.FeatureCollection | null>(null);
   const [selectedAirport, setSelectedAirport] = useState<number | null>(null);
   const [selectedFerry, setSelectedFerry] = useState<number | null>(null);
 
@@ -25,27 +23,11 @@ export function ImprovedInfraLayers() {
     Promise.all([
       fetch(`${import.meta.env.BASE_URL}data/airports.geojson`).then(r => r.json()).catch(() => null),
       fetch(`${import.meta.env.BASE_URL}data/ferries.geojson`).then(r => r.json()).catch(() => null),
-      fetch(`${import.meta.env.BASE_URL}data/protected_areas.geojson`).then(r => r.json()).catch(() => null),
-    ]).then(([ap, fer, pa]) => {
+    ]).then(([ap, fer]) => {
       if (ap) setAirports(ap);
       if (fer) setFerries(fer);
-      if (pa) setProtectedAreas(pa);
     });
   }, []);
-
-  // Style for protected areas polygons
-  const protectedAreaStyle = (feature?: GeoJSON.Feature): L.PathOptions => {
-    const areaType = (feature?.properties as { type?: string })?.type || '';
-    const baseColor = areaType?.includes('Forest') ? '#15803d' : '#047857';
-
-    return {
-      color: baseColor,
-      weight: 1.5,
-      opacity: 0.6,
-      fillColor: baseColor,
-      fillOpacity: 0.15,
-    };
-  };
 
   // Style for ferry routes
   const ferryStyle = (feature?: GeoJSON.Feature): L.PathOptions => {
@@ -65,39 +47,6 @@ export function ImprovedInfraLayers() {
 
   return (
     <>
-      {/* Protected Areas (Polygons) */}
-      {protectedAreas && (
-        <GeoJSON
-          data={protectedAreas as GeoJSON.GeoJsonObject}
-          style={protectedAreaStyle}
-          onEachFeature={(feature, layer) => {
-            const coords = (feature.geometry as any).coordinates?.[0]?.[0] || [0, 0];
-            const props = feature.properties as Record<string, any>;
-
-            // Create rich popup
-            layer.bindPopup(() => {
-              const div = document.createElement('div');
-              const root = ReactDOM.createRoot(div);
-              root.render(
-                <ProtectedAreaPopup
-                  properties={props}
-                  coordinates={[coords[1] || 0, coords[0] || 0]}
-                />
-              );
-              return div;
-            }, {
-              maxWidth: 320,
-              maxHeight: 400,
-              className: 'enhanced-popup',
-            });
-
-            // Simple tooltip on hover
-            const name = props.name || props.Name || 'Area';
-            layer.bindTooltip(`${name}`, { permanent: false });
-          }}
-        />
-      )}
-
       {/* Ferry Routes (Lines/Points) */}
       {ferries && (
         <GeoJSON

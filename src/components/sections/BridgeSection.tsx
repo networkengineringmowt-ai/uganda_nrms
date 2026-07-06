@@ -6,9 +6,7 @@ import { useEffect, useState, useMemo } from 'react';
 import {
   MapContainer, TileLayer, CircleMarker, Popup, ZoomControl,
 } from 'react-leaflet';
-import { WaterLayers } from '../../shared/WaterLayers';
-import { InfraLayers } from '../../shared/InfraLayers';
-import { MapLegend, LEGEND_FULL } from '../../shared/MapLegend';
+import { MapLegend } from '../../shared/MapLegend';
 import 'leaflet/dist/leaflet.css';
 import {
   ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend,
@@ -91,9 +89,13 @@ function StructureMap({ features, showCulverts }: {
     >
       <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery} />
       <TileLayer url={ESRI_TILE_URLS.labels}  attribution={ESRI_ATTRIBUTIONS.labels}  />
-      <WaterLayers />
-      <InfraLayers />
-      <MapLegend title="Map Features" items={LEGEND_FULL} />
+      <MapLegend title="Structure Condition" items={[
+        { color: '#22c55e', label: 'Good',     circle: true },
+        { color: '#eab308', label: 'Fair',     circle: true },
+        { color: '#f97316', label: 'Poor',     circle: true },
+        { color: '#ef4444', label: 'Critical', circle: true },
+        { color: '#64748b', label: 'Unknown',  circle: true },
+      ]} />
       <ZoomControl position="bottomright" />
       {visible.map((f, i) => {
         const [lon, lat] = f.geometry.coordinates;

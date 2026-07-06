@@ -1,8 +1,6 @@
 ﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MapContainer, TileLayer, GeoJSON, ZoomControl } from 'react-leaflet';
-import { WaterLayers } from '../../shared/WaterLayers';
-import { InfraLayers } from '../../shared/InfraLayers';
-import { MapLegend, LEGEND_ROAD_NETWORK } from '../../shared/MapLegend';
+import { MapLegend } from '../../shared/MapLegend';
 import { ESRI_TILE_URLS, ESRI_ATTRIBUTIONS } from '../../shared/mapSymbols';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -335,9 +333,11 @@ export default function RoadVideoView() {
         >
           <TileLayer url={TILE_URL} attribution={ATTRIBUTION}/>
           <TileLayer url={ESRI_TILE_URLS.labels} attribution={ESRI_ATTRIBUTIONS.labels} opacity={0.7}/>
-          <WaterLayers />
-          <InfraLayers />
-          <MapLegend title="Road Network" items={LEGEND_ROAD_NETWORK} />
+          <MapLegend title="Video Coverage" items={[
+            { color: ACCENT,                  label: 'Video available' },
+            { color: '#ffd23f',               label: 'Selected link' },
+            { color: 'rgba(100,116,139,0.5)', label: 'No video' },
+          ]} />
           <ZoomControl position="bottomright"/>
 
           {enrichedGeoJson && (

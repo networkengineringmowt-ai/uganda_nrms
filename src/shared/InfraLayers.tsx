@@ -142,8 +142,18 @@ function makeWrenchIcon(size: number): L.DivIcon {
 }
 
 // ── Component ──────────────────────────────────────────────────────────────────
-export function InfraLayers() {
+export type InfraGroup = 'rail' | 'ferries' | 'weighbridges' | 'airports' | 'maintenance';
+const ALL_GROUPS: InfraGroup[] = ['rail', 'ferries', 'weighbridges', 'airports', 'maintenance'];
+
+interface InfraLayersProps {
+  /** Which infrastructure groups to render. Omit for all (RMS/full network map).
+   *  Section maps pass only what is relevant to that section. */
+  show?: InfraGroup[];
+}
+
+export function InfraLayers({ show = ALL_GROUPS }: InfraLayersProps = {}) {
   const { ferryRoutes, ferryPoints, weighbridges, airports, airfields, railExisting, railProposed, maintenance } = useInfraLayers();
+  const on = (g: InfraGroup) => show.includes(g);
 
   const map = useMap();
   const [zoom, setZoom] = useState(map.getZoom());
@@ -167,14 +177,14 @@ export function InfraLayers() {
   return (
     <>
       {/* ── Railways (very pale — decorative only) ── */}
-      {railExisting && (
+      {on('rail') && railExisting && (
         <GeoJSON
           key="il-rail-existing"
           data={railExisting as never}
           style={f => railExistingStyle(f as GeoJSONData['features'][number])}
         />
       )}
-      {railProposed && (
+      {on('rail') && railProposed && (
         <GeoJSON
           key="il-rail-proposed"
           data={railProposed as never}
@@ -183,7 +193,7 @@ export function InfraLayers() {
       )}
 
       {/* ── Ferry routes (line) ── */}
-      {ferryRoutes && (
+      {on('ferries') && ferryRoutes && (
         <GeoJSON
           key="il-ferry-routes"
           data={ferryRoutes as never}
@@ -192,7 +202,7 @@ export function InfraLayers() {
       )}
 
       {/* ── Ferry crossing points ── */}
-      {ferryPoints?.features.map((f, i) => {
+      {on('ferries') && ferryPoints?.features.map((f, i) => {
         const p = f.properties;
         const coords = f.geometry.coordinates as [number, number];
         if (!inUganda(coords[0], coords[1])) return null;
@@ -216,7 +226,7 @@ export function InfraLayers() {
       })}
 
       {/* ── Weighbridges ── */}
-      {weighbridges?.features.map((f, i) => {
+      {on('weighbridges') && weighbridges?.features.map((f, i) => {
         const p = f.properties;
         const coords = f.geometry.coordinates as [number, number];
         if (!coords || coords.length < 2) return null;
@@ -239,7 +249,7 @@ export function InfraLayers() {
       })}
 
       {/* ── Airports ── */}
-      {airports?.features.map((f, i) => {
+      {on('airports') && airports?.features.map((f, i) => {
         const p = f.properties;
         const coords = f.geometry.coordinates as [number, number];
         if (!inUganda(coords[0], coords[1])) return null;
@@ -263,7 +273,7 @@ export function InfraLayers() {
       })}
 
       {/* ── Airfields ── */}
-      {airfields?.features.map((f, i) => {
+      {on('airports') && airfields?.features.map((f, i) => {
         const p = f.properties;
         const coords = f.geometry.coordinates as [number, number];
         if (!inUganda(coords[0], coords[1])) return null;
@@ -284,7 +294,7 @@ export function InfraLayers() {
       })}
 
       {/* ── Maintenance Stations ── */}
-      {maintenance?.features.map((f, i) => {
+      {on('maintenance') && maintenance?.features.map((f, i) => {
         const p = f.properties;
         const coords = f.geometry.coordinates as [number, number];
         if (!inUganda(coords[0], coords[1])) return null;

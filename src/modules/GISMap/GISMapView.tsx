@@ -7,9 +7,7 @@ import {
   ESRI_TILE_URLS, ESRI_ATTRIBUTIONS,
   ROAD_STYLES, STRUCTURE_STYLES, surfaceCategory,
 } from '../../shared/mapSymbols';
-import { WaterLayers } from '../../shared/WaterLayers';
-import { ImprovedInfraLayers } from '../../shared/ImprovedInfraLayers';
-import { MapLegend, LEGEND_STRUCTURES, LEGEND_STRUCTURE_CONDITION, LEGEND_FULL } from '../../shared/MapLegend';
+import { MapLegend, LEGEND_STRUCTURES, LEGEND_STRUCTURE_CONDITION } from '../../shared/MapLegend';
 import { BotHighlightContext } from '../AssetBot/types';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -137,10 +135,7 @@ export default function GISMapView() {
 
         <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery}/>
         <TileLayer url={ESRI_TILE_URLS.labels}  attribution={ESRI_ATTRIBUTIONS.labels} opacity={0.7}/>
-        <WaterLayers />
-        <ImprovedInfraLayers />
         <MapLegend title="STRUCTURES" items={[...LEGEND_STRUCTURES, ...LEGEND_STRUCTURE_CONDITION]} position="bottomleft" />
-        <MapLegend title="MAP FEATURES" items={LEGEND_FULL} position="bottomright" />
         {roadGeo && (
           <GeoJSON
             key={`roads-${highlightedLinks.length}`}

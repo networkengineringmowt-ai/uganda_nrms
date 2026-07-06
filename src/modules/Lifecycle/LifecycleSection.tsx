@@ -8,9 +8,7 @@ import 'leaflet/dist/leaflet.css';
 import { ESRI_TILE_URLS, ESRI_ATTRIBUTIONS } from '../../shared/mapSymbols';
 import { OFFICIAL_NETWORK_KM } from '../../shared/useNetworkStats';
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
-import { WaterLayers } from '../../shared/WaterLayers';
-import { InfraLayers } from '../../shared/InfraLayers';
-import { MapLegend, LEGEND_FULL } from '../../shared/MapLegend';
+import { MapLegend } from '../../shared/MapLegend';
 import { Clock, Search } from 'lucide-react';
 import { ModuleNavBar } from '../../shared/ModuleNavBar';
 import SourceTableButton from '../../shared/SourceTableButton';
@@ -616,9 +614,12 @@ export default function LifecycleSection() {
             >
               <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery}/>
               <TileLayer url={ESRI_TILE_URLS.labels} attribution={ESRI_ATTRIBUTIONS.labels} opacity={0.6}/>
-              <WaterLayers />
-              <InfraLayers />
-              <MapLegend title="Map Features" items={LEGEND_FULL} />
+              <MapLegend title="Condition (IRI)" items={[
+                { color: C.green,  label: 'Good   IRI < 4' },
+                { color: C.yellow, label: 'Fair   IRI 4–6' },
+                { color: C.orange, label: 'Poor   IRI 6–9' },
+                { color: C.red,    label: 'Very Poor  IRI ≥ 9' },
+              ]} />
               <ZoomControl position="bottomright"/>
               <MapFlyTo center={center} zoom={mapZoom}/>
 

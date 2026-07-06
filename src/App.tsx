@@ -20,6 +20,7 @@ const NetworkSection    = lazy(() => import('./modules/Network/NetworkSection'))
 const PlatformDashboard = lazy(() => import('./modules/PlatformDashboard/PlatformDashboard'));
 const NetworkStory      = lazy(() => import('./modules/NetworkStory/NetworkStory'));
 const RoadNetworkView   = lazy(() => import('./modules/RoadNetwork/RoadNetworkView'));
+const LifecycleView     = lazy(() => import('./modules/Lifecycle/LifecycleView'));
 const TrafficSection    = lazy(() => import('./modules/Traffic/TrafficSection'));
 const RoadConditionView       = lazy(() => import('./modules/RoadCondition/RoadConditionView'));
 const MaintenanceProgrammeView = lazy(() => import('./modules/RoadCondition/MaintenanceProgrammeView'));
@@ -208,7 +209,7 @@ function AppShell() {
                 {activeView === 'rms'             && <RMSSection />}
                 {activeView === 'roadreserve'    && <RoadReserveSection />}
                 {activeView === 'casestudies'    && <GlobalCaseStudiesSection />}
-                {activeView === 'lifecycle'       && <RoadNetworkView />}
+                {activeView === 'lifecycle'       && <LifecycleView />}
                 {activeView === 'sources'         && <SourcesSection />}
                 {activeView === 'tabularsummaries' && <TabularSummaries />}
                 {activeView === 'gisenterprise'    && <GisEnterpriseSection />}

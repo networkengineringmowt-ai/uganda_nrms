@@ -8,8 +8,6 @@ import {
 } from 'recharts';
 import { Chart3DWrap, Bar3D, TT_NEON, TICK } from '../../lib/chart3d';
 import { ESRI_TILE_URLS, ESRI_ATTRIBUTIONS, ROAD_STYLES, surfaceCategory } from '../../shared/mapSymbols';
-import { WaterLayers } from '../../shared/WaterLayers';
-import { InfraLayers } from '../../shared/InfraLayers';
 import { MapLegend, LEGEND_PROJECTS } from '../../shared/MapLegend';
 import { BarChart2 } from 'lucide-react';
 import { ModuleNavBar } from '../../shared/ModuleNavBar';
@@ -268,8 +266,6 @@ export default function NdpivSection() {
           <MapContainer center={[1.373, 32.29]} zoom={7} style={{ width: '100%', height: '100%' }} zoomControl>
             <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery} />
             <TileLayer url={ESRI_TILE_URLS.labels}  attribution={ESRI_ATTRIBUTIONS.labels}  />
-            <WaterLayers />
-            <InfraLayers />
             <MapLegend title="NDPIV Projects" items={LEGEND_PROJECTS} />
             {roadGeo && <GeoJSON key="roads" data={roadGeo} style={roadStyle} />}
 
