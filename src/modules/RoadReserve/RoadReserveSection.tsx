@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback } from 'react';
 import { MapContainer, TileLayer, GeoJSON, ZoomControl } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { ESRI_TILE_URLS, ESRI_ATTRIBUTIONS } from '../../shared/mapSymbols';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
 } from 'recharts';
@@ -472,10 +473,9 @@ function ReserveMapTab() {
         <MapContainer center={[1.4, 32.3]} zoom={7} zoomControl={false}
           style={{ width: '100%', height: '100%', background: '#0a0a0a' }}>
           <ZoomControl position="bottomright" />
-          <TileLayer
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-            attribution="&copy; CARTO &copy; OpenStreetMap contributors"
-          />
+          {/* Base map — Esri World Imagery + reference labels (always-on, non-removable) */}
+          <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery} />
+          <TileLayer url={ESRI_TILE_URLS.labels}  attribution={ESRI_ATTRIBUTIONS.labels} opacity={0.7} />
           {geoData && (
             <GeoJSON data={geoData} style={styleFeature} onEachFeature={onEachFeature} />
           )}
