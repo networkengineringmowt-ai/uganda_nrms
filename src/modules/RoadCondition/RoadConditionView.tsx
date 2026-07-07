@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useEffect, useState, useMemo, useCallback, lazy, Suspense } from 'react';
+const LifecycleSection = lazy(() => import('../Lifecycle/LifecycleSection'));
 import {
   ResponsiveContainer, AreaChart, Area, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar,
@@ -1182,7 +1183,7 @@ function renderCondFeature(f: SelectedLinkData): React.ReactNode {
 
 // ─── Main view ────────────────────────────────────────────────────────────────
 type TabId = 'overview' | 'conditionmap' | 'inventory' | 'analytics' | 'age' | 'fwd';
-type AnalyticsSubTab = 'deterioration' | 'interventions' | 'budget';
+type AnalyticsSubTab = 'deterioration' | 'interventions' | 'budget' | 'lifecycle';
 
 export default function RoadConditionView() {
   const [analytics, setAnalytics]         = useState<PlatformAnalytics | null>(null);
@@ -1256,6 +1257,7 @@ export default function RoadConditionView() {
   // Sub-tabs for the Analytics & Deterioration parent tab
   const ANALYTICS_SUB_TABS: Array<{ id: AnalyticsSubTab; label: string }> = [
     { id: 'deterioration', label: 'Deterioration Curves' },
+    { id: 'lifecycle',     label: 'Lifecycle (Per-Link)' },
     { id: 'interventions', label: 'Intervention Map'     },
     { id: 'budget',        label: 'Budget Planner'       },
   ];
@@ -1831,6 +1833,19 @@ export default function RoadConditionView() {
             Loading deterioration data…
           </div>
         )
+      )}
+
+      {/* ══════════ LIFECYCLE (per-link IRI timeline + intervention history) ══════════ */}
+      {tab === 'analytics' && analyticsSubTab === 'lifecycle' && (
+        <div style={{ position: 'relative', height: 'calc(100vh - 180px)', minHeight: 520,
+          borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(0,245,255,0.12)' }}>
+          <Suspense fallback={
+            <div style={{ background: BG_CARD }} className="rounded-xl p-8 text-center text-slate-500 h-full flex items-center justify-center">
+              Loading per-link lifecycle analytics…
+            </div>}>
+            <LifecycleSection />
+          </Suspense>
+        </div>
       )}
 
       {/* ══════════ INTERVENTIONS (priority table, no map) ══════════ */}
