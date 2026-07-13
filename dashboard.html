@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Uganda DNR — Live Road Asset Dashboard FY25/26</title>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#000;color:#ccc;font-family:'Courier New',monospace;min-height:100vh;overflow-x:hidden}
+:root{--c:#00f5ff;--g:#00ff88;--p:#ff006e;--pu:#bf00ff;--o:#ff6600;--y:#ffee00;--r:#ff0040;--bg1:#060606;--bg2:#0d0d0d;--bg3:#111;--bd:rgba(0,245,255,0.12)}
+
+/* TOPBAR */
+.topbar{background:linear-gradient(180deg,#020a0a,#000);border-bottom:1px solid var(--bd);padding:10px 20px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px}
+.logo img{height:34px;object-fit:contain}
+.logo-txt{line-height:1.2}
+.logo-txt .t1{color:var(--c);font-size:13px;font-weight:700;letter-spacing:2px}
+.logo-txt .t2{color:#555;font-size:10px;letter-spacing:1px}
+.topbar-mid{flex:1;text-align:center}
+.topbar-mid .sys{color:var(--g);font-size:11px;letter-spacing:1px}
+.topbar-mid .ts{color:#444;font-size:10px}
+.topbar-right{display:flex;align-items:center;gap:10px;font-size:10px;color:#555}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--g);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,255,136,.6)}50%{box-shadow:0 0 0 6px rgba(0,255,136,0)}}
+
+/* KPI STRIP */
+.kpi-strip{display:grid;grid-template-columns:repeat(8,1fr);gap:0;border-bottom:1px solid var(--bd)}
+.kpi-card{padding:12px 14px;border-right:1px solid var(--bd);cursor:pointer;transition:background .2s}
+.kpi-card:hover{background:rgba(0,245,255,.04)}
+.kpi-card .lbl{color:#555;font-size:9px;letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px}
+.kpi-card .val{font-size:20px;font-weight:700;font-family:monospace;letter-spacing:-1px}
+.kpi-card .sub{color:#444;font-size:9px;margin-top:2px}
+.kpi-card .chg{font-size:9px;margin-top:1px}
+.chg.up{color:var(--g)}.chg.down{color:var(--r)}.chg.warn{color:var(--y)}
+
+/* TABS */
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--bd);background:var(--bg1);overflow-x:auto}
+.tab-btn{padding:10px 18px;font-size:10.5px;letter-spacing:.8px;color:#555;border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;font-family:monospace}
+.tab-btn:hover{color:var(--c);background:rgba(0,245,255,.04)}
+.tab-btn.active{color:var(--c);border-bottom-color:var(--c);background:rgba(0,245,255,.06)}
+
+/* CHART PANELS */
+.tab-panel{display:none;padding:16px;animation:fadein .3s ease}
+.tab-panel.active{display:block}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+.section-hdr{color:var(--c);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--bd)}
+.chart-grid{display:grid;gap:12px;margin-bottom:16px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:1fr 1fr 1fr}
+.g4{grid-template-columns:1fr 1fr 1fr 1fr}
+.g12{grid-template-columns:1fr 2fr}
+.g21{grid-template-columns:2fr 1fr}
+.g13{grid-template-columns:1fr 3fr}
+
+.chart-box{background:var(--bg2);border:1px solid var(--bd);border-radius:6px;overflow:hidden;position:relative}
+.chart-box.c3d{transform:perspective(1400px) rotateX(2deg) scale(0.99);transition:transform .3s}
+.chart-box.c3d:hover{transform:perspective(1400px) rotateX(0deg) scale(1.005)}
+.chart-box .ch-lbl{position:absolute;top:0;left:0;right:0;background:linear-gradient(180deg,rgba(0,0,0,.9),transparent);padding:6px 10px 12px;z-index:1;pointer-events:none}
+.chart-box .ch-lbl span{color:var(--c);font-size:9.5px;letter-spacing:.6px}
+.chart-box .ch-lbl small{color:#444;font-size:8.5px;margin-left:6px}
+
+.chart-h1{height:200px}.chart-h2{height:260px}.chart-h3{height:320px}.chart-h4{height:400px}.chart-h5{height:480px}
+
+/* FILTER BAR */
+.filter-bar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.filter-btn{padding:4px 12px;border:1px solid var(--bd);border-radius:3px;background:transparent;color:#666;font-size:9.5px;font-family:monospace;cursor:pointer;letter-spacing:.5px;transition:all .2s}
+.filter-btn:hover,.filter-btn.active{border-color:var(--c);color:var(--c);background:rgba(0,245,255,.08)}
+.filter-lbl{color:#444;font-size:9px;letter-spacing:.5px}
+
+/* STAT ROW */
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:12px}
+.stat-mini{background:var(--bg3);border:1px solid var(--bd);border-radius:4px;padding:10px;border-left:3px solid var(--c)}
+.stat-mini .sv{color:var(--c);font-size:18px;font-weight:700;font-family:monospace}
+.stat-mini .sl{color:#555;font-size:9px;margin-top:2px;letter-spacing:.4px}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:#000}
+::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
+</style>
+</head>
+<body>
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">
+    <img src="https://works.go.ug/wp-content/uploads/2025/09/logo.png" alt="MoWT" onerror="this.style.display='none'">
+    <div class="logo-txt"><div class="t1">UGROADS</div><div class="t2">Ministry of Works &amp; Transport · DNR</div></div>
+  </div>
+  <div class="topbar-mid">
+    <div class="sys">RMS — ROAD MANAGEMENT SYSTEM · LIVE ASSET DASHBOARD</div>
+    <div class="ts" id="clk"></div>
+  </div>
+  <div class="topbar-right">
+    <div class="live-dot"></div><span style="color:var(--g)">LIVE</span>
+    <span style="color:#333">|</span><span>RMS v4.0 · FY25-26</span>
+    <span style="color:#333">|</span><span style="color:var(--c)">Prisca Nanjehe</span>
+    <span style="background:var(--g);color:#000;padding:1px 6px;border-radius:2px;font-size:9px;font-weight:700">ADMIN</span>
+  </div>
+</div>
+
+<!-- KPI STRIP -->
+<div class="kpi-strip">
+  <div class="kpi-card"><div class="lbl">Total Network</div><div class="val" style="color:var(--c)" id="kv1">0</div><div class="sub">km · DNR managed</div><div class="chg up">↑ 165 km FY25</div></div>
+  <div class="kpi-card"><div class="lbl">Paved Roads</div><div class="val" style="color:var(--g)" id="kv2">0</div><div class="sub">km · 30% of network</div><div class="chg up">↑ 42 km this FY</div></div>
+  <div class="kpi-card"><div class="lbl">Good Condition</div><div class="val" style="color:var(--g)" id="kv3">0</div><div class="sub">% overall network</div><div class="chg warn">→ stable FY25</div></div>
+  <div class="kpi-card"><div class="lbl">Structures</div><div class="val" style="color:var(--pu)" id="kv4">0</div><div class="sub">bridges &amp; culverts</div><div class="chg up">546 on nat. roads</div></div>
+  <div class="kpi-card"><div class="lbl">Avg AADT</div><div class="val" style="color:var(--y)" id="kv5">0</div><div class="sub">vehicles/day · 25 ATC</div><div class="chg up">↑ 4.2% growth</div></div>
+  <div class="kpi-card"><div class="lbl">Budget FY25/26</div><div class="val" style="color:var(--o)" id="kv6">0</div><div class="sub">bn UGX allocated</div><div class="chg warn">68% utilised</div></div>
+  <div class="kpi-card"><div class="lbl">Critical Roads</div><div class="val" style="color:var(--r)" id="kv7">0</div><div class="sub">km needs urgent work</div><div class="chg down">↑ backlog risk</div></div>
+  <div class="kpi-card"><div class="lbl">Cond. Index</div><div class="val" style="color:var(--y)" id="kv8">0</div><div class="sub">PCI 0–100 scale</div><div class="chg warn">Fair → target 65</div></div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab(1)">📊 NETWORK OVERVIEW</button>
+  <button class="tab-btn" onclick="showTab(2)">🛣 PAVEMENT MANAGEMENT</button>
+  <button class="tab-btn" onclick="showTab(3)">🚗 TRAFFIC INTELLIGENCE</button>
+  <button class="tab-btn" onclick="showTab(4)">🌉 STRUCTURES &amp; BRIDGES</button>
+  <button class="tab-btn" onclick="showTab(5)">💰 BUDGET &amp; FINANCE</button>
+  <button class="tab-btn" onclick="showTab(6)">🏗 PROJECTS &amp; WORKS</button>
+  <button class="tab-btn" onclick="showTab(7)">🚨 ROAD SAFETY</button>
+</div>
+
+<!-- TAB 1: NETWORK OVERVIEW -->
+<div id="tab1" class="tab-panel active">
+  <div class="stat-row">
+    <div class="stat-mini"><div class="sv">21,302 km</div><div class="sl">TOTAL NETWORK</div></div>
+    <div class="stat-mini" style="border-left-color:var(--g)"><div class="sv" style="color:var(--g)">6,405 km</div><div class="sl">PAVED (30%)</div></div>
+    <div class="stat-mini" style="border-left-color:var(--o)"><div class="sv" style="color:var(--o)">14,897 km</div><div class="sl">UNPAVED (70%)</div></div>
+    <div class="stat-mini" style="border-left-color:var(--pu)"><div class="sv" style="color:var(--pu)">4 REGIONS</div><div class="sl">GEOGRAPHIC COVERAGE</div></div>
+    <div class="stat-mini" style="border-left-color:var(--y)"><div class="sv" style="color:var(--y)">3 CLASSES</div><div class="sl">TRUNK / REGIONAL / DISTRICT</div></div>
+    <div class="stat-mini" style="border-left-color:var(--p)"><div class="sv" style="color:var(--p)">165 km</div><div class="sl">UNMAPPED GAP</div></div>
+  </div>
+  <div class="section-hdr">NETWORK COMPOSITION · 15 VIEWS</div>
+  <div class="chart-grid g3">
+    <div class="chart-box c3d"><div class="chart-h2" id="c1"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c2"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c3"></div></div>
+  </div>
+  <div class="chart-grid g12">
+    <div class="chart-box c3d"><div class="chart-h3" id="c4"></div></div>
+    <div class="chart-box c3d"><div class="chart-h3" id="c5"></div></div>
+  </div>
+  <div class="chart-grid g4">
+    <div class="chart-box c3d"><div class="chart-h2" id="c6"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c7"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c8"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c9"></div></div>
+  </div>
+  <div class="chart-grid g3">
+    <div class="chart-box c3d"><div class="chart-h3" id="c10"></div></div>
+    <div class="chart-box c3d"><div class="chart-h3" id="c11"></div></div>
+    <div class="chart-box c3d"><div class="chart-h3" id="c12"></div></div>
+  </div>
+  <div class="chart-grid g3">
+    <div class="chart-box c3d"><div class="chart-h2" id="c13"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c14"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c15"></div></div>
+  </div>
+</div>
+
+<!-- TAB 2: PAVEMENT -->
+<div id="tab2" class="tab-panel">
+  <div class="stat-row">
+    <div class="stat-mini" style="border-left-color:var(--g)"><div class="sv" style="color:var(--g)">35%</div><div class="sl">PAVED GOOD</div></div>
+    <div class="stat-mini" style="border-left-color:var(--y)"><div class="sv" style="color:var(--y)">35%</div><div class="sl">PAVED FAIR</div></div>
+    <div class="stat-mini" style="border-left-color:var(--o)"><div class="sv" style="color:var(--o)">20%</div><div class="sl">PAVED POOR</div></div>
+    <div class="stat-mini" style="border-left-color:var(--r)"><div class="sv" style="color:var(--r)">10%</div><div class="sl">PAVED CRITICAL</div></div>
+    <div class="stat-mini" style="border-left-color:var(--c)"><div class="sv">3.8 m/km</div><div class="sl">AVG IRI (PAVED)</div></div>
+    <div class="stat-mini" style="border-left-color:var(--pu)"><div class="sv" style="color:var(--pu)">58</div><div class="sl">PCI SCORE (0-100)</div></div>
+  </div>
+  <div class="section-hdr">PAVEMENT CONDITION &amp; MANAGEMENT · 15 VIEWS</div>
+  <div class="chart-grid g4">
+    <div class="chart-box c3d"><div class="chart-h2" id="c16"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c17"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c18"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c19"></div></div>
+  </div>
+  <div class="chart-grid g12">
+    <div class="chart-box c3d"><div class="chart-h3" id="c20"></div></div>
+    <div class="chart-box c3d"><div class="chart-h3" id="c21"></div></div>
+  </div>
+  <div class="chart-grid g3">
+    <div class="chart-box c3d"><div class="chart-h3" id="c22"></div></div>
+    <div class="chart-box c3d"><div class="chart-h3" id="c23"></div></div>
+    <div class="chart-box c3d"><div class="chart-h3" id="c24"></div></div>
+  </div>
+  <div class="chart-grid g3">
+    <div class="chart-box c3d"><div class="chart-h2" id="c25"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c26"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c27"></div></div>
+  </div>
+  <div class="chart-grid g3">
+    <div class="chart-box c3d"><div class="chart-h3" id="c28"></div></div>
+    <div class="chart-box c3d"><div class="chart-h3" id="c29"></div></div>
+    <div class="chart-box c3d"><div class="chart-h3" id="c30"></div></div>
+  </div>
+</div>
+
+<!-- TAB 3: TRAFFIC -->
+<div id="tab3" class="tab-panel">
+  <div class="stat-row">
+    <div class="stat-mini" style="border-left-color:var(--y)"><div class="sv" style="color:var(--y)">3,847</div><div class="sl">AVG AADT (NATIONAL)</div></div>
+    <div class="stat-mini" style="border-left-color:var(--c)"><div class="sv" style="color:var(--c)">18,400</div><div class="sl">PEAK AADT (KLA-EBB)</div></div>
+    <div class="stat-mini" style="border-left-color:var(--g)"><div class="sv" style="color:var(--g)">4.2%</div><div class="sl">GROWTH RATE/YR</div></div>
+    <div class="stat-mini" style="border-left-color:var(--o)"><div class="sv" style="color:var(--o)">23%</div><div class="sl">HEAVY VEHICLE %</div></div>
+    <div class="stat-mini" style="border-left-color:var(--pu)"><div class="sv" style="color:var(--pu)">25</div><div class="sl">ATC STATIONS</div></div>
+    <div class="stat-mini" style="border-left-color:var(--p)"><div class="sv" style="color:var(--p)">5,656</div><div class="sl">AADT FORECAST 2035</div></div>
+  </div>
+  <div class="section-hdr">TRAFFIC COUNTS &amp; FORECASTING · 15 VIEWS</div>
+  <div class="chart-grid g3">
+    <div class="chart-box c3d"><div class="chart-h3" id="c31"></div></div>
+    <div class="chart-box c3d"><div class="chart-h3" id="c32"></div></div>
+    <div class="chart-box c3d"><div class="chart-h3" id="c33"></div></div>
+  </div>
+  <div class="chart-grid g12">
+    <div class="chart-box c3d"><div class="chart-h4" id="c34"></div></div>
+    <div class="chart-box c3d"><div class="chart-h4" id="c35"></div></div>
+  </div>
+  <div class="chart-grid g4">
+    <div class="chart-box c3d"><div class="chart-h2" id="c36"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c37"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c38"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c39"></div></div>
+  </div>
+  <div class="chart-grid g3">
+    <div class="chart-box c3d"><div class="chart-h3" id="c40"></div></div>
+    <div class="chart-box c3d"><div class="chart-h3" id="c41"></div></div>
+    <div class="chart-box c3d"><div class="chart-h3" id="c42"></div></div>
+  </div>
+  <div class="chart-grid g3">
+    <div class="chart-box c3d"><div class="chart-h2" id="c43"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c44"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c45"></div></div>
+  </div>
+</div>
+
+<!-- TAB 4: STRUCTURES -->
+<div id="tab4" class="tab-panel">
+  <div class="stat-row">
+    <div class="stat-mini" style="border-left-color:var(--pu)"><div class="sv" style="color:var(--pu)">546</div><div class="sl">STRUCTURES (NAT. ROADS)</div></div>
+    <div class="stat-mini" style="border-left-color:var(--g)"><div class="sv" style="color:var(--g)">36%</div><div class="sl">GOOD CONDITION</div></div>
+    <div class="stat-mini" style="border-left-color:var(--r)"><div class="sv" style="color:var(--r)">54</div><div class="sl">CRITICAL STRUCTURES</div></div>
+    <div class="stat-mini" style="border-left-color:var(--c)"><div class="sv">312</div><div class="sl">BRIDGES</div></div>
+    <div class="stat-mini" style="border-left-color:var(--y)"><div class="sv" style="color:var(--y)">142</div><div class="sl">BOX CULVERTS</div></div>
+    <div class="stat-mini" style="border-left-color:var(--o)"><div class="sv" style="color:var(--o)">36 m</div><div class="sl">AVG BRIDGE SPAN</div></div>
+  </div>
+  <div class="section-hdr">STRUCTURES &amp; BRIDGE MANAGEMENT · 15 VIEWS</div>
+  <div class="chart-grid g3">
+    <div class="chart-box c3d"><div class="chart-h2" id="c46"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c47"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c48"></div></div>
+  </div>
+  <div class="chart-grid g12">
+    <div class="chart-box c3d"><div class="chart-h4" id="c49"></div></div>
+    <div class="chart-box c3d"><div class="chart-h4" id="c50"></div></div>
+  </div>
+  <div class="chart-grid g4">
+    <div class="chart-box c3d"><div class="chart-h2" id="c51"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c52"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c53"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c54"></div></div>
+  </div>
+  <div class="chart-grid g3">
+    <div class="chart-box c3d"><div class="chart-h3" id="c55"></div></div>
+    <div class="chart-box c3d"><div class="chart-h3" id="c56"></div></div>
+    <div class="chart-box c3d"><div class="chart-h3" id="c57"></div></div>
+  </div>
+  <div class="chart-grid g3">
+    <div class="chart-box c3d"><div class="chart-h2" id="c58"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c59"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c60"></div></div>
+  </div>
+</div>
+
+<!-- TAB 5: BUDGET -->
+<div id="tab5" class="tab-panel">
+  <div class="stat-row">
+    <div class="stat-mini" style="border-left-color:var(--o)"><div class="sv" style="color:var(--o)">1,842</div><div class="sl">TOTAL bn UGX FY25/26</div></div>
+    <div class="stat-mini" style="border-left-color:var(--g)"><div class="sv" style="color:var(--g)">892</div><div class="sl">MAINTENANCE bn UGX</div></div>
+    <div class="stat-mini" style="border-left-color:var(--c)"><div class="sv">640</div><div class="sl">DEVELOPMENT bn UGX</div></div>
+    <div class="stat-mini" style="border-left-color:var(--r)"><div class="sv" style="color:var(--r)">180</div><div class="sl">EMERGENCY bn UGX</div></div>
+    <div class="stat-mini" style="border-left-color:var(--y)"><div class="sv" style="color:var(--y)">68%</div><div class="sl">BUDGET UTILISATION</div></div>
+    <div class="stat-mini" style="border-left-color:var(--p)"><div class="sv" style="color:var(--p)">2,840</div><div class="sl">MAINTENANCE BACKLOG bn</div></div>
+  </div>
+  <div class="section-hdr">BUDGET, FINANCE &amp; INVESTMENT · 14 VIEWS</div>
+  <div class="chart-grid g4">
+    <div class="chart-box c3d"><div class="chart-h2" id="c61"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c62"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c63"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c64"></div></div>
+  </div>
+  <div class="chart-grid g3">
+    <div class="chart-box c3d"><div class="chart-h3" id="c65"></div></div>
+    <div class="chart-box c3d"><div class="chart-h3" id="c66"></div></div>
+    <div class="chart-box c3d"><div class="chart-h3" id="c67"></div></div>
+  </div>
+  <div class="chart-grid g12">
+    <div class="chart-box c3d"><div class="chart-h3" id="c68"></div></div>
+    <div class="chart-box c3d"><div class="chart-h3" id="c69"></div></div>
+  </div>
+  <div class="chart-grid g4">
+    <div class="chart-box c3d"><div class="chart-h2" id="c70"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c71"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c72"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c73"></div></div>
+  </div>
+  <div class="chart-grid"><div class="chart-box c3d"><div class="chart-h2" id="c74"></div></div></div>
+</div>
+
+<!-- TAB 6: PROJECTS -->
+<div id="tab6" class="tab-panel">
+  <div class="stat-row">
+    <div class="stat-mini" style="border-left-color:var(--c)"><div class="sv">14</div><div class="sl">ACTIVE PROJECTS</div></div>
+    <div class="stat-mini" style="border-left-color:var(--g)"><div class="sv" style="color:var(--g)">6</div><div class="sl">ON SCHEDULE</div></div>
+    <div class="stat-mini" style="border-left-color:var(--y)"><div class="sv" style="color:var(--y)">5</div><div class="sl">MINOR DELAY</div></div>
+    <div class="stat-mini" style="border-left-color:var(--r)"><div class="sv" style="color:var(--r)">3</div><div class="sl">BEHIND SCHEDULE</div></div>
+    <div class="stat-mini" style="border-left-color:var(--o)"><div class="sv" style="color:var(--o)">1,240 km</div><div class="sl">KM UNDER CONTRACT</div></div>
+    <div class="stat-mini" style="border-left-color:var(--pu)"><div class="sv" style="color:var(--pu)">7</div><div class="sl">OPRC LOTS ACTIVE</div></div>
+  </div>
+  <div class="section-hdr">PROJECTS, CONTRACTS &amp; OPRC · 13 VIEWS</div>
+  <div class="chart-grid g3">
+    <div class="chart-box c3d"><div class="chart-h3" id="c75"></div></div>
+    <div class="chart-box c3d"><div class="chart-h3" id="c76"></div></div>
+    <div class="chart-box c3d"><div class="chart-h3" id="c77"></div></div>
+  </div>
+  <div class="chart-grid g12">
+    <div class="chart-box c3d"><div class="chart-h4" id="c78"></div></div>
+    <div class="chart-box c3d"><div class="chart-h4" id="c79"></div></div>
+  </div>
+  <div class="chart-grid g4">
+    <div class="chart-box c3d"><div class="chart-h2" id="c80"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c81"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c82"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c83"></div></div>
+  </div>
+  <div class="chart-grid g3">
+    <div class="chart-box c3d"><div class="chart-h2" id="c84"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c85"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c86"></div></div>
+  </div>
+  <div class="chart-grid"><div class="chart-box c3d"><div class="chart-h2" id="c87"></div></div></div>
+</div>
+
+<!-- TAB 7: SAFETY -->
+<div id="tab7" class="tab-panel">
+  <div class="stat-row">
+    <div class="stat-mini" style="border-left-color:var(--r)"><div class="sv" style="color:var(--r)">3,247</div><div class="sl">2025 FATALITIES</div></div>
+    <div class="stat-mini" style="border-left-color:var(--o)"><div class="sv" style="color:var(--o)">4.2</div><div class="sl">RATE/10K VEHICLES</div></div>
+    <div class="stat-mini" style="border-left-color:var(--y)"><div class="sv" style="color:var(--y)">847</div><div class="sl">BLACKSPOTS NATIONAL</div></div>
+    <div class="stat-mini" style="border-left-color:var(--g)"><div class="sv" style="color:var(--g)">-3.2%</div><div class="sl">YOY FATALITY TREND</div></div>
+    <div class="stat-mini" style="border-left-color:var(--p)"><div class="sv" style="color:var(--p)">42</div><div class="sl">WORST BLACKSPOT/YR</div></div>
+    <div class="stat-mini" style="border-left-color:var(--c)"><div class="sv">18,400</div><div class="sl">HIGHEST AADT CORRIDOR</div></div>
+  </div>
+  <div class="section-hdr">ROAD SAFETY &amp; BLACKSPOTS · 13 VIEWS</div>
+  <div class="chart-grid g3">
+    <div class="chart-box c3d"><div class="chart-h3" id="c88"></div></div>
+    <div class="chart-box c3d"><div class="chart-h3" id="c89"></div></div>
+    <div class="chart-box c3d"><div class="chart-h3" id="c90"></div></div>
+  </div>
+  <div class="chart-grid g12">
+    <div class="chart-box c3d"><div class="chart-h4" id="c91"></div></div>
+    <div class="chart-box c3d"><div class="chart-h4" id="c92"></div></div>
+  </div>
+  <div class="chart-grid g4">
+    <div class="chart-box c3d"><div class="chart-h2" id="c93"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c94"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c95"></div></div>
+    <div class="chart-box c3d"><div class="chart-h2" id="c96"></div></div>
+  </div>
+  <div class="chart-grid g3">
+    <div class="chart-box c3d"><div class="chart-h3" id="c97"></div></div>
+    <div class="chart-box c3d"><div class="chart-h3" id="c98"></div></div>
+    <div class="chart-box c3d"><div class="chart-h3" id="c99"></div></div>
+  </div>
+  <div class="chart-grid"><div class="chart-box c3d"><div class="chart-h2" id="c100"></div></div></div>
+</div>
+<script>
+// ── CLOCK ─────────────────────────────────────────────────────
+setInterval(()=>{const n=new Date();document.getElementById('clk').textContent=n.toLocaleString('en-UG',{weekday:'short',year:'numeric',month:'short',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})+' EAT';},1000);
+
+// ── ANIMATED KPI COUNTERS ──────────────────────────────────────
+function counter(id,target,suffix,dur){
+  const el=document.getElementById(id); let start=0,step=target/((dur||1200)/16);
+  const t=setInterval(()=>{start=Math.min(start+step,target);el.textContent=Math.round(start).toLocaleString()+suffix;if(start>=target)clearInterval(t);},16);
+}
+counter('kv1',21302,' km',1400); counter('kv2',6405,' km',1200); counter('kv3',49,'%',800);
+counter('kv4',546,'',900); counter('kv5',3847,'',1100); counter('kv6',1842,'',1000);
+counter('kv7',3619,' km',900); counter('kv8',58,'',700);
+
+// ── SINGLE DATA MODEL (source of truth) ───────────────────────
+const D = {
+  // NETWORK
+  total:21302, paved:6405, unpaved:14897,
+  classKm:[4200,5800,11302], classPaved:[3360,2146,899], classLbl:['Class A Trunk','Class B Regional','Class C District'],
+  surfKm:[5840,565,10240,4657], surfLbl:['Bituminous','Concrete','Gravel','Earth'],
+  regKm:[5820,5240,4890,5352], regPaved:[2420,1380,1210,1395], regLbl:['Central','Northern','Eastern','Western'],
+  netYrs:[2010,2012,2014,2016,2018,2020,2022,2024,2025], netKm:[18200,18800,19400,20100,20600,20900,21050,21200,21302],
+  // CONDITION
+  pavCond:[2242,2242,1281,640], unpavCond:[1490,4469,5959,2979],
+  condLbl:['Good','Fair','Poor','Critical'], condCol:['#00ff88','#ffee00','#ff6600','#ff0040'],
+  iriYrs:[2020,2021,2022,2023,2024,2025],
+  iriA:[3.2,3.4,3.3,3.5,3.4,3.3], iriB:[4.1,4.3,4.5,4.8,4.6,4.4], iriC:[5.8,6.1,6.3,6.5,6.4,6.2],
+  treatLbl:['Routine','Resealing','Overlay','Rehab','Reconstruction'],
+  treatKm:[8420,1240,890,640,215], treatCost:[38,142,280,680,1240],
+  // TRAFFIC
+  corridors:['Kla-Entebbe','Kla-Jinja','Kla-Gulu','Kla-Mbarara','Jinja-Tororo','Masaka-Mba','Mba-Kabale','Gulu-Nimule','Hoima-Kafu','FP-Kasese'],
+  corrAADT:[18400,6480,4820,3820,2180,2620,1670,1240,1840,2140],
+  corrGrowth:[4.2,4.0,3.8,3.5,3.1,3.2,2.9,3.3,5.1,3.7],
+  vehComp:[45,15,18,12,7,3], vehLbl:['Cars/SUV','Motorcycle','Light Comm.','HGV','Buses','NMT'],
+  fcYrs:[2016,2018,2020,2022,2024,2026,2028,2030,2032,2034,2035],
+  fcNorm:[2890,3126,3141,3397,3675,3975,4299,4650,5029,5439,5656],
+  fcOpt: [2890,3247,3460,3814,4230,4704,5200,5700,6200,6800,7100],
+  fcPess:[2890,3006,2821,2935,3054,3177,3306,3439,3578,3723,3797],
+  hourHr:['00','02','04','06','07','08','09','10','12','14','16','17','18','20','22'],
+  hourPct:[8,5,4,18,42,88,74,62,68,72,84,100,92,45,18],
+  // STRUCTURES
+  strType:[312,142,68,24], strTypeLbl:['Bridges','Box Culverts','Culverts','Drifts/Causeway'],
+  strCond:[197,164,131,54], strMat:[286,134,76,38,12], strMatLbl:['Concrete','Steel','Composite','Masonry','Timber'],
+  strSpan:[183,164,126,57,16], strSpanLbl:['<10m','10-20m','20-50m','50-100m','>100m'],
+  strAge:[84,128,156,112,66], strAgeLbl:['<10yr','10-20yr','20-30yr','30-50yr','>50yr'],
+  strRegCond:[[48,42,34,14],[36,28,26,8],[62,48,38,18],[51,46,33,14]], // region×cond
+  // BUDGET
+  budCat:['Routine Maint','Periodic Maint','Development','Emergency','Admin'],
+  budBnUGX:[420,472,640,180,130],
+  budYrs:['FY22/23','FY23/24','FY24/25','FY25/26'],
+  budAlloc:[1420,1580,1710,1842], budSpent:[1380,1520,1640,null],
+  costTreat:['Routine','Resealing','Overlay','Rehab','Reconstruct'],
+  costPerKm:[4.5,118,320,780,1450], // mn UGX/km
+  budReg:[480,420,490,452], // region budget bn UGX
+  // PROJECTS
+  projName:['Gulu-Acholibur','Mbarara-Bypass','Ntungamo-Mirama','Soroti-Lira','Kampala Distr.','Masaka-Mbarara','Tororo-Mbale','Hoima-Kafu'],
+  projPct:[88,62,45,71,34,56,82,28],
+  projBn:[248,142,186,124,380,210,168,290],
+  projStatus:['On Track','Minor Delay','Behind','On Track','Behind','Minor Delay','On Track','Behind'],
+  oprcLot:['Lot 1 (A109N)','Lot 2 (A109W)','Lot 3 (A104)','Lot 4 (B23)','Lot 5 (A109E)','Lot 6 (A101)','Lot 7 (B30)'],
+  oprcScore:[84,76,58,91,72,65,88], // performance score
+  // SAFETY
+  safetyYrs:[2016,2017,2018,2019,2020,2021,2022,2023,2024,2025],
+  fatalities:[3891,3744,3820,3698,2940,3180,3340,3480,3380,3247],
+  accCorridor:['Busega Jct','Namawojjolo','Lugazi Town','Katosi Cnr','Kyambogo','Namasuba','Wakiso','Luwero','Mityana','Masaka'],
+  accPerYr:[42,38,31,28,26,24,22,19,18,17],
+  accFatal:[8,6,5,4,3,4,3,2,3,2],
+  causeLbl:['Speeding','Overtaking','Drunk Drive','Poor Road','Pedestrian','Mechanical'],
+  causePct:[38,22,18,12,6,4],
+};
+
+// ── CHART LAYOUT TEMPLATE ──────────────────────────────────────
+const CFG={responsive:true,displayModeBar:false};
+const TL=(title,extra={})=>({
+  title:{text:title,font:{color:'#00f5ff',size:11,family:'Courier New'},x:0.5,xanchor:'center',y:0.97},
+  paper_bgcolor:'#0d0d0d',plot_bgcolor:'#080808',
+  font:{color:'#888',size:9,family:'Courier New'},
+  margin:{t:32,r:10,b:36,l:46,pad:0},
+  legend:{font:{color:'#666',size:8.5},bgcolor:'rgba(0,0,0,0)',bordercolor:'transparent',orientation:'h',y:-0.18},
+  xaxis:{gridcolor:'#1a1a1a',zerolinecolor:'#1f1f1f',tickfont:{color:'#666',size:8},linecolor:'#222',showgrid:true},
+  yaxis:{gridcolor:'#1a1a1a',zerolinecolor:'#1f1f1f',tickfont:{color:'#666',size:8},linecolor:'#222',showgrid:true},
+  ...extra
+});
+const TL3D=(title)=>({
+  title:{text:title,font:{color:'#00f5ff',size:11,family:'Courier New'},x:0.5,xanchor:'center'},
+  paper_bgcolor:'#0d0d0d',
+  font:{color:'#888',size:9,family:'Courier New'},
+  margin:{t:36,r:10,b:10,l:10},
+  scene:{
+    bgcolor:'#060606',
+    xaxis:{gridcolor:'#1a1a1a',zerolinecolor:'#222',tickfont:{color:'#555',size:7},showbackground:true,backgroundcolor:'#060606'},
+    yaxis:{gridcolor:'#1a1a1a',zerolinecolor:'#222',tickfont:{color:'#555',size:7},showbackground:true,backgroundcolor:'#060606'},
+    zaxis:{gridcolor:'#1a1a1a',zerolinecolor:'#222',tickfont:{color:'#555',size:7},showbackground:true,backgroundcolor:'#060606'},
+  }
+});
+const bar=(x,y,name,col,extra={})=>({type:'bar',x,y,name,marker:{color:col,line:{color:'rgba(0,0,0,0.3)',width:0.5}},opacity:0.92,...extra});
+const line=(x,y,name,col,extra={})=>({type:'scatter',mode:'lines+markers',x,y,name,line:{color:col,width:2},marker:{color:col,size:4},...extra});
+const pie=(vals,lbls,cols)=>({type:'pie',values:vals,labels:lbls,marker:{colors:cols,line:{color:'#000',width:1}},textfont:{size:8,color:'#999'},hole:0.35,direction:'clockwise'});
+
+// ── TAB INIT FLAGS ─────────────────────────────────────────────
+const inited={};
+function showTab(n){
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===n-1));
+  document.querySelectorAll('.tab-panel').forEach((p,i)=>{p.style.display=i===n-1?'block':'none';p.classList.toggle('active',i===n-1);});
+  if(!inited[n]){inited[n]=true;setTimeout(()=>window['initT'+n](),50);}
+}
+
+// ══════════════════════════════════════════════════════════════
+// TAB 1 — NETWORK OVERVIEW (c1–c15)
+// ══════════════════════════════════════════════════════════════
+function initT1(){
+  // c1 Sunburst - full hierarchy
+  Plotly.newPlot('c1',[{type:'sunburst',
+    ids:['Total','Paved','Unpaved','Bitumen','Concrete','Gravel','Earth','GoodP','FairP','PoorP','CritP','GoodU','FairU','PoorU','CritU'],
+    labels:['21,302 km','Paved 6,405','Unpaved 14,897','Bitumen 5,840','Concrete 565','Gravel 10,240','Earth 4,657','Good 2,242','Fair 2,242','Poor 1,281','Crit 640','Good 1,490','Fair 4,469','Poor 5,959','Crit 2,979'],
+    parents:['','Total','Total','Paved','Paved','Unpaved','Unpaved','Paved','Paved','Paved','Paved','Unpaved','Unpaved','Unpaved','Unpaved'],
+    values:[21302,6405,14897,5840,565,10240,4657,2242,2242,1281,640,1490,4469,5959,2979],
+    marker:{colors:['#00f5ff','#00ff88','#ff6600','#00ccdd','#00aa66','#cc5500','#994400','#00ff88','#ffee00','#ff6600','#ff0040','#00bb66','#bbaa00','#dd5500','#cc0030'],line:{color:'#000',width:1}},
+    textfont:{size:8}}],
+    {title:{text:'Network Hierarchy',font:{color:'#00f5ff',size:11,family:'Courier New'},x:0.5},paper_bgcolor:'#0d0d0d',margin:{t:32,r:0,b:0,l:0}},CFG);
+
+  // c2 Treemap - by region + class
+  Plotly.newPlot('c2',[{type:'treemap',
+    ids:['Net','Cen','Nor','Eas','Wes','CenA','CenB','CenC','NorA','NorB','NorC','EasA','EasB','EasC','WesA','WesB','WesC'],
+    labels:['21,302km','Central 5,820','Northern 5,240','Eastern 4,890','Western 5,352','A:1,120','B:1,680','C:3,020','A:980','B:1,480','C:2,780','A:1,040','B:1,240','C:2,610','A:1,060','B:1,400','C:2,892'],
+    parents:['','Net','Net','Net','Net','Cen','Cen','Cen','Nor','Nor','Nor','Eas','Eas','Eas','Wes','Wes','Wes'],
+    values:[21302,5820,5240,4890,5352,1120,1680,3020,980,1480,2780,1040,1240,2610,1060,1400,2892],
+    marker:{colorscale:[[0,'#001a1a'],[0.5,'#006666'],[1,'#00f5ff']],line:{color:'#000',width:1}},
+    textfont:{size:8}}],
+    {title:{text:'Network by Region & Class',font:{color:'#00f5ff',size:11,family:'Courier New'},x:0.5},paper_bgcolor:'#0d0d0d',margin:{t:32,r:0,b:0,l:0}},CFG);
+
+  // c3 Stacked bar - region × surface
+  Plotly.newPlot('c3',[
+    bar(D.regLbl,[2420,1380,1210,1395],'Paved','#00f5ff',{text:['2,420','1,380','1,210','1,395'],textposition:'inside',textfont:{size:8}}),
+    bar(D.regLbl,[3400,3860,3680,3957],'Gravel','#ff6600',{text:['3,400','3,860','3,680','3,957'],textposition:'inside',textfont:{size:8}}),
+    bar(D.regLbl,[0,0,0,0],'','rgba(0,0,0,0)'),
+  ].slice(0,2),
+  TL('Road Network by Region (km)',{barmode:'stack',xaxis:{title:{text:'Region',font:{size:9}}},yaxis:{title:{text:'Kilometres',font:{size:9}}}}),CFG);
+
+  // c4 Scatter3D - road segments
+  const n=80,lats=[],lngs=[],aadts=[],iri=[],cond=[];
+  for(let i=0;i<n;i++){lats.push(-1.5+Math.random()*5);lngs.push(29.5+Math.random()*5);aadts.push(500+Math.random()*18000);iri.push(1.5+Math.random()*8);cond.push(['Good','Fair','Poor','Critical'][Math.floor(Math.random()*4)]);}
+  Plotly.newPlot('c4',[{type:'scatter3d',x:lats,y:lngs,z:aadts,mode:'markers',
+    marker:{size:4,color:iri,colorscale:[[0,'#00ff88'],[0.4,'#ffee00'],[0.7,'#ff6600'],[1,'#ff0040']],
+    colorbar:{title:'IRI m/km',titlefont:{color:'#666',size:8},tickfont:{color:'#666',size:7},thickness:8,len:0.6},
+    line:{color:'rgba(0,0,0,0.3)',width:0.5}},
+    text:cond,hovertemplate:'Lat: %{x:.2f}<br>Lng: %{y:.2f}<br>AADT: %{z:,.0f}<br>IRI: %{marker.color:.1f}<extra></extra>'}],
+    {...TL3D('Road Segments · Lat × Lng × AADT (IRI colour)'),scene:{...TL3D('').scene,xaxis:{...TL3D('').scene.xaxis,title:'Latitude'},yaxis:{...TL3D('').scene.yaxis,title:'Longitude'},zaxis:{...TL3D('').scene.zaxis,title:'AADT'}}},CFG);
+
+  // c5 Surface plot - condition score by region × class
+  const z=[[80,62,45],[70,55,38],[72,58,40],[75,60,42]];
+  Plotly.newPlot('c5',[{type:'surface',z,x:['Class A','Class B','Class C'],y:D.regLbl,
+    colorscale:[[0,'#ff0040'],[0.33,'#ff6600'],[0.66,'#ffee00'],[1,'#00ff88']],
+    colorbar:{title:'Cond Score',titlefont:{color:'#666',size:8},tickfont:{color:'#666',size:7},thickness:8},
+    contours:{z:{show:true,usecolormap:true,highlightcolor:'#fff',project:{z:true}}}}],
+    {...TL3D('Condition Score Surface · Region × Class'),scene:{...TL3D('').scene,xaxis:{...TL3D('').scene.xaxis,title:'Road Class'},yaxis:{...TL3D('').scene.yaxis,title:'Region'},zaxis:{...TL3D('').scene.zaxis,title:'Score 0-100'}}},CFG);
+
+  // c6 Pie - surface type
+  Plotly.newPlot('c6',[pie(D.surfKm,D.surfLbl,['#00f5ff','#00aacc','#ff6600','#cc4400'])],
+    TL('Surface Type Distribution'),CFG);
+
+  // c7 Gauge - paved %
+  Plotly.newPlot('c7',[{type:'indicator',mode:'gauge+number+delta',value:30,
+    delta:{reference:28,increasing:{color:'#00ff88'},decreasing:{color:'#ff0040'}},
+    gauge:{axis:{range:[0,100],tickcolor:'#444',tickfont:{size:8,color:'#666'}},
+    bar:{color:'#00f5ff',thickness:0.3},
+    steps:[{range:[0,30],color:'#0a1a1a'},{range:[30,60],color:'#051212'},{range:[60,100],color:'#030808'}],
+    threshold:{line:{color:'#00ff88',width:2},thickness:0.75,value:40}},
+    number:{font:{color:'#00f5ff',size:36},suffix:'%'},
+    title:{text:'Paved Network %<br><span style="font-size:9px;color:#555">Target: 40% by 2027</span>',font:{color:'#aaa',size:10}}}],
+    {paper_bgcolor:'#0d0d0d',margin:{t:28,r:20,b:10,l:20}},CFG);
+
+  // c8 Gauge - condition index
+  Plotly.newPlot('c8',[{type:'indicator',mode:'gauge+number+delta',value:49,
+    delta:{reference:52,increasing:{color:'#ff0040'},decreasing:{color:'#00ff88'}},
+    gauge:{axis:{range:[0,100],tickcolor:'#444',tickfont:{size:8,color:'#666'}},
+    bar:{color:'#ffee00',thickness:0.3},
+    steps:[{range:[0,40],color:'#1a0505'},{range:[40,65],color:'#1a1205'},{range:[65,100],color:'#051a05'}],
+    threshold:{line:{color:'#00ff88',width:2},thickness:0.75,value:65}},
+    number:{font:{color:'#ffee00',size:36}},
+    title:{text:'Overall Condition Index<br><span style="font-size:9px;color:#555">Target: 65 by FY27</span>',font:{color:'#aaa',size:10}}}],
+    {paper_bgcolor:'#0d0d0d',margin:{t:28,r:20,b:10,l:20}},CFG);
+
+  // c9 Bar - km by road class
+  Plotly.newPlot('c9',[bar(D.classLbl,D.classKm,'Total',['#00f5ff','#00aacc','#006688']),
+    bar(D.classLbl,D.classPaved,'Paved',['#00ff88','#00cc66','#009944'])],
+    TL('Network by Road Class',{barmode:'group',yaxis:{title:{text:'km',font:{size:9}}}}),CFG);
+
+  // c10 Horizontal bar - region km
+  Plotly.newPlot('c10',[{type:'bar',orientation:'h',y:D.regLbl,x:D.regKm,name:'Total',
+    marker:{color:['#00f5ff','#00ccdd','#00aacc','#0088aa'],line:{color:'#000',width:0.5}},text:D.regKm.map(v=>v.toLocaleString()+' km'),textposition:'inside',textfont:{size:8,color:'#000'}},
+    {type:'bar',orientation:'h',y:D.regLbl,x:D.regPaved,name:'Paved',
+    marker:{color:'#00ff8866'},text:D.regPaved.map(v=>v.toLocaleString()),textposition:'inside',textfont:{size:8}}],
+    TL('Network Length by Region',{barmode:'overlay',xaxis:{title:{text:'km',font:{size:9}}}}),CFG);
+
+  // c11 Line - network growth
+  Plotly.newPlot('c11',[line(D.netYrs,D.netKm,'Total Network','#00f5ff',{fill:'tozeroy',fillcolor:'rgba(0,245,255,0.06)'}),
+    line(D.netYrs,[5200,5600,5800,5900,6100,6200,6300,6380,6405],'Paved','#00ff88',{fill:'tozeroy',fillcolor:'rgba(0,255,136,0.04)'})],
+    TL('Network Growth 2010–2025 (km)',{yaxis:{title:{text:'km',font:{size:9}}},xaxis:{title:{text:'Year',font:{size:9}}}}),CFG);
+
+  // c12 Heatmap - condition by region × class
+  Plotly.newPlot('c12',[{type:'heatmap',z:[[80,62,45],[70,55,38],[72,58,40],[75,60,42]],
+    x:['Class A','Class B','Class C'],y:D.regLbl,
+    colorscale:[[0,'#200000'],[0.5,'#885500'],[1,'#00ff88']],
+    text:[[80,62,45],[70,55,38],[72,58,40],[75,60,42]],texttemplate:'%{text}',textfont:{size:9,color:'#fff'},
+    colorbar:{title:'Score',titlefont:{color:'#666',size:8},tickfont:{color:'#666',size:7},thickness:8}}],
+    TL('Condition Score · Region × Class'),CFG);
+
+  // c13 Pie - paved vs unpaved split
+  Plotly.newPlot('c13',[{type:'pie',values:[6405,14897],labels:['Paved 6,405 km','Unpaved 14,897 km'],
+    marker:{colors:['#00f5ff','#ff6600'],line:{color:'#000',width:2}},
+    pull:[0.05,0],hole:0.5,textfont:{size:8.5,color:'#ccc'},
+    texttemplate:'%{label}<br>%{percent}'}],
+    TL('Paved vs Unpaved Network'),CFG);
+
+  // c14 Box plot - IRI distribution by class
+  Plotly.newPlot('c14',[
+    {type:'box',name:'Class A',y:[2.1,2.4,2.8,3.2,3.3,3.3,3.4,3.6,3.8,4.2],marker:{color:'#00f5ff'},line:{color:'#00f5ff'},fillcolor:'rgba(0,245,255,0.1)'},
+    {type:'box',name:'Class B',y:[3.2,3.8,4.2,4.4,4.5,4.6,5.0,5.4,5.8,6.2],marker:{color:'#ffee00'},line:{color:'#ffee00'},fillcolor:'rgba(255,238,0,0.1)'},
+    {type:'box',name:'Class C',y:[4.8,5.2,5.8,6.2,6.3,6.4,6.8,7.2,7.8,9.1],marker:{color:'#ff6600'},line:{color:'#ff6600'},fillcolor:'rgba(255,102,0,0.1)'}],
+    TL('IRI Distribution by Road Class',{yaxis:{title:{text:'IRI m/km',font:{size:9}}}}),CFG);
+
+  // c15 Waterfall - network composition breakdown
+  Plotly.newPlot('c15',[{type:'waterfall',orientation:'v',
+    x:['Total','−Class C','−Class B','=Class A','−Earth','−Gravel','=Paved'],
+    y:[21302,-11302,-5800,4200,-4657,-10240,6405],
+    measure:['absolute','relative','relative','total','relative','relative','total'],
+    connector:{line:{color:'#333',width:1}},
+    decreasing:{marker:{color:'#ff6600',line:{color:'#cc4400',width:0.5}}},
+    increasing:{marker:{color:'#00f5ff',line:{color:'#00aacc',width:0.5}}},
+    totals:{marker:{color:'#00ff88',line:{color:'#00cc44',width:0.5}}},
+    text:['21,302','−11,302','−5,800','4,200','−4,657','−10,240','6,405'],textposition:'outside',textfont:{size:8}}],
+    TL('Network Composition Waterfall (km)',{yaxis:{title:{text:'km',font:{size:9}}}}),CFG);
+}
+</script>
+<script>
+// ══════════════════════════════════════════════════════════════
+// TAB 2 — PAVEMENT MANAGEMENT (c16–c30)
+// ══════════════════════════════════════════════════════════════
+function initT2(){
+  // c16 Donut - paved condition
+  Plotly.newPlot('c16',[pie(D.pavCond,['Good 2,242km','Fair 2,242km','Poor 1,281km','Critical 640km'],D.condCol)],
+    TL('Paved Road Condition'),CFG);
+
+  // c17 Donut - unpaved condition
+  Plotly.newPlot('c17',[pie(D.unpavCond,['Good 1,490km','Fair 4,469km','Poor 5,959km','Critical 2,979km'],D.condCol)],
+    TL('Unpaved Road Condition'),CFG);
+
+  // c18 Bar - overall condition km
+  const totCond=[3732,6711,7240,3619];
+  Plotly.newPlot('c18',[{type:'bar',x:D.condLbl,y:totCond,
+    marker:{color:D.condCol,line:{color:'#000',width:0.5}},
+    text:totCond.map(v=>v.toLocaleString()),textposition:'outside',textfont:{size:8},
+    name:'Total km'}],
+    TL('Overall Condition (km)',{yaxis:{title:{text:'km',font:{size:9}}}}),CFG);
+
+  // c19 Gauge - PCI score
+  Plotly.newPlot('c19',[{type:'indicator',mode:'gauge+number+delta',value:58,
+    delta:{reference:55,increasing:{color:'#00ff88'}},
+    gauge:{axis:{range:[0,100],tickvals:[0,20,40,60,80,100],ticktext:['0\nFailed','20\nVBad','40\nPoor','60\nFair','80\nGood','100\nExc'],tickcolor:'#444',tickfont:{size:7,color:'#666'}},
+    bar:{color:'#ffee00',thickness:0.3},
+    steps:[{range:[0,25],color:'#2a0505'},{range:[25,40],color:'#2a1505'},{range:[40,55],color:'#1a1500'},{range:[55,70],color:'#051a05'},{range:[70,100],color:'#021405'}],
+    threshold:{line:{color:'#00ff88',width:2},thickness:0.75,value:65}},
+    number:{font:{color:'#ffee00',size:40}},
+    title:{text:'Pavement Condition Index<br><span style="font-size:9px;color:#555">Target: 65 · Network-weighted</span>',font:{color:'#aaa',size:10}}}],
+    {paper_bgcolor:'#0d0d0d',margin:{t:28,r:20,b:10,l:20}},CFG);
+
+  // c20 Stacked bar - condition by region
+  const reg_good=[820,680,760,740],reg_fair=[1680,1620,1490,1920],reg_poor=[2020,2000,1720,1500],reg_crit=[1300,940,920,459];
+  Plotly.newPlot('c20',[
+    bar(D.regLbl,reg_good,'Good','#00ff88',{text:reg_good,textposition:'inside',textfont:{size:8}}),
+    bar(D.regLbl,reg_fair,'Fair','#ffee00',{text:reg_fair,textposition:'inside',textfont:{size:8}}),
+    bar(D.regLbl,reg_poor,'Poor','#ff6600',{text:reg_poor,textposition:'inside',textfont:{size:8}}),
+    bar(D.regLbl,reg_crit,'Critical','#ff0040',{text:reg_crit,textposition:'inside',textfont:{size:8}})],
+    TL('Condition by Region (km)',{barmode:'stack',yaxis:{title:{text:'km',font:{size:9}}}}),CFG);
+
+  // c21 Scatter3D - segment IRI × age × traffic
+  const ns=70,xiri=[],yage=[],zaadt=[],cols=[];
+  for(let i=0;i<ns;i++){const v=Math.random();xiri.push(1+v*8);yage.push(Math.random()*30);zaadt.push(200+Math.random()*10000);cols.push(v<0.35?'#00ff88':v<0.7?'#ffee00':v<0.9?'#ff6600':'#ff0040');}
+  Plotly.newPlot('c21',[{type:'scatter3d',x:xiri,y:yage,z:zaadt,mode:'markers',
+    marker:{size:4,color:cols,opacity:0.85,line:{color:'rgba(0,0,0,0.2)',width:0.5}},
+    hovertemplate:'IRI: %{x:.1f}<br>Age: %{y:.0f}yr<br>AADT: %{z:,.0f}<extra></extra>'}],
+    {...TL3D('Segment: IRI × Age × AADT'),scene:{...TL3D('').scene,xaxis:{...TL3D('').scene.xaxis,title:'IRI m/km'},yaxis:{...TL3D('').scene.yaxis,title:'Age (yrs)'},zaxis:{...TL3D('').scene.zaxis,title:'AADT'}}},CFG);
+
+  // c22 Multi-line IRI trend
+  Plotly.newPlot('c22',[
+    line(D.iriYrs,D.iriA,'Class A Trunk','#00f5ff',{fill:'tozeroy',fillcolor:'rgba(0,245,255,0.04)'}),
+    line(D.iriYrs,D.iriB,'Class B Regional','#ffee00',{fill:'tozeroy',fillcolor:'rgba(255,238,0,0.04)'}),
+    line(D.iriYrs,D.iriC,'Class C District','#ff6600',{fill:'tozeroy',fillcolor:'rgba(255,102,0,0.04)'})],
+    TL('IRI Trend by Road Class 2020–2025',{yaxis:{title:{text:'IRI (m/km)',font:{size:9}},range:[0,10]},xaxis:{title:{text:'Year',font:{size:9}}}}),CFG);
+
+  // c23 Heatmap - IRI by region × year
+  Plotly.newPlot('c23',[{type:'heatmap',
+    z:[[3.1,3.2,3.3,3.4,3.3,3.2],[3.8,4.0,4.3,4.5,4.4,4.2],[4.2,4.5,4.8,5.0,4.9,4.7],[3.9,4.1,4.4,4.6,4.5,4.3]],
+    x:D.iriYrs,y:D.regLbl,
+    colorscale:[[0,'#002200'],[0.4,'#886600'],[0.8,'#aa2200'],[1,'#ff0040']],
+    text:[[3.1,3.2,3.3,3.4,3.3,3.2],[3.8,4.0,4.3,4.5,4.4,4.2],[4.2,4.5,4.8,5.0,4.9,4.7],[3.9,4.1,4.4,4.6,4.5,4.3]],
+    texttemplate:'%{text:.1f}',textfont:{size:8,color:'#eee'},
+    colorbar:{title:'IRI m/km',titlefont:{color:'#666',size:8},tickfont:{size:7,color:'#666'},thickness:8}}],
+    TL('IRI Heatmap: Region × Year'),CFG);
+
+  // c24 Horizontal bar - treatment needs
+  Plotly.newPlot('c24',[{type:'bar',orientation:'h',y:D.treatLbl,x:D.treatKm,
+    marker:{color:['#00ff88','#ffee00','#ff9900','#ff4400','#ff0040'],line:{color:'#000',width:0.5}},
+    text:D.treatKm.map(v=>v.toLocaleString()+' km'),textposition:'inside',textfont:{size:8,color:'#000'}}],
+    TL('Treatment Needs by Type (km)',{xaxis:{title:{text:'km',font:{size:9}}}}),CFG);
+
+  // c25 Scatter - IRI vs AADT
+  const xi=[],ya=[],ci=[];
+  for(let i=0;i<50;i++){xi.push(1+Math.random()*9);ya.push(200+Math.random()*18000);ci.push(xi[xi.length-1]<3.5?'#00ff88':xi[xi.length-1]<5.5?'#ffee00':xi[xi.length-1]<8?'#ff6600':'#ff0040');}
+  Plotly.newPlot('c25',[{type:'scatter',mode:'markers',x:xi,y:ya,
+    marker:{color:ci,size:6,line:{color:'rgba(0,0,0,0.3)',width:0.5}},
+    hovertemplate:'IRI: %{x:.1f} m/km<br>AADT: %{y:,.0f}<extra></extra>'}],
+    TL('IRI vs Traffic Volume',{xaxis:{title:{text:'IRI m/km',font:{size:9}}},yaxis:{title:{text:'AADT (veh/day)',font:{size:9}}}}),CFG);
+
+  // c26 Stacked area - condition evolution
+  const yrs=[2020,2021,2022,2023,2024,2025];
+  Plotly.newPlot('c26',[
+    line(yrs,[39,38,37,36,36,35],'Good %','#00ff88',{fill:'tozeroy',fillcolor:'rgba(0,255,136,0.15)',mode:'lines'}),
+    line(yrs,[34,34,35,35,35,35],'Fair %','#ffee00',{fill:'tozeroy',fillcolor:'rgba(255,238,0,0.1)',mode:'lines'}),
+    line(yrs,[18,19,19,20,20,20],'Poor %','#ff6600',{fill:'tozeroy',fillcolor:'rgba(255,102,0,0.1)',mode:'lines'}),
+    line(yrs,[9,9,9,9,9,10],'Critical %','#ff0040',{fill:'tozeroy',fillcolor:'rgba(255,0,64,0.1)',mode:'lines'})],
+    TL('Condition Evolution % 2020-2025',{yaxis:{title:{text:'% of paved network',font:{size:9}}}}),CFG);
+
+  // c27 Bar - cost per km by treatment
+  Plotly.newPlot('c27',[{type:'bar',x:D.costTreat,y:D.costPerKm,
+    marker:{color:['#00ff88','#ffee00','#ff9900','#ff4400','#ff0040'],line:{color:'#000',width:0.5}},
+    text:D.costPerKm.map(v=>v.toLocaleString()),textposition:'outside',textfont:{size:8}}],
+    TL('Cost per km by Treatment (mn UGX)',{yaxis:{title:{text:'mn UGX/km',font:{size:9}}}}),CFG);
+
+  // c28 Surface - IRI surface by region × treatment
+  const iriSurf=D.regLbl.map((_,i)=>D.treatLbl.map((_,j)=>2+i*1.2+j*1.8+Math.random()*0.5));
+  Plotly.newPlot('c28',[{type:'surface',z:iriSurf,x:D.treatLbl,y:D.regLbl,
+    colorscale:[[0,'#003300'],[0.5,'#886600'],[1,'#ff0040']],
+    colorbar:{title:'IRI',titlefont:{color:'#666',size:7},tickfont:{size:7,color:'#666'},thickness:8}}],
+    {...TL3D('IRI Surface: Region × Treatment Need'),scene:{...TL3D('').scene,xaxis:{...TL3D('').scene.xaxis,title:'Treatment'},yaxis:{...TL3D('').scene.yaxis,title:'Region'},zaxis:{...TL3D('').scene.zaxis,title:'IRI m/km'}}},CFG);
+
+  // c29 Violin - PCR by region
+  Plotly.newPlot('c29',[
+    {type:'violin',name:'Central',y:[72,68,75,80,55,62,48,85,71,66,78,58],marker:{color:'#00f5ff'},fillcolor:'rgba(0,245,255,0.15)',line:{color:'#00f5ff',width:1.5},box:{visible:true},meanline:{visible:true}},
+    {type:'violin',name:'Northern',y:[55,48,62,58,45,70,52,40,65,50,47,60],marker:{color:'#ffee00'},fillcolor:'rgba(255,238,0,0.1)',line:{color:'#ffee00',width:1.5},box:{visible:true},meanline:{visible:true}},
+    {type:'violin',name:'Eastern',y:[60,65,58,70,55,75,68,62,72,48,55,80],marker:{color:'#00ff88'},fillcolor:'rgba(0,255,136,0.1)',line:{color:'#00ff88',width:1.5},box:{visible:true},meanline:{visible:true}},
+    {type:'violin',name:'Western',y:[58,64,70,75,60,68,55,72,65,58,62,78],marker:{color:'#bf00ff'},fillcolor:'rgba(191,0,255,0.1)',line:{color:'#bf00ff',width:1.5},box:{visible:true},meanline:{visible:true}}],
+    TL('Pavement Condition Rating Distribution by Region',{yaxis:{title:{text:'PCR Score 0-100',font:{size:9}}},violinmode:'group'}),CFG);
+
+  // c30 Funnel - treatment pipeline
+  Plotly.newPlot('c30',[{type:'funnel',y:['Surveyed Links','Condition Assessed','Treatment Planned','Budgeted','Under Contract','Completed FY25'],
+    x:[21302,20840,8420,4200,1240,428],
+    marker:{color:['#00f5ff','#00ccdd','#00aacc','#ffee00','#ff6600','#00ff88'],line:{color:'#000',width:0.5}},
+    textinfo:'value+percent initial',textfont:{size:8.5,color:'#ccc'},opacity:0.9}],
+    TL('Pavement Treatment Pipeline FY25/26',{funnelmode:'stack',yaxis:{tickfont:{size:8.5}}}),CFG);
+}
+</script>
+<script>
+// ══════════════════════════════════════════════════════════════
+// TAB 3 — TRAFFIC (c31–c45)
+// ══════════════════════════════════════════════════════════════
+function initT3(){
+  // c31 Horizontal bar - AADT by corridor
+  Plotly.newPlot('c31',[{type:'bar',orientation:'h',y:D.corridors,x:D.corrAADT,
+    marker:{color:D.corrAADT.map(v=>v>10000?'#ff0040':v>5000?'#ff6600':v>2000?'#ffee00':'#00ff88'),
+    line:{color:'#000',width:0.5}},
+    text:D.corrAADT.map(v=>v.toLocaleString()),textposition:'inside',textfont:{size:8,color:'#000'}}],
+    TL('AADT by Major Corridor',{xaxis:{title:{text:'AADT (veh/day)',font:{size:9}}},yaxis:{tickfont:{size:8}}}),CFG);
+
+  // c32 Line - AADT trend national
+  Plotly.newPlot('c32',[line([2016,2017,2018,2019,2020,2021,2022,2023,2024,2025],[2890,3006,3126,3251,3141,3267,3397,3533,3675,3847],'National Avg AADT','#ffee00',{fill:'tozeroy',fillcolor:'rgba(255,238,0,0.06)'}),
+    line([2016,2017,2018,2019,2020,2021,2022,2023,2024,2025],[14200,14800,15400,16100,15200,16000,16800,17400,18000,18400],'Kla-Entebbe','#ff006e',{yaxis:'y2'})],
+    TL('National AADT Trend 2016–2025',{yaxis:{title:{text:'Avg AADT',font:{size:9}}},
+    yaxis2:{title:{text:'Kla-Entebbe AADT',font:{size:9}},overlaying:'y',side:'right',tickfont:{color:'#ff006e',size:8}},xaxis:{title:{text:'Year',font:{size:9}}}}),CFG);
+
+  // c33 Vehicle composition donut
+  Plotly.newPlot('c33',[pie(D.vehComp,D.vehLbl,['#00f5ff','#00ff88','#ffee00','#ff6600','#bf00ff','#888888'])],
+    TL('Vehicle Class Composition (% AADT)'),CFG);
+
+  // c34 Scatter3D - ATC stations: lat × lng × AADT
+  const stLat=[0.42,0.85,1.62,2.78,3.02,0.31,-0.33,-0.61,-0.54,0.33,0.44,0.61,0.70,0.30,0.06,-0.36,-1.25,-0.62,0.94,0.62,3.60,-1.24,1.43,0.65,2.25];
+  const stLng=[32.58,32.49,31.98,32.30,32.38,32.55,31.74,30.64,30.18,32.65,33.20,33.49,34.18,32.58,32.46,31.62,29.99,30.70,33.12,33.50,32.08,29.98,31.36,30.27,32.23];
+  const stAADT=[4820,3140,2860,2140,1480,5210,3820,2940,1840,6480,4210,2840,2180,18400,9840,2620,1670,2180,1420,1680,1240,1180,1840,2140,2480];
+  Plotly.newPlot('c34',[{type:'scatter3d',x:stLat,y:stLng,z:stAADT,mode:'markers+text',
+    marker:{size:stAADT.map(v=>Math.sqrt(v/400)+3),color:stAADT,colorscale:[[0,'#00ff88'],[0.4,'#ffee00'],[0.8,'#ff6600'],[1,'#ff0040']],
+    colorbar:{title:'AADT',titlefont:{color:'#666',size:7},tickfont:{size:7,color:'#666'},thickness:8},
+    line:{color:'rgba(0,0,0,0.3)',width:0.5}},
+    hovertemplate:'Lat: %{x:.3f}<br>Lng: %{y:.3f}<br>AADT: %{z:,.0f}<extra></extra>'}],
+    {...TL3D('ATC Station Network · 3D Volume Map'),scene:{...TL3D('').scene,xaxis:{...TL3D('').scene.xaxis,title:'Latitude'},yaxis:{...TL3D('').scene.yaxis,title:'Longitude'},zaxis:{...TL3D('').scene.zaxis,title:'AADT'}}},CFG);
+
+  // c35 Multi-line forecast
+  Plotly.newPlot('c35',[
+    line(D.fcYrs,D.fcNorm,'Normal (4%/yr)','#00f5ff',{fill:'tozeroy',fillcolor:'rgba(0,245,255,0.04)'}),
+    line(D.fcYrs,D.fcOpt,'Optimistic (6%/yr)','#00ff88',{fill:'tonexty',fillcolor:'rgba(0,255,136,0.04)'}),
+    line(D.fcYrs,D.fcPess,'Pessimistic (2%/yr)','#ff6600',{fill:'tozeroy',fillcolor:'rgba(255,102,0,0.04)'})],
+    TL('AADT Forecast 2016–2035 (3 Scenarios)',{yaxis:{title:{text:'AADT',font:{size:9}}},xaxis:{title:{text:'Year',font:{size:9}}},
+    shapes:[{type:'line',x0:2025,x1:2025,y0:0,y1:8000,line:{color:'#444',width:1,dash:'dot'}}],
+    annotations:[{x:2025,y:7500,text:'Today',showarrow:false,font:{color:'#555',size:8}}]}),CFG);
+
+  // c36 Bar - hourly traffic pattern
+  Plotly.newPlot('c36',[{type:'bar',x:D.hourHr,y:D.hourPct,name:'% Peak',
+    marker:{color:D.hourPct.map(v=>v>80?'#ff0040':v>50?'#ff6600':v>25?'#ffee00':'#00ff88'),line:{color:'#000',width:0.5}},
+    text:D.hourPct.map(v=>v+'%'),textposition:'outside',textfont:{size:7}}],
+    TL('Hourly Traffic Pattern (% of Peak)',{xaxis:{title:{text:'Hour (EAT)',font:{size:9}}},yaxis:{title:{text:'% of peak',font:{size:9}},range:[0,115]}}),CFG);
+
+  // c37 Bar - daily pattern Mon-Sun
+  Plotly.newPlot('c37',[bar(['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],[82,85,88,86,100,74,42],'%','#00f5ff',{text:[82,85,88,86,100,74,42],textposition:'outside',textfont:{size:8}})],
+    TL('Weekly Traffic Pattern (% of Friday Peak)',{yaxis:{title:{text:'% of peak',font:{size:9}},range:[0,115]}}),CFG);
+
+  // c38 Bar - monthly variation
+  Plotly.newPlot('c38',[bar(['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+    [88,92,96,94,100,98,95,97,100,96,92,84],'% of Peak','#bf00ff',{text:[88,92,96,94,100,98,95,97,100,96,92,84],textposition:'outside',textfont:{size:8}})],
+    TL('Monthly Traffic Variation (% of Peak)',{yaxis:{title:{text:'%',font:{size:9}},range:[0,115]}}),CFG);
+
+  // c39 Scatter - AADT vs pavement condition (IRI)
+  Plotly.newPlot('c39',[{type:'scatter',mode:'markers',
+    x:[18400,6480,4820,3820,2180,2620,1670,1240,1840,2140],
+    y:[2.8,3.1,4.8,5.9,4.2,5.4,5.6,6.1,4.4,4.8],
+    text:D.corridors,mode:'markers+text',textposition:'top center',textfont:{size:7,color:'#666'},
+    marker:{color:['#ff0040','#ff4400','#ff6600','#ffee00','#ffee00','#ff6600','#ff6600','#ff6600','#ff6600','#ff6600'],size:10,line:{color:'rgba(0,0,0,0.3)',width:0.5}},
+    hovertemplate:'%{text}<br>AADT: %{x:,.0f}<br>IRI: %{y:.1f}<extra></extra>'}],
+    TL('Traffic Volume vs Pavement Condition',{xaxis:{title:{text:'AADT (veh/day)',font:{size:9}}},yaxis:{title:{text:'IRI m/km (higher=worse)',font:{size:9}}}}),CFG);
+
+  // c40 Bar - HGV % by corridor
+  Plotly.newPlot('c40',[bar(D.corridors,[12,18,22,28,28,26,24,22,20,18],'HGV %',
+    D.corridors.map((c,i)=>[12,18,22,28,28,26,24,22,20,18][i]>25?'#ff0040':'#ff6600'),{text:[12,18,22,28,28,26,24,22,20,18].map(v=>v+'%'),textposition:'outside',textfont:{size:7}})],
+    TL('Heavy Vehicle % by Corridor',{yaxis:{title:{text:'HGV %',font:{size:9}},range:[0,36]}}),CFG);
+
+  // c41 Heatmap - AADT by corridor × month
+  const mths=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const corrMthData=D.corrAADT.map(a=>mths.map((_,m)=>Math.round(a*(0.85+0.15*Math.sin(m/6*Math.PI)))));
+  Plotly.newPlot('c41',[{type:'heatmap',z:corrMthData,x:mths,y:D.corridors,
+    colorscale:[[0,'#001100'],[0.5,'#666600'],[1,'#ff0040']],
+    colorbar:{title:'AADT',titlefont:{color:'#666',size:7},tickfont:{size:7,color:'#666'},thickness:8}}],
+    TL('AADT Seasonality: Corridor × Month'),CFG);
+
+  // c42 Growth bar
+  Plotly.newPlot('c42',[bar(D.corridors,D.corrGrowth,'Growth %/yr',D.corrGrowth.map(g=>g>4?'#ff0040':g>3?'#ffee00':'#00ff88'),{text:D.corrGrowth.map(v=>v+'%'),textposition:'outside',textfont:{size:8}})],
+    TL('Traffic Growth Rate by Corridor (%/yr)',{yaxis:{title:{text:'%/yr',font:{size:9}},range:[0,6.5]}}),CFG);
+
+  // c43 Surface - AADT × year × region (3D)
+  const yrs3d=[2018,2019,2020,2021,2022,2023,2024,2025];
+  const aadtSurf=[[2200,2280,2180,2270,2360,2460,2560,2670],[1840,1910,1830,1910,1990,2070,2160,2240],[1680,1750,1680,1750,1820,1900,1980,2060],[1900,1970,1890,1970,2050,2130,2220,2310]];
+  Plotly.newPlot('c43',[{type:'surface',z:aadtSurf,x:yrs3d,y:D.regLbl,
+    colorscale:[[0,'#001100'],[0.5,'#886600'],[1,'#00f5ff']],
+    colorbar:{title:'AADT',titlefont:{color:'#666',size:7},tickfont:{size:7,color:'#666'},thickness:8}}],
+    {...TL3D('AADT Surface: Region × Year (3D)'),scene:{...TL3D('').scene,xaxis:{...TL3D('').scene.xaxis,title:'Year'},yaxis:{...TL3D('').scene.yaxis,title:'Region'},zaxis:{...TL3D('').scene.zaxis,title:'AADT'}}},CFG);
+
+  // c44 Box - AADT distribution by road class
+  Plotly.newPlot('c44',[
+    {type:'box',name:'Class A',y:[4200,6480,8200,12000,18400,3820,5200,9400],marker:{color:'#00f5ff'},fillcolor:'rgba(0,245,255,0.1)',line:{color:'#00f5ff'},box:{visible:true},meanline:{visible:true}},
+    {type:'box',name:'Class B',y:[1200,1840,2180,2620,3140,3820,1670,2140],marker:{color:'#ffee00'},fillcolor:'rgba(255,238,0,0.1)',line:{color:'#ffee00'},box:{visible:true},meanline:{visible:true}},
+    {type:'box',name:'Class C',y:[280,450,640,820,1100,1380,900,620,740],marker:{color:'#ff6600'},fillcolor:'rgba(255,102,0,0.1)',line:{color:'#ff6600'},box:{visible:true},meanline:{visible:true}}],
+    TL('AADT Distribution by Road Class',{yaxis:{title:{text:'AADT (veh/day)',font:{size:9}}}}),CFG);
+
+  // c45 Scatter3D - corridors: AADT × growth × IRI
+  Plotly.newPlot('c45',[{type:'scatter3d',x:D.corrAADT,y:D.corrGrowth,
+    z:[2.8,3.1,4.8,5.9,4.2,5.4,5.6,6.1,4.4,4.8],
+    mode:'markers+text',text:D.corridors,textposition:'top center',textfont:{size:7,color:'#aaa'},
+    marker:{size:D.corrAADT.map(v=>Math.sqrt(v/600)+4),color:D.corrAADT,
+    colorscale:[[0,'#00ff88'],[0.5,'#ffee00'],[1,'#ff0040']],
+    colorbar:{title:'AADT',titlefont:{color:'#666',size:7},tickfont:{size:7,color:'#666'},thickness:8},
+    line:{color:'rgba(0,0,0,0.3)',width:0.5}},
+    hovertemplate:'%{text}<br>AADT: %{x:,.0f}<br>Growth: %{y:.1f}%<br>IRI: %{z:.1f}<extra></extra>'}],
+    {...TL3D('Corridor: AADT × Growth × IRI (3D)'),scene:{...TL3D('').scene,xaxis:{...TL3D('').scene.xaxis,title:'AADT'},yaxis:{...TL3D('').scene.yaxis,title:'Growth %/yr'},zaxis:{...TL3D('').scene.zaxis,title:'IRI m/km'}}},CFG);
+}
+</script>
+<script>
+// ══════════════════════════════════════════════════════════════
+// TAB 4 — STRUCTURES (c46–c60)
+// ══════════════════════════════════════════════════════════════
+function initT4(){
+  // c46 Donut - by type
+  Plotly.newPlot('c46',[pie(D.strType,['Bridges 312','Box Culverts 142','Culverts 68','Drifts/Causeway 24'],['#00f5ff','#00aacc','#006688','#003344'])],
+    TL('Structures by Type (546 Total)'),CFG);
+
+  // c47 Donut - condition
+  Plotly.newPlot('c47',[pie(D.strCond,['Good 197','Fair 164','Poor 131','Critical 54'],D.condCol)],
+    TL('Structure Condition Distribution'),CFG);
+
+  // c48 Bar - material
+  Plotly.newPlot('c48',[{type:'bar',x:D.strMatLbl,y:D.strMat,
+    marker:{color:['#00f5ff','#888','#886600','#664400','#442200'],line:{color:'#000',width:0.5}},
+    text:D.strMat,textposition:'outside',textfont:{size:8}}],
+    TL('Structures by Material',{yaxis:{title:{text:'Count',font:{size:9}}}}),CFG);
+
+  // c49 Scatter3D - bridges by lat × lng × condition score
+  const bLat=[0.42,0.30,0.06,0.44,-0.33,-0.61,2.78,0.70,0.61,1.43,0.65,2.25,0.85,1.62,-1.25,0.31,0.94,0.62,-0.54,3.02,0.33,3.60,-0.36,0.50,1.80];
+  const bLng=[32.58,32.58,32.46,33.20,31.74,30.64,32.30,34.18,33.49,31.36,30.27,32.23,32.49,31.98,29.99,32.55,33.12,33.50,30.18,32.38,32.65,32.08,31.62,32.10,31.50];
+  const bScore=[82,75,90,68,55,45,72,38,62,70,84,76,65,52,30,88,71,60,48,55,78,42,66,80,58];
+  Plotly.newPlot('c49',[{type:'scatter3d',x:bLat,y:bLng,z:bScore,mode:'markers',
+    marker:{size:6,color:bScore,colorscale:[[0,'#ff0040'],[0.35,'#ff6600'],[0.65,'#ffee00'],[1,'#00ff88']],
+    colorbar:{title:'Cond Score',titlefont:{color:'#666',size:7},tickfont:{size:7,color:'#666'},thickness:8},
+    line:{color:'rgba(0,0,0,0.3)',width:0.5}},
+    hovertemplate:'Lat: %{x:.3f}<br>Lng: %{y:.3f}<br>Score: %{z}<extra></extra>'}],
+    {...TL3D('Bridge Network: Lat × Lng × Condition Score'),scene:{...TL3D('').scene,xaxis:{...TL3D('').scene.xaxis,title:'Latitude'},yaxis:{...TL3D('').scene.yaxis,title:'Longitude'},zaxis:{...TL3D('').scene.zaxis,title:'Cond Score (0-100)'}}},CFG);
+
+  // c50 Heatmap - condition by region
+  Plotly.newPlot('c50',[{type:'heatmap',
+    z:D.strRegCond,x:D.condLbl,y:D.regLbl,
+    colorscale:[[0,'#200000'],[0.5,'#885500'],[1,'#00ff88']],
+    text:D.strRegCond,texttemplate:'%{text}',textfont:{size:9,color:'#fff'},
+    colorbar:{title:'Count',titlefont:{color:'#666',size:7},tickfont:{size:7,color:'#666'},thickness:8}}],
+    TL('Structure Condition by Region'),CFG);
+
+  // c51 Bar - by span class
+  Plotly.newPlot('c51',[{type:'bar',x:D.strSpanLbl,y:D.strSpan,
+    marker:{color:['#003344','#005566','#007799','#009999','#00bbcc'],line:{color:'#000',width:0.5}},
+    text:D.strSpan,textposition:'outside',textfont:{size:8}}],
+    TL('Bridges by Span Class',{yaxis:{title:{text:'Count',font:{size:9}}}}),CFG);
+
+  // c52 Bar - by age
+  Plotly.newPlot('c52',[{type:'bar',x:D.strAgeLbl,y:D.strAge,
+    marker:{color:D.strAge.map((v,i)=>['#00ff88','#ffee00','#ff9900','#ff4400','#ff0040'][i]),line:{color:'#000',width:0.5}},
+    text:D.strAge,textposition:'outside',textfont:{size:8}}],
+    TL('Bridges by Age Class',{yaxis:{title:{text:'Count',font:{size:9}}}}),CFG);
+
+  // c53 Gauge - inspection currency
+  Plotly.newPlot('c53',[{type:'indicator',mode:'gauge+number',value:89,
+    gauge:{axis:{range:[0,100],tickcolor:'#444',tickfont:{size:8,color:'#666'}},
+    bar:{color:'#00ff88',thickness:0.3},
+    steps:[{range:[0,60],color:'#1a0505'},{range:[60,80],color:'#1a1205'},{range:[80,100],color:'#051a05'}],
+    threshold:{line:{color:'#ff0040',width:2},thickness:0.75,value:70}},
+    number:{font:{color:'#00ff88',size:40},suffix:'%'},
+    title:{text:'Inspected < 12 Months',font:{color:'#aaa',size:10}}}],
+    {paper_bgcolor:'#0d0d0d',margin:{t:28,r:20,b:10,l:20}},CFG);
+
+  // c54 Funnel - inspection pipeline
+  Plotly.newPlot('c54',[{type:'funnel',y:['Total Registered','Principal Insp.','Routine Insp.','Good Condition','Maintenance Due','Needs Urgent Works'],
+    x:[546,420,380,197,185,54],
+    marker:{color:['#00f5ff','#00ccdd','#00aacc','#00ff88','#ffee00','#ff0040'],line:{color:'#000',width:0.5}},
+    textinfo:'value+percent initial',textfont:{size:8.5},opacity:0.9}],
+    TL('Structure Inspection Funnel',{yaxis:{tickfont:{size:8.5}}}),CFG);
+
+  // c55 Bar - deficiency types
+  Plotly.newPlot('c55',[{type:'bar',orientation:'h',
+    y:['Deck Deterioration','Scour/Foundation','Expansion Joint','Bearing Damage','Railing/Parapet','Approach Slab','Abutment Crack','Soffit Crack'],
+    x:[142,84,128,96,180,72,56,64],
+    marker:{color:['#ff0040','#ff2200','#ff4400','#ff6600','#ff8800','#ffaa00','#ffcc00','#ffee00'],line:{color:'#000',width:0.5}},
+    text:[142,84,128,96,180,72,56,64],textposition:'inside',textfont:{size:8,color:'#000'}}],
+    TL('Structure Deficiency Types',{xaxis:{title:{text:'Count of deficiencies',font:{size:9}}}}),CFG);
+
+  // c56 Scatter - repair cost vs condition
+  const rCond=[20,25,30,38,45,55,62,68,75,82,88];
+  const rCost=[4800,3600,2800,2200,1600,1100,780,560,380,220,80];
+  Plotly.newPlot('c56',[{type:'scatter',mode:'markers+lines',x:rCond,y:rCost,
+    marker:{color:rCond.map(v=>v<40?'#ff0040':v<65?'#ffee00':'#00ff88'),size:8,line:{color:'rgba(0,0,0,0.3)',width:0.5}},
+    line:{color:'#444',width:1,dash:'dot'},
+    hovertemplate:'Condition: %{x}<br>Repair Cost: UGX %{y:,.0f}mn<extra></extra>'}],
+    TL('Repair Cost vs Condition Score',{xaxis:{title:{text:'Condition Score (higher=better)',font:{size:9}}},yaxis:{title:{text:'Estimated Repair Cost (mn UGX)',font:{size:9}}}}),CFG);
+
+  // c57 Surface - condition by age × span
+  const ageLbl=['<10yr','10-20yr','20-30yr','30-50yr','>50yr'];
+  const condSurf=ageLbl.map((_,i)=>D.strSpanLbl.map((_,j)=>Math.max(10,90-i*15-j*5+Math.random()*8)));
+  Plotly.newPlot('c57',[{type:'surface',z:condSurf,x:D.strSpanLbl,y:ageLbl,
+    colorscale:[[0,'#200000'],[0.4,'#885500'],[0.7,'#886600'],[1,'#003300']],
+    colorbar:{title:'Cond Score',titlefont:{color:'#666',size:7},tickfont:{size:7,color:'#666'},thickness:8}}],
+    {...TL3D('Bridge Condition Surface: Age × Span'),scene:{...TL3D('').scene,xaxis:{...TL3D('').scene.xaxis,title:'Span Class'},yaxis:{...TL3D('').scene.yaxis,title:'Bridge Age'},zaxis:{...TL3D('').scene.zaxis,title:'Condition Score'}}},CFG);
+
+  // c58 Box - span distribution by type
+  Plotly.newPlot('c58',[
+    {type:'box',name:'Bridges',y:[15,22,28,34,42,55,68,82,96,124,180,240],marker:{color:'#00f5ff'},fillcolor:'rgba(0,245,255,0.1)',line:{color:'#00f5ff'},box:{visible:true},meanline:{visible:true}},
+    {type:'box',name:'Box Culverts',y:[2,3,4,5,6,7,8,9,10,12],marker:{color:'#ffee00'},fillcolor:'rgba(255,238,0,0.1)',line:{color:'#ffee00'},box:{visible:true},meanline:{visible:true}},
+    {type:'box',name:'Culverts',y:[1,1.2,1.5,1.8,2,2.4,3,3.5],marker:{color:'#ff6600'},fillcolor:'rgba(255,102,0,0.1)',line:{color:'#ff6600'},box:{visible:true},meanline:{visible:true}}],
+    TL('Span Length Distribution by Structure Type',{yaxis:{title:{text:'Span (m)',font:{size:9}}}}),CFG);
+
+  // c59 Stacked bar - structures by condition per region
+  Plotly.newPlot('c59',[
+    bar(D.regLbl,[48,36,62,51],'Good','#00ff88',{text:[48,36,62,51],textposition:'inside',textfont:{size:8}}),
+    bar(D.regLbl,[42,28,48,46],'Fair','#ffee00',{text:[42,28,48,46],textposition:'inside',textfont:{size:8}}),
+    bar(D.regLbl,[34,26,38,33],'Poor','#ff6600',{text:[34,26,38,33],textposition:'inside',textfont:{size:8}}),
+    bar(D.regLbl,[14,8,18,14],'Critical','#ff0040',{text:[14,8,18,14],textposition:'inside',textfont:{size:8}})],
+    TL('Structure Condition by Region',{barmode:'stack',yaxis:{title:{text:'Count',font:{size:9}}}}),CFG);
+
+  // c60 Line - inspection trend
+  Plotly.newPlot('c60',[line([2021,2022,2023,2024,2025],[74,79,84,87,89],'Inspected < 12mth %','#00ff88',{fill:'tozeroy',fillcolor:'rgba(0,255,136,0.08)'}),
+    line([2021,2022,2023,2024,2025],[26,21,16,13,11],'Overdue %','#ff0040',{fill:'tozeroy',fillcolor:'rgba(255,0,64,0.06)'})],
+    TL('Inspection Currency 2021–2025',{yaxis:{title:{text:'%',font:{size:9}},range:[0,115]},xaxis:{title:{text:'Year',font:{size:9}}}}),CFG);
+}
+</script>
+<script>
+// ══════════════════════════════════════════════════════════════
+// TAB 5 — BUDGET (c61–c74)
+// ══════════════════════════════════════════════════════════════
+function initT5(){
+  // c61 Donut - budget by category
+  Plotly.newPlot('c61',[pie(D.budBnUGX,['Routine Maint 420bn','Periodic Maint 472bn','Development 640bn','Emergency 180bn','Admin 130bn'],['#00ff88','#00f5ff','#bf00ff','#ff6600','#888888'])],
+    TL('Budget FY25/26 by Category (bn UGX)'),CFG);
+
+  // c62 Gauge - budget utilisation
+  Plotly.newPlot('c62',[{type:'indicator',mode:'gauge+number+delta',value:68,
+    delta:{reference:72,increasing:{color:'#00ff88'},decreasing:{color:'#ff0040'}},
+    gauge:{axis:{range:[0,100],tickcolor:'#444',tickfont:{size:8,color:'#666'}},
+    bar:{color:'#ff6600',thickness:0.3},
+    steps:[{range:[0,50],color:'#1a0505'},{range:[50,80],color:'#1a1205'},{range:[80,100],color:'#051a05'}],
+    threshold:{line:{color:'#ff0040',width:2},thickness:0.75,value:90}},
+    number:{font:{color:'#ff6600',size:40},suffix:'%'},
+    title:{text:'Budget Utilisation FY25/26<br><span style="font-size:9px;color:#555">1,253bn of 1,842bn spent</span>',font:{color:'#aaa',size:10}}}],
+    {paper_bgcolor:'#0d0d0d',margin:{t:28,r:20,b:10,l:20}},CFG);
+
+  // c63 Waterfall - budget allocation
+  Plotly.newPlot('c63',[{type:'waterfall',orientation:'v',
+    x:['Total Budget','Routine','Periodic','Development','Emergency','Admin','Remaining'],
+    y:[1842,-420,-472,-640,-180,-130,0],
+    measure:['absolute','relative','relative','relative','relative','relative','total'],
+    connector:{line:{color:'#333',width:1}},
+    decreasing:{marker:{color:'#ff6600'}},totals:{marker:{color:'#00f5ff'}},
+    text:['1,842','−420','−472','−640','−180','−130','0'],textposition:'outside',textfont:{size:8},
+    increasing:{marker:{color:'#00ff88'}}}],
+    TL('Budget Allocation Waterfall (bn UGX)',{yaxis:{title:{text:'bn UGX',font:{size:9}}}}),CFG);
+
+  // c64 Bar - budget vs actual by year
+  Plotly.newPlot('c64',[bar(D.budYrs,D.budAlloc,'Allocated','#00f5ff',{text:D.budAlloc.map(v=>v.toLocaleString()),textposition:'outside',textfont:{size:8}}),
+    bar(D.budYrs,[1380,1520,1640,1253],'Spent','#00ff8888',{text:[1380,1520,1640,1253].map(v=>v.toLocaleString()),textposition:'outside',textfont:{size:8}})],
+    TL('Budget vs Actuals FY22–FY26 (bn UGX)',{barmode:'group',yaxis:{title:{text:'bn UGX',font:{size:9}}}}),CFG);
+
+  // c65 Line - budget trend + forecast
+  Plotly.newPlot('c65',[
+    line(['FY20/21','FY21/22','FY22/23','FY23/24','FY24/25','FY25/26','FY26/27*','FY27/28*'],[980,1180,1420,1580,1710,1842,2050,2280],'Allocated','#00f5ff',{fill:'tozeroy',fillcolor:'rgba(0,245,255,0.05)'}),
+    line(['FY20/21','FY21/22','FY22/23','FY23/24','FY24/25','FY25/26','FY26/27*','FY27/28*'],[940,1120,1380,1520,1640,1253,null,null],'Spent','#00ff88',{fill:'tozeroy',fillcolor:'rgba(0,255,136,0.04)'})],
+    TL('Budget Trend 2020–2028 (bn UGX) *projected',{yaxis:{title:{text:'bn UGX',font:{size:9}}},xaxis:{title:{text:'Financial Year',font:{size:9}}}}),CFG);
+
+  // c66 Bar - cost per km
+  Plotly.newPlot('c66',[bar(D.costTreat,D.costPerKm,'Cost/km',['#00ff88','#ffee00','#ff9900','#ff4400','#ff0040'],{text:D.costPerKm.map(v=>v.toFixed(0)+' mn'),textposition:'outside',textfont:{size:8}})],
+    TL('Unit Cost by Treatment Type (mn UGX/km)',{yaxis:{title:{text:'mn UGX/km',font:{size:9}}},xaxis:{tickfont:{size:8.5}}}),CFG);
+
+  // c67 Bar - budget by region
+  Plotly.newPlot('c67',[bar(D.regLbl,D.budReg,'Allocation',['#00f5ff','#00ccdd','#00aacc','#0088aa'],{text:D.budReg.map(v=>v+'bn'),textposition:'outside',textfont:{size:8}}),
+    bar(D.regLbl,[342,298,360,318],'Spent so far','#00ff8877',{text:['342bn','298bn','360bn','318bn'],textposition:'outside',textfont:{size:8}})],
+    TL('Budget by Region FY25/26 (bn UGX)',{barmode:'group',yaxis:{title:{text:'bn UGX',font:{size:9}}}}),CFG);
+
+  // c68 Scatter3D - budget × km treated × condition improvement
+  Plotly.newPlot('c68',[{type:'scatter3d',
+    x:[420,472,640,180,130,320,280,380],
+    y:[8420,1240,215,890,0,640,480,820],
+    z:[2,8,15,4,1,6,5,7],
+    mode:'markers+text',
+    text:['Routine','Periodic','Reconstruct','Emergency','Admin','Overlay','Rehab','Reseal'],
+    textposition:'top center',textfont:{size:7,color:'#aaa'},
+    marker:{size:10,color:['#00ff88','#00f5ff','#ff0040','#ff6600','#888','#ffee00','#ff4400','#00aacc'],
+    line:{color:'rgba(0,0,0,0.3)',width:0.5}},
+    hovertemplate:'%{text}<br>Budget: bn UGX %{x}<br>km treated: %{y:,.0f}<br>Cond Δ: %{z}<extra></extra>'}],
+    {...TL3D('Budget × km Treated × Condition Improvement'),scene:{...TL3D('').scene,xaxis:{...TL3D('').scene.xaxis,title:'Budget (bn UGX)'},yaxis:{...TL3D('').scene.yaxis,title:'km Treated'},zaxis:{...TL3D('').scene.zaxis,title:'Cond Score Δ'}}},CFG);
+
+  // c69 Area - investment gap
+  Plotly.newPlot('c69',[
+    line(D.budYrs,D.budAlloc,'Available Budget','#00f5ff',{fill:'tozeroy',fillcolor:'rgba(0,245,255,0.08)'}),
+    line(D.budYrs,[2840,3100,3350,3620],'Maintenance Need','#ff0040',{fill:'tozeroy',fillcolor:'rgba(255,0,64,0.06)'})],
+    TL('Investment Gap: Budget vs Maintenance Need (bn UGX)',{yaxis:{title:{text:'bn UGX',font:{size:9}}}}),CFG);
+
+  // c70 Bar - OPRC contract values
+  Plotly.newPlot('c70',[bar(D.oprcLot,[248,210,186,142,168,130,290],'Contract Value (bn UGX)',D.oprcLot.map((_,i)=>['#00f5ff','#00ccdd','#00aacc','#ffee00','#ff9900','#ff6600','#bf00ff'][i]),{text:[248,210,186,142,168,130,290].map(v=>v+'bn'),textposition:'outside',textfont:{size:8}})],
+    TL('OPRC Contract Values (bn UGX)',{yaxis:{title:{text:'bn UGX',font:{size:9}}},xaxis:{tickfont:{size:8}}}),CFG);
+
+  // c71 Bar - treatment km funded vs unfunded
+  Plotly.newPlot('c71',[
+    bar(D.treatLbl,[8420,1240,890,640,215],'Needs','#ff6600',{text:[8420,1240,890,640,215].map(v=>v.toLocaleString()),textposition:'outside',textfont:{size:8}}),
+    bar(D.treatLbl,[6800,840,520,215,50],'Funded','#00ff88',{text:[6800,840,520,215,50].map(v=>v.toLocaleString()),textposition:'outside',textfont:{size:8}})],
+    TL('Treatment Needs vs Funded (km)',{barmode:'group',yaxis:{title:{text:'km',font:{size:9}}}}),CFG);
+
+  // c72 Heatmap - budget allocation: region × category
+  const regCatBudget=D.regLbl.map((_,i)=>D.budCat.map((_,j)=>[120,148,168,52,38,108,124,148,40,34,108,132,158,44,36,104,128,150,44,30][i*5+j]));
+  Plotly.newPlot('c72',[{type:'heatmap',z:regCatBudget,x:D.budCat,y:D.regLbl,
+    colorscale:[[0,'#001100'],[0.5,'#006666'],[1,'#00f5ff']],
+    text:regCatBudget,texttemplate:'%{text}',textfont:{size:8,color:'#fff'},
+    colorbar:{title:'bn UGX',titlefont:{color:'#666',size:7},tickfont:{size:7,color:'#666'},thickness:8}}],
+    TL('Budget Allocation: Region × Category (bn UGX)'),CFG);
+
+  // c73 Pie - funding sources
+  Plotly.newPlot('c73',[{type:'pie',values:[820,480,340,202],labels:['GoU (UNRA)','World Bank/IDA','AfDB/AfDF','Other Donors'],
+    marker:{colors:['#00f5ff','#00ff88','#ffee00','#ff6600'],line:{color:'#000',width:1}},
+    hole:0.4,textfont:{size:8.5,color:'#ccc'}}],
+    TL('Budget Funding Sources (bn UGX)'),CFG);
+
+  // c74 Scatter - investment vs condition improvement (by region)
+  Plotly.newPlot('c74',[{type:'scatter',mode:'markers+text',
+    x:[480,420,490,452],y:[4.2,3.8,4.6,4.4],
+    text:D.regLbl,textposition:'top center',textfont:{size:9,color:'#aaa'},
+    marker:{color:['#00f5ff','#ffee00','#00ff88','#bf00ff'],size:14,line:{color:'rgba(0,0,0,0.3)',width:0.5}},
+    hovertemplate:'%{text}<br>Investment: bn %{x}<br>Cond Δ: %{y}<extra></extra>'}],
+    TL('Investment vs Condition Improvement by Region',{xaxis:{title:{text:'Investment (bn UGX)',font:{size:9}}},yaxis:{title:{text:'Condition Improvement (score pts)',font:{size:9}}}}),CFG);
+}
+
+// ══════════════════════════════════════════════════════════════
+// TAB 6 — PROJECTS (c75–c87)
+// ══════════════════════════════════════════════════════════════
+function initT6(){
+  // c75 Horizontal bar - project progress
+  Plotly.newPlot('c75',[{type:'bar',orientation:'h',y:D.projName,x:D.projPct,
+    marker:{color:D.projPct.map(v=>v>=75?'#00ff88':v>=50?'#ffee00':v>=25?'#ff6600':'#ff0040'),line:{color:'#000',width:0.5}},
+    text:D.projPct.map(v=>v+'%'),textposition:'inside',textfont:{size:8,color:'#000'}}],
+    TL('Project Completion Progress (%)',{xaxis:{title:{text:'% Complete',font:{size:9}},range:[0,108]},yaxis:{tickfont:{size:8.5}}}),CFG);
+
+  // c76 Bar - OPRC performance scores
+  Plotly.newPlot('c76',[{type:'bar',x:D.oprcLot,y:D.oprcScore,
+    marker:{color:D.oprcScore.map(v=>v>=80?'#00ff88':v>=65?'#ffee00':'#ff6600'),line:{color:'#000',width:0.5}},
+    text:D.oprcScore.map(v=>v+'/100'),textposition:'outside',textfont:{size:8}}],
+    TL('OPRC Contract Performance Scores',{yaxis:{title:{text:'Score /100',font:{size:9}},range:[0,110]},xaxis:{tickfont:{size:8}}}),CFG);
+
+  // c77 Pie - project status
+  Plotly.newPlot('c77',[{type:'pie',values:[6,5,3],labels:['On Schedule (6)','Minor Delay (5)','Behind (3)'],
+    marker:{colors:['#00ff88','#ffee00','#ff0040'],line:{color:'#000',width:1}},
+    hole:0.45,textfont:{size:9,color:'#ccc'}}],
+    TL('Project Status Distribution (14 Projects)'),CFG);
+
+  // c78 Scatter (Gantt-style) - project timelines
+  const pnames=['Gulu-Acholibur','Mbarara Bypass','Ntungamo-Mirama','Soroti-Lira','Kampala Distr.','Masaka-Mbarara','Tororo-Mbale','Hoima-Kafu'];
+  const pstart=[2022,2023,2024,2023,2021,2022,2023,2024],pend=[2026,2027,2027,2026,2027,2026,2026,2028];
+  Plotly.newPlot('c78',[{type:'scatter',mode:'lines+markers',
+    x:[].concat(...pnames.map((_,i)=>[pstart[i],pend[i],null])),
+    y:[].concat(...pnames.map(n=>[n,n,null])),
+    line:{color:'#00f5ff',width:6},marker:{color:'#00f5ff',size:8},
+    hovertemplate:'%{y}: %{x}<extra></extra>'},
+    {type:'scatter',mode:'markers',x:pnames.map((_,i)=>pstart[i]+(pend[i]-pstart[i])*D.projPct[i]/100),y:pnames,
+    marker:{color:D.projPct.map(v=>v>=75?'#00ff88':v>=50?'#ffee00':'#ff0040'),size:12,symbol:'diamond'},name:'Progress',hovertemplate:'%{y}: %{meta}% complete<extra></extra>',meta:D.projPct}],
+    TL('Project Timeline & Progress',{yaxis:{tickfont:{size:8.5}},xaxis:{title:{text:'Year',font:{size:9}},range:[2021,2029],dtick:1}}),CFG);
+
+  // c79 Scatter3D - projects: cost × km × progress
+  Plotly.newPlot('c79',[{type:'scatter3d',x:D.projBn,y:[186,62,124,248,380,210,154,290],
+    z:D.projPct,mode:'markers+text',text:D.projName.map(n=>n.split('-')[0]),textposition:'top center',textfont:{size:7,color:'#aaa'},
+    marker:{size:8,color:D.projPct,colorscale:[[0,'#ff0040'],[0.5,'#ffee00'],[1,'#00ff88']],
+    colorbar:{title:'%Complete',titlefont:{color:'#666',size:7},tickfont:{size:7,color:'#666'},thickness:8},
+    line:{color:'rgba(0,0,0,0.3)',width:0.5}},
+    hovertemplate:'%{text}<br>Budget: bn %{x}<br>km: %{y}<br>Complete: %{z}%<extra></extra>'}],
+    {...TL3D('Projects: Budget × km Length × % Complete'),scene:{...TL3D('').scene,xaxis:{...TL3D('').scene.xaxis,title:'Budget (bn UGX)'},yaxis:{...TL3D('').scene.yaxis,title:'km Length'},zaxis:{...TL3D('').scene.zaxis,title:'% Complete'}}},CFG);
+
+  // c80 Bar - project by contract type
+  Plotly.newPlot('c80',[pie([7,4,3],['OPRC (7)','Periodic Maint (4)','Emergency Works (3)'],['#00f5ff','#ffee00','#ff6600'])],
+    TL('Active Contracts by Type'),CFG);
+
+  // c81 Bar - km under contract by year
+  Plotly.newPlot('c81',[bar(['FY22/23','FY23/24','FY24/25','FY25/26'],[820,980,1120,1240],'km Under Contract','#bf00ff',{text:[820,980,1120,1240].map(v=>v.toLocaleString()+' km'),textposition:'outside',textfont:{size:8}})],
+    TL('km Under Contract by Year',{yaxis:{title:{text:'km',font:{size:9}}}}),CFG);
+
+  // c82 Bar - contractor performance
+  Plotly.newPlot('c82',[bar(['CICO Grp','China Cmm','Stirling','Roko','Dott Svcs','Others'],[88,74,82,91,78,68],'Score',['#00ff88','#ffee00','#00ff88','#00ff88','#ffee00','#ff6600'],{text:[88,74,82,91,78,68].map(v=>v+'/100'),textposition:'outside',textfont:{size:8}})],
+    TL('Top Contractor Performance Scores',{yaxis:{title:{text:'Score /100',font:{size:9}},range:[0,110]}}),CFG);
+
+  // c83 Funnel - project pipeline
+  Plotly.newPlot('c83',[{type:'funnel',y:['Identified','Feasibility','Appraisal','Design','Tender','Implementation','Completed'],
+    x:[42,28,20,16,14,14,8],
+    marker:{color:['#003344','#005566','#007799','#00aacc','#ffee00','#00f5ff','#00ff88'],line:{color:'#000',width:0.5}},
+    textinfo:'value+percent initial',textfont:{size:8.5},opacity:0.9}],
+    TL('Project Pipeline Stages',{yaxis:{tickfont:{size:8.5}}}),CFG);
+
+  // c84 Bar - budget vs expenditure by project
+  Plotly.newPlot('c84',[bar(D.projName.slice(0,6),D.projBn.slice(0,6),'Budget bn','#00f5ff',{text:D.projBn.slice(0,6).map(v=>v+'bn'),textposition:'outside',textfont:{size:7}}),
+    bar(D.projName.slice(0,6),D.projBn.slice(0,6).map((v,i)=>Math.round(v*D.projPct[i]/100)),'Spent bn','#00ff8877',{text:D.projBn.slice(0,6).map((v,i)=>Math.round(v*D.projPct[i]/100)+'bn'),textposition:'outside',textfont:{size:7}})],
+    TL('Budget vs Expenditure (bn UGX)',{barmode:'group',yaxis:{title:{text:'bn UGX',font:{size:9}}},xaxis:{tickfont:{size:7.5}}}),CFG);
+
+  // c85 Area - works completion trend
+  Plotly.newPlot('c85',[line(['FY20/21','FY21/22','FY22/23','FY23/24','FY24/25','FY25/26'],[180,240,320,420,520,428],'km Completed/yr','#00ff88',{fill:'tozeroy',fillcolor:'rgba(0,255,136,0.08)'})],
+    TL('Annual Works Completion Trend (km/yr)',{yaxis:{title:{text:'km completed',font:{size:9}}}}),CFG);
+
+  // c86 Heatmap - project density by region × type
+  Plotly.newPlot('c86',[{type:'heatmap',z:[[3,2,1,1],[2,1,2,0],[1,1,1,1],[2,1,1,0]],x:['OPRC','Periodic','Emergency','Development'],y:D.regLbl,
+    colorscale:[[0,'#000'],[0.5,'#004455'],[1,'#00f5ff']],text:[[3,2,1,1],[2,1,2,0],[1,1,1,1],[2,1,1,0]],texttemplate:'%{text}',textfont:{size:10,color:'#fff'},
+    colorbar:{title:'Projects',titlefont:{color:'#666',size:7},tickfont:{size:7,color:'#666'},thickness:8}}],
+    TL('Project Density: Region × Contract Type'),CFG);
+
+  // c87 Bar stacked - OPRC % of road in good condition per lot
+  Plotly.newPlot('c87',[bar(D.oprcLot,[78,68,52,86,64,58,82],'Good %','#00ff88',{text:[78,68,52,86,64,58,82].map(v=>v+'%'),textposition:'outside',textfont:{size:8}}),
+    bar(D.oprcLot,[12,18,28,8,22,26,12],'Fair %','#ffee00',{text:[12,18,28,8,22,26,12].map(v=>v+'%'),textposition:'outside',textfont:{size:8}}),
+    bar(D.oprcLot,[10,14,20,6,14,16,6],'Poor+Crit %','#ff0040',{text:[10,14,20,6,14,16,6].map(v=>v+'%'),textposition:'outside',textfont:{size:8}})],
+    TL('OPRC Road Condition Achievement (% of Network)',{barmode:'group',yaxis:{title:{text:'%',font:{size:9}}},xaxis:{tickfont:{size:8}}}),CFG);
+}
+</script>
+<script>
+// ══════════════════════════════════════════════════════════════
+// TAB 7 — ROAD SAFETY (c88–c100)
+// ══════════════════════════════════════════════════════════════
+function initT7(){
+  // c88 Line - fatalities trend
+  Plotly.newPlot('c88',[
+    line(D.safetyYrs,D.fatalities,'Fatalities/yr','#ff0040',{fill:'tozeroy',fillcolor:'rgba(255,0,64,0.06)'}),
+    line(D.safetyYrs,[2800,2700,2750,2700,2650,2600,2550,2500,2450,2400],'UN Target','#ffee00',{dash:'dash'})],
+    TL('Road Fatalities Trend (2016–2025) + UN Decade Target',{yaxis:{title:{text:'Fatalities/yr',font:{size:9}}},xaxis:{tickfont:{size:8.5}}}),CFG);
+
+  // c89 Donut - accident cause
+  Plotly.newPlot('c89',[{type:'pie',values:D.causePct,labels:D.causeLbl,hole:0.45,
+    marker:{colors:['#ff0040','#ff6600','#ffee00','#00f5ff','#bf00ff','#888888'],line:{color:'#000',width:1}},
+    textfont:{size:8.5,color:'#ccc'}}],
+    TL('Road Accident Causes (%)'),CFG);
+
+  // c90 Horizontal bar - accident blackspot corridors
+  Plotly.newPlot('c90',[{type:'bar',orientation:'h',y:D.accCorridor,
+    x:[420,380,340,312,290,268,240,214,198,182],
+    marker:{color:[420,380,340,312,290,268,240,214,198,182].map(v=>v>=350?'#ff0040':v>=250?'#ff6600':'#ffee00'),line:{color:'#000',width:0.5}},
+    text:[420,380,340,312,290,268,240,214,198,182].map(v=>v+' acc.'),textposition:'inside',textfont:{size:7.5,color:'#000'}}],
+    TL('Top 10 Accident Blackspot Corridors',{yaxis:{tickfont:{size:8}},xaxis:{title:{text:'Accidents/yr',font:{size:9}}}}),CFG);
+
+  // c91 Bar - fatalities by vehicle type
+  Plotly.newPlot('c91',[bar(['Motorcycles','Peds','Heavy Trucks','Minibus/Taxi','Private Cars','Bicycles','Tuk-tuk'],
+    [1240,820,468,340,218,98,63],'Fatalities',['#ff0040','#ff4400','#ff6600','#ff9900','#ffee00','#00f5ff','#888'],
+    {text:[1240,820,468,340,218,98,63],textposition:'outside',textfont:{size:8}})],
+    TL('Fatalities by Road User Type (2025)',{yaxis:{title:{text:'Deaths',font:{size:9}}}}),CFG);
+
+  // c92 Bar - fatalities by time of day
+  Plotly.newPlot('c92',[{type:'bar',x:['00-03','03-06','06-09','09-12','12-15','15-18','18-21','21-24'],
+    y:[8.2,4.1,12.4,9.8,11.2,14.8,18.4,21.1],
+    marker:{color:['#ff0040','#ff6600','#ffee00','#00f5ff','#ffee00','#ff6600','#ff4400','#ff0040'],line:{color:'#000',width:0.5}},
+    text:[8.2,4.1,12.4,9.8,11.2,14.8,18.4,21.1].map(v=>v+'%'),textposition:'outside',textfont:{size:8}}],
+    TL('Accident Distribution by Time of Day (%)',{xaxis:{title:{text:'Hour (24hr)',font:{size:9}}},yaxis:{title:{text:'% of All Accidents',font:{size:9}}}}),CFG);
+
+  // c93 Scatter3D - blackspots: lat × lng × accident rate
+  Plotly.newPlot('c93',[{type:'scatter3d',
+    x:[0.3,0.2,-0.3,0.68,1.2,1.4,0.1,-0.8,0.9,0.6],
+    y:[32.6,32.4,30.1,33.8,34.1,34.6,31.5,30.8,33.2,32.9],
+    z:[420,380,340,312,290,268,240,214,198,182],
+    mode:'markers+text',text:D.accCorridor.map(n=>n.split('-')[0]),textposition:'top center',textfont:{size:7,color:'#aaa'},
+    marker:{size:[14,13,12,11,10,9,9,8,8,7],
+    color:[420,380,340,312,290,268,240,214,198,182],colorscale:[[0,'#ffee00'],[0.5,'#ff6600'],[1,'#ff0040']],
+    colorbar:{title:'Accidents',titlefont:{color:'#666',size:7},tickfont:{size:7,color:'#666'},thickness:8},
+    line:{color:'rgba(0,0,0,0.3)',width:0.5}},
+    hovertemplate:'%{text}<br>Lat: %{x}<br>Lng: %{y}<br>Accidents: %{z}/yr<extra></extra>'}],
+    {...TL3D('Blackspot Locations: Lat × Lng × Accident Rate'),scene:{...TL3D('').scene,xaxis:{...TL3D('').scene.xaxis,title:'Latitude'},yaxis:{...TL3D('').scene.yaxis,title:'Longitude'},zaxis:{...TL3D('').scene.zaxis,title:'Accidents/yr'}}},CFG);
+
+  // c94 Line multi - fatalities by region
+  const regColors=['#00f5ff','#00ff88','#ffee00','#ff6600'];
+  const regFatal=[[480,460,478,452,340,368,380,398,386,370],[380,366,372,358,268,292,302,316,308,294],[340,326,334,320,240,262,272,284,276,264],[620,592,636,568,492,258,386,382,410,319]];
+  Plotly.newPlot('c94',D.regLbl.map((r,i)=>line(D.safetyYrs,regFatal[i],r,regColors[i])),
+    TL('Fatalities by Region 2016–2025',{yaxis:{title:{text:'Deaths',font:{size:9}}},xaxis:{tickfont:{size:8.5}}}),CFG);
+
+  // c95 Heatmap - accidents: month × hour
+  const mthHrData=Array.from({length:12},(_,m)=>Array.from({length:8},(_,h)=>
+    Math.round(20+Math.random()*80+Math.sin((h-2)*0.8)*30+Math.cos(m*0.5)*20)));
+  Plotly.newPlot('c95',[{type:'heatmap',z:mthHrData,
+    x:['00-03','03-06','06-09','09-12','12-15','15-18','18-21','21-24'],
+    y:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+    colorscale:[[0,'#001100'],[0.5,'#ff6600'],[1,'#ff0040']],
+    colorbar:{title:'Accidents',titlefont:{color:'#666',size:7},tickfont:{size:7,color:'#666'},thickness:8},
+    texttemplate:'%{z}',textfont:{size:7.5,color:'#fff'}}],
+    TL('Accident Heatmap: Month × Time of Day'),CFG);
+
+  // c96 Funnel - road safety enforcement pipeline
+  Plotly.newPlot('c96',[{type:'funnel',y:['Accidents Reported','Investigated','Charges Filed','Prosecuted','Fines Paid','Convictions'],
+    x:[28420,18640,9820,4210,2840,1420],
+    marker:{color:['#ff0040','#ff4400','#ff6600','#ff9900','#ffee00','#00ff88'],line:{color:'#000',width:0.5}},
+    textinfo:'value+percent initial',textfont:{size:8.5},opacity:0.9}],
+    TL('Road Safety Enforcement Pipeline (2025)',{yaxis:{tickfont:{size:8.5}}}),CFG);
+
+  // c97 Bar - safety investment
+  Plotly.newPlot('c97',[bar(D.safetyYrs.slice(-4),['2.8','4.2','6.8','8.4'].map(Number),'Safety Investment (bn UGX)','#ff0040',{text:['2.8bn','4.2bn','6.8bn','8.4bn'],textposition:'outside',textfont:{size:8}}),
+    bar(D.safetyYrs.slice(-4),[3891,3698,2940,3247].map((v,_,a)=>+(v/a[0]*100).toFixed(1)),'Fatality Index (base 2022)','#ff6600',{text:[3891,3698,2940,3247].map((v,_,a)=>(v/a[0]*100).toFixed(0)+'%'),textposition:'outside',textfont:{size:8}})],
+    TL('Safety Investment vs Fatality Index',{barmode:'group',yaxis:{title:{text:'Value (bn UGX / index)',font:{size:9}}},xaxis:{tickfont:{size:9}}}),CFG);
+
+  // c98 Scatter - correlation: IRI vs accident rate (by corridor)
+  Plotly.newPlot('c98',[{type:'scatter',mode:'markers+text',
+    x:[2.1,2.8,4.2,3.6,2.4,5.8,3.9,7.2,1.8,4.4],
+    y:[42,68,148,88,54,240,102,380,38,120],
+    text:D.accCorridor.map(n=>n.split('-')[0]),textposition:'top center',textfont:{size:7,color:'#aaa'},
+    marker:{color:[42,68,148,88,54,240,102,380,38,120],colorscale:[[0,'#ffee00'],[0.5,'#ff6600'],[1,'#ff0040']],
+    colorbar:{title:'Accidents',titlefont:{color:'#666',size:7},tickfont:{size:7,color:'#666'},thickness:8},
+    size:10,line:{color:'rgba(0,0,0,0.3)',width:0.5}},
+    hovertemplate:'%{text}<br>IRI: %{x:.1f} m/km<br>Accidents: %{y}/yr<extra></extra>'}],
+    TL('Road Roughness (IRI) vs Accident Rate by Corridor',{xaxis:{title:{text:'IRI (m/km)',font:{size:9}}},yaxis:{title:{text:'Accidents/yr',font:{size:9}}}}),CFG);
+
+  // c99 Bar - RSE compliance by measure type
+  Plotly.newPlot('c99',[{type:'bar',x:['Speed Humps','Guardrails','Road Signs','Line Marking','Lighting','Rumble Strips','Barrier Posts'],
+    y:[82,64,71,58,42,76,68],
+    marker:{color:[82,64,71,58,42,76,68].map(v=>v>=75?'#00ff88':v>=60?'#ffee00':'#ff0040'),line:{color:'#000',width:0.5}},
+    text:[82,64,71,58,42,76,68].map(v=>v+'%'),textposition:'outside',textfont:{size:8}}],
+    TL('Road Safety Engineering Compliance (% of Network)',{yaxis:{title:{text:'% Compliant',font:{size:9}},range:[0,110]},xaxis:{tickfont:{size:8.5}}}),CFG);
+
+  // c100 Surface 3D - accident risk surface: speed limit × IRI → predicted accident rate
+  const spd=[50,60,80,100,110],iri=[1,2,3,4,5,6,7,8];
+  Plotly.newPlot('c100',[{type:'surface',
+    x:spd,y:iri,
+    z:iri.map(r=>spd.map(s=>Math.round(5+r*8+(s/50)*12+r*(s/50)*4))),
+    colorscale:[[0,'#001100'],[0.35,'#ffee00'],[0.7,'#ff6600'],[1,'#ff0040']],
+    contours:{z:{show:true,usecolormap:true,highlightcolor:'#fff',project:{z:true}}},
+    colorbar:{title:'Acc./yr',titlefont:{color:'#666',size:7},tickfont:{size:7,color:'#666'},thickness:8},
+    lighting:{diffuse:0.9,roughness:0.6},opacity:0.95}],
+    {...TL3D('Risk Surface: Speed Limit × Road Roughness → Accident Rate'),
+    scene:{...TL3D('').scene,
+    xaxis:{...TL3D('').scene.xaxis,title:'Speed Limit (km/h)'},
+    yaxis:{...TL3D('').scene.yaxis,title:'IRI (m/km)'},
+    zaxis:{...TL3D('').scene.zaxis,title:'Predicted Accidents/yr'}}},CFG);
+}
+</script>
+<script>
+// ══════════════════════════════════════════════════════════════
+// TAB SWITCHER + BOOTSTRAP
+// ══════════════════════════════════════════════════════════════
+var inited={};
+function showTab(n){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  const panel=document.getElementById('tab'+n);
+  const btn=document.querySelector('.tab-btn[data-tab="'+n+'"]');
+  if(panel){panel.classList.add('active');}
+  if(btn){btn.classList.add('active');}
+  if(!inited[n]){
+    inited[n]=true;
+    try{
+      if(n===1) initT1();
+      else if(n===2) initT2();
+      else if(n===3) initT3();
+      else if(n===4) initT4();
+      else if(n===5) initT5();
+      else if(n===6) initT6();
+      else if(n===7) initT7();
+    }catch(e){console.error('initT'+n+'() error:',e);}
+  }
+}
+
+// Wire tab buttons
+document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('.tab-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){showTab(+this.dataset.tab);});
+  });
+  // KPI counter animation
+  document.querySelectorAll('.kpi-val[data-target]').forEach(function(el){
+    var target=parseFloat(el.dataset.target);
+    var suffix=el.dataset.suffix||'';
+    var decimals=el.dataset.decimals?+el.dataset.decimals:0;
+    var start=0,step=target/80,cur=start;
+    var t=setInterval(function(){
+      cur=Math.min(cur+step,target);
+      el.textContent=cur.toFixed(decimals).replace(/\B(?=(\d{3})+(?!\d))/g,',')+suffix;
+      if(cur>=target) clearInterval(t);
+    },18);
+  });
+  // Live clock
+  function tick(){
+    var d=new Date();
+    var el=document.getElementById('clk');
+    if(el) el.textContent=d.toUTCString().replace(' GMT','  UTC');
+  }
+  setInterval(tick,1000); tick();
+  // Init Tab 1 on load
+  showTab(1);
+});
+</script>
+</body>
+</html>
