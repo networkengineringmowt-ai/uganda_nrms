@@ -64,6 +64,10 @@ const BMSSection = lazy(() => import('./modules/BMS/BMSSection'));
 // ── PMS unified view ──────────────────────────────────────────────────────────
 const PMSSection = lazy(() => import('./modules/PMS/PMSSection'));
 
+// ── New External Sections ─────────────────────────────────────────────────────
+const NTISSection = lazy(() => import('./sections/NTISSection'));
+const NPMSSection = lazy(() => import('./sections/NPMSSection'));
+
 // ── RMS top-level hub ─────────────────────────────────────────────────────────
 const RMSSection            = lazy(() => import('./modules/RMS/RMSSection'));
 const GlobalCaseStudiesSection = lazy(() => import('./modules/GlobalCaseStudies/GlobalCaseStudiesSection'));
@@ -254,6 +258,8 @@ function AppShell() {
 
                 {activeView === 'bms' && <BMSSection />}
                 {activeView === 'pms' && <PMSSection />}
+                {activeView === 'ntis' && <NTISSection />}
+                {activeView === 'npms' && <NPMSSection />}
               </div>
             )}
 

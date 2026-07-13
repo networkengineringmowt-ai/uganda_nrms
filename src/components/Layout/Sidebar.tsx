@@ -33,6 +33,8 @@ const N = {
 // Per-section metadata (label / icon / colour) — looked up by id.
 const SECTIONS: Record<string, Section> = {
   rms:           { id: 'rms',           label: 'RMS — Road Mgmt System',   icon: <Route size={14}/>,        color: N.cyan   },
+  ntis:          { id: 'ntis',          label: 'National Transport Info',   icon: <Activity size={14}/>,     color: N.indigo },
+  npms:          { id: 'npms',          label: 'National Pavement Mgmt',    icon: <Layers size={14}/>,       color: N.orange },
   roadcondition: { id: 'roadcondition', label: 'Pavement Management',      icon: <Activity size={14}/>,     color: N.orange },
   bms:           { id: 'bms',           label: 'Bridge Management',         icon: <Network size={14}/>,      color: N.blue   },
   roadreserve:   { id: 'roadreserve',   label: 'Road Reserve Management',   icon: <Landmark size={14}/>,     color: N.teal   },
@@ -73,7 +75,7 @@ export default function Sidebar() {
   const isAdmin = user?.role === 'admin';
   // FLAT nav — every section is always visible. No grouping, no accordion/collapse.
   const FLAT_ORDER: ActiveView[] = [
-    'rms', 'roadcondition', 'bms', 'bridgeworks', 'roadreserve', 'roadatlas', 'roadvideo',
+    'rms', 'ntis', 'npms', 'roadcondition', 'bms', 'bridgeworks', 'roadreserve', 'roadatlas', 'roadvideo',
     'traffic', 'atc', 'projects', 'pim', 'budget', 'lifecycle',
     'casestudies', 'sources', 'documents', 'downloads', 'gisenterprise', 'admin',
   ];
