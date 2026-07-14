@@ -38,7 +38,7 @@ body{background:#000;color:#ccc;font-family:'Inter','Segoe UI',sans-serif;min-he
 
 /* TABS */
 .tabs{display:flex;gap:0;border-bottom:2px solid var(--bd);background:var(--bg1);overflow-x:auto}
-.tab-btn{padding:10px 18px;font-size:10.5px;letter-spacing:.8px;color:#555;border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;font-family:'Inter','Segoe UI',sans-serif}
+.tab-btn{padding:12px 20px;font-size:13px;font-weight:700;letter-spacing:.8px;color:#c3cbd8;border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;font-family:'Inter','Segoe UI',sans-serif}
 .tab-btn:hover{color:var(--c);background:rgba(0,245,255,.04)}
 .tab-btn.active{color:var(--c);border-bottom-color:var(--c);background:rgba(0,245,255,.06)}
 
@@ -1216,39 +1216,39 @@ function showTab(n){
   const panel=document.getElementById('tab'+n);
   const btn=document.querySelector('.tab-btn[data-tab="'+n+'"]');
   if(panel){panel.classList.add('active');}
-  if(btn){btn.classList.add('active');}
+  var btnByIdx=document.querySelectorAll('.tab-btn')[n-1];
+  if(btn){btn.classList.add('active');}else if(btnByIdx){btnByIdx.classList.add('active');}
   if(inited[n]&&window.Plotly&&panel){requestAnimationFrame(function(){panel.querySelectorAll('.js-plotly-plot').forEach(function(g){try{Plotly.Plots.resize(g);}catch(e){}});});}
   if(!inited[n]){
-    inited[n]=true;
-    try{
-      if(n===1) initT1();
-      else if(n===2) initT2();
-      else if(n===3) initT3();
-      else if(n===4) initT4();
-      else if(n===5) initT5();
-      else if(n===6) initT6();
-      else if(n===7) initT7();
-    }catch(e){console.error('initT'+n+'() error:',e);}
+    whenPlotly(function(){
+      if(inited[n])return;
+      inited[n]=true;
+      try{window['initT'+n]&&window['initT'+n]();}catch(e){console.error('initT'+n+'() error:',e);}
+    });
   }
+}
+
+// Run cb once Plotly has arrived (it loads deferred; may lag on slow links)
+function whenPlotly(cb){
+  if(window.Plotly)return cb();
+  var t=setInterval(function(){if(window.Plotly){clearInterval(t);cb();}},120);
 }
 
 // Pre-render remaining tabs in the background so every tab opens instantly
 function preloadTabs(){
   [2,3,4,5,6,7].forEach(function(n,i){
     setTimeout(function(){
-      if(!inited[n]){
+      whenPlotly(function(){
+        if(inited[n])return;
         inited[n]=true;
         try{window['initT'+n]&&window['initT'+n]();}catch(e){console.error('preload initT'+n,e);}
-      }
+      });
     },700+i*450);
   });
 }
 
-// Wire tab buttons
-document.addEventListener('DOMContentLoaded',function(){
-  document.querySelectorAll('.tab-btn').forEach(function(btn){
-    btn.addEventListener('click',function(){showTab(+this.dataset.tab);});
-  });
+// Boot immediately — this script sits at the end of <body>, DOM is parsed.
+(function(){
   // KPI counter animation
   document.querySelectorAll('.kpi-val[data-target]').forEach(function(el){
     var target=parseFloat(el.dataset.target);
@@ -1271,7 +1271,7 @@ document.addEventListener('DOMContentLoaded',function(){
   // Init Tab 1 on load
   showTab(1);
   preloadTabs();
-});
+})();
 </script>
 </body>
 </html>
