@@ -29,6 +29,21 @@ export default function GisEnterpriseSection() {
         </div>
       </div>
 
+      {/* Dashboard stat strip */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        {[
+          { v: '5',      l: 'ARCHITECTURE TIERS',   c: '#c084fc' },
+          { v: '1,014',  l: 'GIS ROAD LINKS',       c: '#00f5ff' },
+          { v: '1,004',  l: 'STRUCTURES MAPPED',    c: '#60a5fa' },
+          { v: 'WMS/WFS',l: 'OGC SERVICES LIVE',    c: '#00ff88' },
+        ].map(k => (
+          <div key={k.l} className="bg-slate-900/60 border border-slate-800 rounded-xl p-4" style={{ borderLeft: `3px solid ${k.c}` }}>
+            <div className="text-2xl font-black" style={{ color: k.c }}>{k.v}</div>
+            <div className="text-[11px] font-bold text-slate-300 tracking-wider mt-1">{k.l}</div>
+          </div>
+        ))}
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         
         {/* Tier 4 */}

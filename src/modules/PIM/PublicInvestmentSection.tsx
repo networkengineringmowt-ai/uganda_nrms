@@ -122,8 +122,8 @@ const PIM_FRAMEWORK = [
 ];
 
 const TABS = [
-  { id: 'pim',    label: 'PIM Framework', icon: <FileText size={13}/> },
   { id: 'budget', label: 'Budget & Maintenance Trends', icon: <DollarSign size={13}/> },
+  { id: 'pim',    label: 'PIM Framework', icon: <FileText size={13}/> },
   { id: 'ppp',    label: 'PPP Projects',  icon: <Building2 size={13}/> },
   { id: 'donor',  label: 'Donor Funding', icon: <Globe size={13}/> },
   { id: 'ndpiv',  label: 'NDP IV Targets', icon: <TrendingUp size={13}/> },
@@ -144,7 +144,7 @@ const CT = ({ active, payload, label }: any) => {
 };
 
 export default function PublicInvestmentSection() {
-  const [tab, setTab] = useState<TabId>('pim');
+  const [tab, setTab] = useState<TabId>('budget');
 
   return (
     <div style={{ padding: '20px 18px', minHeight: '100%' }}>

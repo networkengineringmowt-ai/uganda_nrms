@@ -104,7 +104,7 @@ export default function NPMSSection() {
         datasets: [{
           label: '% of Network',
           data: [5, 26, 31, 22, 11, 5],
-          backgroundColor: ['#00ff88','#00f5ff','#ffee00','#ff6600','#ff0040','#bf00ff'],
+          backgroundColor: ['#00ff88','#a3e635','#ffee00','#ff6600','#ff0040','#99001f'],
         }],
       },
       options: {

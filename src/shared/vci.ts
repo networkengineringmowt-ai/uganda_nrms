@@ -15,10 +15,11 @@ export function vciRating(vci: number | null | undefined): VciRating | null {
   return 'Very Poor';
 }
 
+// Convention: condition is ALWAYS reported green → red (Very Good → Very Poor)
 export const VCI_RATING_COLOR: Record<VciRating, string> = {
   'Very Good': '#00ff88',
-  'Good':      '#00f5ff',
-  'Fair':      '#ffd23f',
-  'Poor':      '#ff6b35',
-  'Very Poor': '#ff2d78',
+  'Good':      '#a3e635',
+  'Fair':      '#ffee00',
+  'Poor':      '#ff6600',
+  'Very Poor': '#ff0040',
 };

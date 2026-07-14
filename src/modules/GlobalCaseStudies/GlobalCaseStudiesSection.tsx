@@ -1308,9 +1308,9 @@ const LESSONS: LessonTheme[] = [
 type TabId = 'worldmap' | 'casestudies' | 'analytics' | 'lessons' | 'matrix';
 
 const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
+  { id: 'analytics',   label: 'Dashboard', icon: <BarChart3 size={13} /> },
   { id: 'worldmap',    label: 'World Map',              icon: <Globe size={13} /> },
   { id: 'casestudies', label: 'Case Studies',           icon: <BookOpen size={13} /> },
-  { id: 'analytics',   label: 'Comparative Analytics', icon: <BarChart3 size={13} /> },
   { id: 'lessons',     label: 'Lessons & Recommendations', icon: <Lightbulb size={13} /> },
   { id: 'matrix',      label: 'Literature Review Matrix', icon: <Grid size={13} /> },
 ];
@@ -2272,7 +2272,7 @@ const tdStyle: React.CSSProperties = {
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function GlobalCaseStudiesSection() {
-  const [tab, setTab] = useState<TabId>('worldmap');
+  const [tab, setTab] = useState<TabId>('analytics');
 
   return (
     <div style={S.wrap}>
