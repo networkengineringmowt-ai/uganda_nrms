@@ -171,12 +171,7 @@ function AppShell() {
                 {!import.meta.env.VITE_STANDALONE && !SELF_CHIP_VIEWS.has(activeView) && <CrossLinkChipBar sectionId={activeView} />}
                 {activeView === 'network'               && <NetworkSection />}
                 {activeView === 'platform'              && <PlatformDashboard />}
-                {activeView === 'traffic'               && (
-                  <SectionHub accent="#00f5ff" badge="TIS · FY25-26" tabs={[
-                    { id: 'traffic', label: 'Traffic Information', element: <TrafficSection /> },
-                    { id: 'atc',     label: 'ATC Traffic Counters', element: <ATCView /> },
-                  ]} />
-                )}
+                {activeView === 'traffic'               && <TrafficSection />}
                 {activeView === 'roadcondition'         && <RoadConditionView />}
                 {activeView === 'maintenanceprogramme'  && <MaintenanceProgrammeView />}
                 {activeView === 'projects'              && <ProjectsView />}

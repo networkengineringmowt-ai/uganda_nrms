@@ -536,38 +536,8 @@ function RMSDashboard({ navigate }: { navigate: (v: ActiveView) => void }) {
         <span style={{ color: 'rgba(148,163,184,0.5)', fontSize: 9 }}>Condition % based on surveyed links only</span>
       </div>
 
-      {/* Module health + quick-links */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
-
-        {/* System Health */}
-        <div>
-          <div style={{ fontSize: 11, fontWeight: 900, color: C.cyan,
-            marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-            System Health — Module Status
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            {MODULE_HEALTH.map(m => {
-              const color = m.status === 'ok' ? C.green : m.status === 'warn' ? C.yellow : C.gray;
-              const Icon  = m.status === 'ok' ? CheckCircle : m.status === 'warn' ? AlertCircle : XCircle;
-              return (
-                <button key={m.id} onClick={() => navigate(m.view)} style={{
-                  display: 'flex', alignItems: 'center', gap: 10,
-                  padding: '9px 14px', borderRadius: 9,
-                  background: `rgba(${rgb(color)},0.05)`,
-                  border: `1px solid rgba(${rgb(color)},0.15)`,
-                  cursor: 'pointer', textAlign: 'left',
-                }}>
-                  <Icon size={14} style={{ color, flexShrink: 0 }} />
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: '#d4dde8' }}>{m.name}</div>
-                    <div style={{ fontSize: 9, color: 'rgba(100,116,139,0.7)', marginTop: 1 }}>{m.note}</div>
-                  </div>
-                  <ArrowRight size={11} style={{ color: 'rgba(100,116,139,0.4)', flexShrink: 0 }} />
-                </button>
-              );
-            })}
-          </div>
-        </div>
+      {/* Quick-links */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 18 }}>
 
         {/* Quick-links grid */}
         <div>
@@ -575,7 +545,7 @@ function RMSDashboard({ navigate }: { navigate: (v: ActiveView) => void }) {
             marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
             Quick Navigation — All Modules
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
             {[
               { label: 'Network Overview',    icon: <Globe size={14}/>,        view: 'network' as ActiveView,   color: C.blue   },
               { label: 'Pavement Mgmt (PMS)', icon: <Activity size={14}/>,     view: 'roadcondition' as ActiveView, color: C.orange },
@@ -1546,13 +1516,13 @@ export default function RMSSection() {
 
         {tab === 'overview' && (
           <>
+            <RMSDashboard navigate={navigate} />
             <iframe
               src={`${import.meta.env.BASE_URL}dashboard.html`}
               title="NRMS Live Dashboard"
               style={{ display: 'block', width: '100%', height: 'calc(100vh - 150px)', border: 'none',
-                borderBottom: '1px solid rgba(0,245,255,0.15)', background: '#020202' }}
+                borderTop: '1px solid rgba(0,245,255,0.15)', background: '#020202' }}
             />
-            <RMSDashboard navigate={navigate} />
           </>
         )}
 
