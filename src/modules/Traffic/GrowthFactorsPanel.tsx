@@ -459,7 +459,8 @@ export default function GrowthFactorsPanel() {
       .then(r => r.json())
       .then((d: GFSummary) => {
         setData(d);
-        if (d.year_range?.[1]) setSelectedYear(d.year_range[1]);
+        const ys = [...new Set((d.monthly_factors ?? []).map(m => m.year))].sort((a, b) => a - b);
+        setSelectedYear(ys[ys.length - 1] ?? d.year_range?.[1] ?? new Date().getFullYear());
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -488,6 +489,18 @@ export default function GrowthFactorsPanel() {
     if (!data) return ['total'];
     return data.vehicle_classes.filter(vc => vc !== 'nmt');
   }, [data]);
+
+  // Dynamic gap-fill: if the chosen year has no records for this class, use
+  // the nearest survey year that does (headings reference it explicitly).
+  const effectiveYear = useMemo(() => {
+    if (!data) return selectedYear;
+    const ys = [...new Set(
+      data.monthly_factors.filter(d => d.vehicle_class === selectedVC).map(d => d.year),
+    )].sort((a, b) => a - b);
+    if (!ys.length || ys.includes(selectedYear)) return selectedYear;
+    return ys.reduce((best, y) => (Math.abs(y - selectedYear) < Math.abs(best - selectedYear) ? y : best), ys[0]);
+  }, [data, selectedYear, selectedVC]);
+  const isNearest = effectiveYear !== selectedYear;
 
   if (loading) {
     return (
@@ -611,7 +624,7 @@ export default function GrowthFactorsPanel() {
           <Activity size={14} style={{ color: '#6366f1' }} />
           <div>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>
-              Monthly Expansion Factors (MEF) — {selectedYear}
+              Monthly Expansion Factors (MEF) — {effectiveYear}{isNearest ? ' (nearest survey year)' : ''}
             </div>
             <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.45)' }}>
               Monthly AADT ÷ Annual AADT · &gt;1.0 = peak · &lt;1.0 = trough
@@ -620,7 +633,7 @@ export default function GrowthFactorsPanel() {
         </div>
         <MonthlyHeatmap
           data={filteredMonthly}
-          selectedYear={selectedYear}
+          selectedYear={effectiveYear}
           selectedVC={selectedVC}
         />
       </div>
@@ -631,7 +644,7 @@ export default function GrowthFactorsPanel() {
           <BarChart2 size={14} style={{ color: '#00f5ff' }} />
           <div>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>
-              Seasonal Factors by Region — {selectedYear}
+              Seasonal Factors by Region — {effectiveYear}{isNearest ? ' (nearest survey year)' : ''}
             </div>
             <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.45)' }}>
               Uganda seasons: Long Rains (Mar–May) · Dry 1 (Jun–Aug) · Short Rains (Sep–Nov) · Dry 2 (Dec–Feb)
@@ -641,7 +654,7 @@ export default function GrowthFactorsPanel() {
         <SeasonalBars
           data={data.seasonal_factors}
           regions={visibleRegions.slice(0, 5)}
-          selectedYear={selectedYear}
+          selectedYear={effectiveYear}
           selectedVC={selectedVC}
         />
       </div>

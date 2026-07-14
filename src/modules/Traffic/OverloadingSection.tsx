@@ -282,60 +282,12 @@ export default function OverloadingSection() {
       </div>
 
       {/* ── Map + Charts row ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4" style={{ minHeight: 440 }}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-        {/* Risk map */}
-        <div className="lg:col-span-3 bms-card relative overflow-hidden" style={{ minHeight: 400 }}>
-          <div className="text-sm font-bold text-white mb-2">Road Network Overloading Risk Map</div>
-          <div className="text-[10px] text-slate-500 mb-3">
-            Lines coloured by risk category · Click any road for details
-          </div>
-
-          {/* Legend strip */}
-          <div className="flex items-center gap-4 mb-3 flex-wrap">
-            {Object.entries(RISK_COLOR).map(([cat, col]) => (
-              <div key={cat} className="flex items-center gap-1.5">
-                <div className="w-7 h-1.5 rounded-full" style={{ background: col }}/>
-                <span className="text-[10px]" style={{ color: col }}>{cat}</span>
-                <span className="text-[9px] text-slate-600">({riskDist[cat] ?? 0})</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Map + MapDetailPane row */}
-          <div style={{ display: 'flex', height: 360, gap: 0, borderRadius: 8, overflow: 'hidden' }}>
-            <div style={{ flex: 1, minWidth: 0, position: 'relative' }}>
-              <MapContainer
-                center={[1.37, 32.3]} zoom={7} zoomControl={false}
-                style={{ height: '100%', width: '100%', background: '#0a0f1e' }}
-              >
-                <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery}/>
-                <TileLayer url={ESRI_TILE_URLS.labels}  attribution={ESRI_ATTRIBUTIONS.labels} opacity={0.65}/>
-                <InfraLayers show={['weighbridges']} />
-                <MapLegend title="Overloading Risk" items={LEGEND_OVERLOADING} />
-                <ZoomControl position="bottomright"/>
-                {geoFeatures.length > 0 && (
-                  <RiskLayer
-                    features={geoFeatures}
-                    linkRiskMap={linkRiskMap}
-                    onSelect={onLinkClick}
-                  />
-                )}
-              </MapContainer>
-            </div>
-
-            <OverloadingDetailPane
-              riskDist={riskDist}
-              top20={top20}
-              kpis={kpis}
-              selected={selectedLink}
-              onClose={() => setSelectedLink(null)}
-            />
-          </div>
-        </div>
+        {/* Overloading risk map removed — TIS Traffic Map already covers the network map */}
 
         {/* Charts column */}
-        <div className="lg:col-span-2 flex flex-col gap-4">
+        <div className="lg:col-span-2 grid grid-cols-1 lg:grid-cols-2 gap-4">
 
           {/* ESAL breakdown donut */}
           <div className="bms-card flex-1">

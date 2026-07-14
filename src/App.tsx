@@ -221,8 +221,6 @@ function AppShell() {
                     { id: 'catalogue',  label: 'Evidence Catalogue', element: <SourcesCatalogueSection /> },
                     { id: 'tables',     label: 'Tabular Summaries', element: <TabularSummaries /> },
                     { id: 'dictionary', label: 'Data Dictionary', element: <DataDictionary /> },
-                    { id: 'documents',  label: 'Document Store', element: <DocumentStore /> },
-                    { id: 'downloads',  label: 'Downloads', element: <DownloadsView /> },
                     { id: 'admin',      label: 'Admin Tools', element: (
                       <RequireAdmin label="Admin Tools"><AdminSection onNavigate={navigate} /></RequireAdmin>
                     ) },
