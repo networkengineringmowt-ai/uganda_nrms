@@ -36,15 +36,16 @@ const SECTIONS: Record<string, Section> = {
   ntis:          { id: 'ntis',          label: 'National Transport Info',   icon: <Activity size={14}/>,     color: N.indigo },
   npms:          { id: 'npms',          label: 'National Pavement Mgmt',    icon: <Layers size={14}/>,       color: N.orange },
   roadcondition: { id: 'roadcondition', label: 'Pavement Management',      icon: <Activity size={14}/>,     color: N.orange },
-  bms:           { id: 'bms',           label: 'Bridge Management',         icon: <Network size={14}/>,      color: N.blue   },
+  pms:           { id: 'pms',           label: 'PMS — Pavement Mgmt',       icon: <Activity size={14}/>,     color: N.orange },
+  bms:           { id: 'bms',           label: 'BMS — Bridge Management',         icon: <Network size={14}/>,      color: N.blue   },
   roadreserve:   { id: 'roadreserve',   label: 'Road Reserve Management',   icon: <Landmark size={14}/>,     color: N.teal   },
-  traffic:       { id: 'traffic',       label: 'Traffic Information',       icon: <Layers size={14}/>,       color: N.cyan   },
+  traffic:       { id: 'traffic',       label: 'TIS — Traffic Information',       icon: <Layers size={14}/>,       color: N.cyan   },
   projects:      { id: 'projects',      label: 'Projects & Works',          icon: <Construction size={14}/>, color: N.green  },
-  pim:           { id: 'pim',           label: 'Public Investment',         icon: <Building2 size={14}/>,    color: N.yellow },
+  pim:           { id: 'pim',           label: 'Public Investment Mgmt',         icon: <Building2 size={14}/>,    color: N.yellow },
   budget:        { id: 'budget',        label: 'Budget & Maintenance',      icon: <DollarSign size={14}/>,   color: N.pink   },
   lifecycle:     { id: 'lifecycle',     label: 'Life Cycle Management',     icon: <Clock size={14}/>,        color: N.teal   },
   casestudies:   { id: 'casestudies',   label: 'Global Case Studies',       icon: <Globe size={14}/>,        color: N.teal   },
-  sources:       { id: 'sources',       label: 'Sources & Evidence',        icon: <Database size={14}/>,     color: N.gray   },
+  sources:       { id: 'sources',       label: 'Admin · Sources & Evidence',        icon: <Database size={14}/>,     color: N.gray   },
   admin:         { id: 'admin',         label: 'Admin Tools',               icon: <ShieldCheck size={14}/>,  color: N.cyan   },
   gisenterprise: { id: 'gisenterprise', label: 'GIS Enterprise',            icon: <Layers size={14}/>,       color: N.purple },
   atc:           { id: 'atc',           label: 'ATC Traffic Counters',      icon: <Gauge size={14}/>,        color: N.orange },
@@ -74,10 +75,10 @@ export default function Sidebar() {
   // super level: dashboards & reports only — Admin Tools stays hidden
   const isAdmin = user?.role === 'admin';
   // FLAT nav — every section is always visible. No grouping, no accordion/collapse.
+  // 10 top-level sections; everything else lives as tabs inside these hubs.
   const FLAT_ORDER: ActiveView[] = [
-    'rms', 'ntis', 'npms', 'roadcondition', 'bms', 'bridgeworks', 'roadreserve', 'roadatlas', 'roadvideo',
-    'traffic', 'atc', 'projects', 'pim', 'budget', 'lifecycle',
-    'casestudies', 'sources', 'documents', 'downloads', 'gisenterprise', 'admin',
+    'rms', 'pms', 'traffic', 'bms', 'projects',
+    'roadreserve', 'pim', 'casestudies', 'gisenterprise', 'sources',
   ];
   const navItems = FLAT_ORDER.filter(id => (id !== 'admin' || isAdmin) && SECTIONS[id]);
 

@@ -10,6 +10,7 @@ import { roleLabel } from './modules/Auth/authTypes';
 import CrossLinkChipBar from './shared/CrossLinkChipBar';
 
 const RMSFieldShell = lazy(() => import('./modules/RMS/RMSFieldShell'));
+import SectionHub from './components/Layout/SectionHub';
 import Sidebar from './components/Layout/Sidebar';
 import Header  from './components/Layout/Header';
 
@@ -170,7 +171,13 @@ function AppShell() {
                 {!import.meta.env.VITE_STANDALONE && !SELF_CHIP_VIEWS.has(activeView) && <CrossLinkChipBar sectionId={activeView} />}
                 {activeView === 'network'               && <NetworkSection />}
                 {activeView === 'platform'              && <PlatformDashboard />}
-                {activeView === 'traffic'               && <TrafficSection />}
+                {activeView === 'traffic'               && (
+                  <SectionHub accent="#00f5ff" badge="TIS · FY25-26" tabs={[
+                    { id: 'traffic', label: 'Traffic Information', element: <TrafficSection /> },
+                    { id: 'atc',     label: 'ATC Traffic Counters', element: <ATCView /> },
+                    { id: 'ntis',    label: 'National Transport Info', element: <NTISSection /> },
+                  ]} />
+                )}
                 {activeView === 'roadcondition'         && <RoadConditionView />}
                 {activeView === 'maintenanceprogramme'  && <MaintenanceProgrammeView />}
                 {activeView === 'projects'              && <ProjectsView />}
@@ -206,7 +213,12 @@ function AppShell() {
                 )}
 
                 {activeView === 'projecttracker' && <ProjectTracker />}
-                {activeView === 'pim'            && <PublicInvestmentSection />}
+                {activeView === 'pim'            && (
+                  <SectionHub accent="#facc15" badge="PIM · FY25-26" tabs={[
+                    { id: 'pim',    label: 'Public Investment', element: <PublicInvestmentSection /> },
+                    { id: 'budget', label: 'Budget & Maintenance', element: <BudgetSection /> },
+                  ]} />
+                )}
 
                 {activeView === 'budget' && <BudgetSection />}
 
@@ -214,9 +226,23 @@ function AppShell() {
                 {activeView === 'roadreserve'    && <RoadReserveSection />}
                 {activeView === 'casestudies'    && <GlobalCaseStudiesSection />}
                 {activeView === 'lifecycle'       && <LifecycleView />}
-                {activeView === 'sources'         && <SourcesSection />}
+                {activeView === 'sources'         && (
+                  <SectionHub accent="#94a3b8" badge="KNOWLEDGE & ADMIN" tabs={[
+                    { id: 'sources',   label: 'Sources & Evidence', element: <SourcesSection /> },
+                    { id: 'documents', label: 'Document Store', element: <DocumentStore /> },
+                    { id: 'downloads', label: 'Downloads', element: <DownloadsView /> },
+                    { id: 'admin',     label: 'Admin Tools', element: (
+                      <RequireAdmin label="Admin Tools"><AdminSection onNavigate={navigate} /></RequireAdmin>
+                    ) },
+                  ]} />
+                )}
                 {activeView === 'tabularsummaries' && <TabularSummaries />}
-                {activeView === 'gisenterprise'    && <GisEnterpriseSection />}
+                {activeView === 'gisenterprise'    && (
+                  <SectionHub accent="#c084fc" badge="GIS · FY25-26" tabs={[
+                    { id: 'gis',       label: 'GIS Enterprise', element: <GisEnterpriseSection /> },
+                    { id: 'roadatlas', label: 'Road Atlas', element: <RoadAtlasView /> },
+                  ]} />
+                )}
                 {activeView === 'atc'              && <ATCView />}
                 {activeView === 'bridgeworks'      && <BridgeWorksSection />}
                 {activeView === 'documents'        && <DocumentStore />}
@@ -256,8 +282,21 @@ function AppShell() {
                   </Suspense>
                 )}
 
-                {activeView === 'bms' && <BMSSection />}
-                {activeView === 'pms' && <PMSSection />}
+                {activeView === 'bms' && (
+                  <SectionHub accent="#60a5fa" badge="BMS · FY25-26" tabs={[
+                    { id: 'bms',         label: 'Bridge Management', element: <BMSSection /> },
+                    { id: 'bridgeworks', label: 'Bridge Works Programme', element: <BridgeWorksSection /> },
+                  ]} />
+                )}
+                {activeView === 'pms' && (
+                  <SectionHub accent="#fb923c" badge="PMS · FY25-26" tabs={[
+                    { id: 'pms',       label: 'Pavement Management', element: <PMSSection /> },
+                    { id: 'condition', label: 'Road Condition', element: <RoadConditionView /> },
+                    { id: 'npms',      label: 'National Pavement Mgmt', element: <NPMSSection /> },
+                    { id: 'lifecycle', label: 'Life Cycle Management', element: <LifecycleView /> },
+                    { id: 'roadvideo', label: 'Road Video Survey', element: <RoadVideoView /> },
+                  ]} />
+                )}
                 {activeView === 'ntis' && <NTISSection />}
                 {activeView === 'npms' && <NPMSSection />}
               </div>
