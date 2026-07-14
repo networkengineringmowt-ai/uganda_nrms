@@ -1030,22 +1030,6 @@ export default function SourcesCatalogueSection() {
   return (
     <div style={{ display:'flex', flexDirection:'column', minHeight:'100%' }}>
 
-      {/* ── BMS-style tab bar ─────────────────────────────────────────────── */}
-      <div style={{
-        display: 'flex', gap: 2, padding: '0 14px', flexShrink: 0,
-        borderBottom: '1px solid rgba(77,159,255,0.15)',
-        background: 'rgba(8,8,8,0.85)',
-      }}>
-        <button style={{
-          display:'flex', alignItems:'center', gap:6,
-          padding:'10px 14px 11px', fontSize:11, fontWeight:800,
-          background:'none', border:'none', cursor:'default', flexShrink:0,
-          color:'#4d9fff', borderBottom:'2px solid #4d9fff',
-        }}>
-          Evidence Catalogue
-        </button>
-      </div>
-
       <div style={{ flex:1, padding: '20px 18px' }}>
       {/* Header */}
       <div style={{ marginBottom: 20 }}>

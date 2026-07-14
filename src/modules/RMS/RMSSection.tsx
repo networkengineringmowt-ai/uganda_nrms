@@ -1476,7 +1476,6 @@ export function DTIMSArchitecture({ navigate }: { navigate: (v: ActiveView) => v
 
 const TABS = [
   { id: 'overview'      as const, label: 'Overview',          icon: <LayoutDashboard size={13}/> },
-  { id: 'systemhealth'  as const, label: 'System Health',     icon: <Activity size={13}/> },
   { id: 'roadmap'       as const, label: 'Road Network Map',  icon: <Map size={13}/> },
   { id: 'inventory'     as const, label: 'Road Inventory',    icon: <Database size={13}/> },
   { id: 'networkstory'  as const, label: 'Network Story',     icon: <BookOpen size={13}/> },
@@ -1497,7 +1496,7 @@ export default function RMSSection() {
   const { navigate } = useBMS();
   const [tab, setTab] = useState<TabId>('overview');
 
-  const isFullHeight = tab === 'roadmap' || tab === 'networkstory' || tab === 'overview';
+  const isFullHeight = tab === 'roadmap' || tab === 'networkstory';
   const contentStyle: React.CSSProperties = isFullHeight
     ? { flex: 1, minHeight: 0, position: 'relative', overflow: 'hidden' }
     : { flex: 1, minHeight: 0, overflowY: 'auto' };
@@ -1546,15 +1545,15 @@ export default function RMSSection() {
       <div style={contentStyle}>
 
         {tab === 'overview' && (
-          <iframe
-            src={`${import.meta.env.BASE_URL}dashboard.html`}
-            title="NRMS Live Dashboard"
-            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 'none', background: '#020202' }}
-          />
-        )}
-
-        {tab === 'systemhealth' && (
-          <RMSDashboard navigate={navigate} />
+          <>
+            <iframe
+              src={`${import.meta.env.BASE_URL}dashboard.html`}
+              title="NRMS Live Dashboard"
+              style={{ display: 'block', width: '100%', height: 'calc(100vh - 150px)', border: 'none',
+                borderBottom: '1px solid rgba(0,245,255,0.15)', background: '#020202' }}
+            />
+            <RMSDashboard navigate={navigate} />
+          </>
         )}
 
         {tab === 'roadmap' && (

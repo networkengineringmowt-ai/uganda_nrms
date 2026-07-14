@@ -175,7 +175,6 @@ function AppShell() {
                   <SectionHub accent="#00f5ff" badge="TIS · FY25-26" tabs={[
                     { id: 'traffic', label: 'Traffic Information', element: <TrafficSection /> },
                     { id: 'atc',     label: 'ATC Traffic Counters', element: <ATCView /> },
-                    { id: 'ntis',    label: 'National Transport Info', element: <NTISSection /> },
                   ]} />
                 )}
                 {activeView === 'roadcondition'         && <RoadConditionView />}
@@ -237,12 +236,7 @@ function AppShell() {
                   ]} />
                 )}
                 {activeView === 'tabularsummaries' && <TabularSummaries />}
-                {activeView === 'gisenterprise'    && (
-                  <SectionHub accent="#c084fc" badge="GIS · FY25-26" tabs={[
-                    { id: 'gis',       label: 'GIS Enterprise', element: <GisEnterpriseSection /> },
-                    { id: 'roadatlas', label: 'Road Atlas', element: <RoadAtlasView /> },
-                  ]} />
-                )}
+                {activeView === 'gisenterprise'    && <GisEnterpriseSection />}
                 {activeView === 'atc'              && <ATCView />}
                 {activeView === 'bridgeworks'      && <BridgeWorksSection />}
                 {activeView === 'documents'        && <DocumentStore />}

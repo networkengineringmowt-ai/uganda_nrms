@@ -21,6 +21,10 @@ export default function CrossLinkChipBar({ sectionId, navigate: navProp }: Props
   const links = useCrossLinks(sectionId);
   const navigate = navProp ?? ctxNavigate;
 
+  // Disabled platform-wide (14 Jul 2026): the RELATED DATA chip bar added a
+  // second header layer to every section. Keeping component so call sites work.
+  return null;
+
   if (!links.length) return null;
 
   return (
