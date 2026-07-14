@@ -9,7 +9,9 @@ loads exact files instead of blind-probing.
 import json, os, re, sys
 from PIL import Image
 
-SRC = r'S:\PHOTOS'
+# Source archive: pass a path as the first argument to override the default.
+#   python scripts/build_photo_album.py "G:\My Drive\MOWT\Uganda National Road Network Repository\Bridge stuff\PHOTOS"
+SRC = sys.argv[1] if len(sys.argv) > 1 else r'S:\PHOTOS'
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.normpath(os.path.join(HERE, '..'))
 OUT_PHOTOS = os.path.join(REPO, 'public', 's-photos')
