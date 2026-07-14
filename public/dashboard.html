@@ -7,7 +7,7 @@
 <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#000;color:#ccc;font-family:'Inter','Segoe UI',sans-serif;min-height:100vh;overflow-x:hidden}
+body{background:#000;color:#ccc;font-family:'Inter, Segoe UI, sans-serif';min-height:100vh;overflow-x:hidden}
 :root{--c:#00f5ff;--g:#00ff88;--p:#ff006e;--pu:#bf00ff;--o:#ff6600;--y:#ffee00;--r:#ff0040;--bg1:#060606;--bg2:#0d0d0d;--bg3:#111;--bd:rgba(0,245,255,0.12)}
 
 /* TOPBAR */
@@ -29,14 +29,14 @@ body{background:#000;color:#ccc;font-family:'Inter','Segoe UI',sans-serif;min-he
 .kpi-card{padding:12px 14px;border-right:1px solid var(--bd);cursor:pointer;transition:background .2s}
 .kpi-card:hover{background:rgba(0,245,255,.04)}
 .kpi-card .lbl{color:#555;font-size:9px;letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px}
-.kpi-card .val{font-size:20px;font-weight:700;font-family:'Inter','Segoe UI',sans-serif;letter-spacing:-1px}
+.kpi-card .val{font-size:20px;font-weight:700;font-family:'Inter, Segoe UI, sans-serif';letter-spacing:-1px}
 .kpi-card .sub{color:#444;font-size:9px;margin-top:2px}
 .kpi-card .chg{font-size:9px;margin-top:1px}
 .chg.up{color:var(--g)}.chg.down{color:var(--r)}.chg.warn{color:var(--y)}
 
 /* TABS */
 .tabs{display:flex;gap:0;border-bottom:2px solid var(--bd);background:var(--bg1);overflow-x:auto}
-.tab-btn{padding:10px 18px;font-size:10.5px;letter-spacing:.8px;color:#555;border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;font-family:'Inter','Segoe UI',sans-serif}
+.tab-btn{padding:10px 18px;font-size:10.5px;letter-spacing:.8px;color:#555;border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;font-family:'Inter, Segoe UI, sans-serif'}
 .tab-btn:hover{color:var(--c);background:rgba(0,245,255,.04)}
 .tab-btn.active{color:var(--c);border-bottom-color:var(--c);background:rgba(0,245,255,.06)}
 
@@ -65,14 +65,14 @@ body{background:#000;color:#ccc;font-family:'Inter','Segoe UI',sans-serif;min-he
 
 /* FILTER BAR */
 .filter-bar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
-.filter-btn{padding:4px 12px;border:1px solid var(--bd);border-radius:3px;background:transparent;color:#666;font-size:9.5px;font-family:'Inter','Segoe UI',sans-serif;cursor:pointer;letter-spacing:.5px;transition:all .2s}
+.filter-btn{padding:4px 12px;border:1px solid var(--bd);border-radius:3px;background:transparent;color:#666;font-size:9.5px;font-family:'Inter, Segoe UI, sans-serif';cursor:pointer;letter-spacing:.5px;transition:all .2s}
 .filter-btn:hover,.filter-btn.active{border-color:var(--c);color:var(--c);background:rgba(0,245,255,.08)}
 .filter-lbl{color:#444;font-size:9px;letter-spacing:.5px}
 
 /* STAT ROW */
 .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:12px}
 .stat-mini{background:var(--bg3);border:1px solid var(--bd);border-radius:4px;padding:10px;border-left:3px solid var(--c)}
-.stat-mini .sv{color:var(--c);font-size:18px;font-weight:700;font-family:'Inter','Segoe UI',sans-serif}
+.stat-mini .sv{color:var(--c);font-size:18px;font-weight:700;font-family:'Inter, Segoe UI, sans-serif'}
 .stat-mini .sl{color:#555;font-size:9px;margin-top:2px;letter-spacing:.4px}
 
 /* SCROLLBAR */
@@ -434,9 +434,9 @@ const D = {
 // ── CHART LAYOUT TEMPLATE ──────────────────────────────────────
 const CFG={responsive:true,displayModeBar:false};
 const TL=(title,extra={})=>({
-  title:{text:title,font:{color:'#00f5ff',size:11,family:'Inter','Segoe UI',sans-serif},x:0.5,xanchor:'center',y:0.97},
+  title:{text:title,font:{color:'#00f5ff',size:11,family:'Inter, Segoe UI, sans-serif'},x:0.5,xanchor:'center',y:0.97},
   paper_bgcolor:'#0d0d0d',plot_bgcolor:'#080808',
-  font:{color:'#888',size:9,family:'Inter','Segoe UI',sans-serif},
+  font:{color:'#888',size:9,family:'Inter, Segoe UI, sans-serif'},
   margin:{t:32,r:10,b:36,l:46,pad:0},
   legend:{font:{color:'#666',size:8.5},bgcolor:'rgba(0,0,0,0)',bordercolor:'transparent',orientation:'h',y:-0.18},
   xaxis:{gridcolor:'#1a1a1a',zerolinecolor:'#1f1f1f',tickfont:{color:'#666',size:8},linecolor:'#222',showgrid:true},
@@ -444,9 +444,9 @@ const TL=(title,extra={})=>({
   ...extra
 });
 const TL3D=(title)=>({
-  title:{text:title,font:{color:'#00f5ff',size:11,family:'Inter','Segoe UI',sans-serif},x:0.5,xanchor:'center'},
+  title:{text:title,font:{color:'#00f5ff',size:11,family:'Inter, Segoe UI, sans-serif'},x:0.5,xanchor:'center'},
   paper_bgcolor:'#0d0d0d',
-  font:{color:'#888',size:9,family:'Inter','Segoe UI',sans-serif},
+  font:{color:'#888',size:9,family:'Inter, Segoe UI, sans-serif'},
   margin:{t:36,r:10,b:10,l:10},
   scene:{
     bgcolor:'#060606',
@@ -458,14 +458,6 @@ const TL3D=(title)=>({
 const bar=(x,y,name,col,extra={})=>({type:'bar',x,y,name,marker:{color:col,line:{color:'rgba(0,0,0,0.3)',width:0.5}},opacity:0.92,...extra});
 const line=(x,y,name,col,extra={})=>({type:'scatter',mode:'lines+markers',x,y,name,line:{color:col,width:2},marker:{color:col,size:4},...extra});
 const pie=(vals,lbls,cols)=>({type:'pie',values:vals,labels:lbls,marker:{colors:cols,line:{color:'#000',width:1}},textfont:{size:8,color:'#999'},hole:0.35,direction:'clockwise'});
-
-// ── TAB INIT FLAGS ─────────────────────────────────────────────
-const inited={};
-function showTab(n){
-  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===n-1));
-  document.querySelectorAll('.tab-panel').forEach((p,i)=>{p.style.display=i===n-1?'block':'none';p.classList.toggle('active',i===n-1);});
-  if(!inited[n]){inited[n]=true;setTimeout(()=>window['initT'+n](),50);}
-}
 
 // ══════════════════════════════════════════════════════════════
 // TAB 1 — NETWORK OVERVIEW (c1–c15)
@@ -479,7 +471,7 @@ function initT1(){
     values:[21302,6405,14897,5840,565,10240,4657,2242,2242,1281,640,1490,4469,5959,2979],
     marker:{colors:['#00f5ff','#00ff88','#ff6600','#00ccdd','#00aa66','#cc5500','#994400','#00ff88','#ffee00','#ff6600','#ff0040','#00bb66','#bbaa00','#dd5500','#cc0030'],line:{color:'#000',width:1}},
     textfont:{size:8}}],
-    {title:{text:'Network Hierarchy',font:{color:'#00f5ff',size:11,family:'Inter','Segoe UI',sans-serif},x:0.5},paper_bgcolor:'#0d0d0d',margin:{t:32,r:0,b:0,l:0}},CFG);
+    {title:{text:'Network Hierarchy',font:{color:'#00f5ff',size:11,family:'Inter, Segoe UI, sans-serif'},x:0.5},paper_bgcolor:'#0d0d0d',margin:{t:32,r:0,b:0,l:0}},CFG);
 
   // c2 Treemap - by region + class
   Plotly.newPlot('c2',[{type:'treemap',
@@ -489,7 +481,7 @@ function initT1(){
     values:[21302,5820,5240,4890,5352,1120,1680,3020,980,1480,2780,1040,1240,2610,1060,1400,2892],
     marker:{colorscale:[[0,'#001a1a'],[0.5,'#006666'],[1,'#00f5ff']],line:{color:'#000',width:1}},
     textfont:{size:8}}],
-    {title:{text:'Network by Region & Class',font:{color:'#00f5ff',size:11,family:'Inter','Segoe UI',sans-serif},x:0.5},paper_bgcolor:'#0d0d0d',margin:{t:32,r:0,b:0,l:0}},CFG);
+    {title:{text:'Network by Region & Class',font:{color:'#00f5ff',size:11,family:'Inter, Segoe UI, sans-serif'},x:0.5},paper_bgcolor:'#0d0d0d',margin:{t:32,r:0,b:0,l:0}},CFG);
 
   // c3 Stacked bar - region × surface
   Plotly.newPlot('c3',[
@@ -1248,6 +1240,7 @@ function showTab(n){
   const btn=document.querySelector('.tab-btn[data-tab="'+n+'"]');
   if(panel){panel.classList.add('active');}
   if(btn){btn.classList.add('active');}
+  if(inited[n]&&window.Plotly&&panel){requestAnimationFrame(function(){panel.querySelectorAll('.js-plotly-plot').forEach(function(g){try{Plotly.Plots.resize(g);}catch(e){}});});}
   if(!inited[n]){
     inited[n]=true;
     try{
@@ -1260,6 +1253,18 @@ function showTab(n){
       else if(n===7) initT7();
     }catch(e){console.error('initT'+n+'() error:',e);}
   }
+}
+
+// Pre-render remaining tabs in the background so every tab opens instantly
+function preloadTabs(){
+  [2,3,4,5,6,7].forEach(function(n,i){
+    setTimeout(function(){
+      if(!inited[n]){
+        inited[n]=true;
+        try{window['initT'+n]&&window['initT'+n]();}catch(e){console.error('preload initT'+n,e);}
+      }
+    },700+i*450);
+  });
 }
 
 // Wire tab buttons
@@ -1288,6 +1293,7 @@ document.addEventListener('DOMContentLoaded',function(){
   setInterval(tick,1000); tick();
   // Init Tab 1 on load
   showTab(1);
+  preloadTabs();
 });
 </script>
 </body>

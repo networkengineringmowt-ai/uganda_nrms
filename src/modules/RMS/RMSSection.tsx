@@ -1442,7 +1442,7 @@ export default function RMSSection() {
           <>
             <RMSDashboard navigate={navigate} />
             <iframe
-              src={`${import.meta.env.BASE_URL}dashboard.html`}
+              src={`${import.meta.env.BASE_URL}dashboard.html?v=${Date.now()}`}
               title="NRMS Live Dashboard"
               style={{ display: 'block', width: '100%', height: 'calc(100vh - 150px)', border: 'none',
                 borderTop: '1px solid rgba(0,245,255,0.15)', background: '#020202' }}
