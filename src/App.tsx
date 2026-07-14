@@ -54,6 +54,7 @@ const LifecycleSection        = lazy(() => import('./modules/Lifecycle/Lifecycle
 const SourcesCatalogueSection = lazy(() => import('./modules/Sources/SourcesCatalogueSection'));
 const TabularSummaries        = lazy(() => import('./modules/Sources/TabularSummaries'));
 const SourcesSection          = lazy(() => import('./modules/Sources/SourcesSection'));
+const DataDictionary          = lazy(() => import('./modules/Sources/DataDictionary'));
 
 // ── Data entry ────────────────────────────────────────────────────────────────
 const PendingSubmissions = lazy(() => import('./modules/DataEntry/PendingSubmissions').then(m => ({ default: m.PendingSubmissions })));
@@ -222,10 +223,12 @@ function AppShell() {
                 {activeView === 'lifecycle'       && <LifecycleView />}
                 {activeView === 'sources'         && (
                   <SectionHub accent="#94a3b8" badge="KNOWLEDGE & ADMIN" tabs={[
-                    { id: 'sources',   label: 'Sources & Evidence', element: <SourcesSection /> },
-                    { id: 'documents', label: 'Document Store', element: <DocumentStore /> },
-                    { id: 'downloads', label: 'Downloads', element: <DownloadsView /> },
-                    { id: 'admin',     label: 'Admin Tools', element: (
+                    { id: 'catalogue',  label: 'Evidence Catalogue', element: <SourcesCatalogueSection /> },
+                    { id: 'tables',     label: 'Tabular Summaries', element: <TabularSummaries /> },
+                    { id: 'dictionary', label: 'Data Dictionary', element: <DataDictionary /> },
+                    { id: 'documents',  label: 'Document Store', element: <DocumentStore /> },
+                    { id: 'downloads',  label: 'Downloads', element: <DownloadsView /> },
+                    { id: 'admin',      label: 'Admin Tools', element: (
                       <RequireAdmin label="Admin Tools"><AdminSection onNavigate={navigate} /></RequireAdmin>
                     ) },
                   ]} />
