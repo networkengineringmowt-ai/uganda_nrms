@@ -271,7 +271,7 @@ export default function PublicInvestmentSection() {
       {tab === 'budget' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <Suspense fallback={<div style={{ padding: 24, color: 'rgba(148,163,184,0.7)', fontSize: 12 }}>Loading budget &amp; maintenance…</div>}>
-            <BudgetSection />
+            <BudgetSection embedded />
           </Suspense>
           <div style={card(C.cyan)}>
             <div style={{ fontSize: 11, fontWeight: 900, color: C.cyan, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14 }}>

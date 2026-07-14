@@ -84,7 +84,7 @@ const CT = ({ active, payload, label }: any) => {
   );
 };
 
-export default function BudgetSection() {
+export default function BudgetSection({ embedded = false }: { embedded?: boolean } = {}) {
   const [tab, setTab] = useState<TabId>('gap');
   const imx = useTableSort(INTERVENTION_MATRIX, 'type');
   const { budgetAlignment, networkSummary } = useSectionData();
@@ -134,13 +134,14 @@ export default function BudgetSection() {
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
       <CrossLinkChipBar sectionId="budget" />
     <div style={{ padding: '8px 14px', flex: 1 }}>
-      <ModuleNavBar module="Budget" />
+      {!embedded && <ModuleNavBar module="Budget" />}
       {/* Header — compact single strip: title + KPI chips on one row */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap',
         padding: '8px 12px', marginBottom: 8, borderRadius: 10,
         background: 'rgba(8,8,8,0.7)', border: `1px solid rgba(${hexRgb(C.pink)},0.2)`,
       }}>
+        {!embedded && (<>
         <div style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0,
           background: `linear-gradient(135deg, rgba(${hexRgb(C.pink)},0.25), rgba(${hexRgb(C.red)},0.1))`,
           border: `1px solid rgba(${hexRgb(C.pink)},0.4)`,
@@ -151,6 +152,7 @@ export default function BudgetSection() {
           <div style={{ fontSize: 14, fontWeight: 900, color: '#e2eaf4', lineHeight: 1.15 }}>Budget &amp; Maintenance</div>
           <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.6)' }}>M&amp;R budgets · funding gaps · cost matrix</div>
         </div>
+        </>)}
         <div style={{ flex: 1 }} />
         {[
           { label: 'Required FY25/26', value: `UGX ${totalRequired}B`, color: C.red },
