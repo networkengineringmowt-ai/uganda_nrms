@@ -1,5 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback, lazy, Suspense } from 'react';
-const LifecycleSection = lazy(() => import('../Lifecycle/LifecycleSection'));
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import {
   ResponsiveContainer, AreaChart, Area, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar,
@@ -19,6 +18,9 @@ import {
   NEON, REGION_NEON, Bar3D, Chart3DWrap, AreaGradDefs, TT_NEON, TICK,
 } from '../../lib/chart3d';
 
+import { WaterLayers } from '../../shared/WaterLayers';
+import { InfraLayers } from '../../shared/InfraLayers';
+import { MapLegend, LEGEND_CONDITION } from '../../shared/MapLegend';
 import { ModuleNavBar } from '../../shared/ModuleNavBar';
 import { ESRI_TILE_URLS, ESRI_ATTRIBUTIONS } from '../../shared/mapSymbols';
 import SourceTableButton from '../../shared/SourceTableButton';
@@ -78,7 +80,7 @@ interface SelectedLinkData {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const ACCENT = '#6366f1';
-const BG_CARD = 'rgba(15,15,15,0.55)';
+const BG_CARD = 'rgba(15,23,42,0.55)';
 const CLASS_COLORS: Record<string, string> = {
   A: '#00f5ff', B: '#00ff88', C: '#ffd23f', M: '#b967ff',
 };
@@ -184,7 +186,7 @@ function MapController({ region }: { region: string }) {
 // ── Small filter UI helpers used inside the filter drawer ───────────────────
 const filterInputStyle: React.CSSProperties = {
   flex: 1, fontSize: 10, padding: '5px 7px', borderRadius: 5,
-  background: 'rgba(15,15,15,0.7)', border: '1px solid rgba(148,163,184,0.18)',
+  background: 'rgba(15,23,42,0.7)', border: '1px solid rgba(148,163,184,0.18)',
   color: '#e2eaf4', outline: 'none', textAlign: 'center',
   fontFamily: 'monospace',
 };
@@ -207,7 +209,7 @@ function FilterSelect<T extends string>({
   return (
     <select value={value} onChange={e => onChange(e.target.value as T)} style={{
       width: '100%', fontSize: 10, padding: '5px 7px', borderRadius: 5,
-      background: 'rgba(15,15,15,0.7)', border: '1px solid rgba(148,163,184,0.18)',
+      background: 'rgba(15,23,42,0.7)', border: '1px solid rgba(148,163,184,0.18)',
       color: '#e2eaf4', outline: 'none', cursor: 'pointer',
     }}>
       {options.map(o => <option key={o} value={o}>{labels?.[o] ?? o}</option>)}
@@ -547,6 +549,8 @@ function ConditionMap({
               zoomControl={false}>
               <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery}/>
               <TileLayer url={ESRI_TILE_URLS.labels}  attribution={ESRI_ATTRIBUTIONS.labels} opacity={0.7}/>
+              <WaterLayers />
+              <InfraLayers />
               <GeoJSON
                 key={`${mapLayer}-${filterClass}-${filterSurface}-${filterCondBand}-${filterYearMin}-${filterYearMax}-${showWorst ? 1 : 0}`}
                 data={geo}
@@ -1182,17 +1186,23 @@ function renderCondFeature(f: SelectedLinkData): React.ReactNode {
 }
 
 // ─── Main view ────────────────────────────────────────────────────────────────
-type TabId = 'overview' | 'conditionmap' | 'inventory' | 'analytics' | 'age' | 'fwd';
-type AnalyticsSubTab = 'deterioration' | 'interventions' | 'budget' | 'lifecycle';
+export type RoadConditionTabId = 'overview' | 'conditionmap' | 'inventory' | 'analytics' | 'age' | 'fwd';
+type AnalyticsSubTab = 'deterioration' | 'interventions' | 'budget';
 
-export default function RoadConditionView() {
+interface RoadConditionViewProps {
+  activeTab?: RoadConditionTabId;
+  embedded?: boolean;
+}
+
+export default function RoadConditionView({ activeTab, embedded = false }: RoadConditionViewProps) {
   const [analytics, setAnalytics]         = useState<PlatformAnalytics | null>(null);
   const [det, setDet]                     = useState<DetSummary | null>(null);
   const [roadGeo, setRoadGeo]             = useState<GeoJsonObject | null>(null);
   const [surveyGeo, setSurveyGeo]         = useState<GeoJsonObject | null>(null);
   const [overloading, setOverloading]     = useState<OverloadingSummary | null>(null);
   const [defectSummary, setDefectSummary] = useState<ImageDefectSummary | null>(null);
-  const [tab, setTab]                     = useState<TabId>('overview');
+  const [internalTab, setInternalTab]     = useState<RoadConditionTabId>('overview');
+  const tab                               = activeTab ?? internalTab;
   const [analyticsSubTab, setAnalyticsSubTab] = useState<AnalyticsSubTab>('deterioration');
   const [condSelected, setCondSelected]   = useState<SelectedLinkData | null>(null);
   const [showSurveyLayer, setShowSurveyLayer] = useState(false);
@@ -1246,7 +1256,7 @@ export default function RoadConditionView() {
   ] : [];
 
   // ── BMS-pattern 4 main tabs (Dashboard | Map | Inventory | Analytics) ─────
-  const TABS: Array<{ id: TabId; label: string }> = [
+  const TABS: Array<{ id: RoadConditionTabId; label: string }> = [
     { id: 'overview',      label: 'Dashboard'                },
     { id: 'conditionmap',  label: 'Condition Map'            },
     { id: 'inventory',     label: 'Inventory & Surveys'       },
@@ -1257,7 +1267,6 @@ export default function RoadConditionView() {
   // Sub-tabs for the Analytics & Deterioration parent tab
   const ANALYTICS_SUB_TABS: Array<{ id: AnalyticsSubTab; label: string }> = [
     { id: 'deterioration', label: 'Deterioration Curves' },
-    { id: 'lifecycle',     label: 'Lifecycle (Per-Link)' },
     { id: 'interventions', label: 'Intervention Map'     },
     { id: 'budget',        label: 'Budget Planner'       },
   ];
@@ -1316,17 +1325,17 @@ export default function RoadConditionView() {
   return (
     <div style={{ display:'flex', flexDirection:'column', height:'100%', overflow:'hidden', background:'#0a0f1e' }}>
 
-      <CrossLinkChipBar sectionId="roadcondition" />
+      {!embedded && <CrossLinkChipBar sectionId="roadcondition" />}
 
       {/* ══ BMS-style main tab bar ══════════════════════════════════════════════ */}
-      <div style={{
+      {!embedded && <div style={{
         display:'flex', gap:2, padding:'0 14px', flexShrink:0,
-        borderBottom:'1px solid rgba(77,159,255,0.15)', background:'rgba(8,8,8,0.85)',
+        borderBottom:'1px solid rgba(77,159,255,0.15)', background:'rgba(4,9,18,0.85)',
       }}>
         {TABS.map(t => {
           const isActive = t.id === tab;
           return (
-            <button key={t.id} onClick={() => setTab(t.id)} style={{
+            <button key={t.id} onClick={() => setInternalTab(t.id)} style={{
               display:'flex', alignItems:'center', gap:6,
               padding:'10px 14px 11px', fontSize:11, fontWeight: isActive ? 800 : 500,
               background:'none', border:'none', cursor:'pointer', flexShrink:0,
@@ -1338,13 +1347,13 @@ export default function RoadConditionView() {
             </button>
           );
         })}
-      </div>
+      </div>}
 
       {/* ── Analytics sub-tab bar (only when Analytics main tab active) ──────── */}
       {tab === 'analytics' && (
         <div style={{
           display:'flex', gap:4, padding:'6px 14px 0', flexShrink:0,
-          borderBottom:'1px solid rgba(255,255,255,0.06)', background:'rgba(8,8,8,0.6)',
+          borderBottom:'1px solid rgba(255,255,255,0.06)', background:'rgba(4,9,18,0.6)',
         }}>
           {ANALYTICS_SUB_TABS.map(st => {
             const isA = st.id === analyticsSubTab;
@@ -1454,7 +1463,7 @@ export default function RoadConditionView() {
               ].map(c => (
                 <div key={c.label}
                      className="rounded-xl p-4 border border-slate-700/30"
-                     style={{ background: 'rgba(15,15,15,0.4)' }}>
+                     style={{ background: 'rgba(15,23,42,0.4)' }}>
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-xs font-semibold text-slate-300">{c.label}</span>
                     <span className="text-xl font-black" style={{ color: c.color }}>
@@ -1675,11 +1684,11 @@ export default function RoadConditionView() {
               placeholder="Search link_id, road name, region…"
               style={{
                 flex: 1, minWidth: 220, fontSize: 11, padding: '6px 10px',
-                background: 'rgba(15,15,15,0.7)', border: '1px solid rgba(148,163,184,0.18)',
+                background: 'rgba(15,23,42,0.7)', border: '1px solid rgba(148,163,184,0.18)',
                 borderRadius: 6, color: '#e2eaf4', outline: 'none',
               }}/>
             <select value={invRegion} onChange={e => setInvRegion(e.target.value)}
-              style={{ fontSize: 11, padding: '6px 10px', background: 'rgba(15,15,15,0.7)',
+              style={{ fontSize: 11, padding: '6px 10px', background: 'rgba(15,23,42,0.7)',
                 border: '1px solid rgba(148,163,184,0.18)', borderRadius: 6, color: '#e2eaf4' }}>
               <option value="all">All Regions</option>
               {[...new Set(allSurveyed.map(t => t.region).filter(Boolean))].sort().map(r => (
@@ -1687,13 +1696,13 @@ export default function RoadConditionView() {
               ))}
             </select>
             <select value={invClass} onChange={e => setInvClass(e.target.value)}
-              style={{ fontSize: 11, padding: '6px 10px', background: 'rgba(15,15,15,0.7)',
+              style={{ fontSize: 11, padding: '6px 10px', background: 'rgba(15,23,42,0.7)',
                 border: '1px solid rgba(148,163,184,0.18)', borderRadius: 6, color: '#e2eaf4' }}>
               <option value="all">All Classes</option>
               {['A','B','C','M'].map(c => <option key={c} value={c}>Class {c}</option>)}
             </select>
             <select value={invSurface} onChange={e => setInvSurface(e.target.value)}
-              style={{ fontSize: 11, padding: '6px 10px', background: 'rgba(15,15,15,0.7)',
+              style={{ fontSize: 11, padding: '6px 10px', background: 'rgba(15,23,42,0.7)',
                 border: '1px solid rgba(148,163,184,0.18)', borderRadius: 6, color: '#e2eaf4' }}>
               <option value="all">All Surfaces</option>
               <option value="paved">Paved</option>
@@ -1732,7 +1741,7 @@ export default function RoadConditionView() {
           <div style={{ maxHeight: 540, overflowY: 'auto', overflowX: 'auto',
             borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)' }}>
             <table style={{ width: '100%', fontSize: 10, borderCollapse: 'collapse', minWidth: 1100 }}>
-              <thead style={{ position: 'sticky', top: 0, background: 'rgba(15,15,15,0.95)', zIndex: 2 }}>
+              <thead style={{ position: 'sticky', top: 0, background: 'rgba(15,23,42,0.95)', zIndex: 2 }}>
                 <tr style={{ borderBottom: '1px solid rgba(148,163,184,0.15)' }}>
                   {['Link ID','Road Name','Length km','Class','Region','IRI now','Rutting now','Cracking % now','Condition now','Urgency','Treatment','Survey Yr'].map(h => (
                     <th key={h} style={{ textAlign: 'left', padding: '7px 10px', color: '#94a3b8', fontWeight: 700, whiteSpace: 'nowrap', fontSize: 9.5 }}>{h}</th>
@@ -1746,7 +1755,7 @@ export default function RoadConditionView() {
                   const c = iri != null ? (IRI_COLOR[band] ?? '#94a3b8') : '#64748b';
                   const rut = t.rut_mm;
                   const crack = t.cracking;
-                  const bg = i % 2 === 0 ? 'rgba(15,15,15,0.35)' : 'transparent';
+                  const bg = i % 2 === 0 ? 'rgba(15,23,42,0.35)' : 'transparent';
                   return (
                     <tr key={t.link_id ?? i} style={{ background: bg, borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
                       <td style={{ padding: '5px 10px', color: '#00f5ff', fontFamily: 'monospace', fontSize: 9 }}>{t.link_id}</td>
@@ -1835,19 +1844,6 @@ export default function RoadConditionView() {
         )
       )}
 
-      {/* ══════════ LIFECYCLE (per-link IRI timeline + intervention history) ══════════ */}
-      {tab === 'analytics' && analyticsSubTab === 'lifecycle' && (
-        <div style={{ position: 'relative', height: 'calc(100vh - 180px)', minHeight: 520,
-          borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(0,245,255,0.12)' }}>
-          <Suspense fallback={
-            <div style={{ background: BG_CARD }} className="rounded-xl p-8 text-center text-slate-500 h-full flex items-center justify-center">
-              Loading per-link lifecycle analytics…
-            </div>}>
-            <LifecycleSection />
-          </Suspense>
-        </div>
-      )}
-
       {/* ══════════ INTERVENTIONS (priority table, no map) ══════════ */}
       {tab === 'analytics' && analyticsSubTab === 'interventions' && (
         d
@@ -1873,7 +1869,7 @@ export default function RoadConditionView() {
               <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
                 {Object.entries(d.unit_costs_usd_per_km).map(([k, v]) => (
                   <div key={k} className="rounded-lg p-3 border border-slate-700/30"
-                       style={{ background:'rgba(15,15,15,0.4)' }}>
+                       style={{ background:'rgba(15,23,42,0.4)' }}>
                     <div className="text-[10px] text-slate-500 capitalize">
                       {k.replace(/_/g,' ')}
                     </div>
@@ -1928,7 +1924,7 @@ function FWDRealSurveys() {
     d0 > 800 ? ['FAILED', '#ef4444'] : d0 > 600 ? ['WEAK', '#f97316']
     : d0 > 400 ? ['MONITOR', '#eab308'] : ['SOUND', '#22c55e'];
   return (
-    <div style={{ background: 'rgba(15,15,15,0.55)', borderRadius: 12,
+    <div style={{ background: 'rgba(15,23,42,0.55)', borderRadius: 12,
       border: '1px solid rgba(0,245,255,0.15)', padding: '14px 16px' }}>
       <div style={{ fontWeight: 800, color: '#e2eaf4', fontSize: 13, marginBottom: 2 }}>
         Measured FWD Deflection Surveys — G: repository (FWD/)
@@ -1948,7 +1944,7 @@ function FWDRealSurveys() {
             {data.surveys.map((sv, i) => {
               const [mTag, mColor] = cls(sv.d0_mean);
               return (
-                <tr key={i} style={{ background: i % 2 === 0 ? 'rgba(15,15,15,0.3)' : 'transparent', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                <tr key={i} style={{ background: i % 2 === 0 ? 'rgba(15,23,42,0.3)' : 'transparent', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
                   <td style={{ padding: '5px 10px', color: '#e2eaf4', fontWeight: 700 }}>{sv.road}</td>
                   <td style={{ padding: '5px 10px', color: '#00f5ff', fontFamily: 'monospace', fontSize: 9.5 }}>{sv.sheet}</td>
                   <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{sv.n.toLocaleString()}</td>
@@ -1971,7 +1967,7 @@ function FWDRealSurveys() {
 }
 
 function FWDPanel() {
-  const BG = 'rgba(15,15,15,0.55)';
+  const BG = 'rgba(15,23,42,0.55)';
   const ACCENT2 = '#f97316';
 
   const FWD_LINKS = [
@@ -2034,7 +2030,7 @@ function FWDPanel() {
         </div>
         <div style={{ overflowX:'auto', borderRadius:8, border:'1px solid rgba(255,255,255,0.06)' }}>
           <table style={{ width:'100%', fontSize:10, borderCollapse:'collapse', minWidth:900 }}>
-            <thead style={{ position:'sticky', top:0, background:'rgba(15,15,15,0.95)', zIndex:2 }}>
+            <thead style={{ position:'sticky', top:0, background:'rgba(15,23,42,0.95)', zIndex:2 }}>
               <tr style={{ borderBottom:'1px solid rgba(148,163,184,0.15)' }}>
                 {['Link ID','Road Name','Class','Region','Length km','Struct. No. (SN)','Max D₀ (μm)','Avg D₀ (μm)','SN Back-calc','E-mod (MPa)','Crit. Idx','RCI','Survey'].map(h => (
                   <th key={h} style={{ textAlign:'left', padding:'7px 10px', color:'#94a3b8', fontWeight:700, whiteSpace:'nowrap', fontSize:9 }}>{h}</th>
@@ -2045,7 +2041,7 @@ function FWDPanel() {
               {FWD_LINKS.map((l, i) => {
                 const rc = rciColor(l.rci);
                 return (
-                  <tr key={l.link_id} style={{ background: i%2===0?'rgba(15,15,15,0.3)':'transparent', borderBottom:'1px solid rgba(255,255,255,0.03)' }}>
+                  <tr key={l.link_id} style={{ background: i%2===0?'rgba(15,23,42,0.3)':'transparent', borderBottom:'1px solid rgba(255,255,255,0.03)' }}>
                     <td style={{ padding:'5px 10px', color:'#00f5ff', fontFamily:'monospace', fontSize:9 }}>{l.link_id}</td>
                     <td style={{ padding:'5px 10px', color:'#e2eaf4', maxWidth:200, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{l.road_name}</td>
                     <td style={{ padding:'5px 10px', color:'#ffd23f', fontWeight:700 }}>{l.class}</td>

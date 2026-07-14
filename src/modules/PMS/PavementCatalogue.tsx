@@ -26,7 +26,10 @@ export default function PavementCatalogue() {
 
   useEffect(() => {
     fetch(`${import.meta.env.BASE_URL}manuals/pavement/manifest.json`)
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error(`Catalogue request failed (${r.status})`);
+        return r.json();
+      })
       .then(data => {
         setManuals(data);
         setLoading(false);
@@ -52,7 +55,7 @@ export default function PavementCatalogue() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: '20px', background: 'rgba(8,8,8,0.5)', minHeight: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: '20px', background: 'rgba(8,14,28,0.5)', minHeight: '100%' }}>
       <div>
         <h2 style={{ color: '#f59e0b', marginBottom: 8, fontSize: 18, fontWeight: 900, display: 'flex', alignItems: 'center', gap: 8 }}>
           <Book size={20} />

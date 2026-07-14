@@ -36,7 +36,10 @@ export interface DirEntry {
 const AUTO_ACCEPT = new Set<string>([
   'prisca.nanjehe@unra.go.ug',
 ]);
-export const isLegacyUser = (email: string) => email.trim().toLowerCase().endsWith('@unra.go.ug') || AUTO_ACCEPT.has(email.trim().toLowerCase());
+export const isLegacyUser = (email: string) => {
+  const id = email.trim().toLowerCase();
+  return AUTO_ACCEPT.has(id) || ALLOWED_USERS.some(user => user.email.toLowerCase() === id);
+};
 
 // ── localStorage fallback ─────────────────────────────────────────────────────
 function readLocal(): Record<string, DirEntry> {

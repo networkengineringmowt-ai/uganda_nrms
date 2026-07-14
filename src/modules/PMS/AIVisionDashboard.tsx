@@ -32,13 +32,13 @@ export default function AIVisionDashboard() {
             CNN VISION & VCI PIPELINE
           </h2>
           <p style={{ color: 'rgba(148,163,184,0.7)', fontSize: 12 }}>
-            Real-time automated defect identification from ROMDAS video streams
+            Demonstration of automated defect identification from a ROMDAS survey frame
           </p>
         </div>
         <div style={{ display: 'flex', gap: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(0,255,136,0.1)', border: '1px solid rgba(0,255,136,0.3)', padding: '6px 12px', borderRadius: 20 }}>
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#00ff88', boxShadow: '0 0 8px #00ff88' }} />
-            <span style={{ fontSize: 11, color: '#00ff88', fontWeight: 700 }}>AI Backend Connected</span>
+            <span style={{ fontSize: 11, color: '#00ff88', fontWeight: 700 }}>Demonstration Model Ready</span>
           </div>
         </div>
       </div>
@@ -48,18 +48,18 @@ export default function AIVisionDashboard() {
         
         {/* Video Feed & Detection */}
         <div style={{ background: 'rgba(15,30,50,0.6)', border: '1px solid rgba(0,245,255,0.15)', borderRadius: 8, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ padding: '12px 16px', background: 'rgba(8,8,8,0.8)', borderBottom: '1px solid rgba(0,245,255,0.1)', display: 'flex', justifyContent: 'space-between' }}>
+          <div style={{ padding: '12px 16px', background: 'rgba(4,9,18,0.8)', borderBottom: '1px solid rgba(0,245,255,0.1)', display: 'flex', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#e2eaf4', fontSize: 12, fontWeight: 700 }}>
-              <FileVideo size={16} color="#00f5ff" /> Live Inference Stream: A001_Link03
+              <FileVideo size={16} color="#00f5ff" /> Frame Analysis Demo: A001_Link03
             </div>
             <div style={{ color: 'rgba(148,163,184,0.7)', fontSize: 11, fontFamily: 'monospace' }}>
-              CH 14+320 | FPS: 24 | GPU: NVIDIA A100
+              CH 14+320 | Reference frame
             </div>
           </div>
           
           <div style={{ position: 'relative', flex: 1, minHeight: 400, background: '#000' }}>
             <img 
-              src={`${import.meta.env.BASE_URL}media/romdas_sample.jpg`} 
+              src={`${import.meta.env.BASE_URL}media/romdas_sample.svg`} 
               alt="ROMDAS Frame"
               style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: analyzing ? 0.5 : 1, transition: 'opacity 0.3s' }}
             />
@@ -140,9 +140,9 @@ export default function AIVisionDashboard() {
             <h3 style={{ color: '#00f5ff', fontSize: 12, fontWeight: 700, marginBottom: 12, textTransform: 'uppercase' }}>System Telemetry</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: 11, color: 'rgba(148,163,184,0.9)' }}>
               <div><span style={{ color: 'rgba(148,163,184,0.5)' }}>Model:</span> ResNet50 + Faster R-CNN</div>
-              <div><span style={{ color: 'rgba(148,163,184,0.5)' }}>Latency:</span> 42ms / frame</div>
-              <div><span style={{ color: 'rgba(148,163,184,0.5)' }}>Confidence:</span> 0.89 avg</div>
-              <div><span style={{ color: 'rgba(148,163,184,0.5)' }}>Active Drive:</span> U:\ROMDAS Videos 2023-24</div>
+              <div><span style={{ color: 'rgba(148,163,184,0.5)' }}>Reference latency:</span> 42ms / frame</div>
+              <div><span style={{ color: 'rgba(148,163,184,0.5)' }}>Example confidence:</span> 0.89 avg</div>
+              <div><span style={{ color: 'rgba(148,163,184,0.5)' }}>Source:</span> bundled demonstration frame</div>
             </div>
             
             <button 

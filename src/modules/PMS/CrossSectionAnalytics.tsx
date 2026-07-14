@@ -1,411 +1,195 @@
-import React, { useEffect, useState } from 'react';
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ScatterChart, Scatter } from 'recharts';
-import { useTableSort } from '../../shared/useTableSort';
+import { useEffect, useMemo, useState } from 'react';
+import {
+  Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Pie, PieChart,
+  ResponsiveContainer, Tooltip, XAxis, YAxis,
+} from 'recharts';
+import { Activity, BrainCircuit, Database, RefreshCw, Route } from 'lucide-react';
 
-interface AnalyticsData {
-  pms_by_region: Array<{
-    region_name: string;
-    road_class: string;
-    num_links: number;
-    total_length_km: number;
-    avg_iri: number;
-    total_maintenance_cost: number;
-  }>;
-  road_condition: Array<{
-    region_name: string;
-    road_class: string;
-    condition_class: string;
-    total_length_km: number;
-    avg_iri: number;
-    pct_poor_condition: number;
-  }>;
+type Datum = { label?: string; year?: string | number; value?: number; links?: number; files?: number; records?: number; [key: string]: unknown };
+type Infographic = {
+  id?: string;
+  infographic_id?: string;
+  title: string;
+  subtitle?: string;
+  type?: string;
+  visualization_type?: string;
+  unit?: string;
+  payload: Datum[] | Record<string, unknown>;
+};
+type DashboardData = {
+  generated_at: string;
+  reporting_at: string;
+  model?: { name?: string; model_name?: string; version?: string; model_version?: string; algorithm?: string; metrics?: Record<string, unknown>; validation_metrics?: Record<string, unknown> };
+  source_summary?: Datum[];
+  source_coverage?: Datum[];
+  infographics: Infographic[];
+};
+
+const COLORS = ['#5da7ff', '#5df486', '#ffd633', '#ff7038', '#f23a82', '#8b7bff', '#55d4ff', '#20c997', '#f59e0b', '#94a3b8'];
+const panel: React.CSSProperties = { background: '#0b0f18', border: '1px solid #1d2637', borderRadius: 14 };
+
+function numericValue(item: Datum): number {
+  for (const key of ['value', 'links', 'files', 'records', 'km', 'samples']) {
+    const value = item[key];
+    if (typeof value === 'number' && Number.isFinite(value)) return value;
+  }
+  return 0;
 }
 
-/**
- * CrossSectionAnalytics - Visualize PMS + Projects + Budget alignment
- *
- * Shows:
- * 1. Regional maintenance programme by road class
- * 2. Condition distribution by region
- * 3. Cost vs condition alignment scatter
- * 4. Maintenance triggers by year and type
- * 5. Active projects by region
- * 6. Budget allocations vs maintenance needs
- */
-export default function CrossSectionAnalytics() {
-  const [data, setData] = useState<AnalyticsData | null>(null);
-  const [projects, setProjects] = useState<any[]>([]);
-  const [budgets, setBudgets] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedRegion, setSelectedRegion] = useState<string>('All');
+function chartData(payload: Infographic['payload']): Datum[] {
+  if (!Array.isArray(payload)) return [];
+  return payload.map(item => ({ ...item, value: numericValue(item), label: String(item.label ?? item.year ?? 'Value') }));
+}
 
-  useEffect(() => {
-    // Load analytics data
-    Promise.all([
-      fetch(`${import.meta.env.BASE_URL}data/cross_section_analytics.json`)
-        .then(r => r.json())
-        .catch(() => null),
-      // In a real app, would load projects from API
-      // For now, using placeholder
-      Promise.resolve([]),
-      Promise.resolve([]),
-    ]).then(([analytics, proj, budg]) => {
-      if (analytics) setData(analytics);
-      if (proj) setProjects(proj);
-      if (budg) setBudgets(budg);
-      setLoading(false);
-    });
-  }, []);
-
-  // Process data BEFORE any early return so every hook below runs each render
-  // (moving useTableSort above the loading/!data returns fixes React error #310).
-  const pmsRegions = data ? Array.from(new Set(data.pms_by_region.map(d => d.region_name))) : [];
-  const filteredPMS = !data ? [] : (selectedRegion === 'All'
-    ? data.pms_by_region
-    : data.pms_by_region.filter(d => d.region_name === selectedRegion));
-
-  // Prepare cost vs IRI scatter data
-  const costVsCondition = filteredPMS.map(d => ({
-    region: d.region_name,
-    cost_per_km: d.total_maintenance_cost / Math.max(d.total_length_km, 1),
-    avg_iri: d.avg_iri,
-    length: d.total_length_km,
-    num_links: d.num_links,
-  }));
-
-  // Regional summary
-  const regionalSummary = data ? pmsRegions.map(region => {
-    const regionData = data.pms_by_region.filter(d => d.region_name === region);
-    const totalCost = regionData.reduce((sum, d) => sum + d.total_maintenance_cost, 0);
-    const totalLength = regionData.reduce((sum, d) => sum + d.total_length_km, 0);
-    const avgIRI = regionData.reduce((sum, d) => sum + d.avg_iri, 0) / regionData.length;
-    const totalLinks = regionData.reduce((sum, d) => sum + d.num_links, 0);
-
-    return {
-      region,
-      total_cost: totalCost,
-      total_length_km: totalLength,
-      avg_iri: Number(avgIRI.toFixed(2)),
-      num_links: totalLinks,
-      cost_per_km: Math.round(totalCost / Math.max(totalLength, 1)),
-    };
-  }) : [];
-  const rs = useTableSort(regionalSummary, 'region');
-
-  if (loading) {
-    return (
-      <div style={{ padding: '20px', textAlign: 'center' }}>
-        <div style={{ fontSize: 14, color: '#00f5ff' }}>
-          Loading cross-section analytics...
-        </div>
-      </div>
-    );
-  }
-
-  if (!data) {
-    return (
-      <div style={{ padding: '20px', color: '#ff6b6b' }}>
-        No analytics data available
-      </div>
-    );
-  }
-
+function CompactTooltip({ active, payload, label, unit }: any) {
+  if (!active || !payload?.length) return null;
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: '20px', background: 'rgba(8,8,8,0.5)' }}>
-      <div>
-        <h2 style={{ color: '#00f5ff', marginBottom: 16, fontSize: 18, fontWeight: 900 }}>
-          🎯 CROSS-SECTION ANALYTICS
-        </h2>
-        <p style={{ color: 'rgba(148,163,184,0.7)', fontSize: 12, marginBottom: 20 }}>
-          PMS Maintenance Programme × Road Condition × Regional Budget Alignment
-        </p>
+    <div style={{ background: '#070a10', border: '1px solid #29364b', borderRadius: 8, padding: '8px 10px', boxShadow: '0 12px 30px rgba(0,0,0,.45)' }}>
+      <div style={{ color: '#8d98ad', fontSize: 10 }}>{label ?? payload[0]?.payload?.label}</div>
+      <div style={{ color: payload[0].color ?? '#5da7ff', fontSize: 13, fontWeight: 900 }}>
+        {Number(payload[0].value).toLocaleString(undefined, { maximumFractionDigits: 2 })} {unit}
       </div>
+    </div>
+  );
+}
 
-      {/* Region Filter */}
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        {['All', ...pmsRegions].map(region => (
-          <button
-            key={region}
-            onClick={() => setSelectedRegion(region)}
-            style={{
-              padding: '6px 12px',
-              borderRadius: 6,
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: 11,
-              fontWeight: selectedRegion === region ? 700 : 500,
-              background: selectedRegion === region ? 'rgba(0,245,255,0.2)' : 'rgba(255,255,255,0.05)',
-              color: selectedRegion === region ? '#00f5ff' : 'rgba(148,163,184,0.7)',
-              transition: 'all 0.15s',
-            }}
-          >
-            {region}
-          </button>
+function StatGraphic({ card }: { card: Infographic }) {
+  const payload = card.payload as Record<string, unknown>;
+  const value = Number(payload.value ?? 0);
+  return (
+    <div style={{ display: 'grid', gap: 12, alignContent: 'center', minHeight: 178 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Route size={28} color="#5da7ff" />
+        <span style={{ color: '#5df486', fontSize: 10, fontWeight: 800 }}>{Number(payload.links ?? 0).toLocaleString()} links</span>
+      </div>
+      <div style={{ color: '#f5f8fc', fontSize: 35, lineHeight: 1, fontWeight: 950 }}>
+        {value.toLocaleString(undefined, { maximumFractionDigits: 1 })} <small style={{ color: '#7f8ba1', fontSize: 13 }}>{card.unit}</small>
+      </div>
+      <div style={{ color: '#8490a5', fontSize: 11 }}>{Number(payload.paved_km ?? 0).toLocaleString()} km paved</div>
+    </div>
+  );
+}
+
+function DonutGraphic({ card }: { card: Infographic }) {
+  const data = chartData(card.payload);
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'minmax(120px,.8fr) minmax(130px,1fr)', gap: 8, alignItems: 'center', minHeight: 178 }}>
+      <div style={{ height: 160 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart><Pie data={data} dataKey="value" nameKey="label" innerRadius="48%" outerRadius="76%" paddingAngle={2} stroke="none">
+            {data.map((_, index) => <Cell key={index} fill={COLORS[index % COLORS.length]} />)}
+          </Pie><Tooltip content={<CompactTooltip unit={card.unit} />} /></PieChart>
+        </ResponsiveContainer>
+      </div>
+      <div style={{ display: 'grid', gap: 7 }}>
+        {data.slice(0, 6).map((item, index) => (
+          <div key={`${item.label}-${index}`} style={{ display: 'grid', gridTemplateColumns: '8px 1fr auto', alignItems: 'center', gap: 7, minWidth: 0 }}>
+            <span style={{ width: 7, height: 7, borderRadius: 99, background: COLORS[index % COLORS.length] }} />
+            <span style={{ color: '#8490a5', fontSize: 9.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.label}</span>
+            <strong style={{ color: '#dfe6f1', fontSize: 10 }}>{numericValue(item).toLocaleString()}</strong>
+          </div>
         ))}
       </div>
+    </div>
+  );
+}
 
-      {/* 1. Regional Summary Table */}
-      <div style={{ background: 'rgba(30,50,80,0.6)', borderRadius: 8, padding: 16, border: '1px solid rgba(0,245,255,0.1)' }}>
-        <h3 style={{ color: '#00f5ff', fontSize: 13, fontWeight: 700, marginBottom: 12 }}>
-          📊 Regional Maintenance Programme Summary
-        </h3>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid rgba(0,245,255,0.2)' }}>
-                {([['region','Region','left'],['num_links','Links','right'],['total_length_km','Length (km)','right'],['avg_iri','Avg IRI','right'],['total_cost','Total Cost (USD)','right'],['cost_per_km','Cost/km (k)','right']] as const).map(([k,label,align]) => (
-                  <th key={k} onClick={() => rs.toggle(k)}
-                    style={{ textAlign: align as 'left'|'right', padding: '8px', color: '#00f5ff', cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap' }}>
-                    {label}<span style={{ opacity: 0.6, fontSize: 9 }}>{rs.indicator(k)}</span>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rs.sorted.map((row, idx) => (
-                <tr
-                  key={idx}
-                  style={{
-                    borderBottom: '1px solid rgba(0,245,255,0.1)',
-                    background: selectedRegion === row.region ? 'rgba(0,245,255,0.08)' : 'transparent',
-                  }}
-                >
-                  <td style={{ padding: '8px', color: 'rgba(200,220,255,1)' }}>{row.region}</td>
-                  <td style={{ padding: '8px', textAlign: 'right', color: 'rgba(200,220,255,0.9)' }}>{row.num_links}</td>
-                  <td style={{ padding: '8px', textAlign: 'right', color: 'rgba(200,220,255,0.9)' }}>
-                    {row.total_length_km.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                  </td>
-                  <td style={{ padding: '8px', textAlign: 'right', color: row.avg_iri > 9 ? '#ff6b6b' : '#00ff88' }}>
-                    {row.avg_iri}
-                  </td>
-                  <td style={{ padding: '8px', textAlign: 'right', color: 'rgba(200,220,255,0.9)' }}>
-                    ${(row.total_cost / 1e6).toFixed(1)}M
-                  </td>
-                  <td style={{ padding: '8px', textAlign: 'right', color: 'rgba(200,220,255,0.9)' }}>
-                    {row.cost_per_km}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+function BarGraphic({ card }: { card: Infographic }) {
+  const data = chartData(card.payload).slice(0, 10);
+  return (
+    <div style={{ height: 185, marginTop: 7 }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={data} margin={{ top: 9, right: 5, left: -23, bottom: 26 }}>
+          <CartesianGrid stroke="#172031" strokeDasharray="3 4" vertical={false} />
+          <XAxis dataKey="label" interval={0} angle={-24} textAnchor="end" tick={{ fill: '#68748a', fontSize: 8 }} tickLine={false} axisLine={false} />
+          <YAxis tick={{ fill: '#68748a', fontSize: 8 }} tickLine={false} axisLine={false} />
+          <Tooltip content={<CompactTooltip unit={card.unit} />} />
+          <Bar dataKey="value" radius={[4, 4, 0, 0]}>{data.map((_, index) => <Cell key={index} fill={COLORS[index % COLORS.length]} />)}</Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+function LineGraphic({ card }: { card: Infographic }) {
+  const data = chartData(card.payload).map(item => ({ ...item, label: String(item.year ?? item.label) }));
+  return (
+    <div style={{ height: 185, marginTop: 7 }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={data} margin={{ top: 9, right: 7, left: -23, bottom: 0 }}>
+          <defs><linearGradient id="dynamicIri" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#55d4ff" stopOpacity=".32"/><stop offset="1" stopColor="#55d4ff" stopOpacity="0"/></linearGradient></defs>
+          <CartesianGrid stroke="#172031" strokeDasharray="3 4" />
+          <XAxis dataKey="label" tick={{ fill: '#68748a', fontSize: 8 }} tickLine={false} axisLine={false} />
+          <YAxis tick={{ fill: '#68748a', fontSize: 8 }} tickLine={false} axisLine={false} />
+          <Tooltip content={<CompactTooltip unit={card.unit} />} />
+          <Area type="monotone" dataKey="value" stroke="#55d4ff" strokeWidth={2.2} fill="url(#dynamicIri)" />
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+function Graphic({ card, index }: { card: Infographic; index: number }) {
+  const type = card.type ?? card.visualization_type ?? 'bars';
+  return (
+    <article style={{ ...panel, minWidth: 0, padding: '15px 16px', borderTop: `2px solid ${COLORS[index % COLORS.length]}` }}>
+      <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start', justifyContent: 'space-between' }}>
+        <div>
+          <h3 style={{ margin: 0, color: '#edf2f8', fontSize: 12.5, fontWeight: 900 }}>{index + 1}. {card.title}</h3>
+          <div style={{ marginTop: 4, color: '#657189', fontSize: 9.5 }}>{card.subtitle}</div>
+        </div>
+        <Activity size={14} color={COLORS[index % COLORS.length]} />
+      </div>
+      {type === 'stat' ? <StatGraphic card={card} /> : type === 'donut' ? <DonutGraphic card={card} /> : type === 'line' ? <LineGraphic card={card} /> : <BarGraphic card={card} />}
+    </article>
+  );
+}
+
+async function loadDashboard(): Promise<DashboardData> {
+  try {
+    const api = await fetch('/api/pms/dashboard', { headers: { Accept: 'application/json' } });
+    if (api.ok && api.headers.get('content-type')?.includes('application/json')) return await api.json();
+  } catch { /* static deployment fallback */ }
+  const staticResponse = await fetch(`${import.meta.env.BASE_URL}data/pms_dashboard.json`);
+  if (!staticResponse.ok) throw new Error(`Dashboard data unavailable (${staticResponse.status})`);
+  return staticResponse.json();
+}
+
+export default function CrossSectionAnalytics() {
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [error, setError] = useState('');
+  const [reload, setReload] = useState(0);
+  useEffect(() => {
+    let live = true;
+    loadDashboard().then(value => { if (live) { setData(value); setError(''); } }).catch(reason => { if (live) setError(String(reason)); });
+    return () => { live = false; };
+  }, [reload]);
+  const sources = useMemo(() => data?.source_summary ?? data?.source_coverage ?? [], [data]);
+  const sourceFiles = sources.reduce((sum, row) => sum + Number(row.files ?? 0), 0);
+  const sourceRecords = sources.reduce((sum, row) => sum + Number(row.records ?? 0), 0);
+
+  if (error) return <div style={{ padding: 28, color: '#ff7b88' }}>Unable to load the NPMS engine: {error} <button onClick={() => setReload(v => v + 1)}>Retry</button></div>;
+  if (!data) return <div style={{ display: 'grid', placeItems: 'center', height: '100%', color: '#6f7c91' }}><RefreshCw size={24} className="animate-spin" /></div>;
+
+  const modelName = data.model?.name ?? data.model?.model_name ?? 'Pavement DNN';
+  const modelVersion = data.model?.version ?? data.model?.model_version ?? '';
+  return (
+    <div style={{ minHeight: '100%', padding: '16px 18px 30px', background: '#070b16', color: '#e7ebf2', overflowY: 'auto' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 15, marginBottom: 14, flexWrap: 'wrap' }}>
+        <div>
+          <div style={{ color: '#5da7ff', fontSize: 10, fontWeight: 900, letterSpacing: '.14em', textTransform: 'uppercase' }}>National Pavement Management System</div>
+          <h2 style={{ margin: '5px 0 4px', fontSize: 20, fontWeight: 950 }}>Current Network Intelligence</h2>
+          <div style={{ color: '#6f7a91', fontSize: 10.5 }}>Ten live infographics generated from cross-linked SQL tables · reporting {data.reporting_at}</div>
+        </div>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <div style={{ ...panel, padding: '8px 11px', display: 'flex', alignItems: 'center', gap: 7 }}><BrainCircuit size={14} color="#8b7bff"/><span style={{ color: '#9aa6ba', fontSize: 9.5 }}><b style={{ color: '#dbe3ef' }}>{modelName}</b> {modelVersion}</span></div>
+          <div style={{ ...panel, padding: '8px 11px', display: 'flex', alignItems: 'center', gap: 7 }}><Database size={14} color="#5df486"/><span style={{ color: '#9aa6ba', fontSize: 9.5 }}>{sourceFiles.toLocaleString()} files · {sourceRecords.toLocaleString()} registered records</span></div>
         </div>
       </div>
-
-      {/* 2. Cost vs Condition Alignment Chart */}
-      {costVsCondition.length > 0 && (
-        <div style={{ background: 'rgba(30,50,80,0.6)', borderRadius: 8, padding: 16, border: '1px solid rgba(0,245,255,0.1)' }}>
-          <h3 style={{ color: '#00f5ff', fontSize: 13, fontWeight: 700, marginBottom: 12 }}>
-            💰 Maintenance Cost vs Road Condition Alignment
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,245,255,0.1)" />
-              <XAxis
-                dataKey="avg_iri"
-                name="Average IRI"
-                label={{ value: 'Average IRI (Roughness)', position: 'insideBottomRight', offset: -5, fill: '#00f5ff' }}
-                stroke="rgba(0,245,255,0.5)"
-              />
-              <YAxis
-                dataKey="cost_per_km"
-                name="Cost per km (USD)"
-                label={{ value: 'Cost/km (USD thousands)', angle: -90, position: 'insideLeft', fill: '#00f5ff' }}
-                stroke="rgba(0,245,255,0.5)"
-              />
-              <Tooltip
-                cursor={{ fill: 'rgba(0,245,255,0.1)' }}
-                contentStyle={{ background: 'rgba(8,8,8,0.9)', border: '1px solid #00f5ff', color: '#00f5ff' }}
-                formatter={(value: any) => {
-                  if (value === null || value === undefined) return 'N/A';
-                  return typeof value === 'number' ? value.toFixed(2) : value;
-                }}
-              />
-              <Scatter
-                name="Road Classes"
-                data={costVsCondition}
-                fill="#4d9fff"
-                shape="circle"
-                dataKey="cost_per_km"
-              />
-            </ScatterChart>
-          </ResponsiveContainer>
-          <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.6)', marginTop: 12 }}>
-            📌 Higher IRI (rougher roads) should have higher maintenance costs. Gaps indicate misaligned budgets.
-          </div>
-        </div>
-      )}
-
-      {/* 3. Maintenance Programme by Road Class */}
-      {filteredPMS.length > 0 && (
-        <div style={{ background: 'rgba(30,50,80,0.6)', borderRadius: 8, padding: 16, border: '1px solid rgba(0,245,255,0.1)' }}>
-          <h3 style={{ color: '#00f5ff', fontSize: 13, fontWeight: 700, marginBottom: 12 }}>
-            🛣️ Maintenance Programme by Road Class {selectedRegion !== 'All' && `(${selectedRegion})`}
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={filteredPMS}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,245,255,0.1)" />
-              <XAxis
-                dataKey="road_class"
-                stroke="rgba(0,245,255,0.5)"
-                tick={{ fontSize: 11, fill: 'rgba(0,245,255,0.7)' }}
-              />
-              <YAxis stroke="rgba(0,245,255,0.5)" tick={{ fontSize: 11, fill: 'rgba(0,245,255,0.7)' }} />
-              <Tooltip
-                contentStyle={{ background: 'rgba(8,8,8,0.9)', border: '1px solid #00f5ff', color: '#00f5ff', fontSize: 11 }}
-                formatter={(value: any) => {
-                  if (typeof value === 'number') {
-                    return value > 100 ? `${(value / 1e6).toFixed(1)}M` : value.toLocaleString();
-                  }
-                  return value;
-                }}
-              />
-              <Legend wrapperStyle={{ color: '#00f5ff', fontSize: 11 }} />
-              <Bar dataKey="total_maintenance_cost" fill="#4d9fff" name="Total Cost (USD)" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="total_length_km" fill="#00ff88" name="Length (km)" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-
-      {/* 4. Road Condition Distribution */}
-      {data.road_condition.length > 0 && (
-        <div style={{ background: 'rgba(30,50,80,0.6)', borderRadius: 8, padding: 16, border: '1px solid rgba(0,245,255,0.1)' }}>
-          <h3 style={{ color: '#00f5ff', fontSize: 13, fontWeight: 700, marginBottom: 12 }}>
-            📈 Road Condition by Region
-          </h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            {pmsRegions.map(region => {
-              const regionCondition = data.road_condition.filter(d => d.region_name === region);
-              const totalLen = regionCondition.reduce((sum, d) => sum + d.total_length_km, 0);
-              const avgIRI = regionCondition.reduce((sum, d) => sum + d.avg_iri, 0) / regionCondition.length;
-
-              return (
-                <div
-                  key={region}
-                  style={{
-                    background: 'rgba(15,30,50,0.8)',
-                    borderRadius: 6,
-                    padding: 12,
-                    border: `1px solid ${avgIRI > 9 ? 'rgba(255,107,107,0.3)' : 'rgba(0,255,136,0.3)'}`,
-                  }}
-                >
-                  <div style={{ fontWeight: 700, color: '#00f5ff', fontSize: 12, marginBottom: 8 }}>
-                    {region}
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 11 }}>
-                    <div>
-                      <div style={{ color: 'rgba(148,163,184,0.6)' }}>Avg IRI:</div>
-                      <div style={{ color: avgIRI > 9 ? '#ff6b6b' : '#00ff88', fontWeight: 700 }}>
-                        {avgIRI.toFixed(2)}
-                      </div>
-                    </div>
-                    <div>
-                      <div style={{ color: 'rgba(148,163,184,0.6)' }}>Total Length:</div>
-                      <div style={{ color: 'rgba(200,220,255,0.9)', fontWeight: 700 }}>
-                        {totalLen.toLocaleString(undefined, { maximumFractionDigits: 0 })} km
-                      </div>
-                    </div>
-                  </div>
-                  <div style={{ marginTop: 8, fontSize: 10 }}>
-                    {regionCondition.map((cond, idx) => (
-                      <div key={idx} style={{ color: 'rgba(148,163,184,0.6)', marginBottom: 4 }}>
-                        {cond.condition_class}: {cond.total_length_km.toFixed(0)} km ({cond.avg_iri.toFixed(2)} IRI)
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Key Insights */}
-      <div style={{ background: 'rgba(30,50,80,0.6)', borderRadius: 8, padding: 16, border: '1px solid rgba(0,245,255,0.1)' }}>
-        <h3 style={{ color: '#00f5ff', fontSize: 13, fontWeight: 700, marginBottom: 12 }}>
-          💡 Key Insights
-        </h3>
-        <ul style={{ color: 'rgba(200,220,255,0.8)', fontSize: 11, lineHeight: 1.6, paddingLeft: 16 }}>
-          <li>Northern region has highest maintenance need: 775 tertiary roads with avg IRI 12.09 (poor condition)</li>
-          <li>Eastern region secondary roads: 75 links, 2,804 km, IRI 6.67, total cost USD 190.9M</li>
-          <li>Cost per km ranges from 11.8k to 75.2k USD - significant regional variation</li>
-          <li>Central highways in good condition (IRI 3.33) require lowest cost (11.8k/km)</li>
-          <li>Maintenance triggers show major rehabilitation and reconstruction needs in 2024-2025</li>
-          <li>32 active projects ingested from March 2026 project status report</li>
-          <li>Budget allocations 2026: Central region USD 4.51M, Northern 173k, Eastern 98k, Mid-Western 204k</li>
-        </ul>
-      </div>
-
-      {/* Projects & Budget Status */}
-      <div style={{ background: 'rgba(30,50,80,0.6)', borderRadius: 8, padding: 16, border: '1px solid rgba(0,245,255,0.1)' }}>
-        <h3 style={{ color: '#00f5ff', fontSize: 13, fontWeight: 700, marginBottom: 12 }}>
-          🏗️ Projects & Budget Status (2026)
-        </h3>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-          <div style={{ background: 'rgba(15,30,50,0.8)', borderRadius: 6, padding: 12, border: '1px solid rgba(0,255,136,0.2)' }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: '#00ff88', marginBottom: 8 }}>📌 Active Projects</div>
-            <div style={{ fontSize: 28, fontWeight: 900, color: '#00f5ff' }}>32</div>
-            <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.6)', marginTop: 4 }}>From March 2026 status report</div>
-          </div>
-
-          <div style={{ background: 'rgba(15,30,50,0.8)', borderRadius: 6, padding: 12, border: '1px solid rgba(77,159,255,0.2)' }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: '#4d9fff', marginBottom: 8 }}>💰 Total Budget (2026)</div>
-            <div style={{ fontSize: 28, fontWeight: 900, color: '#00f5ff' }}>5.1M</div>
-            <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.6)', marginTop: 4 }}>USD allocated across regions</div>
-          </div>
-
-          <div style={{ background: 'rgba(15,30,50,0.8)', borderRadius: 6, padding: 12, border: '1px solid rgba(255,107,107,0.2)' }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: '#ff6b6b', marginBottom: 8 }}>⚠️ Budget Gap (Central)</div>
-            <div style={{ fontSize: 28, fontWeight: 900, color: '#ff6b6b' }}>29.5M</div>
-            <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.6)', marginTop: 4 }}>Maintenance need vs allocated (35M vs 4.5M)</div>
-          </div>
-
-          <div style={{ background: 'rgba(15,30,50,0.8)', borderRadius: 6, padding: 12, border: '1px solid rgba(255,210,63,0.2)' }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: '#ffd23f', marginBottom: 8 }}>🎯 Priority: Northern</div>
-            <div style={{ fontSize: 28, fontWeight: 900, color: '#00f5ff' }}>1.2B</div>
-            <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.6)', marginTop: 4 }}>USD maintenance needed for 775 roads (IRI 12.09)</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Budget-Maintenance Alignment */}
-      <div style={{ background: 'rgba(30,50,80,0.6)', borderRadius: 8, padding: 16, border: '1px solid rgba(0,245,255,0.1)' }}>
-        <h3 style={{ color: '#00f5ff', fontSize: 13, fontWeight: 700, marginBottom: 12 }}>
-          📊 Budget vs Maintenance Alignment by Region
-        </h3>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 10, fontSize: 11 }}>
-          {[
-            { region: 'Central', pms: 35.4, budget: 4.5, coverage: 13, priority: 'HIGH' },
-            { region: 'Eastern', pms: 190.9, budget: 0.1, coverage: 0, priority: 'CRITICAL' },
-            { region: 'Northern', pms: 1179.2, budget: 0.2, coverage: 0, priority: 'CRITICAL' },
-            { region: 'Western', pms: 0, budget: 0, coverage: 0, priority: 'LOW' },
-          ].map((row, idx) => (
-            <div
-              key={idx}
-              style={{
-                background: 'rgba(15,30,50,0.8)',
-                borderRadius: 6,
-                padding: 10,
-                border: `1px solid ${
-                  row.priority === 'CRITICAL' ? 'rgba(255,107,107,0.3)' :
-                  row.priority === 'HIGH' ? 'rgba(255,210,63,0.3)' :
-                  'rgba(0,255,136,0.3)'
-                }`,
-              }}
-            >
-              <div style={{ fontWeight: 700, color: '#00f5ff', marginBottom: 6 }}>{row.region}</div>
-              <div style={{ color: 'rgba(148,163,184,0.7)' }}>
-                <div>PMS: <span style={{ color: '#00ff88' }}>${row.pms}M</span></div>
-                <div>Budget: <span style={{ color: '#4d9fff' }}>${row.budget}M</span></div>
-                <div>Coverage: <span style={{ color: row.coverage < 30 ? '#ff6b6b' : '#00ff88' }}>{row.coverage}%</span></div>
-                <div style={{ marginTop: 4, fontSize: 9, fontWeight: 700, color: row.priority === 'CRITICAL' ? '#ff6b6b' : row.priority === 'HIGH' ? '#ffd23f' : '#00ff88' }}>
-                  {row.priority}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <section aria-label="Ten NPMS infographics" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(310px, 1fr))', gap: 11 }}>
+        {data.infographics.map((card, index) => <Graphic key={card.id ?? card.infographic_id ?? index} card={card} index={index} />)}
+      </section>
+      <div style={{ marginTop: 12, color: '#46536a', fontSize: 9 }}>Generated {data.generated_at} · values include source lineage, reporting timestamp, method and confidence in the backend.</div>
     </div>
   );
 }

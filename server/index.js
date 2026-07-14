@@ -32,12 +32,17 @@ import cors from 'cors';
 import { createClient } from '@supabase/supabase-js';
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { DatabaseSync } from 'node:sqlite';
 
 const PORT        = process.env.PORT || 3001;
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SERVICE_KEY  = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const CORS_ORIGIN  = (process.env.CORS_ORIGIN || 'http://localhost:5173')
   .split(',').map(s => s.trim()).filter(Boolean);
+const SERVER_DIR = path.dirname(fileURLToPath(import.meta.url));
+const PMS_DB_PATH = process.env.PMS_DB_PATH || path.resolve(SERVER_DIR, '..', 'data', 'traffic_platform.db');
+const pmsDb = fs.existsSync(PMS_DB_PATH) ? new DatabaseSync(PMS_DB_PATH, { readOnly: true }) : null;
 
 // Supabase is OPTIONAL — the canonical store is the G: Drive repository.
 // Credentials are only needed for the legacy mirror (SUPABASE_MIRROR=on).
@@ -311,6 +316,111 @@ app.patch('/api/admin/road-reserve/records/:id', async (req, res) => {
 // Proxies the Road Asset Bot's LLM chat to the Claude API so the Anthropic key
 // stays server-side (set ANTHROPIC_API_KEY in server/.env). Body:
 //   { messages: [{role:'user'|'assistant', content:string}, ...], system: string }
+// NPMS analytical backend - read-only, parameterized SQLite queries.
+function requirePmsDb(res) {
+  if (!pmsDb) {
+    res.status(503).json({ error: `NPMS database not found at ${PMS_DB_PATH}` });
+    return false;
+  }
+  return true;
+}
+
+function parsePayload(row) {
+  const { payload_json, ...rest } = row;
+  return { ...rest, payload: JSON.parse(payload_json) };
+}
+
+app.get('/api/pms/dashboard', (_req, res) => {
+  try {
+    if (!requirePmsDb(res)) return;
+    const cards = pmsDb.prepare('SELECT * FROM pms_infographics ORDER BY sort_order').all().map(parsePayload);
+    const model = pmsDb.prepare(`
+      SELECT model_run_id,model_name,model_version,algorithm,training_rows,
+             validation_metrics_json,trained_at,reporting_at,status
+      FROM pms_model_runs ORDER BY model_run_id DESC LIMIT 1
+    `).get();
+    const sources = pmsDb.prepare('SELECT * FROM pms_v_source_coverage ORDER BY repository_group,extension').all();
+    const modelPayload = model ? { ...model, validation_metrics: JSON.parse(model.validation_metrics_json) } : null;
+    if (modelPayload) delete modelPayload.validation_metrics_json;
+    res.json({
+      generated_at: cards[0]?.generated_at ?? null,
+      reporting_at: model?.reporting_at ?? null,
+      model: modelPayload,
+      source_coverage: sources,
+      infographics: cards,
+    });
+  } catch (err) { handleError(res, err); }
+});
+
+app.get('/api/pms/links', (req, res) => {
+  try {
+    if (!requirePmsDb(res)) return;
+    const limit = Math.min(Math.max(Number.parseInt(req.query.limit, 10) || 250, 1), 2000);
+    const offset = Math.max(Number.parseInt(req.query.offset, 10) || 0, 0);
+    const region = typeof req.query.region === 'string' && req.query.region ? req.query.region : null;
+    const surface = typeof req.query.surface === 'string' && req.query.surface ? req.query.surface : null;
+    const search = typeof req.query.search === 'string' && req.query.search ? `%${req.query.search}%` : null;
+    const rows = pmsDb.prepare(`
+      SELECT * FROM pms_v_current_link_state
+      WHERE (? IS NULL OR maintenance_region=?)
+        AND (? IS NULL OR surface_type=?)
+        AND (? IS NULL OR link_id LIKE ? OR link_name LIKE ?)
+      ORDER BY link_id LIMIT ? OFFSET ?
+    `).all(region, region, surface, surface, search, search, search, limit, offset);
+    res.json({ count: rows.length, limit, offset, rows });
+  } catch (err) { handleError(res, err); }
+});
+
+app.get('/api/pms/links/:linkId', (req, res) => {
+  try {
+    if (!requirePmsDb(res)) return;
+    const linkId = req.params.linkId;
+    const state = pmsDb.prepare('SELECT * FROM pms_v_current_link_state WHERE link_id=?').get(linkId);
+    if (!state) return res.status(404).json({ error: `Unknown road link ${linkId}` });
+    const observations = pmsDb.prepare(`
+      SELECT o.survey_date,o.survey_year,o.iri_m_per_km,o.rut_depth_mm,o.vci,o.pci,
+             o.cracking_percent,o.condition_class,o.data_quality,f.relative_path AS source_file
+      FROM pms_condition_observations o JOIN pms_source_files f ON f.source_id=o.source_id
+      WHERE o.link_id=? ORDER BY COALESCE(o.survey_date,printf('%04d-12-31',o.survey_year))
+    `).all(linkId);
+    const assets = pmsDb.prepare(`
+      SELECT asset_type,asset_subtype,COUNT(*) AS asset_count,
+             AVG(quantity) AS average_quantity,AVG(length_m) AS average_length_m
+      FROM pms_inventory_assets WHERE link_id=? GROUP BY asset_type,asset_subtype ORDER BY asset_count DESC
+    `).all(linkId);
+    const values = pmsDb.prepare(`
+      SELECT d.canonical_name,d.unit,c.value_numeric,c.value_text,c.reporting_at,c.observed_at,
+             c.value_method,c.confidence,f.relative_path AS source_file,m.model_name,m.model_version
+      FROM pms_current_values c JOIN pms_variable_definitions d ON d.variable_id=c.variable_id
+      LEFT JOIN pms_source_files f ON f.source_id=c.source_id
+      LEFT JOIN pms_model_runs m ON m.model_run_id=c.model_run_id
+      WHERE c.link_id=? ORDER BY d.category,d.canonical_name
+    `).all(linkId);
+    res.json({ state, observations, assets, current_values: values });
+  } catch (err) { handleError(res, err); }
+});
+
+app.get('/api/pms/sources', (_req, res) => {
+  try {
+    if (!requirePmsDb(res)) return;
+    res.json({
+      coverage: pmsDb.prepare('SELECT * FROM pms_v_source_coverage ORDER BY repository_group,extension').all(),
+      files: pmsDb.prepare(`
+        SELECT source_id,repository_group,relative_path,extension,byte_size,modified_at,
+               ingestion_status,record_count,error_message,ingested_at
+        FROM pms_source_files ORDER BY repository_group,relative_path
+      `).all(),
+    });
+  } catch (err) { handleError(res, err); }
+});
+
+app.get('/api/pms/variables', (_req, res) => {
+  try {
+    if (!requirePmsDb(res)) return;
+    res.json({ variables: pmsDb.prepare('SELECT * FROM pms_v_variable_lineage ORDER BY category,canonical_name').all() });
+  } catch (err) { handleError(res, err); }
+});
+
 app.post('/api/bot/chat', async (req, res) => {
   try {
     if (!process.env.ANTHROPIC_API_KEY) {
