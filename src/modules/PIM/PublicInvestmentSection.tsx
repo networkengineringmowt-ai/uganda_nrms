@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
+const BudgetSection = lazy(() => import('../Budget/BudgetSection'));
 import {
   BarChart, Bar, PieChart, Pie, Cell, LineChart, Line,
   XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend,
@@ -122,7 +123,7 @@ const PIM_FRAMEWORK = [
 
 const TABS = [
   { id: 'pim',    label: 'PIM Framework', icon: <FileText size={13}/> },
-  { id: 'budget', label: 'Budget Trends', icon: <DollarSign size={13}/> },
+  { id: 'budget', label: 'Budget & Maintenance Trends', icon: <DollarSign size={13}/> },
   { id: 'ppp',    label: 'PPP Projects',  icon: <Building2 size={13}/> },
   { id: 'donor',  label: 'Donor Funding', icon: <Globe size={13}/> },
   { id: 'ndpiv',  label: 'NDP IV Targets', icon: <TrendingUp size={13}/> },
@@ -266,9 +267,12 @@ export default function PublicInvestmentSection() {
         </div>
       )}
 
-      {/* Budget Trends */}
+      {/* Budget & Maintenance Trends (merged: PIM budget trends + Budget & Maintenance module) */}
       {tab === 'budget' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <Suspense fallback={<div style={{ padding: 24, color: 'rgba(148,163,184,0.7)', fontSize: 12 }}>Loading budget &amp; maintenance…</div>}>
+            <BudgetSection />
+          </Suspense>
           <div style={card(C.cyan)}>
             <div style={{ fontSize: 11, fontWeight: 900, color: C.cyan, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14 }}>
               Department of National Roads Budget Allocation 2015/16–2024/25 (UGX Billions)

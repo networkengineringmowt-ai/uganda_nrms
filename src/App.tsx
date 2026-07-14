@@ -208,12 +208,7 @@ function AppShell() {
                 )}
 
                 {activeView === 'projecttracker' && <ProjectTracker />}
-                {activeView === 'pim'            && (
-                  <SectionHub accent="#facc15" badge="PIM · FY25-26" tabs={[
-                    { id: 'pim',    label: 'Public Investment', element: <PublicInvestmentSection /> },
-                    { id: 'budget', label: 'Budget & Maintenance', element: <BudgetSection /> },
-                  ]} />
-                )}
+                {activeView === 'pim'            && <PublicInvestmentSection />}
 
                 {activeView === 'budget' && <BudgetSection />}
 
