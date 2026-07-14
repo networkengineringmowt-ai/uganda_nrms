@@ -71,6 +71,34 @@ const photoCache = new Map<string, BridgePhoto[]>();
 // public/s-photos/ (built by scripts/build_photo_album.py from S:\PHOTOS).
 // Manifest-first means exact files everywhere — including GitHub Pages,
 // where the old S:-drive probing always 404ed.
+// ─── Google Drive manifest (photos hosted on the user's Drive, not GitHub) ───
+// public/data/drive_photos.json holds { manifestUrl } → an Apps Script web app
+// that serves { folder: [{ id, f, y }] }. Images load straight from Drive via
+// the public thumbnail endpoint. Falls back to the local manifest, then probing.
+type DriveEntry = { id: string; f: string; y: number };
+let drivePromise: Promise<Record<string, DriveEntry[]> | null> | null = null;
+function loadDriveManifest(): Promise<Record<string, DriveEntry[]> | null> {
+  if (!drivePromise) {
+    drivePromise = fetch(`${import.meta.env.BASE_URL}data/drive_photos.json`)
+      .then(r => (r.ok ? r.json() : null))
+      .then((cfg: { manifestUrl?: string } | null) => {
+        if (!cfg?.manifestUrl) return null;
+        return fetch(cfg.manifestUrl).then(r => (r.ok ? r.json() : null));
+      })
+      .catch(() => null);
+  }
+  return drivePromise;
+}
+function photosFromDrive(entries: DriveEntry[]): BridgePhoto[] {
+  return [...entries]
+    .sort((a, b) => a.y - b.y || a.f.localeCompare(b.f))
+    .map((e, i) => ({
+      url: `https://drive.google.com/thumbnail?id=${e.id}&sz=w1600`,
+      year: String(e.y), yearCode: String(e.y).slice(2),
+      index: i + 1, filename: e.f,
+    }));
+}
+
 type ManifestEntry = { f: string; y: number };
 let manifestPromise: Promise<Record<string, ManifestEntry[]> | null> | null = null;
 function loadManifest(): Promise<Record<string, ManifestEntry[]> | null> {
@@ -116,19 +144,31 @@ export function usePhotoLoader(structureId: string | null): {
     const timer = setTimeout(() => {
       if (cancelled) return;
 
-      // Manifest-first: exact shipped thumbnails (works on the deployed site)
+      // Drive-first: photos served from the user's Google Drive
       setLoading(true);
-      void loadManifest().then(manifest => {
+      void loadDriveManifest().then(dm => {
         if (cancelled) return;
-        const entries = manifest?.[folder];
-        if (entries?.length) {
-          const ph = photosFromManifest(folder, entries);
+        const dEntries = dm?.[folder];
+        if (dEntries?.length) {
+          const ph = photosFromDrive(dEntries);
           photoCache.set(folder, ph);
           setPhotos(ph);
           setLoading(false);
           return;
         }
-        runProbe();
+        // Fallback: locally shipped thumbnails
+        void loadManifest().then(manifest => {
+          if (cancelled) return;
+          const entries = manifest?.[folder];
+          if (entries?.length) {
+            const ph = photosFromManifest(folder, entries);
+            photoCache.set(folder, ph);
+            setPhotos(ph);
+            setLoading(false);
+            return;
+          }
+          runProbe();
+        });
       });
 
       function runProbe() {
