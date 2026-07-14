@@ -1386,6 +1386,33 @@ function Spinner() {
   );
 }
 
+function SeamlessDashboardFrame() {
+  const ref = useRef<HTMLIFrameElement>(null);
+  useEffect(() => {
+    const iv = window.setInterval(() => {
+      const el = ref.current;
+      try {
+        const doc = el?.contentWindow?.document;
+        if (el && doc) {
+          const h = Math.max(doc.documentElement?.scrollHeight ?? 0, doc.body?.scrollHeight ?? 0);
+          if (h > 400 && Math.abs(h - el.offsetHeight) > 24) el.style.height = `${h + 24}px`;
+        }
+      } catch { /* ignore until loaded */ }
+    }, 700);
+    return () => window.clearInterval(iv);
+  }, []);
+  return (
+    <iframe
+      ref={ref}
+      src={`${import.meta.env.BASE_URL}dashboard.html?v=${Date.now()}`}
+      title="NRMS Live Dashboard"
+      scrolling="no"
+      style={{ display: 'block', width: '100%', height: '80vh', border: 'none', overflow: 'hidden',
+        borderTop: '1px solid rgba(0,245,255,0.15)', background: '#020202' }}
+    />
+  );
+}
+
 export default function RMSSection() {
   const { navigate } = useBMS();
   const [tab, setTab] = useState<TabId>('overview');
@@ -1441,12 +1468,7 @@ export default function RMSSection() {
         {tab === 'overview' && (
           <>
             <RMSDashboard navigate={navigate} />
-            <iframe
-              src={`${import.meta.env.BASE_URL}dashboard.html?v=${Date.now()}`}
-              title="NRMS Live Dashboard"
-              style={{ display: 'block', width: '100%', height: 'calc(100vh - 150px)', border: 'none',
-                borderTop: '1px solid rgba(0,245,255,0.15)', background: '#020202' }}
-            />
+            <SeamlessDashboardFrame />
           </>
         )}
 
