@@ -1,0 +1,29 @@
+# NPMS pavement data engine — nightly ETL refreshing pms_dashboard.json
+# Adjust the volume hostPath to where the ugnrms repo lives on the server.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: npms-data-engine
+  namespace: nrms
+spec:
+  schedule: "0 2 * * *"          # 02:00 EAT nightly
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: etl
+              image: python:3.12-slim
+              command: ["/bin/sh","-c"]
+              args:
+                - pip install --quiet pandas openpyxl && python /repo/scripts/pavement_data_engine.py
+              volumeMounts:
+                - { name: repo, mountPath: /repo }
+              resources:
+                requests: { cpu: 250m, memory: 512Mi }
+                limits:   { cpu: "1",  memory: 2Gi }
+          volumes:
+            - name: repo
+              hostPath: { path: /srv/ugnrms, type: Directory }

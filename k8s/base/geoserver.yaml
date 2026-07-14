@@ -1,0 +1,52 @@
+# GeoServer 2.25 — OGC WMS/WFS-T/WMTS services over PostGIS
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: geoserver
+  namespace: nrms
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: geoserver } }
+  template:
+    metadata: { labels: { app: geoserver } }
+    spec:
+      containers:
+        - name: geoserver
+          image: kartoza/geoserver:2.25.0
+          ports: [{ containerPort: 8080 }]
+          envFrom:
+            - secretRef: { name: nrms-geoserver-secrets }  # GEOSERVER_ADMIN_USER/PASSWORD
+          env:
+            - { name: INITIAL_MEMORY, value: "1G" }
+            - { name: MAXIMUM_MEMORY, value: "2G" }
+          volumeMounts:
+            - { name: geodata, mountPath: /opt/geoserver/data_dir }
+          resources:
+            requests: { cpu: 250m, memory: 1Gi }
+            limits:   { cpu: "2",  memory: 3Gi }
+          readinessProbe:
+            httpGet: { path: /geoserver/web/, port: 8080 }
+            initialDelaySeconds: 60
+            periodSeconds: 20
+      volumes:
+        - name: geodata
+          persistentVolumeClaim: { claimName: geoserver-data }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: geoserver-data
+  namespace: nrms
+spec:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: local-path
+  resources: { requests: { storage: 20Gi } }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: geoserver
+  namespace: nrms
+spec:
+  selector: { app: geoserver }
+  ports: [{ port: 80, targetPort: 8080 }]

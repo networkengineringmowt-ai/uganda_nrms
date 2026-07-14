@@ -1,0 +1,40 @@
+# NRMS Express API — privileged Supabase write-back (surveys, data entry,
+# encroachment register). Image built from server/Dockerfile.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nrms-api
+  namespace: nrms
+  labels: { app: nrms-api }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: nrms-api } }
+  template:
+    metadata: { labels: { app: nrms-api } }
+    spec:
+      containers:
+        - name: api
+          image: nrms/api:latest          # built locally: k3s ctr images import
+          imagePullPolicy: IfNotPresent
+          ports: [{ containerPort: 8787 }]
+          envFrom:
+            - secretRef: { name: nrms-api-secrets }
+          env:
+            - { name: PORT, value: "8787" }
+            - { name: CORS_ORIGIN, value: "https://networkengineringmowt-ai.github.io" }
+          resources:
+            requests: { cpu: 100m, memory: 128Mi }
+            limits:   { cpu: 500m, memory: 512Mi }
+          readinessProbe:
+            httpGet: { path: /health, port: 8787 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nrms-api
+  namespace: nrms
+spec:
+  selector: { app: nrms-api }
+  ports: [{ port: 80, targetPort: 8787 }]

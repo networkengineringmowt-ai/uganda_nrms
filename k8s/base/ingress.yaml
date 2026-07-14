@@ -1,0 +1,20 @@
+# Traefik ingress (built into k3s). One entry point:
+#   http://<server>/api/...        → Express API
+#   http://<server>/geoserver/...  → GeoServer
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nrms
+  namespace: nrms
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend: { service: { name: nrms-api, port: { number: 80 } } }
+          - path: /geoserver
+            pathType: Prefix
+            backend: { service: { name: geoserver, port: { number: 80 } } }

@@ -1,0 +1,39 @@
+# PostGIS 16 — enterprise geodatabase (single-node StatefulSet, local storage)
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgis
+  namespace: nrms
+spec:
+  serviceName: postgis
+  replicas: 1
+  selector: { matchLabels: { app: postgis } }
+  template:
+    metadata: { labels: { app: postgis } }
+    spec:
+      containers:
+        - name: postgis
+          image: postgis/postgis:16-3.4
+          ports: [{ containerPort: 5432 }]
+          envFrom:
+            - secretRef: { name: nrms-db-secrets }   # POSTGRES_USER/PASSWORD/DB
+          volumeMounts:
+            - { name: pgdata, mountPath: /var/lib/postgresql/data }
+          resources:
+            requests: { cpu: 250m, memory: 512Mi }
+            limits:   { cpu: "2",  memory: 4Gi }
+  volumeClaimTemplates:
+    - metadata: { name: pgdata }
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: local-path        # k3s built-in provisioner
+        resources: { requests: { storage: 50Gi } }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgis
+  namespace: nrms
+spec:
+  selector: { app: postgis }
+  ports: [{ port: 5432, targetPort: 5432 }]
