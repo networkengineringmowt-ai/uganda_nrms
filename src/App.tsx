@@ -270,15 +270,7 @@ function AppShell() {
                 )}
 
                 {activeView === 'bms' && <BMSSection />}
-                {activeView === 'pms' && (
-                  <SectionHub accent="#fb923c" badge="PMS · FY25-26" tabs={[
-                    { id: 'pms',       label: 'Pavement Management', element: <PMSSection /> },
-                    { id: 'condition', label: 'Road Condition', element: <RoadConditionView /> },
-                    { id: 'npms',      label: 'National Pavement Mgmt', element: <NPMSSection /> },
-                    { id: 'lifecycle', label: 'Life Cycle Management', element: <LifecycleView /> },
-                    { id: 'roadvideo', label: 'Road Video Survey', element: <RoadVideoView /> },
-                  ]} />
-                )}
+                {activeView === 'pms' && <PMSSection />}
                 {activeView === 'ntis' && <NTISSection />}
                 {activeView === 'npms' && <NPMSSection />}
               </div>

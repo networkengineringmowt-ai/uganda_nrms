@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from 'react';
+import React, { lazy, Suspense, useState } from 'react';
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
 import type { RoadConditionTabId } from '../RoadCondition/RoadConditionView';
 
@@ -7,6 +7,9 @@ const RoadConditionView = lazy(() => import('../RoadCondition/RoadConditionView'
 const PavementCatalogue = lazy(() => import('./PavementCatalogue'));
 const AIVisionDashboard = lazy(() => import('./AIVisionDashboard'));
 const DigitalTwin = lazy(() => import('./DigitalTwin'));
+const NPMSSection = lazy(() => import('../../sections/NPMSSection'));
+const LifecycleView = lazy(() => import('../Lifecycle/LifecycleView'));
+const RoadVideoView = lazy(() => import('../RoadVideoView/RoadVideoView'));
 
 function Spinner() {
   return (
@@ -20,23 +23,28 @@ function Spinner() {
   );
 }
 
-type MainTab = 'dashboard' | RoadConditionTabId | 'catalogue' | 'ai_vision' | 'digital_twin';
+type MainTab = 'dashboard' | 'conditionmap' | 'surveys' | 'analytics' | 'lifecycle' | 'design';
 
+// 6 sub-tabs — all PMS content merged, no duplicates:
+//   Dashboard          = cross-section analytics + national pavement infographics
+//   Condition Map      = network condition map
+//   Inventory & Surveys= inventory/surveys + road video survey
+//   Analytics          = deterioration + pavement age + FWD/structural
+//   Life Cycle         = life cycle management
+//   Design & AI Tools  = design catalogue + AI defect vision + 3D digital twin
 const MAIN_TABS: Array<{ id: MainTab; label: string }> = [
-  { id: 'dashboard', label: 'Dashboard' },
+  { id: 'dashboard',    label: 'Dashboard' },
   { id: 'conditionmap', label: 'Condition Map' },
-  { id: 'inventory', label: 'Inventory & Surveys' },
-  { id: 'analytics', label: 'Analytics & Deterioration' },
-  { id: 'age', label: 'Pavement Age' },
-  { id: 'fwd', label: 'FWD & Structural' },
-  { id: 'catalogue', label: 'Design Catalogue' },
-  { id: 'ai_vision', label: 'AI Defect Vision' },
-  { id: 'digital_twin', label: '3D Digital Twin' },
+  { id: 'surveys',      label: 'Inventory & Surveys' },
+  { id: 'analytics',    label: 'Analytics & Deterioration' },
+  { id: 'lifecycle',    label: 'Life Cycle Management' },
+  { id: 'design',       label: 'Design Catalogue & AI Tools' },
 ];
 
-const ROAD_CONDITION_TABS = new Set<MainTab>([
-  'conditionmap', 'inventory', 'analytics', 'age', 'fwd',
-]);
+const Block = ({ children }: { children: React.ReactNode }) => (
+  <div style={{ minHeight: '86vh', display: 'flex', flexDirection: 'column',
+    borderBottom: '1px solid rgba(93,167,255,0.15)' }}>{children}</div>
+);
 
 export default function PMSSection() {
   const [mainTab, setMainTab] = useState<MainTab>('dashboard');
@@ -82,15 +90,31 @@ export default function PMSSection() {
         })}
       </nav>
 
-      <main style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
+      <main style={{ flex: 1, minHeight: 0,
+        overflow: mainTab === 'conditionmap' ? 'hidden' : 'auto' }}>
         <Suspense fallback={<Spinner />}>
-          {mainTab === 'dashboard' && <CrossSectionAnalytics />}
-          {ROAD_CONDITION_TABS.has(mainTab) && (
-            <RoadConditionView activeTab={mainTab as RoadConditionTabId} embedded />
+          {mainTab === 'dashboard' && (<>
+            <Block><CrossSectionAnalytics /></Block>
+            <Block><NPMSSection /></Block>
+          </>)}
+          {mainTab === 'conditionmap' && (
+            <RoadConditionView activeTab={'conditionmap' as RoadConditionTabId} embedded />
           )}
-          {mainTab === 'catalogue' && <PavementCatalogue />}
-          {mainTab === 'ai_vision' && <AIVisionDashboard />}
-          {mainTab === 'digital_twin' && <DigitalTwin />}
+          {mainTab === 'surveys' && (<>
+            <Block><RoadConditionView activeTab={'inventory' as RoadConditionTabId} embedded /></Block>
+            <Block><RoadVideoView /></Block>
+          </>)}
+          {mainTab === 'analytics' && (<>
+            <Block><RoadConditionView activeTab={'analytics' as RoadConditionTabId} embedded /></Block>
+            <Block><RoadConditionView activeTab={'age' as RoadConditionTabId} embedded /></Block>
+            <Block><RoadConditionView activeTab={'fwd' as RoadConditionTabId} embedded /></Block>
+          </>)}
+          {mainTab === 'lifecycle' && <LifecycleView />}
+          {mainTab === 'design' && (<>
+            <Block><PavementCatalogue /></Block>
+            <Block><AIVisionDashboard /></Block>
+            <Block><DigitalTwin /></Block>
+          </>)}
         </Suspense>
       </main>
     </div>
