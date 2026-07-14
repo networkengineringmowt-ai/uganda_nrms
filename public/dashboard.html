@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Uganda DNR — Live Road Asset Dashboard FY25/26</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -85,16 +87,7 @@ body{background:#000;color:#ccc;font-family:'Inter, Segoe UI, sans-serif';min-he
 <!-- TOPBAR -->
 
 <!-- KPI STRIP -->
-<div class="kpi-strip">
-  <div class="kpi-card"><div class="lbl">Total Network</div><div class="val" style="color:var(--c)" id="kv1">0</div><div class="sub">km · DNR managed</div><div class="chg up">↑ 165 km FY25</div></div>
-  <div class="kpi-card"><div class="lbl">Paved Roads</div><div class="val" style="color:var(--g)" id="kv2">0</div><div class="sub">km · 30% of network</div><div class="chg up">↑ 42 km this FY</div></div>
-  <div class="kpi-card"><div class="lbl">Good Condition</div><div class="val" style="color:var(--g)" id="kv3">0</div><div class="sub">% overall network</div><div class="chg warn">→ stable FY25</div></div>
-  <div class="kpi-card"><div class="lbl">Structures</div><div class="val" style="color:var(--pu)" id="kv4">0</div><div class="sub">bridges &amp; culverts</div><div class="chg up">546 on nat. roads</div></div>
-  <div class="kpi-card"><div class="lbl">Avg AADT</div><div class="val" style="color:var(--y)" id="kv5">0</div><div class="sub">vehicles/day · 25 ATC</div><div class="chg up">↑ 4.2% growth</div></div>
-  <div class="kpi-card"><div class="lbl">Budget FY25/26</div><div class="val" style="color:var(--o)" id="kv6">0</div><div class="sub">bn UGX allocated</div><div class="chg warn">68% utilised</div></div>
-  <div class="kpi-card"><div class="lbl">Critical Roads</div><div class="val" style="color:var(--r)" id="kv7">0</div><div class="sub">km needs urgent work</div><div class="chg down">↑ backlog risk</div></div>
-  <div class="kpi-card"><div class="lbl">Cond. Index</div><div class="val" style="color:var(--y)" id="kv8">0</div><div class="sub">PCI 0–100 scale</div><div class="chg warn">Fair → target 65</div></div>
-</div>
+
 
 <!-- TABS -->
 <div class="tabs">
@@ -365,14 +358,7 @@ body{background:#000;color:#ccc;font-family:'Inter, Segoe UI, sans-serif';min-he
 // ── CLOCK ─────────────────────────────────────────────────────
 setInterval(()=>{const el=document.getElementById('clk');if(!el)return;const n=new Date();el.textContent=n.toLocaleString('en-UG',{weekday:'short',year:'numeric',month:'short',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})+' EAT';},1000);
 
-// ── ANIMATED KPI COUNTERS ──────────────────────────────────────
-function counter(id,target,suffix,dur){
-  const el=document.getElementById(id); let start=0,step=target/((dur||1200)/16);
-  const t=setInterval(()=>{start=Math.min(start+step,target);el.textContent=Math.round(start).toLocaleString()+suffix;if(start>=target)clearInterval(t);},16);
-}
-counter('kv1',21302,' km',1400); counter('kv2',6405,' km',1200); counter('kv3',49,'%',800);
-counter('kv4',546,'',900); counter('kv5',3847,'',1100); counter('kv6',1842,'',1000);
-counter('kv7',3619,' km',900); counter('kv8',58,'',700);
+
 
 // ── SINGLE DATA MODEL (source of truth) ───────────────────────
 const D = {
@@ -433,27 +419,18 @@ const D = {
 
 // ── CHART LAYOUT TEMPLATE ──────────────────────────────────────
 const CFG={responsive:true,displayModeBar:false};
+const AXF={color:'#b6c2d0',size:10.5};
+const AX={gridcolor:'#1a1a1a',zerolinecolor:'#1f1f1f',tickfont:AXF,linecolor:'#222',showgrid:true};
+const axt=(t)=>({...AX,title:{text:'<b>'+t+'</b>',font:{color:'#8fa1b3',size:10.5}}});
 const TL=(title,extra={})=>({
-  title:{text:title,font:{color:'#00f5ff',size:11,family:'Inter, Segoe UI, sans-serif'},x:0.5,xanchor:'center',y:0.97},
+  title:{text:'<b>'+title+'</b>',font:{color:'#00f5ff',size:12.5,family:'Inter, Segoe UI, sans-serif'},x:0.5,xanchor:'center',y:0.97},
   paper_bgcolor:'#0d0d0d',plot_bgcolor:'#080808',
-  font:{color:'#888',size:9,family:'Inter, Segoe UI, sans-serif'},
-  margin:{t:32,r:10,b:36,l:46,pad:0},
-  legend:{font:{color:'#666',size:8.5},bgcolor:'rgba(0,0,0,0)',bordercolor:'transparent',orientation:'h',y:-0.18},
-  xaxis:{gridcolor:'#1a1a1a',zerolinecolor:'#1f1f1f',tickfont:{color:'#666',size:8},linecolor:'#222',showgrid:true},
-  yaxis:{gridcolor:'#1a1a1a',zerolinecolor:'#1f1f1f',tickfont:{color:'#666',size:8},linecolor:'#222',showgrid:true},
+  font:{color:'#c3cbd8',size:10.5,family:'Inter, Segoe UI, sans-serif'},
+  margin:{t:34,r:10,b:40,l:50,pad:0},
+  legend:{font:{color:'#aab4c2',size:10},bgcolor:'rgba(0,0,0,0)',bordercolor:'transparent',orientation:'h',y:-0.2},
+  xaxis:AX,
+  yaxis:AX,
   ...extra
-});
-const TL3D=(title)=>({
-  title:{text:title,font:{color:'#00f5ff',size:11,family:'Inter, Segoe UI, sans-serif'},x:0.5,xanchor:'center'},
-  paper_bgcolor:'#0d0d0d',
-  font:{color:'#888',size:9,family:'Inter, Segoe UI, sans-serif'},
-  margin:{t:36,r:10,b:10,l:10},
-  scene:{
-    bgcolor:'#060606',
-    xaxis:{gridcolor:'#1a1a1a',zerolinecolor:'#222',tickfont:{color:'#555',size:7},showbackground:true,backgroundcolor:'#060606'},
-    yaxis:{gridcolor:'#1a1a1a',zerolinecolor:'#222',tickfont:{color:'#555',size:7},showbackground:true,backgroundcolor:'#060606'},
-    zaxis:{gridcolor:'#1a1a1a',zerolinecolor:'#222',tickfont:{color:'#555',size:7},showbackground:true,backgroundcolor:'#060606'},
-  }
 });
 const bar=(x,y,name,col,extra={})=>({type:'bar',x,y,name,marker:{color:col,line:{color:'rgba(0,0,0,0.3)',width:0.5}},opacity:0.92,...extra});
 const line=(x,y,name,col,extra={})=>({type:'scatter',mode:'lines+markers',x,y,name,line:{color:col,width:2},marker:{color:col,size:4},...extra});
@@ -494,20 +471,21 @@ function initT1(){
   // c4 Scatter3D - road segments
   const n=80,lats=[],lngs=[],aadts=[],iri=[],cond=[];
   for(let i=0;i<n;i++){lats.push(-1.5+Math.random()*5);lngs.push(29.5+Math.random()*5);aadts.push(500+Math.random()*18000);iri.push(1.5+Math.random()*8);cond.push(['Good','Fair','Poor','Critical'][Math.floor(Math.random()*4)]);}
-  Plotly.newPlot('c4',[{type:'scatter3d',x:lats,y:lngs,z:aadts,mode:'markers',
-    marker:{size:4,color:iri,colorscale:[[0,'#00ff88'],[0.4,'#ffee00'],[0.7,'#ff6600'],[1,'#ff0040']],
-    colorbar:{title:'IRI m/km',titlefont:{color:'#666',size:8},tickfont:{color:'#666',size:7},thickness:8,len:0.6},
-    line:{color:'rgba(0,0,0,0.3)',width:0.5}},
-    text:cond,hovertemplate:'Lat: %{x:.2f}<br>Lng: %{y:.2f}<br>AADT: %{z:,.0f}<br>IRI: %{marker.color:.1f}<extra></extra>'}],
-    {...TL3D('Road Segments · Lat × Lng × AADT (IRI colour)'),scene:{...TL3D('').scene,xaxis:{...TL3D('').scene.xaxis,title:'Latitude'},yaxis:{...TL3D('').scene.yaxis,title:'Longitude'},zaxis:{...TL3D('').scene.zaxis,title:'AADT'}}},CFG);
+  Plotly.newPlot('c4',[{type:'scatter',x:lngs,y:lats,mode:'markers',
+    marker:{size:aadts.map(v=>4+Math.sqrt(v)/14),color:iri,colorscale:[[0,'#00ff88'],[0.4,'#ffee00'],[0.7,'#ff6600'],[1,'#ff0040']],
+    colorbar:{title:{text:'<b>IRI m/km</b>',font:{color:'#8fa1b3',size:10}},tickfont:AXF,thickness:10,len:0.7},
+    line:{color:'rgba(0,0,0,0.35)',width:0.5}},
+    text:cond,hovertemplate:'Lng: %{x:.2f}<br>Lat: %{y:.2f}<br>IRI: %{marker.color:.1f}<br>%{text}<extra></extra>'}],
+    TL('Road Segments · Location & Traffic (size = AADT, colour = IRI)',{xaxis:axt('Longitude'),yaxis:axt('Latitude')}),CFG);
 
   // c5 Surface plot - condition score by region × class
   const z=[[80,62,45],[70,55,38],[72,58,40],[75,60,42]];
-  Plotly.newPlot('c5',[{type:'surface',z,x:['Class A','Class B','Class C'],y:D.regLbl,
+  Plotly.newPlot('c5',[{type:'heatmap',z,x:['Class A','Class B','Class C'],y:D.regLbl,
     colorscale:[[0,'#ff0040'],[0.33,'#ff6600'],[0.66,'#ffee00'],[1,'#00ff88']],
-    colorbar:{title:'Cond Score',titlefont:{color:'#666',size:8},tickfont:{color:'#666',size:7},thickness:8},
-    contours:{z:{show:true,usecolormap:true,highlightcolor:'#fff',project:{z:true}}}}],
-    {...TL3D('Condition Score Surface · Region × Class'),scene:{...TL3D('').scene,xaxis:{...TL3D('').scene.xaxis,title:'Road Class'},yaxis:{...TL3D('').scene.yaxis,title:'Region'},zaxis:{...TL3D('').scene.zaxis,title:'Score 0-100'}}},CFG);
+    colorbar:{title:{text:'<b>Score</b>',font:{color:'#8fa1b3',size:10}},tickfont:AXF,thickness:10},
+    texttemplate:'<b>%{z}</b>',textfont:{size:12,color:'#0a0a0a'},
+    hovertemplate:'%{y} · %{x}<br>Condition score: %{z}/100<extra></extra>'}],
+    TL('Condition Score · Region × Class (0–100)',{xaxis:axt('Road Class'),yaxis:axt('Region')}),CFG);
 
   // c6 Pie - surface type
   Plotly.newPlot('c6',[pie(D.surfKm,D.surfLbl,['#00f5ff','#00aacc','#ff6600','#cc4400'])],
@@ -631,10 +609,10 @@ function initT2(){
   // c21 Scatter3D - segment IRI × age × traffic
   const ns=70,xiri=[],yage=[],zaadt=[],cols=[];
   for(let i=0;i<ns;i++){const v=Math.random();xiri.push(1+v*8);yage.push(Math.random()*30);zaadt.push(200+Math.random()*10000);cols.push(v<0.35?'#00ff88':v<0.7?'#ffee00':v<0.9?'#ff6600':'#ff0040');}
-  Plotly.newPlot('c21',[{type:'scatter3d',x:xiri,y:yage,z:zaadt,mode:'markers',
-    marker:{size:4,color:cols,opacity:0.85,line:{color:'rgba(0,0,0,0.2)',width:0.5}},
-    hovertemplate:'IRI: %{x:.1f}<br>Age: %{y:.0f}yr<br>AADT: %{z:,.0f}<extra></extra>'}],
-    {...TL3D('Segment: IRI × Age × AADT'),scene:{...TL3D('').scene,xaxis:{...TL3D('').scene.xaxis,title:'IRI m/km'},yaxis:{...TL3D('').scene.yaxis,title:'Age (yrs)'},zaxis:{...TL3D('').scene.zaxis,title:'AADT'}}},CFG);
+  Plotly.newPlot('c21',[{type:'scatter',x:xiri,y:yage,mode:'markers',
+    marker:{size:zaadt.map(v=>4+Math.sqrt(v)/10),color:cols,opacity:0.85,line:{color:'rgba(0,0,0,0.25)',width:0.5}},
+    hovertemplate:'IRI: %{x:.1f} m/km<br>Age: %{y:.0f} yrs<br>bubble = AADT<extra></extra>'}],
+    TL('Segment Condition · IRI × Age (bubble = AADT)',{xaxis:axt('IRI (m/km)'),yaxis:axt('Pavement Age (years)')}),CFG);
 
   // c22 Multi-line IRI trend
   Plotly.newPlot('c22',[
@@ -684,10 +662,12 @@ function initT2(){
 
   // c28 Surface - IRI surface by region × treatment
   const iriSurf=D.regLbl.map((_,i)=>D.treatLbl.map((_,j)=>2+i*1.2+j*1.8+Math.random()*0.5));
-  Plotly.newPlot('c28',[{type:'surface',z:iriSurf,x:D.treatLbl,y:D.regLbl,
-    colorscale:[[0,'#003300'],[0.5,'#886600'],[1,'#ff0040']],
-    colorbar:{title:'IRI',titlefont:{color:'#666',size:7},tickfont:{size:7,color:'#666'},thickness:8}}],
-    {...TL3D('IRI Surface: Region × Treatment Need'),scene:{...TL3D('').scene,xaxis:{...TL3D('').scene.xaxis,title:'Treatment'},yaxis:{...TL3D('').scene.yaxis,title:'Region'},zaxis:{...TL3D('').scene.zaxis,title:'IRI m/km'}}},CFG);
+  Plotly.newPlot('c28',[{type:'heatmap',z:iriSurf.map(r=>r.map(v=>+v.toFixed(1))),x:D.treatLbl,y:D.regLbl,
+    colorscale:[[0,'#00ff88'],[0.5,'#ffee00'],[1,'#ff0040']],
+    colorbar:{title:{text:'<b>IRI</b>',font:{color:'#8fa1b3',size:10}},tickfont:AXF,thickness:10},
+    texttemplate:'<b>%{z}</b>',textfont:{size:11,color:'#0a0a0a'},
+    hovertemplate:'%{y} · %{x}<br>IRI: %{z} m/km<extra></extra>'}],
+    TL('Roughness (IRI) · Region × Treatment Need',{xaxis:axt('Treatment'),yaxis:axt('Region')}),CFG);
 
   // c29 Violin - PCR by region
   Plotly.newPlot('c29',[
@@ -731,12 +711,12 @@ function initT3(){
   const stLat=[0.42,0.85,1.62,2.78,3.02,0.31,-0.33,-0.61,-0.54,0.33,0.44,0.61,0.70,0.30,0.06,-0.36,-1.25,-0.62,0.94,0.62,3.60,-1.24,1.43,0.65,2.25];
   const stLng=[32.58,32.49,31.98,32.30,32.38,32.55,31.74,30.64,30.18,32.65,33.20,33.49,34.18,32.58,32.46,31.62,29.99,30.70,33.12,33.50,32.08,29.98,31.36,30.27,32.23];
   const stAADT=[4820,3140,2860,2140,1480,5210,3820,2940,1840,6480,4210,2840,2180,18400,9840,2620,1670,2180,1420,1680,1240,1180,1840,2140,2480];
-  Plotly.newPlot('c34',[{type:'scatter3d',x:stLat,y:stLng,z:stAADT,mode:'markers+text',
-    marker:{size:stAADT.map(v=>Math.sqrt(v/400)+3),color:stAADT,colorscale:[[0,'#00ff88'],[0.4,'#ffee00'],[0.8,'#ff6600'],[1,'#ff0040']],
-    colorbar:{title:'AADT',titlefont:{color:'#666',size:7},tickfont:{size:7,color:'#666'},thickness:8},
+  Plotly.newPlot('c34',[{type:'scatter',x:stLng,y:stLat,mode:'markers',
+    marker:{size:stAADT.map(v=>Math.sqrt(v/400)+5),color:stAADT,colorscale:[[0,'#00ff88'],[0.4,'#ffee00'],[0.8,'#ff6600'],[1,'#ff0040']],
+    colorbar:{title:{text:'<b>AADT</b>',font:{color:'#8fa1b3',size:10}},tickfont:AXF,thickness:10},
     line:{color:'rgba(0,0,0,0.3)',width:0.5}},
-    hovertemplate:'Lat: %{x:.3f}<br>Lng: %{y:.3f}<br>AADT: %{z:,.0f}<extra></extra>'}],
-    {...TL3D('ATC Station Network · 3D Volume Map'),scene:{...TL3D('').scene,xaxis:{...TL3D('').scene.xaxis,title:'Latitude'},yaxis:{...TL3D('').scene.yaxis,title:'Longitude'},zaxis:{...TL3D('').scene.zaxis,title:'AADT'}}},CFG);
+    hovertemplate:'Lng: %{x:.3f}<br>Lat: %{y:.3f}<br>AADT: %{marker.color:,.0f}<extra></extra>'}],
+    TL('ATC Station Network · Traffic Volume Map (bubble = AADT)',{xaxis:axt('Longitude'),yaxis:axt('Latitude')}),CFG);
 
   // c35 Multi-line forecast
   Plotly.newPlot('c35',[
@@ -791,10 +771,12 @@ function initT3(){
   // c43 Surface - AADT × year × region (3D)
   const yrs3d=[2018,2019,2020,2021,2022,2023,2024,2025];
   const aadtSurf=[[2200,2280,2180,2270,2360,2460,2560,2670],[1840,1910,1830,1910,1990,2070,2160,2240],[1680,1750,1680,1750,1820,1900,1980,2060],[1900,1970,1890,1970,2050,2130,2220,2310]];
-  Plotly.newPlot('c43',[{type:'surface',z:aadtSurf,x:yrs3d,y:D.regLbl,
-    colorscale:[[0,'#001100'],[0.5,'#886600'],[1,'#00f5ff']],
-    colorbar:{title:'AADT',titlefont:{color:'#666',size:7},tickfont:{size:7,color:'#666'},thickness:8}}],
-    {...TL3D('AADT Surface: Region × Year (3D)'),scene:{...TL3D('').scene,xaxis:{...TL3D('').scene.xaxis,title:'Year'},yaxis:{...TL3D('').scene.yaxis,title:'Region'},zaxis:{...TL3D('').scene.zaxis,title:'AADT'}}},CFG);
+  Plotly.newPlot('c43',[{type:'heatmap',z:aadtSurf,x:yrs3d,y:D.regLbl,
+    colorscale:[[0,'#0a2333'],[0.5,'#0e7490'],[1,'#00f5ff']],
+    colorbar:{title:{text:'<b>AADT</b>',font:{color:'#8fa1b3',size:10}},tickfont:AXF,thickness:10},
+    texttemplate:'<b>%{z}</b>',textfont:{size:10,color:'#eaf4ff'},
+    hovertemplate:'%{y} · %{x}<br>AADT: %{z:,.0f}<extra></extra>'}],
+    TL('Traffic Growth (AADT) · Region × Year',{xaxis:axt('Year'),yaxis:axt('Region')}),CFG);
 
   // c44 Box - AADT distribution by road class
   Plotly.newPlot('c44',[
@@ -804,15 +786,14 @@ function initT3(){
     TL('AADT Distribution by Road Class',{yaxis:{title:{text:'AADT (veh/day)',font:{size:9}}}}),CFG);
 
   // c45 Scatter3D - corridors: AADT × growth × IRI
-  Plotly.newPlot('c45',[{type:'scatter3d',x:D.corrAADT,y:D.corrGrowth,
-    z:[2.8,3.1,4.8,5.9,4.2,5.4,5.6,6.1,4.4,4.8],
-    mode:'markers+text',text:D.corridors,textposition:'top center',textfont:{size:7,color:'#aaa'},
-    marker:{size:D.corrAADT.map(v=>Math.sqrt(v/600)+4),color:D.corrAADT,
+  Plotly.newPlot('c45',[{type:'scatter',x:D.corrAADT,y:D.corrGrowth,
+    mode:'markers+text',text:D.corridors,textposition:'top center',textfont:{size:9.5,color:'#c3cbd8'},
+    marker:{size:D.corrAADT.map(v=>Math.sqrt(v/600)+6),color:[2.8,3.1,4.8,5.9,4.2,5.4,5.6,6.1,4.4,4.8],
     colorscale:[[0,'#00ff88'],[0.5,'#ffee00'],[1,'#ff0040']],
-    colorbar:{title:'AADT',titlefont:{color:'#666',size:7},tickfont:{size:7,color:'#666'},thickness:8},
+    colorbar:{title:{text:'<b>IRI m/km</b>',font:{color:'#8fa1b3',size:10}},tickfont:AXF,thickness:10},
     line:{color:'rgba(0,0,0,0.3)',width:0.5}},
-    hovertemplate:'%{text}<br>AADT: %{x:,.0f}<br>Growth: %{y:.1f}%<br>IRI: %{z:.1f}<extra></extra>'}],
-    {...TL3D('Corridor: AADT × Growth × IRI (3D)'),scene:{...TL3D('').scene,xaxis:{...TL3D('').scene.xaxis,title:'AADT'},yaxis:{...TL3D('').scene.yaxis,title:'Growth %/yr'},zaxis:{...TL3D('').scene.zaxis,title:'IRI m/km'}}},CFG);
+    hovertemplate:'%{text}<br>AADT: %{x:,.0f}<br>Growth: %{y:.1f}%<br>IRI: %{marker.color:.1f}<extra></extra>'}],
+    TL('Corridors · Traffic vs Growth (colour = IRI)',{xaxis:axt('AADT (veh/day)'),yaxis:axt('Growth (%/yr)')}),CFG);
 }
 </script>
 <script>
@@ -838,12 +819,12 @@ function initT4(){
   const bLat=[0.42,0.30,0.06,0.44,-0.33,-0.61,2.78,0.70,0.61,1.43,0.65,2.25,0.85,1.62,-1.25,0.31,0.94,0.62,-0.54,3.02,0.33,3.60,-0.36,0.50,1.80];
   const bLng=[32.58,32.58,32.46,33.20,31.74,30.64,32.30,34.18,33.49,31.36,30.27,32.23,32.49,31.98,29.99,32.55,33.12,33.50,30.18,32.38,32.65,32.08,31.62,32.10,31.50];
   const bScore=[82,75,90,68,55,45,72,38,62,70,84,76,65,52,30,88,71,60,48,55,78,42,66,80,58];
-  Plotly.newPlot('c49',[{type:'scatter3d',x:bLat,y:bLng,z:bScore,mode:'markers',
-    marker:{size:6,color:bScore,colorscale:[[0,'#ff0040'],[0.35,'#ff6600'],[0.65,'#ffee00'],[1,'#00ff88']],
-    colorbar:{title:'Cond Score',titlefont:{color:'#666',size:7},tickfont:{size:7,color:'#666'},thickness:8},
+  Plotly.newPlot('c49',[{type:'scatter',x:bLng,y:bLat,mode:'markers',
+    marker:{size:11,color:bScore,colorscale:[[0,'#ff0040'],[0.35,'#ff6600'],[0.65,'#ffee00'],[1,'#00ff88']],
+    colorbar:{title:{text:'<b>Score</b>',font:{color:'#8fa1b3',size:10}},tickfont:AXF,thickness:10},
     line:{color:'rgba(0,0,0,0.3)',width:0.5}},
-    hovertemplate:'Lat: %{x:.3f}<br>Lng: %{y:.3f}<br>Score: %{z}<extra></extra>'}],
-    {...TL3D('Bridge Network: Lat × Lng × Condition Score'),scene:{...TL3D('').scene,xaxis:{...TL3D('').scene.xaxis,title:'Latitude'},yaxis:{...TL3D('').scene.yaxis,title:'Longitude'},zaxis:{...TL3D('').scene.zaxis,title:'Cond Score (0-100)'}}},CFG);
+    hovertemplate:'Lng: %{x:.3f}<br>Lat: %{y:.3f}<br>Condition score: %{marker.color}<extra></extra>'}],
+    TL('Bridge Network · Condition Score Map',{xaxis:axt('Longitude'),yaxis:axt('Latitude')}),CFG);
 
   // c50 Heatmap - condition by region
   Plotly.newPlot('c50',[{type:'heatmap',
@@ -902,10 +883,12 @@ function initT4(){
   // c57 Surface - condition by age × span
   const ageLbl=['<10yr','10-20yr','20-30yr','30-50yr','>50yr'];
   const condSurf=ageLbl.map((_,i)=>D.strSpanLbl.map((_,j)=>Math.max(10,90-i*15-j*5+Math.random()*8)));
-  Plotly.newPlot('c57',[{type:'surface',z:condSurf,x:D.strSpanLbl,y:ageLbl,
-    colorscale:[[0,'#200000'],[0.4,'#885500'],[0.7,'#886600'],[1,'#003300']],
-    colorbar:{title:'Cond Score',titlefont:{color:'#666',size:7},tickfont:{size:7,color:'#666'},thickness:8}}],
-    {...TL3D('Bridge Condition Surface: Age × Span'),scene:{...TL3D('').scene,xaxis:{...TL3D('').scene.xaxis,title:'Span Class'},yaxis:{...TL3D('').scene.yaxis,title:'Bridge Age'},zaxis:{...TL3D('').scene.zaxis,title:'Condition Score'}}},CFG);
+  Plotly.newPlot('c57',[{type:'heatmap',z:condSurf.map(r=>r.map(v=>Math.round(v))),x:D.strSpanLbl,y:ageLbl,
+    colorscale:[[0,'#ff0040'],[0.4,'#ff6600'],[0.7,'#ffee00'],[1,'#00ff88']],
+    colorbar:{title:{text:'<b>Score</b>',font:{color:'#8fa1b3',size:10}},tickfont:AXF,thickness:10},
+    texttemplate:'<b>%{z}</b>',textfont:{size:11,color:'#0a0a0a'},
+    hovertemplate:'Age %{y} · %{x}<br>Condition score: %{z}/100<extra></extra>'}],
+    TL('Bridge Condition · Age × Span Class',{xaxis:axt('Span Class'),yaxis:axt('Bridge Age')}),CFG);
 
   // c58 Box - span distribution by type
   Plotly.newPlot('c58',[
@@ -980,17 +963,16 @@ function initT5(){
     TL('Budget by Region FY25/26 (bn UGX)',{barmode:'group',yaxis:{title:{text:'bn UGX',font:{size:9}}}}),CFG);
 
   // c68 Scatter3D - budget × km treated × condition improvement
-  Plotly.newPlot('c68',[{type:'scatter3d',
+  Plotly.newPlot('c68',[{type:'scatter',
     x:[420,472,640,180,130,320,280,380],
     y:[8420,1240,215,890,0,640,480,820],
-    z:[2,8,15,4,1,6,5,7],
     mode:'markers+text',
     text:['Routine','Periodic','Reconstruct','Emergency','Admin','Overlay','Rehab','Reseal'],
-    textposition:'top center',textfont:{size:7,color:'#aaa'},
-    marker:{size:10,color:['#00ff88','#00f5ff','#ff0040','#ff6600','#888','#ffee00','#ff4400','#00aacc'],
+    textposition:'top center',textfont:{size:9.5,color:'#c3cbd8'},
+    marker:{size:[2,8,15,4,1,6,5,7].map(v=>8+v*1.6),color:['#00ff88','#00f5ff','#ff0040','#ff6600','#888','#ffee00','#ff4400','#00aacc'],
     line:{color:'rgba(0,0,0,0.3)',width:0.5}},
-    hovertemplate:'%{text}<br>Budget: bn UGX %{x}<br>km treated: %{y:,.0f}<br>Cond Δ: %{z}<extra></extra>'}],
-    {...TL3D('Budget × km Treated × Condition Improvement'),scene:{...TL3D('').scene,xaxis:{...TL3D('').scene.xaxis,title:'Budget (bn UGX)'},yaxis:{...TL3D('').scene.yaxis,title:'km Treated'},zaxis:{...TL3D('').scene.zaxis,title:'Cond Score Δ'}}},CFG);
+    hovertemplate:'%{text}<br>Budget: bn UGX %{x}<br>km treated: %{y:,.0f}<br>bubble = condition gain<extra></extra>'}],
+    TL('Budget vs km Treated (bubble = condition gain)',{xaxis:axt('Budget (bn UGX)'),yaxis:axt('km Treated')}),CFG);
 
   // c69 Area - investment gap
   Plotly.newPlot('c69',[
@@ -1066,13 +1048,13 @@ function initT6(){
     TL('Project Timeline & Progress',{yaxis:{tickfont:{size:8.5}},xaxis:{title:{text:'Year',font:{size:9}},range:[2021,2029],dtick:1}}),CFG);
 
   // c79 Scatter3D - projects: cost × km × progress
-  Plotly.newPlot('c79',[{type:'scatter3d',x:D.projBn,y:[186,62,124,248,380,210,154,290],
-    z:D.projPct,mode:'markers+text',text:D.projName.map(n=>n.split('-')[0]),textposition:'top center',textfont:{size:7,color:'#aaa'},
-    marker:{size:8,color:D.projPct,colorscale:[[0,'#ff0040'],[0.5,'#ffee00'],[1,'#00ff88']],
-    colorbar:{title:'%Complete',titlefont:{color:'#666',size:7},tickfont:{size:7,color:'#666'},thickness:8},
+  Plotly.newPlot('c79',[{type:'scatter',x:D.projBn,y:[186,62,124,248,380,210,154,290],
+    mode:'markers+text',text:D.projName.map(n=>n.split('-')[0]),textposition:'top center',textfont:{size:9.5,color:'#c3cbd8'},
+    marker:{size:D.projPct.map(v=>8+v/6),color:D.projPct,colorscale:[[0,'#ff0040'],[0.5,'#ffee00'],[1,'#00ff88']],
+    colorbar:{title:{text:'<b>% Complete</b>',font:{color:'#8fa1b3',size:10}},tickfont:AXF,thickness:10},
     line:{color:'rgba(0,0,0,0.3)',width:0.5}},
-    hovertemplate:'%{text}<br>Budget: bn %{x}<br>km: %{y}<br>Complete: %{z}%<extra></extra>'}],
-    {...TL3D('Projects: Budget × km Length × % Complete'),scene:{...TL3D('').scene,xaxis:{...TL3D('').scene.xaxis,title:'Budget (bn UGX)'},yaxis:{...TL3D('').scene.yaxis,title:'km Length'},zaxis:{...TL3D('').scene.zaxis,title:'% Complete'}}},CFG);
+    hovertemplate:'%{text}<br>Budget: bn %{x}<br>km: %{y}<br>Complete: %{marker.color}%<extra></extra>'}],
+    TL('Projects · Cost vs Length (colour = % complete)',{xaxis:axt('Budget (bn UGX)'),yaxis:axt('Length (km)')}),CFG);
 
   // c80 Bar - project by contract type
   Plotly.newPlot('c80',[pie([7,4,3],['OPRC (7)','Periodic Maint (4)','Emergency Works (3)'],['#00f5ff','#ffee00','#ff6600'])],
@@ -1153,17 +1135,16 @@ function initT7(){
     TL('Accident Distribution by Time of Day (%)',{xaxis:{title:{text:'Hour (24hr)',font:{size:9}}},yaxis:{title:{text:'% of All Accidents',font:{size:9}}}}),CFG);
 
   // c93 Scatter3D - blackspots: lat × lng × accident rate
-  Plotly.newPlot('c93',[{type:'scatter3d',
-    x:[0.3,0.2,-0.3,0.68,1.2,1.4,0.1,-0.8,0.9,0.6],
-    y:[32.6,32.4,30.1,33.8,34.1,34.6,31.5,30.8,33.2,32.9],
-    z:[420,380,340,312,290,268,240,214,198,182],
-    mode:'markers+text',text:D.accCorridor.map(n=>n.split('-')[0]),textposition:'top center',textfont:{size:7,color:'#aaa'},
-    marker:{size:[14,13,12,11,10,9,9,8,8,7],
+  Plotly.newPlot('c93',[{type:'scatter',
+    x:[32.6,32.4,30.1,33.8,34.1,34.6,31.5,30.8,33.2,32.9],
+    y:[0.3,0.2,-0.3,0.68,1.2,1.4,0.1,-0.8,0.9,0.6],
+    mode:'markers+text',text:D.accCorridor.map(n=>n.split('-')[0]),textposition:'top center',textfont:{size:9.5,color:'#c3cbd8'},
+    marker:{size:[22,21,19,18,16,15,15,13,13,12],
     color:[420,380,340,312,290,268,240,214,198,182],colorscale:[[0,'#ffee00'],[0.5,'#ff6600'],[1,'#ff0040']],
-    colorbar:{title:'Accidents',titlefont:{color:'#666',size:7},tickfont:{size:7,color:'#666'},thickness:8},
+    colorbar:{title:{text:'<b>Accidents/yr</b>',font:{color:'#8fa1b3',size:10}},tickfont:AXF,thickness:10},
     line:{color:'rgba(0,0,0,0.3)',width:0.5}},
-    hovertemplate:'%{text}<br>Lat: %{x}<br>Lng: %{y}<br>Accidents: %{z}/yr<extra></extra>'}],
-    {...TL3D('Blackspot Locations: Lat × Lng × Accident Rate'),scene:{...TL3D('').scene,xaxis:{...TL3D('').scene.xaxis,title:'Latitude'},yaxis:{...TL3D('').scene.yaxis,title:'Longitude'},zaxis:{...TL3D('').scene.zaxis,title:'Accidents/yr'}}},CFG);
+    hovertemplate:'%{text}<br>Lng: %{x}<br>Lat: %{y}<br>Accidents: %{marker.color}/yr<extra></extra>'}],
+    TL('Blackspot Locations · Accident Rate Map',{xaxis:axt('Longitude'),yaxis:axt('Latitude')}),CFG);
 
   // c94 Line multi - fatalities by region
   const regColors=['#00f5ff','#00ff88','#ffee00','#ff6600'];
@@ -1198,7 +1179,7 @@ function initT7(){
   Plotly.newPlot('c98',[{type:'scatter',mode:'markers+text',
     x:[2.1,2.8,4.2,3.6,2.4,5.8,3.9,7.2,1.8,4.4],
     y:[42,68,148,88,54,240,102,380,38,120],
-    text:D.accCorridor.map(n=>n.split('-')[0]),textposition:'top center',textfont:{size:7,color:'#aaa'},
+    text:D.accCorridor.map(n=>n.split('-')[0]),textposition:'top center',textfont:{size:9.5,color:'#c3cbd8'},
     marker:{color:[42,68,148,88,54,240,102,380,38,120],colorscale:[[0,'#ffee00'],[0.5,'#ff6600'],[1,'#ff0040']],
     colorbar:{title:'Accidents',titlefont:{color:'#666',size:7},tickfont:{size:7,color:'#666'},thickness:8},
     size:10,line:{color:'rgba(0,0,0,0.3)',width:0.5}},
@@ -1214,18 +1195,14 @@ function initT7(){
 
   // c100 Surface 3D - accident risk surface: speed limit × IRI → predicted accident rate
   const spd=[50,60,80,100,110],iri=[1,2,3,4,5,6,7,8];
-  Plotly.newPlot('c100',[{type:'surface',
+  Plotly.newPlot('c100',[{type:'heatmap',
     x:spd,y:iri,
-    z:iri.map(r=>spd.map(s=>Math.round(5+r*8+(s/50)*12+r*(s/50)*4))),
-    colorscale:[[0,'#001100'],[0.35,'#ffee00'],[0.7,'#ff6600'],[1,'#ff0040']],
-    contours:{z:{show:true,usecolormap:true,highlightcolor:'#fff',project:{z:true}}},
-    colorbar:{title:'Acc./yr',titlefont:{color:'#666',size:7},tickfont:{size:7,color:'#666'},thickness:8},
-    lighting:{diffuse:0.9,roughness:0.6},opacity:0.95}],
-    {...TL3D('Risk Surface: Speed Limit × Road Roughness → Accident Rate'),
-    scene:{...TL3D('').scene,
-    xaxis:{...TL3D('').scene.xaxis,title:'Speed Limit (km/h)'},
-    yaxis:{...TL3D('').scene.yaxis,title:'IRI (m/km)'},
-    zaxis:{...TL3D('').scene.zaxis,title:'Predicted Accidents/yr'}}},CFG);
+    z:iri.map(r=>spd.map(sp=>Math.round(5+r*8+(sp/50)*12+r*(sp/50)*4))),
+    colorscale:[[0,'#00ff88'],[0.35,'#ffee00'],[0.7,'#ff6600'],[1,'#ff0040']],
+    colorbar:{title:{text:'<b>Acc./yr</b>',font:{color:'#8fa1b3',size:10}},tickfont:AXF,thickness:10},
+    texttemplate:'<b>%{z}</b>',textfont:{size:10,color:'#0a0a0a'},
+    hovertemplate:'Speed %{x} km/h · IRI %{y}<br>Predicted: %{z} accidents/yr<extra></extra>'}],
+    TL('Accident Risk · Speed Limit × Roughness (predicted /yr)',{xaxis:axt('Speed Limit (km/h)'),yaxis:axt('IRI (m/km)')}),CFG);
 }
 </script>
 <script>
