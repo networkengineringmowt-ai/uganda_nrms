@@ -123,13 +123,6 @@ export default function Sidebar() {
         }}/>
       </div>
 
-      {/* Network summary strip */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', borderBottom: '1px solid rgba(0,245,255,0.08)' }}>
-        <StatPill label="Roads"    value="21.3k" color={N.cyan} />
-        <StatPill label="Bridges"  value={String(structures.filter(s=>s.type==='bridge').length)} color={N.blue} />
-        <StatPill label="Critical" value={String(criticalCount)} color={N.pink} />
-      </div>
-
       {/* ── Flat section list (no grouping, no collapse) ── */}
       <nav style={{ flex: 1, overflowY: 'auto', padding: '6px 6px' }}>
         {navItems.map(id => {

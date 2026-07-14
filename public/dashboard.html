@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Uganda DNR — Live Road Asset Dashboard FY25/26</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js" defer></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#000;color:#ccc;font-family:'Inter, Segoe UI, sans-serif';min-height:100vh;overflow-x:hidden}
+body{background:#000;color:#ccc;font-family:'Inter','Segoe UI',sans-serif;min-height:100vh;overflow-x:hidden}
 :root{--c:#00f5ff;--g:#00ff88;--p:#ff006e;--pu:#bf00ff;--o:#ff6600;--y:#ffee00;--r:#ff0040;--bg1:#060606;--bg2:#0d0d0d;--bg3:#111;--bd:rgba(0,245,255,0.12)}
 
 /* TOPBAR */
@@ -31,14 +31,14 @@ body{background:#000;color:#ccc;font-family:'Inter, Segoe UI, sans-serif';min-he
 .kpi-card{padding:12px 14px;border-right:1px solid var(--bd);cursor:pointer;transition:background .2s}
 .kpi-card:hover{background:rgba(0,245,255,.04)}
 .kpi-card .lbl{color:#555;font-size:9px;letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px}
-.kpi-card .val{font-size:20px;font-weight:700;font-family:'Inter, Segoe UI, sans-serif';letter-spacing:-1px}
+.kpi-card .val{font-size:20px;font-weight:700;font-family:'Inter','Segoe UI',sans-serif;letter-spacing:-1px}
 .kpi-card .sub{color:#444;font-size:9px;margin-top:2px}
 .kpi-card .chg{font-size:9px;margin-top:1px}
 .chg.up{color:var(--g)}.chg.down{color:var(--r)}.chg.warn{color:var(--y)}
 
 /* TABS */
 .tabs{display:flex;gap:0;border-bottom:2px solid var(--bd);background:var(--bg1);overflow-x:auto}
-.tab-btn{padding:10px 18px;font-size:10.5px;letter-spacing:.8px;color:#555;border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;font-family:'Inter, Segoe UI, sans-serif'}
+.tab-btn{padding:10px 18px;font-size:10.5px;letter-spacing:.8px;color:#555;border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;font-family:'Inter','Segoe UI',sans-serif}
 .tab-btn:hover{color:var(--c);background:rgba(0,245,255,.04)}
 .tab-btn.active{color:var(--c);border-bottom-color:var(--c);background:rgba(0,245,255,.06)}
 
@@ -67,14 +67,14 @@ body{background:#000;color:#ccc;font-family:'Inter, Segoe UI, sans-serif';min-he
 
 /* FILTER BAR */
 .filter-bar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
-.filter-btn{padding:4px 12px;border:1px solid var(--bd);border-radius:3px;background:transparent;color:#666;font-size:9.5px;font-family:'Inter, Segoe UI, sans-serif';cursor:pointer;letter-spacing:.5px;transition:all .2s}
+.filter-btn{padding:4px 12px;border:1px solid var(--bd);border-radius:3px;background:transparent;color:#666;font-size:9.5px;font-family:'Inter','Segoe UI',sans-serif;cursor:pointer;letter-spacing:.5px;transition:all .2s}
 .filter-btn:hover,.filter-btn.active{border-color:var(--c);color:var(--c);background:rgba(0,245,255,.08)}
 .filter-lbl{color:#444;font-size:9px;letter-spacing:.5px}
 
 /* STAT ROW */
 .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:12px}
 .stat-mini{background:var(--bg3);border:1px solid var(--bd);border-radius:4px;padding:10px;border-left:3px solid var(--c)}
-.stat-mini .sv{color:var(--c);font-size:18px;font-weight:700;font-family:'Inter, Segoe UI, sans-serif'}
+.stat-mini .sv{color:var(--c);font-size:18px;font-weight:700;font-family:'Inter','Segoe UI',sans-serif}
 .stat-mini .sl{color:#555;font-size:9px;margin-top:2px;letter-spacing:.4px}
 
 /* SCROLLBAR */

@@ -271,12 +271,7 @@ function AppShell() {
                   </Suspense>
                 )}
 
-                {activeView === 'bms' && (
-                  <SectionHub accent="#60a5fa" badge="BMS · FY25-26" tabs={[
-                    { id: 'bms',         label: 'Bridge Management', element: <BMSSection /> },
-                    { id: 'bridgeworks', label: 'Bridge Works Programme', element: <BridgeWorksSection /> },
-                  ]} />
-                )}
+                {activeView === 'bms' && <BMSSection />}
                 {activeView === 'pms' && (
                   <SectionHub accent="#fb923c" badge="PMS · FY25-26" tabs={[
                     { id: 'pms',       label: 'Pavement Management', element: <PMSSection /> },
