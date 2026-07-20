@@ -149,6 +149,10 @@ body{
 ::-webkit-scrollbar-thumb{background:rgba(0,245,255,.22);border-radius:3px}
 ::-webkit-scrollbar-thumb:hover{background:rgba(0,245,255,.4)}
 
+/* ── EMBEDDED MODE (inside platform iframe: shell already has a header) ── */
+body.embedded .rainbow,body.embedded .topbar{display:none}
+body.embedded .tabs{padding-top:14px}
+
 /* ── RESPONSIVE ── */
 @media (max-width:1200px){.kpi-strip{grid-template-columns:repeat(4,1fr)}.g4{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr}}
 @media (max-width:700px){.kpi-strip{grid-template-columns:repeat(2,1fr)}.g2,.g3,.g4,.g12,.g21,.g13{grid-template-columns:1fr}}
@@ -449,6 +453,9 @@ body{
   <div class="chart-grid"><div class="chart-box c3d"><div class="chart-h2" id="c100"></div></div></div>
 </div>
 <script>
+// ── EMBEDDED MODE — hide dashboard chrome when framed by the platform ──
+try{if(window.self!==window.top)document.body.classList.add('embedded');}catch(e){document.body.classList.add('embedded');}
+
 // ── CLOCK ─────────────────────────────────────────────────────
 setInterval(()=>{const n=new Date();document.getElementById('clk').textContent=n.toLocaleString('en-UG',{weekday:'short',year:'numeric',month:'short',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})+' EAT';},1000);
 
