@@ -4,7 +4,7 @@
  * Follows the exact BMS tab-bar pattern.
  */
 import { lazy, Suspense, useState } from 'react';
-import { Activity, BookOpen, Cpu, ShieldCheck, Users } from 'lucide-react';
+import { Activity, BookOpen, Cpu, Database, ShieldCheck, Users } from 'lucide-react';
 import type { ActiveView } from '../../types';
 
 const ADMIN_Identity  = lazy(() => import('./IdentityManager'));
@@ -12,6 +12,7 @@ const ADMIN_Activity  = lazy(() => import('./ActivityLog'));
 const ADMIN_MindMap   = lazy(() => import('../MindMap/MindMapSection'));
 const ADMIN_DataAudit = lazy(() => import('../DataAudit/DataAuditPanel'));
 const ADMIN_Docs      = lazy(() => import('./SystemDocumentation'));
+const ADMIN_SqlSchema = lazy(() => import('./SqlSchemaViewer'));
 
 function Spinner() {
   return (
@@ -31,6 +32,7 @@ const MAIN_TABS = [
   { id: 'mindmap'   as const, label: 'Platform Mind Map',  icon: <Cpu size={13}/> },
   { id: 'dataaudit' as const, label: 'Data Audit',         icon: <ShieldCheck size={13}/> },
   { id: 'docs'      as const, label: 'System Documentation', icon: <BookOpen size={13}/> },
+  { id: 'sqlschema' as const, label: 'SQL Schema',          icon: <Database size={13}/> },
 ];
 type TabId = typeof MAIN_TABS[number]['id'];
 
@@ -101,6 +103,11 @@ export default function AdminSection({
           {tab === 'docs' && (
             <div style={{ position:'absolute', inset:0, overflowY:'auto' }}>
               <ADMIN_Docs />
+            </div>
+          )}
+          {tab === 'sqlschema' && (
+            <div style={{ position:'absolute', inset:0, overflowY:'auto' }}>
+              <ADMIN_SqlSchema />
             </div>
           )}
         </Suspense>

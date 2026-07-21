@@ -1,0 +1,1050 @@
+{
+ "generated_from": "scripts/nrms_schema.sql",
+ "fiscal_year": "FY25/26",
+ "regions": [
+  {
+   "code": "CEN",
+   "name": "Central",
+   "color": "#00f5ff"
+  },
+  {
+   "code": "NOR",
+   "name": "Northern",
+   "color": "#00ff88"
+  },
+  {
+   "code": "EAS",
+   "name": "Eastern",
+   "color": "#ffd23f"
+  },
+  {
+   "code": "WES",
+   "name": "Western",
+   "color": "#b967ff"
+  },
+  {
+   "code": "SOU",
+   "name": "Southern",
+   "color": "#ff2d78"
+  },
+  {
+   "code": "NEA",
+   "name": "North Eastern",
+   "color": "#ff6b35"
+  }
+ ],
+ "network_summary": {
+  "fiscal_year": "FY25/26",
+  "paved_km": 6405.0,
+  "unpaved_km": 14897.0,
+  "total_km": 21302.0,
+  "paved_pct": 30.1
+ },
+ "region_summary": [
+  {
+   "region": "Central",
+   "total_km": 4436.0,
+   "paved_km": 1850.0,
+   "good_pct": 18.0,
+   "fair_pct": 32.0,
+   "poor_pct": 34.0,
+   "critical_pct": 17.0,
+   "avg_iri": 3.2
+  },
+  {
+   "region": "Northern",
+   "total_km": 3920.0,
+   "paved_km": 900.0,
+   "good_pct": 16.0,
+   "fair_pct": 32.0,
+   "poor_pct": 36.0,
+   "critical_pct": 17.0,
+   "avg_iri": 4.2
+  },
+  {
+   "region": "Eastern",
+   "total_km": 4290.0,
+   "paved_km": 860.0,
+   "good_pct": 16.0,
+   "fair_pct": 31.0,
+   "poor_pct": 35.0,
+   "critical_pct": 17.0,
+   "avg_iri": 4.7
+  },
+  {
+   "region": "Western",
+   "total_km": 3000.0,
+   "paved_km": 1280.0,
+   "good_pct": 22.0,
+   "fair_pct": 35.0,
+   "poor_pct": 30.0,
+   "critical_pct": 13.0,
+   "avg_iri": 4.3
+  },
+  {
+   "region": "Southern",
+   "total_km": 3300.0,
+   "paved_km": 1140.0,
+   "good_pct": 19.0,
+   "fair_pct": 33.0,
+   "poor_pct": 33.0,
+   "critical_pct": 14.0,
+   "avg_iri": 3.6
+  },
+  {
+   "region": "North Eastern",
+   "total_km": 2356.0,
+   "paved_km": 375.0,
+   "good_pct": 14.0,
+   "fair_pct": 24.0,
+   "poor_pct": 36.0,
+   "critical_pct": 26.0,
+   "avg_iri": 4.9
+  }
+ ],
+ "condition_bands": [
+  {
+   "code": "GOOD",
+   "name": "Good",
+   "color": "#00ff88",
+   "iri_max": 3.5
+  },
+  {
+   "code": "FAIR",
+   "name": "Fair",
+   "color": "#ffd23f",
+   "iri_max": 5.5
+  },
+  {
+   "code": "POOR",
+   "name": "Poor",
+   "color": "#ff6b35",
+   "iri_max": 8.0
+  },
+  {
+   "code": "CRIT",
+   "name": "Critical",
+   "color": "#ff2d78",
+   "iri_max": null
+  }
+ ],
+ "treatments": [
+  {
+   "code": "RM",
+   "name": "Routine Maintenance",
+   "unit_cost_m_ugx": 45.0
+  },
+  {
+   "code": "PR",
+   "name": "Periodic Resealing",
+   "unit_cost_m_ugx": 180.0
+  },
+  {
+   "code": "RH",
+   "name": "Rehabilitation",
+   "unit_cost_m_ugx": 320.0
+  },
+  {
+   "code": "RC",
+   "name": "Reconstruction",
+   "unit_cost_m_ugx": 680.0
+  }
+ ],
+ "maintenance_register": [
+  {
+   "priority": 9.8,
+   "road_id": "A110_Link01",
+   "section": "Gulu\u2013Kitgum km 0\u201368",
+   "length_km": 68.0,
+   "condition": "Critical",
+   "condition_color": "#ff2d78",
+   "treatment": "Reconstruction",
+   "unit_cost_m_ugx": 680.0,
+   "total_cost_m_ugx": 46240.0,
+   "region": "Northern"
+  },
+  {
+   "priority": 9.6,
+   "road_id": "B023_Link01",
+   "section": "Masaka\u2013Mbarara km 0\u201340",
+   "length_km": 40.0,
+   "condition": "Critical",
+   "condition_color": "#ff2d78",
+   "treatment": "Reconstruction",
+   "unit_cost_m_ugx": 680.0,
+   "total_cost_m_ugx": 27200.0,
+   "region": "Southern"
+  },
+  {
+   "priority": 9.3,
+   "road_id": "C108_Link01",
+   "section": "Mityana\u2013Mubende km 0\u201368",
+   "length_km": 68.0,
+   "condition": "Critical",
+   "condition_color": "#ff2d78",
+   "treatment": "Reconstruction",
+   "unit_cost_m_ugx": 680.0,
+   "total_cost_m_ugx": 46240.0,
+   "region": "Central"
+  },
+  {
+   "priority": 9.1,
+   "road_id": "A104_Link02",
+   "section": "Masaka\u2013Mbarara km 130\u2013200",
+   "length_km": 70.0,
+   "condition": "Critical",
+   "condition_color": "#ff2d78",
+   "treatment": "Reconstruction",
+   "unit_cost_m_ugx": 680.0,
+   "total_cost_m_ugx": 47600.0,
+   "region": "Southern"
+  },
+  {
+   "priority": 8.2,
+   "road_id": "A109_Link01",
+   "section": "Kampala\u2013Gayaza km 0\u201314",
+   "length_km": 14.0,
+   "condition": "Poor",
+   "condition_color": "#ff6b35",
+   "treatment": "Periodic Resealing",
+   "unit_cost_m_ugx": 180.0,
+   "total_cost_m_ugx": 2520.0,
+   "region": "Central"
+  },
+  {
+   "priority": 7.8,
+   "road_id": "A109_Link02",
+   "section": "Gayaza\u2013Zirobwe km 14\u201342",
+   "length_km": 28.0,
+   "condition": "Poor",
+   "condition_color": "#ff6b35",
+   "treatment": "Rehabilitation",
+   "unit_cost_m_ugx": 320.0,
+   "total_cost_m_ugx": 8960.0,
+   "region": "Central"
+  },
+  {
+   "priority": 7.6,
+   "road_id": "A110_Link02",
+   "section": "Lira\u2013Soroti km 0\u201384",
+   "length_km": 84.0,
+   "condition": "Poor",
+   "condition_color": "#ff6b35",
+   "treatment": "Rehabilitation",
+   "unit_cost_m_ugx": 320.0,
+   "total_cost_m_ugx": 26880.0,
+   "region": "North Eastern"
+  },
+  {
+   "priority": 7.4,
+   "road_id": "B023_Link02",
+   "section": "Mbarara\u2013Bushenyi km 40\u201390",
+   "length_km": 50.0,
+   "condition": "Poor",
+   "condition_color": "#ff6b35",
+   "treatment": "Rehabilitation",
+   "unit_cost_m_ugx": 320.0,
+   "total_cost_m_ugx": 16000.0,
+   "region": "Western"
+  },
+  {
+   "priority": 7.1,
+   "road_id": "B033_Link01",
+   "section": "Iganga\u2013Bugiri km 0\u201338",
+   "length_km": 38.0,
+   "condition": "Poor",
+   "condition_color": "#ff6b35",
+   "treatment": "Rehabilitation",
+   "unit_cost_m_ugx": 320.0,
+   "total_cost_m_ugx": 12160.0,
+   "region": "Eastern"
+  },
+  {
+   "priority": 5.1,
+   "road_id": "A109_Link03",
+   "section": "Zirobwe\u2013Wobulenzi km 42\u201368",
+   "length_km": 26.0,
+   "condition": "Fair",
+   "condition_color": "#ffd23f",
+   "treatment": "Routine Maintenance",
+   "unit_cost_m_ugx": 45.0,
+   "total_cost_m_ugx": 1170.0,
+   "region": "Central"
+  },
+  {
+   "priority": 4.8,
+   "road_id": "B033_Link02",
+   "section": "Bugiri\u2013Busia km 38\u201364",
+   "length_km": 26.0,
+   "condition": "Fair",
+   "condition_color": "#ffd23f",
+   "treatment": "Periodic Resealing",
+   "unit_cost_m_ugx": 180.0,
+   "total_cost_m_ugx": 4680.0,
+   "region": "Eastern"
+  },
+  {
+   "priority": 4.2,
+   "road_id": "B010_Link01",
+   "section": "Fort Portal\u2013Kasese km 0\u201352",
+   "length_km": 52.0,
+   "condition": "Fair",
+   "condition_color": "#ffd23f",
+   "treatment": "Periodic Resealing",
+   "unit_cost_m_ugx": 180.0,
+   "total_cost_m_ugx": 9360.0,
+   "region": "Western"
+  },
+  {
+   "priority": 2.4,
+   "road_id": "A109_Link04",
+   "section": "Wobulenzi\u2013Luwero km 68\u201396",
+   "length_km": 28.0,
+   "condition": "Good",
+   "condition_color": "#00ff88",
+   "treatment": "Routine Maintenance",
+   "unit_cost_m_ugx": 45.0,
+   "total_cost_m_ugx": 1260.0,
+   "region": "Central"
+  },
+  {
+   "priority": 1.8,
+   "road_id": "A104_Link01",
+   "section": "Kampala\u2013Entebbe km 0\u201342",
+   "length_km": 42.0,
+   "condition": "Good",
+   "condition_color": "#00ff88",
+   "treatment": "Routine Maintenance",
+   "unit_cost_m_ugx": 45.0,
+   "total_cost_m_ugx": 1890.0,
+   "region": "Central"
+  },
+  {
+   "priority": 1.6,
+   "road_id": "B010_Link02",
+   "section": "Kasese\u2013Hima km 52\u201380",
+   "length_km": 28.0,
+   "condition": "Good",
+   "condition_color": "#00ff88",
+   "treatment": "Routine Maintenance",
+   "unit_cost_m_ugx": 45.0,
+   "total_cost_m_ugx": 1260.0,
+   "region": "Western"
+  }
+ ],
+ "maintenance_totals": [
+  {
+   "treatment": "Periodic Resealing",
+   "sections": 3,
+   "km": 92.0,
+   "cost_bn_ugx": 17.0
+  },
+  {
+   "treatment": "Reconstruction",
+   "sections": 4,
+   "km": 246.0,
+   "cost_bn_ugx": 167.0
+  },
+  {
+   "treatment": "Rehabilitation",
+   "sections": 4,
+   "km": 200.0,
+   "cost_bn_ugx": 64.0
+  },
+  {
+   "treatment": "Routine Maintenance",
+   "sections": 4,
+   "km": 124.0,
+   "cost_bn_ugx": 6.0
+  }
+ ],
+ "iri_distribution": [
+  {
+   "label": "0\u20132 Very Good",
+   "color": "#00ff88",
+   "pct": 5.0
+  },
+  {
+   "label": "2\u20134 Good",
+   "color": "#a3e635",
+   "pct": 26.0
+  },
+  {
+   "label": "4\u20136 Fair",
+   "color": "#ffd23f",
+   "pct": 31.0
+  },
+  {
+   "label": "6\u20138 Poor",
+   "color": "#ff6b35",
+   "pct": 22.0
+  },
+  {
+   "label": "8\u201310 Critical",
+   "color": "#ff2d78",
+   "pct": 11.0
+  },
+  {
+   "label": "10+ Failed",
+   "color": "#99001f",
+   "pct": 5.0
+  }
+ ],
+ "class_iri": [
+  {
+   "class_label": "National",
+   "surveyed_km": 5200.0,
+   "very_good": 8.0,
+   "good": 30.0,
+   "fair": 28.0,
+   "poor": 20.0,
+   "critical": 14.0,
+   "avg_iri": 3.8
+  },
+  {
+   "class_label": "Urban",
+   "surveyed_km": 3100.0,
+   "very_good": 4.0,
+   "good": 22.0,
+   "fair": 34.0,
+   "poor": 26.0,
+   "critical": 14.0,
+   "avg_iri": 4.5
+  },
+  {
+   "class_label": "District",
+   "surveyed_km": 3640.0,
+   "very_good": 2.0,
+   "good": 18.0,
+   "fair": 32.0,
+   "poor": 26.0,
+   "critical": 22.0,
+   "avg_iri": 5.2
+  },
+  {
+   "class_label": "Community",
+   "surveyed_km": 607.0,
+   "very_good": 1.0,
+   "good": 10.0,
+   "fair": 28.0,
+   "poor": 34.0,
+   "critical": 27.0,
+   "avg_iri": 6.4
+  }
+ ],
+ "kpis": {
+  "surveyed_km": {
+   "label": "Total Paved Roads",
+   "value": "12,547",
+   "note": "km surveyed with ROMDAS"
+  },
+  "avg_iri": {
+   "label": "National Avg IRI",
+   "value": "4.2 m/km",
+   "note": "target 3.5 by 2028"
+  },
+  "good_pct": {
+   "label": "Good Condition",
+   "value": "27%",
+   "note": "of surveyed network"
+  },
+  "need_treatment": {
+   "label": "Needing Treatment",
+   "value": "68%",
+   "note": "fair, poor or critical"
+  },
+  "target_iri": {
+   "label": "Target IRI 2028",
+   "value": "3.5 m/km",
+   "note": "NDP IV objective"
+  }
+ },
+ "map_roads": [
+  {
+   "road_no": "A104",
+   "name": "Kampala\u2013Masaka\u2013Mbarara\u2013Kabale Corridor",
+   "coords": [
+    [
+     0.317,
+     32.616
+    ],
+    [
+     0.1,
+     31.8
+    ],
+    [
+     -0.5,
+     30.9
+    ],
+    [
+     -1.25,
+     29.99
+    ]
+   ],
+   "condition": "Critical",
+   "color": "#ff2d78"
+  },
+  {
+   "road_no": "A109",
+   "name": "Kampala\u2013Gayaza\u2013Zirobwe\u2013Luwero Corridor",
+   "coords": [
+    [
+     0.317,
+     32.616
+    ],
+    [
+     0.8,
+     32.5
+    ],
+    [
+     1.5,
+     32.4
+    ],
+    [
+     2.78,
+     32.299
+    ]
+   ],
+   "condition": "Poor",
+   "color": "#ff6b35"
+  },
+  {
+   "road_no": "A110",
+   "name": "Northern Corridor (Gulu\u2013Kitgum / Lira\u2013Soroti)",
+   "coords": [
+    [
+     2.78,
+     32.299
+    ],
+    [
+     2.25,
+     32.9
+    ],
+    [
+     1.72,
+     33.62
+    ]
+   ],
+   "condition": "Critical",
+   "color": "#ff2d78"
+  },
+  {
+   "road_no": "B010",
+   "name": "Fort Portal\u2013Kasese\u2013Hima Road",
+   "coords": [
+    [
+     0.65,
+     30.27
+    ],
+    [
+     0.18,
+     30.08
+    ]
+   ],
+   "condition": "Fair",
+   "color": "#ffd23f"
+  },
+  {
+   "road_no": "B023",
+   "name": "Masaka\u2013Mbarara\u2013Bushenyi Road",
+   "coords": [
+    [
+     -0.33,
+     31.74
+    ],
+    [
+     -0.6,
+     31.15
+    ],
+    [
+     -0.61,
+     30.64
+    ]
+   ],
+   "condition": "Critical",
+   "color": "#ff2d78"
+  },
+  {
+   "road_no": "B033",
+   "name": "Iganga\u2013Bugiri\u2013Busia Road",
+   "coords": [
+    [
+     0.61,
+     33.49
+    ],
+    [
+     0.68,
+     34.18
+    ]
+   ],
+   "condition": "Poor",
+   "color": "#ff6b35"
+  },
+  {
+   "road_no": "C108",
+   "name": "Mityana\u2013Mubende District Road",
+   "coords": [
+    [
+     0.4,
+     32.05
+    ],
+    [
+     0.55,
+     31.39
+    ]
+   ],
+   "condition": "Critical",
+   "color": "#ff2d78"
+  }
+ ],
+ "iri_by_region_year": [
+  {
+   "region": "Central",
+   "year": 2020,
+   "iri": 3.1
+  },
+  {
+   "region": "Central",
+   "year": 2021,
+   "iri": 3.2
+  },
+  {
+   "region": "Central",
+   "year": 2022,
+   "iri": 3.3
+  },
+  {
+   "region": "Central",
+   "year": 2023,
+   "iri": 3.4
+  },
+  {
+   "region": "Central",
+   "year": 2024,
+   "iri": 3.3
+  },
+  {
+   "region": "Central",
+   "year": 2025,
+   "iri": 3.2
+  },
+  {
+   "region": "Northern",
+   "year": 2020,
+   "iri": 3.8
+  },
+  {
+   "region": "Northern",
+   "year": 2021,
+   "iri": 4.0
+  },
+  {
+   "region": "Northern",
+   "year": 2022,
+   "iri": 4.3
+  },
+  {
+   "region": "Northern",
+   "year": 2023,
+   "iri": 4.5
+  },
+  {
+   "region": "Northern",
+   "year": 2024,
+   "iri": 4.4
+  },
+  {
+   "region": "Northern",
+   "year": 2025,
+   "iri": 4.2
+  },
+  {
+   "region": "Eastern",
+   "year": 2020,
+   "iri": 4.2
+  },
+  {
+   "region": "Eastern",
+   "year": 2021,
+   "iri": 4.5
+  },
+  {
+   "region": "Eastern",
+   "year": 2022,
+   "iri": 4.8
+  },
+  {
+   "region": "Eastern",
+   "year": 2023,
+   "iri": 5.0
+  },
+  {
+   "region": "Eastern",
+   "year": 2024,
+   "iri": 4.9
+  },
+  {
+   "region": "Eastern",
+   "year": 2025,
+   "iri": 4.7
+  },
+  {
+   "region": "Western",
+   "year": 2020,
+   "iri": 3.9
+  },
+  {
+   "region": "Western",
+   "year": 2021,
+   "iri": 4.1
+  },
+  {
+   "region": "Western",
+   "year": 2022,
+   "iri": 4.4
+  },
+  {
+   "region": "Western",
+   "year": 2023,
+   "iri": 4.6
+  },
+  {
+   "region": "Western",
+   "year": 2024,
+   "iri": 4.5
+  },
+  {
+   "region": "Western",
+   "year": 2025,
+   "iri": 4.3
+  },
+  {
+   "region": "Southern",
+   "year": 2020,
+   "iri": 3.5
+  },
+  {
+   "region": "Southern",
+   "year": 2021,
+   "iri": 3.6
+  },
+  {
+   "region": "Southern",
+   "year": 2022,
+   "iri": 3.8
+  },
+  {
+   "region": "Southern",
+   "year": 2023,
+   "iri": 3.9
+  },
+  {
+   "region": "Southern",
+   "year": 2024,
+   "iri": 3.8
+  },
+  {
+   "region": "Southern",
+   "year": 2025,
+   "iri": 3.6
+  },
+  {
+   "region": "North Eastern",
+   "year": 2020,
+   "iri": 4.4
+  },
+  {
+   "region": "North Eastern",
+   "year": 2021,
+   "iri": 4.6
+  },
+  {
+   "region": "North Eastern",
+   "year": 2022,
+   "iri": 4.9
+  },
+  {
+   "region": "North Eastern",
+   "year": 2023,
+   "iri": 5.2
+  },
+  {
+   "region": "North Eastern",
+   "year": 2024,
+   "iri": 5.1
+  },
+  {
+   "region": "North Eastern",
+   "year": 2025,
+   "iri": 4.9
+  }
+ ],
+ "aadt_by_region_year": [
+  {
+   "region": "Central",
+   "year": 2018,
+   "aadt": 2200
+  },
+  {
+   "region": "Central",
+   "year": 2019,
+   "aadt": 2280
+  },
+  {
+   "region": "Central",
+   "year": 2020,
+   "aadt": 2180
+  },
+  {
+   "region": "Central",
+   "year": 2021,
+   "aadt": 2270
+  },
+  {
+   "region": "Central",
+   "year": 2022,
+   "aadt": 2360
+  },
+  {
+   "region": "Central",
+   "year": 2023,
+   "aadt": 2460
+  },
+  {
+   "region": "Central",
+   "year": 2024,
+   "aadt": 2560
+  },
+  {
+   "region": "Central",
+   "year": 2025,
+   "aadt": 2670
+  },
+  {
+   "region": "Northern",
+   "year": 2018,
+   "aadt": 1840
+  },
+  {
+   "region": "Northern",
+   "year": 2019,
+   "aadt": 1910
+  },
+  {
+   "region": "Northern",
+   "year": 2020,
+   "aadt": 1830
+  },
+  {
+   "region": "Northern",
+   "year": 2021,
+   "aadt": 1910
+  },
+  {
+   "region": "Northern",
+   "year": 2022,
+   "aadt": 1990
+  },
+  {
+   "region": "Northern",
+   "year": 2023,
+   "aadt": 2070
+  },
+  {
+   "region": "Northern",
+   "year": 2024,
+   "aadt": 2160
+  },
+  {
+   "region": "Northern",
+   "year": 2025,
+   "aadt": 2240
+  },
+  {
+   "region": "Eastern",
+   "year": 2018,
+   "aadt": 1680
+  },
+  {
+   "region": "Eastern",
+   "year": 2019,
+   "aadt": 1750
+  },
+  {
+   "region": "Eastern",
+   "year": 2020,
+   "aadt": 1680
+  },
+  {
+   "region": "Eastern",
+   "year": 2021,
+   "aadt": 1750
+  },
+  {
+   "region": "Eastern",
+   "year": 2022,
+   "aadt": 1820
+  },
+  {
+   "region": "Eastern",
+   "year": 2023,
+   "aadt": 1900
+  },
+  {
+   "region": "Eastern",
+   "year": 2024,
+   "aadt": 1980
+  },
+  {
+   "region": "Eastern",
+   "year": 2025,
+   "aadt": 2060
+  },
+  {
+   "region": "Western",
+   "year": 2018,
+   "aadt": 1900
+  },
+  {
+   "region": "Western",
+   "year": 2019,
+   "aadt": 1970
+  },
+  {
+   "region": "Western",
+   "year": 2020,
+   "aadt": 1890
+  },
+  {
+   "region": "Western",
+   "year": 2021,
+   "aadt": 1970
+  },
+  {
+   "region": "Western",
+   "year": 2022,
+   "aadt": 2050
+  },
+  {
+   "region": "Western",
+   "year": 2023,
+   "aadt": 2130
+  },
+  {
+   "region": "Western",
+   "year": 2024,
+   "aadt": 2220
+  },
+  {
+   "region": "Western",
+   "year": 2025,
+   "aadt": 2310
+  },
+  {
+   "region": "Southern",
+   "year": 2018,
+   "aadt": 1500
+  },
+  {
+   "region": "Southern",
+   "year": 2019,
+   "aadt": 1560
+  },
+  {
+   "region": "Southern",
+   "year": 2020,
+   "aadt": 1490
+  },
+  {
+   "region": "Southern",
+   "year": 2021,
+   "aadt": 1560
+  },
+  {
+   "region": "Southern",
+   "year": 2022,
+   "aadt": 1620
+  },
+  {
+   "region": "Southern",
+   "year": 2023,
+   "aadt": 1690
+  },
+  {
+   "region": "Southern",
+   "year": 2024,
+   "aadt": 1760
+  },
+  {
+   "region": "Southern",
+   "year": 2025,
+   "aadt": 1830
+  },
+  {
+   "region": "North Eastern",
+   "year": 2018,
+   "aadt": 980
+  },
+  {
+   "region": "North Eastern",
+   "year": 2019,
+   "aadt": 1020
+  },
+  {
+   "region": "North Eastern",
+   "year": 2020,
+   "aadt": 990
+  },
+  {
+   "region": "North Eastern",
+   "year": 2021,
+   "aadt": 1030
+  },
+  {
+   "region": "North Eastern",
+   "year": 2022,
+   "aadt": 1080
+  },
+  {
+   "region": "North Eastern",
+   "year": 2023,
+   "aadt": 1120
+  },
+  {
+   "region": "North Eastern",
+   "year": 2024,
+   "aadt": 1170
+  },
+  {
+   "region": "North Eastern",
+   "year": 2025,
+   "aadt": 1210
+  }
+ ],
+ "budget_by_region": [
+  {
+   "region": "Central",
+   "allocation_bn": "FY25/26"
+  },
+  {
+   "region": "Eastern",
+   "allocation_bn": "FY25/26"
+  },
+  {
+   "region": "North Eastern",
+   "allocation_bn": "FY25/26"
+  },
+  {
+   "region": "Northern",
+   "allocation_bn": "FY25/26"
+  },
+  {
+   "region": "Southern",
+   "allocation_bn": "FY25/26"
+  },
+  {
+   "region": "Western",
+   "allocation_bn": "FY25/26"
+  }
+ ]
+}
