@@ -1,8 +1,13 @@
 /**
  * SectionHub — generic tab-bar wrapper used to consolidate multiple modules
  * under one sidebar section (matches the RMSSection tab-bar UI).
+ *
+ * Automatically prepends a "Dashboard" tab as the first tab for every section.
+ * Dashboard content is driven by SectionDashboard which reads live from Supabase.
  */
 import React, { Suspense, useState } from 'react';
+import { LayoutDashboard } from 'lucide-react';
+import SectionDashboard from '../../modules/Dashboard/SectionDashboard';
 
 export interface HubTab {
   id: string;
@@ -11,11 +16,25 @@ export interface HubTab {
   element: React.ReactNode;
 }
 
-export default function SectionHub({ tabs, accent = '#00f5ff', badge }: {
-  tabs: HubTab[]; accent?: string; badge?: string;
+export default function SectionHub({ tabs, accent = '#00f5ff', badge, sectionId }: {
+  tabs: HubTab[]; accent?: string; badge?: string; sectionId?: string;
 }) {
-  const [tab, setTab] = useState(tabs[0]?.id);
-  const active = tabs.find(t => t.id === tab) ?? tabs[0];
+  // Derive a sectionId from the first tab's id if not explicitly provided
+  const resolvedSectionId = sectionId ?? tabs[0]?.id ?? 'default';
+
+  // Prepend the Dashboard tab — always first, always dynamic
+  const dashTab: HubTab = {
+    id: 'dashboard',
+    label: 'Dashboard',
+    icon: <LayoutDashboard size={13} />,
+    element: <SectionDashboard sectionId={resolvedSectionId} accent={accent} />,
+  };
+
+  const allTabs: HubTab[] = [dashTab, ...tabs];
+
+  const [tab, setTab] = useState(allTabs[0].id);
+  const active = allTabs.find(t => t.id === tab) ?? allTabs[0];
+
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
@@ -27,8 +46,8 @@ export default function SectionHub({ tabs, accent = '#00f5ff', badge }: {
         borderBottom: `1px solid ${accent}26`,
         background: 'rgba(8,8,8,0.85)', overflowX: 'auto',
       }}>
-        {tabs.map(t => {
-          const isActive = t.id === active?.id;
+        {allTabs.map(t => {
+          const isActive = t.id === tab;
           return (
             <button key={t.id} onClick={() => setTab(t.id)} style={{
               display: 'flex', alignItems: 'center', gap: 6,
