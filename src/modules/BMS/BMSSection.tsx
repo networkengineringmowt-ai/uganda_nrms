@@ -144,7 +144,6 @@ export default function BMSSection() {
         <Suspense fallback={<Spinner />}>
 
           {/* Tab 1: Dashboard */}
-          {activeTab === 'dashboard' && <SectionDashboard sectionId="bms" />}
           {mainTab === 'overview' && <BMS_Dashboard />}
 
           {/* Tab 2: Structure Map (full-height, position absolute) */}
