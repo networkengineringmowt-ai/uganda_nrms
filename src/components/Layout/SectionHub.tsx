@@ -10,7 +10,7 @@ export interface HubTab {
   element: React.ReactNode;
 }
 
-// Catches render errors from SectionDashboard (Suspense only catches thrown Promises, not errors)
+// Catches render errors from SectionDashboard (Suspense only catches thrown Promises, not thrown errors)
 class DashboardErrorBoundary extends React.Component<
   { children: React.ReactNode; accent: string },
   { hasError: boolean; error: string }
