@@ -1,6 +1,7 @@
 import React, { lazy, Suspense, useState } from 'react';
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
 import type { RoadConditionTabId } from '../RoadCondition/RoadConditionView';
+import SectionDashboard from '../Dashboard/SectionDashboard';
 
 const CrossSectionAnalytics = lazy(() => import('./CrossSectionAnalytics'));
 const RoadConditionView = lazy(() => import('../RoadCondition/RoadConditionView'));
@@ -25,7 +26,7 @@ function Spinner() {
 
 type MainTab = 'dashboard' | 'conditionmap' | 'surveys' | 'analytics' | 'lifecycle' | 'design';
 
-// 6 sub-tabs — all PMS content merged, no duplicates:
+// 6 sub-tabs â all PMS content merged, no duplicates:
 //   Dashboard          = cross-section analytics + national pavement infographics
 //   Condition Map      = network condition map
 //   Inventory & Surveys= inventory/surveys + road video survey
