@@ -4,6 +4,7 @@ import { MapContainer, TileLayer, WMSTileLayer, ZoomControl } from 'react-leafle
 import { GEOSERVER_WMS_URL, GEONODE_LAYERS } from '../../shared/geoserver';
 import { ESRI_TILE_URLS, ESRI_ATTRIBUTIONS } from '../../shared/mapSymbols';
 import 'leaflet/dist/leaflet.css';
+import SectionDashboard from '../Dashboard/SectionDashboard';
 
 const N = {
   indigo: '#6366f1', cyan:   '#00f5ff', orange: '#ff6b35',
@@ -118,12 +119,12 @@ export default function GisEnterpriseSection() {
             style={{ height: '100%', width: '100%', backgroundColor: '#0d0d0d' }}
           >
             <ZoomControl position="bottomright" />
-            {/* Base map — Esri World Imagery + reference labels (always-on, non-removable) */}
+            {/* Base map â Esri World Imagery + reference labels (always-on, non-removable) */}
             <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery} />
             <TileLayer url={ESRI_TILE_URLS.labels}  attribution={ESRI_ATTRIBUTIONS.labels} opacity={0.7} />
-            {/* GeoNode / GeoServer WMS layers — configurable via VITE_GEOSERVER_WMS_URL.
+            {/* GeoNode / GeoServer WMS layers â configurable via VITE_GEOSERVER_WMS_URL.
                 Falls back to a local GeoNode (see geonode/). When offline the tiles
-                simply fail and wmsOnline flips false — the rest of the UI is unaffected. */}
+                simply fail and wmsOnline flips false â the rest of the UI is unaffected. */}
             {(() => {
               const base = GEOSERVER_WMS_URL || 'http://localhost/geoserver/ows';
               const show = GEONODE_LAYERS.filter(l => ['roads', 'condition', 'bridges', 'atc'].includes(l.id));
