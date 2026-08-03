@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { Download, Filter, ExternalLink, BookOpen } from 'lucide-react';
 import { consumePendingSourcesModule } from '../../shared/sourcesFilter';
+import SectionDashboard from '../Dashboard/SectionDashboard';
 
 const C = {
   cyan: '#00f5ff', green: '#00ff88', yellow: '#ffd23f',
@@ -37,9 +38,9 @@ const TYPE_COLOR: Record<SourceType, string> = {
 };
 
 const SOURCES: Source[] = [
-  // ── Surveys ──
+  // ââ Surveys ââ
   { name: 'ROMDAS Pavement Condition Survey',
-    type: 'Survey', owner: 'Department of National Roads/DNR', yearRange: '2018–2023',
+    type: 'Survey', owner: 'Department of National Roads/DNR', yearRange: '2018â2023',
     coverage: '~6,000 km paved national roads (partial coverage annually)',
     variables: 'IRI (m/km), rutting depth, cracking area, texture, GPS coordinates',
     format: 'CSV + ROMDAS binary + georeferenced video',
@@ -47,20 +48,20 @@ const SOURCES: Source[] = [
     notes: 'Surveys conducted by Department of National Roads with ROMDAS vehicle; latest 2023 survey covers ~4,200 km' },
 
   { name: 'Department of National Roads Traffic Information System (TIS)',
-    type: 'Survey', owner: 'Department of National Roads TIS Unit', yearRange: '2010–present',
+    type: 'Survey', owner: 'Department of National Roads TIS Unit', yearRange: '2010âpresent',
     coverage: '298 manual count stations, 21,160 km (mapped) national network',
     variables: 'AADT by 12 vehicle classes, directional split, peak hour, seasonal factors',
-    format: 'Excel workbooks + access DB → analytics.json export',
+    format: 'Excel workbooks + access DB â analytics.json export',
     status: 'Active', module: ['TIS', 'Network', 'PMS'],
     notes: 'Annual 7-day classified counts; growth factors computed from time-series' },
 
   { name: 'Automatic Traffic Counter (ATC) Data',
-    type: 'Survey', owner: 'Department of National Roads/DNR', yearRange: '2016–present',
+    type: 'Survey', owner: 'Department of National Roads/DNR', yearRange: '2016âpresent',
     coverage: '25 ATC stations (15 legacy + 10 new 2025)',
     variables: 'Hourly AADT, speed, classification, axle signature',
     format: 'SQLite DB (traffic_platform.db), 607k+ readings',
     status: 'Active', module: ['TIS', 'Network'],
-    notes: 'Real-time continuous counts; site IDs U0001–U0010 (new stations)' },
+    notes: 'Real-time continuous counts; site IDs U0001âU0010 (new stations)' },
 
   { name: 'OPM NAPR Road Condition Assessment',
     type: 'Survey', owner: 'Office of the Prime Minister / NAPR', yearRange: 'July 2025',
@@ -71,16 +72,16 @@ const SOURCES: Source[] = [
     notes: 'National Annual Progress Report 2025 road condition data; primary condition layer' },
 
   { name: 'Weighbridge / Axle Load Survey',
-    type: 'Survey', owner: 'Department of National Roads / AFCAP Uganda', yearRange: '2014–2022',
+    type: 'Survey', owner: 'Department of National Roads / AFCAP Uganda', yearRange: '2014â2022',
     coverage: '12 weighbridge stations on major corridors',
     variables: 'Gross vehicle weight, axle configuration, overloading %, commodity type',
     format: 'Excel + AFCAP reports',
     status: 'Partial', module: ['TIS', 'HDM4'],
     notes: 'SATCC/TRH4 ESAL factors derived from these surveys; overloading uplift 25% HGV' },
 
-  // ── GIS ──
+  // ââ GIS ââ
   { name: 'Uganda National Road Network GIS',
-    type: 'GIS', owner: 'Department of National Roads/DNR GIS Section', yearRange: '2010–present',
+    type: 'GIS', owner: 'Department of National Roads/DNR GIS Section', yearRange: '2010âpresent',
     coverage: '21,160 km (mapped), 1,013 links, 6 maintenance regions',
     variables: 'Geometry, road_no, link_id, surface_type, road_class, length_km, chainage',
     format: 'Shapefile + GeoJSON (bundle.json, atc_stations.geojson)',
@@ -88,7 +89,7 @@ const SOURCES: Source[] = [
     notes: 'Primary spatial reference for all asset management layers; maintained in ArcGIS' },
 
   { name: 'Bridge & Culvert GIS Registry',
-    type: 'GIS', owner: 'Department of National Roads BMS Unit', yearRange: '2015–present',
+    type: 'GIS', owner: 'Department of National Roads BMS Unit', yearRange: '2015âpresent',
     coverage: '1,019 structures (534 bridges, 485 culverts)',
     variables: 'lat/lng, span, width, material, condition rating, inspection date',
     format: 'GeoJSON + SQLite (traffic_platform.db)',
@@ -96,16 +97,16 @@ const SOURCES: Source[] = [
     notes: 'Structure registry; coordinates validated against 1:50,000 topo' },
 
   { name: 'KCCA Road Network (Urban)',
-    type: 'GIS', owner: 'KCCA / MoWT', yearRange: '2020–present',
+    type: 'GIS', owner: 'KCCA / MoWT', yearRange: '2020âpresent',
     coverage: 'Kampala metropolitan area classified roads',
     variables: 'Geometry, road class, condition, paving status',
     format: 'Shapefile',
     status: 'Partial', module: ['Network'],
     notes: 'Partial coverage; urban roads complementary to national network' },
 
-  // ── Databases ──
+  // ââ Databases ââ
   { name: 'Traffic Platform SQLite DB',
-    type: 'Database', owner: 'Department of National Roads/DNR (this platform)', yearRange: '2016–2025',
+    type: 'Database', owner: 'Department of National Roads/DNR (this platform)', yearRange: '2016â2025',
     coverage: 'All ATC stations, road links, traffic counts',
     variables: '12+ tables: road_links, traffic_counts, atc_stations, atc_readings, overloading_summary',
     format: 'SQLite (traffic_platform.db)',
@@ -113,16 +114,16 @@ const SOURCES: Source[] = [
     notes: 'Platform database: 267k+ traffic records, 1,013 links, 305 ATC records' },
 
   { name: 'Department of National Roads Contract Management System',
-    type: 'Database', owner: 'Department of National Roads PDU / Contracts Dept', yearRange: '2010–present',
+    type: 'Database', owner: 'Department of National Roads PDU / Contracts Dept', yearRange: '2010âpresent',
     coverage: 'All Department of National Roads contracts (construction + maintenance)',
     variables: 'Contract value, contractor, progress %, payment status, completion date',
     format: 'Internal system (proprietary) + Excel exports',
     status: 'Active', module: ['Projects'],
     notes: 'Source for OPRC and NDPIV project data; exported to projects JSON' },
 
-  // ── Reports ──
+  // ââ Reports ââ
   { name: 'Department of National Roads Annual Report',
-    type: 'Report', owner: 'Department of National Roads', yearRange: '2010–2024',
+    type: 'Report', owner: 'Department of National Roads', yearRange: '2010â2024',
     coverage: 'Full national road network performance',
     variables: 'Paved km added, condition KPIs, accident stats, bridge inspections, budget utilisation',
     format: 'PDF (published annually)',
@@ -131,7 +132,7 @@ const SOURCES: Source[] = [
     notes: 'Primary source for time-series network performance indicators' },
 
   { name: 'World Bank Uganda Transport Sector Review',
-    type: 'Report', owner: 'World Bank / IBRD', yearRange: '2008–2022',
+    type: 'Report', owner: 'World Bank / IBRD', yearRange: '2008â2022',
     coverage: 'Uganda transport sector (roads, rail, aviation, water)',
     variables: 'Budget analysis, RSDP progress, VFM assessment, institutional review',
     format: 'PDF (World Bank Open Data)',
@@ -139,7 +140,7 @@ const SOURCES: Source[] = [
     notes: 'Multiple reports; 2022 transport diagnostic is most current' },
 
   { name: 'AfDB RSSP Completion Reports',
-    type: 'Report', owner: 'AfDB / Department of National Roads', yearRange: '2010–2023',
+    type: 'Report', owner: 'AfDB / Department of National Roads', yearRange: '2010â2023',
     coverage: 'Road Sector Support Project I, II, III',
     variables: 'Project completion, KPIs, disbursement, outcome ratings',
     format: 'PDF (AfDB project portal)',
@@ -147,14 +148,14 @@ const SOURCES: Source[] = [
     notes: 'Key donor financing history for Northern Uganda road upgrading' },
 
   { name: 'JICA Uganda Road Sector Studies',
-    type: 'Report', owner: 'JICA / MoWT', yearRange: '2007–2020',
+    type: 'Report', owner: 'JICA / MoWT', yearRange: '2007â2020',
     coverage: 'Northern Corridor, cross-border roads with Tanzania/Kenya',
     variables: 'Traffic counts, economic analysis, design standards',
     format: 'PDF',
     status: 'Archived', module: ['PIM', 'TIS'],
-    notes: 'Important for Kyotera–Mutukula and Gulu–Atiak traffic data' },
+    notes: 'Important for KyoteraâMutukula and GuluâAtiak traffic data' },
 
-  // ── Manuals ──
+  // ââ Manuals ââ
   { name: 'MoWT Design Manual for Roads & Bridges',
     type: 'Manual', owner: 'Ministry of Works & Transport', yearRange: '2005 (2023 update)',
     coverage: 'Uganda design standards, all road classes',
@@ -173,7 +174,7 @@ const SOURCES: Source[] = [
 
   { name: 'HDM-4 User Guide & Documentation',
     type: 'Manual', owner: 'World Bank / PIARC', yearRange: '2000 (v1.3)',
-    coverage: 'Global — HDM-4 methodology and technical documentation',
+    coverage: 'Global â HDM-4 methodology and technical documentation',
     variables: 'Deterioration equations, calibration procedures, economic analysis framework',
     format: 'PDF (PIARC/World Bank)',
     status: 'Active', module: ['HDM4'],
@@ -187,7 +188,7 @@ const SOURCES: Source[] = [
     status: 'Active', module: ['TIS', 'HDM4'],
     notes: 'Source for ESAL factors used in overloading risk computation (Truck Trailer 6ax = 5.86)' },
 
-  // ── Model / External ──
+  // ââ Model / External ââ
   { name: 'HDM-4 Calibration Study (Department of National Roads 2023)',
     type: 'Model', owner: 'Department of National Roads/DNR', yearRange: 'December 2023',
     coverage: '~3,200 km paved roads (calibration segments)',
@@ -197,7 +198,7 @@ const SOURCES: Source[] = [
     notes: 'First Uganda-specific HDM-4 calibration; critical for accurate treatment programming' },
 
   { name: 'CHIRPS Rainfall Data (Uganda)',
-    type: 'External', owner: 'UC Santa Barbara / USAID', yearRange: '1981–present',
+    type: 'External', owner: 'UC Santa Barbara / USAID', yearRange: '1981âpresent',
     coverage: 'Uganda national coverage at 5km grid',
     variables: 'Monthly/annual rainfall (mm), anomalies',
     format: 'NetCDF / GeoTIFF (open source)',
@@ -214,8 +215,8 @@ const SOURCES: Source[] = [
     link: 'https://earthexplorer.usgs.gov',
     notes: 'Terrain slope derived for HDM-4 environment model and flood risk scoring' },
 
-  { name: 'Uganda Bureau of Statistics — GDP & Population',
-    type: 'External', owner: 'UBOS', yearRange: '2010–2024',
+  { name: 'Uganda Bureau of Statistics â GDP & Population',
+    type: 'External', owner: 'UBOS', yearRange: '2010â2024',
     coverage: 'National, district, sub-county level',
     variables: 'GDP (real, USD), GDP growth rate, population by district',
     format: 'Excel + PDF reports (UBOS website)',
@@ -223,12 +224,12 @@ const SOURCES: Source[] = [
     link: 'https://www.ubos.org',
     notes: 'Used for traffic growth model inputs (GDP-AADT elasticity)' },
 
-  // ── Category A tag on primary sources ──
-  // (all preceding entries are implicitly Category A — primary DNR data)
+  // ââ Category A tag on primary sources ââ
+  // (all preceding entries are implicitly Category A â primary DNR data)
 
-  // ── Projects ──
+  // ââ Projects ââ
   { name: 'NDP IV Projects Register',
-    type: 'Project', owner: 'NPA / Department of National Roads', yearRange: '2020/21–2025/26',
+    type: 'Project', owner: 'NPA / Department of National Roads', yearRange: '2020/21â2025/26',
     coverage: 'All NDP IV national road investments',
     variables: 'Project name, location, length, budget, progress %, funder, contractor',
     format: 'Excel + JSON (ndpiv_projects.json)',
@@ -236,16 +237,16 @@ const SOURCES: Source[] = [
     notes: 'Primary source for NDPIV dashboard; updated quarterly from Department of National Roads contract management' },
 
   { name: 'OPRC Lot Boundaries & Performance Data',
-    type: 'Project', owner: 'Department of National Roads/OPRC PMU', yearRange: '2018–present',
+    type: 'Project', owner: 'Department of National Roads/OPRC PMU', yearRange: '2018âpresent',
     coverage: '9 OPRC lots covering ~7,500 km national roads',
     variables: 'Lot boundary, contractor, contract value, performance score, condition targets',
     format: 'GeoJSON + Excel',
     status: 'Active', module: ['Projects', 'Budget'],
     notes: 'Output-based road contract data; contractor is responsible for condition standards' },
 
-  // ──────────────────────────────────────────────────────────────────────────────
-  // CATEGORY B — International Standards & Guidelines
-  // ──────────────────────────────────────────────────────────────────────────────
+  // ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // CATEGORY B â International Standards & Guidelines
+  // ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
   { name: 'HDM-4 Highway Development & Management Tool (v1.3)',
     category: 'B', type: 'Standard', owner: 'World Bank / PIARC', yearRange: '2000 (v1.3)',
     coverage: 'Global; pavement and bridge analysis for low-to-high volume roads',
@@ -254,7 +255,7 @@ const SOURCES: Source[] = [
     status: 'Active', module: ['HDM4', 'PMS', 'Budget'],
     notes: 'Core analytical tool for DNR. Uganda-specific calibration 2023. Covers 4 analytical modes: project, programme, strategy, network analysis.' },
 
-  { name: 'ISO 55001:2014 — Asset Management System Requirements',
+  { name: 'ISO 55001:2014 â Asset Management System Requirements',
     category: 'B', type: 'Standard', owner: 'ISO / BSI', yearRange: '2014',
     coverage: 'Global; applies to any type of physical asset management',
     variables: 'Asset management policy, strategy, objectives, lifecycle planning, risk management',
@@ -263,7 +264,7 @@ const SOURCES: Source[] = [
     link: 'https://www.iso.org/standard/55089.html',
     notes: 'DNR\'s Road Infrastructure Asset Management Policy 2017 aligns with ISO 55000 series. ISO 55001 is the certifiable standard.' },
 
-  { name: 'SATCC TRH4 — Structural Design of Flexible Pavements (2020)',
+  { name: 'SATCC TRH4 â Structural Design of Flexible Pavements (2020)',
     category: 'B', type: 'Standard', owner: 'SATCC / CSIR South Africa', yearRange: '2020',
     coverage: 'SADC/COMESA region including Uganda',
     variables: 'Vehicle classification, axle load factors, ESAL equivalency, pavement design thickness',
@@ -278,7 +279,7 @@ const SOURCES: Source[] = [
     format: 'PDF (World Bank Open Knowledge)',
     status: 'Active', module: ['RMS', 'Budget', 'PMS'],
     link: 'https://openknowledge.worldbank.org',
-    notes: 'Framework for DNR RAMS development; referenced in all World Bank Uganda transport projects (RSDP I–IV).' },
+    notes: 'Framework for DNR RAMS development; referenced in all World Bank Uganda transport projects (RSDP IâIV).' },
 
   { name: 'AfDB Infrastructure Asset Management Policy Framework',
     category: 'B', type: 'Standard', owner: 'African Development Bank', yearRange: '2021',
@@ -289,7 +290,7 @@ const SOURCES: Source[] = [
     link: 'https://www.afdb.org',
     notes: 'Applies to all AfDB-funded DNR projects (RSSP I-III, UTRP). Requires annual condition progress reports.' },
 
-  { name: 'AASHTO PP 104-20 — Pavement Preservation Design Guide',
+  { name: 'AASHTO PP 104-20 â Pavement Preservation Design Guide',
     category: 'B', type: 'Standard', owner: 'AASHTO', yearRange: '2020',
     coverage: 'USA; applicable globally for mechanistic-empirical pavement design',
     variables: 'Pavement preservation treatment design, performance prediction, material specifications',
@@ -297,7 +298,7 @@ const SOURCES: Source[] = [
     status: 'Active', module: ['PMS', 'HDM4'],
     notes: 'Supplementary design reference for Class A roads. AASHTO MEPDG used alongside HDM-4 for high-volume route design.' },
 
-  { name: 'FHWA TAMP Guidelines — Transportation Asset Management Plans',
+  { name: 'FHWA TAMP Guidelines â Transportation Asset Management Plans',
     category: 'B', type: 'Standard', owner: 'FHWA (USA Federal Highway Administration)', yearRange: '2019',
     coverage: 'USA NHS; model applicable globally',
     variables: 'TAMP structure, 10-year horizon, pavement/bridge targets, investment strategies, risk management',
@@ -306,7 +307,7 @@ const SOURCES: Source[] = [
     link: 'https://www.fhwa.dot.gov/asset',
     notes: 'Provides DNR with a model for structuring its 10-year Asset Management Plan submission to MoWT and Parliament.' },
 
-  { name: 'Austroads AP-R615-20 — Asset Management for Road Networks',
+  { name: 'Austroads AP-R615-20 â Asset Management for Road Networks',
     category: 'B', type: 'Standard', owner: 'Austroads', yearRange: '2020',
     coverage: 'Australia/New Zealand; applicable in tropics',
     variables: 'Whole-of-life costing, LCC methodology, risk-based prioritisation, AMP framework',
@@ -315,15 +316,15 @@ const SOURCES: Source[] = [
     link: 'https://austroads.com.au',
     notes: 'LCC methodology applied in DNR Lifecycle Management module. Austroads is globally recognised as best-practice in road asset management.' },
 
-  { name: 'Austroads AP-R359-09 — Low-Cost Sealed Roads in Low-Rainfall Areas',
+  { name: 'Austroads AP-R359-09 â Low-Cost Sealed Roads in Low-Rainfall Areas',
     category: 'B', type: 'Standard', owner: 'Austroads', yearRange: '2009',
-    coverage: 'Australia tropics — analogous to Uganda wet-dry cycle conditions',
+    coverage: 'Australia tropics â analogous to Uganda wet-dry cycle conditions',
     variables: 'Pavement design for low-volume roads, thin surfacings, cost-benefit criteria',
     format: 'PDF',
     status: 'Archived', module: ['PMS'],
     notes: 'Directly applicable to Uganda Class B/C upgrade decisions. Covers DBST design similar to Uganda paving approach.' },
 
-  { name: 'PIARC Technical Report — Road Asset Management in Developing Countries',
+  { name: 'PIARC Technical Report â Road Asset Management in Developing Countries',
     category: 'B', type: 'Standard', owner: 'PIARC (World Road Association)', yearRange: '2019',
     coverage: 'Global; focus on low/middle income countries',
     variables: 'RAMS framework, data requirements, institutional capacity, funding mechanisms',
@@ -332,7 +333,7 @@ const SOURCES: Source[] = [
     link: 'https://www.piarc.org',
     notes: 'PIARC TC 4.1 report on RAMS in developing countries directly applicable to Uganda context.' },
 
-  { name: 'IRC SP:19-2001 — Guidelines for Road Maintenance',
+  { name: 'IRC SP:19-2001 â Guidelines for Road Maintenance',
     category: 'B', type: 'Standard', owner: 'Indian Roads Congress (IRC)', yearRange: '2001',
     coverage: 'India; applicable to Sub-Saharan Africa (similar conditions)',
     variables: 'Routine/periodic maintenance specifications, unit costs, crew productivity norms',
@@ -358,7 +359,7 @@ const SOURCES: Source[] = [
 
   { name: 'DNR Road Infrastructure Asset Management Policy 2017 (v1.4)',
     category: 'B', type: 'Manual', owner: 'Department of National Roads/DNR', yearRange: '2017',
-    coverage: 'Full DNR national road network — institutional and operational framework',
+    coverage: 'Full DNR national road network â institutional and operational framework',
     variables: 'Asset management objectives, lifecycle approach, data requirements, KPIs, budget framework',
     format: 'PDF (DNR internal)',
     status: 'Active', module: ['RMS', 'Budget', 'PMS', 'BMS'],
@@ -366,13 +367,13 @@ const SOURCES: Source[] = [
 
   { name: 'COMESA Road Design Standards',
     category: 'B', type: 'Standard', owner: 'COMESA / TTCA', yearRange: '2018',
-    coverage: 'Common Market for Eastern and Southern Africa — 21 member states including Uganda',
+    coverage: 'Common Market for Eastern and Southern Africa â 21 member states including Uganda',
     variables: 'Axle load limits, design standards, cross-border transport regulation',
     format: 'PDF',
     status: 'Active', module: ['TIS', 'HDM4'],
     notes: 'COMESA 10-tonne axle load standard; overloading enforcement framework applied at all Uganda weighbridge stations.' },
 
-  { name: 'SSATP Working Paper — Road Funds and Road Maintenance in Africa',
+  { name: 'SSATP Working Paper â Road Funds and Road Maintenance in Africa',
     category: 'B', type: 'Report', owner: 'World Bank SSATP', yearRange: '2016',
     coverage: 'Sub-Saharan Africa; road fund management and governance',
     variables: 'Road fund collections, maintenance funding adequacy, institutional governance',
@@ -388,7 +389,7 @@ const SOURCES: Source[] = [
     status: 'Active', module: ['PMS', 'BMS', 'HDM4'],
     notes: 'Regional harmonisation standards. DNR designs must comply with EAC specs for cross-border links (NMH, Northern Corridor).' },
 
-  { name: 'ERA Road Asset Management System Manual — Ethiopia',
+  { name: 'ERA Road Asset Management System Manual â Ethiopia',
     category: 'B', type: 'Manual', owner: 'Ethiopian Roads Authority', yearRange: '2021',
     coverage: 'Ethiopian federal road network (15,000 km paved, 130,000 km total)',
     variables: 'RAMS data model, survey protocols, analysis procedures, programming methodology',
@@ -412,9 +413,9 @@ const SOURCES: Source[] = [
     status: 'Active', module: ['RMS', 'BMS'],
     notes: 'Northern Corridor partner. KeNHA\'s AMP format provides a model for DNR\'s own 10-year asset management plan.' },
 
-  // ──────────────────────────────────────────────────────────────────────────────
-  // CATEGORY C — Global Research Literature (50+ entries)
-  // ──────────────────────────────────────────────────────────────────────────────
+  // ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // CATEGORY C â Global Research Literature (50+ entries)
+  // ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
   { name: 'Pavement Deterioration Modelling for Developing Countries (Odoki & Kerali 2000)',
     category: 'C', type: 'Research', owner: 'Odoki, J.B. & Kerali, H.G.R. / PIARC', yearRange: '2000',
     coverage: 'Global / Sub-Saharan Africa',
@@ -461,7 +462,7 @@ const SOURCES: Source[] = [
     variables: 'Fatality rates by road class, condition-safety correlation, intervention cost-effectiveness',
     format: 'PDF',
     status: 'Active', module: ['PMS', 'TIS'],
-    notes: 'Road condition–safety correlation used in DNR road safety analytics module.' },
+    notes: 'Road conditionâsafety correlation used in DNR road safety analytics module.' },
 
   { name: 'Overloading on African Roads: Costs and Policy Responses (Gwilliam & Meakin 2014)',
     category: 'C', type: 'Research', owner: 'Gwilliam, K. & Meakin, R. / World Bank SSATP', yearRange: '2014',
@@ -549,7 +550,7 @@ const SOURCES: Source[] = [
     variables: 'LVR design standards, gravel road design, maintenance interventions, cost criteria',
     format: 'PDF (TRL)',
     status: 'Archived', module: ['PMS', 'Budget'],
-    notes: 'TRL ORN20 — primary reference for Uganda Class C gravel road design and maintenance standards.' },
+    notes: 'TRL ORN20 â primary reference for Uganda Class C gravel road design and maintenance standards.' },
 
   { name: 'Economic Analysis of Road Projects (AASHTO User Benefit Analysis 2003)',
     category: 'C', type: 'Research', owner: 'AASHTO', yearRange: '2003',
@@ -821,7 +822,7 @@ const SOURCES: Source[] = [
     variables: 'Mean annual rainfall impact on gravel roads, erosion modelling, drainage design criteria',
     format: 'PDF (TRL)',
     status: 'Active', module: ['PMS', 'HDM4'],
-    notes: 'Rainfall-pavement interaction; Uganda MAR data (800–1,500 mm/yr) applied in HDM-4 environment model.' },
+    notes: 'Rainfall-pavement interaction; Uganda MAR data (800â1,500 mm/yr) applied in HDM-4 environment model.' },
 
   { name: 'Pavement Distress Cataloguing for Visual Surveys (ASTM D6433)',
     category: 'C', type: 'Standard', owner: 'ASTM International', yearRange: '2018',
@@ -839,19 +840,19 @@ const SOURCES: Source[] = [
     status: 'Archived', module: ['BMS', 'RMS'],
     notes: 'Bridge AMP methodology; structure used in DNR BMS 5-year inspection and maintenance planning.' },
 
-  // ──────────────────────────────────────────────────────────────────────────────
-  // CATEGORY D — Global Case Studies (one per RMS section country)
-  // ──────────────────────────────────────────────────────────────────────────────
-  { name: 'TANROADS RAMS Implementation (IDA-funded, Tanzania 2015–2022)',
-    category: 'D', type: 'Case Study', owner: 'TANROADS / World Bank / Bentley Systems', yearRange: '2015–2022',
+  // ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // CATEGORY D â Global Case Studies (one per RMS section country)
+  // ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  { name: 'TANROADS RAMS Implementation (IDA-funded, Tanzania 2015â2022)',
+    category: 'D', type: 'Case Study', owner: 'TANROADS / World Bank / Bentley Systems', yearRange: '2015â2022',
     coverage: 'Tanzania national roads (35,000 km)',
     variables: 'RAMS architecture, HDM-4 calibration, condition survey results, budget optimisation',
     format: 'PDF + World Bank Project Completion Report ICR-00006',
     status: 'Active', module: ['RMS', 'HDM4', 'PMS'],
-    notes: 'Tanzania RAMS — most similar context to Uganda DNR. HDM-4 calibration approach directly applicable. IDA P150523.' },
+    notes: 'Tanzania RAMS â most similar context to Uganda DNR. HDM-4 calibration approach directly applicable. IDA P150523.' },
 
   { name: 'KeNHA Road Asset Management System, Kenya',
-    category: 'D', type: 'Case Study', owner: 'KeNHA / World Bank', yearRange: '2016–present',
+    category: 'D', type: 'Case Study', owner: 'KeNHA / World Bank', yearRange: '2016âpresent',
     coverage: 'Kenya national roads (11,189 km)',
     variables: 'RAMS system, bridge database, mobile survey app, budget programme 2024',
     format: 'PDF + KeNHA Annual Report',
@@ -859,16 +860,16 @@ const SOURCES: Source[] = [
     link: 'https://www.kenha.co.ke',
     notes: 'Northern Corridor partner. Mobile data collection approach reduces survey cost by 40%. Applicable to DNR Class B/C.' },
 
-  { name: 'Rwanda RTDA Performance-Based Road Contracts (2018–2024)',
-    category: 'D', type: 'Case Study', owner: 'RTDA / World Bank / AfDB', yearRange: '2018–2024',
+  { name: 'Rwanda RTDA Performance-Based Road Contracts (2018â2024)',
+    category: 'D', type: 'Case Study', owner: 'RTDA / World Bank / AfDB', yearRange: '2018â2024',
     coverage: 'Rwanda paved network (4,700 km)',
     variables: 'OPRC performance KPIs, network roughness outcomes, condition survey results',
     format: 'PDF (World Bank IEG evaluation)',
     status: 'Active', module: ['Projects', 'Budget', 'RMS'],
-    notes: 'Rwanda OPRC with bundled emergency works clause — applicable to DNR Lot 9 (Karamoja) redesign.' },
+    notes: 'Rwanda OPRC with bundled emergency works clause â applicable to DNR Lot 9 (Karamoja) redesign.' },
 
   { name: 'SANRAL iRAMS: Integrated Road Asset Management, South Africa',
-    category: 'D', type: 'Case Study', owner: 'SANRAL', yearRange: '2010–present',
+    category: 'D', type: 'Case Study', owner: 'SANRAL', yearRange: '2010âpresent',
     coverage: 'South Africa national roads (21,400 km)',
     variables: 'Whole-life cost, LCC optimisation, public condition portal, ISO 55001 certification',
     format: 'PDF (SANRAL Annual Report 2024)',
@@ -876,8 +877,8 @@ const SOURCES: Source[] = [
     link: 'https://www.sanral.co.za',
     notes: 'Most advanced RMS in Africa. SANRAL\'s public condition portal approach applicable to DNR stakeholder transparency.' },
 
-  { name: 'Highways England HAPMS — Whole-Life Cost Optimisation',
-    category: 'D', type: 'Case Study', owner: 'Highways England (NHTSA)', yearRange: '2005–present',
+  { name: 'Highways England HAPMS â Whole-Life Cost Optimisation',
+    category: 'D', type: 'Case Study', owner: 'Highways England (NHTSA)', yearRange: '2005âpresent',
     coverage: 'UK strategic road network (7,800 km)',
     variables: 'Whole-life cost, SCANNER surveys, risk-based intervention, 50-year horizon',
     format: 'PDF (Highways England strategy documents)',
@@ -886,7 +887,7 @@ const SOURCES: Source[] = [
     notes: 'HAPMS provides the gold-standard model for DNR\'s 10-15 year rolling maintenance programme design.' },
 
   { name: 'Austroads / NZTA dTIMS CT: Evidence-Based Programming',
-    category: 'D', type: 'Case Study', owner: 'Austroads / Deighton Associates', yearRange: '2000–present',
+    category: 'D', type: 'Case Study', owner: 'Austroads / Deighton Associates', yearRange: '2000âpresent',
     coverage: 'Australia/New Zealand national and state networks',
     variables: 'dTIMS strategic analysis, LCC, budget optimisation, AP-R series research integration',
     format: 'PDF (Austroads AP-R series)',
@@ -895,7 +896,7 @@ const SOURCES: Source[] = [
     notes: 'AP-R359 (low-cost roads) and AP-R556 (unsealed roads tropics) directly applicable to Uganda Class C.' },
 
   { name: 'NZTA ONE Network Framework: Service-Level Based Asset Management',
-    category: 'D', type: 'Case Study', owner: 'NZTA Waka Kotahi', yearRange: '2014–present',
+    category: 'D', type: 'Case Study', owner: 'NZTA Waka Kotahi', yearRange: '2014âpresent',
     coverage: 'New Zealand strategic highway network (11,000 km)',
     variables: 'ONRC service levels, risk-based prioritisation, AMPs, resilience planning',
     format: 'PDF (NZTA investment decisions portal)',
@@ -904,7 +905,7 @@ const SOURCES: Source[] = [
     notes: 'ONRC service-level framework applicable to DNR to define differentiated standards for Class A/B/C roads.' },
 
   { name: 'USA FHWA TAMP: MAP-21 Asset Management Requirements',
-    category: 'D', type: 'Case Study', owner: 'FHWA / US State DOTs', yearRange: '2012–present',
+    category: 'D', type: 'Case Study', owner: 'FHWA / US State DOTs', yearRange: '2012âpresent',
     coverage: 'USA National Highway System (900,000 km equivalent)',
     variables: 'TAMP structure, 10-year horizon, IRI/bridge performance targets, risk register',
     format: 'PDF (FHWA asset management portal)',
@@ -913,7 +914,7 @@ const SOURCES: Source[] = [
     notes: 'MAP-21 legislative framework model for requiring mandatory DNR 10-year asset management plan in Uganda law.' },
 
   { name: 'India NHAI PM Gati Shakti Digital Platform',
-    category: 'D', type: 'Case Study', owner: 'NHAI / Government of India', yearRange: '2021–present',
+    category: 'D', type: 'Case Study', owner: 'NHAI / Government of India', yearRange: '2021âpresent',
     coverage: 'India national highway network (145,000 km)',
     variables: 'Multi-modal GIS integration, real-time construction progress, RCMS rural roads',
     format: 'PDF + portal',
@@ -922,7 +923,7 @@ const SOURCES: Source[] = [
     notes: 'PM Gati Shakti GIS integration across all transport modes provides inspiration for Uganda MoWT multi-sector portal.' },
 
   { name: 'Sweden Trafikverket LCC Analysis and Long-Term Infrastructure Plan',
-    category: 'D', type: 'Case Study', owner: 'Trafikverket', yearRange: '2018–present',
+    category: 'D', type: 'Case Study', owner: 'Trafikverket', yearRange: '2018âpresent',
     coverage: 'Sweden national roads and railways (98,000 km roads)',
     variables: '12-year plan horizon, LCC framework, climate-neutral construction target 2030',
     format: 'PDF (Trafikverket annual report)',
@@ -931,16 +932,16 @@ const SOURCES: Source[] = [
     notes: 'Seasonal moisture/freeze-thaw modelling analogous to Uganda bi-modal rainfall impact on pavements.' },
 
   { name: 'Netherlands RWS Predictive Asset Management',
-    category: 'D', type: 'Case Study', owner: 'Rijkswaterstaat', yearRange: '2015–present',
+    category: 'D', type: 'Case Study', owner: 'Rijkswaterstaat', yearRange: '2015âpresent',
     coverage: 'Netherlands national motorway network (5,900 km)',
     variables: 'Asset Health Index, ML deterioration models, digital twin, reactive works reduction',
     format: 'PDF + open data portal',
     status: 'Active', module: ['RMS', 'PMS'],
     link: 'https://www.rijkswaterstaat.nl',
-    notes: 'RWS Asset Health Index (monthly per-link score) — model for DNR\'s single-number reporting KPI to Parliament.' },
+    notes: 'RWS Asset Health Index (monthly per-link score) â model for DNR\'s single-number reporting KPI to Parliament.' },
 
   { name: 'Japan MLIT Bridge Inspection Law: Systematic Condition Assessment',
-    category: 'D', type: 'Case Study', owner: 'Ministry of Land, Infrastructure, Transport and Tourism (MLIT)', yearRange: '2014–present',
+    category: 'D', type: 'Case Study', owner: 'Ministry of Land, Infrastructure, Transport and Tourism (MLIT)', yearRange: '2014âpresent',
     coverage: 'Japan national and local bridges (720,000 structures)',
     variables: '5-year inspection cycle, AI crack detection, preventive maintenance ratio target',
     format: 'PDF (MLIT white paper)',
@@ -949,7 +950,7 @@ const SOURCES: Source[] = [
     notes: 'Mandatory 5-year inspection cycle model; applicable for Uganda Bridge Inspection regulatory framework.' },
 
   { name: 'Brazil DNIT PRO-INFRA and CREMA Performance Contracts',
-    category: 'D', type: 'Case Study', owner: 'DNIT Brazil', yearRange: '2010–present',
+    category: 'D', type: 'Case Study', owner: 'DNIT Brazil', yearRange: '2010âpresent',
     coverage: 'Brazil federal roads (75,000 km)',
     variables: 'CREMA contracts on gravel roads, SGEPT PMS, SICRO cost system',
     format: 'PDF + DNIT portal',
@@ -958,7 +959,7 @@ const SOURCES: Source[] = [
     notes: 'Brazil CREMA (OPRC-style) on dirt/gravel roads; performance standards for Class C applicable to DNR.' },
 
   { name: 'Ghana GHA GHIAS: World Bank-Funded RAMS (P164887)',
-    category: 'D', type: 'Case Study', owner: 'Ghana Highway Authority / World Bank', yearRange: '2018–2022',
+    category: 'D', type: 'Case Study', owner: 'Ghana Highway Authority / World Bank', yearRange: '2018â2022',
     coverage: 'Ghana national roads (15,000 km)',
     variables: 'RAMS rollout phases, condition survey results, OPRC pilots, bridge inventory',
     format: 'PDF (World Bank ICR P164887)',
@@ -966,7 +967,7 @@ const SOURCES: Source[] = [
     notes: 'Most comparable recent RAMS implementation in West Africa. Phased rollout model applicable to DNR stage 2 expansion.' },
 
   { name: 'Ethiopia ERA RRAMPS: AfDB-Funded Road Asset Management',
-    category: 'D', type: 'Case Study', owner: 'Ethiopian Roads Authority / AfDB', yearRange: '2019–2024',
+    category: 'D', type: 'Case Study', owner: 'Ethiopian Roads Authority / AfDB', yearRange: '2019â2024',
     coverage: 'Ethiopia federal roads (15,000 km paved / 130,000 km total)',
     variables: 'RRAMPS data model, HDM-4 integration, IBEX budget link, condition baseline',
     format: 'PDF (AfDB Project Performance Evaluation)',
@@ -978,10 +979,10 @@ const STATUS_COLOR = { Active: C.green, Archived: C.gray, Planned: C.blue, Parti
 const TYPES: SourceType[] = ['Survey', 'GIS', 'Database', 'Report', 'Manual', 'Project', 'External', 'Model', 'Standard', 'Research', 'Case Study'];
 const CATEGORIES: { id: SourceCategory | 'All'; label: string }[] = [
   { id: 'All', label: `All (${SOURCES.length})` },
-  { id: 'A', label: 'A — Primary Data' },
-  { id: 'B', label: 'B — Standards' },
-  { id: 'C', label: 'C — Research' },
-  { id: 'D', label: 'D — Case Studies' },
+  { id: 'A', label: 'A â Primary Data' },
+  { id: 'B', label: 'B â Standards' },
+  { id: 'C', label: 'C â Research' },
+  { id: 'D', label: 'D â Case Studies' },
 ];
 
 export default function SourcesCatalogueSection() {
@@ -1056,8 +1057,8 @@ export default function SourcesCatalogueSection() {
         }}>
           <strong style={{ color: '#00f5ff' }}>International Standards &amp; Research Publications</strong>
           {' '}(HDM-4, ISO 55001, SATCC TRH4, AASHTO, PIARC, World Bank RAMP, AfDB IAMP, and 50+ research papers)
-          are catalogued here as <strong style={{ color: '#00f5ff' }}>Category B — Standards</strong> and
-          {' '}<strong style={{ color: '#b967ff' }}>Category C — Research</strong>. Use the category filter below to browse.
+          are catalogued here as <strong style={{ color: '#00f5ff' }}>Category B â Standards</strong> and
+          {' '}<strong style={{ color: '#b967ff' }}>Category C â Research</strong>. Use the category filter below to browse.
         </div>
 
         {/* Stats */}
