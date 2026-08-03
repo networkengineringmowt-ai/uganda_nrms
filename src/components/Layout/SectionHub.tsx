@@ -1,5 +1,5 @@
 /**
- * SectionHub — generic tab-bar wrapper used to consolidate multiple modules
+ * SectionHub â generic tab-bar wrapper used to consolidate multiple modules
  * under one sidebar section (matches the RMSSection tab-bar UI).
  *
  * Automatically prepends a "Dashboard" tab as the first tab for every section.
@@ -7,7 +7,8 @@
  */
 import React, { Suspense, useState } from 'react';
 import { LayoutDashboard } from 'lucide-react';
-import SectionDashboard from '../../modules/Dashboard/SectionDashboard';
+// SectionDashboard is lazy-loaded to prevent module-level init from crashing the app
+const SectionDashboard = React.lazy(() => import('../../modules/Dashboard/SectionDashboard'));
 
 export interface HubTab {
   id: string;
@@ -22,12 +23,16 @@ export default function SectionHub({ tabs, accent = '#00f5ff', badge, sectionId 
   // Derive a sectionId from the first tab's id if not explicitly provided
   const resolvedSectionId = sectionId ?? tabs[0]?.id ?? 'default';
 
-  // Prepend the Dashboard tab — always first, always dynamic
+  // Prepend the Dashboard tab â always first, always dynamic
   const dashTab: HubTab = {
     id: 'dashboard',
     label: 'Dashboard',
     icon: <LayoutDashboard size={13} />,
-    element: <SectionDashboard sectionId={resolvedSectionId} accent={accent} />,
+    element: (
+      <Suspense fallback={<div style={{padding:'1.5rem',color:'#00f5ff',textAlign:'center',opacity:0.7,fontSize:'12px'}}>Loading dashboard…</div>}>
+        <SectionDashboard sectionId={resolvedSectionId} accent={accent} />
+      </Suspense>
+    ),
   };
 
   const allTabs: HubTab[] = [dashTab, ...tabs];
@@ -73,7 +78,7 @@ export default function SectionHub({ tabs, accent = '#00f5ff', badge, sectionId 
       <div style={{ flex: 1, minHeight: 0, position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, overflow: 'auto' }}>
           <Suspense fallback={
-            <div style={{ padding: 40, color: 'rgba(148,163,184,0.7)', fontSize: 12 }}>Loading module…</div>
+            <div style={{ padding: 40, color: 'rgba(148,163,184,0.7)', fontSize: 12 }}>Loading moduleâ¦</div>
           }>
             {active?.element}
           </Suspense>
