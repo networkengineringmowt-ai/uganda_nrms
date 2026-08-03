@@ -1467,7 +1467,6 @@ export default function RMSSection() {
       {/* Content */}
       <div style={contentStyle}>
 
-          {TABS[activeTab].id === 'dashboard' && <SectionDashboard sectionId="rms" />}
         {tab === 'overview' && (
           <>
             <RMSDashboard navigate={navigate} />
