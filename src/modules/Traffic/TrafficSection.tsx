@@ -19,7 +19,7 @@ import {
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { lazy, Suspense } from 'react';
-import { Clock, Play, Pause, Radio, Wifi, BarChart3, Map as MapIcon, Table2, TrendingUp } from 'lucide-react';
+import { Clock, Play, Pause, Radio, Wifi, BarChart3, Map as MapIcon, Table2, TrendingUp , LayoutDashboard } from 'lucide-react';
 import { useTCSStations } from '../../data/networkDB';
 
 // Sub-module lazy loads (previously separate sidebar items)
@@ -29,6 +29,7 @@ const GrowthFactorsView        = lazy(() => import('./GrowthFactorsPanel'));
 const OverloadingView          = lazy(() => import('./OverloadingSection'));
 const TrafficProjectionView    = lazy(() => import('./TrafficProjectionTable'));
 const SeasonalFactorsView      = lazy(() => import('./SeasonalFactorsTable'));
+const SectionDashboard = lazy(() => import('../Dashboard/SectionDashboard'));
 
 function TabSpinner() {
   return (
@@ -575,7 +576,8 @@ export default function TrafficSection() {
   }
 
   const MAIN_TABS = [
-    { id: 'map'      as const, label: 'Traffic Map',        icon: <MapIcon size={13}/> },
+    { id: 'dashboard' as const, label: 'Dashboard', icon: <LayoutDashboard size={13}/> },
+  { id: 'map'      as const, label: 'Traffic Map',        icon: <MapIcon size={13}/> },
     { id: 'counts'   as const, label: 'Counts & Analysis',  icon: <Table2 size={13}/> },
     { id: 'trends'   as const, label: 'Trends & Risk',      icon: <TrendingUp size={13}/> },
     { id: 'stations' as const, label: 'Station Directory',  icon: <BarChart3 size={13}/> },
@@ -679,6 +681,11 @@ export default function TrafficSection() {
       </div>
 
       {/* ══ Sub-tab bar — Counts & Analysis ══════════════════════════════════ */}
+        {activeTab === 'dashboard' && (
+          <Suspense fallback={<div style={{padding:'1.5rem',color:'#00f5ff',textAlign:'center',opacity:0.7,fontSize:'12px'}}>Loading dashboard…</div>}>
+            <SectionDashboard sectionId="traffic" accent="#00f5ff" />
+          </Suspense>
+        )}
       {activeTab === 'counts' && (
         <div style={{
           display:'flex', gap:4, padding:'6px 14px 0', flexShrink:0,
