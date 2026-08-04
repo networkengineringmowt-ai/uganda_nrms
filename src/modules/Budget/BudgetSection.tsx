@@ -198,7 +198,13 @@ export default function BudgetSection({ embedded = false }: { embedded?: boolean
             <SectionDashboard sectionId="budget" accent="#ffd700" />
           </Suspense>
         )}
-      {tab === 'gap' && (
+     
+        {tab === 'dashboard' && (
+          <Suspense fallback={<div style={{padding:'1.5rem',color:'#ff6b35',textAlign:'center',opacity:0.7,fontSize:'12px'}}>Loading dashboard…</div>}>
+            <SectionDashboard sectionId="budget" accent="#ff6b35" />
+          </Suspense>
+        )}
+ {tab === 'gap' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div style={card(C.pink)}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
