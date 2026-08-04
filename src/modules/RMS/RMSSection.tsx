@@ -1467,6 +1467,12 @@ export default function RMSSection() {
       {/* Content */}
       <div style={contentStyle}>
 
+        {tab === 'dashboard' && (
+          <Suspense fallback={<div style={{padding:'1.5rem',color:'#00f5ff',textAlign:'center',opacity:0.7,fontSize:'12px'}}>Loading dashboard…</div>}>
+            <SectionDashboard sectionId="rms" accent="#00f5ff" />
+          </Suspense>
+        )}
+
         {tab === 'overview' && (
           <>
             <RMSDashboard navigate={navigate} />
