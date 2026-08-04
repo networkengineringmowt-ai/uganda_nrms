@@ -39,6 +39,7 @@ export default function BridgeWorksSection() {
   const [works, setWorks] = useState<BridgeWork[]>([]);
   const [src, setSrc] = useState<'supabase' | 'bundle' | 'loading'>('loading');
   const [q, setQ] = useState('');
+  const [tab, setTab] = useState('works');
 
   useEffect(() => {
     let alive = true;
@@ -78,6 +79,16 @@ export default function BridgeWorksSection() {
   return (
     <div style={{ padding: '22px 20px', minHeight: '100%',
       background: 'radial-gradient(1200px 600px at 80% -10%, rgba(0,212,170,0.10), transparent), linear-gradient(180deg, rgba(8,8,8,0.5), transparent)' }}>
+      {/* BridgeWorks tab nav */}
+      <div style={{ display: 'flex', gap: 6, marginBottom: 18 }}>
+        {['works', 'dashboard'].map(t => (
+          <button key={t} onClick={() => setTab(t)} style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '5px 14px', borderRadius: 20, border: 'none', cursor: 'pointer', background: tab === t ? '#b967ff' : 'rgba(185,103,255,0.08)', color: tab === t ? '#020202' : 'rgba(185,103,255,0.7)', transition: 'all .15s' }}>
+            {t === 'works' ? 'Bridge Works' : 'Dashboard'}
+          </button>
+        ))}
+      </div>
+      {tab === 'dashboard' && <SectionDashboard sectionId="bridgeworks" accent="#b967ff" />}
+      {tab === 'works' && (<>
 
       {/* ââ Liquid-glass header ââ */}
       <div style={{ ...liquidGlass(C.teal, 20), padding: '18px 22px', marginBottom: 18 }}>
@@ -181,6 +192,7 @@ export default function BridgeWorksSection() {
         Source: MOWT Projects Status Report â Â§1.4 Bridges Development Projects (April 2026).
         {src === 'bundle' && ' Serving from the G: Drive data bundle (canonical store).'}
       </div>
+      </>)}
     </div>
   );
 }
