@@ -4,6 +4,7 @@ import { useBMS } from '../../store/BMSContext';
 import type { BridgeDocument, DocumentCategory } from '../../types';
 import { formatDate } from '../../utils/helpers';
 import { v4 as uuidv4 } from 'uuid';
+import SectionDashboard from '../Dashboard/SectionDashboard';
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   'Design Drawing':     <FileText size={14} className="text-blue-400" />,
@@ -65,8 +66,19 @@ export default function DocumentStore() {
     return counts;
   }, [documents]);
 
+  const [tab, setTab] = useState<'content' | 'dashboard'>('content');
   return (
     <div className="flex flex-col h-full animate-fade-in">
+      {/* ── Tab nav ── */}
+      <div style={{ display:'flex', gap:6, padding:'8px 14px', borderBottom:'1px solid rgba(100,100,200,0.15)' }}>
+        {(['content','dashboard'] as const).map(t => (
+          <button key={t} onClick={() => setTab(t)} style={{ fontSize:11, fontWeight:700, letterSpacing:1, padding:'4px 14px', border:`1px solid ${t===tab?'#4d9fff':'rgba(100,100,200,0.2)'}`, borderRadius:4, cursor:'pointer', background:t===tab?'#4d9fff':'rgba(100,100,200,0.06)', color:t===tab?'#020202':'rgba(200,200,200,0.7)', textTransform:'uppercase' }}>
+            {t==='content'?'Documents':'Dashboard'}
+          </button>
+        ))}
+      </div>
+      {tab==='dashboard'&&<SectionDashboard sectionId="documents" accent="#4d9fff"/>}
+      {tab==='content'&&(<>
       {/* Category strip */}
       <div className="flex-shrink-0 flex items-center gap-2 px-6 py-3 border-b border-slate-700/60 bg-slate-900/50 overflow-x-auto">
         <button
@@ -308,6 +320,8 @@ function DocUploadForm({
           <button onClick={save} className="bms-btn-primary"><Upload size={14} /> Attach</button>
         </div>
       </div>
+      </>)}
+
     </div>
   );
 }
