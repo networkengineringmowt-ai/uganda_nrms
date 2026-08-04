@@ -8,10 +8,11 @@
  *     intervention-history analytics (LifecycleSection).
  */
 import { Suspense, lazy, useState } from 'react';
-import { Map as MapIcon, Activity } from 'lucide-react';
+import { Map as MapIcon, Activity , LayoutDashboard } from 'lucide-react';
 
 const RoadNetworkView  = lazy(() => import('../RoadNetwork/RoadNetworkView'));
 const LifecycleSection = lazy(() => import('./LifecycleSection'));
+const SectionDashboard = lazy(() => import('../Dashboard/SectionDashboard'));
 
 function Spinner() {
   return (
@@ -24,6 +25,7 @@ function Spinner() {
 }
 
 const TABS = [
+  { id: 'dashboard' as const, label: 'Dashboard', icon: <LayoutDashboard size={13}/> },
   { id: 'map',       label: 'History Map',         icon: MapIcon },
   { id: 'analytics', label: 'Lifecycle Analytics', icon: Activity },
 ] as const;
@@ -55,6 +57,11 @@ export default function LifecycleView() {
       {/* Content */}
       <div style={{ flex: 1, minHeight: 0, position: 'relative', overflow: 'hidden' }}>
         <Suspense fallback={<Spinner />}>
+        {tab === 'dashboard' && (
+          <Suspense fallback={<div style={{padding:'1.5rem',color:'#ffd700',textAlign:'center',opacity:0.7,fontSize:'12px'}}>Loading dashboard…</div>}>
+            <SectionDashboard sectionId="lifecycle" accent="#ffd700" />
+          </Suspense>
+        )}
           {tab === 'map'       && <RoadNetworkView defaultHistory />}
           {tab === 'analytics' && (
             <div style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}>
