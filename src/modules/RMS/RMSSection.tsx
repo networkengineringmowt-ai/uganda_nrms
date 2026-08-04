@@ -8,7 +8,7 @@ import { useBMS } from '../../store/BMSContext';
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
 import { CaptureButton } from '../../shared/CaptureButton';
 import type { ActiveView } from '../../types';
-import SectionDashboard from '../Dashboard/SectionDashboard';
+const SectionDashboard = lazy(() => import('../Dashboard/SectionDashboard'));
 import {
   LayoutDashboard, Map, BookOpen, Network,
   CheckCircle, AlertCircle, XCircle,
