@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { hexRgb, lightenHex, darkenHex, TICK, TICK_SM, AX_LINE } from '../../lib/chart3d';
 import { loadPlatformAnalytics, type PlatformAnalytics } from '../../data/platformData';
+import SectionDashboard from '../Dashboard/SectionDashboard';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface StoryData {
@@ -819,7 +820,8 @@ export default function NetworkStory() {
   const [sortCol, setSortCol] = useState<'region'|'paved_km'|'unpaved_km'|'total'|'pct'|'links'>('paved_km');
   const [sortDir, setSortDir] = useState<'asc'|'desc'>('desc');
   const [hovRow,  setHovRow]  = useState<string|null>(null);
-  const [hovStation, setHovStation] = useState<string|null>(null);
+  const [hovStation, setHovStation] = useState<string|null>(null)
+  const [nsTab, setNsTab] = useState<'story' | 'dashboard'>('story');;
 
   // Load data + inject slider CSS
   useEffect(() => {
@@ -1024,6 +1026,19 @@ export default function NetworkStory() {
   // ══════════════════════════════════════════════════════════════════════════
   return (
     <div style={{ position: 'absolute', inset: 0, overflowY: 'auto', overflowX: 'hidden', background: 'rgba(2,2,2,0.98)', fontFamily: 'inherit' }}>
+      {/* NetworkStory tab nav */}
+      <div style={{ position:'absolute', top:10, left:'50%', transform:'translateX(-50%)', zIndex:1000, display:'flex', gap:6 }}>
+        {(['story','dashboard'] as const).map(t => (
+          <button key={t} onClick={() => setNsTab(t)} style={{ fontSize:11, fontWeight:700, letterSpacing:1, padding:'4px 14px', border:`1px solid ${nsTab===t?'#00f5ff':'rgba(0,245,255,0.25)'}`, borderRadius:4, cursor:'pointer', background:nsTab===t?'#00f5ff':'rgba(0,245,255,0.08)', color:nsTab===t?'#020202':'rgba(0,245,255,0.7)', textTransform:'uppercase', whiteSpace:'nowrap' }}>
+            {t==='story'?'📖 Network Story':'📊 Dashboard'}
+          </button>
+        ))}
+      </div>
+      {nsTab==='dashboard'&&(
+        <div style={{ position:'absolute', inset:0, zIndex:999, background:'#0a0a1a', overflow:'auto' }}>
+          <SectionDashboard sectionId="networkstory" accent="#00f5ff" />
+        </div>
+      )}
 
       {/* Top rainbow bar */}
       <div style={{
