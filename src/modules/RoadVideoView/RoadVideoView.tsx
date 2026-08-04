@@ -9,6 +9,7 @@ import {
   AlertCircle, ChevronLeft, ChevronRight, X,
 } from 'lucide-react';
 import type { Feature, FeatureCollection, LineString } from 'geojson';
+import SectionDashboard from '../Dashboard/SectionDashboard';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface YearInfo { has_pave: boolean; has_360: boolean; frame_count: number }
@@ -89,6 +90,7 @@ export default function RoadVideoView() {
   const [viewType,      setViewType]      = useState<ViewType>('PAVE');
   const [frame,         setFrame]         = useState(1);
   const [imgError,      setImgError]      = useState(false);
+  const [rvTab, setRvTab] = useState<'map' | 'dashboard'>('map');
 
   const geoJsonRef = useRef<L.GeoJSON | null>(null);
   const selectedKeyRef = useRef<string | null>(null);
@@ -274,6 +276,19 @@ export default function RoadVideoView() {
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div style={{ position: 'absolute', inset: 0, display: 'flex', overflow: 'hidden' }}>
+      {/* ── RoadVideo tab nav ── */}
+      <div style={{ position: 'absolute', top: 10, left: '50%', transform: 'translateX(-50%)', zIndex: 1000, display: 'flex', gap: 6 }}>
+        {(['map', 'dashboard'] as const).map(t => (
+          <button key={t} onClick={() => setRvTab(t)} style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, padding: '4px 14px', border: `1px solid ${rvTab === t ? '#ffd23f' : 'rgba(255,210,63,0.25)'}`, borderRadius: 4, cursor: 'pointer', background: rvTab === t ? '#ffd23f' : 'rgba(255,210,63,0.08)', color: rvTab === t ? '#020202' : 'rgba(255,210,63,0.7)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+            {t === 'map' ? '🎥 Road Video' : '📊 Dashboard'}
+          </button>
+        ))}
+      </div>
+      {rvTab === 'dashboard' && (
+        <div style={{ position: 'absolute', inset: 0, zIndex: 999, background: '#0a0a1a', overflow: 'auto' }}>
+          <SectionDashboard sectionId="roadvideo" accent="#ffd23f" />
+        </div>
+      )}
 
       {/* ── Map fills flex: 1 ── */}
       <div style={{ flex: 1, position: 'relative', minWidth: 0 }}>
