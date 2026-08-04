@@ -14,8 +14,9 @@ import type { Structure } from '../../types';
 import { conditionColor, conditionLabel, conditionBadge, formatDate } from '../../utils/helpers';
 import { usePhotoLoader } from './usePhotoLoader';
 import BridgeSchematic from './BridgeSchematic';
+import SectionDashboard from '../Dashboard/SectionDashboard';
 
-type Tab = 'photos' | 'twin' | 'timeline';
+type Tab = 'photos' | 'twin' | 'timeline' | 'dashboard';
 
 export default function PhotoTwin() {
   const { state, dispatch, selectStructure } = useBMS();
@@ -60,7 +61,18 @@ export default function PhotoTwin() {
   );
 
   return (
-    <div className="flex h-full overflow-hidden animate-fade-in">
+    <div className="relative flex h-full overflow-hidden animate-fade-in">
+      {/* PhotoTwin Dashboard overlay */}
+      <div style={{ position:'absolute', top:10, left:'50%', transform:'translateX(-50%)', zIndex:1000, display:'flex', gap:6 }}>
+        <button onClick={() => setTab(activeTab==='dashboard'?'photos':'dashboard')} style={{ fontSize:11, fontWeight:700, letterSpacing:1, padding:'4px 14px', border:'1px solid #00d4aa', borderRadius:4, cursor:'pointer', background:'#00d4aa', color:'#020202', textTransform:'uppercase', whiteSpace:'nowrap' }}>
+          {activeTab==='dashboard'?'🏗️ 3D Twin':'📊 Dashboard'}
+        </button>
+      </div>
+      {activeTab==='dashboard'&&(
+        <div style={{ position:'absolute', inset:0, zIndex:999, background:'#0a0a1a', overflow:'auto' }}>
+          <SectionDashboard sectionId="phototwin" accent="#00d4aa" />
+        </div>
+      )}
       {/* ─── Left: Structure List ─── */}
       <div className="w-72 flex-shrink-0 flex flex-col border-r border-slate-700/60 bg-slate-900/50">
         {/* Search */}
