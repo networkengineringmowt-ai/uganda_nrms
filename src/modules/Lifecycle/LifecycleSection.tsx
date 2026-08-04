@@ -398,6 +398,7 @@ export default function LifecycleSection() {
   const [classFilter,  setClassFilter]  = useState<RoadClass | 'All'>('All');
   const [showAllLinks, setShowAllLinks] = useState(false);
   const [mapClickedLink, setMapClickedLink] = useState<LinkDef | null>(null);
+  const [tab, setTab] = useState('links');
 
   useEffect(() => {
     const base = (import.meta as { env: { BASE_URL: string } }).env.BASE_URL;
@@ -830,6 +831,16 @@ function AllLinksTable({
 
   return (
     <div>
+      {/* Lifecycle tab nav */}
+      <div style={{ display: 'flex', gap: 6, padding: '8px 14px', borderBottom: '1px solid rgba(0,212,170,0.15)' }}>
+        {['links', 'dashboard'].map(t => (
+          <button key={t} onClick={() => setTab(t)} style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '5px 14px', borderRadius: 20, border: 'none', cursor: 'pointer', background: tab === t ? '#00d4aa' : 'rgba(0,212,170,0.08)', color: tab === t ? '#020202' : 'rgba(0,212,170,0.7)', transition: 'all .15s' }}>
+            {t === 'links' ? 'Network Links' : 'Dashboard'}
+          </button>
+        ))}
+      </div>
+      {tab === 'dashboard' && <SectionDashboard sectionId="lifecycle" accent="#00d4aa" />}
+      {tab === 'links' && (
       {/* Filter row */}
       <div style={{ display: 'flex', gap: 10, marginBottom: 12, flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ position: 'relative', flex: 1, minWidth: 220 }}>
@@ -926,6 +937,7 @@ function AllLinksTable({
         <div style={{ padding: '8px 12px', fontSize: 9.5, color: 'rgba(148,163,184,0.5)', textAlign: 'center' }}>
           Showing first 1,200 rows of {sorted.length.toLocaleString()} â narrow filters to see more.
         </div>
+      )}
       )}
     </div>
   );
