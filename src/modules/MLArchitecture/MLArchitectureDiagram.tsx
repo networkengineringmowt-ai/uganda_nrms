@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { X, ChevronRight, Cpu, Database, GitBranch, BarChart3, Layers, Target, ArrowRight } from 'lucide-react';
 import SourceTableButton from '../../shared/SourceTableButton';
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
+import SectionDashboard from '../Dashboard/SectionDashboard';
 
 function MLChartSourceButton() {
   return (
@@ -484,9 +485,20 @@ export default function MLArchitectureDiagram() {
     );
   }, [selected]);
 
+  const [tab, setTab] = useState<'content' | 'dashboard'>('content');
   return (
     <div style={{ position: 'relative', background: C.bg, borderRadius: 16,
       border: `1px solid ${C.border}`, overflow: 'hidden', userSelect: 'none' }}>
+      {/* ── Tab nav ── */}
+      <div style={{ display:'flex', gap:6, padding:'8px 14px', borderBottom:'1px solid rgba(100,100,200,0.15)' }}>
+        {(['content','dashboard'] as const).map(t => (
+          <button key={t} onClick={() => setTab(t)} style={{ fontSize:11, fontWeight:700, letterSpacing:1, padding:'4px 14px', border:`1px solid ${t===tab?'#00f5ff':'rgba(100,100,200,0.2)'}`, borderRadius:4, cursor:'pointer', background:t===tab?'#00f5ff':'rgba(100,100,200,0.06)', color:t===tab?'#020202':'rgba(200,200,200,0.7)', textTransform:'uppercase' }}>
+            {t==='content'?'ML Architecture':'Dashboard'}
+          </button>
+        ))}
+      </div>
+      {tab==='dashboard'&&<SectionDashboard sectionId="mlarchitecture" accent="#00f5ff"/>}
+      {tab==='content'&&(<>
 
       <CrossLinkChipBar sectionId="hdm4" />
 
@@ -829,6 +841,8 @@ export default function MLArchitectureDiagram() {
           </div>
         </div>
       )}
+      </>)}
+
     </div>
   );
 }
