@@ -5,6 +5,7 @@ import type { Structure } from '../../types';
 import { conditionLabel, conditionColor, conditionBadge, formatDate, formatUGX } from '../../utils/helpers';
 import { downloadGeoJSON, downloadKML } from '../../utils/downloads';
 import StructureDetailModal from './StructureDetailModal';
+import SectionDashboard from '../Dashboard/SectionDashboard';
 
 type SortKey = keyof Structure;
 
@@ -103,8 +104,19 @@ export default function StructureRegistry() {
     </th>
   );
 
+  const [tab, setTab] = useState<'content' | 'dashboard'>('content');
   return (
     <div className="flex flex-col h-full animate-fade-in">
+      {/* ── Tab nav ── */}
+      <div style={{ display:'flex', gap:6, padding:'8px 14px', borderBottom:'1px solid rgba(100,100,200,0.15)' }}>
+        {(['content','dashboard'] as const).map(t => (
+          <button key={t} onClick={() => setTab(t)} style={{ fontSize:11, fontWeight:700, letterSpacing:1, padding:'4px 14px', border:`1px solid ${t===tab?'#b967ff':'rgba(100,100,200,0.2)'}`, borderRadius:4, cursor:'pointer', background:t===tab?'#b967ff':'rgba(100,100,200,0.06)', color:t===tab?'#020202':'rgba(200,200,200,0.7)', textTransform:'uppercase' }}>
+            {t==='content'?'Registry':'Dashboard'}
+          </button>
+        ))}
+      </div>
+      {tab==='dashboard'&&<SectionDashboard sectionId="registry" accent="#b967ff"/>}
+      {tab==='content'&&(<>
       {/* Toolbar */}
       <div className="flex-shrink-0 px-6 py-4 border-b border-slate-700/60 bg-slate-900/50">
         <div className="flex flex-wrap items-center gap-3">
@@ -276,6 +288,8 @@ export default function StructureRegistry() {
 
       {/* Detail modal */}
       {selected && <StructureDetailModal structure={selected} onClose={() => setSelected(null)} />}
+      </>)}
+
     </div>
   );
 }
