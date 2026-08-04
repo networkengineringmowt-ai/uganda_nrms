@@ -24,6 +24,7 @@ import {
   formatDate, formatUGX, CONDITION_COLORS,
 } from '../../utils/helpers';
 import { usePhotoLoader } from '../PhotoTwin/usePhotoLoader';
+import SectionDashboard from '../Dashboard/SectionDashboard';
 
 const YEARS = [2018, 2019, 2020, 2021, 2022, 2023, 2024];
 const CENTER: [number, number] = [1.373, 32.29];
@@ -57,6 +58,7 @@ export default function GISMapView() {
   const [selected,    setSelected]    = useState<DisplayStructure | null>(null);
   const [roadGeo,     setRoadGeo]     = useState<GeoJSON.FeatureCollection | null>(null);
   const [zoom,        setZoom]        = useState(7);
+  const [gisTab, setGisTab] = useState<'map' | 'dashboard'>('map');
   const { highlightedLinks } = useContext(BotHighlightContext);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const handleZoom  = useCallback((z: number) => setZoom(z), []);
@@ -123,6 +125,19 @@ export default function GISMapView() {
 
   return (
     <div className="relative flex h-full w-full overflow-hidden">
+      {/* ── GISMap tab nav ── */}
+      <div style={{ position:'absolute', top:10, left:'50%', transform:'translateX(-50%)', zIndex:1000, display:'flex', gap:6 }}>
+        {(['map','dashboard'] as const).map(t => (
+          <button key={t} onClick={() => setGisTab(t)} style={{ fontSize:11, fontWeight:700, letterSpacing:1, padding:'4px 14px', border:`1px solid ${gisTab===t?'#4d9fff':'rgba(77,159,255,0.25)'}`, borderRadius:4, cursor:'pointer', background:gisTab===t?'#4d9fff':'rgba(77,159,255,0.08)', color:gisTab===t?'#020202':'rgba(77,159,255,0.7)', textTransform:'uppercase', whiteSpace:'nowrap' }}>
+            {t==='map'?'🗺️ GIS Map':'📊 Dashboard'}
+          </button>
+        ))}
+      </div>
+      {gisTab==='dashboard'&&(
+        <div style={{ position:'absolute', inset:0, zIndex:999, background:'#0a0a1a', overflow:'auto' }}>
+          <SectionDashboard sectionId="gismap" accent="#4d9fff" />
+        </div>
+      )}
 
       {/* ── Map canvas ── */}
       <MapContainer
