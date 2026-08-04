@@ -16,6 +16,7 @@ import { loadEnhancedProjects, type Project } from '../../data/appStore';
 import { ModuleNavBar } from '../../shared/ModuleNavBar';
 import MapDetailPane, { StatCard, AttributeRow, SectionHeader } from '../../shared/MapDetailPane';
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
+import SectionDashboard from '../Dashboard/SectionDashboard';
 
 // ── Under-construction corridor definitions ───────────────────────────────────
 interface UCorridor {
@@ -268,7 +269,7 @@ export default function ProjectsView() {
 
   const cardListRef = useRef<HTMLDivElement>(null);
   const [roadsGeo, setRoadsGeo] = useState<GeoJSON.FeatureCollection | null>(null);
-  const [activeTab, setActiveTab] = useState<'map' | 'register' | 'ndpiv' | 'oprc'>('map');
+  const [activeTab, setActiveTab] = useState<'map' | 'register' | 'ndpiv' | 'oprc' | 'dashboard'>('map');
 
   // Load projects and road network base layer
   useEffect(() => {
@@ -365,6 +366,7 @@ export default function ProjectsView() {
           { id: 'register', label: 'Works Register', icon: '📋' },
           { id: 'ndpiv',    label: 'NDPIV Projects', icon: '🏗️' },
           { id: 'oprc',     label: 'OPRC Lots',      icon: '🔧' },
+          { id: 'dashboard', label: 'Dashboard',      icon: '📊' },
         ] as const).map(t => {
           const isActive = t.id === activeTab;
           return (
@@ -795,6 +797,12 @@ export default function ProjectsView() {
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {activeTab === 'dashboard' && (
+        <div style={{ padding: '12px 14px' }}>
+          <SectionDashboard sectionId="projects" accent="#00d4aa" />
         </div>
       )}
 
