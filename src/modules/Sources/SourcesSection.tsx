@@ -5,6 +5,7 @@
  */
 import { lazy, Suspense, useState } from 'react';
 import { FileText, Table2, BookOpen } from 'lucide-react';
+import SectionDashboard from '../Dashboard/SectionDashboard';
 
 const SRC_Catalogue = lazy(() => import('./SourcesCatalogueSection'));
 const SRC_Tables    = lazy(() => import('./TabularSummaries'));
@@ -26,6 +27,7 @@ const MAIN_TABS = [
   { id: 'catalogue'  as const, label: 'Evidence Catalogue',  icon: <FileText size={13}/> },
   { id: 'tables'     as const, label: 'Tabular Summaries',   icon: <Table2 size={13}/> },
   { id: 'dictionary' as const, label: 'Data Dictionary',     icon: <BookOpen size={13}/> },
+  { id: 'dashboard' as const, label: 'Dashboard', icon: <BookOpen size={13}/> },
 ];
 type TabId = typeof MAIN_TABS[number]['id'];
 
@@ -74,6 +76,7 @@ export default function SourcesSection() {
           {tab === 'dictionary' && <SRC_Dictionary />}
         </Suspense>
       </div>
+      {tab === 'dashboard' && <SectionDashboard sectionId="sources" accent="#4d9fff" />}
     </div>
   );
 }
