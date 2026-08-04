@@ -4,21 +4,21 @@
  * Visual language: dark neon glass, ESRI satellite tiles, recharts 3D bars
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, lazy, Suspense } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip as ReTooltip,
   ResponsiveContainer, CartesianGrid, Cell,
 } from 'recharts';
-import { Globe, BarChart3, BookOpen, Lightbulb, Search, Download, Grid } from 'lucide-react';
+import { Globe, BarChart3, BookOpen, Lightbulb, Search, Download, Grid , LayoutDashboard } from 'lucide-react';
 import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
   Legend as ReChartLegend,
 } from 'recharts';
 import { ESRI_TILE_URLS, ESRI_ATTRIBUTIONS } from '../../shared/mapSymbols';
 import { Chart3DWrap, Bar3D, TT_NEON, TICK } from '../../lib/chart3d';
-import SectionDashboard from '../Dashboard/SectionDashboard';
+const SectionDashboard = lazy(() => import('../Dashboard/SectionDashboard'));
 
 // ââ Colour helpers ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
@@ -1309,6 +1309,7 @@ const LESSONS: LessonTheme[] = [
 type TabId = 'worldmap' | 'casestudies' | 'analytics' | 'lessons' | 'matrix';
 
 const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
+  { id: 'dashboard' as const, label: 'Dashboard', icon: <LayoutDashboard size={13}/> },
   { id: 'analytics',   label: 'Dashboard', icon: <BarChart3 size={13} /> },
   { id: 'worldmap',    label: 'World Map',              icon: <Globe size={13} /> },
   { id: 'casestudies', label: 'Case Studies',           icon: <BookOpen size={13} /> },
@@ -2313,6 +2314,11 @@ export default function GlobalCaseStudiesSection() {
 
       {/* Tab content */}
       <div style={{ flex: 1, minHeight: 0, position: 'relative', overflow: tab === 'worldmap' ? 'hidden' : 'auto', display: 'flex', flexDirection: 'column' }}>
+        {tab === 'dashboard' && (
+          <Suspense fallback={<div style={{padding:'1.5rem',color:'#a855f7',textAlign:'center',opacity:0.7,fontSize:'12px'}}>Loading dashboard…</div>}>
+            <SectionDashboard sectionId="casestudies" accent="#a855f7" />
+          </Suspense>
+        )}
         {tab === 'worldmap'    && <WorldMapTab />}
         {tab === 'casestudies' && <CaseStudiesTab />}
         {tab === 'analytics'   && <AnalyticsTab />}
