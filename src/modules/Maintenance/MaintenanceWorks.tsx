@@ -4,6 +4,7 @@ import { useBMS } from '../../store/BMSContext';
 import type { WorkOrder, WorkOrderStatus, WorkOrderType, WorkOrderPriority } from '../../types';
 import { formatDate, formatUGX } from '../../utils/helpers';
 import { v4 as uuidv4 } from 'uuid';
+import SectionDashboard from '../Dashboard/SectionDashboard';
 
 const STATUS_COLORS: Record<WorkOrderStatus, string> = {
   'Planned':     'badge-blue',
@@ -68,8 +69,19 @@ export default function MaintenanceWorks() {
     dispatch({ type: 'UPDATE_WORK_ORDER', payload: { ...wo, status } });
   }
 
+  const [tab, setTab] = useState<'content' | 'dashboard'>('content');
   return (
     <div className="flex flex-col h-full animate-fade-in">
+      {/* ── Tab nav ── */}
+      <div style={{ display:'flex', gap:6, padding:'8px 14px', borderBottom:'1px solid rgba(100,100,200,0.15)' }}>
+        {(['content','dashboard'] as const).map(t => (
+          <button key={t} onClick={() => setTab(t)} style={{ fontSize:11, fontWeight:700, letterSpacing:1, padding:'4px 14px', border:`1px solid ${t===tab?'#00d4aa':'rgba(100,100,200,0.2)'}`, borderRadius:4, cursor:'pointer', background:t===tab?'#00d4aa':'rgba(100,100,200,0.06)', color:t===tab?'#020202':'rgba(200,200,200,0.7)', textTransform:'uppercase' }}>
+            {t==='content'?'Maintenance':'Dashboard'}
+          </button>
+        ))}
+      </div>
+      {tab==='dashboard'&&<SectionDashboard sectionId="maintenance" accent="#00d4aa"/>}
+      {tab==='content'&&(<>
       {/* KPI strip */}
       <div className="flex-shrink-0 grid grid-cols-5 gap-px bg-slate-700/40 border-b border-slate-700/60">
         <KPIStrip label="Planned"    value={kpis.planned}   color="text-blue-400" />
@@ -302,6 +314,8 @@ function WorkOrderForm({
           </button>
         </div>
       </div>
+      </>)}
+
     </div>
   );
 }
