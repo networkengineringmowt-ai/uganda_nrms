@@ -13,6 +13,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '../../lib/supabase';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
+  PieChart, Pie, Legend,
 } from 'recharts';
 import {
   LayoutDashboard, RefreshCw, TrendingUp, Database,
@@ -437,185 +438,195 @@ export default function SectionDashboard({
   const barColors = [accent, C.green, C.orange, C.blue, C.pink, C.yellow, C.purple, C.cyan];
 
   return (
-    <div style={{
-      minHeight: '100%',
-      background: C.bg,
-      fontFamily: "'Inter','Segoe UI',system-ui,sans-serif",
-      padding: '18px 20px 24px',
-      overflowY: 'auto',
-    }}>
-      {/* ── Header ──────────────────────────────────────────────────────── */}
-      <div style={{
-        display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
-        marginBottom: 20, gap: 12,
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{
-            width: 34, height: 34, borderRadius: 8,
-            background: `${accent}18`,
-            border: `1px solid ${accent}40`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: accent, flexShrink: 0,
-          }}>
-            <LayoutDashboard size={17} />
-          </div>
-          <div>
-            <div style={{ fontSize: 16, fontWeight: 800, color: C.text, lineHeight: 1.2 }}>
-              Dashboard
-            </div>
-            <div style={{ fontSize: 10, color: C.dim, marginTop: 2 }}>
-              {conf.subtitle} · Live from Supabase
-            </div>
+    <div style={{ display:'flex', flexDirection:'column', height:'100%', background:C.bg, overflow:'auto', fontFamily:"'Inter','Segoe UI',sans-serif" }}>
+      <style>{`
+        @keyframes sdFadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes sdPulse  { 0%,100%{opacity:1} 50%{opacity:.45} }
+        .sd-kpi  { transition:transform .15s,box-shadow .15s; }
+        .sd-kpi:hover { transform:translateY(-2px)!important; box-shadow:0 8px 32px rgba(0,0,0,.6)!important; }
+        .sd-panel { transition:box-shadow .2s; border-radius:8px; }
+        .sd-panel:hover { box-shadow:0 0 0 1px rgba(0,245,255,.2)!important; }
+      `}</style>
+
+      {/* Header */}
+      <div style={{ padding:'16px 20px 4px', display:'flex', alignItems:'flex-end', justifyContent:'space-between', flexShrink:0 }}>
+        <div>
+          <div style={{ color:accent, fontSize:10, fontWeight:700, letterSpacing:'.2em', textTransform:'uppercase', opacity:.7 }}>{conf.subtitle}</div>
+          <div style={{ color:'#e2e8f0', fontSize:18, fontWeight:700, marginTop:2 }}>
+            Analytics
+            <span style={{ color:'rgba(148,163,184,.35)', fontSize:11, fontWeight:400, marginLeft:8 }}>
+              · {kpis.filter(k=>k.value!==null).length} metrics
+            </span>
           </div>
         </div>
-
-        <button
-          onClick={() => setTick(t => t + 1)}
-          disabled={loading}
-          title="Refresh"
-          style={{
-            background: 'none', border: `1px solid ${C.border}`,
-            borderRadius: 6, padding: '5px 10px', cursor: 'pointer',
-            color: loading ? C.dim : accent, display: 'flex', alignItems: 'center', gap: 5,
-            fontSize: 10, fontWeight: 600, transition: 'all 0.15s',
-          }}
-        >
-          <RefreshCw size={11} style={{ animation: loading ? 'dash-spin 1s linear infinite' : 'none' }} />
-          {loading ? 'Loading…' : 'Refresh'}
-        </button>
+        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+          {error && <span style={{ color:C.orange, fontSize:10 }}>⚠ {String(error)}</span>}
+          {fetchedAt && <span style={{ color:'rgba(148,163,184,.4)', fontSize:10 }}>{(fetchedAt as Date).toLocaleTimeString()}</span>}
+        </div>
       </div>
 
-      {/* ── Error banner ────────────────────────────────────────────────── */}
-      {error && (
-        <div style={{
-          background: 'rgba(255,0,110,0.08)', border: '1px solid rgba(255,0,110,0.25)',
-          borderRadius: 8, padding: '10px 14px', fontSize: 11, color: C.pink, marginBottom: 16,
-        }}>
-          {error}
-        </div>
-      )}
-
-      {/* ── KPI Cards ───────────────────────────────────────────────────── */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: `repeat(auto-fill, minmax(160px, 1fr))`,
-        gap: 10, marginBottom: 20,
-      }}>
-        {loading && conf.kpis.map((k, i) => (
-          <div key={i} style={{
-            background: C.panel, border: `1px solid ${C.border}`, borderRadius: 10,
-            padding: '14px 16px', minHeight: 80,
-            animation: 'dash-pulse 1.5s ease-in-out infinite',
-          }} />
-        ))}
-
-        {!loading && kpis.map((kpi, i) => (
-          <div key={i} style={{
-            background: C.panel,
-            border: `1px solid ${C.border}`,
-            borderLeft: `3px solid ${kpi.color}`,
-            borderRadius: 10, padding: '14px 16px',
-            display: 'flex', flexDirection: 'column', gap: 8,
-            transition: 'border-color 0.2s',
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ color: kpi.color, opacity: 0.85 }}>{ICONS[kpi.icon]}</span>
-              <span style={{ fontSize: 10, color: C.dim, fontWeight: 500, letterSpacing: '0.04em' }}>
-                {kpi.label}
-              </span>
-            </div>
-            <div style={{ fontSize: 26, fontWeight: 900, color: kpi.color, lineHeight: 1 }}>
-              {kpi.value === '—' ? (
-                <span style={{ fontSize: 18, color: C.dim }}>—</span>
-              ) : (
-                <>
-                  {typeof kpi.value === 'number' ? kpi.value.toLocaleString() : kpi.value}
-                  {kpi.unit && <span style={{ fontSize: 13, color: `${kpi.color}99`, marginLeft: 2 }}>{kpi.unit}</span>}
-                </>
-              )}
-            </div>
-          </div>
-        ))}
+      {/* KPI Strip */}
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(6,1fr)', gap:10, padding:'12px 20px', flexShrink:0 }}>
+        {kpis.length === 0 && loading
+          ? Array.from({length:6}).map((_,i) => (
+              <div key={i} style={{ background:'rgba(0,14,28,.92)', borderRadius:8, padding:'14px 16px', borderTop:'2px solid rgba(0,245,255,.15)', animation:`sdPulse 1.4s ease ${i*0.1}s infinite` }}>
+                <div style={{ height:22, background:'rgba(255,255,255,.06)', borderRadius:3, marginBottom:6 }} />
+                <div style={{ height:10, background:'rgba(255,255,255,.03)', borderRadius:3, width:'55%' }} />
+              </div>
+            ))
+          : kpis.slice(0,6).map((k,i) => {
+              const col = k.color || barColours[i % barColours.length];
+              const v = k.value;
+              const display = v === null
+                ? (k.loading ? '…' : '—')
+                : (v >= 1_000_000 ? `${(v/1_000_000).toFixed(1)}M` : v >= 10_000 ? `${(v/1_000).toFixed(0)}k` : v >= 1_000 ? `${(v/1_000).toFixed(1)}k` : v.toLocaleString());
+              const sfx = k.unit || '';
+              return (
+                <div key={k.label} className="sd-kpi" style={{ background:'rgba(0,14,28,.92)', border:`1px solid ${col}22`, borderTop:`2px solid ${col}`, borderRadius:8, padding:'14px 16px', animation:`sdFadeIn .35s ease ${i*55}ms both` }}>
+                  <div style={{ color:col, fontSize:22, fontWeight:800, letterSpacing:'-.02em', lineHeight:1 }}>
+                    {display}{sfx && <span style={{ fontSize:11, marginLeft:3, opacity:.7 }}>{sfx}</span>}
+                  </div>
+                  <div style={{ color:'rgba(148,163,184,.7)', fontSize:9, fontWeight:600, letterSpacing:'.12em', textTransform:'uppercase', marginTop:4 }}>{k.label}</div>
+                </div>
+              );
+            })
+        }
       </div>
 
-      {/* ── Bar Chart ───────────────────────────────────────────────────── */}
-      {conf.chart && !loading && chartData.length > 0 && (
-        <div style={{
-          background: C.panel, border: `1px solid ${C.border}`,
-          borderRadius: 12, padding: '16px 18px', marginBottom: 16,
-        }}>
-          <div style={{
-            fontSize: 11, fontWeight: 700, color: accent,
-            letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 14,
-          }}>
-            {conf.chart.title}
-          </div>
-          <ResponsiveContainer width="100%" height={180}>
-            <BarChart data={chartData} margin={{ top: 0, right: 4, bottom: 24, left: 0 }}>
-              <XAxis
-                dataKey="label"
-                tick={{ fill: C.dim, fontSize: 9 }}
-                axisLine={{ stroke: C.border }}
-                tickLine={false}
-                angle={-30}
-                textAnchor="end"
-                interval={0}
-              />
-              <YAxis
-                tick={{ fill: C.dim, fontSize: 9 }}
-                axisLine={false}
-                tickLine={false}
-                width={28}
-              />
-              <Tooltip content={<NeonTooltip />} cursor={{ fill: `${accent}08` }} />
-              <Bar dataKey="value" radius={[3, 3, 0, 0]}>
-                {chartData.map((_, idx) => (
-                  <Cell key={idx} fill={barColors[idx % barColors.length]} fillOpacity={0.85} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      )}
+      {/* Charts Row 1: 3 columns */}
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:12, padding:'0 20px 12px', flexShrink:0 }}>
 
-      {/* ── Empty state (all KPIs are 0 or '—') ────────────────────────── */}
-      {!loading && !error && kpis.length > 0 && kpis.every(k => k.value === 0 || k.value === '—') && (
-        <div style={{
-          background: C.panel, border: `1px solid ${C.border}`,
-          borderRadius: 12, padding: '28px 24px', textAlign: 'center',
-          color: C.dim, fontSize: 11,
-        }}>
-          <Database size={22} style={{ color: accent, opacity: 0.5, marginBottom: 10 }} />
-          <div style={{ fontWeight: 700, marginBottom: 6, color: C.text }}>No data yet</div>
-          <div>
-            Connect and populate your Supabase tables to see live metrics here.
-          </div>
-          {fetchedAt && (
-            <div style={{ marginTop: 12, fontSize: 9, color: C.dim }}>
-              Last checked {fetchedAt.toLocaleTimeString()}
-            </div>
+        {/* Donut / Pie */}
+        <div className="sd-panel" style={{ background:'rgba(0,14,28,.92)', border:'1px solid rgba(0,245,255,.12)', padding:'12px 16px' }}>
+          <div style={{ color:'#e2e8f0', fontSize:10, fontWeight:600, letterSpacing:'.1em', textTransform:'uppercase', opacity:.75, marginBottom:6 }}>Composition</div>
+          {kpis.some(k=>k.value!==null&&(k.value as number)>0) ? (
+            <ResponsiveContainer width="100%" height={200}>
+              <PieChart>
+                <Pie
+                  data={kpis.filter(k=>k.value!==null&&(k.value as number)>0).map((k,i)=>({ name:k.label, value:k.value as number, color:k.color||barColours[i%barColours.length] }))}
+                  cx="50%" cy="50%" innerRadius={52} outerRadius={82} dataKey="value" paddingAngle={2} strokeWidth={0}
+                >
+                  {kpis.filter(k=>k.value!==null&&(k.value as number)>0).map((k,i)=>(
+                    <Cell key={i} fill={k.color||barColours[i%barColours.length]} />
+                  ))}
+                </Pie>
+                <Tooltip contentStyle={{ background:'rgba(2,14,28,.97)', border:'1px solid rgba(0,245,255,.15)', borderRadius:6, color:'#e2e8f0', fontSize:11 }} formatter={(v:any)=>[typeof v==='number'?v.toLocaleString():v,'']} />
+                <Legend iconType="circle" iconSize={7} formatter={(v:any)=><span style={{ color:'rgba(148,163,184,.6)', fontSize:9 }}>{v}</span>} />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <div style={{ height:200, display:'flex', alignItems:'center', justifyContent:'center', color:'rgba(148,163,184,.3)', fontSize:11 }}>{loading ? 'Loading…' : 'No data yet'}</div>
           )}
         </div>
-      )}
 
-      {/* ── Footer ──────────────────────────────────────────────────────── */}
-      {fetchedAt && !loading && (
-        <div style={{ fontSize: 9, color: C.dim, marginTop: 8 }}>
-          Data fetched from Supabase · {fetchedAt.toLocaleTimeString()} ·{' '}
-          <span style={{ color: accent }}>project vbidhkvzjigatfygnycg</span>
+        {/* Vertical Bar — Metrics Overview */}
+        <div className="sd-panel" style={{ background:'rgba(0,14,28,.92)', border:'1px solid rgba(0,245,255,.12)', padding:'12px 16px' }}>
+          <div style={{ color:'#e2e8f0', fontSize:10, fontWeight:600, letterSpacing:'.1em', textTransform:'uppercase', opacity:.75, marginBottom:6 }}>Metrics Overview</div>
+          {kpis.some(k=>k.value!==null) ? (
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart
+                data={kpis.slice(0,8).filter(k=>k.value!==null).map((k,i)=>({ name:k.label.split(' ').slice(-1)[0], full:k.label, value:k.value as number }))}
+                margin={{ top:4, right:6, bottom:30, left:0 }}
+              >
+                <XAxis dataKey="name" tick={{ fill:'rgba(148,163,184,.6)', fontSize:9 }} angle={-35} textAnchor="end" interval={0} />
+                <YAxis tick={{ fill:'rgba(148,163,184,.6)', fontSize:9 }} />
+                <Tooltip contentStyle={{ background:'rgba(2,14,28,.97)', border:'1px solid rgba(0,245,255,.15)', borderRadius:6, color:'#e2e8f0', fontSize:11 }} formatter={(v:any,_:any,p:any)=>[typeof v==='number'?v.toLocaleString():v, p?.payload?.full||'']} />
+                <Bar dataKey="value" radius={[3,3,0,0]}>
+                  {kpis.slice(0,8).filter(k=>k.value!==null).map((k,i)=>(<Cell key={i} fill={k.color||barColours[i%barColours.length]} />))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div style={{ height:200, display:'flex', alignItems:'center', justifyContent:'center', color:'rgba(148,163,184,.3)', fontSize:11 }}>{loading ? 'Loading…' : 'No data yet'}</div>
+          )}
         </div>
-      )}
 
-      <style>{`
-        @keyframes dash-spin {
-          from { transform: rotate(0deg); }
-          to   { transform: rotate(360deg); }
-        }
-        @keyframes dash-pulse {
-          0%, 100% { opacity: 0.4; }
-          50%       { opacity: 0.7; }
-        }
-      `}</style>
+        {/* Horizontal Bar — Ranked or chartData */}
+        <div className="sd-panel" style={{ background:'rgba(0,14,28,.92)', border:'1px solid rgba(0,245,255,.12)', padding:'12px 16px' }}>
+          <div style={{ color:'#e2e8f0', fontSize:10, fontWeight:600, letterSpacing:'.1em', textTransform:'uppercase', opacity:.75, marginBottom:6 }}>
+            {chartData.length > 0 ? 'Category Breakdown' : 'Ranked'}
+          </div>
+          {(() => {
+            const rows = chartData.length > 0
+              ? chartData.slice(0,8)
+              : [...kpis].filter(k=>k.value!==null).sort((a,b)=>(b.value as number)-(a.value as number)).slice(0,8).map((k,i)=>({ label:k.label, value:k.value as number }));
+            return rows.length > 0 ? (
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={rows} layout="vertical" margin={{ top:4, right:20, bottom:4, left:68 }}>
+                  <XAxis type="number" tick={{ fill:'rgba(148,163,184,.6)', fontSize:9 }} />
+                  <YAxis type="category" dataKey="label" tick={{ fill:'rgba(148,163,184,.6)', fontSize:8 }} width={66} />
+                  <Tooltip contentStyle={{ background:'rgba(2,14,28,.97)', border:'1px solid rgba(0,245,255,.15)', borderRadius:6, color:'#e2e8f0', fontSize:11 }} formatter={(v:any)=>[typeof v==='number'?v.toLocaleString():v,'']} />
+                  <Bar dataKey="value" radius={[0,3,3,0]}>
+                    {rows.map((_:any,i:number)=>(<Cell key={i} fill={barColours[i%barColours.length]} opacity={0.88} />))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            ) : <div style={{ height:200, display:'flex', alignItems:'center', justifyContent:'center', color:'rgba(148,163,184,.3)', fontSize:11 }}>{loading ? 'Loading…' : 'No data yet'}</div>;
+          })()}
+        </div>
+      </div>
+
+      {/* Charts Row 2: 2 columns */}
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, padding:'0 20px 20px', flexShrink:0 }}>
+
+        {/* Value Distribution */}
+        <div className="sd-panel" style={{ background:'rgba(0,14,28,.92)', border:'1px solid rgba(0,245,255,.12)', padding:'12px 16px' }}>
+          <div style={{ color:'#e2e8f0', fontSize:10, fontWeight:600, letterSpacing:'.1em', textTransform:'uppercase', opacity:.75, marginBottom:6 }}>Value Distribution</div>
+          {kpis.some(k=>k.value!==null) ? (
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart
+                data={kpis.filter(k=>k.value!==null).map((k,i)=>({ name:k.label.split(' ').map((w:string)=>w[0]||'').join('').toUpperCase(), full:k.label, value:k.value as number }))}
+                margin={{ top:4, right:6, bottom:20, left:0 }}
+              >
+                <XAxis dataKey="name" tick={{ fill:'rgba(148,163,184,.6)', fontSize:9 }} />
+                <YAxis tick={{ fill:'rgba(148,163,184,.6)', fontSize:9 }} />
+                <Tooltip contentStyle={{ background:'rgba(2,14,28,.97)', border:'1px solid rgba(0,245,255,.15)', borderRadius:6, color:'#e2e8f0', fontSize:11 }} formatter={(v:any,_:any,p:any)=>[typeof v==='number'?v.toLocaleString():v, p?.payload?.full||'']} />
+                <Bar dataKey="value" radius={[3,3,0,0]}>
+                  {kpis.filter(k=>k.value!==null).map((_:any,i:number)=>(<Cell key={i} fill={barColours[i%barColours.length]} opacity={0.88} />))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div style={{ height:220, display:'flex', alignItems:'center', justifyContent:'center', color:'rgba(148,163,184,.3)', fontSize:11 }}>{loading ? 'Loading…' : 'No data yet'}</div>
+          )}
+        </div>
+
+        {/* Score Matrix */}
+        <div className="sd-panel" style={{ background:'rgba(0,14,28,.92)', border:'1px solid rgba(0,245,255,.12)', padding:'12px 16px' }}>
+          <div style={{ color:'#e2e8f0', fontSize:10, fontWeight:600, letterSpacing:'.1em', textTransform:'uppercase', opacity:.75, marginBottom:8 }}>Score Matrix</div>
+          {kpis.some(k=>k.value!==null) ? (() => {
+            const loaded = kpis.filter(k=>k.value!==null);
+            const maxV = Math.max(...loaded.map(k=>k.value as number), 1);
+            return (
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:5 }}>
+                {loaded.slice(0,9).map((k,i) => {
+                  const col = k.color || barColours[i%barColours.length];
+                  const pct = Math.min(100, Math.round(((k.value as number)/maxV)*100));
+                  const v = k.value as number;
+                  const disp = v>=1_000_000?`${(v/1_000_000).toFixed(1)}M`:v>=1_000?`${(v/1_000).toFixed(1)}k`:v.toLocaleString();
+                  return (
+                    <div key={k.label} style={{ background:`${col}10`, border:`1px solid ${col}28`, borderRadius:6, padding:'8px 9px' }}>
+                      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:4 }}>
+                        <span style={{ color:'rgba(148,163,184,.6)', fontSize:7.5, textTransform:'uppercase', letterSpacing:'.06em', overflow:'hidden', whiteSpace:'nowrap', textOverflow:'ellipsis', maxWidth:'68%' }}>{k.label}</span>
+                        <span style={{ color:col, fontSize:8, fontWeight:700 }}>{pct}%</span>
+                      </div>
+                      <div style={{ height:2.5, background:`${col}1a`, borderRadius:2, overflow:'hidden', marginBottom:5 }}>
+                        <div style={{ height:'100%', width:`${pct}%`, background:col, borderRadius:2, transition:'width .6s ease' }} />
+                      </div>
+                      <div style={{ color:col, fontSize:13, fontWeight:800, lineHeight:1 }}>
+                        {disp}
+                        {k.unit && <span style={{ fontSize:8.5, opacity:.65, marginLeft:2 }}>{k.unit}</span>}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })() : (
+            <div style={{ height:220, display:'flex', alignItems:'center', justifyContent:'center', color:'rgba(148,163,184,.3)', fontSize:11 }}>{loading ? 'Loading…' : 'No data yet'}</div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
