@@ -4,9 +4,9 @@
  * Follows the exact BMS tab-bar pattern.
  */
 import { lazy, Suspense, useState } from 'react';
-import { Activity, BookOpen, Cpu, Database, ShieldCheck, Users } from 'lucide-react';
+import { Activity, BookOpen, Cpu, Database, ShieldCheck, Users , LayoutDashboard } from 'lucide-react';
 import type { ActiveView } from '../../types';
-import SectionDashboard from '../Dashboard/SectionDashboard';
+const SectionDashboard = lazy(() => import('../Dashboard/SectionDashboard'));
 
 const ADMIN_Identity  = lazy(() => import('./IdentityManager'));
 const ADMIN_Activity  = lazy(() => import('./ActivityLog'));
@@ -28,6 +28,8 @@ function Spinner() {
 }
 
 const MAIN_TABS = [
+  { id: 'dashboard' as const, label: 'Dashboard', icon: <LayoutDashboard size={13}/> },
+
   { id: 'identity'  as const, label: 'Identity Manager',   icon: <Users size={13}/> },
   { id: 'activity'  as const, label: 'Activity Log',       icon: <Activity size={13}/> },
   { id: 'mindmap'   as const, label: 'Platform Mind Map',  icon: <Cpu size={13}/> },
@@ -81,6 +83,11 @@ export default function AdminSection({
       {/* ââ Content area ââââââââââââââââââââââââââââââââââââââââââââââââââââ */}
       <div style={{ flex: 1, minHeight: 0, position: 'relative', overflow: 'hidden' }}>
         <Suspense fallback={<Spinner />}>
+        {tab === 'dashboard' && (
+          <Suspense fallback={<div style={{padding:'1.5rem',color:'#a855f7',textAlign:'center',opacity:0.7,fontSize:'12px'}}>Loading dashboard…</div>}>
+            <SectionDashboard sectionId="admin" accent="#a855f7" />
+          </Suspense>
+        )}
           {tab === 'identity' && (
             <div style={{ position:'absolute', inset:0, overflowY:'auto' }}>
               <ADMIN_Identity />
