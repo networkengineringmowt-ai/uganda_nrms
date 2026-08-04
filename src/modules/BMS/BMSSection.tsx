@@ -6,7 +6,7 @@
  */
 import { lazy, Suspense, useState } from 'react';
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
-import SectionDashboard from '../Dashboard/SectionDashboard';
+const SectionDashboard = lazy(() => import('../Dashboard/SectionDashboard'));
 import {
   LayoutDashboard, Map, Table2, BarChart3,
   ClipboardCheck, Activity, Wrench, AlertTriangle, Camera, Hammer,
@@ -144,7 +144,7 @@ export default function BMSSection() {
         <Suspense fallback={<Spinner />}>
 
           {/* Tab 1: Dashboard */}
-          {mainTab === 'overview' && <BMS_Dashboard />}
+          {mainTab === 'overview' && <SectionDashboard sectionId="bms" accent="#00f5ff" />}
 
           {/* Tab 2: Structure Map (full-height, position absolute) */}
           {mainTab === 'map' && (
