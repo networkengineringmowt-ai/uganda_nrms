@@ -15,9 +15,20 @@ const N = {
 
 export default function GisEnterpriseSection() {
   const [wmsOnline, setWmsOnline] = useState<boolean | null>(null);
+  const [tab, setTab] = useState('map');
 
   return (
     <div className="flex flex-col h-full bg-slate-950 p-6 overflow-y-auto">
+      {/* GisEnterprise tab nav */}
+      <div style={{ display: 'flex', gap: 6, marginBottom: 18 }}>
+        {['map', 'dashboard'].map(t => (
+          <button key={t} onClick={() => setTab(t)} style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '5px 14px', borderRadius: 20, border: 'none', cursor: 'pointer', background: tab === t ? '#4d9fff' : 'rgba(77,159,255,0.08)', color: tab === t ? '#020202' : 'rgba(77,159,255,0.7)', transition: 'all .15s' }}>
+            {t === 'map' ? 'GIS Map' : 'Dashboard'}
+          </button>
+        ))}
+      </div>
+      {tab === 'dashboard' && <SectionDashboard sectionId="gisenterprise" accent="#4d9fff" />}
+      {tab === 'map' && (<>
       <div className="mb-6 flex items-end justify-between">
         <div>
           <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-3">
@@ -188,6 +199,7 @@ export default function GisEnterpriseSection() {
           </div>
         </div>
       </div>
+      </>)}
     </div>
   );
 }
