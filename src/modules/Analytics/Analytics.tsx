@@ -13,8 +13,9 @@ import {
   LineChart, Line,
 } from 'recharts';
 import { NEON, REGION_NEON, Bar3D, GlowDefs, Chart3DWrap, AreaGradDefs, TT_NEON, TICK, TICK_SM, AX_LINE } from '../../lib/chart3d';
+import SectionDashboard from '../Dashboard/SectionDashboard';
 
-type Tab = 'condition' | 'age' | 'cost' | 'region' | 'radar';
+type Tab = 'condition' | 'age' | 'cost' | 'region' | 'radar' | 'dashboard';
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'condition', label: 'Condition Distribution' },
@@ -22,6 +23,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'cost',      label: 'Cost Trends' },
   { id: 'region',    label: 'Road-by-Road' },
   { id: 'radar',     label: 'Risk Radar' },
+  { id: 'dashboard', label: 'Dashboard' },
 ];
 
 export default function Analytics() {
@@ -223,6 +225,7 @@ export default function Analytics() {
         {tab === 'cost'      && <CostTab costTrend={costTrend} workOrders={workOrders} />}
         {tab === 'region'    && <RegionTab roadData={roadData} />}
         {tab === 'radar'     && <RadarTab radarData={radarData} />}
+      {tab === 'dashboard' && <SectionDashboard sectionId="analytics" accent="#00f5ff" />}
       </div>
     </div>
   );
