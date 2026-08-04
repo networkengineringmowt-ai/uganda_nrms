@@ -1,6 +1,5 @@
 import React, { Suspense, useState } from 'react';
 import { LayoutDashboard } from 'lucide-react';
-// SectionDashboard is lazy-loaded to prevent module-level init from crashing the app
 const SectionDashboard = React.lazy(() => import('../../modules/Dashboard/SectionDashboard'));
 
 export interface HubTab {
@@ -10,7 +9,6 @@ export interface HubTab {
   element: React.ReactNode;
 }
 
-// Catches render errors from SectionDashboard (Suspense only catches thrown Promises, not thrown errors)
 class DashboardErrorBoundary extends React.Component<
   { children: React.ReactNode; accent: string },
   { hasError: boolean; error: string }
@@ -39,17 +37,12 @@ export default function SectionHub({ tabs, accent = '#00f5ff', badge, sectionId 
   tabs: HubTab[]; accent?: string; badge?: string; sectionId?: string;
 }) {
   const resolvedSectionId = sectionId ?? tabs[0]?.id ?? 'default';
+  // dashTab.element is null — SectionDashboard rendered directly in content area when tab==='dashboard'
   const dashTab: HubTab = {
     id: 'dashboard',
     label: 'Dashboard',
     icon: <LayoutDashboard size={13} />,
-    element: (
-      <DashboardErrorBoundary accent={accent}>
-        <Suspense fallback={<div style={{padding:'1.5rem',color:'#00f5ff',textAlign:'center',opacity:0.7,fontSize:'12px'}}>Loading dashboard…</div>}>
-          <SectionDashboard sectionId={resolvedSectionId} accent={accent} />
-        </Suspense>
-      </DashboardErrorBoundary>
-    ),
+    element: null,
   };
   const allTabs: HubTab[] = [dashTab, ...tabs];
   const [tab, setTab] = useState(allTabs[0].id);
@@ -71,7 +64,15 @@ export default function SectionHub({ tabs, accent = '#00f5ff', badge, sectionId 
       <div style={{ flex: 1, minHeight: 0, position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, overflow: 'auto' }}>
           <Suspense fallback={<div style={{ padding: 40, color: 'rgba(148,163,184,0.7)', fontSize: 12 }}>Loading module…</div>}>
-            {active?.element}
+            {tab === 'dashboard' ? (
+              <DashboardErrorBoundary accent={accent}>
+                <Suspense fallback={<div style={{padding:'1.5rem',color:'#00f5ff',textAlign:'center',opacity:0.7,fontSize:'12px'}}>Loading dashboard…</div>}>
+                  <SectionDashboard sectionId={resolvedSectionId} accent={accent} />
+                </Suspense>
+              </DashboardErrorBoundary>
+            ) : (
+              active?.element
+            )}
           </Suspense>
         </div>
       </div>
