@@ -475,7 +475,7 @@ export default function SectionDashboard({
               </div>
             ))
           : kpis.slice(0,6).map((k,i) => {
-              const col = k.color || barColours[i % barColours.length];
+              const col = k.color || barColors[i % barColors.length];
               const v = k.value;
               const display = v === null
                 ? (k.loading ? '…' : '—')
@@ -503,11 +503,11 @@ export default function SectionDashboard({
             <ResponsiveContainer width="100%" height={200}>
               <PieChart>
                 <Pie
-                  data={kpis.filter(k=>k.value!==null&&(k.value as number)>0).map((k,i)=>({ name:k.label, value:k.value as number, color:k.color||barColours[i%barColours.length] }))}
+                  data={kpis.filter(k=>k.value!==null&&(k.value as number)>0).map((k,i)=>({ name:k.label, value:k.value as number, color:k.color||barColors[i%barColors.length] }))}
                   cx="50%" cy="50%" innerRadius={52} outerRadius={82} dataKey="value" paddingAngle={2} strokeWidth={0}
                 >
                   {kpis.filter(k=>k.value!==null&&(k.value as number)>0).map((k,i)=>(
-                    <Cell key={i} fill={k.color||barColours[i%barColours.length]} />
+                    <Cell key={i} fill={k.color||barColors[i%barColors.length]} />
                   ))}
                 </Pie>
                 <Tooltip contentStyle={{ background:'rgba(2,14,28,.97)', border:'1px solid rgba(0,245,255,.15)', borderRadius:6, color:'#e2e8f0', fontSize:11 }} formatter={(v:any)=>[typeof v==='number'?v.toLocaleString():v,'']} />
@@ -532,7 +532,7 @@ export default function SectionDashboard({
                 <YAxis tick={{ fill:'rgba(148,163,184,.6)', fontSize:9 }} />
                 <Tooltip contentStyle={{ background:'rgba(2,14,28,.97)', border:'1px solid rgba(0,245,255,.15)', borderRadius:6, color:'#e2e8f0', fontSize:11 }} formatter={(v:any,_:any,p:any)=>[typeof v==='number'?v.toLocaleString():v, p?.payload?.full||'']} />
                 <Bar dataKey="value" radius={[3,3,0,0]}>
-                  {kpis.slice(0,8).filter(k=>k.value!==null).map((k,i)=>(<Cell key={i} fill={k.color||barColours[i%barColours.length]} />))}
+                  {kpis.slice(0,8).filter(k=>k.value!==null).map((k,i)=>(<Cell key={i} fill={k.color||barColors[i%barColors.length]} />))}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
@@ -557,7 +557,7 @@ export default function SectionDashboard({
                   <YAxis type="category" dataKey="label" tick={{ fill:'rgba(148,163,184,.6)', fontSize:8 }} width={66} />
                   <Tooltip contentStyle={{ background:'rgba(2,14,28,.97)', border:'1px solid rgba(0,245,255,.15)', borderRadius:6, color:'#e2e8f0', fontSize:11 }} formatter={(v:any)=>[typeof v==='number'?v.toLocaleString():v,'']} />
                   <Bar dataKey="value" radius={[0,3,3,0]}>
-                    {rows.map((_:any,i:number)=>(<Cell key={i} fill={barColours[i%barColours.length]} opacity={0.88} />))}
+                    {rows.map((_:any,i:number)=>(<Cell key={i} fill={barColors[i%barColors.length]} opacity={0.88} />))}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -582,7 +582,7 @@ export default function SectionDashboard({
                 <YAxis tick={{ fill:'rgba(148,163,184,.6)', fontSize:9 }} />
                 <Tooltip contentStyle={{ background:'rgba(2,14,28,.97)', border:'1px solid rgba(0,245,255,.15)', borderRadius:6, color:'#e2e8f0', fontSize:11 }} formatter={(v:any,_:any,p:any)=>[typeof v==='number'?v.toLocaleString():v, p?.payload?.full||'']} />
                 <Bar dataKey="value" radius={[3,3,0,0]}>
-                  {kpis.filter(k=>k.value!==null).map((_:any,i:number)=>(<Cell key={i} fill={barColours[i%barColours.length]} opacity={0.88} />))}
+                  {kpis.filter(k=>k.value!==null).map((_:any,i:number)=>(<Cell key={i} fill={barColors[i%barColors.length]} opacity={0.88} />))}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
@@ -600,7 +600,7 @@ export default function SectionDashboard({
             return (
               <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:5 }}>
                 {loaded.slice(0,9).map((k,i) => {
-                  const col = k.color || barColours[i%barColours.length];
+                  const col = k.color || barColors[i%barColors.length];
                   const pct = Math.min(100, Math.round(((k.value as number)/maxV)*100));
                   const v = k.value as number;
                   const disp = v>=1_000_000?`${(v/1_000_000).toFixed(1)}M`:v>=1_000?`${(v/1_000).toFixed(1)}k`:v.toLocaleString();
