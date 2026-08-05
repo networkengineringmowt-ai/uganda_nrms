@@ -1,14 +1,14 @@
 /**
- * SectionDashboard — matches the RMS Overview visual style.
+ * SectionDashboard â matches the RMS Overview visual style.
  * Every section's Dashboard tab shows:
  *   1. A section-specific definition card (same as RMSDashboard in RMSSection)
- *   2. SeamlessDashboardFrame iframe (public/dashboard.html — 7-tab comprehensive view)
+ *   2. SeamlessDashboardFrame iframe (public/dashboard.html â 7-tab comprehensive view)
  */
 import React, { useRef, useEffect } from 'react';
 import {
   Shield, Layers, Activity, BarChart2, Map, BookOpen,
   TrendingUp, Settings, Wrench, MapPin, Video,
-  Briefcase, Globe, Link2, Network,
+  Briefcase, Building2, Globe, Link2, Network,
 } from 'lucide-react';
 
 const A = {
@@ -151,7 +151,7 @@ const DEFS: Record<string, Def> = {
     icon: <BookOpen size={20} />, accent: A.pink,
   },
   admin: {
-    title: 'Admin — Sources & Evidence',
+    title: 'Admin â Sources & Evidence',
     desc: (<>System administration hub for the Uganda NRMS. Manages <strong style={{ color: A.cyan }}>user roles, data-source configurations, audit logs, SQL schema documentation</strong> and evidence trails for all RMS data submissions and revisions.</>),
     chips: ['Role Management','Audit Logs','SQL Schema','Data Provenance'],
     icon: <Settings size={20} />, accent: A.cyan,
@@ -161,6 +161,12 @@ const DEFS: Record<string, Def> = {
     desc: (<>Runs <strong style={{ color: A.teal }}>HDM-4 model simulations</strong> to forecast long-term pavement deterioration, compute road user costs and generate optimised multi-year maintenance programme recommendations aligned to Uganda's annual road fund allocations.</>),
     chips: ['HDM-4 Modelling','Deterioration Forecasting','Road User Costs','Programme Optimisation'],
     icon: <TrendingUp size={20} />, accent: A.teal,
+  },
+  ducar: {
+    title: 'DUCAR — District, Urban & Community Access Roads',
+    desc: (<>The <strong style={{ color: A.orange }}>Department of Urban and Community Access Roads</strong> manages urban roads, district feeder roads, and community access routes across Uganda's 146 Local Government Units — connecting farmers, schools and health centres with the national network.</>),
+    chips: ['Urban Roads','District Feeder Roads','Community Access','Labour-Based Works','NDP IV Aligned'],
+    icon: <Building2 size={20} />, accent: A.orange,
   },
 };
 
@@ -214,7 +220,7 @@ export default function SectionDashboard({ sectionId, accent }: { sectionId: str
             display: 'flex', alignItems: 'center', justifyContent: 'center', color: acc,
           }}>{def.icon}</div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 16, fontWeight: 900, color: '#e2eaf4' }}>{def.title} — Definition</div>
+            <div style={{ fontSize: 16, fontWeight: 900, color: '#e2eaf4' }}>{def.title} â Definition</div>
             <div style={{ fontSize: 12, color: 'rgba(203,213,225,0.8)', lineHeight: 1.7, marginTop: 6 }}>{def.desc}</div>
             <div style={{ marginTop: 10, display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {def.chips.map(t => <Chip key={t} label={t} color={acc} />)}
