@@ -1,4 +1,4 @@
-// ─── Core Structure Types ────────────────────────────────────────────────────
+// âââ Core Structure Types ââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 export type StructureType = 'bridge' | 'culvert';
 export type ConditionRating = 1 | 2 | 3 | 4 | 5;
@@ -50,7 +50,7 @@ export interface Structure {
   notes: string;
 }
 
-// ─── Inspection Types ────────────────────────────────────────────────────────
+// âââ Inspection Types ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 export type InspectionType = 'Routine' | 'Principal' | 'Special' | 'Emergency';
 
@@ -61,14 +61,14 @@ export interface Inspection {
   date: string;
   inspector: string;
   type: InspectionType;
-  // NBI-style component ratings (0–9)
+  // NBI-style component ratings (0â9)
   deckRating: number;
   superstructureRating: number;
   substructureRating: number;
   channelRating: number;
   overallCondition: ConditionRating;
   // Visual
-  visualScore: number;           // 0–100
+  visualScore: number;           // 0â100
   findings: string;
   defects: string[];
   recommendations: string;
@@ -77,7 +77,7 @@ export interface Inspection {
   completedAt: string;
 }
 
-// ─── Work Order Types ────────────────────────────────────────────────────────
+// âââ Work Order Types ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 export type WorkOrderType   = 'Routine Maintenance' | 'Preventive' | 'Rehabilitation' | 'Emergency Repair' | 'Reconstruction';
 export type WorkOrderStatus = 'Planned' | 'In Progress' | 'Completed' | 'On Hold' | 'Cancelled';
@@ -102,7 +102,7 @@ export interface WorkOrder {
   notes: string;
 }
 
-// ─── Document Types ──────────────────────────────────────────────────────────
+// âââ Document Types ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 export type DocumentCategory = 'Design Drawing' | 'Inspection Report' | 'As-Built' | 'Contract' | 'Photo' | 'Maintenance Record' | 'Environmental' | 'Other';
 
@@ -121,17 +121,17 @@ export interface BridgeDocument {
   url?: string;
 }
 
-// ─── App State ───────────────────────────────────────────────────────────────
+// âââ App State âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
-// ─── Platform-level views ─────────────────────────────────────────────────────
+// âââ Platform-level views âââââââââââââââââââââââââââââââââââââââââââââââââââââ
 export type ActiveView =
   | 'platform'              // Uganda National Roads Platform dashboard
   | 'roadnetwork'           // Road network GIS map (all 1,013 links)
   | 'traffic'               // Traffic & demand analytics
   | 'roadcondition'         // Road condition & pavement data
-  | 'maintenanceprogramme'  // PMS maintenance programme — priority-ranked links
+  | 'maintenanceprogramme'  // PMS maintenance programme â priority-ranked links
   | 'projects'              // Ongoing road development projects
-  // ─── BMS sub-module views ──────────────────────────────────────────────────
+  // âââ BMS sub-module views ââââââââââââââââââââââââââââââââââââââââââââââââââ
   | 'dashboard'      // BMS structure dashboard
   | 'registry'       // Structure registry table
   | 'gismap'         // Structure GIS map
@@ -141,44 +141,45 @@ export type ActiveView =
   | 'analytics'      // BMS analytics
   | 'priority'       // Priority ranking
   | 'phototwin'      // Photo & digital twin
-  | 'networkstory'   // Uganda Road Network historical story (1986–present)
+  | 'networkstory'   // Uganda Road Network historical story (1986âpresent)
   | 'trafficanalytics'  // Traffic demand analytics dashboard
   | 'trafficsummary'   // Traffic summary tables (Road Links + Stations)
   | 'oprc'             // OPRC contracts dashboard
   | 'ndpiv'            // NDP IV investment dashboard
-  | 'overloading'      // Overloading analytics — ESAL risk index & hotspot map
+  | 'overloading'      // Overloading analytics â ESAL risk index & hotspot map
   | 'growthfactors'   // Monthly/seasonal/annual growth factors
-  // ─── New 10-module views ──────────────────────────────────────────────────
+  // âââ New 10-module views ââââââââââââââââââââââââââââââââââââââââââââââââââ
   | 'mlarchitecture'  // Interactive ML system architecture diagram
   | 'hdm4'            // HDM-4 deterioration models, calibration, CESAL calculator
   | 'projecttracker'  // Gantt/Kanban project progress tracker
-  | 'pim'             // Public Investment Management — PPPs, donor funding
+  | 'pim'             // Public Investment Management â PPPs, donor funding
   | 'budget'          // Budgeting & Maintenance planning
-  | 'lifecycle'       // Life Cycle Management — per-link asset timelines
+  | 'lifecycle'       // Life Cycle Management â per-link asset timelines
   | 'sources'           // Sources & Evidence catalogue
-  | 'tabularsummaries'  // Tabular summaries — all data tables aggregated
-  | 'bms'               // Bridge Management System — unified view (incl. Bridge Works tab)
-  | 'pms'               // Pavement Management System — unified view (NPMS)
+  | 'tabularsummaries'  // Tabular summaries â all data tables aggregated
+  | 'bms'               // Bridge Management System â unified view (incl. Bridge Works tab)
+  | 'pms'               // Pavement Management System â unified view (NPMS)
   | 'ntis'              // National Transport Information System
   | 'npms'              // National Pavement Management System
-  | 'network'           // Network Overview — 4-tab unified view
-  | 'rms'               // RMS — Road Management System hub (4-tab: overview, road map, network story, DNR RMS Engine architecture)
-  | 'casestudies'       // Global RMS Case Studies — world map, cards, comparative analytics, lessons
-  | 'roadreserve'       // Road Reserve Management — gazette status, encroachment register, reserve map
-  | 'admin'             // Admin Tools — 2-tab unified view (Mind Map + Data Audit)
+  | 'network'           // Network Overview â 4-tab unified view
+  | 'rms'               // RMS â Road Management System hub (4-tab: overview, road map, network story, DNR RMS Engine architecture)
+  | 'casestudies'       // Global RMS Case Studies â world map, cards, comparative analytics, lessons
+  | 'roadreserve'       // Road Reserve Management â gazette status, encroachment register, reserve map
+  | 'admin'             // Admin Tools â 2-tab unified view (Mind Map + Data Audit)
   | 'pendingsurveys'    // Pending condition survey submissions
-  | 'dataaudit'         // Data Audit Panel — admin-only cross-section KPI validation
-  | 'datacapture'       // Data Capture Hub — login-gated forms that write to Supabase
-  | 'mindmap'           // Platform Mind Map — 5D architectural schematic
+  | 'dataaudit'         // Data Audit Panel â admin-only cross-section KPI validation
+  | 'datacapture'       // Data Capture Hub â login-gated forms that write to Supabase
+  | 'mindmap'           // Platform Mind Map â 5D architectural schematic
   | 'gisenterprise'     // GIS Enterprise Dashboard
   | 'atc'               // ATC automatic traffic counters
   | 'bridgeworks'       // Bridge works programme
   | 'documents'         // Document store
   | 'downloads'         // Downloads centre
   | 'roadatlas'         // Road atlas
-  | 'roadvideo';        // Road video survey viewer
+  | 'roadvideo'         // Road video survey viewer
+  | 'ducar';            // DUCAR — District, Urban & Community Access Roads
 
-// ─── Road network types ───────────────────────────────────────────────────────
+// âââ Road network types âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 export type RoadClass   = 'A' | 'B' | 'C' | 'M';
 export type SurfaceType = 'Bituminous' | 'Unsealed';
 
