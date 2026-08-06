@@ -19,7 +19,7 @@ import {
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { lazy, Suspense } from 'react';
-import { Clock, Play, Pause, Radio, Wifi, BarChart3, Map as MapIcon, Table2, TrendingUp , LayoutDashboard } from 'lucide-react';
+import { Clock, Play, Pause, Radio, Wifi, BarChart3, Map as MapIcon, Table2, TrendingUp , LayoutDashboard, ShieldAlert } from 'lucide-react';
 import { useTCSStations } from '../../data/networkDB';
 
 // Sub-module lazy loads (previously separate sidebar items)
@@ -454,7 +454,7 @@ export default function TrafficSection() {
   const [isPlaying,    setIsPlaying]    = useState(false);
   const [now,          setNow]          = useState(() => new Date());
   const [selFeature,   setSelFeature]   = useState<FeatureData | null>(null);
-  const [activeTab,    setActiveTab]    = useState<'map' | 'counts' | 'trends' | 'stations'>('map');
+  const [activeTab,    setActiveTab]    = useState<'map' | 'counts' | 'trends' | 'stations' | 'roadsafety'>('map');
   const [countsTab,    setCountsTab]    = useState<'linxclass' | 'trafficanalytics' | 'trafficsummary' | 'proj2040'>('linxclass');
   const [trendsTab,    setTrendsTab]    = useState<'growthfactors' | 'seasonal' | 'overloading' | 'analytics'>('growthfactors');
   const { stations: tcsStations } = useTCSStations();
@@ -581,6 +581,7 @@ export default function TrafficSection() {
     { id: 'counts'   as const, label: 'Counts & Analysis',  icon: <Table2 size={13}/> },
     { id: 'trends'   as const, label: 'Trends & Risk',      icon: <TrendingUp size={13}/> },
     { id: 'stations' as const, label: 'Station Directory',  icon: <BarChart3 size={13}/> },
+    { id: 'roadsafety' as const, label: 'Road Safety',     icon: <ShieldAlert size={13}/> },
   ];
   const COUNTS_TABS = [
     { id: 'linxclass'       as const, label: 'Link × Class Table'       },
@@ -1265,6 +1266,174 @@ export default function TrafficSection() {
           </div>
         )}
 
+      {activeTab === 'roadsafety' && <RoadSafetyPanel />}
+
+    </div>
+  );
+}
+
+
+// ═══ Road Safety Panel ═══════════════════════════════════════════════════
+function RoadSafetyPanel() {
+  const SB_URL = (import.meta.env.VITE_SUPABASE_URL ?? '') as string;
+  const SB_KEY = (import.meta.env.VITE_SUPABASE_ANON_KEY ?? '') as string;
+
+  const [accidents, setAccidents] = useState<Record<string, unknown>[]>([]);
+  const [blackspots, setBlackspots] = useState<Record<string, unknown>[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!SB_URL) { setLoading(false); return; }
+    const h: Record<string, string> = { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` };
+    Promise.all([
+      fetch(`${SB_URL}/rest/v1/road_accidents?select=accident_date,severity,casualties,vehicles,road_name,district,cause&order=accident_date.desc&limit=5000`, { headers: h })
+        .then(r => r.ok ? r.json() as Promise<Record<string, unknown>[]> : []).catch(() => []),
+      fetch(`${SB_URL}/rest/v1/road_blackspots?select=road_name,road_number,accident_count,fatality_count&order=accident_count.desc&limit=30`, { headers: h })
+        .then(r => r.ok ? r.json() as Promise<Record<string, unknown>[]> : []).catch(() => []),
+    ]).then(([acc, bs]) => {
+      setAccidents(Array.isArray(acc) ? acc : []);
+      setBlackspots(Array.isArray(bs) ? bs : []);
+      setLoading(false);
+    });
+  }, [SB_URL]);
+
+  const total = accidents.length;
+  const bySeverity = accidents.reduce<Record<string, number>>((m, a) => {
+    const s = ((a['severity'] as string) || 'Unknown');
+    m[s] = (m[s] || 0) + 1; return m;
+  }, {});
+  const byYear = accidents.reduce<Record<string, number>>((m, a) => {
+    const y = ((a['accident_date'] as string) || '').slice(0, 4) || 'Unknown';
+    m[y] = (m[y] || 0) + 1; return m;
+  }, {});
+  const byCause = accidents.reduce<Record<string, number>>((m, a) => {
+    const c = ((a['cause'] as string) || 'Unknown');
+    m[c] = (m[c] || 0) + 1; return m;
+  }, {});
+  const byDistrict = accidents.reduce<Record<string, number>>((m, a) => {
+    const d = ((a['district'] as string) || 'Unknown');
+    m[d] = (m[d] || 0) + 1; return m;
+  }, {});
+  const totalCasualties = accidents.reduce((s, a) => s + ((a['casualties'] as number) || 0), 0);
+  const fatalCount = Object.entries(bySeverity).filter(([k]) => k.toLowerCase().includes('fatal')).reduce((s, [, v]) => s + v, 0);
+  const seriousCount = Object.entries(bySeverity).filter(([k]) => k.toLowerCase().includes('serious')).reduce((s, [, v]) => s + v, 0);
+  const minorCount = Object.entries(bySeverity).filter(([k]) => k.toLowerCase().includes('minor')).reduce((s, [, v]) => s + v, 0);
+
+  const CARD: React.CSSProperties = { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '14px 16px' };
+  const LABEL: React.CSSProperties = { fontSize: 10, color: 'rgba(148,163,184,0.7)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 };
+  const VALUE: React.CSSProperties = { fontSize: 24, fontWeight: 700, lineHeight: 1.1 };
+  const TITLE: React.CSSProperties = { fontSize: 11, fontWeight: 700, color: 'rgba(148,163,184,0.8)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 10 };
+
+  const HBar = ({ label, count, max, color }: { label: string; count: number; max: number; color: string }) => (
+    <div style={{ marginBottom: 7 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 3 }}>
+        <span style={{ color: 'rgba(226,232,240,0.85)', maxWidth: '70%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
+        <span style={{ color: 'rgba(148,163,184,0.65)' }}>{count}</span>
+      </div>
+      <div style={{ height: 6, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>
+        <div style={{ height: '100%', width: `${max ? Math.min(100, Math.round(count / max * 100)) : 0}%`, background: color, borderRadius: 3, transition: 'width 0.6s ease' }} />
+      </div>
+    </div>
+  );
+
+  if (loading) return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'rgba(148,163,184,0.45)', fontSize: 13, gap: 10 }}>
+      <ShieldAlert size={18} style={{ opacity: 0.4 }} /> Loading road safety data…
+    </div>
+  );
+
+  if (total === 0) return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 10, color: 'rgba(148,163,184,0.45)', fontSize: 13 }}>
+      <ShieldAlert size={42} style={{ opacity: 0.25 }} />
+      <div>No accident records found in <code style={{ fontFamily: 'monospace', fontSize: 11 }}>road_accidents</code> table.</div>
+      <div style={{ fontSize: 11 }}>Populate the table in Supabase to see statistics here.</div>
+    </div>
+  );
+
+  const years = Object.keys(byYear).filter(y => y !== 'Unknown').sort().reverse().slice(0, 10);
+  const maxYear = Math.max(1, ...years.map(y => byYear[y]));
+  const causeEntries = Object.entries(byCause).sort((a, b) => b[1] - a[1]).slice(0, 8);
+  const distEntries = Object.entries(byDistrict).sort((a, b) => b[1] - a[1]).slice(0, 10);
+  const sevEntries = Object.entries(bySeverity).sort((a, b) => b[1] - a[1]);
+  const maxSev = Math.max(1, sevEntries[0]?.[1] || 1);
+
+  return (
+    <div style={{ padding: '14px 16px', overflowY: 'auto', height: '100%', display: 'flex', flexDirection: 'column', gap: 14, boxSizing: 'border-box' }}>
+      {/* KPI row */}
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+        {([
+          { label: 'Total Accidents',  value: total.toLocaleString(),            color: '#ef4444' },
+          { label: 'Fatal Accidents',  value: fatalCount.toLocaleString(),       color: '#dc2626' },
+          { label: 'Serious Injuries', value: seriousCount.toLocaleString(),     color: '#f97316' },
+          { label: 'Minor Injuries',   value: minorCount.toLocaleString(),       color: '#eab308' },
+          { label: 'Total Casualties', value: totalCasualties.toLocaleString(), color: '#fb923c' },
+          { label: 'Blackspots',       value: blackspots.length.toLocaleString(), color: '#a855f7' },
+        ] as const).map(k => (
+          <div key={k.label} style={{ ...CARD, flex: '1 1 130px', minWidth: 120 }}>
+            <div style={LABEL}>{k.label}</div>
+            <div style={{ ...VALUE, color: k.color }}>{k.value}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Chart cards */}
+      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', flex: 1 }}>
+        <div style={{ ...CARD, flex: '1 1 200px' }}>
+          <div style={TITLE}>Severity Breakdown</div>
+          {sevEntries.map(([sev, cnt]) => {
+            const col = sev.toLowerCase().includes('fatal') ? '#dc2626' : sev.toLowerCase().includes('serious') ? '#f97316' : sev.toLowerCase().includes('minor') ? '#eab308' : '#64748b';
+            return <HBar key={sev} label={`${sev} (${total ? Math.round(cnt / total * 100) : 0}%)`} count={cnt} max={maxSev} color={col} />;
+          })}
+        </div>
+
+        <div style={{ ...CARD, flex: '1 1 200px' }}>
+          <div style={TITLE}>Accidents by Year</div>
+          {years.map(y => <HBar key={y} label={y} count={byYear[y]} max={maxYear} color='#ef4444' />)}
+        </div>
+
+        <div style={{ ...CARD, flex: '1 1 240px' }}>
+          <div style={TITLE}>Top Accident Causes</div>
+          {causeEntries.map(([cause, cnt]) => (
+            <HBar key={cause} label={cause} count={cnt} max={causeEntries[0]?.[1] || 1} color='#f97316' />
+          ))}
+        </div>
+
+        <div style={{ ...CARD, flex: '1 1 200px' }}>
+          <div style={TITLE}>Accidents by District</div>
+          {distEntries.map(([d, cnt]) => (
+            <HBar key={d} label={d} count={cnt} max={distEntries[0]?.[1] || 1} color='#7c3aed' />
+          ))}
+        </div>
+
+        {blackspots.length > 0 && (
+          <div style={{ ...CARD, flex: '2 1 400px' }}>
+            <div style={TITLE}>Accident Blackspots</div>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
+              <thead>
+                <tr>
+                  {['Road Name', 'Road No.', 'Accidents', 'Fatalities'].map(h => (
+                    <th key={h} style={{ textAlign: 'left', padding: '4px 8px', color: 'rgba(148,163,184,0.55)', fontWeight: 600, fontSize: 10, borderBottom: '1px solid rgba(255,255,255,0.07)' }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {blackspots.map((bs, i) => (
+                  <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                    <td style={{ padding: '5px 8px', color: 'rgba(226,232,240,0.85)' }}>{(bs['road_name'] as string) || '—'}</td>
+                    <td style={{ padding: '5px 8px', color: 'rgba(148,163,184,0.65)' }}>{(bs['road_number'] as string) || '—'}</td>
+                    <td style={{ padding: '5px 8px', color: '#ef4444', fontWeight: 600 }}>{(bs['accident_count'] as number) || 0}</td>
+                    <td style={{ padding: '5px 8px', color: '#dc2626', fontWeight: 600 }}>{(bs['fatality_count'] as number) || 0}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.28)', marginTop: 2 }}>
+        Source: road_accidents · road_blackspots — Supabase · Uganda NTIS Road Safety Module
+      </div>
     </div>
   );
 }
