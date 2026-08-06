@@ -841,6 +841,7 @@ function AllLinksTable({
       </div>
       {tab === 'dashboard' && <SectionDashboard sectionId="lifecycle" accent="#00d4aa" />}
       {tab === 'links' && (
+      <>
       <div style={{ display: 'flex', gap: 10, marginBottom: 12, flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ position: 'relative', flex: 1, minWidth: 220 }}>
           <Search size={11} style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: 'rgba(148,163,184,0.5)' }}/>
@@ -937,6 +938,7 @@ function AllLinksTable({
           Showing first 1,200 rows of {sorted.length.toLocaleString()} â narrow filters to see more.
         </div>
       )}
+      </>
       )}
     </div>
   );
