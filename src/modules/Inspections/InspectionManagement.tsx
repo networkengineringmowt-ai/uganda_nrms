@@ -46,7 +46,7 @@ export default function InspectionManagement() {
   const [tab, setTab] = useState<'content' | 'dashboard'>('content');
   return (
     <div className="flex flex-col h-full animate-fade-in">
-      {/* ── Tab nav ── */}
+      {/* ââ Tab nav ââ */}
       <div style={{ display:'flex', gap:6, padding:'8px 14px', borderBottom:'1px solid rgba(100,100,200,0.15)' }}>
         {(['content','dashboard'] as const).map(t => (
           <button key={t} onClick={() => setTab(t)} style={{ fontSize:11, fontWeight:700, letterSpacing:1, padding:'4px 14px', border:`1px solid ${t===tab?'#b967ff':'rgba(100,100,200,0.2)'}`, borderRadius:4, cursor:'pointer', background:t===tab?'#b967ff':'rgba(100,100,200,0.06)', color:t===tab?'#020202':'rgba(200,200,200,0.7)', textTransform:'uppercase' }}>
@@ -63,7 +63,7 @@ export default function InspectionManagement() {
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
             <input
               className="bms-input pl-9 py-1.5 text-xs"
-              placeholder="Search by structure, inspector…"
+              placeholder="Search by structure, inspectorâ¦"
               value={query}
               onChange={e => { setQuery(e.target.value); setPage(1); }}
             />
@@ -115,12 +115,12 @@ export default function InspectionManagement() {
           {/* Pagination */}
           <div className="flex items-center justify-between px-6 py-3 border-t border-slate-700/60 bg-slate-900/50 flex-shrink-0">
             <span className="text-xs text-slate-500">
-              Showing {((page - 1) * PAGE_SIZE) + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length}
+              Showing {((page - 1) * PAGE_SIZE) + 1}â{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length}
             </span>
             <div className="flex items-center gap-2">
-              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="bms-btn-secondary text-xs py-1 px-3 disabled:opacity-40">← Prev</button>
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="bms-btn-secondary text-xs py-1 px-3 disabled:opacity-40">â Prev</button>
               <span className="text-xs text-slate-400">Page {page} / {pageCount}</span>
-              <button onClick={() => setPage(p => Math.min(pageCount, p + 1))} disabled={page === pageCount} className="bms-btn-secondary text-xs py-1 px-3 disabled:opacity-40">Next →</button>
+              <button onClick={() => setPage(p => Math.min(pageCount, p + 1))} disabled={page === pageCount} className="bms-btn-secondary text-xs py-1 px-3 disabled:opacity-40">Next â</button>
             </div>
           </div>
         </div>
@@ -165,11 +165,12 @@ export default function InspectionManagement() {
           onClose={() => setShowForm(false)}
         />
       )}
+      </>)}
     </div>
   );
 }
 
-// ─── Table Row ────────────────────────────────────────────────────────────────
+// âââ Table Row ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function InspectionRow({ insp }: { insp: Inspection }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -206,7 +207,7 @@ function InspectionRow({ insp }: { insp: Inspection }) {
         </td>
         <td className="px-4 py-3">
           <span className={`badge ${conditionBadge(insp.overallCondition)}`}>
-            {insp.overallCondition} – {conditionLabel(insp.overallCondition)}
+            {insp.overallCondition} â {conditionLabel(insp.overallCondition)}
           </span>
         </td>
         <td className="px-4 py-3 text-xs text-slate-400 whitespace-nowrap">{formatDate(insp.nextInspection)}</td>
@@ -267,7 +268,7 @@ function RatingDot({ v }: { v: number }) {
   );
 }
 
-// ─── Log Form ─────────────────────────────────────────────────────────────────
+// âââ Log Form âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function InspectionForm({
   structures, onSave, onClose,
 }: {
@@ -328,7 +329,7 @@ function InspectionForm({
             <ClipboardCheck size={18} className="text-blue-400" />
             <span className="font-bold text-white">Log New Inspection</span>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-white">✕</button>
+          <button onClick={onClose} className="text-slate-400 hover:text-white">â</button>
         </div>
 
         <div className="p-6 grid grid-cols-2 gap-4 overflow-y-auto max-h-[70vh]">
@@ -360,11 +361,11 @@ function InspectionForm({
           <FormField label="Next Inspection Date"           type="date"   value={f.nextInspection}       onChange={v => set('nextInspection', v)} />
           <div className="col-span-2">
             <label className="bms-label">Findings</label>
-            <textarea className="bms-input h-24 resize-none" value={f.findings} onChange={e => set('findings', e.target.value)} placeholder="Describe observations…" />
+            <textarea className="bms-input h-24 resize-none" value={f.findings} onChange={e => set('findings', e.target.value)} placeholder="Describe observationsâ¦" />
           </div>
           <div className="col-span-2">
             <label className="bms-label">Recommendations</label>
-            <textarea className="bms-input h-20 resize-none" value={f.recommendations} onChange={e => set('recommendations', e.target.value)} placeholder="Actions required…" />
+            <textarea className="bms-input h-20 resize-none" value={f.recommendations} onChange={e => set('recommendations', e.target.value)} placeholder="Actions requiredâ¦" />
           </div>
         </div>
 
