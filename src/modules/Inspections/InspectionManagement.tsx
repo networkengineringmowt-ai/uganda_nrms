@@ -398,7 +398,6 @@ function FormField({
         max={max}
         onChange={e => onChange(e.target.value)}
       />
-      </>)}
 
     </div>
   );
