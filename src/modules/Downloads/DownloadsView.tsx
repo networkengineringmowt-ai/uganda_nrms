@@ -274,7 +274,6 @@ function ExportCardUI({ card, isDone }: { card: ExportCard; isDone: boolean }) {
           : <><Download size={14} /> Download</>
         }
       </button>
-      </>)}
 
     </div>
   );
