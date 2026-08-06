@@ -314,7 +314,6 @@ function WorkOrderForm({
           </button>
         </div>
       </div>
-      </>)}
 
     </div>
   );
