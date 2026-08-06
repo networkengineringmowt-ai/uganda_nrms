@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {
   Activity, Shield, Construction, Layers, Network, Building2,
   DollarSign, Clock, Database, ShieldCheck, Route, Globe, Landmark,
-  ChevronDown, Gauge, Map, Video, Construction, Hammer, FileText, Download,
+  ChevronDown, Gauge, Map, Video, Hammer, FileText, Download,
 } from 'lucide-react';
 import { useBMS } from '../../store/BMSContext';
 import { useAuth } from '../../modules/Auth/AuthContext';
