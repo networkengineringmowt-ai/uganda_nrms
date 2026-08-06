@@ -320,7 +320,6 @@ function DocUploadForm({
           <button onClick={save} className="bms-btn-primary"><Upload size={14} /> Attach</button>
         </div>
       </div>
-      </>)}
 
     </div>
   );
