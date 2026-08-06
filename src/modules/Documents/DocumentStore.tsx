@@ -162,6 +162,8 @@ export default function DocumentStore() {
           onClose={() => setShowForm(false)}
         />
       )}
+      </>
+      )}
     </div>
   );
 }
@@ -220,8 +222,6 @@ function DocRow({ doc }: { doc: BridgeDocument }) {
             </button>
           )}
         </div>
-      </>
-      )}
       </td>
     </tr>
   );
