@@ -4,7 +4,7 @@ import { useBMS } from '../../store/BMSContext';
 import { conditionColor, conditionLabel, conditionBadge, formatDate } from '../../utils/helpers';
 import type { Structure } from '../../types';
 import SectionDashboard from '../Dashboard/SectionDashboard';
-import {;
+import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis,
   CartesianGrid, Tooltip, ReferenceLine,
 } from 'recharts';
