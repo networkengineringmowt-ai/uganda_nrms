@@ -105,6 +105,8 @@ export default function ConditionAssessment() {
           )}
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 }
