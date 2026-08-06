@@ -269,7 +269,6 @@ function NetworkConditionOverview({ structures }: { structures: Structure[] }) {
           ))}
         </div>
       </div>
-      </>)}
 
     </div>
   );
