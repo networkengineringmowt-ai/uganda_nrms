@@ -236,6 +236,8 @@ export default function PriorityRanking() {
           </div>
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 }
