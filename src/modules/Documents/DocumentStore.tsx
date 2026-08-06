@@ -220,6 +220,8 @@ function DocRow({ doc }: { doc: BridgeDocument }) {
             </button>
           )}
         </div>
+      </>
+      )}
       </td>
     </tr>
   );
