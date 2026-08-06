@@ -180,6 +180,8 @@ export default function MaintenanceWorks() {
           onClose={() => setShowForm(false)}
         />
       )}
+      </>
+      )}
     </div>
   );
 }
