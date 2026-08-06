@@ -3,8 +3,8 @@ import { Activity, Search, ChevronDown, ChevronUp } from 'lucide-react';
 import { useBMS } from '../../store/BMSContext';
 import { conditionColor, conditionLabel, conditionBadge, formatDate } from '../../utils/helpers';
 import type { Structure } from '../../types';
-import {
 import SectionDashboard from '../Dashboard/SectionDashboard';
+import {;
   ResponsiveContainer, LineChart, Line, XAxis, YAxis,
   CartesianGrid, Tooltip, ReferenceLine,
 } from 'recharts';
