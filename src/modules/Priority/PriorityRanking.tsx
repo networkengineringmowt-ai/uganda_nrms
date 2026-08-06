@@ -3,8 +3,8 @@ import { AlertTriangle, TrendingUp, Filter } from 'lucide-react';
 import { useBMS } from '../../store/BMSContext';
 import { conditionColor, conditionLabel, conditionBadge, formatUGX, CONDITION_COLORS } from '../../utils/helpers';
 import type { Structure } from '../../types';
-import {
 import SectionDashboard from '../Dashboard/SectionDashboard';
+import {
   ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Cell,
 } from 'recharts';
 
