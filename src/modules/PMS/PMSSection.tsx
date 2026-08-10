@@ -8,7 +8,7 @@ const RoadConditionView = lazy(() => import('../RoadCondition/RoadConditionView'
 const PavementCatalogue = lazy(() => import('./PavementCatalogue'));
 const AIVisionDashboard = lazy(() => import('./AIVisionDashboard'));
 const DigitalTwin = lazy(() => import('./DigitalTwin'));
-const NPMSSection = lazy(() => import('../../sections/NPMSSection'));
+// NPMSSection removed — was imported from '../../sections/NPMSSection' which does not exist
 const LifecycleView = lazy(() => import('../Lifecycle/LifecycleView'));
 const RoadVideoView = lazy(() => import('../RoadVideoView/RoadVideoView'));
 
@@ -26,20 +26,20 @@ function Spinner() {
 
 type MainTab = 'dashboard' | 'conditionmap' | 'surveys' | 'analytics' | 'lifecycle' | 'design';
 
-// 6 sub-tabs â all PMS content merged, no duplicates:
-//   Dashboard          = cross-section analytics + national pavement infographics
-//   Condition Map      = network condition map
-//   Inventory & Surveys= inventory/surveys + road video survey
-//   Analytics          = deterioration + pavement age + FWD/structural
-//   Life Cycle         = life cycle management
-//   Design & AI Tools  = design catalogue + AI defect vision + 3D digital twin
+// 6 sub-tabs — all PMS content merged, no duplicates:
+// Dashboard  = section KPIs + condition distribution + summary (Supabase live)
+// Condition Map = network condition map
+// Inventory & Surveys = inventory/surveys + road video survey
+// Analytics = deterioration + pavement age + FWD/structural
+// Life Cycle = life cycle management
+// Design & AI Tools = design catalogue + AI defect vision + 3D digital twin
 const MAIN_TABS: Array<{ id: MainTab; label: string }> = [
-  { id: 'dashboard',    label: 'Dashboard' },
+  { id: 'dashboard',  label: 'Dashboard' },
   { id: 'conditionmap', label: 'Condition Map' },
-  { id: 'surveys',      label: 'Inventory & Surveys' },
-  { id: 'analytics',    label: 'Analytics & Deterioration' },
-  { id: 'lifecycle',    label: 'Life Cycle Management' },
-  { id: 'design',       label: 'Design Catalogue & AI Tools' },
+  { id: 'surveys',    label: 'Inventory & Surveys' },
+  { id: 'analytics',  label: 'Analytics & Deterioration' },
+  { id: 'lifecycle',  label: 'Life Cycle Management' },
+  { id: 'design',     label: 'Design Catalogue & AI Tools' },
 ];
 
 const Block = ({ children }: { children: React.ReactNode }) => (
@@ -94,10 +94,9 @@ export default function PMSSection() {
       <main style={{ flex: 1, minHeight: 0,
         overflow: mainTab === 'conditionmap' ? 'hidden' : 'auto' }}>
         <Suspense fallback={<Spinner />}>
-          {mainTab === 'dashboard' && (<>
-            <Block><CrossSectionAnalytics /></Block>
-            <Block><NPMSSection /></Block>
-          </>)}
+          {mainTab === 'dashboard' && (
+            <SectionDashboard sectionId="pms" accent="#4d9fff" />
+          )}
           {mainTab === 'conditionmap' && (
             <RoadConditionView activeTab={'conditionmap' as RoadConditionTabId} embedded />
           )}
@@ -106,6 +105,7 @@ export default function PMSSection() {
             <Block><RoadVideoView /></Block>
           </>)}
           {mainTab === 'analytics' && (<>
+            <Block><CrossSectionAnalytics /></Block>
             <Block><RoadConditionView activeTab={'analytics' as RoadConditionTabId} embedded /></Block>
             <Block><RoadConditionView activeTab={'age' as RoadConditionTabId} embedded /></Block>
             <Block><RoadConditionView activeTab={'fwd' as RoadConditionTabId} embedded /></Block>
