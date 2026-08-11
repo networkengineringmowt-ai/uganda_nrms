@@ -9,7 +9,7 @@ import {
 import {
   Landmark, MapPin, FileText, Gavel, AlertTriangle, ShieldAlert, Download,
   Filter, ChevronRight, Building2, Sprout, Megaphone, Cable, X,
-  ClipboardList, CheckCircle2, Clock,
+  ClipboardList, CheckCircle2, Clock, LayoutDashboard,
 } from 'lucide-react';
 import { hexRgb } from '../../lib/chart3d';
 import { ModuleNavBar } from '../../shared/ModuleNavBar';
