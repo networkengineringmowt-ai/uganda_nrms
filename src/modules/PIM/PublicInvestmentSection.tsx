@@ -163,7 +163,7 @@ export default function PublicInvestmentSection() {
           <div>
             <div style={{ fontSize: 18, fontWeight: 900, color: '#e2eaf4' }}>Public Investment Management</div>
             <div style={{ fontSize: 11, color: 'rgba(148,163,184,0.65)', marginTop: 1 }}>
-              Uganda national roads financing Â· PPPs Â· donor frameworks Â· NDP IV investment plan
+              Uganda national roads financing · PPPs · donor frameworks · NDP IV investment plan
             </div>
           </div>
         </div>
@@ -205,6 +205,8 @@ export default function PublicInvestmentSection() {
           );
         })}
       </div>
+
+      {tab === 'dashboard' && <SectionDashboard sectionId="pim" accent={C.yellow} />}
 
       {/* PIM Framework */}
       {tab === 'pim' && (
@@ -372,7 +374,7 @@ export default function PublicInvestmentSection() {
                   <span style={{ fontSize: 11, fontWeight: 800, color: '#d4dde8' }}>{d.donor}</span>
                   <span style={{ fontSize: 10, fontWeight: 800, color: C.yellow }}>{d.share}</span>
                 </div>
-                <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.6)' }}>{d.focus} Â· {d.active}</div>
+                <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.6)' }}>{d.focus} · {d.active}</div>
               </div>
             ))}
           </div>
