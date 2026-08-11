@@ -22,6 +22,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - name: Set up Node.js 20
         uses: actions/setup-node@v4
@@ -36,7 +38,7 @@ jobs:
 
       # Build the platform directly with Vite. We deliberately skip `npm run
       # build` because that also runs the local-only `export-data` (Python,
-      # reads G: Drive) and `tsc -b` steps, which don't belong on a CI runner —
+      # reads G: Drive) and `tsc -b` steps, which don't belong on a CI runner â
       # the app's data is already committed under public/data, and Vite bundles
       # public/ (including media) from the full checkout.
       - name: Build
