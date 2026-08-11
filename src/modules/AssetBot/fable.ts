@@ -21,7 +21,7 @@ export interface FableTurn {
 
 const MODEL = 'claude-fable-5';
 const MAX_TOKENS = 2048;
-const SERVER_URL = 'http://localhost:3001/api/bot/chat';
+const SERVER_URL = (import.meta.env.DEV ? 'http://localhost:3001/api/bot/chat' : '');
 const KEY_STORAGE = 'anthropic_api_key';
 
 // Remember a failed server probe so we don't pay the timeout on every message.
