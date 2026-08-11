@@ -30,23 +30,23 @@ const N = {
   gray:   '#94a3b8',
 };
 
-// Per-section metadata (label / icon / colour) â looked up by id.
+// Per-section metadata (label / icon / colour)  -  looked up by id.
 const SECTIONS: Record<string, Section> = {
-  rms:           { id: 'rms',           label: 'RMS â Road Mgmt System',   icon: <Route size={14}/>,        color: N.cyan   },
+  rms:           { id: 'rms',           label: 'RMS  -  Road Mgmt System',   icon: <Route size={14}/>,        color: N.cyan   },
   ntis:          { id: 'ntis',          label: 'National Transport Info',   icon: <Activity size={14}/>,     color: N.indigo },
   npms:          { id: 'npms',          label: 'National Pavement Mgmt',    icon: <Layers size={14}/>,       color: N.orange },
   roadcondition: { id: 'roadcondition', label: 'Pavement Management',      icon: <Activity size={14}/>,     color: N.orange },
-  pms:           { id: 'pms',           label: 'PMS â Pavement Mgmt',       icon: <Activity size={14}/>,     color: N.orange },
-  bms:           { id: 'bms',           label: 'BMS â Bridge Management',         icon: <Network size={14}/>,      color: N.blue   },
+  pms:           { id: 'pms',           label: 'PMS  -  Pavement Mgmt',       icon: <Activity size={14}/>,     color: N.orange },
+  bms:           { id: 'bms',           label: 'BMS  -  Bridge Management',         icon: <Network size={14}/>,      color: N.blue   },
   ducar:         { id: 'ducar',         label: 'DUCAR  -  District & Urban',       icon: <Construction size={14}/>, color: N.orange },
   roadreserve:   { id: 'roadreserve',   label: 'Road Reserve Management',   icon: <Landmark size={14}/>,     color: N.teal   },
-  traffic:       { id: 'traffic',       label: 'TIS â Traffic Information',       icon: <Layers size={14}/>,       color: N.cyan   },
+  traffic:       { id: 'traffic',       label: 'TIS  -  Traffic Information',       icon: <Layers size={14}/>,       color: N.cyan   },
   projects:      { id: 'projects',      label: 'Projects & Works',          icon: <Construction size={14}/>, color: N.green  },
   pim:           { id: 'pim',           label: 'Public Investment Mgmt',         icon: <Building2 size={14}/>,    color: N.yellow },
   budget:        { id: 'budget',        label: 'Budget & Maintenance',      icon: <DollarSign size={14}/>,   color: N.pink   },
   lifecycle:     { id: 'lifecycle',     label: 'Life Cycle Management',     icon: <Clock size={14}/>,        color: N.teal   },
   casestudies:   { id: 'casestudies',   label: 'Global Case Studies',       icon: <Globe size={14}/>,        color: N.teal   },
-  sources:       { id: 'sources',       label: 'Admin Â· Sources & Evidence',        icon: <Database size={14}/>,     color: N.gray   },
+  sources:       { id: 'sources',       label: 'Admin  -  Sources & Evidence',        icon: <Database size={14}/>,     color: N.gray   },
   admin:         { id: 'admin',         label: 'Admin Tools',               icon: <ShieldCheck size={14}/>,  color: N.cyan   },
   gisenterprise: { id: 'gisenterprise', label: 'GIS Enterprise',            icon: <Layers size={14}/>,       color: N.purple },
   atc:           { id: 'atc',           label: 'ATC Traffic Counters',      icon: <Gauge size={14}/>,        color: N.orange },
@@ -57,7 +57,7 @@ const SECTIONS: Record<string, Section> = {
   downloads:     { id: 'downloads',     label: 'Downloads',                 icon: <Download size={14}/>,     color: N.gray   },
 };
 
-// Four top-level tabs â each groups its child sections. Navigation is unchanged
+// Four top-level tabs  -  each groups its child sections. Navigation is unchanged
 // (each child still calls navigate(id)); this is a presentation/IA grouping only.
 const GROUPS: Group[] = [
   { id: 'assets',    label: 'Network & Assets',      icon: <Network size={15}/>,      color: N.cyan,   items: ['rms', 'roadcondition', 'bms', 'bridgeworks', 'roadreserve', 'roadatlas', 'roadvideo'] },
@@ -73,9 +73,9 @@ export default function Sidebar() {
 
   const criticalCount = structures.filter(s => s.conditionRating === 1).length;
 
-  // super level: dashboards & reports only â Admin Tools stays hidden
+  // super level: dashboards & reports only  -  Admin Tools stays hidden
   const isAdmin = user?.role === 'admin';
-  // FLAT nav â every section is always visible. No grouping, no accordion/collapse.
+  // FLAT nav  -  every section is always visible. No grouping, no accordion/collapse.
   // 10 top-level sections; everything else lives as tabs inside these hubs.
   const FLAT_ORDER: ActiveView[] = [
     'rms', 'pms', 'traffic', 'bms', 'ducar', 'projects',
@@ -113,7 +113,7 @@ export default function Sidebar() {
               letterSpacing: '0.12em', lineHeight: 1.2,
               textShadow: '0 0 12px rgba(0,245,255,0.5)' }}>UGROADS</div>
             <div style={{ fontSize: 8, color: 'rgba(148,163,184,0.6)', letterSpacing: '0.04em' }}>
-              Ministry of Works & Transport Â· DNR
+              Ministry of Works & Transport  -  DNR
             </div>
           </div>
         </div>
@@ -168,7 +168,7 @@ export default function Sidebar() {
       {/* Footer */}
       <div style={{ padding: '8px 14px', borderTop: '1px solid rgba(0,245,255,0.08)', textAlign: 'center' }}>
         <div style={{ fontSize: 7.5, color: 'rgba(100,116,139,0.45)', letterSpacing: '0.05em' }}>
-          Uganda NRMS v4.0 Â· DNR 2026 (FY25-26)
+          Uganda NRMS v4.0  -  DNR 2026 (FY25-26)
         </div>
         <div style={{ marginTop: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5 }}>
           <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#00ff88',
