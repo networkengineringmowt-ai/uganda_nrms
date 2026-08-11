@@ -1370,6 +1370,7 @@ export function DTIMSArchitecture({ navigate }: { navigate: (v: ActiveView) => v
 // Ã¢ÂÂÃ¢ÂÂ Main Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 
 const TABS = [
+  { id: 'dashboard'     as const, label: 'Dashboard',        icon: <LayoutDashboard size={13}/> },
   { id: 'overview'      as const, label: 'Overview',          icon: <LayoutDashboard size={13}/> },
   { id: 'roadmap'       as const, label: 'Road Network Map',  icon: <Map size={13}/> },
   { id: 'inventory'     as const, label: 'Road Inventory',    icon: <Database size={13}/> },
@@ -1416,7 +1417,7 @@ function SeamlessDashboardFrame() {
 
 export default function RMSSection() {
   const { navigate } = useBMS();
-  const [tab, setTab] = useState<TabId>('overview');
+  const [tab, setTab] = useState<TabId>('dashboard');
 
   const isFullHeight = tab === 'roadmap' || tab === 'networkstory';
   const contentStyle: React.CSSProperties = isFullHeight
@@ -1467,7 +1468,12 @@ export default function RMSSection() {
       <div style={contentStyle}>
 
 
-        {tab === 'overview' && (
+        {tab === 'dashboard' && (
+      <Suspense fallback={<div style={{padding:'1.5rem',color:'#00f5ff',textAlign:'center',opacity:0.7,fontSize:'12px'}}>Loading…</div>}>
+        <SectionDashboard sectionId="rms" accent="#00f5ff" />
+      </Suspense>
+    )}
+    {tab === 'overview' && (
           <>
             <RMSDashboard navigate={navigate} />
             <SeamlessDashboardFrame />
