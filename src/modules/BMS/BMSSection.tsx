@@ -1,6 +1,6 @@
 /**
  * BMSSection â€” Bridge Management System unified view.
- * Main tabs: Dashboard · Structure Map · Inventory & Condition · Bridge Works.
+ * Main tabs: Dashboard Â· Structure Map Â· Inventory & Condition Â· Bridge Works.
  * Analytics, Priority Ranking and the Digital Twin live as sub-tabs under
  * Inventory & Condition (merged from the former Analytics & Digital Twin tab).
  */
