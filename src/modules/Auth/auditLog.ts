@@ -9,7 +9,7 @@
  * nothing is lost, delivery is just deferred.
  */
 
-const AUDIT_URL = 'http://localhost:3001/api/audit';
+const AUDIT_URL = import.meta.env.DEV ? 'http://localhost:3001/api/audit' : '';
 const QUEUE_KEY = 'audit_log_queue';
 const QUEUE_CAP = 500;
 
@@ -41,6 +41,7 @@ export function logEvent(type: AuditEvent['type'], detail?: Record<string, unkno
     try {
       const ctl = new AbortController();
       const t = setTimeout(() => ctl.abort(), 2500);
+      if (!AUDIT_URL) { clearTimeout(t); return; }
       const r = await fetch(AUDIT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
