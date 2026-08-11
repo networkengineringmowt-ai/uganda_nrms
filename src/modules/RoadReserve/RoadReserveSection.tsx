@@ -236,7 +236,7 @@ function useReserveKpis() {
 
 // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 export default function RoadReserveSection() {
-  const [activeTab, setActiveTab] = useState<TabId>('overview');
+  const [activeTab, setActiveTab] = useState<TabId>('dashboard');
   const { dispatch } = useBMS();
   const kpis = useReserveKpis();
 
