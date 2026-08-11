@@ -292,7 +292,7 @@ export default function RoadReserveSection() {
         })}
       </div>
 
-          {TABS[activeTab].id === 'dashboard' && <SectionDashboard sectionId="roadreserve" />}
+          {activeTab === 'dashboard' && <SectionDashboard sectionId="roadreserve" accent="#00d4aa" />}
       {activeTab === 'overview' && (
         <OverviewTab kpis={kpis} onNavigate={(view) => dispatch({ type: 'SET_ACTIVE_VIEW', payload: view as any })} />
       )}
