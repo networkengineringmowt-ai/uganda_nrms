@@ -1,6 +1,6 @@
 /**
- * BMSSection â Bridge Management System unified view.
- * Main tabs: Dashboard Â· Structure Map Â· Inventory & Condition Â· Bridge Works.
+ * BMSSection — Bridge Management System unified view.
+ * Main tabs: Dashboard · Structure Map · Inventory & Condition · Bridge Works.
  * Analytics, Priority Ranking and the Digital Twin live as sub-tabs under
  * Inventory & Condition (merged from the former Analytics & Digital Twin tab).
  */
@@ -12,7 +12,7 @@ import {
   ClipboardCheck, Activity, Wrench, AlertTriangle, Camera, Hammer,
 } from 'lucide-react';
 
-// ââ Lazy-load all BMS sub-modules âââââââââââââââââââââââââââââââââââââââââââââ
+// ── Lazy-load all BMS sub-modules ─────────────────────────────────────────────
 const BMS_Dashboard   = lazy(() => import('../Dashboard/Dashboard'));
 const BMS_GISMap      = lazy(() => import('../GISMap/GISMapView'));
 const BMS_Registry    = lazy(() => import('../Registry/StructureRegistry'));
@@ -34,7 +34,7 @@ function Spinner() {
   );
 }
 
-// ââ Sub-tab bar for Tabs 3 and 4 ââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Sub-tab bar for Tabs 3 and 4 ──────────────────────────────────────────────
 interface SubTab {
   id: string;
   label: string;
@@ -70,7 +70,7 @@ function SubTabBar({
   );
 }
 
-// ââ Main BMS Section ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Main BMS Section ──────────────────────────────────────────────────────────
 const MAIN_TABS = [
   { id: 'overview',   label: 'Dashboard',                 icon: <LayoutDashboard size={13}/> },
   { id: 'map',        label: 'Structure Map',              icon: <Map size={13}/> },
@@ -110,7 +110,7 @@ export default function BMSSection() {
       {/* Cross-section links are hidden in the standalone NBMS build (no other sections to jump to) */}
       {!import.meta.env.VITE_STANDALONE && <CrossLinkChipBar sectionId="bms" />}
 
-      {/* ââ Main tab bar ââ */}
+      {/* ── Main tab bar ── */}
       <div style={{
         display: 'flex', gap: 2, padding: '0 14px',
         borderBottom: '1px solid rgba(77,159,255,0.15)',
@@ -134,12 +134,12 @@ export default function BMSSection() {
         })}
       </div>
 
-      {/* ââ Sub-tab bar for Inventory & Condition (incl. Analytics & Digital Twin) ââ */}
+      {/* ── Sub-tab bar for Inventory & Condition (incl. Analytics & Digital Twin) ── */}
       {mainTab === 'inventory' && (
         <SubTabBar tabs={INVENTORY_TABS} active={inventoryTab} onSelect={setInventoryTab} />
       )}
 
-      {/* ââ Content area ââ */}
+      {/* ── Content area ── */}
       <div style={contentStyle}>
         <Suspense fallback={<Spinner />}>
 
