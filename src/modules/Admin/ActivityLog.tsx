@@ -45,7 +45,7 @@ export default function ActivityLog() {
     try {
       const ctl = new AbortController();
       const t = setTimeout(() => ctl.abort(), 3000);
-      const r = await fetch(`http://localhost:3001/api/audit${m ? `?month=${m}` : ''}`, { signal: ctl.signal });
+      const r = await fetch((import.meta.env.DEV ? `http://localhost:3001/api/audit${m ? ` : '')?month=${m}` : ''}`, { signal: ctl.signal });
       clearTimeout(t);
       if (!r.ok) throw new Error(String(r.status));
       const j = await r.json();
