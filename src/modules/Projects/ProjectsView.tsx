@@ -263,7 +263,7 @@ export default function ProjectsView() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [flyTarget,  setFlyTarget]            = useState<[number, number] | null>(null);
   const [search,     setSearch]     = useState('');
-  const [regionF,    setRegionF]    = useState('all');
+  const [regionF,    setRegionF]    = useState('dashboard');
   const [statusF,    setStatusF]    = useState<'all' | 'planned' | 'ongoing' | 'complete'>('all');
   const [lightbox,   setLightbox]   = useState<{ photos: string[]; idx: number; caption: string } | null>(null);
 
