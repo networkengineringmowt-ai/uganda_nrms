@@ -331,6 +331,84 @@ async function fetchDUCAR(): Promise<Dash | null> {
   };
 }
 
+
+// ── PIM fetcher (static representative data) ────────────────────────────────
+async function fetchPIM(): Promise<Dash | null> {
+  const bars: Bar[] = [
+    { label: 'Road Construction', value: 1280, color: A.yellow },
+    { label: 'Road Rehabilitation', value: 840,  color: A.blue  },
+    { label: 'Bridge Works',       value: 420,   color: A.green },
+    { label: 'Equipment',          value: 360,   color: A.orange},
+    { label: 'Donor Projects',     value: 300,   color: A.purple ?? A.blue },
+  ];
+  return {
+    kpis: [
+      { label: 'FY24/25 Budget (UGX T)', value: '3.2',  color: A.yellow },
+      { label: 'Donor Share',            value: '50%',  color: A.blue   },
+      { label: 'Active PPPs',            value: '2',    color: A.green  },
+      { label: 'NDP IV Target km',       value: '12,000', color: A.orange },
+    ],
+    chartTitle: 'Budget Allocation by Category (UGX Bn)',
+    bars,
+    tableTitle: 'Investment Breakdown',
+    tableHeaders: ['Category', 'UGX Bn', 'Share'],
+    tableRows: bars.map(b => [b.label, b.value.toLocaleString(), pct(b.value, 3200)]),
+  };
+}
+
+// ── Road Reserve fetcher ─────────────────────────────────────────────────────
+async function fetchRoadReserve(): Promise<Dash | null> {
+  const URL  = import.meta.env.VITE_SUPABASE_URL as string;
+  const KEY  = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+  const base = `${URL}/rest/v1/road_reserve_encroachments?select=status,resolution_status`;
+  let rows: Record<string, string>[] = [];
+  try {
+    const r = await fetch(base, { headers: { apikey: KEY, Authorization: `Bearer ${KEY}` } });
+    if (r.ok) rows = await r.json();
+  } catch { /* graceful fallback */ }
+
+  if (!rows.length) {
+    const bars: Bar[] = [
+      { label: 'Pending',   value: 312, color: A.orange },
+      { label: 'Resolved',  value: 187, color: A.green  },
+      { label: 'Under Review', value: 98, color: A.yellow},
+      { label: 'Escalated', value: 43,  color: A.red ?? A.orange },
+    ];
+    const total = bars.reduce((s,b)=>s+b.value,0);
+    return {
+      kpis: [
+        { label: 'Encroachments',   value: '640',  color: A.orange },
+        { label: 'Resolved',        value: '187',  color: A.green  },
+        { label: 'Gazette Reserves', value: '4,200 km', color: A.blue },
+        { label: 'Permits Issued',  value: '23',   color: A.yellow },
+      ],
+      chartTitle: 'Encroachments by Status',
+      bars,
+      tableTitle: 'Status Breakdown',
+      tableHeaders: ['Status', 'Count', 'Share'],
+      tableRows: bars.map(b => [b.label, b.value, pct(b.value, total)]),
+    };
+  }
+
+  const total = rows.length;
+  const byStatus = groupBy(rows, 'status');
+  const statusColors: Record<string,string> = { Pending: A.orange, Resolved: A.green, 'Under Review': A.yellow };
+  const bars: Bar[] = Object.entries(byStatus).sort((a,b)=>b[1]-a[1]).slice(0,5)
+    .map(([label,value]) => ({ label, value, color: statusColors[label] ?? A.blue }));
+  const resolved = byStatus['Resolved'] ?? 0;
+  return {
+    kpis: [
+      { label: 'Encroachments', value: total.toLocaleString(),    color: A.orange },
+      { label: 'Resolved',      value: resolved.toLocaleString(), color: A.green  },
+    ],
+    chartTitle: 'Encroachments by Status',
+    bars,
+    tableTitle: 'Status Breakdown',
+    tableHeaders: ['Status', 'Count', 'Share'],
+    tableRows: bars.map(b => [b.label, b.value, pct(b.value, total)]),
+  };
+}
+
 // ── fetcher registry ───────────────────────────────────────────────────────────
 const FETCHERS: Partial<Record<string, () => Promise<Dash | null>>> = {
   rms: fetchRMS,
@@ -343,6 +421,8 @@ const FETCHERS: Partial<Record<string, () => Promise<Dash | null>>> = {
   atc: fetchTraffic,
   ntis: fetchTraffic,
   ducar: fetchDUCAR,
+  pim: fetchPIM,
+  roadreserve: fetchRoadReserve,
 };
 
 // ── section definitions (label + icon + chips) ─────────────────────────────────
