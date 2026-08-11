@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:   # allow manual runs from the Actions tab
+  workflow_dispatch:
 
 concurrency:
   group: github-pages-deploy
@@ -32,15 +32,8 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        # npm install (not ci) tolerates lock drift; legacy-peer-deps avoids
-        # ERESOLVE peer-dependency hard-fails on the runner.
         run: npm install --no-audit --no-fund --legacy-peer-deps
 
-      # Build the platform directly with Vite. We deliberately skip `npm run
-      # build` because that also runs the local-only `export-data` (Python,
-      # reads G: Drive) and `tsc -b` steps, which don't belong on a CI runner â
-      # the app's data is already committed under public/data, and Vite bundles
-      # public/ (including media) from the full checkout.
       - name: Build
         run: npx vite build
         env:
@@ -54,6 +47,3 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
           publish_branch: gh-pages
-          # No force_orphan: keep gh-pages history so each deploy is an
-          # INCREMENTAL push (only changed bundles/data) instead of re-uploading
-          # all committed media every time. Cuts deploy from ~15 min to ~1 min.
