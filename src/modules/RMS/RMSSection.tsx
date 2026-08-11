@@ -137,7 +137,7 @@ const CASE_STUDIES: CaseStudy[] = [
     lessonsDNR: 'HAPMS demonstrates the value of long-horizon (10â€“15 year) rolling works programmes. DNR should develop a 10-year rolling maintenance programme using HDM-4 multi-year analysis to reduce reactive emergency spending.',
     dataApproach: 'SCANNER surveys + surface skid resistance + structural GPR + deflectograph; all data in HAPMS central database with API access for contractors.',
     funding: 'Road Investment Strategy (RIS) â€” dedicated ring-fenced budget',
-    metrics: '97.4% network meeting serviceability standard; £6 return per £1 preventive maintenance',
+    metrics: '97.4% network meeting serviceability standard; Â£6 return per Â£1 preventive maintenance',
   },
   {
     id: 6, agency: 'DPTI / Austroads', country: 'Australia', flag: 'ðŸ‡¦ðŸ‡º', networkKm: 33_000,
@@ -249,10 +249,10 @@ const CASE_STUDIES: CaseStudy[] = [
     system: 'SGEPT / PRO-INFRA + Performance-Based Contracts',
     keyFeatures: [
       'Performance-based concession contracts on 22,000 km federal highways',
-      'SGEPT (Sistema de Gerência de Pavimentos e Tráfego) â€” national PMS',
+      'SGEPT (Sistema de GerÃªncia de Pavimentos e TrÃ¡fego) â€” national PMS',
       'SICRO cost system: standardised unit costs across all federal roads',
       'OPRC-style contracts (CREMA) on 45% of federal network',
-      'Annual SNV (Sistema Nacional de Viação) condition survey',
+      'Annual SNV (Sistema Nacional de ViaÃ§Ã£o) condition survey',
     ],
     lessonsDNR: 'Brazil\'s CREMA contracts (similar to OPRC) on dirt/gravel roads with performance standards for surface condition and drainage are a good model for DNR\'s Class C network in Northern Uganda where output-based approaches have struggled with baseline condition issues.',
     dataApproach: 'Annual automated surveys (laser profilometer + video); data stored in SGEPT and shared with concession contractors via API; public SNV portal.',
@@ -645,7 +645,7 @@ function GlobalCaseStudies() {
                       <Chip label={region} color={regCol} />
                     </div>
                     <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.65)', marginTop: 2 }}>
-                      {cs.country} · {cs.networkKm.toLocaleString()} km · {cs.system}
+                      {cs.country} Â· {cs.networkKm.toLocaleString()} km Â· {cs.system}
                     </div>
                   </div>
                   <ArrowRight size={12} style={{ color: 'rgba(100,116,139,0.4)', transform: isOpen ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }} />
@@ -815,7 +815,7 @@ const UNRA_LAYERS = [
     desc: 'Analytical engines that convert raw data into condition forecasts, priorities and costs',
     tools: [
       'HDM-4 Pavement Deterioration & Strategy Analysis',
-      'ML Multi-Task IRI Prediction (PyTorch, R²=0.93)',
+      'ML Multi-Task IRI Prediction (PyTorch, RÂ²=0.93)',
       'Bridge Condition Scoring & Priority Ranking',
       'Traffic Growth & Demand Forecasting (2016â€“2040)',
       'ESAL / Overloading Structural Damage Model (SATCC TRH4)',
@@ -1164,7 +1164,7 @@ export function DTIMSArchitecture({ navigate }: { navigate: (v: ActiveView) => v
             {/* Road inventory */}
             <ArchBox
               label="Road Inventory"
-              sub="Visual Condition · Roughness · GPS · Video · FWD/DCP · Photographs"
+              sub="Visual Condition Â· Roughness Â· GPS Â· Video Â· FWD/DCP Â· Photographs"
               color={C.teal}
               onClick={() => navigate('roadcondition')}
             />
@@ -1242,7 +1242,7 @@ export function DTIMSArchitecture({ navigate }: { navigate: (v: ActiveView) => v
                 DNR Asset Management Database
               </div>
               <div style={{ fontSize: 9, color: 'rgba(0,245,255,0.6)', textAlign: 'center', lineHeight: 1.5 }}>
-                DNR Road Management Engine · Integrated Asset DB · ML-Powered
+                DNR Road Management Engine Â· Integrated Asset DB Â· ML-Powered
               </div>
               <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 4, justifyContent: 'center' }}>
                 {['Road Network', 'Condition Data', 'Traffic Data', 'Structures', 'Maintenance History'].map(t => (
@@ -1267,7 +1267,7 @@ export function DTIMSArchitecture({ navigate }: { navigate: (v: ActiveView) => v
             {/* GIS */}
             <ArchBox
               label="GIS â€” Geographic Information System"
-              sub="Network GeoJSON · Spatial analysis · Map outputs"
+              sub="Network GeoJSON Â· Spatial analysis Â· Map outputs"
               color={C.teal}
               onClick={() => navigate('gismap')}
             />
@@ -1277,7 +1277,7 @@ export function DTIMSArchitecture({ navigate }: { navigate: (v: ActiveView) => v
             {/* RMS Reporting */}
             <ArchBox
               label="RMS Reporting Module"
-              sub="Annual reports · KPIs · Performance dashboards"
+              sub="Annual reports Â· KPIs Â· Performance dashboards"
               color={C.green}
               onClick={() => navigate('rms')}
             />
@@ -1300,14 +1300,14 @@ export function DTIMSArchitecture({ navigate }: { navigate: (v: ActiveView) => v
 
             <ArchBox
               label="LCCA â€” DNR RMS Life Cycle Cost Analysis"
-              sub="Roads + Bridges · 40-year NPV horizon"
+              sub="Roads + Bridges Â· 40-year NPV horizon"
               color={C.orange}
               onClick={() => navigate('hdm4')}
             />
 
             <ArchBox
               label="HDM-4 â€” Highway Development and Management"
-              sub="Strategy analysis · Project prioritisation · ESAL modelling"
+              sub="Strategy analysis Â· Project prioritisation Â· ESAL modelling"
               color={C.yellow}
               onClick={() => navigate('hdm4')}
             />
@@ -1320,21 +1320,21 @@ export function DTIMSArchitecture({ navigate }: { navigate: (v: ActiveView) => v
 
             <ArchBox
               label="ROMAPS â€” Routine Maintenance & Planning System"
-              sub="AWP generation · Maintenance station programming"
+              sub="AWP generation Â· Maintenance station programming"
               color={C.teal}
               onClick={() => navigate('budget')}
             />
 
             <ArchBox
               label="Road Proclamation System"
-              sub="Gazettement · Road class amendments · Reserve management"
+              sub="Gazettement Â· Road class amendments Â· Reserve management"
               color={C.blue}
               onClick={() => navigate('projects')}
             />
 
             <ArchBox
               label="Project Control System"
-              sub="NDP IV pipeline · OPRC contracts · Financial progress"
+              sub="NDP IV pipeline Â· OPRC contracts Â· Financial progress"
               color={C.green}
               onClick={() => navigate('projects')}
             />
@@ -1459,7 +1459,7 @@ export default function RMSSection() {
           );
         })}
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', paddingRight: 4 }}>
-          <Chip label="RMS v4.0 · FY25-26" color={C.cyan} />
+          <Chip label="RMS v4.0 Â· FY25-26" color={C.cyan} />
         </div>
       </div>
 
