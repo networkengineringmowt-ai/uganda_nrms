@@ -13,7 +13,7 @@
 import type { UserRole } from './authTypes';
 import { ALLOWED_USERS } from './allowedUsers';
 
-const DIR_URL   = 'http://localhost:3001/api/directory';
+const DIR_URL   = (import.meta.env.DEV ? 'http://localhost:3001/api/directory' : '');
 const LOCAL_KEY = 'idm_directory';
 
 export type AccessStatus = 'active' | 'pending' | 'revoked' | 'rejected' | 'new';
