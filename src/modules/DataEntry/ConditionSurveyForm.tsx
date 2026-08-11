@@ -101,7 +101,7 @@ function SurveyFormInner({ onClose }: Props) {
         try { return JSON.parse(localStorage.getItem('dnr_user') ?? 'null') ?? {}; }
         catch { return {}; }
       })();
-      const r = await fetch('http://localhost:3001/api/admin/road_link_condition?upsert=link_id,survey_year', {
+      const r = await fetch((import.meta.env.DEV ? 'http://localhost:3001/api/admin/road_link_condition?upsert=link_id,survey_year' : ''), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
