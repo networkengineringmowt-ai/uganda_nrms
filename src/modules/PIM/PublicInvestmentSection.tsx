@@ -146,7 +146,7 @@ const CT = ({ active, payload, label }: any) => {
 };
 
 export default function PublicInvestmentSection() {
-  const [tab, setTab] = useState<TabId>('budget');
+  const [tab, setTab] = useState<TabId>('dashboard');
 
   return (
     <div style={{ padding: '20px 18px', minHeight: '100%' }}>
