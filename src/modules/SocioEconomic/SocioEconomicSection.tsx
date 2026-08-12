@@ -191,7 +191,7 @@ const ENERGY_MIX = [
   {name:'Hydro',v:78},{name:'Thermal',v:9},{name:'Solar',v:8},
   {name:'Bagasse',v:4},{name:'Other',v:1},
 ];
-const DAM_CAPACITY = DAMS{.ap(d => ({name:d.name.replace(' Hydropower','').replace(' — Owen Falls I','').replace(' — Owen Falls II',''), mw:parseInt((d.value||'0').replace(' MW',''))||0}));
+const DAM_CAPACITY = DAMS.map(d => ({name:d.name.replace(' Hydropower','').replace(' — Owen Falls I','').replace(' — Owen Falls II',''), mw:parseInt((d.value||'0').replace(' MW',''))||0}));
 const MINERAL_TYPES = [
   {name:'Gold',n:7},{name:'Iron Ore',n:3},{name:'Cobalt/Nickel',n:3},
   {name:'Phosphate',n:2},{name:'Limestone',n:3},{name:'Others',n:7},
