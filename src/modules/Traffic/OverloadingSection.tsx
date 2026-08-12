@@ -1,10 +1,10 @@
 /**
- * OverloadingSection â Pavement overloading analytics
+ * OverloadingSection — Pavement overloading analytics
  *
  * ESAL methodology (SATCC/TRH4, standard axle = 80 kN):
- *   - HGV at legal weight: 2.4 ESALs â overloaded +25%: 5.86 ESALs (4th power law)
- *   - Bus at legal weight: 1.6 ESALs â overloaded +10%: 2.34 ESALs
- *   - Risk index = min(100, heavy_veh_per_day / 1000 Ã 100) Ã surface/class multipliers
+ *   - HGV at legal weight: 2.4 ESALs → overloaded +25%: 5.86 ESALs (4th power law)
+ *   - Bus at legal weight: 1.6 ESALs → overloaded +10%: 2.34 ESALs
+ *   - Risk index = min(100, heavy_veh_per_day / 1000 × 100) × surface/class multipliers
  */
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import {
@@ -29,7 +29,7 @@ import MapDetailPane, { StatCard, AttributeRow, SectionHeader } from '../../shar
 import SourceTableButton from '../../shared/SourceTableButton';
 import SectionDashboard from '../Dashboard/SectionDashboard';
 
-// ââ Risk colour palette âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Risk colour palette ───────────────────────────────────────────────────────
 const RISK_COLOR: Record<string, string> = {
   Critical: '#ef4444',
   High:     '#f97316',
@@ -37,7 +37,7 @@ const RISK_COLOR: Record<string, string> = {
   Low:      '#22c55e',
 };
 
-// ââ Types âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Types ─────────────────────────────────────────────────────────────────────
 interface OverloadingKPIs {
   total_links:          number;
   total_daily_esals:    number;
@@ -81,7 +81,7 @@ interface OverloadingSummary {
   link_risk_map:           Record<string, LinkRisk>;
 }
 
-// ââ Leaflet risk map layer ââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Leaflet risk map layer ────────────────────────────────────────────────────
 function RiskLayer({
   features, linkRiskMap, onSelect,
 }: {
@@ -112,7 +112,7 @@ function RiskLayer({
   return <GeoJSON data={geo as any} style={styleF as any} onEachFeature={onEach as any} />;
 }
 
-// ââ KPI neon card (ATC-style) âââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── KPI neon card (ATC-style) ─────────────────────────────────────────────────
 function hexRgbInline(hex: string) {
   if (hex.startsWith('#')) {
     return `${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)}`;
@@ -150,7 +150,7 @@ function KpiCard({ label, value, sub, color, icon }: {
   );
 }
 
-// ââ Custom donut label ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Custom donut label ────────────────────────────────────────────────────────
 function DonutLabel({ cx, cy, midAngle, outerRadius, name, value, total }: any) {
   if (!value || value / total < 0.03) return null;
   const RADIAN = Math.PI / 180;
@@ -165,7 +165,7 @@ function DonutLabel({ cx, cy, midAngle, outerRadius, name, value, total }: any) 
   );
 }
 
-// ââ Main export âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Main export ───────────────────────────────────────────────────────────────
 export default function OverloadingSection() {
   const [summary,      setSummary]      = useState<OverloadingSummary | null>(null);
   const [geoFeatures,  setGeoFeatures]  = useState<any[]>([]);
@@ -190,7 +190,7 @@ export default function OverloadingSection() {
   const linkRiskMap = summary?.link_risk_map ?? {};
   const esalBreak   = summary?.esal_breakdown_by_class ?? {};
 
-  // ESAL donut data â filter Motorcycles (=0)
+  // ESAL donut data — filter Motorcycles (=0)
   const donutData = useMemo(() => {
     const total = Object.values(esalBreak).reduce((a, b) => a + b, 0);
     return Object.entries(esalBreak)
@@ -226,7 +226,7 @@ export default function OverloadingSection() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full text-slate-500 text-sm">
-        Computing ESAL risk indicesâ¦
+        Computing ESAL risk indices…
       </div>
     );
   }
@@ -236,7 +236,7 @@ export default function OverloadingSection() {
 
       <ModuleNavBar module="TIS" />
 
-      {/* ââ Header ââ */}
+      {/* ── Header ── */}
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-xl flex items-center justify-center"
           style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.25)' }}>
@@ -245,47 +245,47 @@ export default function OverloadingSection() {
         <div>
           <h1 className="text-lg font-bold text-white">Overloading Analytics</h1>
           <p className="text-xs text-slate-400">
-            ESAL risk index Â· SATCC/TRH4 methodology Â· Uganda legal limits 10/16/24/48 t
+            ESAL risk index · SATCC/TRH4 methodology · Uganda legal limits 10/16/24/48 t
           </p>
         </div>
       </div>
 
-      {/* ââ KPI row ââ */}
+      {/* ── KPI row ── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard
           label="Total Daily ESALs"
-          value={kpis ? `${(kpis.total_daily_esals / 1_000_000).toFixed(1)}M` : 'â'}
+          value={kpis ? `${(kpis.total_daily_esals / 1_000_000).toFixed(1)}M` : '—'}
           sub="Equiv. standard axle loads / day"
           color="#ef4444"
           icon={<Activity size={18}/>}
         />
         <KpiCard
           label="Critical Risk Links"
-          value={kpis ? kpis.critical_links.toString() : 'â'}
+          value={kpis ? kpis.critical_links.toString() : '—'}
           sub={`+ ${kpis?.high_risk_links ?? 0} High risk links`}
           color="#f97316"
           icon={<AlertTriangle size={18}/>}
         />
         <KpiCard
           label="Avg Network HGV %"
-          value={kpis ? `${kpis.avg_hgv_pct.toFixed(1)}%` : 'â'}
+          value={kpis ? `${kpis.avg_hgv_pct.toFixed(1)}%` : '—'}
           sub="Heavy vehicles as % of AADT"
           color="#eab308"
           icon={<Truck size={18}/>}
         />
         <KpiCard
           label="Annual Pavement Damage"
-          value={kpis ? `${kpis.annual_esal_millions.toFixed(0)}M` : 'â'}
+          value={kpis ? `${kpis.annual_esal_millions.toFixed(0)}M` : '—'}
           sub="Million ESALs / year (network)"
           color="#a78bfa"
           icon={<Activity size={18}/>}
         />
       </div>
 
-      {/* ââ Map + Charts row ââ */}
+      {/* ── Map + Charts row ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-        {/* Overloading risk map removed â TIS Traffic Map already covers the network map */}
+        {/* Overloading risk map removed — TIS Traffic Map already covers the network map */}
 
         {/* Charts column */}
         <div className="lg:col-span-2 grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -355,11 +355,11 @@ export default function OverloadingSection() {
         </div>
       </div>
 
-      {/* ââ Regional ESALs bar chart ââ */}
+      {/* ── Regional ESALs bar chart ── */}
       <div className="bms-card">
         <div className="text-sm font-bold text-white mb-1">Daily ESAL Load by Region (thousands)</div>
         <div className="text-[10px] text-slate-500 mb-4">
-          Total estimated equivalent standard axle loads per day Â· overloaded HGV +25%, bus +10%
+          Total estimated equivalent standard axle loads per day · overloaded HGV +25%, bus +10%
         </div>
         <Chart3DWrap>
           <ResponsiveContainer width="100%" height={220}>
@@ -378,7 +378,7 @@ export default function OverloadingSection() {
         </Chart3DWrap>
       </div>
 
-      {/* ââ Top 20 overloaded roads table ââ */}
+      {/* ── Top 20 overloaded roads table ── */}
       <div className="bms-card">
         <div className="text-sm font-bold text-white mb-1 flex items-center gap-2">
           <AlertTriangle size={15} style={{ color: '#ef4444' }}/>
@@ -413,7 +413,7 @@ export default function OverloadingSection() {
                   </td>
                   <td className="py-2 px-2 font-mono text-amber-400 text-[10px]">{r.hgv_pct.toFixed(1)}%</td>
                   <td className="py-2 px-2 font-mono text-slate-200 text-[10px]">{r.estimated_daily_esals.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
-                  <td className="py-2 px-2 font-mono text-slate-300 text-[10px]">{r.pavement_damage_factor.toFixed(2)}Ã</td>
+                  <td className="py-2 px-2 font-mono text-slate-300 text-[10px]">{r.pavement_damage_factor.toFixed(2)}×</td>
                   <td className="py-2 px-2">
                     <span
                       className="text-[10px] font-bold px-2 py-0.5 rounded-full"
@@ -434,7 +434,7 @@ export default function OverloadingSection() {
         </div>
       </div>
 
-      {/* ââ Info panel ââ */}
+      {/* ── Info panel ── */}
       <div className="bms-card" style={{ borderColor: 'rgba(167,139,250,0.15)' }}>
         <div className="flex items-center gap-2 mb-4">
           <Info size={15} style={{ color: '#a78bfa' }}/>
@@ -463,11 +463,11 @@ export default function OverloadingSection() {
 
           <div>
             <div className="text-[10px] font-bold text-amber-400 uppercase tracking-wider mb-2">
-              4th Power Law â Pavement Damage
+              4th Power Law — Pavement Damage
             </div>
             <p>
-              Damage â (axle_load / standard_axle)<sup>4</sup>. Standard axle = 80 kN (8.16 t).
-              A vehicle 20% overloaded causes <span className="text-amber-300 font-semibold">2.1Ã the pavement damage</span> of
+              Damage ∝ (axle_load / standard_axle)<sup>4</sup>. Standard axle = 80 kN (8.16 t).
+              A vehicle 20% overloaded causes <span className="text-amber-300 font-semibold">2.1× the pavement damage</span> of
               a legal vehicle. At Uganda's typical +25% HGV overloading, an HGV
               generates <span className="text-red-400 font-semibold">5.86 ESALs</span> vs 2.4 at legal weight.
             </p>
@@ -478,10 +478,10 @@ export default function OverloadingSection() {
               Risk Index Calculation
             </div>
             <p>
-              <span className="text-slate-300">Base score</span> = min(100, heavy_veh_day / 1000 Ã 100).
-              Multiplied by surface vulnerability: unpaved Ã1.3, Class&nbsp;C Ã1.2.
-              Sources: SATCC/TRH4 ESAL factors Â· AFCAP Uganda overloading surveys
-              (+25% HGV, +10% bus) Â· Department of National Roads traffic count surveys 2017â2025.
+              <span className="text-slate-300">Base score</span> = min(100, heavy_veh_day / 1000 × 100).
+              Multiplied by surface vulnerability: unpaved ×1.3, Class&nbsp;C ×1.2.
+              Sources: SATCC/TRH4 ESAL factors · AFCAP Uganda overloading surveys
+              (+25% HGV, +10% bus) · Department of National Roads traffic count surveys 2017–2025.
             </p>
           </div>
         </div>
@@ -491,7 +491,7 @@ export default function OverloadingSection() {
   );
 }
 
-// âââ Reusable detail pane for Overloading ââââââââââââââââââââââââââââââââââââ
+// ─── Reusable detail pane for Overloading ────────────────────────────────────
 function OverloadingDetailPane({
   riskDist, top20, kpis, selected, onClose,
 }: {
@@ -540,9 +540,9 @@ function OverloadingDetailPane({
         }}>
           <div style={{ display:'flex', justifyContent:'space-between' }}>
             <span style={{ color:'#e2eaf4', fontWeight:700, fontFamily:'monospace', fontSize:9 }}>
-              #{i+1} {l.link_id ?? 'â'}
+              #{i+1} {l.link_id ?? '—'}
             </span>
-            <span style={{ color:'#fb923c', fontWeight:800 }}>{l.idx?.toFixed(0) ?? 'â'}</span>
+            <span style={{ color:'#fb923c', fontWeight:800 }}>{l.idx?.toFixed(0) ?? '—'}</span>
           </div>
           {l.link_name && (
             <div style={{ color:'#94a3b8', fontSize:8.5, marginTop:1 }}>{l.link_name}</div>
@@ -568,19 +568,19 @@ function OverloadingDetailPane({
         return (
           <div>
             <div style={{ fontSize:12.5, fontWeight:800, color:'#e2eaf4', marginBottom:4 }}>
-              {p?.link_name ?? p?.link_id ?? 'â'}
+              {p?.link_name ?? p?.link_id ?? '—'}
             </div>
             <div style={{ fontSize:9, color:'rgba(148,163,184,0.7)', marginBottom:10, fontFamily:'monospace' }}>
               {p?.link_id ?? ''}
             </div>
 
             <StatCard label="Risk Category" value={rc} color={c} />
-            <StatCard label="Risk Index" value={p?.idx?.toFixed(1) ?? 'â'} unit="/ 100" color={c}
-              sub={p?.idx > 60 ? 'Severe road damage risk' : p?.idx > 30 ? 'Elevated damage' : 'Lowâmoderate'} />
+            <StatCard label="Risk Index" value={p?.idx?.toFixed(1) ?? '—'} unit="/ 100" color={c}
+              sub={p?.idx > 60 ? 'Severe road damage risk' : p?.idx > 30 ? 'Elevated damage' : 'Low–moderate'} />
 
             <SectionHeader title="Loading Metrics" accent={accent} />
-            <AttributeRow label="Heavy Vehicle %" value={`${p?.hpct?.toFixed(1) ?? 'â'}%`} color="#f59e0b" mono />
-            <AttributeRow label="Daily ESALs" value={p?.esal?.toLocaleString(undefined,{maximumFractionDigits:0}) ?? 'â'} color="#fb923c" mono />
+            <AttributeRow label="Heavy Vehicle %" value={`${p?.hpct?.toFixed(1) ?? '—'}%`} color="#f59e0b" mono />
+            <AttributeRow label="Daily ESALs" value={p?.esal?.toLocaleString(undefined,{maximumFractionDigits:0}) ?? '—'} color="#fb923c" mono />
             <AttributeRow label="Risk Category" value={rc} color={c} />
 
             <div style={{
@@ -588,7 +588,7 @@ function OverloadingDetailPane({
               background: `${c}11`, border: `1px solid ${c}44`,
               fontSize:9.5, color:'#94a3b8', lineHeight:1.5,
             }}>
-              ESAL methodology â SATCC/TRH4 (4th-power damage law).
+              ESAL methodology — SATCC/TRH4 (4th-power damage law).
               Overloaded HGVs at +25% impose 5.86 ESALs vs 2.4 ESALs legal.
             </div>
           </div>
