@@ -15,7 +15,7 @@ import SourceTableButton from '../../shared/SourceTableButton';
 import MapDetailPane, { StatCard, AttributeRow, SectionHeader } from '../../shared/MapDetailPane';
 import SectionDashboard from '../Dashboard/SectionDashboard';
 
-// ââ Palette ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Palette ──────────────────────────────────────────────────────────────────
 const C = {
   teal: '#14b8a6', cyan: '#00f5ff', green: '#00ff88', yellow: '#ffd23f',
   orange: '#f97316', red: '#ef4444', purple: '#a855f7', blue: '#4d9fff',
@@ -46,7 +46,7 @@ function conditionLabel(iri: number): string {
   return 'Very Poor';
 }
 
-// ââ Types âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Types ─────────────────────────────────────────────────────────────────────
 type IntType = 'Routine' | 'Reseal' | 'Overlay' | 'Rehabilitation' | 'Reconstruction';
 type RoadClass = 'A' | 'B' | 'C' | 'M' | 'U';
 
@@ -88,7 +88,7 @@ function classifyInt(type: string): IntType {
   return 'Routine';
 }
 
-// ââ Road Link Data â synthesised at runtime from network2026.geojson ââââ
+// ── Road Link Data — synthesised at runtime from network2026.geojson ────
 //
 // Empty placeholder. The actual array is populated by useEffect in the
 // component, which reads ALL 1,013 link features from the GeoJSON and
@@ -96,7 +96,7 @@ function classifyInt(type: string): IntType {
 // derived from real completion_year + rehabilitation_year).
 const LINKS: LinkDef[] = [];
 
-// ââ Helper: build a LinkDef from a GeoJSON feature âââââââââââââââââââââââââ
+// ── Helper: build a LinkDef from a GeoJSON feature ─────────────────────────
 function featureToLink(p: Record<string, unknown>, idx: number, geom?: { type?: string; coordinates?: unknown }): LinkDef {
   const id        = String(p.link_id        ?? `Link${idx}`);
   const name      = String(p.link_nam_1     ?? p.link_name ?? id);
@@ -117,11 +117,11 @@ function featureToLink(p: Record<string, unknown>, idx: number, geom?: { type?: 
   // Cost rate (UGX million / km) by surface
   const costPerKm = surface === 'Bituminous' ? 220 : 25;
 
-  // Asset replacement value (Bn UGX): heuristic â paved 6.4 M USD/km, unpaved 0.8 M USD/km
+  // Asset replacement value (Bn UGX): heuristic — paved 6.4 M USD/km, unpaved 0.8 M USD/km
   const usdPerKmM = surface === 'Bituminous' ? 6.4 : 0.8;
   const assetValueBn = Math.round(lengthKm * usdPerKmM * 3.7) / 10; // approx in Bn UGX
 
-  // AADT 2026 â class-weighted baseline Ã length factor
+  // AADT 2026 — class-weighted baseline × length factor
   const baseAadt =
     roadClass === 'A' ? 6800 :
     roadClass === 'B' ? 1900 :
@@ -132,7 +132,7 @@ function featureToLink(p: Record<string, unknown>, idx: number, geom?: { type?: 
   const builtYear = completion > 1900 ? completion : 1985;
   const interventions: Intervention[] = [];
 
-  // Initial construction implied â not an intervention
+  // Initial construction implied — not an intervention
   if (rehabYear > 0 && rehabYear !== builtYear) {
     // Add a rehabilitation event at the rehab year
     interventions.push({
@@ -185,7 +185,7 @@ function featureToLink(p: Record<string, unknown>, idx: number, geom?: { type?: 
     currentIRI > 9 ? (surface === 'Bituminous' ? 'Severe Cracking & Potholes' : 'Gravel Loss & Erosion') :
     currentIRI > 6 ? (surface === 'Bituminous' ? 'Fatigue Cracking & Rutting' : 'Corrugation & Loose Aggregate') :
     currentIRI > 4 ? (surface === 'Bituminous' ? 'Surface Wear & Edge Crack' : 'Minor Erosion') :
-                     (surface === 'Bituminous' ? 'Good â No Distress' : 'Stable');
+                     (surface === 'Bituminous' ? 'Good — No Distress' : 'Stable');
 
   const designStandard = surface === 'Bituminous'
     ? `Class ${roadClass} ${roadClass === 'A' ? 'dual carriageway' : 'single carriageway'}`
@@ -195,7 +195,7 @@ function featureToLink(p: Record<string, unknown>, idx: number, geom?: { type?: 
     : builtYear < 2010 ? 'Multiple (DBST)'
     : 'NDPIV / OPRC contractor';
 
-  // Coords â prefer the REAL GeoJSON geometry (so every road is mapped to its
+  // Coords — prefer the REAL GeoJSON geometry (so every road is mapped to its
   // true shape); fall back to a start/end straight line, then to centre.
   let coords: [number, number][] = [];
   const gType = geom?.type;
@@ -232,7 +232,7 @@ function featureToLink(p: Record<string, unknown>, idx: number, geom?: { type?: 
 // ALL_REGIONS is now derived from loaded links inside the component.
 const ALL_CLASSES: RoadClass[] = ['A', 'B', 'C', 'M', 'U'];
 
-// ââ IRI trajectory builder ââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── IRI trajectory builder ────────────────────────────────────────────────────
 function buildIriSeries(link: LinkDef): { year: number; iri: number }[] {
   const maxIri = link.surface === 'Unsealed' ? 18 : 14;
   const growthRate = link.surface === 'Unsealed' ? 0.85 : 0.32;
@@ -270,7 +270,7 @@ function buildIriSeries(link: LinkDef): { year: number; iri: number }[] {
   return pts.filter(p => Number.isInteger(p.year));
 }
 
-// ââ Interpolate point at fraction along polyline ââââââââââââââââââââââââââââââ
+// ── Interpolate point at fraction along polyline ──────────────────────────────
 function pointAtFraction(coords: [number, number][], frac: number): [number, number] {
   if (coords.length < 2) return coords[0] ?? [1.37, 32.29];
   const segs: number[] = [];
@@ -302,14 +302,14 @@ function mapCenter(coords: [number, number][]): [number, number] {
   return [lat, lng];
 }
 
-// ââ Map controller ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Map controller ────────────────────────────────────────────────────────────
 function MapFlyTo({ center, zoom }: { center: [number, number]; zoom: number }) {
   const map = useMap();
   useEffect(() => { map.flyTo(center, zoom, { duration: 1.0 }); }, [map, center[0], center[1], zoom]); // eslint-disable-line
   return null;
 }
 
-// ââ Custom chart tooltip ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Custom chart tooltip ──────────────────────────────────────────────────────
 function SparkTip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   return (
@@ -323,7 +323,7 @@ function SparkTip({ active, payload, label }: any) {
 
 const TK = { fontSize: 8, fill: 'rgba(148,163,184,0.5)' };
 
-// ââ Timeline card âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Timeline card ─────────────────────────────────────────────────────────────
 function TimelineCard({
   year, phase, title, subtitle, color, iriBefore, iriAfter, cost, dashed,
 }: {
@@ -371,7 +371,7 @@ function TimelineCard({
             {iriBefore !== undefined && iriAfter !== undefined && (
               <span style={{ fontSize: 9, color: 'rgba(148,163,184,0.6)' }}>
                 IRI: <span style={{ color: C.red, fontWeight: 700 }}>{iriBefore}</span>
-                {' â '}
+                {' → '}
                 <span style={{ color: C.green, fontWeight: 700 }}>{iriAfter}</span> m/km
               </span>
             )}
@@ -387,9 +387,9 @@ function TimelineCard({
   );
 }
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 export default function LifecycleSection() {
-  // ââ Load ALL 1,013 road links from network2026.geojson ââââââââââââââ
+  // ── Load ALL 1,013 road links from network2026.geojson ──────────────
   const [allLinks,     setAllLinks]     = useState<LinkDef[]>([]);
   const [loading,      setLoading]      = useState(true);
   const [selectedId,   setSelectedId]   = useState<string>('');
@@ -414,15 +414,15 @@ export default function LifecycleSection() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Loading guard â show small spinner until links arrive
+  // Loading guard — show small spinner until links arrive
   const link: LinkDef = useMemo(() => {
     if (allLinks.length === 0) {
       // Stable placeholder so hooks below don't blow up before data arrives
       return {
-        id: 'â', name: 'Loadingâ¦', road: '?', region: 'Unknown',
+        id: '—', name: 'Loading…', road: '?', region: 'Unknown',
         roadClass: 'C', lengthKm: 0, surface: 'Unsealed',
-        builtYear: 2000, contractor: 'â', designStandard: 'â',
-        aadt2026: 0, dominantDefect: 'â',
+        builtYear: 2000, contractor: '—', designStandard: '—',
+        aadt2026: 0, dominantDefect: '—',
         interventions: [], currentIRI: 6.0, assetValueBn: 0,
         coords: [[1.37, 32.29], [1.38, 32.30]],
       };
@@ -432,7 +432,7 @@ export default function LifecycleSection() {
 
   const ALL_REGIONS = useMemo(() => [...new Set(allLinks.map(l => l.region))].sort(), [allLinks]);
 
-  // ââ Derived values ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Derived values ──────────────────────────────────────────────────────────
   const iriSeries  = useMemo(() => buildIriSeries(link),  [link]);
   const iriColor   = useMemo(() => conditionColor(link.currentIRI), [link]);
   const ageYears   = 2026 - link.builtYear;
@@ -440,7 +440,7 @@ export default function LifecycleSection() {
   const nextRehabYr = Math.round(2026 + Math.max(1, (8.0 - link.currentIRI) / 0.38));
   const nextRehabCostBn = +(link.lengthKm * 2200 / 1_000_000).toFixed(1);
 
-  // ââ Summary stats â across all 1,013 loaded links âââââââââââââââââââââââââââ
+  // ── Summary stats — across all 1,013 loaded links ───────────────────────────
   const statsAll = useMemo(() => {
     if (allLinks.length === 0) return { totalKm: 0, totalInts: 0, avgIri: 0, projCost2035: 0 };
     return {
@@ -451,7 +451,7 @@ export default function LifecycleSection() {
     };
   }, [allLinks]);
 
-  // ââ Filtered link list ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Filtered link list ──────────────────────────────────────────────────────
   const filteredLinks = useMemo(() => allLinks.filter(l => {
     const q = search.toLowerCase();
     const matchSearch = !q
@@ -464,7 +464,7 @@ export default function LifecycleSection() {
     return matchSearch && matchRegion && matchClass;
   }), [allLinks, search, regionFilter, classFilter]);
 
-  // ââ Intervention markers for map ââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Intervention markers for map ────────────────────────────────────────────
   const markers = useMemo(() => {
     const span = 2026 - link.builtYear;
     return link.interventions.map(iv => {
@@ -486,7 +486,7 @@ export default function LifecycleSection() {
   const center = useMemo(() => mapCenter(link.coords), [link]);
   const mapZoom = link.lengthKm > 200 ? 7 : link.lengthKm > 100 ? 8 : 10;
 
-  // ââ Glass card helper âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Glass card helper ───────────────────────────────────────────────────────
   const glass = useCallback((acc: string, extra?: CSSProperties) => ({
     background: 'rgba(10,15,30,0.7)',
     border: `1px solid rgba(${hexRgb(acc)},0.22)`,
@@ -499,7 +499,7 @@ export default function LifecycleSection() {
 
       <CrossLinkChipBar sectionId="lifecycle" />
 
-      {/* ââ BMS-style tab bar âââââââââââââââââââââââââââââââââââââââââââââââ */}
+      {/* ── BMS-style tab bar ─────────────────────────────────────────────── */}
       <div style={{
         display: 'flex', gap: 2, padding: '0 14px', flexShrink: 0,
         borderBottom: '1px solid rgba(77,159,255,0.15)',
@@ -507,7 +507,7 @@ export default function LifecycleSection() {
       }}>
         {([
           { id: 'detail', label: 'Selected Link Lifecycle' },
-          { id: 'all',    label: `All Links Table (${allLinks.length || 'â¦'})` },
+          { id: 'all',    label: `All Links Table (${allLinks.length || '…'})` },
         ] as const).map(t => {
           const isActive = (t.id === 'all') === showAllLinks;
           return (
@@ -525,7 +525,7 @@ export default function LifecycleSection() {
         })}
       </div>
 
-      {/* ââ Network coverage banner (always visible) âââââââââââââââââââââââââ */}
+      {/* ── Network coverage banner (always visible) ───────────────────────── */}
       <div style={{
         flexShrink: 0, padding: '5px 14px',
         background: 'linear-gradient(180deg, rgba(0,245,255,0.05), transparent)',
@@ -537,10 +537,10 @@ export default function LifecycleSection() {
         </span>
         <span style={{ color: '#00f5ff', fontWeight: 800 }}>{OFFICIAL_NETWORK_KM.toLocaleString()} km</span>
         <span style={{ color: 'rgba(148,163,184,0.55)' }}>total official network</span>
-        <span style={{ color: 'rgba(148,163,184,0.25)' }}>Â·</span>
-        <span style={{ color: '#00ff88', fontWeight: 800 }}>{allLinks.length || 'â¦'} links</span>
+        <span style={{ color: 'rgba(148,163,184,0.25)' }}>·</span>
+        <span style={{ color: '#00ff88', fontWeight: 800 }}>{allLinks.length || '…'} links</span>
         <span style={{ color: 'rgba(148,163,184,0.55)' }}>mapped in GeoJSON ({Math.round(statsAll.totalKm).toLocaleString()} km)</span>
-        <span style={{ color: 'rgba(148,163,184,0.25)' }}>Â·</span>
+        <span style={{ color: 'rgba(148,163,184,0.25)' }}>·</span>
         <span style={{ color: '#fb923c', fontWeight: 700 }}>{(OFFICIAL_NETWORK_KM - Math.round(statsAll.totalKm)).toLocaleString()} km gap</span>
         <span style={{ color: 'rgba(148,163,184,0.55)' }}>not yet in geodata</span>
       </div>
@@ -548,11 +548,11 @@ export default function LifecycleSection() {
       <div style={{ flex: 1, padding: '8px 14px 12px', overflowY: showAllLinks ? 'auto' : 'visible' }}>
       {loading && (
         <div style={{ textAlign: 'center', padding: 40, color: '#64748b', fontSize: 12 }}>
-          Loading 1,013 road links from network2026.geojsonâ¦
+          Loading 1,013 road links from network2026.geojson…
         </div>
       )}
 
-      {/* ââ All Links Table tab âââââââââââââââââââââââââââââââââââââââââââââ */}
+      {/* ── All Links Table tab ───────────────────────────────────────────── */}
       {showAllLinks && !loading && (
         <AllLinksTable
           links={filteredLinks}
@@ -568,7 +568,7 @@ export default function LifecycleSection() {
       {!showAllLinks && !loading && (
       <>
 
-      {/* ââ Compact KPI chips ââ */}
+      {/* ── Compact KPI chips ── */}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 10 }}>
         {[
           { label: 'Interventions', value: String(statsAll.totalInts), color: C.purple },
@@ -584,12 +584,12 @@ export default function LifecycleSection() {
         ))}
       </div>
 
-      {/* ââ 3-panel layout ââ */}
+      {/* ── 3-panel layout ── */}
       <div style={{ display: 'flex', gap: 12, flex: 1, height: 'calc(100vh - 245px)', minHeight: 420 }}>
 
-        {/* ââ Right: Intervention Map + MapDetailPane (definitive flex-row, siblings) ââ */}
+        {/* ── Right: Intervention Map + MapDetailPane (definitive flex-row, siblings) ── */}
         <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'row', alignItems: 'stretch', overflow: 'hidden', height: '100%' }}>
-        {/* Map + sparkline column â flex:1, fills remaining space to the left of MapDetailPane */}
+        {/* Map + sparkline column — flex:1, fills remaining space to the left of MapDetailPane */}
         <div style={{ ...glass(C.orange), flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           {/* Map header */}
           <div style={{ padding: '8px 12px', borderBottom: `1px solid rgba(${hexRgb(C.orange)},0.12)`, flexShrink: 0 }}>
@@ -618,14 +618,14 @@ export default function LifecycleSection() {
               <TileLayer url={ESRI_TILE_URLS.labels} attribution={ESRI_ATTRIBUTIONS.labels} opacity={0.6}/>
               <MapLegend title="Condition (IRI)" items={[
                 { color: C.green,  label: 'Good   IRI < 4' },
-                { color: C.yellow, label: 'Fair   IRI 4â6' },
-                { color: C.orange, label: 'Poor   IRI 6â9' },
-                { color: C.red,    label: 'Very Poor  IRI â¥ 9' },
+                { color: C.yellow, label: 'Fair   IRI 4–6' },
+                { color: C.orange, label: 'Poor   IRI 6–9' },
+                { color: C.red,    label: 'Very Poor  IRI ≥ 9' },
               ]} />
               <ZoomControl position="bottomright"/>
               <MapFlyTo center={center} zoom={mapZoom}/>
 
-              {/* ALL road links â every road mapped, coloured by condition (IRI).
+              {/* ALL road links — every road mapped, coloured by condition (IRI).
                   The selected link is emphasised. Click any to inspect its lifecycle. */}
               {allLinks.map((l, i) => {
                 const sel = l.id === (mapClickedLink?.id ?? selectedId);
@@ -649,8 +649,8 @@ export default function LifecycleSection() {
                 >
                   <Popup>
                     <div style={{ minWidth: 140, fontSize: 11 }}>
-                      <div style={{ fontWeight: 700, color: m.color, marginBottom: 4 }}>{m.year} â {m.label}</div>
-                      <div style={{ color: '#333' }}>IRI: {m.iriBefore} â {m.iriAfter} m/km</div>
+                      <div style={{ fontWeight: 700, color: m.color, marginBottom: 4 }}>{m.year} — {m.label}</div>
+                      <div style={{ color: '#333' }}>IRI: {m.iriBefore} → {m.iriAfter} m/km</div>
                       <div style={{ color: '#333' }}>Cost: UGX {m.costMUgx.toLocaleString()}M</div>
                     </div>
                   </Popup>
@@ -661,7 +661,7 @@ export default function LifecycleSection() {
 
         </div>{/* closes map column */}
 
-        {/* MapDetailPane â right of lifecycle map, 340px */}
+        {/* MapDetailPane — right of lifecycle map, 340px */}
         <MapDetailPane
           width={340}
           accent={C.teal}
@@ -674,12 +674,12 @@ export default function LifecycleSection() {
               .slice(0, 5);
             return (
               <div>
-                <StatCard label="Total Links" value={allLinks.length || 'â¦'} color={C.teal}
+                <StatCard label="Total Links" value={allLinks.length || '…'} color={C.teal}
                   sub="from network2026.geojson" />
                 <StatCard label="Avg IRI (network)" value={`${(allLinks.reduce((s,l) => s+l.currentIRI, 0) / Math.max(allLinks.length, 1)).toFixed(1)} m/km`} color={conditionColor(4)} />
                 <div style={{ marginTop: 10, fontSize: 9, color: 'rgba(148,163,184,0.5)' }}>
                   Official network: <strong style={{ color: '#fff' }}>{OFFICIAL_NETWORK_KM.toLocaleString()} km</strong> (NDPIV FY25/26)
-                  Â· GeoJSON covers <strong style={{ color: C.cyan }}>{Math.round(allLinks.reduce((s,l)=>s+l.lengthKm,0)).toLocaleString()} km</strong>
+                  · GeoJSON covers <strong style={{ color: C.cyan }}>{Math.round(allLinks.reduce((s,l)=>s+l.lengthKm,0)).toLocaleString()} km</strong>
                 </div>
                 {top5.length > 0 && (
                   <>
@@ -794,7 +794,7 @@ export default function LifecycleSection() {
   );
 }
 
-// ââ All Links Overview Table âââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── All Links Overview Table ─────────────────────────────────────────────────
 function AllLinksTable({
   links, allCount, search, setSearch, regionFilter, setRegionFilter,
   classFilter, setClassFilter, allRegions, onSelect,
@@ -827,7 +827,7 @@ function AllLinksTable({
     if (sortKey === k) setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
     else { setSortKey(k); setSortDir('asc'); }
   }
-  const arrow = (k: string) => sortKey === k ? (sortDir === 'asc' ? 'â²' : 'â¼') : '';
+  const arrow = (k: string) => sortKey === k ? (sortDir === 'asc' ? '▲' : '▼') : '';
 
   return (
     <div>
@@ -846,7 +846,7 @@ function AllLinksTable({
         <div style={{ position: 'relative', flex: 1, minWidth: 220 }}>
           <Search size={11} style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: 'rgba(148,163,184,0.5)' }}/>
           <input value={search} onChange={e => setSearch(e.target.value)}
-            placeholder="Search link_id, road name, road no, stationâ¦"
+            placeholder="Search link_id, road name, road no, station…"
             style={{
               width: '100%', padding: '6px 8px 6px 26px', fontSize: 11,
               background: 'rgba(15,15,15,0.7)', border: '1px solid rgba(148,163,184,0.18)',
@@ -866,7 +866,7 @@ function AllLinksTable({
           {(['A','B','C','M'] as RoadClass[]).map(c => <option key={c} value={c}>Class {c}</option>)}
         </select>
         <span style={{ fontSize: 10, color: 'rgba(148,163,184,0.5)' }}>
-          Showing {links.length.toLocaleString()} / {allCount.toLocaleString()} links Â· {Math.round(links.reduce((s, l) => s + l.lengthKm, 0)).toLocaleString()} km
+          Showing {links.length.toLocaleString()} / {allCount.toLocaleString()} links · {Math.round(links.reduce((s, l) => s + l.lengthKm, 0)).toLocaleString()} km
         </span>
       </div>
 
@@ -911,7 +911,7 @@ function AllLinksTable({
                   <td style={{ padding: '5px 10px', color: '#94a3b8', fontVariantNumeric: 'tabular-nums' }}>{l.lengthKm.toFixed(1)}</td>
                   <td style={{ padding: '5px 10px', color: l.roadClass === 'A' ? '#00f5ff' : l.roadClass === 'B' ? '#00ff88' : l.roadClass === 'M' ? '#b967ff' : '#ffd23f', fontWeight: 800 }}>{l.roadClass}</td>
                   <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{l.region}</td>
-                  <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{l.station ?? 'â'}</td>
+                  <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{l.station ?? '—'}</td>
                   <td style={{ padding: '5px 10px', color: l.surface === 'Bituminous' ? '#00f5ff' : '#ff8c00' }}>{l.surface === 'Bituminous' ? 'Paved' : 'Unsealed'}</td>
                   <td style={{ padding: '5px 10px' }}>
                     <span style={{ color: condC, fontWeight: 700 }}>{l.currentIRI.toFixed(1)}</span>
@@ -925,7 +925,7 @@ function AllLinksTable({
                       padding: '3px 9px', borderRadius: 5, fontSize: 9, fontWeight: 700,
                       background: 'rgba(77,159,255,0.12)', border: '1px solid rgba(77,159,255,0.3)',
                       color: '#4d9fff', cursor: 'pointer',
-                    }}>Open â</button>
+                    }}>Open →</button>
                   </td>
                 </tr>
               );
@@ -935,7 +935,7 @@ function AllLinksTable({
       </div>
       {sorted.length > 1200 && (
         <div style={{ padding: '8px 12px', fontSize: 9.5, color: 'rgba(148,163,184,0.5)', textAlign: 'center' }}>
-          Showing first 1,200 rows of {sorted.length.toLocaleString()} â narrow filters to see more.
+          Showing first 1,200 rows of {sorted.length.toLocaleString()} — narrow filters to see more.
         </div>
       )}
       </>
