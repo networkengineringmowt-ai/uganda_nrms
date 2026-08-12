@@ -124,7 +124,7 @@ export default function Sidebar() {
         }}/>
       </div>
 
-      {/* ââ Flat section list (no grouping, no collapse) ââ */}
+      {/* ── Flat section list (no grouping, no collapse) ── */}
       <nav style={{ flex: 1, overflowY: 'auto', padding: '6px 6px' }}>
         {navItems.map(id => {
           const s = SECTIONS[id];
