@@ -1,5 +1,5 @@
 /**
- * AdminSection â Admin Tools unified 2-tab view.
+ * AdminSection — Admin Tools unified 2-tab view.
  * Tabs: Platform Mind Map | Data Audit
  * Follows the exact BMS tab-bar pattern.
  */
@@ -56,7 +56,7 @@ export default function AdminSection({
         @keyframes admin-spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
       `}</style>
 
-      {/* ââ BMS-style main tab bar âââââââââââââââââââââââââââââââââââââââââââ */}
+      {/* ── BMS-style main tab bar ─────────────────────────────────────────── */}
       <div style={{
         display: 'flex', gap: 2, padding: '0 14px', flexShrink: 0,
         borderBottom: '1px solid rgba(77,159,255,0.15)',
@@ -80,7 +80,7 @@ export default function AdminSection({
         })}
       </div>
 
-      {/* ââ Content area ââââââââââââââââââââââââââââââââââââââââââââââââââââ */}
+      {/* ── Content area ──────────────────────────────────────────────────── */}
       <div style={{ flex: 1, minHeight: 0, position: 'relative', overflow: 'hidden' }}>
         <Suspense fallback={<Spinner />}>
         {tab === 'dashboard' && (
