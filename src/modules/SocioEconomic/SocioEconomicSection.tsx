@@ -1,775 +1,881 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { MapContainer, TileLayer, CircleMarker, Popup, GeoJSON, useMap } from 'react-leaflet';
+import React, { useState, useEffect } from 'react';
+import { MapContainer, TileLayer, CircleMarker, Popup, useMap, GeoJSON } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import {
-  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, Legend, AreaChart, Area
 } from 'recharts';
-import {
-  Globe, GraduationCap, Heart, Mountain, Tractor, Factory, Users,
-  TrendingUp, MapPin, DollarSign, Activity, Zap, Droplets, Building2,
-  BookOpen, Layers, AlertCircle, CheckCircle, Clock
-} from 'lucide-react';
 
-/* ─────────────── STATIC DATA ─────────────── */
+// ── Constants ──────────────────────────────────────────────────
+const TILES = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+const ATTR = '&copy; OpenStreetMap contributors &copy; <a href="https://carto.com">CARTO</a>';
+const UGA: [number, number] = [1.3733, 32.2903];
+const ZOOM = 7;
+const CC = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899','#84cc16'];
 
-const UGANDA_CENTER: [number, number] = [1.3733, 32.2903];
-const UGANDA_ZOOM = 7;
+// ── Types ──────────────────────────────────────────────────────
+interface Pt { name:string; lat:number; lng:number; type?:string; value?:string; color?:string; detail?:string; size?:number; }
+interface Rgn { name:string; lat:number; lng:number; pop:number; hdi:number; gdp:number; area:number; color:string; }
 
-const STATS = {
-  population: 45741007,
-  area: 241551,
-  districts: 146,
-  gdpUSD: 49.27e9,
-  gdpPerCapita: 1076,
-  literacyRate: 79,
-  hdi: 0.544,
-  povertyRate: 20.3,
-  ruralPop: 76,
-  urbanPop: 24,
-  avgGrowth: 6.1,
-  roadLength: 20544,
-};
-
-const MINERALS: Array<{ name: string; type: string; lat: number; lng: number; quantity: string; color: string; status: string; value: string }> = [
-  { name: 'Oil – Kingfisher Field', type: 'oil', lat: 1.65, lng: 31.10, quantity: '6.5 bn barrels (proved)', color: '#1a1a2e', status: 'Under development', value: '$~20B' },
-  { name: 'Oil – Jobi Rii Field', type: 'oil', lat: 2.12, lng: 31.41, quantity: 'Significant reserves', color: '#1a1a2e', status: 'Development', value: 'Est. $B+' },
-  { name: 'Copper / Cobalt – Kilembe', type: 'copper', lat: 0.18, lng: 30.07, quantity: '>4 million tonnes Cu', color: '#b87333', status: 'Suspended (rehab)', value: '$8B est.' },
-  { name: 'Limestone – Tororo', type: 'limestone', lat: 0.71, lng: 34.17, quantity: '300 million tonnes', color: '#d4c5a9', status: 'Active – cement', value: 'Commercial' },
-  { name: 'Iron Ore / Phosphates – Sukulu', type: 'iron', lat: 0.79, lng: 34.15, quantity: '200M t iron + 230M t phosphate', color: '#8B4513', status: 'Pre-development', value: '$2B+' },
-  { name: 'Gold – Murchison Belt', type: 'gold', lat: 2.25, lng: 31.78, quantity: 'Large, ongoing exploration', color: '#FFD700', status: 'Active artisanal & industrial', value: 'High' },
-  { name: 'Rock Salt – Lake Katwe', type: 'salt', lat: -0.022, lng: 29.91, quantity: '30 million tonnes', color: '#E0F2FE', status: 'Active', value: 'Commercial' },
-  { name: 'Limestone – Hima', type: 'limestone', lat: 0.31, lng: 30.05, quantity: 'Large deposit', color: '#d4c5a9', status: 'Active – cement', value: 'Commercial' },
-  { name: 'Gold / Tungsten – Buhweju', type: 'gold', lat: -0.38, lng: 30.34, quantity: 'Significant deposits', color: '#FFD700', status: 'Exploration', value: 'Est. high' },
-  { name: 'Nickel – Kabale', type: 'nickel', lat: -1.25, lng: 29.99, quantity: 'Identified deposits', color: '#A8A9AD', status: 'Exploration', value: 'TBD' },
-  { name: 'Marble – Moroto', type: 'marble', lat: 2.54, lng: 34.67, quantity: 'Large ornamental deposits', color: '#F8F8F0', status: 'Active', value: 'Commercial' },
-  { name: 'Vermiculite – Namekara', type: 'vermiculite', lat: 1.20, lng: 34.25, quantity: 'Known deposits', color: '#CD853F', status: 'Exploration', value: 'TBD' },
-  { name: 'Tin / Coltan – Kigezi', type: 'coltan', lat: -1.10, lng: 29.80, quantity: 'Artisanal deposits', color: '#708090', status: 'Artisanal mining', value: 'Moderate' },
+// ── Mineral Deposits (25 — USGS & DGSM Uganda data) ────────────
+const MINERALS: Pt[] = [
+  {name:'Kilembe Copper Mine',lat:0.2033,lng:30.0733,type:'Copper/Cobalt',value:'4.5 MT ore reserves',color:'#f59e0b',size:12},
+  {name:'Tororo Phosphate',lat:0.6921,lng:34.1814,type:'Phosphate Rock',value:'235 MT reserves',color:'#22c55e',size:14},
+  {name:'Hima Limestone Quarry',lat:0.3100,lng:30.1400,type:'Limestone/Cement',value:'50 MT active',color:'#94a3b8',size:10},
+  {name:'Muko Iron Ore',lat:-1.1500,lng:29.7200,type:'Iron Ore',value:'200 MT reserves',color:'#b45309',size:12},
+  {name:'Lake Katwe Salt/Potash',lat:0.0000,lng:29.9000,type:'Salt/Potassium',value:'3.5 MT reserves',color:'#e2e8f0',size:10},
+  {name:'Busia Gold Fields',lat:0.4594,lng:34.0908,type:'Gold',value:'1.2 Moz estimated',color:'#fbbf24',size:12},
+  {name:'Mubende Gold Project',lat:0.5533,lng:31.3667,type:'Gold',value:'800 koz estimated',color:'#fbbf24',size:10},
+  {name:'Buhweju Gold',lat:-0.5500,lng:30.3000,type:'Gold',value:'600 koz estimated',color:'#fbbf24',size:10},
+  {name:'Namayingo Gold',lat:-0.1667,lng:33.9167,type:'Gold',value:'Exploration stage',color:'#fbbf24',size:8},
+  {name:'Kyenjojo Gold',lat:0.6333,lng:30.6333,type:'Gold',value:'Exploration stage',color:'#fbbf24',size:8},
+  {name:'Kasanda Cobalt/Nickel',lat:0.5167,lng:31.5000,type:'Cobalt/Nickel',value:'Active exploration',color:'#60a5fa',size:9},
+  {name:'Kabale Tungsten/Wolfram',lat:-1.2500,lng:30.0000,type:'Tungsten',value:'Historical production',color:'#a78bfa',size:9},
+  {name:'Ntungamo Coltan',lat:-0.8833,lng:30.2667,type:'Coltan/Tantalum',value:'Artisanal mining',color:'#f43f5e',size:8},
+  {name:'Namekara Vermiculite',lat:1.0333,lng:34.2333,type:'Vermiculite',value:'Active quarry',color:'#34d399',size:9},
+  {name:'Bugiri Cassiterite (Tin)',lat:0.5667,lng:33.7333,type:'Tin Ore',value:'Artisanal mining',color:'#fb923c',size:8},
+  {name:'Sukulu Phosphate/Iron',lat:0.7800,lng:34.1300,type:'Phosphate/Iron',value:'Processing planned',color:'#22c55e',size:10},
+  {name:'Moroto Marble',lat:2.5338,lng:34.6544,type:'Marble/Limestone',value:'Active quarry',color:'#94a3b8',size:9},
+  {name:'Butebo Iron Ore',lat:1.2000,lng:33.9333,type:'Iron Ore',value:'Exploration stage',color:'#b45309',size:8},
+  {name:'Soroti Kaolin Clay',lat:1.7167,lng:33.6167,type:'Kaolin Clay',value:'Industrial use',color:'#e2e8f0',size:8},
+  {name:'Kasese Cobalt',lat:0.1833,lng:30.0833,type:'Cobalt',value:'Processing ongoing',color:'#60a5fa',size:9},
+  {name:'Lira Graphite',lat:2.2500,lng:32.9000,type:'Graphite',value:'Exploration stage',color:'#475569',size:8},
+  {name:'Kapchorwa Nickel',lat:1.3500,lng:34.4500,type:'Nickel',value:'Exploration',color:'#60a5fa',size:8},
+  {name:'Amuria Silica Sand',lat:2.0333,lng:33.6500,type:'Silica Sand',value:'Construction use',color:'#fde68a',size:8},
+  {name:'Kabale Cassiterite',lat:-1.3000,lng:29.9000,type:'Tin/Cassiterite',value:'Small-scale',color:'#fb923c',size:7},
+  {name:'Moyo Feldspar',lat:3.6500,lng:31.7200,type:'Feldspar',value:'Ceramics industry',color:'#818cf8',size:7},
 ];
 
-const AGRI_ZONES = [
-  { name: 'Arabica Coffee', region: 'Mt. Elgon / Bugisu', lat: 1.07, lng: 34.47, color: '#6F4E37', pct: 12, export: '$600M/yr' },
-  { name: 'Robusta Coffee', region: 'Rwenzori / Central', lat: 0.40, lng: 30.20, color: '#7B4B2A', pct: 18, export: '$600M/yr' },
-  { name: 'Tea', region: 'Kigezi (Kabale)', lat: -1.25, lng: 29.99, color: '#228B22', pct: 4, export: '$90M/yr' },
-  { name: 'Tea', region: 'Kayonza Forest', lat: -0.85, lng: 29.75, color: '#228B22', pct: 3, export: 'Incl. above' },
-  { name: 'Sugarcane', region: 'Busoga (Jinja)', lat: 0.43, lng: 33.20, color: '#90EE90', pct: 6, export: '$100M/yr' },
-  { name: 'Cotton', region: 'Northern Uganda', lat: 2.50, lng: 32.50, color: '#F5F5DC', pct: 8, export: '$40M/yr' },
-  { name: 'Vanilla', region: 'Bundibugyo', lat: 0.72, lng: 30.07, color: '#F3E5AB', pct: 2, export: '$60M/yr' },
-  { name: 'Tobacco', region: 'West Nile', lat: 3.10, lng: 31.10, color: '#C8A165', pct: 3, export: '$30M/yr' },
-  { name: 'Rice', region: 'Eastern Uganda', lat: 1.30, lng: 33.80, color: '#FFF8DC', pct: 5, export: 'Domestic' },
-  { name: 'Nile Perch (Fish)', region: 'Lake Victoria', lat: -0.10, lng: 32.90, color: '#4169E1', pct: 6, export: '$150M/yr' },
-  { name: 'Maize', region: 'Central / Eastern', lat: 0.35, lng: 32.20, color: '#FFE135', pct: 14, export: 'Regional' },
-  { name: 'Banana / Matoke', region: 'Central / Western', lat: 0.00, lng: 31.00, color: '#FFFF00', pct: 10, export: 'Domestic' },
+// ── Hydropower Dams ────────────────────────────────────────────
+const DAMS: Pt[] = [
+  {name:'Karuma Hydropower',lat:2.2486,lng:32.2683,type:'Hydropower',value:'600 MW',detail:"Uganda's largest; 4,373 GWh/yr, 2024",color:'#06b6d4',size:16},
+  {name:'Bujagali Hydropower',lat:0.4983,lng:33.1375,type:'Hydropower',value:'250 MW',detail:'1,100 GWh/yr; commissioned 2012',color:'#06b6d4',size:13},
+  {name:'Isimba Hydropower',lat:0.7717,lng:33.0422,type:'Hydropower',value:'183.2 MW',detail:'1,039 GWh/yr; commissioned 2019',color:'#06b6d4',size:12},
+  {name:'Nalubale — Owen Falls I',lat:0.4503,lng:33.1928,type:'Hydropower',value:'180 MW',detail:"Uganda's first dam, 1954",color:'#0891b2',size:12},
+  {name:'Kiira — Owen Falls II',lat:0.4636,lng:33.1756,type:'Hydropower',value:'200 MW',detail:'Expansion of Owen Falls, 2003',color:'#0891b2',size:12},
+  {name:'Muzizi Hydropower',lat:0.9667,lng:30.5333,type:'Hydropower',value:'44 MW',detail:'Commissioned 2024, Kyenjojo',color:'#06b6d4',size:10},
+  {name:'Bugoye Hydropower',lat:0.5167,lng:30.1500,type:'Hydropower',value:'13 MW',detail:'Mubuku River, Kasese',color:'#0891b2',size:8},
+  {name:'Nyamwamba Hydro',lat:0.2833,lng:30.0833,type:'Hydropower',value:'9.2 MW',detail:'Kasese sub-region',color:'#0891b2',size:7},
+  {name:'Kikagati Hydropower',lat:-0.9833,lng:29.9833,type:'Hydropower',value:'16 MW',detail:'Kagera River, Isingiro',color:'#06b6d4',size:9},
+  {name:'Muvumbe Hydropower',lat:-0.9000,lng:30.0333,type:'Hydropower',value:'6.5 MW',detail:'SW Uganda',color:'#0891b2',size:7},
+  {name:'Ishasha Hydropower',lat:-0.5500,lng:29.7667,type:'Hydropower',value:'6.5 MW',detail:'Kigezi, Rukungiri',color:'#0891b2',size:7},
+  {name:'Nshungyezi Hydropower',lat:0.0833,lng:30.1167,type:'Hydropower',value:'2.5 MW',detail:'Kasese area',color:'#0891b2',size:6},
 ];
 
-const CITIES = [
-  { name: 'Kampala', lat: 0.347, lng: 32.582, pop: 1650800, capital: true, role: 'Capital & commercial hub' },
-  { name: 'Gulu', lat: 2.774, lng: 32.298, pop: 170183, capital: false, role: 'Northern regional capital' },
-  { name: 'Mbarara', lat: -0.607, lng: 30.656, pop: 195000, capital: false, role: 'Western regional capital' },
-  { name: 'Jinja', lat: 0.425, lng: 33.205, pop: 300000, capital: false, role: 'Industrial & sugar hub' },
-  { name: 'Mbale', lat: 1.068, lng: 34.175, pop: 108778, capital: false, role: 'Eastern gateway / coffee' },
-  { name: 'Fort Portal', lat: 0.671, lng: 30.275, pop: 69400, capital: false, role: 'Tourism & tea' },
-  { name: 'Masaka', lat: -0.333, lng: 31.734, pop: 103400, capital: false, role: 'Agriculture & trade' },
-  { name: 'Entebbe', lat: 0.047, lng: 32.461, pop: 69958, capital: false, role: 'International gateway' },
-  { name: 'Hoima', lat: 1.433, lng: 31.350, pop: 98163, capital: false, role: 'Oil industry hub' },
-  { name: 'Lira', lat: 2.250, lng: 32.900, pop: 119323, capital: false, role: 'Northern commercial centre' },
-  { name: 'Arua', lat: 3.020, lng: 30.912, pop: 121000, capital: false, role: 'West Nile trade hub' },
-  { name: 'Soroti', lat: 1.714, lng: 33.611, pop: 62900, capital: false, role: 'Teso agri centre' },
-  { name: 'Kasese', lat: 0.184, lng: 30.081, pop: 101000, capital: false, role: 'Minerals & tourism' },
-  { name: 'Tororo', lat: 0.695, lng: 34.176, pop: 77000, capital: false, role: 'Cement & industry' },
+// ── Oil & Gas Fields (Albertine Graben) ────────────────────────
+const OIL_FIELDS: Pt[] = [
+  {name:'Tilenga Oil Field',lat:2.1000,lng:31.5000,type:'Oil Field',value:'836 Mbbl reserves',detail:'TotalEnergies; 31 well pads; first oil 2026',color:'#f97316',size:16},
+  {name:'Kingfisher Oil Field',lat:1.1000,lng:31.2000,type:'Oil Field',value:'214 Mbbl reserves',detail:'CNOOC; 31 wells; first oil 2026',color:'#f97316',size:14},
+  {name:'Jobi-Rii Block',lat:1.9000,lng:31.4000,type:'Oil Block',value:'Exploration',detail:'Albertine Graben, EA-1B',color:'#fb923c',size:10},
+  {name:'Mputa/Nzizi Field',lat:1.8500,lng:31.5500,type:'Oil Field',value:'Development pending',detail:'Albertine Graben',color:'#fb923c',size:10},
+  {name:'Lyec Block',lat:2.4000,lng:31.6000,type:'Oil Block',value:'Exploration',detail:'Northern Albertine Graben',color:'#fdba74',size:9},
+  {name:'Waraga Field',lat:1.9500,lng:31.3500,type:'Oil Field',value:'Exploration',detail:'Albertine Graben',color:'#fdba74',size:9},
+  {name:'Ngege Block',lat:2.0500,lng:31.3000,type:'Oil Block',value:'Exploration',detail:'Albertine Graben',color:'#fdba74',size:8},
+  {name:'Kasemene Field',lat:2.3000,lng:31.7000,type:'Oil Field',value:'Exploration',detail:'Near Murchison Falls',color:'#fdba74',size:8},
 ];
 
+// ── Protected Areas ────────────────────────────────────────────
+const PROTECTED: Pt[] = [
+  {name:'Murchison Falls NP',lat:2.2833,lng:31.7667,type:'National Park',value:'3,840 km²',detail:'Largest NP; lions, elephants, hippos, Nile',color:'#16a34a',size:18},
+  {name:'Queen Elizabeth NP',lat:-0.1000,lng:30.0000,type:'National Park',value:'1,978 km²',detail:'Tree-climbing lions, chimpanzees, hippos',color:'#16a34a',size:16},
+  {name:'Kidepo Valley NP',lat:3.8667,lng:33.7500,type:'National Park',value:'1,442 km²',detail:'Cheetahs, lions; most biodiverse NP',color:'#16a34a',size:15},
+  {name:'Kibale NP',lat:0.5167,lng:30.3667,type:'National Park',value:'766 km²',detail:'Highest chimp density in Africa',color:'#16a34a',size:14},
+  {name:'Bwindi Impenetrable NP',lat:-1.0333,lng:29.6833,type:'National Park',value:'331 km²',detail:'400+ mountain gorillas; UNESCO World Heritage Site',color:'#16a34a',size:14},
+  {name:'Rwenzori Mountains NP',lat:0.3167,lng:29.9667,type:'National Park',value:'998 km²',detail:'Margherita Peak 5,109 m; UNESCO WHS',color:'#166534',size:14},
+  {name:'Mount Elgon NP',lat:1.1333,lng:34.3000,type:'National Park',value:'1,279 km²',detail:'Ancient caldera; hot springs',color:'#16a34a',size:13},
+  {name:'Lake Mburo NP',lat:-0.6167,lng:30.9667,type:'National Park',value:'370 km²',detail:'Zebras, impalas, hippos; closest to Kampala',color:'#16a34a',size:12},
+  {name:'Semuliki NP',lat:0.8500,lng:30.2667,type:'National Park',value:'220 km²',detail:'Congo basin species; hot springs',color:'#16a34a',size:11},
+  {name:'Mgahinga Gorilla NP',lat:-1.3167,lng:29.6333,type:'National Park',value:'33.7 km²',detail:'Gorillas, golden monkeys, 3 volcanoes',color:'#16a34a',size:10},
+  {name:'Pian Upe WR',lat:2.0500,lng:34.2000,type:'Wildlife Reserve',value:'2,043 km²',detail:'Cheetahs, ostriches, eland; Karamoja',color:'#4ade80',size:13},
+  {name:'Matheniko WR',lat:2.9167,lng:34.5000,type:'Wildlife Reserve',value:'1,520 km²',detail:'Semi-arid savanna; Karamoja',color:'#4ade80',size:12},
+  {name:'Bugungu WR',lat:2.2000,lng:31.8000,type:'Wildlife Reserve',value:'473 km²',detail:'Adjacent to Murchison Falls',color:'#4ade80',size:11},
+  {name:'Toro-Semuliki WR',lat:0.7000,lng:30.2000,type:'Wildlife Reserve',value:'548 km²',detail:'Near Rwenzori range',color:'#4ade80',size:11},
+  {name:'Katonga WR',lat:0.0000,lng:31.0000,type:'Wildlife Reserve',value:'208 km²',detail:'Sitatunga antelope habitat',color:'#4ade80',size:10},
+  {name:'Kigezi WR',lat:-0.5000,lng:29.8333,type:'Wildlife Reserve',value:'265 km²',detail:'SW Uganda highlands',color:'#4ade80',size:10},
+  {name:'Kyambura GR',lat:-0.1500,lng:30.0833,type:'Game Reserve',value:'155 km²',detail:'The "Valley of Apes"; chimpanzees',color:'#4ade80',size:10},
+];
+
+// ── Agricultural Zones ─────────────────────────────────────────
+const AGRI: Pt[] = [
+  {name:'Arabica Coffee — Kabale',lat:-1.25,lng:30.0,type:'Coffee Arabica',value:'15,000 MT/yr',color:'#92400e',size:12},
+  {name:'Arabica Coffee — Kisoro',lat:-1.33,lng:29.68,type:'Coffee Arabica',value:'8,000 MT/yr',color:'#92400e',size:10},
+  {name:'Arabica Coffee — Kapchorwa',lat:1.35,lng:34.45,type:'Coffee Arabica',value:'12,000 MT/yr',color:'#92400e',size:11},
+  {name:'Arabica Coffee — Mbale',lat:1.07,lng:34.18,type:'Coffee Arabica',value:'10,000 MT/yr',color:'#92400e',size:10},
+  {name:'Robusta Coffee — Mukono',lat:0.35,lng:32.75,type:'Coffee Robusta',value:'25,000 MT/yr',color:'#d97706',size:13},
+  {name:'Robusta Coffee — Masaka',lat:-0.33,lng:31.73,type:'Coffee Robusta',value:'20,000 MT/yr',color:'#d97706',size:12},
+  {name:'Robusta Coffee — Luwero',lat:0.83,lng:32.47,type:'Coffee Robusta',value:'18,000 MT/yr',color:'#d97706',size:11},
+  {name:'Tea — Ntungamo',lat:-0.88,lng:30.27,type:'Tea',value:'15,000 MT/yr',color:'#166534',size:11},
+  {name:'Tea — Kyenjojo',lat:0.63,lng:30.63,type:'Tea',value:'12,000 MT/yr',color:'#166534',size:10},
+  {name:'Tea — Kapchorwa',lat:1.35,lng:34.45,type:'Tea',value:'5,000 MT/yr',color:'#166534',size:9},
+  {name:'Kakira Sugar Works',lat:0.53,lng:33.33,type:'Sugar Cane',value:'230,000 MT/yr',color:'#fbbf24',size:14},
+  {name:'Lugazi Sugar Estates',lat:0.37,lng:32.90,type:'Sugar Cane',value:'60,000 MT/yr',color:'#fbbf24',size:11},
+  {name:'Kinyara Sugar — Masindi',lat:1.68,lng:31.72,type:'Sugar Cane',value:'90,000 MT/yr',color:'#fbbf24',size:12},
+  {name:'Cotton Belt — Soroti',lat:1.72,lng:33.62,type:'Cotton',value:'30,000 MT/yr',color:'#e2e8f0',size:11},
+  {name:'Cotton Belt — Lira',lat:2.25,lng:32.90,type:'Cotton',value:'25,000 MT/yr',color:'#e2e8f0',size:10},
+  {name:'Cotton Belt — Gulu',lat:2.78,lng:32.30,type:'Cotton',value:'20,000 MT/yr',color:'#e2e8f0',size:10},
+  {name:'Matooke Belt — Masaka',lat:-0.33,lng:31.73,type:'Bananas/Matooke',value:'800,000 MT/yr',color:'#84cc16',size:13},
+  {name:'Matooke Belt — Mbarara',lat:-0.62,lng:30.65,type:'Bananas/Matooke',value:'600,000 MT/yr',color:'#84cc16',size:12},
+  {name:'Fishing — Entebbe/L.Victoria',lat:0.06,lng:32.46,type:'Fishing',value:'200,000 MT/yr',color:'#38bdf8',size:12},
+  {name:'Fishing — Jinja/L.Victoria',lat:0.43,lng:33.20,type:'Fishing',value:'80,000 MT/yr',color:'#38bdf8',size:10},
+  {name:'Fishing — L. Albert (Buliisa)',lat:1.82,lng:31.48,type:'Fishing',value:'50,000 MT/yr',color:'#38bdf8',size:10},
+  {name:'Vanilla — Mukono/Iganga',lat:0.35,lng:32.75,type:'Vanilla',value:'2,000 MT/yr',color:'#c4b5fd',size:9},
+  {name:'Tobacco — Arua (West Nile)',lat:3.02,lng:30.91,type:'Tobacco',value:'8,000 MT/yr',color:'#a8a29e',size:9},
+];
+
+// ── Industrial Parks ───────────────────────────────────────────
+const INDUSTRY: Pt[] = [
+  {name:'Namanve Industrial Park',lat:0.3167,lng:32.7167,type:'Industrial Park',value:'2,200 Ha',detail:'Largest; 100+ firms, Wakiso',color:'#6366f1',size:14},
+  {name:'Luzira Industrial Area',lat:0.2667,lng:32.6833,type:'Industrial Area',value:'Mixed industries',detail:'Beer, beverages, plastics, Kampala',color:'#6366f1',size:11},
+  {name:'Jinja Industrial Area',lat:0.4317,lng:33.2028,type:'Industrial Area',value:'Steel/Sugar/Textiles',detail:'Nile Special; SCOUL; Kakira',color:'#6366f1',size:12},
+  {name:'Mbale Industrial Park',lat:1.0667,lng:34.1833,type:'Industrial Park',value:'Eastern Uganda hub',detail:'Food processing, textiles',color:'#818cf8',size:11},
+  {name:'Arua Industrial Park',lat:3.0167,lng:30.9000,type:'Industrial Park',value:'West Nile hub',detail:'Agriculture processing, trade',color:'#818cf8',size:10},
+  {name:'Mbarara Industrial Park',lat:-0.6167,lng:30.6500,type:'Industrial Park',value:'SW Uganda hub',detail:'Dairy, beverages, plastics',color:'#818cf8',size:10},
+  {name:'Fort Portal Industrial Zone',lat:0.6500,lng:30.2833,type:'Industrial Zone',value:'Tooro Kingdom',detail:'Tea processing, tourism services',color:'#818cf8',size:9},
+  {name:'Kasese Industrial Area',lat:0.2167,lng:30.0833,type:'Industrial Area',value:'Mineral processing',detail:'Cobalt, cement, fish processing',color:'#818cf8',size:10},
+  {name:'Bweyogerere Industrial',lat:0.3500,lng:32.6833,type:'Industrial Area',value:'Wakiso District',detail:'Roofing sheets, textiles',color:'#818cf8',size:10},
+  {name:'Iganga Economic Zone',lat:0.6000,lng:33.4833,type:'Economic Zone',value:'Eastern Uganda',detail:'Agriculture processing hub',color:'#818cf8',size:9},
+];
+
+// ── Universities ───────────────────────────────────────────────
+const UNIVERSITIES: Pt[] = [
+  {name:'Makerere University',lat:0.3361,lng:32.5722,type:'Public',value:'40,000+ students',detail:"East Africa's oldest, 1922",color:'#f59e0b'},
+  {name:'Kyambogo University',lat:0.3486,lng:32.6344,type:'Public',value:'30,000+ students',detail:'Technical & Vocational',color:'#f59e0b'},
+  {name:'Gulu University',lat:2.7700,lng:32.3000,type:'Public',value:'8,000+ students',detail:'Northern Uganda',color:'#fbbf24'},
+  {name:'MUST — Mbarara',lat:-0.6094,lng:30.6583,type:'Public',value:'5,000+ students',detail:'Science & Technology',color:'#f59e0b'},
+  {name:'Busitema University',lat:0.5667,lng:34.1167,type:'Public',value:'6,000+ students',detail:'Engineering focus, Tororo',color:'#fbbf24'},
+  {name:'Kabale University',lat:-1.2500,lng:30.0000,type:'Public',value:'3,000+ students',detail:'SW Uganda',color:'#fbbf24'},
+  {name:'Mountains of Moon (MMU)',lat:0.6500,lng:30.2833,type:'Public',value:'4,000+ students',detail:'Fort Portal campus',color:'#fbbf24'},
+  {name:'IUIU — Mbale',lat:0.6000,lng:33.4833,type:'Private',value:'15,000+ students',detail:'Islamic University in Uganda',color:'#a78bfa'},
+  {name:'Uganda Martyrs University',lat:0.2667,lng:31.8833,type:'Private',value:'5,000+ students',detail:'Nkozi campus',color:'#a78bfa'},
+  {name:'KIU — Ishaka',lat:-0.6500,lng:30.2167,type:'Private',value:'20,000+ students',detail:'Kampala International Univ.',color:'#a78bfa'},
+  {name:'Cavendish University',lat:0.3167,lng:32.5833,type:'Private',value:'6,000+ students',detail:'Business & Law, Kampala',color:'#a78bfa'},
+  {name:'Lira University',lat:2.2500,lng:32.8900,type:'Public',value:'3,000+ students',detail:'Northern Uganda hub',color:'#fbbf24'},
+];
+
+// ── Referral Hospitals ─────────────────────────────────────────
+const HOSPITALS: Pt[] = [
+  {name:'Mulago National Referral',lat:0.3414,lng:32.5761,type:'National',value:'1,500 beds',detail:"Uganda's largest hospital",color:'#ef4444'},
+  {name:'Mbarara RRH',lat:-0.6200,lng:30.6500,type:'Regional',value:'600 beds',detail:'SW Uganda regional hub',color:'#f87171'},
+  {name:'Gulu RRH',lat:2.7800,lng:32.3100,type:'Regional',value:'400 beds',detail:'Northern Uganda hub',color:'#f87171'},
+  {name:'Mbale RRH',lat:1.0747,lng:34.1750,type:'Regional',value:'350 beds',detail:'Eastern Uganda hub',color:'#f87171'},
+  {name:'Arua RRH',lat:3.0167,lng:30.9100,type:'Regional',value:'300 beds',detail:'West Nile hub',color:'#f87171'},
+  {name:'Soroti RRH',lat:1.7167,lng:33.6100,type:'Regional',value:'250 beds',detail:'Teso sub-region',color:'#f87171'},
+  {name:'Lira RRH',lat:2.2500,lng:32.8900,type:'Regional',value:'280 beds',detail:'Lango sub-region',color:'#f87171'},
+  {name:'Fort Portal RRH',lat:0.6500,lng:30.2833,type:'Regional',value:'300 beds',detail:'Tooro Kingdom',color:'#f87171'},
+  {name:'Kabale RRH',lat:-1.2500,lng:29.9900,type:'Regional',value:'250 beds',detail:'Kigezi region',color:'#f87171'},
+  {name:'Jinja RRH',lat:0.4300,lng:33.2000,type:'Regional',value:'350 beds',detail:'Busoga region',color:'#f87171'},
+  {name:'Masaka RRH',lat:-0.3300,lng:31.7300,type:'Regional',value:'290 beds',detail:'Southern Buganda',color:'#f87171'},
+  {name:'Hoima RRH',lat:1.4333,lng:31.3500,type:'Regional',value:'250 beds',detail:'Bunyoro region',color:'#f87171'},
+];
+
+// ── Regions ────────────────────────────────────────────────────
+const REGIONS: Rgn[] = [
+  {name:'Central',lat:0.4,lng:32.5,pop:12.5,hdi:0.572,gdp:42.3,area:61403,color:'#3b82f6'},
+  {name:'Eastern',lat:1.4,lng:33.7,pop:11.2,hdi:0.489,gdp:16.8,area:39478,color:'#10b981'},
+  {name:'Western',lat:-0.3,lng:30.7,pop:11.8,hdi:0.523,gdp:22.4,area:55263,color:'#f59e0b'},
+  {name:'Northern',lat:3.0,lng:32.5,pop:8.9,hdi:0.465,gdp:10.1,area:85392,color:'#ef4444'},
+];
+
+// ── Chart Data ─────────────────────────────────────────────────
 const GDP_DATA = [
-  { year: '2018', gdp: 34.38, growth: 6.2 },
-  { year: '2019', gdp: 37.06, growth: 7.9 },
-  { year: '2020', gdp: 37.74, growth: 2.9 },
-  { year: '2021', gdp: 40.37, growth: 6.7 },
-  { year: '2022', gdp: 45.06, growth: 4.9 },
-  { year: '2023', gdp: 48.28, growth: 5.3 },
+  {y:'2018',gdp:27.5},{y:'2019',gdp:30.2},{y:'2020',gdp:30.1},
+  {y:'2021',gdp:33.1},{y:'2022',gdp:37.4},{y:'2023',gdp:42.8},
+  {y:'2024',gdp:47.2},{y:'2025',gdp:51.0},
+];
+const EXPORT_DATA = [
+  {name:'Coffee',v:862},{name:'Gold',v:743},{name:'Fish',v:147},
+  {name:'Cocoa',v:110},{name:'Tobacco',v:85},{name:'Vanilla',v:72},
+  {name:'Tea',v:65},{name:'Flowers',v:55},
+];
+const ENERGY_MIX = [
+  {name:'Hydro',v:78},{name:'Thermal',v:9},{name:'Solar',v:8},
+  {name:'Bagasse',v:4},{name:'Other',v:1},
+];
+const DAM_CAPACITY = DAMS{.ap(d => ({name:d.name.replace(' Hydropower','').replace(' — Owen Falls I','').replace(' — Owen Falls II',''), mw:parseInt((d.value||'0').replace(' MW',''))||0}));
+const MINERAL_TYPES = [
+  {name:'Gold',n:7},{name:'Iron Ore',n:3},{name:'Cobalt/Nickel',n:3},
+  {name:'Phosphate',n:2},{name:'Limestone',n:3},{name:'Others',n:7},
+];
+const CROP_REV = [
+  {crop:'Coffee',rev:862},{crop:'Sugar',rev:380},{crop:'Matooke',rev:220},
+  {crop:'Maize',rev:180},{crop:'Tea',rev:65},{crop:'Cotton',rev:55},
+  {crop:'Vanilla',rev:72},{crop:'Tobacco',rev:85},
+];
+const ENROLL = [
+  {level:'Pre-Primary',rate:41},{level:'Primary',rate:95},
+  {level:'Secondary',rate:47},{level:'Tertiary',rate:12},
+];
+const POP_PYMD = [
+  {age:'0-14',m:24.3,f:23.8},{age:'15-24',m:11.2,f:11.0},
+  {age:'25-34',m:7.8,f:7.9},{age:'35-44',m:5.1,f:5.3},
+  {age:'45-54',m:3.2,f:3.4},{age:'55-64',m:2.1,f:2.3},{age:'65+',m:1.4,f:1.8},
+];
+const SECTOR_GDP = [
+  {name:'Services',v:44.5},{name:'Agriculture',v:27.2},{name:'Industry',v:21.3},
+  {name:'Taxes',v:7.0},
 ];
 
-const SECTORS = [
-  { sector: 'Services', pct: 47.0, color: '#3B82F6' },
-  { sector: 'Industry', pct: 27.3, color: '#10B981' },
-  { sector: 'Agriculture', pct: 24.1, color: '#F59E0B' },
-  { sector: 'Other', pct: 1.6, color: '#6B7280' },
-];
-
-const REGION_DATA = [
-  { region: 'Central', population: 10857179, area: 61403, density: 177, hdi: 0.598, schools: 4820, hospitals: 312 },
-  { region: 'Eastern', population: 12225534, area: 39479, density: 310, hdi: 0.501, schools: 5234, hospitals: 289 },
-  { region: 'Northern', population: 9018003, area: 85392, density: 106, hdi: 0.472, schools: 3890, hospitals: 198 },
-  { region: 'Western', population: 12225534, area: 55311, density: 221, hdi: 0.538, schools: 4670, hospitals: 276 },
-];
-
-const INDUSTRY_SITES = [
-  { name: 'Kakira Sugar Works', lat: 0.47, lng: 33.28, type: 'Sugar processing', capacity: '170,000 t/yr' },
-  { name: 'Uganda Breweries (Nile)', lat: 0.43, lng: 33.22, type: 'Beer / beverages', capacity: 'Major' },
-  { name: 'Tororo Cement', lat: 0.69, lng: 34.17, type: 'Cement', capacity: '1.5M t/yr' },
-  { name: 'Hima Cement', lat: 0.31, lng: 30.05, type: 'Cement', capacity: '0.75M t/yr' },
-  { name: 'Namanve Industrial Park', lat: 0.32, lng: 32.69, type: 'Multi-sector park', capacity: '1,000+ firms' },
-  { name: 'Luzira Industrial Area', lat: 0.30, lng: 32.64, type: 'Steel / manufacturing', capacity: 'Major' },
-  { name: 'Soroti Fruit Factory', lat: 1.71, lng: 33.61, type: 'Fruit processing', capacity: '50,000 t/yr' },
-  { name: 'Luweero Pineapple', lat: 0.85, lng: 32.48, type: 'Agro-processing', capacity: 'Growing' },
-  { name: 'Bujagali Hydropower', lat: 0.47, lng: 33.17, type: 'Hydro power', capacity: '250 MW' },
-  { name: 'Karuma Hydropower', lat: 2.23, lng: 32.27, type: 'Hydro power', capacity: '600 MW' },
-  { name: 'Isimba Hydropower', lat: 0.47, lng: 33.00, type: 'Hydro power', capacity: '183 MW' },
-  { name: 'Tilenga Oil Project', lat: 2.28, lng: 31.40, type: 'Oil production', capacity: '190,000 bbl/day' },
-  { name: 'Kibiro Salt Works', lat: 1.58, lng: 31.26, type: 'Salt extraction', capacity: 'Artisanal' },
-];
-
-/* ─────────────── HELPERS ─────────────── */
-
-function StatCard({ icon, label, value, sub, color }: { icon: React.ReactNode; label: string; value: string; sub?: string; color: string }) {
-  return (
-    <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 14 }}>
-      <div style={{ background: color + '22', color, borderRadius: 10, padding: 10, display: 'flex' }}>{icon}</div>
-      <div>
-        <div style={{ fontSize: 22, fontWeight: 700, color: '#f5f5f7' }}>{value}</div>
-        <div style={{ fontSize: 12, color: '#a1a1aa', fontWeight: 500 }}>{label}</div>
-        {sub && <div style={{ fontSize: 11, color: '#71717a', marginTop: 2 }}>{sub}</div>}
-      </div>
-    </div>
-  );
+// ── Hooks ──────────────────────────────────────────────────────
+function useOverpass(query: string, enabled: boolean) {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  useEffect(() => {
+    if (!enabled) return;
+    setLoading(true); setError('');
+    fetch('https://overpass-api.de/api/interpreter', {
+      method:'POST',
+      body:'data='+encodeURIComponent(query),
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+    })
+      .then(r => r.json())
+      .then(d => { setData(d.elements||[]); setLoading(false); })
+      .catch(e => { setError(e.message); setLoading(false); });
+  }, [enabled]);
+  return {data, loading, error};
 }
 
-const MINERAL_COLORS: Record<string, string> = {
-  oil: '#1a1a2e', copper: '#b87333', limestone: '#d4c5a9', iron: '#8B4513',
-  gold: '#FFD700', salt: '#ADD8E6', nickel: '#A8A9AD', marble: '#F8F8F0',
-  vermiculite: '#CD853F', coltan: '#708090', phosphate: '#90EE90',
-};
+function useBoundaries() {
+  const [geo, setGeo] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    let ok = true;
+    setLoading(true);
+    (async () => {
+      try {
+        const meta = await fetch('https://www.geoboundaries.org/api/current/gbOpen/UGA/ADM1/').then(r=>r.json());
+        const data = await fetch(meta.gjDownloadURL).then(r=>r.json());
+        if (ok) setGeo(data);
+      } catch {}
+      if (ok) setLoading(false);
+    })();
+    return () => { ok=false; };
+  }, []);
+  return {geo, loading};
+}
 
-/* ─────────────── MAP FIT ─────────────── */
+// ── Overpass Queries ───────────────────────────────────────────
+const Q_SCHOOLS = `[out:json][timeout:25];(node["amenity"="school"](0.0,29.5,4.2,35.0);way["amenity"="school"](0.0,29.5,4.2,35.0););out center 300;`;
+const Q_HOSPITALS = `[out:json][timeout:25];(node["amenity"~"hospital|clinic|health_centre"](0.0,29.5,4.2,35.0);way["amenity"~"hospital|clinic|health_centre"](0.0,29.5,4.2,35.0););out center 300;`;
+const Q_MARKETS = `[out:json][timeout:25];(node["amenity"="marketplace"](0.0,29.5,4.2,35.0);way["amenity"="marketplace"](0.0,29.5,4.2,35.0););ut center 200;`;
 
-function FitUganda() {
+// ── Map Helpers ─────────────────────────────────────────────────
+function FitUga() {
   const map = useMap();
-  useEffect(() => { map.setView(UGANDA_CENTER, UGANDA_ZOOM); }, [map]);
+  useEffect(() => { map.setView(UGA zOOM); }, [map]);
   return null;
 }
 
-/* ─────────────── TABS ─────────────── */
-
-const TABS = [
-  { id: 'dashboard', label: 'Overview', icon: <Globe size={14} /> },
-  { id: 'minerals', label: 'Minerals & Resources', icon: <Mountain size={14} /> },
-  { id: 'agriculture', label: 'Agriculture', icon: <Tractor size={14} /> },
-  { id: 'industry', label: 'Industry & Energy', icon: <Factory size={14} /> },
-  { id: 'education', label: 'Education', icon: <GraduationCap size={14} /> },
-  { id: 'health', label: 'Health', icon: <Heart size={14} /> },
-  { id: 'demographics', label: 'Demographics', icon: <Users size={14} /> },
-  { id: 'economy', label: 'Economy', icon: <TrendingUp size={14} /> },
-];
-
-/* ─────────────── MAP PANEL (reusable) ─────────────── */
-
-function MapPanel({ children, height = 500 }: { children: React.ReactNode; height?: number }) {
+function MapPanel({children,h=420}:{children:React.ReactNode; h?:number}) {
   return (
-    <div style={{ borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', height }}>
-      <MapContainer
-        center={UGANDA_CENTER}
-        zoom={UGANDA_ZOOM}
-        style={{ height: '100%', width: '100%', background: '#1a1a2e' }}
-        zoomControl={true}
-      >
-        <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>'
-        />
-        <FitUganda />
+    <div style={{height:h,borderRadius:10,overflow:'hidden',border:'1px solid rgba(255,255,255,0.08)',marginBottom:14}}>
+      <MapContainer center={UGA} zoom={ZOOM} style={{height:'100%',width:'100%'}} scrollWheelZoom>
+        <FitUga />
+        <TileLayer url={TILES} attribution={ATTR} />
         {children}
       </MapContainer>
     </div>
   );
 }
 
-/* ─────────────── OVERPASS HOOK ─────────────── */
-
-type OSMFeature = { lat: number; lng: number; name: string; tags: Record<string, string> };
-
-function useOverpass(query: string, enabled: boolean) {
-  const [data, setData] = useState<OSMFeature[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!enabled) return;
-    setLoading(true);
-    setError(null);
-    const url = 'https://overpass-api.de/api/interpreter';
-    fetch(url, {
-      method: 'POST',
-      body: 'data=' + encodeURIComponent(query),
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    })
-      .then(r => r.json())
-      .then(json => {
-        const features: OSMFeature[] = (json.elements || [])
-          .filter((el: any) => el.lat || (el.center && el.center.lat))
-          .map((el: any) => ({
-            lat: el.lat ?? el.center.lat,
-            lng: el.lon ?? el.center.lon,
-            name: el.tags?.name || el.tags?.amenity || 'Unknown',
-            tags: el.tags || {},
-          }));
-        setData(features);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError('Failed to load live data. Showing static summary only.');
-        setLoading(false);
-      });
-  }, [query, enabled]);
-
-  return { data, loading, error };
-}
-
-/* ─────────────── OVERPASS QUERIES ─────────────── */
-
-const SCHOOLS_QUERY = `[out:json][timeout:30];
-area["ISO3166-1"="UG"]->.a;
-nwr["amenity"="school"](area.a);
-out center 300;`;
-
-const HOSPITALS_QUERY = `[out:json][timeout:30];
-area["ISO3166-1"="UG"]->.a;
-nwr["amenity"~"hospital|clinic|health_centre|doctors"](area.a);
-out center 400;`;
-
-/* ─────────────── SUB-SECTIONS ─────────────── */
-
-function DashboardTab() {
+// ── UI Helpers ─────────────────────────────────────────────────
+function Card({icon,label,value,sub,col='#3b82f6'}:{icon:string;label:string;value:string;sub?:string;col?:string}) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      {/* KPI grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
-        <StatCard icon={<Users size={20} />} label="Population (2024 Census)" value="45.7M" sub="Growth rate 3.0% p.a." color="#3B82F6" />
-        <StatCard icon={<DollarSign size={20} />} label="GDP (USD)" value="$49.3B" sub="GDP per capita $1,076" color="#10B981" />
-        <StatCard icon={<TrendingUp size={20} />} label="Avg. GDP Growth" value="6.1%" sub="2015–2023 average" color="#F59E0B" />
-        <StatCard icon={<BookOpen size={20} />} label="Literacy Rate" value="79%" sub="Adult (15+), UBOS 2022" color="#8B5CF6" />
-        <StatCard icon={<Activity size={20} />} label="HDI" value="0.544" sub="Low–medium (2023)" color="#EC4899" />
-        <StatCard icon={<MapPin size={20} />} label="Districts" value="146" sub="Covering 241,551 km²" color="#14B8A6" />
-        <StatCard icon={<Factory size={20} />} label="Industry Share of GDP" value="27.3%" sub="Incl. construction" color="#F97316" />
-        <StatCard icon={<Tractor size={20} />} label="Agriculture Share" value="24.1%" sub="75% of labour force" color="#84CC16" />
+    <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderLeft:`3px solid ${col}`,borderRadius:10,padding:'12px 14px'}}>
+      <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:6}}>
+        <span style={{fontSize:16}}>{icon}</span>
+        <span style={{fontSize:10,color:'#64748b',textTransform:'uppercase',letterSpacing:1}}>{label}</span>
       </div>
-
-      {/* Map with cities */}
-      <div>
-        <h3 style={{ color: '#f5f5f7', fontWeight: 600, marginBottom: 10, fontSize: 15 }}>Urban Centres & Economic Geography</h3>
-        <MapPanel height={460}>
-          {CITIES.map(c => (
-            <CircleMarker
-              key={c.name}
-              center={[c.lat, c.lng]}
-              radius={c.capital ? 14 : Math.max(5, Math.log(c.pop / 10000) * 3)}
-              pathOptions={{ color: c.capital ? '#FFD700' : '#3B82F6', fillColor: c.capital ? '#FFD700' : '#60A5FA', fillOpacity: 0.8, weight: 2 }}
-            >
-              <Popup>
-                <div style={{ minWidth: 160 }}>
-                  <strong style={{ fontSize: 13 }}>{c.name}</strong>
-                  {c.capital && <span style={{ color: '#FFD700', fontSize: 11 }}> ★ Capital</span>}
-                  <div style={{ fontSize: 11, color: '#666', marginTop: 4 }}>
-                    <div>Population: <strong>{c.pop.toLocaleString()}</strong></div>
-                    <div>Role: {c.role}</div>
-                  </div>
-                </div>
-              </Popup>
-            </CircleMarker>
-          ))}
-        </MapPanel>
-        <div style={{ display: 'flex', gap: 16, marginTop: 8, flexWrap: 'wrap' }}>
-          <span style={{ color: '#a1a1aa', fontSize: 11 }}><span style={{ color: '#FFD700' }}>★</span> Capital city (size = population)</span>
-          <span style={{ color: '#a1a1aa', fontSize: 11 }}><span style={{ color: '#60A5FA' }}>●</span> Urban centre (size ∝ population)</span>
-        </div>
-      </div>
-
-      {/* Regional breakdown */}
-      <div>
-        <h3 style={{ color: '#f5f5f7', fontWeight: 600, marginBottom: 10, fontSize: 15 }}>Regional Socio-Economic Comparison</h3>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-            <thead>
-              <tr style={{ background: 'rgba(255,255,255,0.06)', color: '#a1a1aa' }}>
-                {['Region','Population','Area (km²)','Density (p/km²)','HDI','Schools','Health Facilities'].map(h => (
-                  <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 600, fontSize: 11, textTransform: 'uppercase', letterSpacing: 0.5 }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {REGION_DATA.map((r, i) => (
-                <tr key={r.region} style={{ background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                  <td style={{ padding: '10px 14px', color: '#f5f5f7', fontWeight: 600 }}>{r.region}</td>
-                  <td style={{ padding: '10px 14px', color: '#d1d5db' }}>{r.population.toLocaleString()}</td>
-                  <td style={{ padding: '10px 14px', color: '#d1d5db' }}>{r.area.toLocaleString()}</td>
-                  <td style={{ padding: '10px 14px', color: '#d1d5db' }}>{r.density}</td>
-                  <td style={{ padding: '10px 14px', color: r.hdi >= 0.55 ? '#10B981' : r.hdi >= 0.51 ? '#F59E0B' : '#EF4444' }}>{r.hdi}</td>
-                  <td style={{ padding: '10px 14px', color: '#d1d5db' }}>{r.schools.toLocaleString()}</td>
-                  <td style={{ padding: '10px 14px', color: '#d1d5db' }}>{r.hospitals}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <div style={{fontSize:21,fontWeight:700,color:'#f1f5f9'}}>{value}</div>
+      {sub && <div style={{fontSize:10,color:'#475569',marginTop:3}}>{sub}</div>}
     </div>
   );
 }
 
-function MineralsTab() {
-  const [selected, setSelected] = useState<(typeof MINERALS)[0] | null>(null);
-  const typeCounts: Record<string, number> = {};
-  MINERALS.forEach(m => { typeCounts[m.type] = (typeCounts[m.type] || 0) + 1; });
-  const typeData = Object.entries(typeCounts).map(([type, count]) => ({ type, count, color: MINERAL_COLORS[type] || '#888' }));
-
+function Lgd({items}:{items:{color:string;label:string}[]}) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
-        <StatCard icon={<Mountain size={20} />} label="Known Mineral Types" value="30+" sub="Oil, gold, copper, limestone…" color="#F59E0B" />
-        <StatCard icon={<DollarSign size={20} />} label="Oil Reserves (proved)" value="6.5B bbls" sub="Albertine Graben – EACOP route" color="#1a1a2e" />
-        <StatCard icon={<Building2 size={20} />} label="Mining Licenses Active" value="1,200+" sub="DGSM Portal 2024" color="#10B981" />
-      </div>
-
-      <MapPanel height={520}>
-        {MINERALS.map(m => (
-          <CircleMarker
-            key={m.name}
-            center={[m.lat, m.lng]}
-            radius={m.type === 'oil' ? 14 : 9}
-            pathOptions={{ color: MINERAL_COLORS[m.type] || '#888', fillColor: MINERAL_COLORS[m.type] || '#888', fillOpacity: 0.85, weight: 2 }}
-            eventHandlers={{ click: () => setSelected(m) }}
-          >
-            <Popup>
-              <div style={{ minWidth: 200 }}>
-                <strong style={{ fontSize: 13 }}>{m.name}</strong>
-                <div style={{ fontSize: 11, color: '#555', marginTop: 6, lineHeight: 1.6 }}>
-                  <div><strong>Type:</strong> {m.type.charAt(0).toUpperCase() + m.type.slice(1)}</div>
-                  <div><strong>Quantity:</strong> {m.quantity}</div>
-                  <div><strong>Status:</strong> {m.status}</div>
-                  <div><strong>Est. Value:</strong> {m.value}</div>
-                </div>
-              </div>
-            </Popup>
-          </CircleMarker>
-        ))}
-      </MapPanel>
-
-      {/* Legend */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-        {Object.entries(MINERAL_COLORS).map(([type, color]) => (
-          <div key={type} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#d1d5db' }}>
-            <div style={{ width: 12, height: 12, borderRadius: '50%', background: color, border: '1px solid rgba(255,255,255,0.3)' }} />
-            {type.charAt(0).toUpperCase() + type.slice(1)}
-          </div>
-        ))}
-      </div>
-
-      {/* Table */}
-      <div>
-        <h3 style={{ color: '#f5f5f7', fontWeight: 600, marginBottom: 10, fontSize: 15 }}>Mineral Deposits Catalogue</h3>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
-            <thead>
-              <tr style={{ background: 'rgba(255,255,255,0.06)', color: '#a1a1aa' }}>
-                {['Deposit','Type','Quantity','Status','Est. Value'].map(h => (
-                  <th key={h} style={{ padding: '9px 12px', textAlign: 'left', fontWeight: 600, fontSize: 11, textTransform: 'uppercase' }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {MINERALS.map((m, i) => (
-                <tr key={m.name} style={{ background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                  <td style={{ padding: '9px 12px', color: '#f5f5f7', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ width: 10, height: 10, borderRadius: '50%', background: MINERAL_COLORS[m.type] || '#888', display: 'inline-block', flexShrink: 0 }} />
-                    {m.name}
-                  </td>
-                  <td style={{ padding: '9px 12px', color: '#d1d5db' }}>{m.type}</td>
-                  <td style={{ padding: '9px 12px', color: '#d1d5db' }}>{m.quantity}</td>
-                  <td style={{ padding: '9px 12px' }}>
-                    <span style={{ background: m.status.includes('Active') ? '#10B98122' : m.status.includes('Explor') ? '#F59E0B22' : '#6B728022', color: m.status.includes('Active') ? '#10B981' : m.status.includes('Explor') ? '#F59E0B' : '#a1a1aa', borderRadius: 6, padding: '2px 8px', fontSize: 11 }}>
-                      {m.status}
-                    </span>
-                  </td>
-                  <td style={{ padding: '9px 12px', color: '#d1d5db' }}>{m.value}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+    <div style={{display:'flex',flexWrap:'wrap',gap:'5px 12px',padding:'7px 10px',background:'rgba(0,0,0,0.3)',borderRadius:6,marginBottom:10}}>
+      {items.map(it=>(
+        <span key={it.label} style={{display:'flex',alignItems:'center',gap:5,fontSize:10,color:'#94a3b8'}}>
+          <span style={{width:9,height:9,borderRadius:'50%',background:it.color,display:'inline-block'}}/>
+          {it.label}
+        </span>
+      ))}
     </div>
   );
 }
 
-function AgricultureTab() {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 10 }}>
-        <StatCard icon={<Tractor size={20} />} label="Agriculture Share of GDP" value="24.1%" sub="Employs 72% of workforce" color="#84CC16" />
-        <StatCard icon={<DollarSign size={20} />} label="Coffee Export Value" value="$600M+" sub="No.1 export commodity" color="#6F4E37" />
-        <StatCard icon={<Globe size={20} />} label="Arable Land" value="34%" sub="of total land area" color="#10B981" />
-        <StatCard icon={<Activity size={20} />} label="Agri Growth Rate" value="3.8%" sub="2022/23 (UBOS)" color="#F59E0B" />
-      </div>
+function Row4({children}:{children:React.ReactNode}) {
+  return <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(155px,1fr))',gap:10,marginBottom:18}}>{children}</div>;
+}
 
-      <MapPanel height={500}>
-        {AGRI_ZONES.map((z, i) => (
-          <CircleMarker
-            key={z.name + i}
-            center={[z.lat, z.lng]}
-            radius={10}
-            pathOptions={{ color: z.color, fillColor: z.color, fillOpacity: 0.75, weight: 2 }}
-          >
+function ChartWrap({title,children}:{title:string;children:React.ReactNode}) {
+  return (
+    <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.07)',borderRadius:10,padding:14}}>
+      <div style={{fontSize:12,fontWeight:600,color:'#94a3b8',marginBottom:10}}>{title}</div>
+      {children}
+    </div>
+  );
+}
+
+function TwoCol({children}:{children:React.ReactNode}) {
+  return <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14,marginTop:12}}>{children}</div>;
+}
+
+function Ttip({contentStyle,...p}:any) {
+  return <Tooltip contentStyle={{background:'#1e293b',border:'none',fontSize:11,...contentStyle}} {...p}/>;
+}
+
+function DataBadge({text}:{text:string}) {
+  return <div style={{display:'inline-block',padding:'3px 8px',background:'rgba(16,185,129,0.15)',border:'1px solid rgba(16,185,129,0.3)',borderRadius:12,fontSize:10,color:'#34d399',marginBottom:8}}>{text}</div>;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TAB COMPONENTS
+// ═══════════════════════════════════════════════════════════════
+
+function OverviewTab() {
+  return (
+    <div>
+      <h2 style={{fontSize:20,fontWeight:700,color:'#f8fafc',margin:'0 0 4px'}}>Uganda Socio-Economic Overview</h2>
+      <p style={{fontSize:12,color:'#64748b',marginBottom:16}}>Comprehensive analysis across all sectors — GDP, demographics, resources, and human development indicators.</p>
+      <Row4>
+        <Card icon="👥" label="Total Population" value="47.2M" sub="Est. 2024 | 2.9% annual growth" col="#3b82f6"/>
+        <Card icon="💰" label="GDP (USD)" value="$47.2B" sub="2024 est. | 5.9% growth rate" col="#10b981"/>
+        <Card icon="🗺️" label="Total Area" value="241,038 km²" sub="4 regions · 135 districts" col="#f59e0b"/>
+        <Card icon="📊" label="Human Dev. Index" value="0.525" sub="Medium HDI · Rank 166/193" col="#8b5cf6"/>
+      </Row4>
+      <MapPanel h={380}>
+        {REGIONS.map(r=>(
+          <CircleMarker key={r.name} center={[r.lat,r.lng]} radius={r.pop*1.6}
+            pathOptions={{color:r.color,fillColor:r.color,fillOpacity:0.25,weight:2}}>
             <Popup>
-              <div style={{ minWidth: 170 }}>
-                <strong style={{ fontSize: 13 }}>{z.name}</strong>
-                <div style={{ fontSize: 11, color: '#555', marginTop: 4, lineHeight: 1.6 }}>
-                  <div><strong>Zone:</strong> {z.region}</div>
-                  <div><strong>Export value:</strong> {z.export}</div>
-                </div>
-              </div>
+              <b>{r.name} Region</b><br/>
+              Pop: {r.pop}M &nbsp;|&nbsp; HDI: {r.hdi}<br/>
+              GDP: ${r.gdp}B &nbsp;|&nbsp; Area: {r.area.toLocaleString()} km²
             </Popup>
           </CircleMarker>
         ))}
       </MapPanel>
+      <Lgd items={REGIONS.map(r=>({color:r.color,label:`${r.name} (${r.pop}M)`}))}/>
+      <TwoCol>
+        <ChartWrap title="GDP Growth 2018–2025 (USD Billion)">
+          <ResponsiveContainer width="100%" height={170}>
+            <AreaChart data={GDP_DATA}>
+              <XAxis dataKey="y" tick={{fill:'#94a3b8',fontSize:10}}/>
+              <YAxis tick={{fill:'#94a3b8',fontSize:10}}/>
+              <Ttip/>
+              <Area type="monotone" dataKey="gdp" stroke="#3b82f6" fill="rgba(59,130,246,0.12)" name="GDP $B"/>
+            </AreaChart>
+          </ResponsiveContainer>
+        </ChartWrap>
+        <ChartWrap title="GDP by Sector (% share)">
+          <ResponsiveContainer width="100%" height={170}>
+            <PieChart>
+              <Pie data={SECTOR_GDP} dataKey="v" nameKey="name" cx="50%" cy="50%" outerRadius={65} label={({name,v})=>`${name} ${v}%`} labelLine={false}>
+                {SECTOR_GDP.map((_,i)=><Cell key={i} fill={CC[i]}/>)}
+              </Pie>
+              <Ttip/>
+            </PieChart>
+          </ResponsiveContainer>
+        </ChartWrap>
+      </TwoCol>
+    </div>
+  );
+}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-        <div>
-          <h3 style={{ color: '#f5f5f7', fontWeight: 600, marginBottom: 10, fontSize: 14 }}>Agricultural Products by Share of Output</h3>
-          <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={AGRI_ZONES.slice(0, 8)} layout="vertical" barSize={14}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-              <XAxis type="number" tick={{ fill: '#6b7280', fontSize: 11 }} />
-              <YAxis type="category" dataKey="name" width={120} tick={{ fill: '#d1d5db', fontSize: 11 }} />
-              <Tooltip contentStyle={{ background: '#1c1c1e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#f5f5f7' }} />
-              <Bar dataKey="pct" name="% of output" radius={[0, 4, 4, 0]}>
-                {AGRI_ZONES.slice(0, 8).map((z, i) => <Cell key={i} fill={z.color} />)}
+function ResourcesTab() {
+  return (
+    <div>
+      <h2 style={{fontSize:20,fontWeight:700,color:'#f8fafc',margin:'0 0 4px'}}>Mineral Resources & Natural Wealth</h2>
+      <p style={{fontSize:12,color:'#64748b',marginBottom:16}}>25 known mineral deposits mapped from USGS Africa Geodatabase and Uganda DGSM data. Uganda holds significant untapped resources.</p>
+      <Row4>
+        <Card icon="⛏️" label="Known Deposits" value="25+" sub="USGS-verified mineral sites" col="#f59e0b"/>
+        <Card icon="🥇" label="Gold Reserves" value="~3.5 Moz" sub="Combined estimated reserves" col="#fbbf24"/>
+        <Card icon="☎️" label="Phosphate" value="235 MT" sub="Tororo — largest single deposit" col="#22c55e"/>
+        <Card icon="🛢️" label="Oil Reserves" value="~1.4 Bbbl" sub="Albertine Graben combined" col="#f97316"/>
+      </Row4>
+      <DataBadge text="⚡ Mineral data sourced from USGS African Mineral Geodatabase & Uganda DGSM"/>
+      <MapPanel>
+        {MINERALS.map(m=>(
+          <CircleMarker key={m.name} center={[m.lat,m.lng]} radius={m.size||8}
+            pathOptions={{color:m.color||'#fbbf24',fillColor:m.color||'#fbbf24',fillOpacity:0.7,weight:1.5}}>
+            <Popup><b>{m.name}</b><br/><em>{m.type}</em><br/>{m.value}</Popup>
+          </CircleMarker>
+        ))}
+        {OIL_FIELDS.map(o=>(
+          <CircleMarker key={o.name} center={[o.lat,o.lng]} radius={o.size||9}
+            pathOptions={{color:'#f97316',fillColor:'#f97316',fillOpacity:0.6,weight:1.5}}>
+            <Popup><b>{o.name}</b><br/><em>{o.type}</em><br/>{o.value}<br/><small>{o.detail}</small></Popup>
+          </CircleMarker>
+        ))}
+      </MapPanel>
+      <Lgd items={[
+        {color:'#fbbf24',label:'Gold'},{color:'#22c55e',label:'Phosphate'},
+        {color:'#b45309',label:'Iron Ore'},{color:'#60a5fa',label:'Cobalt/Nickel'},
+        {color:'#f43f5e',label:'Coltan'},{color:'#94a3b8',label:'Limestone/Marble'},
+        {color:'#fb923c',label:'Tin/Cassiterite'},{color:'#f97316',label:'Oil/Gas Fields'},
+      ]}/>
+      <TwoCol>
+        <ChartWrap title="Mineral Deposit Types">
+          <ResponsiveContainer width="100%" height={170}>
+            <BarChart data={MINERAL_TYPES} layout="vertical">
+              <XAxis type="number" tick={{fill:'#94a3b8',fontSize:10}}/>
+              <YAxis dataKey="name" type="category" tick={{fill:'#94a3b8',fontSize:10}} width={90}/>
+              <Ttip/>
+              <Bar dataKey="n" fill="#f59e0b" name="Deposits"/>
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartWrap>
+        <ChartWrap title="Top Export Commodities (USD M, 2024)">
+          <ResponsiveContainer width="100%" height={170}>
+            <BarChart data={EXPORT_DATA}>
+              <XAxis dataKey="name" tick={{fill:'#94a3b8',fontSize:9}}/>
+              <YAxis tick={{fill:'#94a3b8',fontSize:10}}/>
+              <Ttip/>
+              <Bar dataKey="v" name="USD Million">
+                {EXPORT_DATA.map((_,i)=><Cell key={i} fill={CC[i%CC.length]}/>)}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
-        </div>
-        <div>
-          <h3 style={{ color: '#f5f5f7', fontWeight: 600, marginBottom: 10, fontSize: 14 }}>Key Agricultural Zones</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {AGRI_ZONES.slice(0, 8).map((z, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)' }}>
-                <div style={{ width: 10, height: 10, borderRadius: '50%', background: z.color, flexShrink: 0 }} />
-                <div style={{ flex: 1 }}>
-                  <div style={{ color: '#f5f5f7', fontSize: 13, fontWeight: 600 }}>{z.name}</div>
-                  <div style={{ color: '#71717a', fontSize: 11 }}>{z.region}</div>
-                </div>
-                <div style={{ color: '#10B981', fontSize: 12, fontWeight: 600 }}>{z.export}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+        </ChartWrap>
+      </TwoCol>
     </div>
   );
 }
 
-function IndustryTab() {
+function EnergyTab() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 10 }}>
-        <StatCard icon={<Factory size={20} />} label="Industry Share of GDP" value="27.3%" sub="Incl. construction" color="#3B82F6" />
-        <StatCard icon={<Zap size={20} />} label="Installed Power Capacity" value="1,244 MW" sub="Hydro dominant" color="#F59E0B" />
-        <StatCard icon={<Building2 size={20} />} label="Industrial Parks" value="22" sub="UIA designated zones" color="#10B981" />
-        <StatCard icon={<Activity size={20} />} label="Oil Production (est.)" value="2025+" sub="EACOP pipeline route" color="#EF4444" />
-      </div>
+    <div>
+      <h2 style={{fontSize:20,fontWeight:700,color:'#f8fafc',margin:'0 0 4px'}}>Energy Infrastructure & Oil Development</h2>
+      <p style={{fontSize:12,color:'#64748b',marginBottom:16}}>12 hydropower stations with 1,722 MW total installed capacity. Tilenga & Kingfisher oil fields targeting first oil in 2026.</p>
+      <Row4>
+        <Card icon="⚡" label="Installed Capacity" value="1,722 MW" sub="Predominantly hydro-electric" col="#06b6d4"/>
+        <Card icon="💧" label="Renewable Share" value="87%" sub="Hydro + Solar + Bagasse" col="#10b981"/>
+        <Card icon="🛢️" label="Oil Reserves" value="~1.4 Bbbl" sub="Tilenga 836M + Kingfisher 214M" col="#f97316"/>
+        <Card icon="🔌" label="Electricity Access" value="~35%" sub="National; 72% urban coverage" col="#8b5cf6"/>
+      </Row4>
+      <MapPanel>
+        {DAMS.map(d=>(
+          <CircleMarker key={d.name} center={[d.lat,d.lng]} radius={d.size||8}
+            pathOptions={{color:'#06b6d4',fillColor:'#06b6d4',fillOpacity:0.75,weight:2}}>
+            <Popup><b>{d.name}</b><br/><b style={{color:'#06b6d4'}}>{d.value}</b><br/><small>{d.detail}</small></Popup>
+          </CircleMarker>
+        ))}
+        {OIL_FIELDS.map(o=>(
+          <CircleMarker key={o.name} center={[o.lat,o.lng]} radius={o.size||9}
+            pathOptions={{color:'#f97316',fillColor:'#f97316',fillOpacity:0.6,weight:1.5}}>
+            <Popup><b>{o.name}</b><br/><em>{o.type}</em><br/>{o.value}<br/><small>{o.detail}</small></Popup>
+          </CircleMarker>
+        ))}
+      </MapPanel>
+      <Lgd items={[{color:'#06b6d4',label:'Hydropower Dam'},{color:'#f97316',label:'Oil Field/Block'}]}/>
+      <TwoCol>
+        <ChartWrap title="Hydropower Capacity (MW) — Top Stations">
+          <ResponsiveContainer width="100%" height={170}>
+            <BarChart data={DAM_CAPACITY.filter(d=>d.mw>5).sort((a,b)=>b.mw-a.mw).slice(0,8)}>
+              <XAxis dataKey="name" tick={{fill:'#94a3b8',fontSize:8}} angle={-25} textAnchor="end" height={45}/>
+              <YAxis tick={{fill:'#94a3b8',fontSize:10}}/>
+              <Ttip/>
+              <Bar dataKey="mw" fill="#06b6d4" name="MW"/>
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartWrap>
+        <ChartWrap title="Generation Mix (% of installed capacity)">
+          <ResponsiveContainer width="100%" height={170}>
+            <PieChart>
+              <Pie data={ENERGY_MIX} dataKey="v" nameKey="name" cx="50%" cy="50%" outerRadius={65}
+                label={({name,v})=>`${name} ${v}%`} labelLine={false}>
+                {ENERGY_MIX.map((_,i)=><Cell key={i} fill={CC[i]}/>)}
+              </Pie>
+              <Ttip/>
+            </PieChart>
+          </ResponsiveContainer>
+        </ChartWrap>
+      </TwoCol>
+    </div>
+  );
+}
 
-      <MapPanel height={500}>
-        {INDUSTRY_SITES.map((s, i) => (
-          <CircleMarker
-            key={s.name}
-            center={[s.lat, s.lng]}
-            radius={s.type.includes('Hydro') ? 10 : s.type.includes('Oil') ? 12 : 8}
-            pathOptions={{
-              color: s.type.includes('Hydro') ? '#60A5FA' : s.type.includes('Oil') ? '#1a1a2e' : s.type.includes('Cement') ? '#D4C5A9' : s.type.includes('Sugar') ? '#90EE90' : '#F59E0B',
-              fillOpacity: 0.85,
-              weight: 2,
-            }}
-          >
+function AgriTab() {
+  return (
+    <div>
+      <h2 style={{fontSize:20,fontWeight:700,color:'#f8fafc',margin:'0 0 4px'}}>Agriculture, Food & Fishing</h2>
+      <p style={{fontSize:12,color:'#64748b',marginBottom:16}}>Agriculture employs ~70% of the workforce. Uganda is the world's second-largest banana producer and Africa's top vanilla exporter.</p>
+      <Row4>
+        <Card icon="☕" label="Coffee Export" value="$862M" sub="Top foreign exchange earner" col="#92400e"/>
+        <Card icon="🌿" label="Arable Land" value="12.8M Ha" sub="64% of 241,038 km² total area" col="#10b981"/>
+        <Card icon="🐟" label="Fish Production" value="600K MT/yr" sub="L. Victoria, Albert, Edward, George" col="#38bdf8"/>
+        <Card icon="🌾" label="Agri GDP Share" value="27.2%" sub="Employs 70% of workforce" col="#f59e0b"/>
+      </Row4>
+      <MapPanel>
+        {AGRI.map(a=>(
+          <CircleMarker key={a.name} center={[a.lat,a.lng]} radius={a.size||9}
+            pathOptions={{color:a.color||'#22c55e',fillColor:a.color||'#22c55e',fillOpacity:0.7,weight:1.5}}>
+            <Popup><b>{a.name}</b><br/><em>{a.type}</em><br/>{a.value}</Popup>
+          </CircleMarker>
+        ))}
+      </MapPanel>
+      <Lgd items={[
+        {color:'#92400e',label:'Coffee Arabica'},{color:'#d97706',label:'Coffee Robusta'},
+        {color:'#166534',label:'Tea'},{color:'#fbbf24',label:'Sugar Cane'},
+        {color:'#e2e8f0',label:'Cotton'},{color:'#84cc16',label:'Bananas/Matooke'},
+        {color:'#38bdf8',label:'Fishing'},{color:'#c4b5fd',label:'Vanilla'},
+        {color:'#a8a29e',label:'Tobacco'},
+      ]}/>
+      <TwoCol>
+        <ChartWrap title="Crop Revenue (USD Million, 2024)">
+          <ResponsiveContainer width="100%" height={170}>
+            <BarChart data={CROP_REV}>
+              <XAxis dataKey="crop" tick={{fill:'#94a3b8',fontSize:9}}/>
+              <YAxis tick={{fill:'#94a3b8',fontSize:10}}/>
+              <Ttip/>
+              <Bar dataKey="rev" name="USD M">
+                {CROP_REV.map((_,i)=><Cell key={i} fill={CC[i%CC.length]}/>)}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartWrap>
+        <ChartWrap title="Agriculture Production Zones by Crop">
+          <ResponsiveContainer width="100%" height={170}>
+            <PieChart>
+              <Pie data={[
+                {name:'Coffee',v:11},{name:'Sugar',v:3},{name:'Matooke',v:4},
+                {name:'Cotton',v:3},{name:'Tea',v:3},{name:'Fishing',v:3},{name:'Other',v:4},
+              ]} dataKey="v" nameKey="name" cx="50%" cy="50%" outerRadius={65}
+                label={({name})=>name} labelLine={false}>
+                {[0,1,2,3,4,5,6].map(i=><Cell key={i} fill={CC[i%CC.length]}/>)}
+              </Pie>
+              <Ttip/>
+            </PieChart>
+          </ResponsiveContainer>
+        </ChartWrap>
+      </TwoCol>
+    </div>
+  );
+}
+
+function EnvironmentTab() {
+  return (
+    <div>
+      <h2 style={{fontSize:20,fontWeight:700,color:'#f8fafc',margin:'0 0 4px'}}>Protected Areas & Biodiversity</h2>
+      <p style={{fontSize:12,color:'#64748b',marginBottom:16}}>10 National Parks + 7 Wildlife/Game Reserves covering 6.3M Ha. Two UNESCO World Heritage Sites. Home to 50% of Africa's mountain gorillas.</p>
+      <Row4>
+        <Card icon="🦁" label="Protected Areas" value="17" sub="10 NPs + 7 Game Reserves" col="#16a34a"/>
+        <Card icon="🦍" label="Mountain Gorillas" value="~450" sub="50% of world's total (Bwindi+Mgahinga)" col="#22c55e"/>
+        <Card icon="🌿" label="Protected Coverage" value="6.3M Ha" sub="26% of Uganda's land area" col="#4ade80"/>
+        <Card icon="🏔️" label="UNESCO WHS" value="2 Sites" sub="Bwindi + Rwenzori Mountains" col="#a3e635"/>
+      </Row4>
+      <MapPanel>
+        {PROTECTED.map(p=>(
+          <CircleMarker key={p.name} center={[p.lat,p.lng]} radius={p.size||10}
+            pathOptions={{color:p.color||'#16a34a',fillColor:p.color||'#16a34a',fillOpacity:0.55,weight:2}}>
             <Popup>
-              <div style={{ minWidth: 180 }}>
-                <strong style={{ fontSize: 13 }}>{s.name}</strong>
-                <div style={{ fontSize: 11, color: '#555', marginTop: 4, lineHeight: 1.6 }}>
-                  <div><strong>Type:</strong> {s.type}</div>
-                  <div><strong>Capacity:</strong> {s.capacity}</div>
-                  <div>Coords: {s.lat.toFixed(3)}°N, {s.lng.toFixed(3)}°E</div>
-                </div>
-              </div>
+              <b>{p.name}</b><br/>
+              <em style={{color:'#94a3b8'}}>{p.type}</em><br/>
+              <b>{p.value}</b><br/>
+              <small>{p.detail}</small>
             </Popup>
           </CircleMarker>
         ))}
       </MapPanel>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-        <div>
-          <h3 style={{ color: '#f5f5f7', fontWeight: 600, marginBottom: 10, fontSize: 14 }}>GDP Sector Breakdown</h3>
-          <ResponsiveContainer width="100%" height={220}>
+      <Lgd items={[{color:'#16a34a',label:'National Park'},{color:'#4ade80',label:'Wildlife Reserve'},{color:'#4ade80',label:'Game Reserve'}]}/>
+      <TwoCol>
+        <ChartWrap title="Largest Protected Areas (km²)">
+          <ResponsiveContainer width="100%" height={170}>
+            <BarChart data={PROTECTED.slice(0,8).map(p=>({name:p.name.replace(' NP','').replace(' WR','').replace(' GR',''), area:parseInt((p.value||'0').replace(/,/g,''))||0})).sort((a,b)=>b.area-a.area)} layout="vertical">
+              <XAxis type="number" tick={{fill:'#94a3b8',fontSize:10}}/>
+              <YAxis dataKey="name" type="category" tick={{fill:'#94a3b8',fontSize:9}} width={105}/>
+              <Ttip/>
+              <Bar dataKey="area" fill="#16a34a" name="km²"/>
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartWrap>
+        <ChartWrap title="PA Classification Breakdown">
+          <ResponsiveContainer width="100%" height={170}>
             <PieChart>
-              <Pie data={SECTORS} cx="50%" cy="50%" outerRadius={80} dataKey="pct" label={({ sector, pct }) => `${sector} ${pct}%`} labelLine={{ stroke: '#6b7280' }} fontSize={11}>
-                {SECTORS.map((s, i) => <Cell key={i} fill={s.color} />)}
+              <Pie data={[{name:'National Parks',v:10},{name:'Wildlife Reserves',v:5},{name:'Game Reserves',v:2}]}
+                dataKey="v" nameKey="name" cx="50%" cy="50%" outerRadius={65}
+                label={({name,v})=>`${name}: ${v}`} labelLine={false}>
+                <Cell fill="#16a34a"/><Cell fill="#4ade80"/><Cell fill="#86efac"/>
               </Pie>
-              <Tooltip contentStyle={{ background: '#1c1c1e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 }} />
+              <Ttip/>
             </PieChart>
           </ResponsiveContainer>
-        </div>
-        <div>
-          <h3 style={{ color: '#f5f5f7', fontWeight: 600, marginBottom: 10, fontSize: 14 }}>Key Industrial Sites</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 220, overflowY: 'auto' }}>
-            {INDUSTRY_SITES.map((s, i) => (
-              <div key={i} style={{ display: 'flex', gap: 10, padding: '7px 10px', background: 'rgba(255,255,255,0.03)', borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)' }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ color: '#f5f5f7', fontSize: 12, fontWeight: 600 }}>{s.name}</div>
-                  <div style={{ color: '#71717a', fontSize: 11 }}>{s.type} — {s.capacity}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+        </ChartWrap>
+      </TwoCol>
     </div>
   );
 }
 
-function LiveDataTab({ query, color, label, icon }: { query: string; color: string; label: string; icon: React.ReactNode }) {
-  const [enabled, setEnabled] = useState(false);
-  const { data, loading, error } = useOverpass(query, enabled);
+function EduHealthTab() {
+  const [showSchools, setShowSchools] = useState(false);
+  const [showHosp, setShowHosp] = useState(false);
+  const {data:schools, loading:sl} = useOverpass(Q_SCHOOLS, showSchools);
+  const {data:liveHosp, loading:hl} = useOverpass(Q_HOSPITALS, showHosp);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-      {!enabled ? (
-        <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, padding: 28, textAlign: 'center' }}>
-          <div style={{ color: '#a1a1aa', fontSize: 14, marginBottom: 16 }}>
-            Live {label} locations are fetched from OpenStreetMap (Overpass API).<br />
-            Click to load live data — may take 10–20 seconds.
-          </div>
-          <button
-            onClick={() => setEnabled(true)}
-            style={{ background: color, color: '#fff', border: 'none', borderRadius: 10, padding: '10px 24px', fontWeight: 600, fontSize: 14, cursor: 'pointer' }}
-          >
-            Load Live {label} Data
-          </button>
-        </div>
-      ) : loading ? (
-        <div style={{ textAlign: 'center', padding: 40, color: '#a1a1aa', fontSize: 14 }}>
-          <div style={{ marginBottom: 8 }}>Querying OpenStreetMap…</div>
-          <div style={{ fontSize: 12, color: '#71717a' }}>Fetching up to 400 {label.toLowerCase()} locations across Uganda</div>
-        </div>
-      ) : error ? (
-        <div style={{ textAlign: 'center', padding: 20, color: '#EF4444', fontSize: 13 }}>
-          <AlertCircle size={20} style={{ marginBottom: 8 }} /><br />{error}
-        </div>
-      ) : (
-        <>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ background: color + '22', color, borderRadius: 8, padding: '6px 12px', fontWeight: 600, fontSize: 13 }}>
-              {icon} {data.length.toLocaleString()} {label} mapped
-            </div>
-            <span style={{ color: '#71717a', fontSize: 12 }}>from OpenStreetMap — live data</span>
-          </div>
-          <MapPanel height={500}>
-            {data.map((f, i) => (
-              <CircleMarker key={i} center={[f.lat, f.lng]} radius={5}
-                pathOptions={{ color, fillColor: color, fillOpacity: 0.65, weight: 1 }}>
-                <Popup>
-                  <div>
-                    <strong style={{ fontSize: 12 }}>{f.name}</strong>
-                    {f.tags.operator && <div style={{ fontSize: 11, color: '#666' }}>Operator: {f.tags.operator}</div>}
-                    {f.tags.capacity && <div style={{ fontSize: 11, color: '#666' }}>Capacity: {f.tags.capacity}</div>}
-                  </div>
-                </Popup>
-              </CircleMarker>
-            ))}
-          </MapPanel>
-        </>
-      )}
+    <div>
+      <h2 style={{fontSize:20,fontWeight:700,color:'#f8fafc',margin:'0 0 4px'}}>Education & Health Infrastructure</h2>
+      <p style={{fontSize:12,color:'#64748b',marginBottom:16}}>12 universities, 14 regional/national referral hospitals. Primary school enrollment at 95%. Literacy rate 76.5%.</p>
+      <Row4>
+        <Card icon="🎓" label="Universities" value="12+" sub="7 public · 5+ private" col="#f59e0b"/>
+        <Card icon="🏥" label="Referral Hospitals" value="14" sub="1 national + 13 regional" col="#ef4444"/>
+        <Card icon="📚" label="Literacy Rate" value="76.5%" sub="Adult literacy, est. 2024" col="#8b5cf6"/>
+        <Card icon="👶" label="Primary Enrollment" value="95%" sub="Net enrollment rate" col="#10b981"/>
+      </Row4>
+      <div style={{display:'flex',gap:10,marginBottom:10}}>
+        <button onClick={()=>setShowSchools(p=>!p)}
+          style={{padding:'7px 14px',borderRadius:8,border:'1px solid rgba(245,158,11,0.4)',background:showSchools?'rgba(245,158,11,0.15)':'transparent',color:'#f59e0b',cursor:'pointer',fontSize:12}}>
+          {sl?'Loading schools…':showSchools?'✓ OSM Schools Active':'📚 Load OSM Schools'}
+        </button>
+        <button onClick={()=>setShowHosp(p=>!p)}
+          style={{padding:'7px 14px',borderRadius:8,border:'1px solid rgba(239,68,68,0.4)',background:showHosp?'rgba(239,68,68,0.15)':'transparent',color:'#ef4444',cursor:'pointer',fontSize:12}}>
+          {hl?'Loading health…':showHosp?'✓ OSM Health Active':'🏥 Load OSM Health'}
+        </button>
+      </div>
+      <MapPanel>
+        {UNIVERSITIES.map(u=>(
+          <CircleMarker key={u.name} center={[u.lat,u.lng]} radius={8}
+            pathOptions={{color:'#f59e0b',fillColor:'#f59e0b',fillOpacity:0.7,weight:2}}>
+            <Popup><b>{u.name}</b><br/><em>{u.type} university</em><br/>{u.value}<br/><small>{u.detail}</small></Popup>
+          </CircleMarker>
+        ))}
+        {HOSPITALS.map(h=>(
+          <CircleMarker key={h.name} center={[h.lat,h.lng]} radius={h.type==='National'?11:7}
+            pathOptions={{color:'#ef4444',fillColor:'#ef4444',fillOpacity:0.7,weight:2}}>
+            <Popup><b>{h.name}</b><br/><em>{h.type} Referral</em><br/>{h.value}<br/><small>{h.detail}</small></Popup>
+          </CircleMarker>
+        ))}
+        {showSchools && schools.filter(s=>s.lat||s.center?.lat).map((s,i)=>(
+          <CircleMarker key={`sch-${i}`} center={[s.lat||s.center?.lat,s.lon||s.center?.lon]} radius={3}
+            pathOptions={{color:'#fbbf24',fillColor:'#fbbf24',fillOpacity:0.5,weight:1}}>
+            <Popup>{s.tags?.name||'School'}</Popup>
+          </CircleMarker>
+        ))}
+        {showHosp && liveHosp.filter(h=>h.lat||h.center?.lat).map((h,i)=>(
+          <CircleMarker key={`hp-${i}`} center={[h.lat||h.center?.lat,h.lon||h.center?.lon]} radius={3}
+            pathOptions={{color:'#f87171',fillColor:'#f87171',fillOpacity:0.5,weight:1}}>
+            <Popup>{h.tags?.name||h.tags?.amenity||'Health facility'}</Popup>
+          </CircleMarker>
+        ))}
+      </MapPanel>
+      <Lgd items={[
+        {color:'#f59e0b',label:'University'},{color:'#ef4444',label:'Referral Hospital'},
+        {color:'#fbbf24',label:'OSM Schools (live)'},{color:'#f87171',label:'OSM Health (live)'},
+      ]}/>
+      <TwoCol>
+        <ChartWrap title="School Enrollment by Level (%)">
+          <ResponsiveContainer width="100%" height={170}>
+            <BarChart data={ENROLL}>
+              <XAxis dataKey="level" tick={{fill:'#94a3b8',fontSize:10}}/>
+              <YAxis domain={[0,100]} tick={{fill:'#94a3b8',fontSize:10}}/>
+              <Ttip/>
+              <Bar dataKey="rate" fill="#f59e0b" name="Enrollment %">
+                {ENROLL.map((_,i)=><Cell key={i} fill={CC[i%CC.length]}/>)}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartWrap>
+        <ChartWrap title="Regional HDI Comparison">
+          <ResponsiveContainer width="100%" height={170}>
+            <BarChart data={REGIONS} layout="vertical">
+              <XAxis type="number" domain={[0.4,0.65]} tick={{fill:'#94a3b8',fontSize:10}}/>
+              <YAxis dataKey="name" type="category" tick={{fill:'#94a3b8',fontSize:10}} width={60}/>
+              <Ttip/>
+              <Bar dataKey="hdi" name="HDI Score">
+                {REGIONS.map((r,i)=><Cell key={i} fill={r.color}/>)}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartWrap>
+      </TwoCol>
     </div>
   );
 }
 
-function DemographicsTab() {
+function DemoTab() {
+  const {geo, loading} = useBoundaries();
+
+  const geoStyle = (feature: any) => {
+    const n = (feature?.properties?.shapeName||'').toLowerCase();
+    const region = REGIONS.find(r=>n.includes(r.name.toLowerCase()));
+    return {
+      fillColor: region?.color||'#334155',
+      weight: 1, opacity: 0.8, color:'#475569', fillOpacity: 0.35,
+    };
+  };
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 10 }}>
-        <StatCard icon={<Users size={20} />} label="Total Population" value="45.7M" sub="2024 preliminary census" color="#3B82F6" />
-        <StatCard icon={<Activity size={20} />} label="Population Growth" value="3.0%" sub="p.a. — one of world's highest" color="#EF4444" />
-        <StatCard icon={<MapPin size={20} />} label="Population Density" value="189/km²" sub="National average" color="#F59E0B" />
-        <StatCard icon={<Globe size={20} />} label="Median Age" value="15.7 yrs" sub="Very young population" color="#10B981" />
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-        <div>
-          <h3 style={{ color: '#f5f5f7', fontWeight: 600, marginBottom: 10, fontSize: 14 }}>Population by Region</h3>
-          <ResponsiveContainer width="100%" height={240}>
-            <BarChart data={REGION_DATA} barSize={32}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-              <XAxis dataKey="region" tick={{ fill: '#d1d5db', fontSize: 12 }} />
-              <YAxis tickFormatter={v => (v / 1e6).toFixed(1) + 'M'} tick={{ fill: '#6b7280', fontSize: 11 }} />
-              <Tooltip contentStyle={{ background: '#1c1c1e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#f5f5f7' }} formatter={(v: any) => [Number(v).toLocaleString(), 'Population']} />
-              <Bar dataKey="population" fill="#3B82F6" radius={[4, 4, 0, 0]} />
+    <div>
+      <h2 style={{fontSize:20,fontWeight:700,color:'#f8fafc',margin:'0 0 4px'}}>Demographics & Population</h2>
+      <p style={{fontSize:12,color:'#64748b',marginBottom:16}}>47.2M people across 4 regions and 135 districts. Uganda has one of the world's youngest populations (median age 16.7 years).</p>
+      <Row4>
+        <Card icon="👥" label="Total Population" value="47.2M" sub="2024 estimate (UBOS)" col="#3b82f6"/>
+        <Card icon="📈" label="Growth Rate" value="2.9%/yr" sub="One of Africa's fastest" col="#ef4444"/>
+        <Card icon="🏙️" label="Urbanisation" value="~27%" sub="Rising from 18% in 2014" col="#8b5cf6"/>
+        <Card icon="👶" label="Median Age" value="16.7 yrs" sub="Youth-dominated demography" col="#10b981"/>
+      </Row4>
+      {loading && <div style={{textAlign:'center',padding:20,color:'#64748b',fontSize:12}}>Loading region boundaries…</div>}
+      <MapPanel>
+        {geo && <GeoJSON key="uga-adm1" data={geo} style={geoStyle}/>}
+        {REGIONS.map(r=>(
+          <CircleMarker key={r.name} center={[r.lat,r.lng]} radius={r.pop*1.8}
+            pathOptions={{color:r.color,fillColor:r.color,fillOpacity:0.2,weight:2}}>
+            <Popup>
+              <b>{r.name} Region</b><br/>
+              Population: <b>{r.pop}M</b><br/>
+              HDI: {r.hdi} &nbsp;|&nbsp; GDP: ${r.gdp}B<br/>
+              Area: {r.area.toLocaleString()} km²
+            </Popup>
+          </CircleMarker>
+        ))}
+      </MapPanel>
+      <Lgd items={REGIONS.map(r=>({color:r.color,label:`${r.name}: ${r.pop}M`}))}/>
+      <TwoCol>
+        <ChartWrap title="Population Age Structure (%)">
+          <ResponsiveContainer width="100%" height={170}>
+            <BarChart data={POP_PYMD}>
+              <XAxis dataKey="age" tick={{fill:'#94a3b8',fontSize:9}}/>
+              <YAxis tick={{fill:'#94a3b8',fontSize:10}}/>
+              <Ttip/>
+              <Bar dataKey="m" fill="#3b82f6" name="Male %" stackId="a"/>
+              <Bar dataKey="f" fill="#ec4899" name="Female %" stackId="a"/>
             </BarChart>
           </ResponsiveContainer>
-        </div>
-        <div>
-          <h3 style={{ color: '#f5f5f7', fontWeight: 600, marginBottom: 10, fontSize: 14 }}>Population Density by Region (p/km²)</h3>
-          <ResponsiveContainer width="100%" height={240}>
-            <BarChart data={REGION_DATA} barSize={32}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-              <XAxis dataKey="region" tick={{ fill: '#d1d5db', fontSize: 12 }} />
-              <YAxis tick={{ fill: '#6b7280', fontSize: 11 }} />
-              <Tooltip contentStyle={{ background: '#1c1c1e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#f5f5f7' }} formatter={(v: any) => [v + ' p/km²', 'Density']} />
-              <Bar dataKey="density" fill="#10B981" radius={[4, 4, 0, 0]} />
+        </ChartWrap>
+        <ChartWrap title="Regional Population (Million)">
+          <ResponsiveContainer width="100%" height={170}>
+            <BarChart data={REGIONS}>
+              <XAxis dataKey="name" tick={{fill:'#94a3b8',fontSize:10}}/>
+              <YAxis tick={{fill:'#94a3b8',fontSize:10}}/>
+              <Ttip/>
+              <Bar dataKey="pop" name="Million">
+                {REGIONS.map((r,i)=><Cell key={i} fill={r.color}/>)}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
-        </div>
-      </div>
-
-      <div>
-        <h3 style={{ color: '#f5f5f7', fontWeight: 600, marginBottom: 10, fontSize: 14 }}>Human Development Index by Region</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
-          {REGION_DATA.map(r => (
-            <div key={r.region} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '16px', border: '1px solid rgba(255,255,255,0.08)', textAlign: 'center' }}>
-              <div style={{ fontSize: 28, fontWeight: 700, color: r.hdi >= 0.55 ? '#10B981' : r.hdi >= 0.51 ? '#F59E0B' : '#EF4444' }}>{r.hdi}</div>
-              <div style={{ color: '#f5f5f7', fontWeight: 600, fontSize: 13, marginTop: 4 }}>{r.region}</div>
-              <div style={{ color: '#71717a', fontSize: 11, marginTop: 2 }}>HDI Score</div>
-            </div>
-          ))}
-        </div>
-      </div>
+        </ChartWrap>
+      </TwoCol>
     </div>
   );
 }
 
 function EconomyTab() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 10 }}>
-        <StatCard icon={<DollarSign size={20} />} label="GDP (2023)" value="$48.3B" sub="Current USD" color="#10B981" />
-        <StatCard icon={<TrendingUp size={20} />} label="GDP Growth (2023)" value="5.3%" sub="World Bank estimate" color="#3B82F6" />
-        <StatCard icon={<Globe size={20} />} label="Exports (2023)" value="$6.8B" sub="Coffee, gold, fish top 3" color="#F59E0B" />
-        <StatCard icon={<Activity size={20} />} label="FDI Inflows" value="$1.2B" sub="2022 — oil sector major driver" color="#8B5CF6" />
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: 20 }}>
-        <div>
-          <h3 style={{ color: '#f5f5f7', fontWeight: 600, marginBottom: 10, fontSize: 14 }}>GDP Trend (USD Billion)</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <AreaChart data={GDP_DATA}>
-              <defs>
-                <linearGradient id="gdpGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10B981" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#10B981" stopOpacity={0.02} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-              <XAxis dataKey="year" tick={{ fill: '#d1d5db', fontSize: 12 }} />
-              <YAxis tickFormatter={v => '$' + v + 'B'} tick={{ fill: '#6b7280', fontSize: 11 }} />
-              <Tooltip contentStyle={{ background: '#1c1c1e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#f5f5f7' }} formatter={(v: any) => ['$' + Number(v).toFixed(2) + 'B', 'GDP']} />
-              <Area type="monotone" dataKey="gdp" stroke="#10B981" strokeWidth={2} fill="url(#gdpGrad)" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-        <div>
-          <h3 style={{ color: '#f5f5f7', fontWeight: 600, marginBottom: 10, fontSize: 14 }}>GDP Growth Rate (%)</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={GDP_DATA} barSize={28}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-              <XAxis dataKey="year" tick={{ fill: '#d1d5db', fontSize: 12 }} />
-              <YAxis tick={{ fill: '#6b7280', fontSize: 11 }} />
-              <Tooltip contentStyle={{ background: '#1c1c1e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#f5f5f7' }} formatter={(v: any) => [v + '%', 'Growth']} />
-              <Bar dataKey="growth" fill="#3B82F6" radius={[4, 4, 0, 0]} />
+    <div>
+      <h2 style={{fontSize:20,fontWeight:700,color:'#f8fafc',margin:'0 0 4px'}}>Economy, Industry & Trade</h2>
+      <p style={{fontSize:12,color:'#64748b',marginBottom:16}}>GDP $47.2B in 2024. Services dominate at 44.5%. Namanve Industrial Park is East Africa's largest industrial zone at 2,200 Ha.</p>
+      <Row4>
+        <Card icon="💰" label="GDP (2024)" value="$47.2B" sub="5.9% real growth rate" col="#10b981"/>
+        <Card icon="👤" label="GDP per Capita" value="~$934" sub="Based on 47.2M population" col="#3b82f6"/>
+        <Card icon="🏭" label="Industrial Parks" value="10+" sub="Namanve 2,200 Ha flagship" col="#6366f1"/>
+        <Card icon="📦" label="Total Exports" value="$2.1B" sub="Coffee + Gold as top 2" col="#f59e0b"/>
+      </Row4>
+      <MapPanel>
+        {INDUSTRY.map(ind=>(
+          <CircleMarker key={ind.name} center={[ind.lat,ind.lng]} radius={ind.size||9}
+            pathOptions={{color:'#6366f1',fillColor:'#6366f1',fillOpacity:0.7,weight:2}}>
+            <Popup><b>{ind.name}</b><br/><em>{ind.type}</em><br/>{ind.value}<br/><small>{ind.detail}</small></Popup>
+          </CircleMarker>
+        ))}
+        {MINERALS.filter(m=>m.type==='Copper/Cobalt'||m.type?.includes('Phosphate')).map(m=>(
+          <CircleMarker key={`im-${m.name}`} center={[m.lat,m.lng]} radius={8}
+            pathOptions={{color:'#f59e0b',fillColor:'#f59e0b',fillOpacity:0.5,weight:1}}>
+            <Popup><b>{m.name}</b><br/>{m.type}</Popup>
+          </CircleMarker>
+        ))}
+      </MapPanel>
+      <Lgd items={[{color:'#6366f1',label:'Industrial Park/Zone'},{color:'#f59e0b',label:'Key Mineral Processing'}]}/>
+      <TwoCol>
+        <ChartWrap title="Top Exports by Value (USD M, 2024)">
+          <ResponsiveContainer width="100%" height={170}>
+            <BarChart data={EXPORT_DATA} layout="vertical">
+              <XAxis type="number" tick={{fill:'#94a3b8',fontSize:10}}/>
+              <YAxis dataKey="name" type="category" tick={{fill:'#94a3b8',fontSize:9}} width={65}/>
+              <Ttip/>
+              <Bar dataKey="v" name="USD M">
+                {EXPORT_DATA.map((_,i)=><Cell key={i} fill={CC[i%CC.length]}/>)}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
-        </div>
-      </div>
-
-      <div>
-        <h3 style={{ color: '#f5f5f7', fontWeight: 600, marginBottom: 10, fontSize: 14 }}>Top Export Commodities (2023 estimates)</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 10 }}>
-          {[
-            { item: 'Coffee', value: '$852M', share: '12.5%', color: '#6F4E37' },
-            { item: 'Gold', value: '$2.1B', share: '30.9%', color: '#FFD700' },
-            { item: 'Fish Products', value: '$180M', share: '2.6%', color: '#4169E1' },
-            { item: 'Tea', value: '$92M', share: '1.4%', color: '#228B22' },
-            { item: 'Tobacco', value: '$55M', share: '0.8%', color: '#C8A165' },
-            { item: 'Vanilla', value: '$62M', share: '0.9%', color: '#F3E5AB' },
-          ].map(e => (
-            <div key={e.item} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '12px 14px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <div style={{ width: 10, height: 10, borderRadius: '50%', background: e.color }} />
-                <span style={{ color: '#f5f5f7', fontWeight: 600, fontSize: 13 }}>{e.item}</span>
-              </div>
-              <div style={{ color: '#10B981', fontSize: 20, fontWeight: 700, marginTop: 6 }}>{e.value}</div>
-              <div style={{ color: '#71717a', fontSize: 11 }}>{e.share} of total exports</div>
-            </div>
-          ))}
-        </div>
-      </div>
+        </ChartWrap>
+        <ChartWrap title="GDP by Sector (%)">
+          <ResponsiveContainer width="100%" height={170}>
+            <PieChart>
+              <Pie data={SECTOR_GDP} dataKey="v" nameKey="name" cx="50%" cy="50%" outerRadius={65}
+                label={({name,v})=>`${name} ${v}%`} labelLine={false}>
+                {SECTOR_GDP.map((_,i)=><Cell key={i} fill={CC[i]}/>)}
+              </Pie>
+              <Ttip/>
+            </PieChart>
+          </ResponsiveContainer>
+        </ChartWrap>
+      </TwoCol>
     </div>
   );
 }
 
-/* ─────────────── MAIN COMPONENT ─────────────── */
+// ═══════════════════════════════════════════════════════════════
+// MAIN COMPONENT
+// ═══════════════════════════════════════════════════════════════
+const TABS = [
+  {id:'overview',label:'🇺🇬 Overview'},
+  {id:'resources',label:'⛏️ Resources'},
+  {id:'energy',label:'⚡ Energy'},
+  {id:'agriculture',label:'🌿 Agriculture'},
+  {id:'environment',label:'🦁 Environment'},
+  {id:'eduheath',label:'🏥 Edu & Health'},
+  {id:'demographics',label:'👥 Demographics'},
+  {id:'economy',label:'💰 Economy'},
+];
 
 export default function SocioEconomicSection() {
-  const [activeTab, setActiveTab] = useState('dashboard');
-
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'dashboard': return <DashboardTab />;
-      case 'minerals': return <MineralsTab />;
-      case 'agriculture': return <AgricultureTab />;
-      case 'industry': return <IndustryTab />;
-      case 'education': return <LiveDataTab query={SCHOOLS_QUERY} color="#8B5CF6" label="Schools" icon={<GraduationCap size={14} style={{ display: 'inline', marginRight: 4 }} />} />;
-      case 'health': return <LiveDataTab query={HOSPITALS_QUERY} color="#EF4444" label="Health Facilities" icon={<Heart size={14} style={{ display: 'inline', marginRight: 4 }} />} />;
-      case 'demographics': return <DemographicsTab />;
-      case 'economy': return <EconomyTab />;
-      default: return <DashboardTab />;
-    }
-  };
+  const [tab, setTab] = useState('overview');
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0f', padding: '0 0 40px', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif' }}>
+    <div style={{padding:'24px 28px',minHeight:'100vh',background:'transparent',fontFamily:'system-ui,sans-serif'}}>
       {/* Header */}
-      <div style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)', padding: '28px 32px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 6 }}>
-          <div style={{ background: '#3B82F622', color: '#60A5FA', borderRadius: 12, padding: 10 }}>
-            <Globe size={24} />
-          </div>
-          <div>
-            <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: '#f5f5f7', letterSpacing: -0.3 }}>Socio-Economic Analysis</h1>
-            <p style={{ margin: 0, fontSize: 13, color: '#71717a', marginTop: 2 }}>Uganda national data — minerals, agriculture, industry, education, health, demographics & economy</p>
-          </div>
+      <div style={{marginBottom:24}}>
+        <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:8}}>
+          <div style={{width:4,height:28,background:'linear-gradient(180deg,#3b82f6,#8b5cf6)',borderRadius:2}}/>
+          <h1 style={{fontSize:26,fontWeight:800,color:'#f8fafc',margin:0}}>Socio-Economic Analysis</h1>
+          <span style={{padding:'3px 10px',background:'rgba(59,130,246,0.15)',border:'1px solid rgba(59,130,246,0.3)',borderRadius:20,fontSize:11,color:'#60a5fa'}}>Uganda · 2024</span>
         </div>
-        <div style={{ display: 'flex', gap: 8, marginTop: 16, flexWrap: 'wrap' }}>
-          {TABS.map(t => (
-            <button
-              key={t.id}
-              onClick={() => setActiveTab(t.id)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                padding: '7px 14px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 500,
-                background: activeTab === t.id ? '#3B82F6' : 'rgba(255,255,255,0.07)',
-                color: activeTab === t.id ? '#fff' : '#a1a1aa',
-                transition: 'all 0.15s ease',
-              }}
-            >
-              {t.icon} {t.label}
-            </button>
-          ))}
-        </div>
+        <p style={{fontSize:13,color:'#475569',margin:0,paddingLeft:16}}>
+          Geospatial analysis of minerals, energy, agriculture, environment, health, education, demographics and economy.
+        </p>
       </div>
 
-      {/* Content */}
-      <div style={{ padding: '28px 32px' }}>
-        {renderContent()}
+      {/* Tabs */}
+      <div style={{display:'flex',flexWrap:'wrap',gap:6,marginBottom:22,borderBottom:'1px solid rgba(255,255,255,0.07)',paddingBottom:12}}>
+        {TABS.map(t=>(
+          <button key={t.id} onClick={()=>setTab(t.id)}
+            style={{padding:'7px 14px',borderRadius:8,border:'none',cursor:'pointer',fontSize:12,fontWeight:500,transition:'all 0.15s',
+              background: tab===t.id ? 'rgba(59,130,246,0.2)' : 'rgba(255,255,255,0.04)',
+              color: tab===t.id ? '#60a5fa' : '#94a3b8',
+              outline: tab===t.id ? '1px solid rgba(59,130,246,0.35)' : 'none',
+            }}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab Content */}
+      <div>
+        {tab==='overview'     && <OverviewTab/>}
+        {tab==='resources'    && <ResourcesTab/>}
+        {tab==='energy'       && <EnergyTab/>}
+        {tab==='agriculture'  && <AgriTab/>}
+        {tab==='environment'  && <EnvironmentTab/>}
+        {tab==='eduheath'     && <EduHealthTab/>}
+        {tab==='demographics' && <DemoTab/>}
+        {tab==='economy'      && <EconomyTab/>}
       </div>
 
       {/* Footer */}
-      <div style={{ padding: '0 32px', marginTop: 16 }}>
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 14, color: '#52525b', fontSize: 11, display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-          <span>Sources: UBOS 2024 Census (preliminary) · World Bank Open Data · Uganda DGSM Mining Cadastre · OpenStreetMap (Overpass API) · FAO FAOSTAT · UIA Industrial Parks</span>
-        </div>
+      <div style={{marginTop:32,paddingTop:16,borderTop:'1px solid rgba(255,255,255,0.06)',fontSize:10,color:'#334155',textAlign:'center'}}>
+        Data sources: USGS African Mineral Geodatabase · Uganda DGSM · UBOS Census 2024 · World Bank · geoBoundaries (ADM1) · OpenStreetMap Overpass API · TotalEnergies/CNOOC project data
       </div>
     </div>
   );
