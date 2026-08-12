@@ -16,7 +16,7 @@ import Header  from './components/Layout/Header';
 
 const RoadAssetBot = lazy(() => import('./modules/AssetBot/RoadAssetBot'));
 
-// ââ Platform-level modules ââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Platform-level modules ────────────────────────────────────────────────────
 const NetworkSection    = lazy(() => import('./modules/Network/NetworkSection'));
 const PlatformDashboard = lazy(() => import('./modules/PlatformDashboard/PlatformDashboard'));
 const NetworkStory      = lazy(() => import('./modules/NetworkStory/NetworkStory'));
@@ -27,7 +27,7 @@ const RoadConditionView       = lazy(() => import('./modules/RoadCondition/RoadC
 const MaintenanceProgrammeView = lazy(() => import('./modules/RoadCondition/MaintenanceProgrammeView'));
 const ProjectsView            = lazy(() => import('./modules/Projects/ProjectsView'));
 
-// ââ BMS sub-modules âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── BMS sub-modules ───────────────────────────────────────────────────────────
 const Dashboard            = lazy(() => import('./modules/Dashboard/Dashboard'));
 const StructureRegistry    = lazy(() => import('./modules/Registry/StructureRegistry'));
 const GISMapView           = lazy(() => import('./modules/GISMap/GISMapView'));
@@ -44,7 +44,7 @@ const NdpivSection         = lazy(() => import('./components/sections/NdpivSecti
 const GrowthFactorsPanel   = lazy(() => import('./modules/Traffic/GrowthFactorsPanel'));
 const OverloadingSection   = lazy(() => import('./modules/Traffic/OverloadingSection'));
 
-// ââ New 10-module sections ââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── New 10-module sections ────────────────────────────────────────────────────
 const MLArchitectureDiagram   = lazy(() => import('./modules/MLArchitecture/MLArchitectureDiagram'));
 const HDM4Section             = lazy(() => import('./modules/HDM4/HDM4Section'));
 const ProjectTracker          = lazy(() => import('./modules/Projects/ProjectTracker'));
@@ -56,27 +56,27 @@ const TabularSummaries        = lazy(() => import('./modules/Sources/TabularSumm
 const SourcesSection          = lazy(() => import('./modules/Sources/SourcesSection'));
 const DataDictionary          = lazy(() => import('./modules/Sources/DataDictionary'));
 
-// ââ Data entry ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Data entry ────────────────────────────────────────────────────────────────
 const PendingSubmissions = lazy(() => import('./modules/DataEntry/PendingSubmissions').then(m => ({ default: m.PendingSubmissions })));
 const DataCaptureHub     = lazy(() => import('./modules/DataEntry/DataCaptureHub'));
 
-// ââ BMS unified view ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── BMS unified view ──────────────────────────────────────────────────────────
 const BMSSection = lazy(() => import('./modules/BMS/BMSSection'));
 const DUCARSection = lazy(() => import('./modules/DUCAR/DUCARSection'));
 
-// ââ PMS unified view ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── PMS unified view ──────────────────────────────────────────────────────────
 const PMSSection = lazy(() => import('./modules/PMS/PMSSection'));
 
-// ââ New External Sections âââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── New External Sections ─────────────────────────────────────────────────────
 const NTISSection = lazy(() => import('./sections/NTISSection'));
 const NPMSSection = lazy(() => import('./sections/NPMSSection'));
 
-// ââ RMS top-level hub âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── RMS top-level hub ─────────────────────────────────────────────────────────
 const RMSSection            = lazy(() => import('./modules/RMS/RMSSection'));
 const GlobalCaseStudiesSection = lazy(() => import('./modules/GlobalCaseStudies/GlobalCaseStudiesSection'));
 const RoadReserveSection    = lazy(() => import('./modules/RoadReserve/RoadReserveSection'));
 
-// ââ Admin + unified wrappers ââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Admin + unified wrappers ──────────────────────────────────────────────────
 const AdminSection    = lazy(() => import('./modules/Admin/AdminSection'));
 const DataAuditPanel  = lazy(() => import('./modules/DataAudit/DataAuditPanel'));
 const MindMapSection  = lazy(() => import('./modules/MindMap/MindMapSection'));
@@ -91,11 +91,11 @@ const SocioEconomicSection = lazy(() => import('./modules/SocioEconomic/SocioEco
 
 const FULL_VIEWS      = new Set(['gismap', 'roadnetwork']);
 const SELF_SCROLL_VIEWS = new Set(['networkstory']);
-// Views whose section component already renders its own CrossLinkChipBar â the
+// Views whose section component already renders its own CrossLinkChipBar — the
 // global bar below skips these to avoid a duplicate "Related Data" strip.
 const SELF_CHIP_VIEWS = new Set(['rms', 'bms', 'pms', 'roadcondition', 'traffic', 'budget', 'lifecycle', 'projects', 'oprc', 'ndpiv', 'mlarchitecture', 'roadnetwork']);
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 function LoadingScreen() {
   return (
     <div className="flex items-center justify-center h-full w-full bg-slate-950">
@@ -107,8 +107,8 @@ function LoadingScreen() {
         </div>
         <div>
           <div className="text-white font-bold text-lg">Uganda National Roads Management Platform</div>
-          <div className="text-slate-500 text-sm mt-1">Dept. of National Roads Â· Ministry of Works &amp; Transport</div>
-          <div className="text-slate-600 text-xs mt-0.5">Initializing platform Â· Fetching network data from unified database Â· DNR GIS Jun 2025</div>
+          <div className="text-slate-500 text-sm mt-1">Dept. of National Roads · Ministry of Works &amp; Transport</div>
+          <div className="text-slate-600 text-xs mt-0.5">Initializing platform · Fetching network data from unified database · DNR GIS Jun 2025</div>
         </div>
         <div className="flex justify-center gap-1.5">
           {[0, 1, 2].map(i => (
@@ -129,7 +129,7 @@ function ModuleSpinner() {
   );
 }
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 function AppShell() {
   const { state, navigate } = useBMS();
   const { activeView, isLoading } = state;
@@ -170,7 +170,7 @@ function AppShell() {
 
             {!isFullView && !SELF_SCROLL_VIEWS.has(activeView) && (
               <div style={{ position: 'absolute', inset: 0, overflowY: 'auto', overflowX: 'hidden', paddingBottom: 12 }}>
-                {/* Unified Related-Data chip bar â shown on every section that doesn't render its own */}
+                {/* Unified Related-Data chip bar — shown on every section that doesn't render its own */}
                 {!import.meta.env.VITE_STANDALONE && !SELF_CHIP_VIEWS.has(activeView) && <CrossLinkChipBar sectionId={activeView} />}
                 {activeView === 'network'               && <NetworkSection />}
                 {activeView === 'platform'              && <PlatformDashboard />}
@@ -202,7 +202,7 @@ function AppShell() {
                         Asset Management ML Engine
                       </div>
                       <div style={{ fontSize: 11, color: 'rgba(148,163,184,0.65)' }}>
-                        Interactive system architecture â click any node to inspect model details, inputs, and outputs
+                        Interactive system architecture — click any node to inspect model details, inputs, and outputs
                       </div>
                     </div>
                     <MLArchitectureDiagram />
@@ -227,7 +227,8 @@ function AppShell() {
                       <RequireAdmin label="Admin Tools"><AdminSection onNavigate={navigate} /></RequireAdmin>
                     ) },
                   ]} />
-                )}                {activeView === 'gisenterprise'    && <GisEnterpriseSection />}
+                )}
+                {activeView === 'gisenterprise'    && <GisEnterpriseSection />}
                 {activeView === 'atc'              && <ATCView />}
                 {activeView === 'bridgeworks'      && <BridgeWorksSection />}
                 {activeView === 'documents'        && <DocumentStore />}
@@ -283,13 +284,13 @@ function AppShell() {
   );
 }
 
-// ââ Admin-only gate for input/audit/admin sections ââââââââââââââââââââââââââââ
+// ── Admin-only gate for input/audit/admin sections ────────────────────────────
 function RequireAdmin({ label, children }: { label: string; children: React.ReactNode }) {
   const { user } = useAuth();
   if (user && canAccessView(user.role, 'admin')) return <>{children}</>;
   return (
     <div style={{ textAlign: 'center', padding: '60px 20px', color: 'rgba(148,163,184,0.85)' }}>
-      <div style={{ fontSize: 28, marginBottom: 10 }}>ð</div>
+      <div style={{ fontSize: 28, marginBottom: 10 }}>🔒</div>
       <div style={{ fontSize: 14, fontWeight: 700, color: '#e2eaf4' }}>{label} is admin-only</div>
       <div style={{ fontSize: 12, marginTop: 6 }}>
         Your access level (<strong style={{ color: '#fbbf24' }}>{roleLabel(user?.role)}</strong>) is
@@ -299,10 +300,10 @@ function RequireAdmin({ label, children }: { label: string; children: React.Reac
   );
 }
 
-// ââ Level gate â three logins, three interfaces âââââââââââââââââââââââââââââââ
-//  rms   â mobile-first field capture shell (inputs only)
-//  super â full dashboards & reports, no input/audit/admin
-//  admin â everything
+// ── Level gate — three logins, three interfaces ───────────────────────────────
+//  rms   → mobile-first field capture shell (inputs only)
+//  super → full dashboards & reports, no input/audit/admin
+//  admin → everything
 function AppGate() {
   const { user, isAuthenticated } = useAuth();
 
@@ -329,7 +330,7 @@ function AppGate() {
   );
 }
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 export default function App() {
   const [highlightedLinks, setHighlightedLinks] = useState<string[]>([]);
 
