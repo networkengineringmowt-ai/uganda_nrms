@@ -234,7 +234,7 @@ function AppShell() {
                 {activeView === 'documents'        && <DocumentStore />}
                 {activeView === 'downloads'        && <DownloadsView />}
                 {activeView === 'roadatlas'        && <RoadAtlasView />}
-                {activeView === 'roadvideo'        && <RoadVideoView />}
+                {activeView === 'roadvideo', 'socioeconomic'        && <RoadVideoView />}
 
                 {activeView === 'admin' && (
                   <Suspense fallback={<ModuleSpinner />}>
