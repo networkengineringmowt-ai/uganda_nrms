@@ -262,7 +262,7 @@ const Q_MARKETS = `[out:json][timeout:25];(node["amenity"="marketplace"](0.0,29.
 // ── Map Helpers ─────────────────────────────────────────────────
 function FitUga() {
   const map = useMap();
-  useEffect(() => { map.setView(UGA zOOM); }, [map]);
+  useEffect(() => { map.setView(UGA, ZOOM); }, [map]);
   return null;
 }
 
