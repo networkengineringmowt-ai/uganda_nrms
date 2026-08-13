@@ -732,10 +732,13 @@ export default function SectionDashboard({ sectionId, accent }: { sectionId: str
   const r = rgb(acc);
 
   return (
-    <div style={{ padding: '12px 14px', maxWidth: 900 }}>
+    <div style={{ padding: '6px 8px', width: '100%' }}>
       <style>{`@keyframes sd-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
 
-      {/* Definition card — kept from original design */}
+      {/* Live Supabase data panel — data first, no filler */}
+      <LivePanel sectionId={sectionId} accent={acc} />
+
+      {/* Definition card — reference, moved below data */}
       <div style={{
         background: `rgba(${r},0.04)`, border: `1px solid rgba(${r},0.15)`,
         borderRadius: 14, padding: '16px 22px', marginBottom: 18,
@@ -757,8 +760,6 @@ export default function SectionDashboard({ sectionId, accent }: { sectionId: str
         </div>
       </div>
 
-      {/* Live Supabase data panel */}
-      <LivePanel sectionId={sectionId} accent={acc} />
     </div>
   );
 }
