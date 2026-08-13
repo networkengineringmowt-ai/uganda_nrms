@@ -520,7 +520,7 @@ function RMSArchitecture({ navigate }: { navigate: (v: ActiveView) => void }) {
         </div>
       </div>
 
-      <div style={{ maxWidth: 800, margin: '0 auto' }}>
+      <div style={{ width: '100%' }}>
         {TIERS.map((tier, i) => {
           const col = TIER_COLORS[i];
           const isHov = hovered === i;
@@ -909,7 +909,7 @@ function UNRARMSArchitecture({ navigate }: { navigate: (v: ActiveView) => void }
         ))}
       </div>
 
-      <div style={{ maxWidth: 900, margin: '0 auto' }}>
+      <div style={{ width: '100%' }}>
         {UNRA_LAYERS.map((layer, i) => {
           const isHov = hovered === i;
           const isExp = expanded === i;
@@ -1469,11 +1469,11 @@ export default function RMSSection() {
 
         {tab === 'dashboard' && (
       <>
+        <SeamlessDashboardFrame />
+        <RMSDashboard navigate={navigate} />
         <Suspense fallback={<div style={{padding:'1.5rem',color:'#00f5ff',textAlign:'center',opacity:0.7,fontSize:'12px'}}>Loading…</div>}>
           <SectionDashboard sectionId="rms" accent="#00f5ff" />
         </Suspense>
-        <RMSDashboard navigate={navigate} />
-        <SeamlessDashboardFrame />
       </>
     )}
 
