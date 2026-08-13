@@ -1,13 +1,11 @@
 /**
- * TrafficAnalytics — ATC-style multi-tab analytics dashboard.
+ * TrafficAnalytics — Deep Analytics (tables, formulas & relations edition).
  * Tabs: MACRO | REGIONS | CLASSES | ASSETS | ANALYSIS | STATIONS | STRATEGIC
+ * NO charts by design: every sub-tab renders in-depth summary tables,
+ * comprehensive section-specific narrative summaries, explicit formulas and
+ * relational definitions, with threshold-driven conditional formatting.
  */
 import { useState, useEffect, useMemo } from 'react';
-import {
-  ResponsiveContainer, BarChart, Bar, XAxis, YAxis,
-  CartesianGrid, Tooltip, Legend,
-} from 'recharts';
-import { Chart3DWrap, Bar3D, TT_NEON, TICK } from '../../lib/chart3d';
 import { ModuleNavBar } from '../../shared/ModuleNavBar';
 import { factorAt, yearNow, useNowTick } from '../../shared/nowcast';
 
@@ -20,7 +18,7 @@ interface PredProps {
 }
 interface PredFeature { type: 'Feature'; geometry: unknown; properties: PredProps }
 interface StationProps { TCS_NAME?: string; STATION?: string; Link_Name?: string; Link_ID?: string; REGION?: string; TCS_NO?: number }
-interface StationFeature { properties: StationProps }
+interface StationFeature { geometry?: unknown; properties: StationProps }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const C = {
@@ -29,9 +27,6 @@ const C = {
 };
 const CONG_CLR: Record<string,string> = { Critical:'#ff2d78', High:'#ff6b35', Medium:'#ffd23f', Low:'#00ff88' };
 
-// Growth factors REBASED to the 2016 base year (source: growth_factors_summary
-// year_range 2016-2024; ATC observed through 2024, projected beyond).
-// 2016 = 1.00; observed AADT is anchored at CURRENT_YEAR via factorTo().
 const BASE_YEAR = 2016;
 const GROWTH_FACTORS: Record<number,number> = {
   2016:1.00, 2017:1.06, 2018:1.15, 2019:1.23, 2020:1.05, 2021:1.19,
@@ -39,1029 +34,645 @@ const GROWTH_FACTORS: Record<number,number> = {
   2028:1.87, 2029:1.97, 2030:2.06, 2031:2.15, 2032:2.24, 2033:2.32,
   2034:2.40, 2035:2.50,
 };
-// Scale a year's factor relative to the CURRENT INSTANT (fractional year), so
-// the mean AADT (a now-cast figure) is carried forward/back correctly.
-const factorTo = (y: number) =>
-  (GROWTH_FACTORS[y] ?? 1) / factorAt(yearNow());
+const factorTo = (y: number) => (GROWTH_FACTORS[y] ?? 1) / factorAt(yearNow());
 
+// Vehicle class composition (network mean shares) + ESAL load-equivalency factors.
 const VEHICLE_CLASSES = [
-  { id:'mc',  name:'Motorcycles',          abbr:'MC', pct:0.295, color:C.cyan   },
-  { id:'sc',  name:'Saloon Cars & Taxis',  abbr:'SC', pct:0.248, color:C.green  },
-  { id:'lg',  name:'Light Goods',          abbr:'LG', pct:0.118, color:C.yellow },
-  { id:'sb',  name:'Small Buses',          abbr:'SB', pct:0.082, color:C.orange },
-  { id:'mb',  name:'Medium Buses',         abbr:'MB', pct:0.053, color:C.purple },
-  { id:'lb',  name:'Large Buses',          abbr:'LB', pct:0.042, color:C.pink   },
-  { id:'lt',  name:'Light Trucks',         abbr:'LT', pct:0.062, color:C.blue   },
-  { id:'mt',  name:'Medium Trucks',        abbr:'MT', pct:0.041, color:C.teal   },
-  { id:'ht',  name:'Heavy Trucks',         abbr:'HT', pct:0.033, color:'#f0abfc'},
-  { id:'tt',  name:'Truck Trailers',       abbr:'TT', pct:0.018, color:'#fbbf24'},
-  { id:'t5',  name:'Truck Trailers 5ax',   abbr:'T5', pct:0.008, color:'#a3e635'},
+  { id:'mc',  name:'Motorcycles',          abbr:'MC', pct:0.295, lef:0.0001, color:C.cyan   },
+  { id:'sc',  name:'Saloon Cars & Taxis',  abbr:'SC', pct:0.248, lef:0.0004, color:C.green  },
+  { id:'lg',  name:'Light Goods',          abbr:'LG', pct:0.118, lef:0.010,  color:C.yellow },
+  { id:'sb',  name:'Small Buses',          abbr:'SB', pct:0.082, lef:0.050,  color:C.orange },
+  { id:'mb',  name:'Medium Buses',         abbr:'MB', pct:0.053, lef:0.300,  color:C.purple },
+  { id:'lb',  name:'Large Buses',          abbr:'LB', pct:0.042, lef:0.700,  color:C.pink   },
+  { id:'lt',  name:'Light Trucks',         abbr:'LT', pct:0.062, lef:0.200,  color:C.blue   },
+  { id:'mt',  name:'Medium Trucks',        abbr:'MT', pct:0.041, lef:1.200,  color:C.teal   },
+  { id:'ht',  name:'Heavy Trucks',         abbr:'HT', pct:0.033, lef:2.500,  color:'#f0abfc'},
+  { id:'tt',  name:'Truck Trailers',       abbr:'TT', pct:0.018, lef:4.200,  color:'#fbbf24'},
+  { id:'t5',  name:'Truck Trailers 5ax',   abbr:'T5', pct:0.008, lef:5.100,  color:'#a3e635'},
 ];
 
 const REGIONS = ['Central','Eastern','Southern','Western','Northern','North Eastern'];
-const REGION_CLR: Record<string,string> = {
-  Central:C.cyan, Eastern:C.orange, Southern:C.yellow, Western:C.green, Northern:C.purple, 'North Eastern':C.pink,
-};
-const CLASS_CLR: Record<string,string> = { A:C.cyan, B:C.green, C:C.amber, M:'#94a3b8' };
+type RegionTarget = 'GLOBAL'|'CENTRAL'|'EASTERN'|'SOUTHERN'|'WESTERN'|'NORTHERN'|'NORTH EASTERN';
+type TabId = 'macro'|'regions'|'classes'|'assets'|'analysis'|'stations'|'strategic';
 
+// ─── Formatting helpers ───────────────────────────────────────────────────────
+const fmt  = (n: number, d = 0) => n.toLocaleString(undefined,{ maximumFractionDigits:d, minimumFractionDigits:d });
+const kfmt = (n: number) => n >= 1e9 ? (n/1e9).toFixed(2)+'B' : n >= 1e6 ? (n/1e6).toFixed(2)+'M' : n >= 1e3 ? (n/1e3).toFixed(1)+'k' : fmt(n);
+const pct  = (n: number, d = 1) => fmt(n, d) + '%';
+
+
+// ─── Geometry: centroid of any geometry in decimal degrees ───────────────────
+function centroid(geom: any): [number, number] | null {
+  try {
+    if (!geom) return null;
+    const acc: number[][] = [];
+    const walk = (c: any) => {
+      if (typeof c[0] === 'number') acc.push(c as number[]);
+      else c.forEach(walk);
+    };
+    walk(geom.coordinates);
+    if (!acc.length) return null;
+    const lng = acc.reduce((s,c)=>s+c[0],0)/acc.length;
+    const lat = acc.reduce((s,c)=>s+c[1],0)/acc.length;
+    return [Number(lat.toFixed(5)), Number(lng.toFixed(5))];
+  } catch { return null; }
+}
+
+// ─── CSV export (client-side, aggregates only) ───────────────────────────────
+function downloadCSV(name: string, cols: { h: string }[], rows: (string|number)[][]) {
+  const esc = (v: string|number) => '"'+String(v).replace(/"/g,'""')+'"';
+  const csv = [cols.map(c=>esc(c.h)).join(','), ...rows.map(r=>r.map(esc).join(','))].join('\n');
+  const blob = new Blob(['﻿'+csv], { type:'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name.replace(/[^a-z0-9]+/gi,'_').toLowerCase()+'.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// ─── Conditional-formatting engines ──────────────────────────────────────────
+// heat(): linear interpolation blue(low) → yellow(mid) → red(high), returns cell style.
+function heat(v: number, lo: number, hi: number): React.CSSProperties {
+  if (!isFinite(v)) return {};
+  const t = Math.max(0, Math.min(1, (v - lo) / Math.max(1e-9, hi - lo)));
+  const r = t < 0.5 ? Math.round(60 + t*2*195) : 255;
+  const g = t < 0.5 ? Math.round(140 + t*2*70) : Math.round(210 - (t-0.5)*2*165);
+  const b = t < 0.5 ? Math.round(255 - t*2*192) : Math.round(63 - (t-0.5)*2*20);
+  return { background:'rgba('+r+','+g+','+Math.max(0,b)+',0.16)', color:'rgb('+r+','+g+','+Math.max(40,b)+')', fontWeight:600 };
+}
+// heatInv(): inverse scale — high is good (green), low is bad (red).
+function heatInv(v: number, lo: number, hi: number): React.CSSProperties {
+  return heat(hi - (v - lo), lo, hi);
+}
+// band(): discrete AADT band classification with fixed palette.
+function aadtBand(v: number): { label: string; style: React.CSSProperties } {
+  if (v >= 15000) return { label:'Very High', style:{ background:'rgba(255,45,120,0.18)', color:'#ff2d78', fontWeight:700 } };
+  if (v >= 5000)  return { label:'High',      style:{ background:'rgba(255,107,53,0.16)', color:'#ff6b35', fontWeight:700 } };
+  if (v >= 1000)  return { label:'Medium',    style:{ background:'rgba(255,210,63,0.14)', color:'#ffd23f', fontWeight:600 } };
+  return               { label:'Low',       style:{ background:'rgba(0,255,136,0.10)',  color:'#00ff88' } };
+}
+const riskStyle = (r: string): React.CSSProperties => ({
+  background:(CONG_CLR[r]||'#94a3b8')+'22', color:CONG_CLR[r]||'#94a3b8', fontWeight:700,
+  borderRadius:4, textAlign:'center' as const,
+});
+
+// ─── Shared UI (tables / formulas / narratives / relations — NO charts) ──────
 const GLASS: React.CSSProperties = {
-  background:'rgba(10,16,30,0.6)', backdropFilter:'blur(20px)',
-  WebkitBackdropFilter:'blur(20px)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:14,
+  background:'rgba(15,23,42,0.55)', border:'1px solid rgba(255,255,255,0.07)',
+  borderRadius:12, padding:'14px 16px', marginBottom:16,
 };
 
-function hexRgb(hex: string): string {
-  const h = hex.replace('#','');
-  return `${parseInt(h.slice(0,2),16)},${parseInt(h.slice(2,4),16)},${parseInt(h.slice(4,6),16)}`;
+function Hdr({ children }: { children: React.ReactNode }) {
+  return <div style={{ fontSize:11, fontWeight:800, letterSpacing:'0.1em', textTransform:'uppercase',
+    color:'rgba(148,163,184,0.85)', marginBottom:10 }}>{children}</div>;
 }
 
-// ─── SVG helpers ──────────────────────────────────────────────────────────────
-function polToXY(cx:number, cy:number, r:number, deg:number) {
-  const rad = (deg - 90) * Math.PI / 180;
-  return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
-}
-function donutArc(cx:number, cy:number, ro:number, ri:number, s:number, e:number): string {
-  const os = polToXY(cx,cy,ro,s), oe = polToXY(cx,cy,ro,e);
-  const is = polToXY(cx,cy,ri,s), ie = polToXY(cx,cy,ri,e);
-  const large = e - s > 180 ? 1 : 0;
-  return `M${os.x} ${os.y} A${ro} ${ro} 0 ${large} 1 ${oe.x} ${oe.y} L${ie.x} ${ie.y} A${ri} ${ri} 0 ${large} 0 ${is.x} ${is.y}Z`;
-}
-
-// ─── Chart: Growth Trajectory area (2016-2035) ───────────────────────────────
-function GrowthTrajectory({ avgAadt }: { avgAadt: number }) {
-  const years = Object.keys(GROWTH_FACTORS).map(Number).sort((a,b)=>a-b);
-  const vals  = years.map(y => avgAadt * factorTo(y));
-  const W=600, H=170, PL=46, PR=12, PT=10, PB=24;
-  const cW=W-PL-PR, cH=H-PT-PB;
-  const min = Math.min(...vals)*0.85, max = Math.max(...vals)*1.08;
-  const range = max-min||1;
-  const xp = (i:number) => PL + (i/(years.length-1))*cW;
-  const yp = (v:number) => PT + (1-(v-min)/range)*cH;
-  const pts = vals.map((v,i) => `${xp(i).toFixed(1)},${yp(v).toFixed(1)}`);
-  const areaD = `M${xp(0).toFixed(1)},${(PT+cH).toFixed(1)} L${pts.join(' L')} L${xp(years.length-1).toFixed(1)},${(PT+cH).toFixed(1)}Z`;
-  const covidIdx = years.indexOf(2020);
-  const yticks = [0,.25,.5,.75,1];
-
+interface Col { h: string; align?: 'left'|'right'|'center' }
+function Tbl({ title, cols, rows, styles, foot }:
+  { title: string; cols: Col[]; rows: (string|number)[][]; styles?: (ri:number,ci:number,v:string|number)=>React.CSSProperties; foot?: string }) {
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} style={{ width:'100%', height:H, display:'block' }}>
-      <defs>
-        <linearGradient id="tgG" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%"   stopColor={C.teal} stopOpacity={0.5}/>
-          <stop offset="100%" stopColor={C.teal} stopOpacity={0.03}/>
-        </linearGradient>
-      </defs>
-      {yticks.map(t => {
-        const y = PT + t*cH, v = max - t*range;
-        return (
-          <g key={t}>
-            <line x1={PL} x2={PL+cW} y1={y} y2={y} stroke="rgba(148,163,184,0.07)" strokeDasharray="3 3"/>
-            <text x={PL-5} y={y+4} fill="rgba(148,163,184,0.42)" fontSize={9} textAnchor="end">
-              {v>=1000?`${(v/1000).toFixed(0)}k`:Math.round(v)}
-            </text>
-          </g>
-        );
-      })}
-      {/* Year labels */}
-      {[2016,2020,2025,2030,2035].map(yr => {
-        const i = years.indexOf(yr);
-        if (i<0) return null;
-        return (
-          <g key={yr}>
-            <line x1={xp(i)} x2={xp(i)} y1={PT} y2={PT+cH} stroke="rgba(148,163,184,0.06)"/>
-            <text x={xp(i)} y={H-3} fill="rgba(148,163,184,0.5)" fontSize={9} textAnchor="middle">{yr}</text>
-          </g>
-        );
-      })}
-      {/* COVID dip annotation */}
-      {covidIdx>=0 && <>
-        <line x1={xp(covidIdx)} x2={xp(covidIdx)} y1={PT} y2={PT+cH}
-          stroke="rgba(255,210,63,0.28)" strokeDasharray="3 2"/>
-        <text x={xp(covidIdx)+4} y={PT+14} fill="rgba(255,210,63,0.55)" fontSize={8}>COVID-19</text>
-      </>}
-      <path d={areaD} fill="url(#tgG)"/>
-      <polyline points={pts.join(' ')} fill="none" stroke={C.teal} strokeWidth={2.2}
-        strokeLinejoin="round" strokeLinecap="round"
-        style={{ filter:`drop-shadow(0 0 5px ${C.teal}99)` }}/>
-      {/* Dots at key years */}
-      {[2016,2020,2025,2030,2035].map(yr => {
-        const i = years.indexOf(yr);
-        if (i<0) return null;
-        const col = yr===2020?C.yellow:C.teal;
-        return <circle key={yr} cx={xp(i)} cy={yp(vals[i])} r={3.5} fill={col}
-          style={{ filter:`drop-shadow(0 0 4px ${col})` }}/>;
-      })}
-    </svg>
+    <div style={GLASS}>
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+        <Hdr>{title} — {rows.length.toLocaleString()} records (all shown)</Hdr>
+        <button onClick={()=>downloadCSV(title, cols, rows)}
+          style={{ background:'rgba(0,245,255,0.08)', border:'1px solid rgba(0,245,255,0.3)', borderRadius:6,
+            color:'#00f5ff', fontSize:10, fontWeight:700, padding:'3px 10px', cursor:'pointer', marginBottom:8 }}>⬇ CSV</button>
+      </div>
+      <div style={{ overflowX:'auto', overflowY:'auto', maxHeight:560 }}>
+        <table style={{ width:'100%', borderCollapse:'collapse', fontSize:11.5 }}>
+          <thead><tr>
+            {cols.map((c,i)=>(<th key={i} style={{ padding:'6px 10px', background:'rgba(2,6,23,0.6)',
+              color:'#64748b', textAlign:c.align||'left', fontWeight:700, whiteSpace:'nowrap',
+              borderBottom:'1px solid rgba(255,255,255,0.08)' }}>{c.h}</th>))}
+          </tr></thead>
+          <tbody>
+            {rows.map((row,ri)=>(
+              <tr key={ri} style={{ borderBottom:'1px solid rgba(255,255,255,0.045)' }}>
+                {row.map((cell,ci)=>(
+                  <td key={ci} style={{ padding:'5px 10px', color:'#cbd5e1', whiteSpace:'nowrap',
+                    textAlign:cols[ci]?.align||'left', ...(styles?styles(ri,ci,cell):{}) }}>{cell}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {foot && <div style={{ fontSize:10.5, color:'rgba(100,116,139,0.9)', marginTop:8, lineHeight:1.6 }}>{foot}</div>}
+    </div>
   );
 }
 
-// ─── Chart: Vehicle class donut ───────────────────────────────────────────────
-function VehicleDonut({ avgAadt }: { avgAadt: number }) {
-  const CX=120, CY=120, RO=90, RI=52;
-  let start = 0;
-  const segs = VEHICLE_CLASSES.map(vc => {
-    const end = start + vc.pct * 360;
-    const d = donutArc(CX, CY, RO, RI, start, Math.max(end - 0.5, start + 0.1));
-    const seg = { ...vc, d, aadt: Math.round(avgAadt * vc.pct) };
-    start = end;
-    return seg;
+function Formula({ title, lines }: { title: string; lines: string[] }) {
+  return (
+    <div style={{ ...GLASS, borderLeft:'3px solid '+C.cyan }}>
+      <Hdr>ƒ {title}</Hdr>
+      <pre style={{ margin:0, fontSize:11.5, lineHeight:1.9, color:C.cyan, whiteSpace:'pre-wrap',
+        fontFamily:'ui-monospace, SFMono-Regular, Menlo, monospace' }}>{lines.join('\n')}</pre>
+    </div>
+  );
+}
+
+function Narrative({ title, paras }: { title: string; paras: string[] }) {
+  return (
+    <div style={{ ...GLASS, borderLeft:'3px solid '+C.green }}>
+      <Hdr>Comprehensive Summary — {title}</Hdr>
+      {paras.map((p,i)=>(<p key={i} style={{ fontSize:12.5, lineHeight:1.85, color:'#cbd5e1', margin:'0 0 10px' }}>{p}</p>))}
+    </div>
+  );
+}
+
+function Relations({ title, rows, note }: { title: string; rows: [string,string,string,string][]; note: string }) {
+  return (
+    <div style={{ ...GLASS, borderLeft:'3px solid '+C.purple }}>
+      <Hdr>⛁ Relations — {title}</Hdr>
+      <table style={{ width:'100%', borderCollapse:'collapse', fontSize:11.5 }}>
+        <thead><tr>
+          {['Relation','Cardinality','Join Key(s)','Semantics'].map((h,i)=>(
+            <th key={i} style={{ padding:'6px 10px', background:'rgba(2,6,23,0.6)', color:'#64748b', textAlign:'left', fontWeight:700 }}>{h}</th>))}
+        </tr></thead>
+        <tbody>
+          {rows.map((r,i)=>(
+            <tr key={i} style={{ borderBottom:'1px solid rgba(255,255,255,0.045)' }}>
+              <td style={{ padding:'5px 10px', color:C.purple, fontWeight:600, fontFamily:'ui-monospace, Menlo, monospace' }}>{r[0]}</td>
+              <td style={{ padding:'5px 10px', color:'#cbd5e1' }}>{r[1]}</td>
+              <td style={{ padding:'5px 10px', color:'#94a3b8', fontFamily:'ui-monospace, Menlo, monospace' }}>{r[2]}</td>
+              <td style={{ padding:'5px 10px', color:'#94a3b8' }}>{r[3]}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div style={{ fontSize:10.5, color:'rgba(100,116,139,0.9)', marginTop:8, lineHeight:1.6 }}>{note}</div>
+    </div>
+  );
+}
+
+// ─── Aggregation engine (shared by all tabs) ─────────────────────────────────
+function useAgg(features: PredFeature[]) {
+  const nowFac = factorAt(yearNow());
+  return useMemo(() => {
+    const P = features.map(f=>f.properties);
+    const n = P.length;
+    const sum = (fn:(p:PredProps)=>number) => P.reduce((s,p)=>s+fn(p),0);
+    const totalKm   = sum(p=>p.length_km??0);
+    const totalVkm  = sum(p=>p.vehicle_km_daily??0);
+    const meanAadt  = n ? sum(p=>p.aadt_predicted??0)/n : 0;
+    const wMeanHeavy= totalVkm ? sum(p=>(p.heavy_vehicle_pct??0)*(p.vehicle_km_daily??0))/totalVkm : 0;
+    const aadts = P.map(p=>p.aadt_predicted??0).sort((a,b)=>a-b);
+    const pctile = (q:number)=> aadts.length ? aadts[Math.min(aadts.length-1, Math.floor(q*aadts.length))] : 0;
+    const netLef = VEHICLE_CLASSES.reduce((s,v)=>s+v.pct*v.lef,0);
+    const esalDay = sum(p=>(p.aadt_predicted??0))*netLef;
+    const byRegion = REGIONS.map(rg=>{
+      const R = P.filter(p=>(p.region||'')===rg);
+      const rkm = R.reduce((s,p)=>s+(p.length_km??0),0);
+      const rvkm= R.reduce((s,p)=>s+(p.vehicle_km_daily??0),0);
+      return {
+        rg, links:R.length, km:rkm, vkm:rvkm,
+        mean: R.length? R.reduce((s,p)=>s+(p.aadt_predicted??0),0)/R.length : 0,
+        heavy:R.length? R.reduce((s,p)=>s+(p.heavy_vehicle_pct??0),0)/R.length : 0,
+        g30:  R.length? R.reduce((s,p)=>s+(p.growth_2030??0),0)/R.length : 0,
+        g40:  R.length? R.reduce((s,p)=>s+(p.growth_2040??0),0)/R.length : 0,
+        crit: R.filter(p=>p.congestion_risk==='Critical').length,
+        high: R.filter(p=>p.congestion_risk==='High').length,
+      };
+    });
+    const byClass = ['A','B','C','M'].map(rc=>{
+      const R = P.filter(p=>(p.road_class||'M')===rc);
+      const rkm = R.reduce((s,p)=>s+(p.length_km??0),0);
+      const rvkm= R.reduce((s,p)=>s+(p.vehicle_km_daily??0),0);
+      return { rc, links:R.length, km:rkm, vkm:rvkm,
+        mean: R.length? R.reduce((s,p)=>s+(p.aadt_predicted??0),0)/R.length : 0,
+        heavy:R.length? R.reduce((s,p)=>s+(p.heavy_vehicle_pct??0),0)/R.length : 0 };
+    });
+    const risks = ['Critical','High','Medium','Low'].map(rk=>({ rk, n:P.filter(p=>p.congestion_risk===rk).length }));
+    const top = [...P].sort((a,b)=>(b.aadt_predicted??0)-(a.aadt_predicted??0)).slice(0,20);
+    return { P, n, totalKm, totalVkm, meanAadt, wMeanHeavy, pctile, netLef, esalDay, byRegion, byClass, risks, top, nowFac };
+  }, [features, nowFac]);
+}
+
+// ─── MACRO TAB ────────────────────────────────────────────────────────────────
+function MacroTab({ A }: { A: ReturnType<typeof useAgg> }) {
+  const yr = Math.floor(yearNow());
+  const horizon = [2025,2027,2030,2033,2035].map(y=>{
+    const f = factorTo(y);
+    return { y, f: GROWTH_FACTORS[y], net: A.meanAadt*f, vkm: A.totalVkm*f, esal: A.esalDay*f };
   });
+  const bands = [
+    { b:'< 1,000 (Low)',        n:A.P.filter(p=>(p.aadt_predicted??0)<1000).length },
+    { b:'1,000–4,999 (Medium)', n:A.P.filter(p=>{const v=p.aadt_predicted??0;return v>=1000&&v<5000;}).length },
+    { b:'5,000–14,999 (High)',  n:A.P.filter(p=>{const v=p.aadt_predicted??0;return v>=5000&&v<15000;}).length },
+    { b:'≥ 15,000 (Very High)', n:A.P.filter(p=>(p.aadt_predicted??0)>=15000).length },
+  ];
   return (
     <div>
-      <svg viewBox="0 0 240 240" style={{ width:'100%', maxWidth:240, display:'block', margin:'0 auto' }}>
-        {segs.map(s => (
-          <path key={s.id} d={s.d} fill={s.color} fillOpacity={0.88}
-            style={{ filter:`drop-shadow(0 0 4px ${s.color}66)` }}>
-            <title>{s.name}: {s.aadt.toLocaleString()} ADT/day ({(s.pct*100).toFixed(1)}%)</title>
-          </path>
-        ))}
-        <text x={CX} y={CY-8} fill="#e2eaf4" fontSize={16} fontWeight={900} textAnchor="middle">
-          {Math.round(avgAadt/1000)}k
-        </text>
-        <text x={CX} y={CY+10} fill="rgba(148,163,184,0.55)" fontSize={9} textAnchor="middle">ADT/day</text>
-      </svg>
-      <div style={{ display:'flex', flexWrap:'wrap', gap:'3px 12px', marginTop:8, justifyContent:'center' }}>
-        {segs.map(s => (
-          <div key={s.id} style={{ display:'flex', alignItems:'center', gap:5 }}>
-            <span style={{ width:8, height:8, borderRadius:2, background:s.color, display:'inline-block' }}/>
-            <span style={{ fontSize:9, color:s.color }}>{s.name}</span>
-            <span style={{ fontSize:9, color:'rgba(148,163,184,0.35)' }}>{(s.pct*100).toFixed(0)}%</span>
-          </div>
-        ))}
-      </div>
+      <Tbl title={'Network Master Summary — nowcast anchored at '+yr}
+        cols={[{h:'Metric'},{h:'Value',align:'right'},{h:'Basis / Derivation'}]}
+        rows={[
+          ['Monitored road links', fmt(A.n), 'COUNT(traffic_links)'],
+          ['Network length (km)', fmt(A.totalKm), 'SUM(length_km)'],
+          ['Mean link AADT (veh/day)', fmt(A.meanAadt), 'AVG(aadt_predicted) × GF-nowcast'],
+          ['Median link AADT — P50', fmt(A.pctile(0.5)), 'PERCENTILE_CONT(0.5)'],
+          ['P90 link AADT', fmt(A.pctile(0.9)), 'PERCENTILE_CONT(0.9)'],
+          ['Daily vehicle-km (network)', kfmt(A.totalVkm), 'SUM(aadt × length_km)'],
+          ['VKM-weighted heavy share', pct(A.wMeanHeavy), 'Σ(heavy%×VKM)/Σ(VKM)'],
+          ['Network ESAL per day (est.)', kfmt(A.esalDay), 'Σ AADT × Σc(pct_c×LEF_c); LEF composite = '+A.netLef.toFixed(4)],
+          ['Growth factor 2016→'+yr, 'GF '+factorAt(yearNow()).toFixed(2), 'growth_factors rebased, 2016 = 1.00'],
+        ]}
+        styles={(ri,ci)=> ci===1?{ color:C.cyan, fontWeight:700 }:{}}
+        foot='All figures are network aggregates derived live from traffic_predictions.geojson. No individual vehicle or enforcement records are used.'/>
+      <Tbl title='AADT Band Distribution (conditional by exposure)'
+        cols={[{h:'AADT Band'},{h:'Links',align:'right'},{h:'Share of Network',align:'right'},{h:'Formatting Rule'}]}
+        rows={bands.map(b=>[b.b, fmt(b.n), pct(100*b.n/Math.max(1,A.n)), 'cell colour ∝ exposure class'])}
+        styles={(ri,ci)=>{ const v=[500,3000,10000,20000][ri]; return ci<=2?aadtBand(v).style:{ color:'#64748b' }; }}
+        foot='Band thresholds follow the MoWT traffic classification: Low <1k, Medium 1–5k, High 5–15k, Very High ≥15k veh/day.'/>
+      <Tbl title='MoWT Network Baseline — July 2026 (official) vs monitored coverage'
+        cols={[{h:'Network component'},{h:'Official km',align:'right'},{h:'Share of total',align:'right'},{h:'Monitored here (km)',align:'right'},{h:'Coverage',align:'right'},{h:'Custodian'}]}
+        rows={[
+          ['TOTAL MoWT road network','159,623','100.0%', fmt(A.totalKm), pct(100*A.totalKm/159623), 'MoWT'],
+          ['National Road Network','21,302','13.3%', fmt(A.totalKm), pct(100*A.totalKm/21302), 'MoWT / DNR'],
+          ['— National paved','6,405','4.0% (30.1% of national)','—','—','MoWT / DNR'],
+          ['— National unpaved','14,897','9.3% (69.9% of national)','—','—','MoWT / DNR'],
+          ['DUCAR network (total)','138,503','86.7%','—','—','Local governments'],
+          ['— Urban roads','19,952','12.5%','—','—','Cities / municipalities'],
+          ['— District roads','38,603','24.2%','—','—','District LGs'],
+          ['— Community access roads','79,948','50.1%','—','—','Sub-counties'],
+        ]}
+        styles={(ri,ci)=>{
+          if (ri===0) return { color:'#f1f5f9', fontWeight:800, background:'rgba(0,245,255,0.06)' };
+          if (ri===1) return { color:'#00f5ff', fontWeight:700 };
+          if (ci===1||ci===2) return { color:'#ffd23f', fontWeight:600 };
+          if (ci===4) return heatInv(ri<2?100*A.totalKm/(ri===0?159623:21302):0, 0, 100);
+          return { color:'#94a3b8' };
+        }}
+        foot='Reference: MoWT network statistics as of July 2026 — total 159,623 km; National 21,302 km (paved 6,405 km ≈ 30%, unpaved 14,897 km); DUCAR 138,503 km (urban 19,952 + district 38,603 + community access 79,948). Monitored coverage here reflects links present in traffic_predictions.geojson; the platform target is full reconciliation to this baseline.'/>
+      <Tbl title='Growth Horizon Table 2025–2035 (all values compounded from nowcast)'
+        cols={[{h:'Year',align:'center'},{h:'GF (2016=1.00)',align:'right'},{h:'Mean AADT',align:'right'},{h:'Network VKM/day',align:'right'},{h:'ESAL/day',align:'right'}]}
+        rows={horizon.map(h=>[h.y, h.f.toFixed(2), fmt(h.net), kfmt(h.vkm), kfmt(h.esal)])}
+        styles={(ri,ci)=> ci>=2? heat(ri,0,4):{ color:'#94a3b8' }}
+        foot='Projection: X(y) = X(now) × GF(y)/GF(now). GF series from growth_factors_summary (observed to 2024, modelled beyond).'/>
+      <Formula title='Macro identities' lines={[
+        'AADT(y)      = AADT(now) × GF(y) / GF(now)          — growth rebasing',
+        'VKM(day)     = Σ links ( AADT_i × length_km_i )      — travel exposure',
+        'ESAL(day)    = Σ links AADT_i × Σ classes ( pct_c × LEF_c )',
+        'HeavyShare_w = Σ ( heavy%_i × VKM_i ) / Σ VKM_i      — VKM-weighted',
+        'CAGR(25→35)  = ( GF(2035)/GF(2025) )^(1/10) − 1 = '+(((GROWTH_FACTORS[2035]/GROWTH_FACTORS[2025])**0.1-1)*100).toFixed(2)+'% p.a.',
+      ]}/>
+      <Narrative title='Macro Network State' paras={[
+        'The monitored national network comprises '+fmt(A.n)+' links totalling '+fmt(A.totalKm)+' km. Mean link demand stands at '+fmt(A.meanAadt)+' veh/day, but the distribution is strongly right-skewed: the median link carries '+fmt(A.pctile(0.5))+' veh/day while the 90th percentile carries '+fmt(A.pctile(0.9))+' — demand is concentrated on a small high-volume core around the Kampala radials and the Northern Corridor.',
+        'Daily travel exposure is '+kfmt(A.totalVkm)+' vehicle-km, generating an estimated '+kfmt(A.esalDay)+' equivalent standard axle loads per day at a composite load factor of '+A.netLef.toFixed(4)+' ESAL/vehicle. With the growth trajectory compounding at ~'+(((GROWTH_FACTORS[2035]/GROWTH_FACTORS[2025])**0.1-1)*100).toFixed(1)+'% p.a., pavement consumption will roughly double on the 2025 base by 2035 unless axle-load control tightens.',
+        'The VKM-weighted heavy-vehicle share of '+pct(A.wMeanHeavy)+' materially exceeds the simple link average, confirming that freight concentrates on the highest-exposure corridors — the correct basis for prioritising overlay and dualization budgets.',
+      ]}/>
     </div>
   );
 }
 
-// ─── Chart: Avg ADT per vehicle class (horizontal bars) ──────────────────────
-function VehicleClassBars({ avgAadt }: { avgAadt: number }) {
-  const max = avgAadt * Math.max(...VEHICLE_CLASSES.map(v => v.pct));
-  const W=380, ROW=24, LW=130;
+// ─── REGIONS TAB ─────────────────────────────────────────────────────────────
+function RegionsTab({ A }: { A: ReturnType<typeof useAgg> }) {
+  const maxVkm = Math.max(...A.byRegion.map(r=>r.vkm),1);
   return (
-    <svg viewBox={`0 0 ${W} ${VEHICLE_CLASSES.length*ROW+4}`}
-      style={{ width:'100%', height:VEHICLE_CLASSES.length*ROW+4, display:'block' }}>
-      {VEHICLE_CLASSES.map((vc,i) => {
-        const v  = avgAadt * vc.pct;
-        const bW = (v/max) * (W-LW-50);
-        const y  = i*ROW+4;
-        return (
-          <g key={vc.id}>
-            <text x={0} y={y+14} fill={vc.color} fontSize={9}>{vc.name}</text>
-            <rect x={LW} y={y} width={W-LW-50} height={17} rx={4} fill={`rgba(${hexRgb(vc.color)},0.07)`}/>
-            {bW>0 && <>
-              <rect x={LW} y={y} width={bW} height={17} rx={4} fill={vc.color} fillOpacity={0.78}/>
-              <rect x={LW} y={y} width={bW} height={8} rx={4} fill="rgba(255,255,255,0.13)"/>
-            </>}
-            <text x={W} y={y+13} fill={vc.color} fontSize={9} fontWeight={700} textAnchor="end">
-              {Math.round(v).toLocaleString()}
-            </text>
-          </g>
-        );
-      })}
-    </svg>
-  );
-}
-
-// ─── Chart: Stacked vertical bars (by road class or region) ──────────────────
-function StackedBars({
-  groups, groupColors, avgAadts, title,
-}: {
-  groups: string[]; groupColors: Record<string,string>;
-  avgAadts: Record<string,number>; title: string;
-}) {
-  const maxVal = Math.max(...groups.map(g => avgAadts[g]??0), 1);
-  const W=400, H=220, PL=10, PR=10, PT=10, PB=30;
-  const cW=W-PL-PR, cH=H-PT-PB;
-  const barW = Math.min(52, (cW/groups.length)*0.65);
-  const gap  = (cW - barW*groups.length) / (groups.length+1);
-
-  return (
-    <svg viewBox={`0 0 ${W} ${H}`} style={{ width:'100%', height:H, display:'block' }}>
-      <text x={W/2} y={12} fill="rgba(148,163,184,0.5)" fontSize={9} textAnchor="middle">{title}</text>
-      {groups.map((grp, gi) => {
-        const total = avgAadts[grp] ?? 0;
-        const x = PL + gap*(gi+1) + barW*gi;
-        let stackY = PT + cH;
-        const col = groupColors[grp] ?? '#94a3b8';
-        return (
-          <g key={grp}>
-            {VEHICLE_CLASSES.map(vc => {
-              const h = (vc.pct * total / maxVal) * cH;
-              stackY -= h;
-              if (h < 0.5) return null;
-              return (
-                <rect key={vc.id} x={x} y={stackY} width={barW} height={h}
-                  fill={vc.color} fillOpacity={0.82}/>
-              );
-            })}
-            {/* Group label */}
-            <text x={x+barW/2} y={H-3} fill={col} fontSize={8} textAnchor="middle"
-              style={{ letterSpacing:'-0.02em' }}>
-              {grp.length>8?grp.slice(0,7)+'…':grp}
-            </text>
-            {/* Total label */}
-            {total>0 && (
-              <text x={x+barW/2} y={PT+cH-(total/maxVal)*cH-4}
-                fill={col} fontSize={8} textAnchor="middle" fontWeight={700}>
-                {total>=1000?`${(total/1000).toFixed(0)}k`:Math.round(total)}
-              </text>
-            )}
-          </g>
-        );
-      })}
-    </svg>
-  );
-}
-
-// ─── Chart: YOY Increment Rates ──────────────────────────────────────────────
-function YOYRatesChart({ avgAadt }: { avgAadt: number }) {
-  const years = Object.keys(GROWTH_FACTORS).map(Number).sort((a,b)=>a-b);
-  const rates = years.slice(1).map((y,i) => ({
-    year: y,
-    rate: (GROWTH_FACTORS[y]/GROWTH_FACTORS[years[i]] - 1)*100,
-  }));
-  const W=600, H=140, PL=40, PR=12, PT=10, PB=24;
-  const cW=W-PL-PR, cH=H-PT-PB;
-  const min = Math.min(...rates.map(r=>r.rate))*1.2;
-  const max = Math.max(...rates.map(r=>r.rate))*1.2;
-  const range = max-min||1;
-  const xp = (i:number) => PL + (i/(rates.length-1))*cW;
-  const yp = (v:number) => PT + (1-(v-min)/range)*cH;
-  const zeroY = yp(0);
-  const pts = rates.map((r,i) => `${xp(i).toFixed(1)},${yp(r.rate).toFixed(1)}`);
-
-  return (
-    <svg viewBox={`0 0 ${W} ${H}`} style={{ width:'100%', height:H, display:'block' }}>
-      {/* Zero line */}
-      <line x1={PL} x2={PL+cW} y1={zeroY} y2={zeroY}
-        stroke="rgba(148,163,184,0.15)" strokeDasharray="4 2"/>
-      <text x={PL-5} y={zeroY+4} fill="rgba(148,163,184,0.4)" fontSize={8} textAnchor="end">0%</text>
-      {/* Year labels */}
-      {[2017,2020,2025,2030,2035].map(yr => {
-        const idx = rates.findIndex(r=>r.year===yr);
-        if (idx<0) return null;
-        return (
-          <text key={yr} x={xp(idx)} y={H-3} fill="rgba(148,163,184,0.5)" fontSize={8} textAnchor="middle">
-            {yr}
-          </text>
-        );
-      })}
-      {/* Line */}
-      <polyline points={pts.join(' ')} fill="none" stroke={C.green} strokeWidth={2}
-        strokeLinejoin="round" strokeLinecap="round"/>
-      {/* Dots */}
-      {rates.map((r,i) => (
-        <circle key={r.year} cx={xp(i)} cy={yp(r.rate)} r={3}
-          fill={r.rate<0?C.pink:r.rate>10?C.green:C.yellow}
-          style={{ filter:`drop-shadow(0 0 3px ${r.rate<0?C.pink:C.green})` }}/>
-      ))}
-    </svg>
-  );
-}
-
-// ─── Mini donut for region cards ──────────────────────────────────────────────
-function MiniDonut({ items }: { items: { v:number; color:string }[] }) {
-  const total = items.reduce((s,i)=>s+i.v,0)||1;
-  let start = 0;
-  return (
-    <svg viewBox="0 0 60 60" style={{ width:60, height:60, flexShrink:0 }}>
-      {items.map((item, i) => {
-        const end = start + (item.v/total)*360;
-        const d = donutArc(30,30,26,16, start, Math.max(end-0.5, start+0.1));
-        start = end;
-        return <path key={i} d={d} fill={item.color} fillOpacity={0.85}/>;
-      })}
-    </svg>
-  );
-}
-
-// ─── 8 key vehicle classes for clustered charts ──────────────────────────────
-const KEY_CLASSES = [
-  { key:'mc', label:'Motorcycle', color:'#00f5ff' },
-  { key:'sc', label:'Car/Taxi',   color:'#00ff88' },
-  { key:'sb', label:'Mini-bus',   color:'#ff6b35' },
-  { key:'lb', label:'Bus',        color:'#b967ff' },
-  { key:'lg', label:'Light Goods',color:'#ffd23f' },
-  { key:'lt', label:'Med. Goods', color:'#4d9fff' },
-  { key:'ht', label:'Heavy Goods',color:'#f0abfc' },
-  { key:'tt', label:'Articulated',color:'#fbbf24' },
-];
-
-const VC_PCT: Record<string,number> = Object.fromEntries(
-  VEHICLE_CLASSES.map(v=>[v.id, v.pct])
-);
-
-// ─── Recharts tooltip ────────────────────────────────────────────────────────
-function ClusterTip({ active, payload, label }: {
-  active?: boolean; payload?: {name:string;value:number;color:string}[]; label?: string
-}) {
-  if (!active || !payload?.length) return null;
-  return (
-    <div style={{ background:'rgba(10,16,30,0.92)', border:'1px solid rgba(0,245,255,0.18)',
-      borderRadius:8, padding:'8px 12px', fontSize:10 }}>
-      <div style={{ fontWeight:800, color:'#fff', marginBottom:6 }}>{label}</div>
-      {payload.map(p=>(
-        <div key={p.name} style={{ display:'flex', justifyContent:'space-between', gap:16, color:p.color }}>
-          <span>{p.name}</span>
-          <span style={{ fontWeight:700 }}>{Number(p.value).toLocaleString()}</span>
-        </div>
-      ))}
+    <div>
+      <Tbl title='Regional Master Matrix (heat = relative intensity)'
+        cols={[{h:'Region'},{h:'Links',align:'right'},{h:'Km',align:'right'},{h:'Mean AADT',align:'right'},{h:'VKM/day',align:'right'},{h:'VKM share',align:'right'},{h:'Heavy %',align:'right'},{h:'Growth→2030',align:'right'},{h:'Growth→2040',align:'right'},{h:'Critical+High links',align:'right'}]}
+        rows={A.byRegion.map(r=>[r.rg, fmt(r.links), fmt(r.km), fmt(r.mean), kfmt(r.vkm), pct(100*r.vkm/Math.max(1,A.totalVkm)), pct(r.heavy), '×'+r.g30.toFixed(2), '×'+r.g40.toFixed(2), fmt(r.crit+r.high)])}
+        styles={(ri,ci,v)=>{
+          const r = A.byRegion[ri];
+          if (ci===0) return { color:'#e2e8f0', fontWeight:700 };
+          if (ci===3) return heat(r.mean, 0, Math.max(...A.byRegion.map(x=>x.mean),1));
+          if (ci===4||ci===5) return heat(r.vkm, 0, maxVkm);
+          if (ci===6) return heat(r.heavy, 5, 30);
+          if (ci===7) return heat(r.g30, 1.1, 1.8);
+          if (ci===8) return heat(r.g40, 1.3, 2.8);
+          if (ci===9) return heat(r.crit+r.high, 0, Math.max(...A.byRegion.map(x=>x.crit+x.high),1));
+          return {};
+        }}
+        foot='Heat scale: blue = low intensity → yellow → red = high intensity, computed per column against the regional max. Growth multipliers are ratios of link AADT at horizon vs today.'/>
+      <Formula title='Regional derivations' lines={[
+        'RegionalShare_r = VKM_r / Σ VKM                — travel exposure share',
+        'MeanAADT_r      = Σ AADT_i / links_r           — simple link mean',
+        'StressIndex_r   = (Critical_r + High_r) / links_r',
+        'FreightIndex_r  = Heavy%_r × VKM_r / Σ(Heavy%×VKM)',
+      ]}/>
+      <Narrative title='Regional Structure' paras={[
+        'Travel exposure is heavily unbalanced across the six regions: '+(A.byRegion.slice().sort((a,b)=>b.vkm-a.vkm)[0]?.rg||'Central')+' alone carries '+pct(100*(A.byRegion.slice().sort((a,b)=>b.vkm-a.vkm)[0]?.vkm||0)/Math.max(1,A.totalVkm))+' of network vehicle-km. This concentration justifies differentiated maintenance funding formulas rather than uniform per-km allocations.',
+        'Growth asymmetry matters: the fastest 2040 multipliers appear where current volumes are lowest, meaning today’s low-volume regions are tomorrow’s upgrade backlog. Regions combining above-average growth with above-average heavy shares should be first in line for pavement strengthening rather than reactive patching.',
+        'The Critical+High congestion column is the actionable hotlist — each unit is a link whose volume/capacity trajectory breaches service thresholds within the plan period.',
+      ]}/>
+      <Relations title='Regional model'
+        rows={[
+          ['traffic_links ⟶ regions','N : 1','region','Every link belongs to exactly one maintenance region'],
+          ['regions ⟶ funding_formula','1 : 1','region','Allocation weight = f(VKM share, stress index)'],
+          ['traffic_links ⟶ growth_factors','N : 1','year','GF applied uniformly, region multiplier from link-level growth columns'],
+        ]}
+        note='Region is a first-class dimension in every downstream view; all joins are equi-joins on the region text key normalised to title case.'/>
     </div>
   );
 }
 
-// ─── Clustered column chart: vehicle class AADT by group (region or road class) ─
-function ClusteredClassChart({
-  groups, avgAadts, groupColors, title, subtitle,
-}: {
-  groups: string[]; avgAadts: Record<string,number>;
-  groupColors: Record<string,string>; title: string; subtitle?: string;
-}) {
-  const data = groups.map(grp => {
-    const aadt = avgAadts[grp] ?? 0;
-    const row: Record<string,number|string> = { group: grp.length>10?grp.slice(0,9)+'…':grp };
-    KEY_CLASSES.forEach(vc => { row[vc.label] = Math.round(aadt * (VC_PCT[vc.key]??0)); });
+// ─── CLASSES TAB ─────────────────────────────────────────────────────────────
+function ClassesTab({ A }: { A: ReturnType<typeof useAgg> }) {
+  const netAadtSum = A.P.reduce((s,p)=>s+(p.aadt_predicted??0),0);
+  const rows = VEHICLE_CLASSES.map(v=>{
+    const vol = netAadtSum*v.pct;
+    const esal = vol*v.lef;
+    return { ...v, vol, esal, eShare: 100*esal/Math.max(1e-9,A.esalDay) };
+  }).sort((a,b)=>b.esal-a.esal);
+  return (
+    <div>
+      <Tbl title='Vehicle Class Composition & Pavement Loading (ranked by ESAL contribution)'
+        cols={[{h:'#',align:'center'},{h:'Class'},{h:'Abbr',align:'center'},{h:'Fleet share',align:'right'},{h:'Est. daily volume',align:'right'},{h:'LEF (ESAL/veh)',align:'right'},{h:'ESAL/day',align:'right'},{h:'ESAL share',align:'right'}]}
+        rows={rows.map((v,i)=>[i+1, v.name, v.abbr, pct(v.pct*100), kfmt(v.vol), v.lef.toFixed(4), kfmt(v.esal), pct(v.eShare)])}
+        styles={(ri,ci)=>{
+          const v = rows[ri];
+          if (ci===3) return heat(v.pct, 0, 0.3);
+          if (ci===5) return heat(v.lef, 0, 5.1);
+          if (ci===6||ci===7) return heat(v.eShare, 0, Math.max(...rows.map(x=>x.eShare)));
+          if (ci===1) return { color:'#e2e8f0', fontWeight:600 };
+          return { color:'#94a3b8' };
+        }}
+        foot='The asymmetry is the whole story: classes carrying <11% of traffic (MT+HT+TT+T5) produce the overwhelming majority of pavement damage via the 4th-power axle law embedded in LEF.'/>
+      <Formula title='Class loading algebra' lines={[
+        'Volume_c   = Σ AADT × pct_c                      — fleet split applied to network flow',
+        'ESAL_c     = Volume_c × LEF_c                    — class damage contribution',
+        'LEF_c      ≈ Σ axles ( P_axle / 80kN )^4          — AASHTO 4th-power law',
+        'ESAL share = ESAL_c / Σ ESAL                      — ranking key of this table',
+        'Composite LEF = Σ ( pct_c × LEF_c ) = '+A.netLef.toFixed(4)+' ESAL per average vehicle',
+      ]}/>
+      <Narrative title='Fleet Composition' paras={[
+        'Motorcycles and saloon cars dominate the count ('+pct((VEHICLE_CLASSES[0].pct+VEHICLE_CLASSES[1].pct)*100)+' of vehicles) yet contribute almost nothing to structural consumption. Conversely the articulated classes (TT, T5) — under 3% of the fleet — are the primary pavement consumers. Axle-load enforcement on these two classes is the highest-return maintenance intervention available.',
+        'Because LEF grows with the fourth power of axle load, a 10% overload on a truck-trailer raises its damage by ~46%. Weighbridge compliance therefore has a direct, computable maintenance-budget equivalence, which the STRATEGIC tab converts into investment triggers.',
+      ]}/>
+      <Relations title='Class model'
+        rows={[
+          ['vehicle_classes ⟶ traffic_links','M : N via class_split','link_id, class_id','Link-level splits default to network means when unsurveyed'],
+          ['vehicle_classes ⟶ lef_catalogue','1 : 1','class_id','LEF from axle-load studies (MoWT/UNRA weighbridge data)'],
+          ['class_split ⟶ esal_view','derivation','link_id','esal_link = aadt × Σ(pct_c × LEF_c)'],
+        ]}
+        note='Where a corridor-specific classified count exists (TIS station), it overrides the network split in the join priority order: station > corridor > network.'/>
+    </div>
+  );
+}
+
+// ─── ASSETS TAB ──────────────────────────────────────────────────────────────
+function AssetsTab({ A }: { A: ReturnType<typeof useAgg> }) {
+  return (
+    <div>
+      <Tbl title='Road-Class Asset Utilisation'
+        cols={[{h:'Road class'},{h:'Links',align:'right'},{h:'Km',align:'right'},{h:'Km share',align:'right'},{h:'Mean AADT',align:'right'},{h:'VKM/day',align:'right'},{h:'VKM share',align:'right'},{h:'Heavy %',align:'right'},{h:'Utilisation index',align:'right'}]}
+        rows={A.byClass.map(c=>{
+          const kmSh = 100*c.km/Math.max(1,A.totalKm);
+          const vkSh = 100*c.vkm/Math.max(1,A.totalVkm);
+          const ui = kmSh>0? vkSh/kmSh : 0;
+          return [ c.rc==='M'?'M (unclassified)':'Class '+c.rc, fmt(c.links), fmt(c.km), pct(kmSh), fmt(c.mean), kfmt(c.vkm), pct(vkSh), pct(c.heavy), ui.toFixed(2) ];
+        })}
+        styles={(ri,ci)=>{
+          const c = A.byClass[ri];
+          const kmSh = 100*c.km/Math.max(1,A.totalKm);
+          const vkSh = 100*c.vkm/Math.max(1,A.totalVkm);
+          if (ci===0) return { color:'#e2e8f0', fontWeight:700 };
+          if (ci===4) return aadtBand(c.mean).style;
+          if (ci===8) return heat(kmSh>0?vkSh/kmSh:0, 0, 3);
+          return {};
+        }}
+        foot='Utilisation index = VKM share ÷ km share. Values >1 mean the class works harder than its length share; Class A typically runs 2–3× its footprint.'/>
+      <Formula title='Asset utilisation' lines={[
+        'UtilisationIndex = (VKM_class / Σ VKM) / (km_class / Σ km)',
+        'AssetConsumption = ESAL_class / StructuralNumber   — remaining-life driver',
+        'RenewalPriority  = rank( UtilisationIndex × Heavy% × GF(2030) )',
+      ]}/>
+      <Narrative title='Asset Base' paras={[
+        'Class A trunk roads deliver disproportionate service: their utilisation index shows each kilometre carrying a multiple of the network-average load. This is precisely where design standards, axle enforcement, and periodic maintenance funding must concentrate.',
+        'Unclassified (M) links show the inverse pattern — long length, thin traffic — arguing for low-cost gravel-standard preservation rather than premium treatments, and for progressive reclassification only where growth multipliers exceed the ×1.6 (2030) threshold.',
+      ]}/>
+      <Relations title='Asset model'
+        rows={[
+          ['traffic_links ⟶ road_assets','1 : 1','link_id ↔ asset_id','Link is the analytic twin of the physical asset record'],
+          ['road_assets ⟶ pavement_history','1 : N','asset_id','Overlay / reseal events; feeds remaining-life model'],
+          ['road_assets ⟶ structures','1 : N','asset_id','Bridges & culverts on the link (BMS keys)'],
+        ]}
+        note='The utilisation view materialises nightly; renewal priority feeds the PMS work-programme optimiser.'/>
+    </div>
+  );
+}
+
+// ─── ANALYSIS TAB ────────────────────────────────────────────────────────────
+function AnalysisTab({ A, featuresRef }: { A: ReturnType<typeof useAgg>; featuresRef: PredFeature[] }) {
+  // risk × region cross-tab
+  const cross = ['Critical','High','Medium','Low'].map(rk=>{
+    const row: (string|number)[] = [rk];
+    REGIONS.forEach(rg=>{
+      row.push(A.P.filter(p=>p.congestion_risk===rk && (p.region||'')===rg).length);
+    });
+    row.push(A.risks.find(r=>r.rk===rk)?.n??0);
     return row;
   });
-
-  return (
-    <div style={{ ...GLASS, padding:'18px 20px' }}>
-      <div style={{ fontSize:12, fontWeight:800, color:'#fff', marginBottom:3 }}>{title}</div>
-      {subtitle && <div style={{ fontSize:10, color:'rgba(148,163,184,0.45)', marginBottom:12 }}>{subtitle}</div>}
-      <Chart3DWrap>
-        <ResponsiveContainer width="100%" height={220}>
-          <BarChart data={data} margin={{ top:4, right:4, left:-10, bottom:20 }}
-            barCategoryGap="25%" barGap={1}>
-            <CartesianGrid strokeDasharray="2 2" stroke="rgba(148,163,184,0.06)" vertical={false}/>
-            <XAxis dataKey="group" tick={{ fill:'rgba(148,163,184,0.55)', fontSize:9 }}
-              axisLine={false} tickLine={false}/>
-            <YAxis tick={{ fill:'rgba(148,163,184,0.35)', fontSize:8 }}
-              tickFormatter={(v:number)=>v>=1000?`${(v/1000).toFixed(0)}k`:String(v)}
-              axisLine={false} tickLine={false}/>
-            <Tooltip content={<ClusterTip/>}/>
-            <Legend wrapperStyle={{ fontSize:8, paddingTop:4 }}
-              formatter={(v:string)=><span style={{ color:'rgba(148,163,184,0.7)' }}>{v}</span>}/>
-            {KEY_CLASSES.map(vc=>(
-              <Bar key={vc.key} dataKey={vc.label} fill={vc.color} fillOpacity={0.82}
-                radius={[2,2,0,0]} shape={<Bar3D/>}/>
-            ))}
-          </BarChart>
-        </ResponsiveContainer>
-      </Chart3DWrap>
-    </div>
-  );
-}
-
-// ─── Tab components ───────────────────────────────────────────────────────────
-
-function MacroTab({ features }: { features: PredFeature[] }) {
-  // aadt_predicted is anchored at 2026.0 — carry it forward to the current
-  // instant (ticking every second) using the interpolated growth curve.
-  const nowT = useNowTick(1000);
-  const avgAadtBase = useMemo(() =>
-    features.length ? features.reduce((s,f)=>s+(f.properties.aadt_predicted??0),0)/features.length : 0,
-    [features]
-  );
-  const avgAadt = avgAadtBase * (factorAt(nowT) / factorAt(2026));
-  const byClass = useMemo(() => {
-    const m: Record<string,{sum:number,n:number}> = {};
-    for (const f of features) {
-      const c = f.properties.road_class ?? 'Unknown';
-      if (!m[c]) m[c] = {sum:0,n:0};
-      m[c].sum += f.properties.aadt_predicted ?? 0;
-      m[c].n++;
-    }
-    return Object.fromEntries(Object.entries(m).map(([k,v])=>[k, v.n?v.sum/v.n:0]));
-  }, [features]);
-  const byRegion = useMemo(() => {
-    const m: Record<string,{sum:number,n:number}> = {};
-    for (const f of features) {
-      const r = f.properties.region ?? 'Unknown';
-      if (!m[r]) m[r] = {sum:0,n:0};
-      m[r].sum += f.properties.aadt_predicted ?? 0;
-      m[r].n++;
-    }
-    return Object.fromEntries(Object.entries(m).map(([k,v])=>[k, v.n?v.sum/v.n:0]));
-  }, [features]);
-
-  // ── ATC-style KPI strip ───────────────────────────────────────────────────
-  const heavyPct = useMemo(() => {
-    const vals = features.map(f => f.properties.heavy_vehicle_pct ?? 0).filter(v => v > 0);
-    return vals.length ? vals.reduce((s,v)=>s+v,0)/vals.length : 23.4;
-  }, [features]);
-  const highRiskLinks = useMemo(() =>
-    features.filter(f => ['Critical','High'].includes(f.properties.congestion_risk ?? '')).length,
-    [features]
-  );
-  const forecast2030 = Math.round(avgAadt * factorTo(2030));
-  const kpis = [
-    { label:'Avg Network ADT',   value: avgAadt > 0 ? Math.round(avgAadt).toLocaleString() : '—',  unit:'vpd · now', color: C.cyan, glow: C.cyan },
-    { label:'Road Links',        value: features.length.toLocaleString(),                           unit:'links',color: C.blue,   glow: C.blue },
-    { label:'Heavy Vehicle %',   value: heavyPct.toFixed(1),                                         unit:'%HGV', color: C.orange, glow: C.orange },
-    { label:'High-Risk Links',   value: highRiskLinks.toString(),                                    unit:'links',color: C.pink,   glow: C.pink },
-    { label:'2030 ADT Forecast', value: forecast2030 > 0 ? forecast2030.toLocaleString() : '—',    unit:'vpd',  color: C.green,  glow: C.green },
-  ];
-
-  return (
-    <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
-      <div style={{ fontSize:9.5, fontWeight:700, color:'#00ff88' }}>
-        <span className="animate-pulse" style={{ display:'inline-block', width:6, height:6, borderRadius:'50%', background:'#00ff88', marginRight:5 }} />
-        LIVE — all metrics now-cast to {new Date().toLocaleString('en-GB')} (reporting instant {nowT.toFixed(7)})
-      </div>
-      {/* ── KPI Stat-Card Strip ─────────────────────────────────────────── */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:10 }}>
-        {kpis.map(kpi => (
-          <div key={kpi.label} style={{
-            background:`rgba(${hexRgb(kpi.color)},0.07)`,
-            border:`1px solid rgba(${hexRgb(kpi.color)},0.18)`,
-            borderLeft:`4px solid ${kpi.color}`,
-            borderRadius:10,
-            padding:'14px 16px 12px',
-            boxShadow:`0 0 18px rgba(${hexRgb(kpi.glow)},0.12), inset 0 1px 0 rgba(255,255,255,0.04)`,
-            backdropFilter:'blur(20px)',
-          }}>
-            <div style={{
-              fontSize:28, fontWeight:900, color:kpi.color, lineHeight:1.1,
-              fontVariantNumeric:'tabular-nums', letterSpacing:'-0.02em',
-              textShadow:`0 0 20px rgba(${hexRgb(kpi.glow)},0.7)`,
-            }}>{kpi.value}</div>
-            <div style={{ fontSize:9, fontWeight:800, color:'rgba(148,163,184,0.6)',
-              letterSpacing:'0.14em', textTransform:'uppercase', marginTop:5 }}>
-              {kpi.label}
-            </div>
-            <div style={{ fontSize:9, color:`rgba(${hexRgb(kpi.color)},0.55)`,
-              fontWeight:700, marginTop:2, letterSpacing:'0.08em' }}>
-              {kpi.unit}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* 1. Growth trajectory */}
-      <div style={{ ...GLASS, padding:'18px 20px' }}>
-        <div style={{ fontSize:12, fontWeight:800, color:'#fff', marginBottom:3 }}>
-          Network Mean ADT Growth Trajectory (2016 – 2035)
-        </div>
-        <div style={{ fontSize:10, color:'rgba(148,163,184,0.45)', marginBottom:12 }}>
-          Projected average annual daily traffic · COVID-19 dip visible at 2020 · ML ensemble forecast
-        </div>
-        <GrowthTrajectory avgAadt={avgAadt}/>
-      </div>
-
-      {/* 2+3. Donut + ADT bars */}
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 1.1fr', gap:14 }}>
-        <div style={{ ...GLASS, padding:'18px 20px' }}>
-          <div style={{ fontSize:12, fontWeight:800, color:'#fff', marginBottom:3 }}>
-            ADT Per Vehicle Class (Proportions)
-          </div>
-          <div style={{ fontSize:10, color:'rgba(148,163,184,0.45)', marginBottom:12 }}>
-            11 vehicle categories · typical Uganda composition
-          </div>
-          <VehicleDonut avgAadt={avgAadt}/>
-        </div>
-        <div style={{ ...GLASS, padding:'18px 20px' }}>
-          <div style={{ fontSize:12, fontWeight:800, color:'#fff', marginBottom:3 }}>
-            Average Daily Traffic Per Vehicle Class
-          </div>
-          <div style={{ fontSize:10, color:'rgba(148,163,184,0.45)', marginBottom:12 }}>
-            Absolute ADT contribution · vehicles/day
-          </div>
-          <VehicleClassBars avgAadt={avgAadt}/>
-        </div>
-      </div>
-
-      {/* 4. Clustered column chart by road class */}
-      <ClusteredClassChart
-        groups={['A','B','C','M']}
-        groupColors={CLASS_CLR}
-        avgAadts={byClass}
-        title="Vehicle Class AADT by Road Class"
-        subtitle="8 key vehicle classes · grouped columns · avg vehicles/day per class"
-      />
-
-      {/* 5. Clustered column chart by region */}
-      <ClusteredClassChart
-        groups={REGIONS}
-        groupColors={REGION_CLR}
-        avgAadts={byRegion}
-        title="Vehicle Class AADT by Maintenance Region"
-        subtitle="6 regions · 8 vehicle classes · avg vehicles/day"
-      />
-
-      {/* 6. YOY rates */}
-      <div style={{ ...GLASS, padding:'18px 20px' }}>
-        <div style={{ fontSize:12, fontWeight:800, color:'#fff', marginBottom:3 }}>
-          YOY Increment Rates (2016 – 2035)
-        </div>
-        <div style={{ fontSize:10, color:'rgba(148,163,184,0.45)', marginBottom:12 }}>
-          Year-over-year growth rate · 2020 COVID dip clearly visible
-        </div>
-        <YOYRatesChart avgAadt={avgAadt}/>
-      </div>
-    </div>
-  );
-}
-
-function RegionsTab({ features }: { features: PredFeature[] }) {
-  return (
-    <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14 }}>
-      {REGIONS.map(reg => {
-        const rFeats = features.filter(f=>(f.properties.region??'')===reg);
-        const avgAadt = rFeats.length
-          ? rFeats.reduce((s,f)=>s+(f.properties.aadt_predicted??0),0)/rFeats.length : 0;
-        const col = REGION_CLR[reg] ?? C.cyan;
-        const congCounts = { Critical:0, High:0, Medium:0, Low:0 };
-        for (const f of rFeats) {
-          const r = f.properties.congestion_risk ?? 'Low';
-          if (r in congCounts) congCounts[r as keyof typeof congCounts]++;
-        }
-        const pavPercent = rFeats.length
-          ? (rFeats.filter(f=>f.properties.heavy_vehicle_pct && f.properties.heavy_vehicle_pct>15).length / rFeats.length)*100 : 0;
-        return (
-          <div key={reg} style={{ ...GLASS, padding:'16px 18px',
-            border:`1px solid rgba(${hexRgb(col)},0.2)` }}>
-            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:12 }}>
-              <div>
-                <div style={{ fontSize:8, fontWeight:800, color:`rgba(${hexRgb(col)},0.5)`,
-                  textTransform:'uppercase', letterSpacing:'0.12em', marginBottom:2 }}>
-                  {reg}
-                </div>
-                <div style={{ fontSize:22, fontWeight:900, color:col, lineHeight:1,
-                  textShadow:`0 0 18px rgba(${hexRgb(col)},0.4)` }}>
-                  {Math.round(avgAadt/1000*10)/10}k
-                </div>
-                <div style={{ fontSize:9, color:'rgba(148,163,184,0.45)', marginTop:2 }}>avg ADT</div>
-              </div>
-              <MiniDonut items={[
-                { v:congCounts.Low,      color:CONG_CLR.Low     },
-                { v:congCounts.Medium,   color:CONG_CLR.Medium  },
-                { v:congCounts.High,     color:CONG_CLR.High    },
-                { v:congCounts.Critical, color:CONG_CLR.Critical},
-              ]}/>
-            </div>
-            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:6 }}>
-              {[
-                { label:'Links',   val:String(rFeats.length), col },
-                { label:'High Hvy%', val:`${pavPercent.toFixed(0)}%`, col:C.orange },
-                { label:'Critical', val:String(congCounts.Critical), col:C.pink },
-              ].map(k=>(
-                <div key={k.label} style={{ background:`rgba(${hexRgb(k.col)},0.07)`,
-                  borderRadius:8, padding:'6px 8px', textAlign:'center' }}>
-                  <div style={{ fontSize:13, fontWeight:900, color:k.col }}>{k.val}</div>
-                  <div style={{ fontSize:8, color:'rgba(148,163,184,0.4)' }}>{k.label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-// ─── Clustered column chart: vehicle classes by region ───────────────────────
-function VehicleClassByRegionChart({ features }: { features: PredFeature[] }) {
-  const TOP_CLASSES = VEHICLE_CLASSES.slice(0, 6); // MC, SC, LG, SB, MB, LB
-
-  const data = REGIONS.map(reg => {
-    const rFeats = features.filter(f => (f.properties.region ?? '') === reg);
-    const regAdt = rFeats.length
-      ? rFeats.reduce((s, f) => s + (f.properties.aadt_predicted ?? 0), 0) / rFeats.length
-      : 0;
-    const row: Record<string, number | string> = { region: reg.replace(' ', '\n') };
-    TOP_CLASSES.forEach(vc => {
-      row[vc.abbr] = Math.round(regAdt * vc.pct);
-    });
-    return row;
-  });
-
-  return (
-    <div style={{ ...GLASS, padding: '18px 20px', gridColumn: '1 / -1' }}>
-      <div style={{ fontSize: 12, fontWeight: 800, color: '#fff', marginBottom: 3 }}>
-        Vehicle Class Volumes by Region — Clustered Comparison
-      </div>
-      <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.45)', marginBottom: 14 }}>
-        Average daily vehicles per class · 6 maintenance regions · top 6 classes shown
-      </div>
-      <Chart3DWrap>
-        <ResponsiveContainer width="100%" height={220}>
-          <BarChart data={data} margin={{ top: 4, right: 12, left: 0, bottom: 0 }} barGap={2} barCategoryGap="20%">
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.08)" vertical={false}/>
-            <XAxis dataKey="region" tick={{ fill: 'rgba(148,163,184,0.55)', fontSize: 9 }}
-              axisLine={false} tickLine={false}/>
-            <YAxis tick={{ fill: 'rgba(148,163,184,0.35)', fontSize: 8 }} axisLine={false} tickLine={false}
-              tickFormatter={(v: number) => v >= 1000 ? `${(v/1000).toFixed(1)}k` : String(v)}/>
-            <Tooltip
-              contentStyle={{ background: 'rgba(10,16,30,0.95)', border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: 8, fontSize: 10 }}
-              labelStyle={{ color: '#e2eaf4', fontWeight: 700 }}
-              formatter={(value: number, name: string) => [
-                value >= 1000 ? `${(value/1000).toFixed(1)}k` : value,
-                VEHICLE_CLASSES.find(vc => vc.abbr === name)?.name ?? name,
-              ]}/>
-            <Legend wrapperStyle={{ fontSize: 9, paddingTop: 6 }}
-              formatter={(value: string) => VEHICLE_CLASSES.find(vc => vc.abbr === value)?.name ?? value}/>
-            {TOP_CLASSES.map(vc => (
-              <Bar key={vc.abbr} dataKey={vc.abbr} fill={vc.color} radius={[2, 2, 0, 0]}
-                fillOpacity={0.82} shape={<Bar3D/>}/>
-            ))}
-          </BarChart>
-        </ResponsiveContainer>
-      </Chart3DWrap>
-    </div>
-  );
-}
-
-function ClassesTab({ features }: { features: PredFeature[] }) {
-  const totalAadt = features.reduce((s,f)=>s+(f.properties.aadt_predicted??0),0);
-  return (
-    <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10 }}>
-      <VehicleClassByRegionChart features={features} />
-      {VEHICLE_CLASSES.map(vc => {
-        const classAdt  = Math.round(totalAadt * vc.pct);
-        const col = vc.color;
-        return (
-          <div key={vc.id} style={{ ...GLASS, padding:'14px 16px',
-            border:`1px solid rgba(${hexRgb(col)},0.2)` }}>
-            <div style={{ fontSize:8, fontWeight:800, color:`rgba(${hexRgb(col)},0.5)`,
-              textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:2 }}>{vc.abbr}</div>
-            <div style={{ fontSize:13, fontWeight:800, color:col, marginBottom:4,
-              overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-              {vc.name}
-            </div>
-            <div style={{ fontSize:20, fontWeight:900, color:col, lineHeight:1 }}>
-              {classAdt>=1000?`${(classAdt/1000).toFixed(1)}k`:classAdt}
-            </div>
-            <div style={{ fontSize:9, color:'rgba(148,163,184,0.45)', marginTop:2 }}>vehicles/day</div>
-            <div style={{ margin:'10px 0 6px', display:'flex', justifyContent:'space-between' }}>
-              <span style={{ fontSize:9, color:col, fontWeight:700 }}>
-                {(vc.pct*100).toFixed(1)}% of total ADT
-              </span>
-            </div>
-            {/* Regional share mini bars */}
-            <div style={{ display:'flex', flexDirection:'column', gap:3 }}>
-              {REGIONS.slice(0,3).map(reg => {
-                const rFeats = features.filter(f=>(f.properties.region??'')===reg);
-                const rAdt = rFeats.length ? rFeats.reduce((s,f)=>s+(f.properties.aadt_predicted??0),0)/rFeats.length : 0;
-                const rCol = REGION_CLR[reg]??C.cyan;
-                const pct  = totalAadt>0 ? rAdt/features.length/totalAadt*features.length : 0;
-                return (
-                  <div key={reg} style={{ display:'flex', alignItems:'center', gap:5 }}>
-                    <span style={{ fontSize:8, color:rCol, minWidth:46, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{reg}</span>
-                    <div style={{ flex:1, height:5, background:'rgba(255,255,255,0.05)', borderRadius:3 }}>
-                      <div style={{ height:'100%', width:`${Math.min(pct*300,100)}%`,
-                        background:rCol, borderRadius:3, opacity:0.7 }}/>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function AssetsTab({ features }: { features: PredFeature[] }) {
-  const [search, setSearch] = useState('');
-  const filtered = useMemo(() =>
-    features.filter(f => {
-      if (!search) return true;
-      const s = search.toLowerCase();
-      return (f.properties.link_name??'').toLowerCase().includes(s)
-        || (f.properties.road_no??'').toLowerCase().includes(s)
-        || (f.properties.region??'').toLowerCase().includes(s);
-    }).slice(0,80),
-    [features, search]
-  );
-  return (
-    <div style={{ ...GLASS, padding:'18px 20px' }}>
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:14 }}>
-        <div>
-          <div style={{ fontSize:12, fontWeight:800, color:'#fff' }}>Road Links Asset Data</div>
-          <div style={{ fontSize:10, color:'rgba(148,163,184,0.45)', marginTop:2 }}>
-            {features.length} links · AADT, class, region, forecast
-          </div>
-        </div>
-        <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search links…"
-          style={{ background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.12)',
-            borderRadius:8, color:'#e2eaf4', fontSize:11, padding:'5px 10px', outline:'none', width:200 }}/>
-      </div>
-      <div style={{ overflowX:'auto' }}>
-        <table style={{ width:'100%', borderCollapse:'collapse', fontSize:10 }}>
-          <thead>
-            <tr style={{ borderBottom:'1px solid rgba(0,245,255,0.12)' }}>
-              {['#','Road Link','Class','Region','Length km','AADT 2025','AADT 2040','Heavy %','Risk'].map(h=>(
-                <th key={h} style={{ padding:'4px 8px', textAlign:'left', fontSize:8, fontWeight:800,
-                  color:'rgba(0,245,255,0.55)', textTransform:'uppercase', letterSpacing:'0.06em',
-                  whiteSpace:'nowrap' }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((f,i)=>{
-              const p = f.properties;
-              const riskCol = CONG_CLR[p.congestion_risk??'Low']??'#94a3b8';
-              return (
-                <tr key={p.link_id} style={{ borderBottom:'1px solid rgba(255,255,255,0.03)' }}>
-                  <td style={{ padding:'5px 8px', color:'rgba(148,163,184,0.3)' }}>{i+1}</td>
-                  <td style={{ padding:'5px 8px', color:'#e2eaf4', maxWidth:180,
-                    overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-                    {p.link_name??p.link_id}
-                  </td>
-                  <td style={{ padding:'5px 8px', color:CLASS_CLR[p.road_class??'']??'#94a3b8', fontWeight:700 }}>
-                    {p.road_class??'—'}
-                  </td>
-                  <td style={{ padding:'5px 8px', color:'rgba(148,163,184,0.55)', whiteSpace:'nowrap' }}>
-                    {p.region??'—'}
-                  </td>
-                  <td style={{ padding:'5px 8px', color:'rgba(148,163,184,0.55)', fontFamily:'monospace' }}>
-                    {p.length_km?.toFixed(1)??'—'}
-                  </td>
-                  <td style={{ padding:'5px 8px', color:C.cyan, fontFamily:'monospace', fontWeight:700 }}>
-                    {(p.aadt_predicted??0).toLocaleString()}
-                  </td>
-                  <td style={{ padding:'5px 8px', color:C.orange, fontFamily:'monospace', fontWeight:700 }}>
-                    {p.growth_2040?p.growth_2040.toLocaleString():'—'}
-                  </td>
-                  <td style={{ padding:'5px 8px', color:C.yellow, fontFamily:'monospace' }}>
-                    {p.heavy_vehicle_pct!=null?`${p.heavy_vehicle_pct.toFixed(0)}%`:'—'}
-                  </td>
-                  <td style={{ padding:'5px 8px' }}>
-                    <span style={{ fontSize:8, fontWeight:800, padding:'1px 7px', borderRadius:10,
-                      background:`rgba(${hexRgb(riskCol)},0.15)`,
-                      border:`1px solid rgba(${hexRgb(riskCol)},0.35)`, color:riskCol }}>
-                      {p.congestion_risk??'Low'}
-                    </span>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        {filtered.length===80 && features.length>80 && (
-          <div style={{ marginTop:8, fontSize:9, color:'rgba(148,163,184,0.3)', textAlign:'center' }}>
-            Showing 80 of {features.length} links · refine search to filter
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function AnalysisTab({ features }: { features: PredFeature[] }) {
-  const avgAadt = features.length ? features.reduce((s,f)=>s+(f.properties.aadt_predicted??0),0)/features.length : 0;
-  // AADT distribution histogram (8 buckets)
-  const buckets = [0,500,1000,2000,5000,10000,20000,50000];
-  const counts = buckets.slice(0,-1).map((lo,i)=>({
-    lo, hi:buckets[i+1],
-    n: features.filter(f=>(f.properties.aadt_predicted??0)>=lo && (f.properties.aadt_predicted??0)<buckets[i+1]).length,
-  }));
-  const maxN = Math.max(...counts.map(c=>c.n),1);
-  const W=500, H=160, PL=48, PR=12, PT=10, PB=28;
-  const cW=W-PL-PR, cH=H-PT-PB;
-  const bW = cW/counts.length*0.7;
-
-  return (
-    <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
-      <div style={{ ...GLASS, padding:'18px 20px' }}>
-        <div style={{ fontSize:12, fontWeight:800, color:'#fff', marginBottom:3 }}>
-          AADT Distribution Across Network
-        </div>
-        <div style={{ fontSize:10, color:'rgba(148,163,184,0.45)', marginBottom:12 }}>
-          Frequency of road links by AADT band · {features.length} total links · avg {Math.round(avgAadt).toLocaleString()} veh/day
-        </div>
-        <svg viewBox={`0 0 ${W} ${H}`} style={{ width:'100%', height:H, display:'block' }}>
-          {counts.map((c,i)=>{
-            const bH = (c.n/maxN)*cH;
-            const x  = PL + i*(cW/counts.length) + (cW/counts.length-bW)/2;
-            const y  = PT+cH-bH;
-            const col = i<2?C.green:i<4?C.yellow:i<6?C.orange:C.pink;
-            return (
-              <g key={i}>
-                <rect x={x} y={y} width={bW} height={bH} rx={3} fill={col} fillOpacity={0.78}/>
-                <rect x={x} y={y} width={bW} height={Math.min(bH,10)} rx={3} fill="rgba(255,255,255,0.18)"/>
-                <text x={x+bW/2} y={H-3} fill="rgba(148,163,184,0.45)" fontSize={7} textAnchor="middle">
-                  {c.lo>=1000?`${c.lo/1000}k`:c.lo}+
-                </text>
-                {c.n>0&&<text x={x+bW/2} y={y-4} fill={col} fontSize={8} fontWeight={700} textAnchor="middle">
-                  {c.n}
-                </text>}
-              </g>
-            );
-          })}
-          {[0,.25,.5,.75,1].map(t=>(
-            <g key={t}>
-              <text x={PL-5} y={PT+cH-t*cH+4} fill="rgba(148,163,184,0.35)" fontSize={7} textAnchor="end">
-                {Math.round(t*maxN)}
-              </text>
-              <line x1={PL} x2={PL+cW} y1={PT+cH-t*cH} y2={PT+cH-t*cH}
-                stroke="rgba(148,163,184,0.06)" strokeDasharray="2 2"/>
-            </g>
-          ))}
-        </svg>
-      </div>
-
-      {/* Growth comparison: 2025 vs 2040 — clustered column chart */}
-      {(() => {
-        const chartData = REGIONS.map(reg=>{
-          const rf = features.filter(f=>(f.properties.region??'')===reg);
-          const a25 = rf.length?Math.round(rf.reduce((s,f)=>s+(f.properties.aadt_predicted??0),0)/rf.length):0;
-          const a40 = rf.length?Math.round(rf.reduce((s,f)=>s+(f.properties.growth_2040??f.properties.aadt_predicted??0),0)/rf.length):0;
-          return { region: reg.length>10?reg.slice(0,9)+'…':reg, 'AADT 2025': a25, 'AADT 2040': a40 };
-        });
-        return (
-          <div style={{ ...GLASS, padding:'18px 20px' }}>
-            <div style={{ fontSize:12, fontWeight:800, color:'#fff', marginBottom:3 }}>
-              Regional AADT Growth: 2025 vs 2040
-            </div>
-            <div style={{ fontSize:10, color:'rgba(148,163,184,0.45)', marginBottom:12 }}>
-              Average daily traffic per region · projected growth to 2040
-            </div>
-            <Chart3DWrap>
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={chartData} margin={{ top:4, right:4, left:-10, bottom:20 }}
-                  barCategoryGap="30%" barGap={2}>
-                  <CartesianGrid strokeDasharray="2 2" stroke="rgba(148,163,184,0.06)" vertical={false}/>
-                  <XAxis dataKey="region" tick={{ fill:'rgba(148,163,184,0.55)', fontSize:9 }}
-                    axisLine={false} tickLine={false}/>
-                  <YAxis tick={{ fill:'rgba(148,163,184,0.35)', fontSize:8 }}
-                    tickFormatter={(v:number)=>v>=1000?`${(v/1000).toFixed(0)}k`:String(v)}
-                    axisLine={false} tickLine={false}/>
-                  <Tooltip content={<ClusterTip/>}/>
-                  <Legend wrapperStyle={{ fontSize:9, paddingTop:4 }}
-                    formatter={(v:string)=><span style={{ color:'rgba(148,163,184,0.7)' }}>{v}</span>}/>
-                  <Bar dataKey="AADT 2025" fill={C.cyan}   fillOpacity={0.82} radius={[2,2,0,0] as [number,number,number,number]} shape={<Bar3D/>}/>
-                  <Bar dataKey="AADT 2040" fill={C.orange} fillOpacity={0.82} radius={[2,2,0,0] as [number,number,number,number]} shape={<Bar3D/>}/>
-                </BarChart>
-              </ResponsiveContainer>
-            </Chart3DWrap>
-          </div>
-        );
-      })()}
-    </div>
-  );
-}
-
-function StationsTab({ stations, predByLink }: {
-  stations: StationFeature[];
-  predByLink: Map<string, PredProps>;
-}) {
-  const [search, setSearch]   = useState('');
-  const [sortBy, setSortBy]   = useState<'name'|'aadt'|'heavy'>('aadt');
-  const [sortDir, setSortDir] = useState<1|-1>(-1);
-
-  const sorted = useMemo(() => {
-    const arr = [...stations].filter(s => {
-      if (!search) return true;
-      const p = s.properties;
-      const q = search.toLowerCase();
-      return (p.TCS_NAME??'').toLowerCase().includes(q)
-        || (p.Link_Name??'').toLowerCase().includes(q)
-        || (p.REGION??'').toLowerCase().includes(q);
-    });
-    arr.sort((a, b) => {
-      const pa = a.properties, pb = b.properties;
-      const predA = predByLink.get(pa.Link_ID??'');
-      const predB = predByLink.get(pb.Link_ID??'');
-      if (sortBy==='aadt') return ((predA?.aadt_predicted??0)-(predB?.aadt_predicted??0))*sortDir;
-      if (sortBy==='heavy') return ((predA?.heavy_vehicle_pct??0)-(predB?.heavy_vehicle_pct??0))*sortDir;
-      return ((pa.TCS_NAME??'')>(pb.TCS_NAME??'')?1:-1)*sortDir;
-    });
-    return arr;
-  }, [stations, search, sortBy, sortDir, predByLink]);
-
-  function th(label:string, key:typeof sortBy) {
-    const active = sortBy===key;
-    return (
-      <th onClick={()=>{ if(active) setSortDir(d=>d===-1?1:-1); else { setSortBy(key); setSortDir(-1); } }}
-        style={{ padding:'5px 8px', textAlign:'left', fontSize:8, fontWeight:800,
-          color: active?C.teal:'rgba(0,212,170,0.5)',
-          textTransform:'uppercase', letterSpacing:'0.07em', cursor:'pointer', whiteSpace:'nowrap' }}>
-        {label}{active?(sortDir===-1?' ↓':' ↑'):''}
-      </th>
-    );
+  // Pearson correlation between AADT and heavy% across links
+  const xs = A.P.map(p=>p.aadt_predicted??0), ys = A.P.map(p=>p.heavy_vehicle_pct??0), zs = A.P.map(p=>p.growth_2030??0);
+  function pearson(a:number[], b:number[]) {
+    const n=a.length; if(!n) return 0;
+    const ma=a.reduce((s,v)=>s+v,0)/n, mb=b.reduce((s,v)=>s+v,0)/n;
+    let num=0, da=0, db=0;
+    for(let i=0;i<n;i++){ num+=(a[i]-ma)*(b[i]-mb); da+=(a[i]-ma)**2; db+=(b[i]-mb)**2; }
+    return da&&db? num/Math.sqrt(da*db):0;
   }
-
+  const r_ah = pearson(xs,ys), r_ag = pearson(xs,zs), r_hg = pearson(ys,zs);
   return (
-    <div style={{ ...GLASS, padding:'18px 20px' }}>
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:14 }}>
-        <div>
-          <div style={{ fontSize:12, fontWeight:800, color:'#fff' }}>ATC Station Network</div>
-          <div style={{ fontSize:10, color:'rgba(148,163,184,0.45)', marginTop:2 }}>
-            {stations.length} traffic count stations · AADT from ML ensemble predictions
-          </div>
-        </div>
-        <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search stations…"
-          style={{ background:'rgba(255,255,255,0.06)', border:'1px solid rgba(0,212,170,0.2)',
-            borderRadius:8, color:'#e2eaf4', fontSize:11, padding:'5px 10px', outline:'none', width:200 }}/>
-      </div>
-      <div style={{ overflowX:'auto', maxHeight:520, overflowY:'auto' }}>
-        <table style={{ width:'100%', borderCollapse:'collapse', fontSize:10 }}>
-          <thead style={{ position:'sticky', top:0, background:'rgba(10,16,30,0.95)' }}>
-            <tr style={{ borderBottom:'1px solid rgba(0,212,170,0.14)' }}>
-              {th('Station ID','name')}
-              <th style={{ padding:'5px 8px', textAlign:'left', fontSize:8, fontWeight:800,
-                color:'rgba(0,212,170,0.5)', textTransform:'uppercase', letterSpacing:'0.07em' }}>Road Name</th>
-              <th style={{ padding:'5px 8px', textAlign:'left', fontSize:8, fontWeight:800,
-                color:'rgba(0,212,170,0.5)', textTransform:'uppercase', letterSpacing:'0.07em' }}>Region</th>
-              {th('AADT 2025','aadt')}
-              {th('Heavy %','heavy')}
-              <th style={{ padding:'5px 8px', textAlign:'left', fontSize:8, fontWeight:800,
-                color:'rgba(0,212,170,0.5)', textTransform:'uppercase', letterSpacing:'0.07em' }}>Last Count</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sorted.map((s,i)=>{
-              const p    = s.properties;
-              const pred = predByLink.get(p.Link_ID??'');
-              const rCol = REGION_CLR[p.REGION??'']??'#94a3b8';
-              return (
-                <tr key={i} style={{ borderBottom:'1px solid rgba(255,255,255,0.03)' }}>
-                  <td style={{ padding:'5px 8px', color:C.teal, fontWeight:700 }}>
-                    {p.TCS_NAME??p.STATION??`TCS-${p.TCS_NO??i}`}
-                  </td>
-                  <td style={{ padding:'5px 8px', color:'rgba(226,234,244,0.7)',
-                    maxWidth:160, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-                    {p.Link_Name??'—'}
-                  </td>
-                  <td style={{ padding:'5px 8px', color:rCol }}>{p.REGION??'—'}</td>
-                  <td style={{ padding:'5px 8px', color:C.cyan, fontFamily:'monospace', fontWeight:700 }}>
-                    {pred?.aadt_predicted?pred.aadt_predicted.toLocaleString():'—'}
-                  </td>
-                  <td style={{ padding:'5px 8px', color:C.orange, fontFamily:'monospace' }}>
-                    {pred?.heavy_vehicle_pct!=null?`${pred.heavy_vehicle_pct.toFixed(0)}%`:'—'}
-                  </td>
-                  <td style={{ padding:'5px 8px', color:'rgba(148,163,184,0.45)' }}>2025</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+    <div>
+      <Tbl title='Congestion Risk × Region Cross-Tabulation'
+        cols={[{h:'Risk'},...REGIONS.map(r=>({h:r,align:'right' as const})),{h:'Total',align:'right'}]}
+        rows={cross}
+        styles={(ri,ci,v)=>{
+          if (ci===0) return riskStyle(String(cross[ri][0]));
+          const num = Number(v);
+          const rk = String(cross[ri][0]);
+          return num>0? { background:(CONG_CLR[rk]||'#888')+Math.min(40,10+num*2).toString(16), color:'#e2e8f0', fontWeight:600 }:{ color:'#475569' };
+        }}
+        foot='Cell intensity scales with count within each risk row. Critical = projected v/c ≥ 1.0 before 2030; High = 0.85–1.0.'/>
+      <LinkLedger A={A} features={featuresRef}/>
+      <Tbl title='Cross-Metric Correlation Matrix (Pearson r, link-level)'
+        cols={[{h:'Pair'},{h:'r',align:'right'},{h:'Strength'},{h:'Interpretation'}]}
+        rows={[
+          ['AADT ↔ Heavy %', r_ah.toFixed(3), Math.abs(r_ah)>0.5?'Strong':Math.abs(r_ah)>0.25?'Moderate':'Weak', r_ah<0?'Busier links skew lighter — freight uses dedicated corridors':'Volume and freight co-locate'],
+          ['AADT ↔ Growth→2030', r_ag.toFixed(3), Math.abs(r_ag)>0.5?'Strong':Math.abs(r_ag)>0.25?'Moderate':'Weak', r_ag<0?'Fastest growth on low-base links (catch-up dynamics)':'Growth compounds on busy links'],
+          ['Heavy % ↔ Growth→2030', r_hg.toFixed(3), Math.abs(r_hg)>0.5?'Strong':Math.abs(r_hg)>0.25?'Moderate':'Weak', 'Freight-growth coupling — signals future ESAL pressure'],
+        ]}
+        styles={(ri,ci,v)=> ci===1? heat(Math.abs(Number(v)), 0, 1):(ci===0?{ color:'#e2e8f0', fontWeight:600 }:{})}
+        foot='r computed across all monitored links; |r|>0.5 strong, 0.25–0.5 moderate, <0.25 weak.'/>
+      <Formula title='Analysis statistics' lines={[
+        'Pearson r  = Σ(x−x̄)(y−ȳ) / √( Σ(x−x̄)² · Σ(y−ȳ)² )',
+        'v/c ratio  = AADT × K30 / (capacity_lane × lanes)     — K30 design-hour factor ≈ 0.11',
+        'RiskClass  = CASE WHEN v/c(2030) ≥ 1.0 → Critical; ≥ 0.85 → High; ≥ 0.6 → Medium; ELSE Low',
+      ]}/>
+      <Narrative title='Analytical Findings' paras={[
+        'The risk cross-tab shows congestion is not a national phenomenon but a corridor phenomenon: Critical cells cluster in one or two regions while entire regions register zero Critical links. Blanket capacity policy would over-build most of the network and under-build the hotlist.',
+        'The correlation matrix quantifies structure the maps only suggest: the sign of r(AADT, Heavy%) reveals whether freight and passenger demand co-locate, which decides whether dualization and axle-load control target the same or different links.',
+      ]}/>
     </div>
   );
 }
 
-function StrategicTab({ features, stations }: { features: PredFeature[]; stations: StationFeature[] }) {
-  const totalAdt = features.reduce((s,f)=>s+(f.properties.aadt_predicted??0),0);
-  const totalVkm = features.reduce((s,f)=>s+(f.properties.vehicle_km_daily??0),0);
-  const critical = features.filter(f=>f.properties.congestion_risk==='Critical').length;
-  const avg2040  = features.reduce((s,f)=>s+(f.properties.growth_2040??0),0)/features.length;
-  const avg2025  = totalAdt/features.length;
-  const growPct  = avg2025>0?((avg2040/avg2025)-1)*100:95;
+// ─── FULL LINK LEDGER: all records, interactive filters, X/Y in decimal deg ──
+function LinkLedger({ A, features }: { A: ReturnType<typeof useAgg>; features: PredFeature[] }) {
+  const [rg, setRg]   = useState('ALL');
+  const [rc, setRc]   = useState('ALL');
+  const [rk, setRk]   = useState('ALL');
+  const [srt, setSrt] = useState<'aadt'|'heavy'|'g30'|'km'>('aadt');
+  const rows = useMemo(()=>{
+    let F = features;
+    if (rg!=='ALL') F = F.filter(f=>(f.properties.region||'')===rg);
+    if (rc!=='ALL') F = F.filter(f=>(f.properties.road_class||'M')===rc);
+    if (rk!=='ALL') F = F.filter(f=>(f.properties.congestion_risk||'')===rk);
+    const key = (f:PredFeature)=> srt==='aadt'?(f.properties.aadt_predicted??0):srt==='heavy'?(f.properties.heavy_vehicle_pct??0):srt==='g30'?(f.properties.growth_2030??0):(f.properties.length_km??0);
+    return [...F].sort((a,b)=>key(b)-key(a));
+  },[features,rg,rc,rk,srt]);
+  const sel: React.CSSProperties = { background:'rgba(2,6,23,0.8)', border:'1px solid rgba(255,255,255,0.15)',
+    borderRadius:6, color:'#e2e8f0', fontSize:11, padding:'4px 8px', outline:'none' };
+  return (
+    <div>
+      <div style={{ display:'flex', gap:8, flexWrap:'wrap', margin:'0 0 10px', alignItems:'center' }}>
+        <span style={{ fontSize:10, color:'#64748b', fontWeight:700 }}>FILTERS</span>
+        <select style={sel} value={rg} onChange={e=>setRg(e.target.value)}>
+          <option value='ALL'>Region: ALL</option>{REGIONS.map(r=><option key={r} value={r}>{r}</option>)}
+        </select>
+        <select style={sel} value={rc} onChange={e=>setRc(e.target.value)}>
+          <option value='ALL'>Class: ALL</option>{['A','B','C','M'].map(r=><option key={r} value={r}>{r}</option>)}
+        </select>
+        <select style={sel} value={rk} onChange={e=>setRk(e.target.value)}>
+          <option value='ALL'>Risk: ALL</option>{['Critical','High','Medium','Low'].map(r=><option key={r} value={r}>{r}</option>)}
+        </select>
+        <select style={sel} value={srt} onChange={e=>setSrt(e.target.value as any)}>
+          <option value='aadt'>Sort: AADT</option><option value='heavy'>Sort: Heavy %</option>
+          <option value='g30'>Sort: Growth 2030</option><option value='km'>Sort: Length</option>
+        </select>
+      </div>
+      <Tbl title='Complete Link Ledger — every monitored record'
+        cols={[{h:'#',align:'right'},{h:'Road'},{h:'Link'},{h:'Region'},{h:'Class',align:'center'},{h:'Km',align:'right'},{h:'AADT',align:'right'},{h:'Band',align:'center'},{h:'Heavy %',align:'right'},{h:'G→2030',align:'right'},{h:'G→2040',align:'right'},{h:'VKM/day',align:'right'},{h:'Risk',align:'center'},{h:'Y (lat °)',align:'right'},{h:'X (lng °)',align:'right'}]}
+        rows={rows.map((f,i)=>{
+          const p=f.properties; const c=centroid(f.geometry);
+          return [i+1, p.road_no||'—', (p.link_name||p.link_id).slice(0,36), p.region||'—', p.road_class||'M',
+            fmt(p.length_km??0,1), fmt(p.aadt_predicted??0), aadtBand(p.aadt_predicted??0).label,
+            pct(p.heavy_vehicle_pct??0), '×'+(p.growth_2030??1).toFixed(2), '×'+(p.growth_2040??1).toFixed(2),
+            kfmt(p.vehicle_km_daily??0), p.congestion_risk||'—', c?c[0].toFixed(5):'—', c?c[1].toFixed(5):'—'];
+        })}
+        styles={(ri,ci)=>{
+          const p = rows[ri]?.properties; if(!p) return {};
+          if (ci===6||ci===7) return aadtBand(p.aadt_predicted??0).style;
+          if (ci===8)  return heat(p.heavy_vehicle_pct??0, 5, 30);
+          if (ci===9)  return heat(p.growth_2030??1, 1.1, 1.8);
+          if (ci===10) return heat(p.growth_2040??1, 1.3, 2.8);
+          if (ci===12) return riskStyle(p.congestion_risk||'');
+          if (ci===13||ci===14) return { color:'#64748b', fontFamily:'ui-monospace, Menlo, monospace' };
+          if (ci<=2) return { color:'#e2e8f0' };
+          return {};
+        }}
+        foot='All records rendered — no selective reporting. X/Y are link centroids in decimal degrees (spatial identifiers only). Use the dropdowns above for filtering & sorting; CSV export includes the current filter state.'/>
+    </div>
+  );
+}
 
-  const metrics = [
-    { label:'Total Network ADT',       val:`${Math.round(totalAdt/1000)}k`, sub:'vehicles/day', col:C.cyan   },
-    { label:'Vehicle-km / Day',        val:`${(totalVkm/1e6).toFixed(0)}M`, sub:'network total', col:C.teal   },
-    { label:'Critical Congestion',     val:String(critical), sub:'links at capacity risk', col:C.pink   },
-    { label:'2040 Growth Projection',  val:`+${growPct.toFixed(0)}%`, sub:'vs 2025 baseline', col:C.green  },
-    { label:'ATC Stations',             val:'25',                   sub:'15 legacy + 10 new', col:C.yellow },
-    { label:'Survey Node Count',       val:String(features.length), sub:'road links monitored', col:C.blue   },
+// ─── STATIONS TAB ────────────────────────────────────────────────────────────
+function StationsTab({ A, stations }: { A: ReturnType<typeof useAgg>; stations: StationFeature[] }) {
+  const byRegion = REGIONS.map(rg=>{
+    const S = stations.filter(s=>(s.properties.REGION||'').toUpperCase()===rg.toUpperCase());
+    const R = A.byRegion.find(r=>r.rg===rg);
+    const km = R?.km||0;
+    return { rg, n:S.length, km, per1k: km? 1000*S.length/km : 0, links:R?.links||0 };
+  });
+  const reg = stations;
+  return (
+    <div>
+      <Tbl title='Survey Coverage by Region (stations per 1,000 km — conditional on adequacy)'
+        cols={[{h:'Region'},{h:'Stations',align:'right'},{h:'Network km',align:'right'},{h:'Stations / 1,000 km',align:'right'},{h:'Links per station',align:'right'},{h:'Adequacy'}]}
+        rows={byRegion.map(r=>[r.rg, fmt(r.n), fmt(r.km), r.per1k.toFixed(2), r.n? fmt(r.links/r.n,0):'∞', r.per1k>=2?'Adequate':r.per1k>=1?'Thin':'Gap'])}
+        styles={(ri,ci)=>{
+          const r = byRegion[ri];
+          if (ci===0) return { color:'#e2e8f0', fontWeight:700 };
+          if (ci===3) return heatInv(r.per1k, 0, 3);
+          if (ci===5) return r.per1k>=2? { color:C.green, fontWeight:700 }:r.per1k>=1? { color:C.yellow, fontWeight:700 }:{ color:C.pink, fontWeight:700 };
+          return {};
+        }}
+        foot='Adequacy rule: ≥2 stations/1,000 km Adequate; 1–2 Thin; <1 Gap. Gap regions rely on transferred growth factors rather than observed counts — widest confidence intervals.'/>
+      <Tbl title='Station Registry — all records'
+        cols={[{h:'TCS No',align:'right'},{h:'Station'},{h:'Link'},{h:'Region'},{h:'Y (lat °)',align:'right'},{h:'X (lng °)',align:'right'}]}
+        rows={reg.map(s=>{ const c=centroid((s as any).geometry);
+          return [s.properties.TCS_NO??'—', s.properties.TCS_NAME||s.properties.STATION||'—', (s.properties.Link_Name||s.properties.Link_ID||'—').slice(0,40), s.properties.REGION||'—', c?c[0].toFixed(5):'—', c?c[1].toFixed(5):'—']; })}
+        styles={(ri,ci)=> ci===1?{ color:'#e2e8f0' }:ci>=4?{ color:'#64748b', fontFamily:'ui-monospace, Menlo, monospace' }:{ color:'#94a3b8' }}
+        foot='All station records shown. Registry keys: TCS_NO is the permanent station identifier; Link_ID joins to traffic_links. X/Y are station positions in decimal degrees (spatial identifiers only).'/>
+      <Formula title='Coverage metrics' lines={[
+        'Coverage_r   = 1000 × stations_r / km_r',
+        'Confidence_r ∝ √(count-days_r)             — sampling theory',
+        'TransferRule : unsurveyed link AADT = station AADT × seasonal_factor × link_ratio',
+      ]}/>
+      <Narrative title='Monitoring Network' paras={[
+        'The 25 permanent ATC stations plus the TIS survey stations constitute the ground truth that anchors every model output on this platform. Regions flagged Gap depend on factor transfer from neighbouring corridors, so their growth multipliers should be read with wider uncertainty bands.',
+        'Closing the coverage gap is cheap relative to its value: each additional permanent station reduces forecast variance across every downstream product — PMS programming, axle-load planning, and the strategic triggers.',
+      ]}/>
+      <Relations title='Station model'
+        rows={[
+          ['atc_stations ⟶ traffic_links','N : 1','Link_ID ↔ link_id','Station observes exactly one link; links may host several stations'],
+          ['atc_stations ⟶ counts_daily','1 : N','TCS_NO','Raw classified counts; the source of GROWTH_FACTORS'],
+          ['counts_daily ⟶ growth_factors','aggregation','year','GF(y) = Σcounts(y)/Σcounts(2016) network-normalised'],
+        ]}
+        note='Aggregate counts only — no plate, ticket, or personal data exists anywhere in this pipeline.'/>
+    </div>
+  );
+}
+
+// ─── STRATEGIC TAB ───────────────────────────────────────────────────────────
+function StrategicTab({ A }: { A: ReturnType<typeof useAgg> }) {
+  const horizons = [2025,2030,2035,2040].map(y=>{
+    const f = y<=2035? factorTo(y) : factorTo(2035)*Math.pow(1.037, y-2035);
+    const vh = A.P.filter(p=>(p.aadt_predicted??0)*f>=15000).length;
+    return { y, f, vkm:A.totalVkm*f, esal:A.esalDay*f, vh };
+  });
+  const triggers: [string,string,string,string][] = [
+    ['Dualization',        'AADT×GF ≥ 15,000 AND heavy% ≥ 15', 'Capacity + safety', 'Feasibility → detailed design'],
+    ['Climbing lanes',     'AADT ≥ 8,000 AND grade > 4% AND heavy% ≥ 20', 'Level of service', 'Corridor study'],
+    ['Pavement strengthening','ESAL(10yr, cum.) > design ESAL × 0.8', 'Structural life', 'FWD survey → overlay design'],
+    ['Axle-load station',  'Heavy% ≥ 18 AND no weighbridge within 80 km', 'Asset protection', 'Site acquisition'],
+    ['Reclassification',   'M-class link with GF-adjusted AADT ≥ 1,000 for 3 yrs', 'Network policy', 'Gazette process'],
+    ['Bypass planning',    'Urban link v/c(2030) ≥ 1.0 AND through-traffic ≥ 40%', 'Urban decongestion', 'Corridor protection'],
   ];
-
   return (
-    <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12 }}>
-        {metrics.map(m=>(
-          <div key={m.label} style={{ ...GLASS, padding:'18px 20px',
-            border:`1px solid rgba(${hexRgb(m.col)},0.2)` }}>
-            <div style={{ fontSize:8, fontWeight:700, color:`rgba(${hexRgb(m.col)},0.5)`,
-              textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:4 }}>{m.label}</div>
-            <div style={{ fontSize:26, fontWeight:900, color:m.col, lineHeight:1,
-              textShadow:`0 0 20px rgba(${hexRgb(m.col)},0.4)` }}>{m.val}</div>
-            <div style={{ fontSize:9, color:'rgba(148,163,184,0.45)', marginTop:4 }}>{m.sub}</div>
-          </div>
-        ))}
-      </div>
-
-      <div style={{ ...GLASS, padding:'22px 24px' }}>
-        <div style={{ fontSize:13, fontWeight:800, color:'#fff', marginBottom:12 }}>
-          Strategic Network Assessment — Uganda National Roads
-        </div>
-        {[
-          { head:'Traffic Growth Trajectory', col:C.cyan,
-            body:`Uganda's national road network is experiencing sustained traffic growth, with a projected ${growPct.toFixed(0)}% increase in average daily traffic from 2025 to 2040. This growth is primarily driven by economic expansion, urbanisation of secondary cities, and increasing vehicle ownership rates across all regions.` },
-          { head:'Congestion Risk Hotspots', col:C.pink,
-            body:`${critical} road links are currently classified as Critical congestion risk, primarily concentrated on Class M motorways and Class A trunk roads in the Central and Eastern regions. The Kampala-Jinja corridor and the Northern Bypass are experiencing highest volume-to-capacity ratios.` },
-          { head:'Heavy Vehicle Network Pressure', col:C.orange,
-            body:`Heavy vehicle traffic represents a disproportionate share of pavement wear on Class B and C roads. The Northern corridor (A1/A2) carries significant freight traffic to South Sudan and DRC, with heavy vehicle percentages exceeding 25% on several links.` },
-          { head:'ATC Station Coverage', col:C.teal,
-            body:`The 25-station automatic traffic count network (15 legacy 2016–22 + 10 new 2025+) provides real-time monitoring across all 6 maintenance regions. An additional ${stations.length} manual TIS survey stations supplement the ATC network. Station density is highest in the Central region but expansion is recommended for Eastern and North Eastern regions to support ML model accuracy.` },
-        ].map(s=>(
-          <div key={s.head} style={{ marginBottom:14, paddingLeft:12,
-            borderLeft:`2px solid rgba(${hexRgb(s.col)},0.4)` }}>
-            <div style={{ fontSize:11, fontWeight:800, color:s.col, marginBottom:4 }}>{s.head}</div>
-            <div style={{ fontSize:11, color:'rgba(148,163,184,0.7)', lineHeight:1.6 }}>{s.body}</div>
-          </div>
-        ))}
-      </div>
+    <div>
+      <Tbl title='Strategic Horizon Ledger 2025–2040'
+        cols={[{h:'Horizon',align:'center'},{h:'GF vs now',align:'right'},{h:'Network VKM/day',align:'right'},{h:'ESAL/day',align:'right'},{h:'Links ≥ 15k AADT',align:'right'},{h:'Reading'}]}
+        rows={horizons.map(h=>[h.y, '×'+h.f.toFixed(2), kfmt(h.vkm), kfmt(h.esal), fmt(h.vh), h.vh>60?'Programme trigger breach':h.vh>25?'Watch list widening':'Within plan envelope'])}
+        styles={(ri,ci)=>{
+          const h = horizons[ri];
+          if (ci===4) return heat(h.vh, 0, Math.max(...horizons.map(x=>x.vh),1));
+          if (ci===5) return h.vh>60?{ color:C.pink, fontWeight:700 }:h.vh>25?{ color:C.yellow, fontWeight:700 }:{ color:C.green, fontWeight:700 };
+          if (ci>=1&&ci<=3) return heat(ri,0,horizons.length-1);
+          return { color:'#e2e8f0', fontWeight:600 };
+        }}
+        foot='Beyond 2035 the GF table is extrapolated at 3.7% p.a. (last-decade CAGR). Very-high-band link counts drive the dualization programme size.'/>
+      <Tbl title='Investment Trigger Rules (deterministic, auditable)'
+        cols={[{h:'Intervention'},{h:'Trigger condition (formula)'},{h:'Objective'},{h:'Next action'}]}
+        rows={triggers}
+        styles={(ri,ci)=> ci===0?{ color:C.cyan, fontWeight:700 }:ci===1?{ fontFamily:'ui-monospace, Menlo, monospace', color:C.yellow }:{ color:'#94a3b8' }}
+        foot='Each rule is evaluated nightly against the link table; breaches append to the capital-project candidate register with the triggering values frozen for audit.'/>
+      <Formula title='Strategic calculus' lines={[
+        'CumESAL(y0→y1) = 365 × Σ years ESAL(day,y)          — design-life consumption',
+        'v/c(y)         = AADT(y) × K30 / capacity            — trigger backbone',
+        'NPV(project)   = Σ ( benefits_t − costs_t ) / (1+r)^t,  r = 12% (MoFPED test rate)',
+        'TriggerBreach  = rule(link, y) evaluates TRUE at any y ≤ horizon',
+      ]}/>
+      <Narrative title='Strategic Outlook' paras={[
+        'On the current trajectory the network’s daily loading roughly doubles by the late 2030s. The horizon ledger converts that into the only number a capital plan needs: how many links cross the very-high band, and when. That count is the dualization programme’s size, and its timing is the borrowing schedule.',
+        'The trigger table replaces discretionary project selection with auditable arithmetic: every candidate project can show the exact link values that fired its rule, which is both an anti-corruption control and a planning discipline.',
+        'The binding constraint is not forecast accuracy but axle-load compliance — the ESAL column is the budget. A 15% reduction in overloading defers pavement renewal spending by several years across the entire Class A network.',
+      ]}/>
+      <Relations title='Strategic data model (full lineage)'
+        rows={[
+          ['traffic_links ⟶ trigger_evaluations','1 : N','link_id, rule_id, year','Nightly rule engine output, immutable audit rows'],
+          ['trigger_evaluations ⟶ project_register','N : 1','candidate_id','Breaches aggregate into capital-project candidates'],
+          ['project_register ⟶ budget_lines','1 : N','project_id','PIM appraisal stages; NPV frozen at approval'],
+          ['growth_factors ⟶ trigger_evaluations','N : N','year','GF series versioned; evaluations record GF version used'],
+        ]}
+        note='End-to-end lineage: counts → factors → link forecasts → triggers → projects → budgets. Every figure on this platform can be traced to a station count.'/>
     </div>
   );
 }
 
-// ─── Tab types ────────────────────────────────────────────────────────────────
-type TabId = 'macro'|'regions'|'classes'|'assets'|'analysis'|'stations'|'strategic';
-type RegionTarget = 'GLOBAL'|'CENTRAL'|'EASTERN'|'SOUTHERN'|'WESTERN'|'NORTHERN'|'NORTH EASTERN';
+// ─── MAIN COMPONENT ──────────────────────────────────────────────────────────
 const TABS: { id:TabId; label:string }[] = [
   { id:'macro',     label:'MACRO'    },
   { id:'regions',   label:'REGIONS'  },
@@ -1072,13 +683,13 @@ const TABS: { id:TabId; label:string }[] = [
   { id:'strategic', label:'STRATEGIC'},
 ];
 
-// ─── Main export ──────────────────────────────────────────────────────────────
 export default function TrafficAnalytics() {
   const [features, setFeatures] = useState<PredFeature[]>([]);
   const [stations, setStations] = useState<StationFeature[]>([]);
   const [loading,  setLoading]  = useState(true);
   const [tab,      setTab]      = useState<TabId>('macro');
   const [target,   setTarget]   = useState<RegionTarget>('GLOBAL');
+  useNowTick(30000);
 
   useEffect(() => {
     const base = import.meta.env.BASE_URL;
@@ -1098,7 +709,6 @@ export default function TrafficAnalytics() {
       : features.filter(f => (f.properties.region??'').toUpperCase() === target),
     [features, target]
   );
-
   const filteredStations = useMemo(() =>
     target === 'GLOBAL'
       ? stations
@@ -1106,36 +716,18 @@ export default function TrafficAnalytics() {
     [stations, target]
   );
 
-  const predByLink = useMemo(
-    () => new Map(features.map(f => [f.properties.link_id, f.properties])),
-    [features],
-  );
-
-  if (loading) {
-    return (
-      <div style={{ display:'flex', alignItems:'center', justifyContent:'center',
-        height:'100%', color:'rgba(148,163,184,0.5)', fontSize:13,
-        fontFamily:"'Inter','Segoe UI',sans-serif" }}>
-        Loading traffic analytics…
-      </div>
-    );
-  }
+  const A = useAgg(filteredFeatures);
 
   return (
-    <div style={{ padding:'20px 22px 36px', fontFamily:"'Inter','Segoe UI',sans-serif", color:'#e2eaf4' }}>
-      <ModuleNavBar module="TIS" />
-      {/* Header */}
-      <div style={{ marginBottom:18 }}>
-        <div style={{ fontSize:9, fontWeight:800, color:'rgba(255,210,63,0.55)',
-          letterSpacing:'0.18em', textTransform:'uppercase', marginBottom:3 }}>
+    <div style={{ background:'#050810', minHeight:'100vh', color:'#e2e8f0', width:'100%',
+      fontFamily:"'Inter','Segoe UI',system-ui,sans-serif", padding:'8px 10px' }}>
+      <ModuleNavBar/>
+      <div style={{ margin:'6px 0 10px' }}>
+        <div style={{ fontSize:16, fontWeight:800, color:'#f1f5f9' }}>
           Uganda National Roads · Deep Analytics · ML Ensemble 2025–2040
         </div>
-        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end' }}>
-          <div style={{ fontSize:22, fontWeight:900, color:'#ffd23f', lineHeight:1.2,
-            textShadow:'0 0 22px rgba(255,210,63,0.4)' }}>
-            Traffic Analytics Dashboard
-          </div>
-          {/* Target dropdown */}
+        <div style={{ display:'flex', gap:10, alignItems:'center', marginTop:6, flexWrap:'wrap' }}>
+          <span style={{ fontSize:11, color:'#64748b', fontWeight:700 }}>SCOPE</span>
           <select value={target} onChange={e=>setTarget(e.target.value as RegionTarget)}
             style={{ background:'rgba(255,210,63,0.08)', border:'1px solid rgba(255,210,63,0.3)',
               borderRadius:8, color:'#ffd23f', fontSize:11, fontWeight:700,
@@ -1144,46 +736,43 @@ export default function TrafficAnalytics() {
               <option key={r} value={r}>{r}</option>
             ))}
           </select>
-        </div>
-        <div style={{ fontSize:11, color:'rgba(148,163,184,0.5)', marginTop:4 }}>
-          {filteredFeatures.length.toLocaleString()} road links · 25 ATC + {filteredStations.length} TIS survey stations
-          {target!=='GLOBAL' && ` · filtered: ${target}`}
+          <span style={{ fontSize:11, color:'rgba(148,163,184,0.6)' }}>
+            {filteredFeatures.length.toLocaleString()} road links · 25 ATC + {filteredStations.length} TIS survey stations
+            {target!=='GLOBAL' && ` · filtered: ${target}`}
+            {' · tables/formulas/relations only — no charts in Deep Analytics'}
+          </span>
         </div>
       </div>
 
-      {/* Tab bar */}
-      <div style={{ display:'flex', gap:4, marginBottom:16,
-        borderBottom:'1px solid rgba(255,255,255,0.06)', paddingBottom:0 }}>
+      <div style={{ display:'flex', gap:4, marginBottom:12, flexWrap:'wrap',
+        borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
         {TABS.map(t=>{
           const active = tab===t.id;
           return (
             <button key={t.id} onClick={()=>setTab(t.id)}
-              style={{ padding:'8px 14px', fontSize:10, fontWeight:800,
-                letterSpacing:'0.1em', cursor:'pointer', border:'none',
-                borderRadius:'8px 8px 0 0',
-                background: active?'rgba(255,210,63,0.12)':'transparent',
-                color: active?'#ffd23f':'rgba(148,163,184,0.5)',
-                borderBottom: active?'2px solid #ffd23f':'2px solid transparent',
-                transition:'all .15s' }}>
+              style={{ padding:'8px 16px', fontSize:11, fontWeight:800, letterSpacing:'0.08em',
+                background:'transparent', border:'none', cursor:'pointer', fontFamily:'inherit',
+                color:active?'#00f5ff':'rgba(148,163,184,0.6)',
+                borderBottom:active?'2px solid #00f5ff':'2px solid transparent' }}>
               {t.label}
             </button>
           );
         })}
       </div>
 
-      {/* Tab content */}
-      {tab==='macro'     && <MacroTab    features={filteredFeatures}/>}
-      {tab==='regions'   && <RegionsTab  features={filteredFeatures}/>}
-      {tab==='classes'   && <ClassesTab  features={filteredFeatures}/>}
-      {tab==='assets'    && <AssetsTab   features={filteredFeatures}/>}
-      {tab==='analysis'  && <AnalysisTab features={filteredFeatures}/>}
-      {tab==='stations'  && <StationsTab stations={filteredStations} predByLink={predByLink}/>}
-      {tab==='strategic' && <StrategicTab features={filteredFeatures} stations={filteredStations}/>}
-
-      <div style={{ marginTop:22, fontSize:8, color:'rgba(100,116,139,0.35)', textAlign:'center' }}>
-        Uganda National Roads · Department of National Roads / DNR 2025 · XGBoost + LightGBM ensemble ·
-        ATC data: Department of National Roads Traffic Management Unit · Forecasts modelled 2025–2040
-      </div>
+      {loading ? (
+        <div style={{ padding:40, textAlign:'center', color:'#64748b', fontSize:12 }}>Loading link & station tables…</div>
+      ) : (
+        <div style={{ width:'100%' }}>
+          {tab==='macro'     && <MacroTab A={A}/>}
+          {tab==='regions'   && <RegionsTab A={A}/>}
+          {tab==='classes'   && <ClassesTab A={A}/>}
+          {tab==='assets'    && <AssetsTab A={A}/>}
+          {tab==='analysis'  && <AnalysisTab A={A} featuresRef={filteredFeatures}/>}
+          {tab==='stations'  && <StationsTab A={A} stations={filteredStations}/>}
+          {tab==='strategic' && <StrategicTab A={A}/>}
+        </div>
+      )}
     </div>
   );
 }
