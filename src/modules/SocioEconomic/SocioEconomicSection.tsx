@@ -1,881 +1,1076 @@
-import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, CircleMarker, Popup, useMap, GeoJSON } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, Legend, AreaChart, Area
-} from 'recharts';
+import React, { useState, useEffect, useCallback } from 'react';
+import { MapContainer, TileLayer, CircleMarker, Popup, GeoJSON, useMap } from 'react-leaflet';
+import { AreaChart, BarChart, PieChart, Pie, Cell, Bar, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
-// ── Constants ──────────────────────────────────────────────────
+// ─── CONSTANTS ────────────────────────────────────────────────────────────────
 const TILES = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-const ATTR = '&copy; OpenStreetMap contributors &copy; <a href="https://carto.com">CARTO</a>';
-const UGA: [number, number] = [1.3733, 32.2903];
+const ADM1_URL = 'https://raw.githubusercontent.com/wmgeolab/geoBoundaries/main/releaseData/gbOpen/UGA/ADM1/geoBoundaries-UGA-ADM1.geojson';
+const OVP_MIRRORS = ['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter'];
+const UGA: [number,number] = [1.3733,32.2903];
 const ZOOM = 7;
-const CC = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899','#84cc16'];
+const BBOX = '[bbox:-1.5,29.5,4.3,35.1]';
+const ATTRIBUTION = '© CARTO © OSM contributors';
+const PIE_C = ['#3b82f6','#22c55e','#f97316','#a855f7','#eab308','#06b6d4','#ef4444','#84cc16'];
 
-// ── Types ──────────────────────────────────────────────────────
-interface Pt { name:string; lat:number; lng:number; type?:string; value?:string; color?:string; detail?:string; size?:number; }
-interface Rgn { name:string; lat:number; lng:number; pop:number; hdi:number; gdp:number; area:number; color:string; }
+// ─── STYLES ───────────────────────────────────────────────────────────────────
+const S: Record<string,React.CSSProperties> = {
+  card: { background:'#1e293b', borderRadius:10, padding:'14px 16px', marginBottom:16 },
+  kpiWrap: { display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(165px,1fr))', gap:12, marginBottom:20 },
+  mapWrap: { borderRadius:8, overflow:'hidden', height:400 },
+};
 
-// ── Mineral Deposits (25 — USGS & DGSM Uganda data) ────────────
-const MINERALS: Pt[] = [
-  {name:'Kilembe Copper Mine',lat:0.2033,lng:30.0733,type:'Copper/Cobalt',value:'4.5 MT ore reserves',color:'#f59e0b',size:12},
-  {name:'Tororo Phosphate',lat:0.6921,lng:34.1814,type:'Phosphate Rock',value:'235 MT reserves',color:'#22c55e',size:14},
-  {name:'Hima Limestone Quarry',lat:0.3100,lng:30.1400,type:'Limestone/Cement',value:'50 MT active',color:'#94a3b8',size:10},
-  {name:'Muko Iron Ore',lat:-1.1500,lng:29.7200,type:'Iron Ore',value:'200 MT reserves',color:'#b45309',size:12},
-  {name:'Lake Katwe Salt/Potash',lat:0.0000,lng:29.9000,type:'Salt/Potassium',value:'3.5 MT reserves',color:'#e2e8f0',size:10},
-  {name:'Busia Gold Fields',lat:0.4594,lng:34.0908,type:'Gold',value:'1.2 Moz estimated',color:'#fbbf24',size:12},
-  {name:'Mubende Gold Project',lat:0.5533,lng:31.3667,type:'Gold',value:'800 koz estimated',color:'#fbbf24',size:10},
-  {name:'Buhweju Gold',lat:-0.5500,lng:30.3000,type:'Gold',value:'600 koz estimated',color:'#fbbf24',size:10},
-  {name:'Namayingo Gold',lat:-0.1667,lng:33.9167,type:'Gold',value:'Exploration stage',color:'#fbbf24',size:8},
-  {name:'Kyenjojo Gold',lat:0.6333,lng:30.6333,type:'Gold',value:'Exploration stage',color:'#fbbf24',size:8},
-  {name:'Kasanda Cobalt/Nickel',lat:0.5167,lng:31.5000,type:'Cobalt/Nickel',value:'Active exploration',color:'#60a5fa',size:9},
-  {name:'Kabale Tungsten/Wolfram',lat:-1.2500,lng:30.0000,type:'Tungsten',value:'Historical production',color:'#a78bfa',size:9},
-  {name:'Ntungamo Coltan',lat:-0.8833,lng:30.2667,type:'Coltan/Tantalum',value:'Artisanal mining',color:'#f43f5e',size:8},
-  {name:'Namekara Vermiculite',lat:1.0333,lng:34.2333,type:'Vermiculite',value:'Active quarry',color:'#34d399',size:9},
-  {name:'Bugiri Cassiterite (Tin)',lat:0.5667,lng:33.7333,type:'Tin Ore',value:'Artisanal mining',color:'#fb923c',size:8},
-  {name:'Sukulu Phosphate/Iron',lat:0.7800,lng:34.1300,type:'Phosphate/Iron',value:'Processing planned',color:'#22c55e',size:10},
-  {name:'Moroto Marble',lat:2.5338,lng:34.6544,type:'Marble/Limestone',value:'Active quarry',color:'#94a3b8',size:9},
-  {name:'Butebo Iron Ore',lat:1.2000,lng:33.9333,type:'Iron Ore',value:'Exploration stage',color:'#b45309',size:8},
-  {name:'Soroti Kaolin Clay',lat:1.7167,lng:33.6167,type:'Kaolin Clay',value:'Industrial use',color:'#e2e8f0',size:8},
-  {name:'Kasese Cobalt',lat:0.1833,lng:30.0833,type:'Cobalt',value:'Processing ongoing',color:'#60a5fa',size:9},
-  {name:'Lira Graphite',lat:2.2500,lng:32.9000,type:'Graphite',value:'Exploration stage',color:'#475569',size:8},
-  {name:'Kapchorwa Nickel',lat:1.3500,lng:34.4500,type:'Nickel',value:'Exploration',color:'#60a5fa',size:8},
-  {name:'Amuria Silica Sand',lat:2.0333,lng:33.6500,type:'Silica Sand',value:'Construction use',color:'#fde68a',size:8},
-  {name:'Kabale Cassiterite',lat:-1.3000,lng:29.9000,type:'Tin/Cassiterite',value:'Small-scale',color:'#fb923c',size:7},
-  {name:'Moyo Feldspar',lat:3.6500,lng:31.7200,type:'Feldspar',value:'Ceramics industry',color:'#818cf8',size:7},
+// ─── STATIC DATASETS ──────────────────────────────────────────────────────────
+const CITIES = [
+  {n:'Kampala',lat:0.3476,lng:32.5825,pop:3600000,reg:'Central',type:'Capital'},
+  {n:'Gulu',lat:2.7809,lng:32.2994,pop:200000,reg:'Northern',type:'City'},
+  {n:'Lira',lat:2.2499,lng:32.9003,pop:150000,reg:'Northern',type:'City'},
+  {n:'Mbarara',lat:-0.6072,lng:30.6545,pop:200000,reg:'Western',type:'City'},
+  {n:'Jinja',lat:0.4478,lng:33.2026,pop:120000,reg:'Eastern',type:'City'},
+  {n:'Entebbe',lat:0.0611,lng:32.4600,pop:76000,reg:'Central',type:'City'},
+  {n:'Masaka',lat:-0.3462,lng:31.7364,pop:88000,reg:'Central',type:'City'},
+  {n:'Kasese',lat:0.1825,lng:30.0827,pop:75000,reg:'Western',type:'Town'},
+  {n:'Arua',lat:3.0200,lng:30.9109,pop:95000,reg:'West Nile',type:'City'},
+  {n:'Fort Portal',lat:0.6710,lng:30.2750,pop:55000,reg:'Western',type:'City'},
+  {n:'Mbale',lat:1.0796,lng:34.1753,pop:100000,reg:'Eastern',type:'City'},
+  {n:'Soroti',lat:1.7148,lng:33.6108,pop:65000,reg:'Eastern',type:'City'},
+  {n:'Kabale',lat:-1.2508,lng:29.9891,pop:48000,reg:'Western',type:'Town'},
+  {n:'Hoima',lat:1.4360,lng:31.3538,pop:55000,reg:'Western',type:'City'},
+  {n:'Tororo',lat:0.6921,lng:34.1813,pop:52000,reg:'Eastern',type:'Town'},
 ];
 
-// ── Hydropower Dams ────────────────────────────────────────────
-const DAMS: Pt[] = [
-  {name:'Karuma Hydropower',lat:2.2486,lng:32.2683,type:'Hydropower',value:'600 MW',detail:"Uganda's largest; 4,373 GWh/yr, 2024",color:'#06b6d4',size:16},
-  {name:'Bujagali Hydropower',lat:0.4983,lng:33.1375,type:'Hydropower',value:'250 MW',detail:'1,100 GWh/yr; commissioned 2012',color:'#06b6d4',size:13},
-  {name:'Isimba Hydropower',lat:0.7717,lng:33.0422,type:'Hydropower',value:'183.2 MW',detail:'1,039 GWh/yr; commissioned 2019',color:'#06b6d4',size:12},
-  {name:'Nalubale — Owen Falls I',lat:0.4503,lng:33.1928,type:'Hydropower',value:'180 MW',detail:"Uganda's first dam, 1954",color:'#0891b2',size:12},
-  {name:'Kiira — Owen Falls II',lat:0.4636,lng:33.1756,type:'Hydropower',value:'200 MW',detail:'Expansion of Owen Falls, 2003',color:'#0891b2',size:12},
-  {name:'Muzizi Hydropower',lat:0.9667,lng:30.5333,type:'Hydropower',value:'44 MW',detail:'Commissioned 2024, Kyenjojo',color:'#06b6d4',size:10},
-  {name:'Bugoye Hydropower',lat:0.5167,lng:30.1500,type:'Hydropower',value:'13 MW',detail:'Mubuku River, Kasese',color:'#0891b2',size:8},
-  {name:'Nyamwamba Hydro',lat:0.2833,lng:30.0833,type:'Hydropower',value:'9.2 MW',detail:'Kasese sub-region',color:'#0891b2',size:7},
-  {name:'Kikagati Hydropower',lat:-0.9833,lng:29.9833,type:'Hydropower',value:'16 MW',detail:'Kagera River, Isingiro',color:'#06b6d4',size:9},
-  {name:'Muvumbe Hydropower',lat:-0.9000,lng:30.0333,type:'Hydropower',value:'6.5 MW',detail:'SW Uganda',color:'#0891b2',size:7},
-  {name:'Ishasha Hydropower',lat:-0.5500,lng:29.7667,type:'Hydropower',value:'6.5 MW',detail:'Kigezi, Rukungiri',color:'#0891b2',size:7},
-  {name:'Nshungyezi Hydropower',lat:0.0833,lng:30.1167,type:'Hydropower',value:'2.5 MW',detail:'Kasese area',color:'#0891b2',size:6},
+const MINERALS = [
+  {n:'Kilembe Mine',lat:0.2100,lng:30.0100,type:'Copper/Cobalt',status:'Explored',dist:'Kasese',res:'4.5Mt ore',grade:'1.8% Cu',val_usd_m:320},
+  {n:'Muko Iron Ore',lat:-1.0800,lng:29.7000,type:'Iron Ore',status:'Explored',dist:'Kabale',res:'162Mt',grade:'42% Fe',val_usd_m:2100},
+  {n:'Sukulu Phosphates',lat:0.6000,lng:34.0800,type:'Phosphate',status:'Active',dist:'Tororo',res:'230Mt',grade:'12% P2O5',val_usd_m:890},
+  {n:'Busia Gold',lat:0.4600,lng:34.0900,type:'Gold',status:'Active',dist:'Busia',res:'1.2Mt ore',grade:'3.5g/t Au',val_usd_m:180},
+  {n:'Hima Limestone',lat:0.3300,lng:30.2200,type:'Limestone',status:'Active',dist:'Kasese',res:'500Mt',grade:'CaCO3 90%',val_usd_m:95},
+  {n:'Lake Katwe Salt',lat:-0.0600,lng:29.9000,type:'Salt/Evaporites',status:'Active',dist:'Kasese',res:'Perennial',grade:'NaCl 85%',val_usd_m:12},
+  {n:'Moroto Marble',lat:2.5400,lng:34.6700,type:'Marble',status:'Explored',dist:'Moroto',res:'80Mt',grade:'High purity',val_usd_m:55},
+  {n:'Tororo Rock Phosphate',lat:0.6800,lng:34.1700,type:'Phosphate',status:'Active',dist:'Tororo',res:'280Mt',grade:'14% P2O5',val_usd_m:1100},
+  {n:'Kitgum Vermiculite',lat:3.2700,lng:32.8800,type:'Vermiculite',status:'Explored',dist:'Kitgum',res:'2.5Mt',grade:'High grade',val_usd_m:35},
+  {n:'Mubende Gold',lat:0.5700,lng:31.3700,type:'Gold',status:'Active',dist:'Mubende',res:'0.8Mt ore',grade:'2.8g/t Au',val_usd_m:120},
+  {n:'Kigezi Wolfram',lat:-1.1000,lng:29.8500,type:'Tungsten',status:'Explored',dist:'Kabale',res:'0.5Mt',grade:'0.3% WO3',val_usd_m:28},
+  {n:'Rwimi Beryllium',lat:0.4300,lng:30.4200,type:'Beryllium',status:'Explored',dist:'Kabarole',res:'Artisanal',grade:'Moderate',val_usd_m:15},
+  {n:'Tiira Nickel',lat:0.5200,lng:34.1000,type:'Nickel',status:'Explored',dist:'Tororo',res:'4Mt ore',grade:'0.6% Ni',val_usd_m:85},
+  {n:'Kabale Tin',lat:-1.2200,lng:29.9700,type:'Tin/Tantalum',status:'Active',dist:'Kabale',res:'Artisanal',grade:'Mixed',val_usd_m:22},
+  {n:'Luwero Cobalt',lat:0.8300,lng:32.5000,type:'Cobalt',status:'Explored',dist:'Luwero',res:'2Mt ore',grade:'0.3% Co',val_usd_m:65},
+  {n:'Agago Rare Earths',lat:3.0000,lng:33.1000,type:'REE',status:'Explored',dist:'Agago',res:'1.8Mt ore',grade:'1.2% TREO',val_usd_m:210},
+  {n:'Buhweju Diatomite',lat:-0.5000,lng:30.2200,type:'Diatomite',status:'Explored',dist:'Buhweju',res:'15Mt',grade:'High silica',val_usd_m:18},
+  {n:'Namanve Clay',lat:0.3200,lng:32.7000,type:'Clay/Ceramics',status:'Active',dist:'Mukono',res:'Abundant',grade:'Ceramic grade',val_usd_m:8},
+  {n:'Kibuku Graphite',lat:1.0300,lng:33.6500,type:'Graphite',status:'Explored',dist:'Kibuku',res:'3Mt ore',grade:'8% Cg',val_usd_m:42},
+  {n:'Karamoja Gemstones',lat:3.5000,lng:34.5000,type:'Gemstones',status:'Active',dist:'Moroto',res:'Artisanal',grade:'Mixed',val_usd_m:30},
 ];
 
-// ── Oil & Gas Fields (Albertine Graben) ────────────────────────
-const OIL_FIELDS: Pt[] = [
-  {name:'Tilenga Oil Field',lat:2.1000,lng:31.5000,type:'Oil Field',value:'836 Mbbl reserves',detail:'TotalEnergies; 31 well pads; first oil 2026',color:'#f97316',size:16},
-  {name:'Kingfisher Oil Field',lat:1.1000,lng:31.2000,type:'Oil Field',value:'214 Mbbl reserves',detail:'CNOOC; 31 wells; first oil 2026',color:'#f97316',size:14},
-  {name:'Jobi-Rii Block',lat:1.9000,lng:31.4000,type:'Oil Block',value:'Exploration',detail:'Albertine Graben, EA-1B',color:'#fb923c',size:10},
-  {name:'Mputa/Nzizi Field',lat:1.8500,lng:31.5500,type:'Oil Field',value:'Development pending',detail:'Albertine Graben',color:'#fb923c',size:10},
-  {name:'Lyec Block',lat:2.4000,lng:31.6000,type:'Oil Block',value:'Exploration',detail:'Northern Albertine Graben',color:'#fdba74',size:9},
-  {name:'Waraga Field',lat:1.9500,lng:31.3500,type:'Oil Field',value:'Exploration',detail:'Albertine Graben',color:'#fdba74',size:9},
-  {name:'Ngege Block',lat:2.0500,lng:31.3000,type:'Oil Block',value:'Exploration',detail:'Albertine Graben',color:'#fdba74',size:8},
-  {name:'Kasemene Field',lat:2.3000,lng:31.7000,type:'Oil Field',value:'Exploration',detail:'Near Murchison Falls',color:'#fdba74',size:8},
+const OIL_BLOCKS = [
+  {n:'EA1 Kingfisher',lat:1.1000,lng:31.1000,op:'CNOOC Uganda',status:'Development',field:'Kingfisher',res:'600M bbl recoverable',first_oil:'2025'},
+  {n:'EA2 Tilenga',lat:2.1000,lng:31.5000,op:'TotalEnergies EP Uganda',status:'Development',field:'Tilenga (Jobi-Rii + 5 fields)',res:'1.2B bbl',first_oil:'2026'},
+  {n:'EA1A Jobi-Rii',lat:1.5000,lng:31.2000,op:'TotalEnergies EP Uganda',status:'Development',field:'Jobi-Rii',res:'200M bbl',first_oil:'2026'},
+  {n:'EA3A Mputa',lat:1.8000,lng:31.0000,op:'TotalEnergies EP Uganda',status:'Appraisal',field:'Mputa-Waraga',res:'100M bbl',first_oil:'2027'},
+  {n:'EA3B Avivi',lat:2.3000,lng:31.7000,op:'TotalEnergies EP Uganda',status:'Exploration',field:'Avivi',res:'TBD',first_oil:'2028+'},
+  {n:'EACOP Terminal',lat:0.3200,lng:32.6000,op:'EACOP Ltd Consortium',status:'Under Construction',field:'Pipeline to Tanga',res:'N/A — export corridor',first_oil:'2026'},
 ];
 
-// ── Protected Areas ────────────────────────────────────────────
-const PROTECTED: Pt[] = [
-  {name:'Murchison Falls NP',lat:2.2833,lng:31.7667,type:'National Park',value:'3,840 km²',detail:'Largest NP; lions, elephants, hippos, Nile',color:'#16a34a',size:18},
-  {name:'Queen Elizabeth NP',lat:-0.1000,lng:30.0000,type:'National Park',value:'1,978 km²',detail:'Tree-climbing lions, chimpanzees, hippos',color:'#16a34a',size:16},
-  {name:'Kidepo Valley NP',lat:3.8667,lng:33.7500,type:'National Park',value:'1,442 km²',detail:'Cheetahs, lions; most biodiverse NP',color:'#16a34a',size:15},
-  {name:'Kibale NP',lat:0.5167,lng:30.3667,type:'National Park',value:'766 km²',detail:'Highest chimp density in Africa',color:'#16a34a',size:14},
-  {name:'Bwindi Impenetrable NP',lat:-1.0333,lng:29.6833,type:'National Park',value:'331 km²',detail:'400+ mountain gorillas; UNESCO World Heritage Site',color:'#16a34a',size:14},
-  {name:'Rwenzori Mountains NP',lat:0.3167,lng:29.9667,type:'National Park',value:'998 km²',detail:'Margherita Peak 5,109 m; UNESCO WHS',color:'#166534',size:14},
-  {name:'Mount Elgon NP',lat:1.1333,lng:34.3000,type:'National Park',value:'1,279 km²',detail:'Ancient caldera; hot springs',color:'#16a34a',size:13},
-  {name:'Lake Mburo NP',lat:-0.6167,lng:30.9667,type:'National Park',value:'370 km²',detail:'Zebras, impalas, hippos; closest to Kampala',color:'#16a34a',size:12},
-  {name:'Semuliki NP',lat:0.8500,lng:30.2667,type:'National Park',value:'220 km²',detail:'Congo basin species; hot springs',color:'#16a34a',size:11},
-  {name:'Mgahinga Gorilla NP',lat:-1.3167,lng:29.6333,type:'National Park',value:'33.7 km²',detail:'Gorillas, golden monkeys, 3 volcanoes',color:'#16a34a',size:10},
-  {name:'Pian Upe WR',lat:2.0500,lng:34.2000,type:'Wildlife Reserve',value:'2,043 km²',detail:'Cheetahs, ostriches, eland; Karamoja',color:'#4ade80',size:13},
-  {name:'Matheniko WR',lat:2.9167,lng:34.5000,type:'Wildlife Reserve',value:'1,520 km²',detail:'Semi-arid savanna; Karamoja',color:'#4ade80',size:12},
-  {name:'Bugungu WR',lat:2.2000,lng:31.8000,type:'Wildlife Reserve',value:'473 km²',detail:'Adjacent to Murchison Falls',color:'#4ade80',size:11},
-  {name:'Toro-Semuliki WR',lat:0.7000,lng:30.2000,type:'Wildlife Reserve',value:'548 km²',detail:'Near Rwenzori range',color:'#4ade80',size:11},
-  {name:'Katonga WR',lat:0.0000,lng:31.0000,type:'Wildlife Reserve',value:'208 km²',detail:'Sitatunga antelope habitat',color:'#4ade80',size:10},
-  {name:'Kigezi WR',lat:-0.5000,lng:29.8333,type:'Wildlife Reserve',value:'265 km²',detail:'SW Uganda highlands',color:'#4ade80',size:10},
-  {name:'Kyambura GR',lat:-0.1500,lng:30.0833,type:'Game Reserve',value:'155 km²',detail:'The "Valley of Apes"; chimpanzees',color:'#4ade80',size:10},
+const POWER_PLANTS = [
+  {n:'Karuma HPP',lat:2.2300,lng:32.2600,cap_mw:600,type:'Hydro',status:'Commissioning',river:'Victoria Nile',yr:2024},
+  {n:'Bujagali HPP',lat:0.4500,lng:33.1500,cap_mw:250,type:'Hydro',status:'Operational',river:'Victoria Nile',yr:2012},
+  {n:'Nalubaale HPP',lat:0.4800,lng:33.1900,cap_mw:180,type:'Hydro',status:'Operational',river:'Victoria Nile',yr:1954},
+  {n:'Kiira HPP',lat:0.4700,lng:33.2000,cap_mw:200,type:'Hydro',status:'Operational',river:'Victoria Nile',yr:2003},
+  {n:'Isimba HPP',lat:0.5600,lng:33.0000,cap_mw:183,type:'Hydro',status:'Operational',river:'Victoria Nile',yr:2019},
+  {n:'Muzizi HPP',lat:0.8600,lng:30.9500,cap_mw:44,type:'Hydro',status:'Under Dev',river:'Muzizi',yr:2025},
+  {n:'Kikagati HPP',lat:-1.0200,lng:30.6700,cap_mw:16,type:'Hydro',status:'Operational',river:'Kagera',yr:2020},
+  {n:'Nyagak HPP',lat:3.0500,lng:30.8200,cap_mw:3.5,type:'Hydro',status:'Operational',river:'Nyagak',yr:2012},
+  {n:'Agago HPP',lat:3.1000,lng:33.3000,cap_mw:84,type:'Hydro',status:'Under Dev',river:'Agago',yr:2026},
+  {n:'Kiba HPP',lat:0.6500,lng:30.5000,cap_mw:380,type:'Hydro',status:'Planned',river:'Muzizi',yr:2028},
+  {n:'Kabale Solar Farm',lat:-1.2600,lng:30.0000,cap_mw:10,type:'Solar',status:'Operational',river:'N/A',yr:2021},
+  {n:'Soroti Solar Farm',lat:1.7100,lng:33.6200,cap_mw:10,type:'Solar',status:'Operational',river:'N/A',yr:2021},
+  {n:'Tororo Thermal',lat:0.6900,lng:34.1800,cap_mw:50,type:'Thermal',status:'Operational',river:'N/A',yr:2007},
+  {n:'Namanve Thermal',lat:0.3100,lng:32.7200,cap_mw:50,type:'Thermal',status:'Standby',river:'N/A',yr:2009},
+  {n:'Ayago HPP',lat:2.5500,lng:31.9000,cap_mw:840,type:'Hydro',status:'Planned',river:'Victoria Nile',yr:2030},
 ];
 
-// ── Agricultural Zones ─────────────────────────────────────────
-const AGRI: Pt[] = [
-  {name:'Arabica Coffee — Kabale',lat:-1.25,lng:30.0,type:'Coffee Arabica',value:'15,000 MT/yr',color:'#92400e',size:12},
-  {name:'Arabica Coffee — Kisoro',lat:-1.33,lng:29.68,type:'Coffee Arabica',value:'8,000 MT/yr',color:'#92400e',size:10},
-  {name:'Arabica Coffee — Kapchorwa',lat:1.35,lng:34.45,type:'Coffee Arabica',value:'12,000 MT/yr',color:'#92400e',size:11},
-  {name:'Arabica Coffee — Mbale',lat:1.07,lng:34.18,type:'Coffee Arabica',value:'10,000 MT/yr',color:'#92400e',size:10},
-  {name:'Robusta Coffee — Mukono',lat:0.35,lng:32.75,type:'Coffee Robusta',value:'25,000 MT/yr',color:'#d97706',size:13},
-  {name:'Robusta Coffee — Masaka',lat:-0.33,lng:31.73,type:'Coffee Robusta',value:'20,000 MT/yr',color:'#d97706',size:12},
-  {name:'Robusta Coffee — Luwero',lat:0.83,lng:32.47,type:'Coffee Robusta',value:'18,000 MT/yr',color:'#d97706',size:11},
-  {name:'Tea — Ntungamo',lat:-0.88,lng:30.27,type:'Tea',value:'15,000 MT/yr',color:'#166534',size:11},
-  {name:'Tea — Kyenjojo',lat:0.63,lng:30.63,type:'Tea',value:'12,000 MT/yr',color:'#166534',size:10},
-  {name:'Tea — Kapchorwa',lat:1.35,lng:34.45,type:'Tea',value:'5,000 MT/yr',color:'#166534',size:9},
-  {name:'Kakira Sugar Works',lat:0.53,lng:33.33,type:'Sugar Cane',value:'230,000 MT/yr',color:'#fbbf24',size:14},
-  {name:'Lugazi Sugar Estates',lat:0.37,lng:32.90,type:'Sugar Cane',value:'60,000 MT/yr',color:'#fbbf24',size:11},
-  {name:'Kinyara Sugar — Masindi',lat:1.68,lng:31.72,type:'Sugar Cane',value:'90,000 MT/yr',color:'#fbbf24',size:12},
-  {name:'Cotton Belt — Soroti',lat:1.72,lng:33.62,type:'Cotton',value:'30,000 MT/yr',color:'#e2e8f0',size:11},
-  {name:'Cotton Belt — Lira',lat:2.25,lng:32.90,type:'Cotton',value:'25,000 MT/yr',color:'#e2e8f0',size:10},
-  {name:'Cotton Belt — Gulu',lat:2.78,lng:32.30,type:'Cotton',value:'20,000 MT/yr',color:'#e2e8f0',size:10},
-  {name:'Matooke Belt — Masaka',lat:-0.33,lng:31.73,type:'Bananas/Matooke',value:'800,000 MT/yr',color:'#84cc16',size:13},
-  {name:'Matooke Belt — Mbarara',lat:-0.62,lng:30.65,type:'Bananas/Matooke',value:'600,000 MT/yr',color:'#84cc16',size:12},
-  {name:'Fishing — Entebbe/L.Victoria',lat:0.06,lng:32.46,type:'Fishing',value:'200,000 MT/yr',color:'#38bdf8',size:12},
-  {name:'Fishing — Jinja/L.Victoria',lat:0.43,lng:33.20,type:'Fishing',value:'80,000 MT/yr',color:'#38bdf8',size:10},
-  {name:'Fishing — L. Albert (Buliisa)',lat:1.82,lng:31.48,type:'Fishing',value:'50,000 MT/yr',color:'#38bdf8',size:10},
-  {name:'Vanilla — Mukono/Iganga',lat:0.35,lng:32.75,type:'Vanilla',value:'2,000 MT/yr',color:'#c4b5fd',size:9},
-  {name:'Tobacco — Arua (West Nile)',lat:3.02,lng:30.91,type:'Tobacco',value:'8,000 MT/yr',color:'#a8a29e',size:9},
+const PROTECTED_AREAS = [
+  {n:'Murchison Falls NP',lat:2.2700,lng:31.6500,area_km2:3840,type:'National Park',animals:'Elephant, Lion, Buffalo, Nile Croc, Shoebill',established:1952,whs:false},
+  {n:'Queen Elizabeth NP',lat:-0.1000,lng:30.0000,area_km2:1978,type:'National Park',animals:'Hippo, Elephant, Tree-climbing Lion, Chimpanzee',established:1954,whs:false},
+  {n:'Kibale NP',lat:0.4900,lng:30.3500,area_km2:766,type:'National Park',animals:'Chimpanzee (1,500+), Red Colobus, Forest Elephant',established:1993,whs:false},
+  {n:'Bwindi Impenetrable NP',lat:-1.0500,lng:29.7000,area_km2:321,type:'National Park',animals:'Mountain Gorilla (459+), L\'Hoest Monkey',established:1991,whs:true},
+  {n:'Kidepo Valley NP',lat:3.8200,lng:33.8600,area_km2:1442,type:'National Park',animals:'Lion, Cheetah, Ostrich, Eland, Rotschild Giraffe',established:1962,whs:false},
+  {n:'Lake Mburo NP',lat:-0.6300,lng:30.9500,area_km2:370,type:'National Park',animals:'Zebra, Hippo, Impala, Eland, Waterbuck',established:1983,whs:false},
+  {n:'Mt Rwenzori NP',lat:0.3700,lng:29.9200,area_km2:996,type:'National Park',animals:'Chimpanzee, L\'Hoest, Forest Elephant, Afropavo',established:1991,whs:true},
+  {n:'Mgahinga Gorilla NP',lat:-1.3700,lng:29.6400,area_km2:33.7,type:'National Park',animals:'Mountain Gorilla, Golden Monkey',established:1991,whs:false},
+  {n:'Semuliki NP',lat:0.9000,lng:30.1500,area_km2:220,type:'National Park',animals:'Chimpanzee, Pygmy Hippo, Forest species',established:1993,whs:false},
+  {n:'Mt Elgon NP',lat:1.1200,lng:34.5500,area_km2:1279,type:'National Park',animals:'Elephant, Buffalo, Forest Hog, Sitatunga',established:1993,whs:false},
+  {n:'Ajai Wildlife Reserve',lat:3.1600,lng:31.8000,area_km2:166,type:'Game Reserve',animals:'White Rhino (reintroduced), Hippo, Buffalo',established:1956,whs:false},
+  {n:'Katonga Wildlife Reserve',lat:0.1500,lng:31.4800,area_km2:207,type:'Game Reserve',animals:'Sitatunga, Uganda Kob, Oribi',established:1964,whs:false},
 ];
 
-// ── Industrial Parks ───────────────────────────────────────────
-const INDUSTRY: Pt[] = [
-  {name:'Namanve Industrial Park',lat:0.3167,lng:32.7167,type:'Industrial Park',value:'2,200 Ha',detail:'Largest; 100+ firms, Wakiso',color:'#6366f1',size:14},
-  {name:'Luzira Industrial Area',lat:0.2667,lng:32.6833,type:'Industrial Area',value:'Mixed industries',detail:'Beer, beverages, plastics, Kampala',color:'#6366f1',size:11},
-  {name:'Jinja Industrial Area',lat:0.4317,lng:33.2028,type:'Industrial Area',value:'Steel/Sugar/Textiles',detail:'Nile Special; SCOUL; Kakira',color:'#6366f1',size:12},
-  {name:'Mbale Industrial Park',lat:1.0667,lng:34.1833,type:'Industrial Park',value:'Eastern Uganda hub',detail:'Food processing, textiles',color:'#818cf8',size:11},
-  {name:'Arua Industrial Park',lat:3.0167,lng:30.9000,type:'Industrial Park',value:'West Nile hub',detail:'Agriculture processing, trade',color:'#818cf8',size:10},
-  {name:'Mbarara Industrial Park',lat:-0.6167,lng:30.6500,type:'Industrial Park',value:'SW Uganda hub',detail:'Dairy, beverages, plastics',color:'#818cf8',size:10},
-  {name:'Fort Portal Industrial Zone',lat:0.6500,lng:30.2833,type:'Industrial Zone',value:'Tooro Kingdom',detail:'Tea processing, tourism services',color:'#818cf8',size:9},
-  {name:'Kasese Industrial Area',lat:0.2167,lng:30.0833,type:'Industrial Area',value:'Mineral processing',detail:'Cobalt, cement, fish processing',color:'#818cf8',size:10},
-  {name:'Bweyogerere Industrial',lat:0.3500,lng:32.6833,type:'Industrial Area',value:'Wakiso District',detail:'Roofing sheets, textiles',color:'#818cf8',size:10},
-  {name:'Iganga Economic Zone',lat:0.6000,lng:33.4833,type:'Economic Zone',value:'Eastern Uganda',detail:'Agriculture processing hub',color:'#818cf8',size:9},
+const DISTRICTS = [
+  {n:'Kampala',reg:'Central',pop:3600000,area_km2:189,gdp_m:12400,poverty:8,literacy:90,lat:0.3476,lng:32.5825},
+  {n:'Wakiso',reg:'Central',pop:2200000,area_km2:2807,gdp_m:3200,poverty:12,literacy:87,lat:0.4040,lng:32.4600},
+  {n:'Mukono',reg:'Central',pop:950000,area_km2:4958,gdp_m:850,poverty:21,literacy:82,lat:0.3542,lng:32.7558},
+  {n:'Mbarara',reg:'Western',pop:700000,area_km2:1846,gdp_m:680,poverty:24,literacy:78,lat:-0.6072,lng:30.6545},
+  {n:'Gulu',reg:'Northern',pop:580000,area_km2:3446,gdp_m:420,poverty:41,literacy:70,lat:2.7809,lng:32.2994},
+  {n:'Lira',reg:'Northern',pop:620000,area_km2:2988,gdp_m:380,poverty:45,literacy:67,lat:2.2499,lng:32.9003},
+  {n:'Mbale',reg:'Eastern',pop:530000,area_km2:249,gdp_m:350,poverty:32,literacy:74,lat:1.0796,lng:34.1753},
+  {n:'Jinja',reg:'Eastern',pop:490000,area_km2:2534,gdp_m:620,poverty:26,literacy:80,lat:0.4478,lng:33.2026},
+  {n:'Kasese',reg:'Western',pop:890000,area_km2:3044,gdp_m:310,poverty:38,literacy:68,lat:0.1825,lng:30.0827},
+  {n:'Arua',reg:'West Nile',pop:980000,area_km2:3439,gdp_m:290,poverty:52,literacy:62,lat:3.0200,lng:30.9109},
+  {n:'Soroti',reg:'Eastern',pop:430000,area_km2:4229,gdp_m:220,poverty:39,literacy:71,lat:1.7148,lng:33.6108},
+  {n:'Kabale',reg:'Western',pop:550000,area_km2:1937,gdp_m:280,poverty:30,literacy:76,lat:-1.2508,lng:29.9891},
+  {n:'Hoima',reg:'Western',pop:580000,area_km2:3609,gdp_m:890,poverty:29,literacy:73,lat:1.4360,lng:31.3538},
+  {n:'Tororo',reg:'Eastern',pop:520000,area_km2:1783,gdp_m:340,poverty:28,literacy:75,lat:0.6921,lng:34.1813},
+  {n:'Moroto',reg:'Karamoja',pop:210000,area_km2:3571,gdp_m:82,poverty:78,literacy:38,lat:2.5345,lng:34.6680},
+  {n:'Kitgum',reg:'Northern',pop:370000,area_km2:7200,gdp_m:140,poverty:55,literacy:58,lat:3.2783,lng:32.8868},
+  {n:'Iganga',reg:'Eastern',pop:680000,area_km2:1731,gdp_m:260,poverty:35,literacy:72,lat:0.6090,lng:33.4687},
+  {n:'Fort Portal',reg:'Western',pop:410000,area_km2:1593,gdp_m:310,poverty:27,literacy:77,lat:0.6710,lng:30.2750},
+  {n:'Masaka',reg:'Central',pop:760000,area_km2:2721,gdp_m:490,poverty:22,literacy:83,lat:-0.3462,lng:31.7364},
+  {n:'Nebbi',reg:'West Nile',pop:460000,area_km2:2067,gdp_m:165,poverty:49,literacy:60,lat:2.4762,lng:31.0893},
 ];
 
-// ── Universities ───────────────────────────────────────────────
-const UNIVERSITIES: Pt[] = [
-  {name:'Makerere University',lat:0.3361,lng:32.5722,type:'Public',value:'40,000+ students',detail:"East Africa's oldest, 1922",color:'#f59e0b'},
-  {name:'Kyambogo University',lat:0.3486,lng:32.6344,type:'Public',value:'30,000+ students',detail:'Technical & Vocational',color:'#f59e0b'},
-  {name:'Gulu University',lat:2.7700,lng:32.3000,type:'Public',value:'8,000+ students',detail:'Northern Uganda',color:'#fbbf24'},
-  {name:'MUST — Mbarara',lat:-0.6094,lng:30.6583,type:'Public',value:'5,000+ students',detail:'Science & Technology',color:'#f59e0b'},
-  {name:'Busitema University',lat:0.5667,lng:34.1167,type:'Public',value:'6,000+ students',detail:'Engineering focus, Tororo',color:'#fbbf24'},
-  {name:'Kabale University',lat:-1.2500,lng:30.0000,type:'Public',value:'3,000+ students',detail:'SW Uganda',color:'#fbbf24'},
-  {name:'Mountains of Moon (MMU)',lat:0.6500,lng:30.2833,type:'Public',value:'4,000+ students',detail:'Fort Portal campus',color:'#fbbf24'},
-  {name:'IUIU — Mbale',lat:0.6000,lng:33.4833,type:'Private',value:'15,000+ students',detail:'Islamic University in Uganda',color:'#a78bfa'},
-  {name:'Uganda Martyrs University',lat:0.2667,lng:31.8833,type:'Private',value:'5,000+ students',detail:'Nkozi campus',color:'#a78bfa'},
-  {name:'KIU — Ishaka',lat:-0.6500,lng:30.2167,type:'Private',value:'20,000+ students',detail:'Kampala International Univ.',color:'#a78bfa'},
-  {name:'Cavendish University',lat:0.3167,lng:32.5833,type:'Private',value:'6,000+ students',detail:'Business & Law, Kampala',color:'#a78bfa'},
-  {name:'Lira University',lat:2.2500,lng:32.8900,type:'Public',value:'3,000+ students',detail:'Northern Uganda hub',color:'#fbbf24'},
+const WETLANDS = [
+  {n:'Lake Victoria (UGA portion)',lat:-0.2800,lng:32.9000,area_km2:31093,type:'Lake',depth_m:83,sh:'Kenya/Tanzania'},
+  {n:'Lake Albert',lat:1.6800,lng:30.9200,area_km2:5347,type:'Lake',depth_m:51,sh:'DRC'},
+  {n:'Lake Edward',lat:-0.3000,lng:29.6000,area_km2:2325,type:'Lake',depth_m:112,sh:'DRC'},
+  {n:'Lake Kyoga',lat:1.5000,lng:33.0000,area_km2:2700,type:'Lake/Swamp',depth_m:6,sh:'Uganda only'},
+  {n:'Lake George',lat:0.0200,lng:30.2000,area_km2:250,type:'Lake',depth_m:3,sh:'Uganda only'},
+  {n:'Lake Wamala',lat:0.3900,lng:31.6300,area_km2:250,type:'Lake',depth_m:4,sh:'Uganda only'},
+  {n:'Lutembe Wetland',lat:0.1000,lng:32.5500,area_km2:11,type:'Ramsar Wetland',depth_m:2,sh:'Uganda only'},
+  {n:'Mabamba Wetland',lat:0.1200,lng:32.2100,area_km2:64,type:'Ramsar Wetland',depth_m:2,sh:'Uganda only'},
+  {n:'Nakivubo Wetland',lat:0.3100,lng:32.6200,area_km2:5,type:'Urban Wetland',depth_m:1,sh:'Uganda only'},
+  {n:'Opeta-Bisina Wetland',lat:1.7500,lng:33.9200,area_km2:900,type:'Ramsar Wetland',depth_m:3,sh:'Uganda only'},
 ];
 
-// ── Referral Hospitals ─────────────────────────────────────────
-const HOSPITALS: Pt[] = [
-  {name:'Mulago National Referral',lat:0.3414,lng:32.5761,type:'National',value:'1,500 beds',detail:"Uganda's largest hospital",color:'#ef4444'},
-  {name:'Mbarara RRH',lat:-0.6200,lng:30.6500,type:'Regional',value:'600 beds',detail:'SW Uganda regional hub',color:'#f87171'},
-  {name:'Gulu RRH',lat:2.7800,lng:32.3100,type:'Regional',value:'400 beds',detail:'Northern Uganda hub',color:'#f87171'},
-  {name:'Mbale RRH',lat:1.0747,lng:34.1750,type:'Regional',value:'350 beds',detail:'Eastern Uganda hub',color:'#f87171'},
-  {name:'Arua RRH',lat:3.0167,lng:30.9100,type:'Regional',value:'300 beds',detail:'West Nile hub',color:'#f87171'},
-  {name:'Soroti RRH',lat:1.7167,lng:33.6100,type:'Regional',value:'250 beds',detail:'Teso sub-region',color:'#f87171'},
-  {name:'Lira RRH',lat:2.2500,lng:32.8900,type:'Regional',value:'280 beds',detail:'Lango sub-region',color:'#f87171'},
-  {name:'Fort Portal RRH',lat:0.6500,lng:30.2833,type:'Regional',value:'300 beds',detail:'Tooro Kingdom',color:'#f87171'},
-  {name:'Kabale RRH',lat:-1.2500,lng:29.9900,type:'Regional',value:'250 beds',detail:'Kigezi region',color:'#f87171'},
-  {name:'Jinja RRH',lat:0.4300,lng:33.2000,type:'Regional',value:'350 beds',detail:'Busoga region',color:'#f87171'},
-  {name:'Masaka RRH',lat:-0.3300,lng:31.7300,type:'Regional',value:'290 beds',detail:'Southern Buganda',color:'#f87171'},
-  {name:'Hoima RRH',lat:1.4333,lng:31.3500,type:'Regional',value:'250 beds',detail:'Bunyoro region',color:'#f87171'},
+const ECONOMIC_ZONES = [
+  {n:'Namanve Industrial & Business Park',lat:0.3100,lng:32.7000,area_ha:1000,invest_m:850,jobs:28000,type:'Industrial Park',status:'Operational',sectors:'Manufacturing, Logistics, Assembly'},
+  {n:'Kampala Industrial & Business Park (KIBP)',lat:0.3200,lng:32.5600,area_ha:120,invest_m:320,jobs:8500,type:'Industrial Park',status:'Operational',sectors:'Light manufacturing, Garments, Food processing'},
+  {n:'Jinja Industrial & Business Park',lat:0.4500,lng:33.2200,area_ha:250,invest_m:180,jobs:6200,type:'Industrial Park',status:'Operational',sectors:'Steel, Textiles, Chemicals, Cement'},
+  {n:'Luzira Free Zone',lat:0.2900,lng:32.6800,area_ha:40,invest_m:95,jobs:2400,type:'Free Zone',status:'Operational',sectors:'Warehousing, Re-export, Electronics assembly'},
+  {n:'Kasese Industrial Park',lat:0.1900,lng:30.0900,area_ha:80,invest_m:45,jobs:1800,type:'Industrial Park',status:'Operational',sectors:'Copper processing, Mining services, Cement'},
+  {n:'Gulu Industrial Park',lat:2.7900,lng:32.3100,area_ha:65,invest_m:38,jobs:1200,type:'Industrial Park',status:'Developing',sectors:'Agro-processing, Food, Textiles'},
+  {n:'Mbale Industrial Park',lat:1.0800,lng:34.1900,area_ha:75,invest_m:42,jobs:1500,type:'Industrial Park',status:'Developing',sectors:'Coffee processing, Textiles, Packaging'},
+  {n:'Mbarara Industrial Park',lat:-0.5900,lng:30.6700,area_ha:60,invest_m:35,jobs:1100,type:'Industrial Park',status:'Developing',sectors:'Dairy, Agro-processing, Light manufacturing'},
+  {n:'Arua Industrial Park',lat:3.0300,lng:30.9200,area_ha:50,invest_m:28,jobs:900,type:'Industrial Park',status:'Planned',sectors:'Border trade, Agro-processing, Retail'},
+  {n:'Buikwe SEZ',lat:0.3600,lng:33.0100,area_ha:200,invest_m:120,jobs:4500,type:'SEZ',status:'Developing',sectors:'Sugar, Textiles, Chemical inputs'},
+  {n:'Soroti Fruit Factory Zone',lat:1.7200,lng:33.6300,area_ha:30,invest_m:22,jobs:600,type:'Industrial Park',status:'Operational',sectors:'Fruit processing, Juices, Packaging'},
+  {n:'Masindi Petroleum Zone',lat:1.6800,lng:31.7200,area_ha:150,invest_m:240,jobs:3200,type:'SEZ',status:'Planned',sectors:'Oil services, Refinery inputs, Gas processing'},
 ];
 
-// ── Regions ────────────────────────────────────────────────────
-const REGIONS: Rgn[] = [
-  {name:'Central',lat:0.4,lng:32.5,pop:12.5,hdi:0.572,gdp:42.3,area:61403,color:'#3b82f6'},
-  {name:'Eastern',lat:1.4,lng:33.7,pop:11.2,hdi:0.489,gdp:16.8,area:39478,color:'#10b981'},
-  {name:'Western',lat:-0.3,lng:30.7,pop:11.8,hdi:0.523,gdp:22.4,area:55263,color:'#f59e0b'},
-  {name:'Northern',lat:3.0,lng:32.5,pop:8.9,hdi:0.465,gdp:10.1,area:85392,color:'#ef4444'},
+const AGRI_ZONES = [
+  {n:'Buganda Basin',lat:0.2000,lng:32.0000,area_ha:3800000,prod_t:9800000,rain_mm:1200,soil:'Ferralsol/Nitisol',export_crop:'Coffee (Robusta)',farmhh:820000,crops:'Banana, Coffee, Maize, Beans'},
+  {n:'Ankole Highlands',lat:-0.6000,lng:30.5000,area_ha:1800000,prod_t:3200000,rain_mm:1050,soil:'Andosol/Nitisol',export_crop:'Coffee (Arabica)',farmhh:380000,crops:'Coffee, Sorghum, Maize, Dairy'},
+  {n:'Nile Valley North',lat:2.5000,lng:31.8000,area_ha:2200000,prod_t:3800000,rain_mm:980,soil:'Vertisol/Arenosol',export_crop:'Sesame/Sunflower',farmhh:420000,crops:'Sesame, Maize, Millet, Cotton'},
+  {n:'Karamoja Arid Zone',lat:3.2000,lng:34.3000,area_ha:1900000,prod_t:620000,rain_mm:480,soil:'Lixisol/Arenosol',export_crop:'Livestock',farmhh:95000,crops:'Sorghum, Millet, Livestock'},
+  {n:'Busoga Sugarbelt',lat:0.5500,lng:33.5000,area_ha:1400000,prod_t:5800000,rain_mm:1150,soil:'Ferralsol/Gleysol',export_crop:'Sugar/Fish',farmhh:310000,crops:'Sugarcane, Maize, Beans, Cassava'},
+  {n:'Rwenzori Slopes',lat:0.3500,lng:30.1000,area_ha:800000,prod_t:1200000,rain_mm:1400,soil:'Andosol/Histosol',export_crop:'Tea/Vanilla',farmhh:190000,crops:'Tea, Vanilla, Arabica Coffee, Banana'},
+  {n:'West Nile Corridor',lat:3.0000,lng:31.0000,area_ha:1100000,prod_t:2100000,rain_mm:1100,soil:'Ferralsol/Luvisol',export_crop:'Tobacco/Sesame',farmhh:240000,crops:'Tobacco, Maize, Cassava, Sesame'},
+  {n:'Teso Cotton Belt',lat:1.8000,lng:34.0000,area_ha:1600000,prod_t:2900000,rain_mm:1050,soil:'Vertisol/Ferralsol',export_crop:'Cotton/Sunflower',farmhh:350000,crops:'Cotton, Millet, Sorghum, Groundnuts'},
 ];
-
-// ── Chart Data ─────────────────────────────────────────────────
-const GDP_DATA = [
-  {y:'2018',gdp:27.5},{y:'2019',gdp:30.2},{y:'2020',gdp:30.1},
-  {y:'2021',gdp:33.1},{y:'2022',gdp:37.4},{y:'2023',gdp:42.8},
-  {y:'2024',gdp:47.2},{y:'2025',gdp:51.0},
-];
-const EXPORT_DATA = [
-  {name:'Coffee',v:862},{name:'Gold',v:743},{name:'Fish',v:147},
-  {name:'Cocoa',v:110},{name:'Tobacco',v:85},{name:'Vanilla',v:72},
-  {name:'Tea',v:65},{name:'Flowers',v:55},
-];
-const ENERGY_MIX = [
-  {name:'Hydro',v:78},{name:'Thermal',v:9},{name:'Solar',v:8},
-  {name:'Bagasse',v:4},{name:'Other',v:1},
-];
-const DAM_CAPACITY = DAMS.map(d => ({name:d.name.replace(' Hydropower','').replace(' — Owen Falls I','').replace(' — Owen Falls II',''), mw:parseInt((d.value||'0').replace(' MW',''))||0}));
-const MINERAL_TYPES = [
-  {name:'Gold',n:7},{name:'Iron Ore',n:3},{name:'Cobalt/Nickel',n:3},
-  {name:'Phosphate',n:2},{name:'Limestone',n:3},{name:'Others',n:7},
-];
-const CROP_REV = [
-  {crop:'Coffee',rev:862},{crop:'Sugar',rev:380},{crop:'Matooke',rev:220},
-  {crop:'Maize',rev:180},{crop:'Tea',rev:65},{crop:'Cotton',rev:55},
-  {crop:'Vanilla',rev:72},{crop:'Tobacco',rev:85},
-];
-const ENROLL = [
-  {level:'Pre-Primary',rate:41},{level:'Primary',rate:95},
-  {level:'Secondary',rate:47},{level:'Tertiary',rate:12},
-];
-const POP_PYMD = [
-  {age:'0-14',m:24.3,f:23.8},{age:'15-24',m:11.2,f:11.0},
-  {age:'25-34',m:7.8,f:7.9},{age:'35-44',m:5.1,f:5.3},
-  {age:'45-54',m:3.2,f:3.4},{age:'55-64',m:2.1,f:2.3},{age:'65+',m:1.4,f:1.8},
-];
-const SECTOR_GDP = [
-  {name:'Services',v:44.5},{name:'Agriculture',v:27.2},{name:'Industry',v:21.3},
-  {name:'Taxes',v:7.0},
-];
-
-// ── Hooks ──────────────────────────────────────────────────────
-function useOverpass(query: string, enabled: boolean) {
-  const [data, setData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  useEffect(() => {
-    if (!enabled) return;
-    setLoading(true); setError('');
-    fetch('https://overpass-api.de/api/interpreter', {
-      method:'POST',
-      body:'data='+encodeURIComponent(query),
-      headers:{'Content-Type':'application/x-www-form-urlencoded'},
-    })
-      .then(r => r.json())
-      .then(d => { setData(d.elements||[]); setLoading(false); })
-      .catch(e => { setError(e.message); setLoading(false); });
-  }, [enabled]);
-  return {data, loading, error};
+// ─── HOOKS ────────────────────────────────────────────────────────────────────
+function useOverpass(query: string) {
+  const [data, setData] = React.useState<any[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string|null>(null);
+  React.useEffect(() => {
+    if (!query) { setLoading(false); return; }
+    let cancelled = false;
+    async function fetchOvp() {
+      for (let mi = 0; mi < OVP_MIRRORS.length; mi++) {
+        try {
+          const r = await fetch(OVP_MIRRORS[mi], { method:'POST', body:'data='+encodeURIComponent(query), headers:{'Content-Type':'application/x-www-form-urlencoded'} });
+          if (!r.ok) continue;
+          const j = await r.json();
+          if (!cancelled && j.elements) { setData(j.elements); setLoading(false); return; }
+        } catch (_) {}
+        await new Promise(res => setTimeout(res, 800));
+      }
+      if (!cancelled) { setError('Overpass unavailable'); setLoading(false); }
+    }
+    fetchOvp();
+    return () => { cancelled = true; };
+  }, [query]);
+  return { data, loading, error };
 }
 
-function useBoundaries() {
-  const [geo, setGeo] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
-  useEffect(() => {
-    let ok = true;
-    setLoading(true);
-    (async () => {
-      try {
-        const meta = await fetch('https://www.geoboundaries.org/api/current/gbOpen/UGA/ADM1/').then(r=>r.json());
-        const data = await fetch(meta.gjDownloadURL).then(r=>r.json());
-        if (ok) setGeo(data);
-      } catch {}
-      if (ok) setLoading(false);
-    })();
-    return () => { ok=false; };
-  }, []);
-  return {geo, loading};
+function useGeoJSON(url: string) {
+  const [data, setData] = React.useState<any>(null);
+  const [loading, setLoading] = React.useState(true);
+  React.useEffect(() => {
+    fetch(url).then(r => r.json()).then(j => { setData(j); setLoading(false); }).catch(() => setLoading(false));
+  }, [url]);
+  return { data, loading };
 }
 
-// ── Overpass Queries ───────────────────────────────────────────
-const Q_SCHOOLS = `[out:json][timeout:25];(node["amenity"="school"](0.0,29.5,4.2,35.0);way["amenity"="school"](0.0,29.5,4.2,35.0););out center 300;`;
-const Q_HOSPITALS = `[out:json][timeout:25];(node["amenity"~"hospital|clinic|health_centre"](0.0,29.5,4.2,35.0);way["amenity"~"hospital|clinic|health_centre"](0.0,29.5,4.2,35.0););out center 300;`;
-const Q_MARKETS = `[out:json][timeout:25];(node["amenity"="marketplace"](0.0,29.5,4.2,35.0);way["amenity"="marketplace"](0.0,29.5,4.2,35.0););ut center 200;`;
-
-// ── Map Helpers ─────────────────────────────────────────────────
-function FitUga() {
-  const map = useMap();
-  useEffect(() => { map.setView(UGA, ZOOM); }, [map]);
-  return null;
-}
-
-function MapPanel({children,h=420}:{children:React.ReactNode; h?:number}) {
+// ─── SHARED UI ────────────────────────────────────────────────────────────────
+function KPICard({ label, value, sub, color, icon }: { label:string; value:string; sub:string; color:string; icon:string }) {
   return (
-    <div style={{height:h,borderRadius:10,overflow:'hidden',border:'1px solid rgba(255,255,255,0.08)',marginBottom:14}}>
-      <MapContainer center={UGA} zoom={ZOOM} style={{height:'100%',width:'100%'}} scrollWheelZoom>
-        <FitUga />
-        <TileLayer url={TILES} attribution={ATTR} />
-        {children}
-      </MapContainer>
+    <div style={{ background:'#1e293b', borderRadius:10, padding:'14px 16px', borderLeft:'3px solid '+color }}>
+      <div style={{ fontSize:22, marginBottom:4 }}>{icon}</div>
+      <div style={{ fontSize:20, fontWeight:700, color, lineHeight:1.1 }}>{value}</div>
+      <div style={{ fontSize:11, color:'#94a3b8', marginTop:4 }}>{label}</div>
+      <div style={{ fontSize:10, color:'#64748b', marginTop:2 }}>{sub}</div>
     </div>
   );
 }
 
-// ── UI Helpers ─────────────────────────────────────────────────
-function Card({icon,label,value,sub,col='#3b82f6'}:{icon:string;label:string;value:string;sub?:string;col?:string}) {
+function SectionHdr({ children }: { children: React.ReactNode }) {
+  return <div style={{ fontSize:12, fontWeight:700, color:'#94a3b8', letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:10 }}>{children}</div>;
+}
+
+function MapLoadingOverlay({ loading, error }: { loading?: boolean; error?: string|null }) {
+  if (!loading && !error) return null;
   return (
-    <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderLeft:`3px solid ${col}`,borderRadius:10,padding:'12px 14px'}}>
-      <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:6}}>
-        <span style={{fontSize:16}}>{icon}</span>
-        <span style={{fontSize:10,color:'#64748b',textTransform:'uppercase',letterSpacing:1}}>{label}</span>
+    <div style={{ position:'absolute', top:8, right:8, zIndex:9999, background:'rgba(15,23,42,0.88)', borderRadius:6, padding:'4px 10px', fontSize:11, color: error?'#f87171':'#94a3b8' }}>
+      {error ? '⚠ '+error : '⟳ Loading geodata…'}
+    </div>
+  );
+}
+
+function DataTable({ title, cols, rows }: { title:string; cols:string[]; rows:string[][] }) {
+  const [page, setPage] = React.useState(0);
+  const PER = 25;
+  const pages = Math.ceil(rows.length / PER);
+  const visible = rows.slice(page*PER, page*PER+PER);
+  return (
+    <div style={S.card}>
+      <SectionHdr>{title} ({rows.length} records)</SectionHdr>
+      <div style={{ overflowX:'auto' }}>
+        <table style={{ width:'100%', borderCollapse:'collapse', fontSize:11 }}>
+          <thead>
+            <tr>{cols.map((c,i)=><th key={i} style={{ padding:'6px 10px', background:'#0f172a', color:'#64748b', textAlign:'left', fontWeight:600, whiteSpace:'nowrap' }}>{c}</th>)}</tr>
+          </thead>
+          <tbody>
+            {visible.map((row,ri)=>(
+              <tr key={ri} style={{ borderBottom:'1px solid #1e293b' }}>
+                {row.map((cell,ci)=><td key={ci} style={{ padding:'5px 10px', color:'#cbd5e1', whiteSpace:'nowrap' }}>{cell}</td>)}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
-      <div style={{fontSize:21,fontWeight:700,color:'#f1f5f9'}}>{value}</div>
-      {sub && <div style={{fontSize:10,color:'#475569',marginTop:3}}>{sub}</div>}
+      {pages > 1 && (
+        <div style={{ display:'flex', gap:6, marginTop:8, alignItems:'center', fontSize:11 }}>
+          <button onClick={()=>setPage(p=>Math.max(0,p-1))} disabled={page===0} style={{ padding:'3px 10px', background:'#334155', border:'none', borderRadius:4, color:'#cbd5e1', cursor:'pointer' }}>‹</button>
+          <span style={{ color:'#64748b' }}>Page {page+1}/{pages}</span>
+          <button onClick={()=>setPage(p=>Math.min(pages-1,p+1))} disabled={page===pages-1} style={{ padding:'3px 10px', background:'#334155', border:'none', borderRadius:4, color:'#cbd5e1', cursor:'pointer' }}>›</button>
+        </div>
+      )}
     </div>
   );
 }
 
-function Lgd({items}:{items:{color:string;label:string}[]}) {
+function AnalysisTable({ title, cols, rows }: { title:string; cols:string[]; rows:string[][] }) {
   return (
-    <div style={{display:'flex',flexWrap:'wrap',gap:'5px 12px',padding:'7px 10px',background:'rgba(0,0,0,0.3)',borderRadius:6,marginBottom:10}}>
-      {items.map(it=>(
-        <span key={it.label} style={{display:'flex',alignItems:'center',gap:5,fontSize:10,color:'#94a3b8'}}>
-          <span style={{width:9,height:9,borderRadius:'50%',background:it.color,display:'inline-block'}}/>
-          {it.label}
-        </span>
-      ))}
+    <div style={S.card}>
+      <SectionHdr>{title}</SectionHdr>
+      <div style={{ overflowX:'auto' }}>
+        <table style={{ width:'100%', borderCollapse:'collapse', fontSize:11 }}>
+          <thead>
+            <tr>{cols.map((c,i)=><th key={i} style={{ padding:'7px 12px', background:'#0f172a', color:'#64748b', textAlign:'left', fontWeight:600 }}>{c}</th>)}</tr>
+          </thead>
+          <tbody>
+            {rows.map((row,ri)=>(
+              <tr key={ri} style={{ borderBottom:'1px solid #1e293b', background: ri%2===0?'transparent':'rgba(255,255,255,0.02)' }}>
+                {row.map((cell,ci)=><td key={ci} style={{ padding:'6px 12px', color: ci===0?'#e2e8f0':'#94a3b8', lineHeight:1.5 }}>{cell}</td>)}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
 
-function Row4({children}:{children:React.ReactNode}) {
-  return <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(155px,1fr))',gap:10,marginBottom:18}}>{children}</div>;
-}
-
-function ChartWrap({title,children}:{title:string;children:React.ReactNode}) {
+function SQLPanel({ title, sql }: { title:string; sql:string }) {
+  const [open, setOpen] = React.useState(false);
   return (
-    <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.07)',borderRadius:10,padding:14}}>
-      <div style={{fontSize:12,fontWeight:600,color:'#94a3b8',marginBottom:10}}>{title}</div>
-      {children}
+    <div style={S.card}>
+      <button onClick={()=>setOpen(o=>!o)} style={{ background:'none', border:'none', color:'#64748b', cursor:'pointer', fontSize:12, fontWeight:600, padding:0, display:'flex', alignItems:'center', gap:6 }}>
+        <span style={{ fontSize:14 }}>{open?'▼':'▶'}</span> SQL Schema & Queries — {title}
+      </button>
+      {open && (
+        <pre style={{ marginTop:12, background:'#0f172a', borderRadius:6, padding:'12px 14px', fontSize:11, color:'#4ade80', overflowX:'auto', lineHeight:1.7, whiteSpace:'pre-wrap' }}>
+          {sql}
+        </pre>
+      )}
     </div>
   );
 }
 
-function TwoCol({children}:{children:React.ReactNode}) {
-  return <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14,marginTop:12}}>{children}</div>;
-}
-
-function Ttip({contentStyle,...p}:any) {
-  return <Tooltip contentStyle={{background:'#1e293b',border:'none',fontSize:11,...contentStyle}} {...p}/>;
-}
-
-function DataBadge({text}:{text:string}) {
-  return <div style={{display:'inline-block',padding:'3px 8px',background:'rgba(16,185,129,0.15)',border:'1px solid rgba(16,185,129,0.3)',borderRadius:12,fontSize:10,color:'#34d399',marginBottom:8}}>{text}</div>;
-}
-
-// ═══════════════════════════════════════════════════════════════
-// TAB COMPONENTS
-// ═══════════════════════════════════════════════════════════════
-
+// ─── OVERVIEW TAB ─────────────────────────────────────────────────────────────
 function OverviewTab() {
+  const { data: adm1 } = useGeoJSON(ADM1_URL);
+  const gdpTrend = [
+    {yr:'2018',v:27.6},{yr:'2019',v:29.1},{yr:'2020',v:29.7},{yr:'2021',v:31.0},
+    {yr:'2022',v:33.8},{yr:'2023',v:35.9},{yr:'2024',v:38.1},
+  ];
+  const popByReg = [
+    {name:'Central',v:12.8},{name:'Eastern',v:11.5},{name:'Western',v:10.8},
+    {name:'Northern',v:8.9},{name:'West Nile',v:3.8},{name:'Karamoja',v:2.1},
+  ];
+  const gdpBySec = [
+    {name:'Services',v:46},{name:'Industry',v:27},{name:'Agriculture',v:24},{name:'Taxes',v:3},
+  ];
   return (
     <div>
-      <h2 style={{fontSize:20,fontWeight:700,color:'#f8fafc',margin:'0 0 4px'}}>Uganda Socio-Economic Overview</h2>
-      <p style={{fontSize:12,color:'#64748b',marginBottom:16}}>Comprehensive analysis across all sectors — GDP, demographics, resources, and human development indicators.</p>
-      <Row4>
-        <Card icon="👥" label="Total Population" value="47.2M" sub="Est. 2024 | 2.9% annual growth" col="#3b82f6"/>
-        <Card icon="💰" label="GDP (USD)" value="$47.2B" sub="2024 est. | 5.9% growth rate" col="#10b981"/>
-        <Card icon="🗺️" label="Total Area" value="241,038 km²" sub="4 regions · 135 districts" col="#f59e0b"/>
-        <Card icon="📊" label="Human Dev. Index" value="0.525" sub="Medium HDI · Rank 166/193" col="#8b5cf6"/>
-      </Row4>
-      <MapPanel h={380}>
-        {REGIONS.map(r=>(
-          <CircleMarker key={r.name} center={[r.lat,r.lng]} radius={r.pop*1.6}
-            pathOptions={{color:r.color,fillColor:r.color,fillOpacity:0.25,weight:2}}>
-            <Popup>
-              <b>{r.name} Region</b><br/>
-              Pop: {r.pop}M &nbsp;|&nbsp; HDI: {r.hdi}<br/>
-              GDP: ${r.gdp}B &nbsp;|&nbsp; Area: {r.area.toLocaleString()} km²
-            </Popup>
-          </CircleMarker>
-        ))}
-      </MapPanel>
-      <Lgd items={REGIONS.map(r=>({color:r.color,label:`${r.name} (${r.pop}M)`}))}/>
-      <TwoCol>
-        <ChartWrap title="GDP Growth 2018–2025 (USD Billion)">
-          <ResponsiveContainer width="100%" height={170}>
-            <AreaChart data={GDP_DATA}>
-              <XAxis dataKey="y" tick={{fill:'#94a3b8',fontSize:10}}/>
-              <YAxis tick={{fill:'#94a3b8',fontSize:10}}/>
-              <Ttip/>
-              <Area type="monotone" dataKey="gdp" stroke="#3b82f6" fill="rgba(59,130,246,0.12)" name="GDP $B"/>
-            </AreaChart>
-          </ResponsiveContainer>
-        </ChartWrap>
-        <ChartWrap title="GDP by Sector (% share)">
-          <ResponsiveContainer width="100%" height={170}>
-            <PieChart>
-              <Pie data={SECTOR_GDP} dataKey="v" nameKey="name" cx="50%" cy="50%" outerRadius={65} label={({name,v})=>`${name} ${v}%`} labelLine={false}>
-                {SECTOR_GDP.map((_,i)=><Cell key={i} fill={CC[i]}/>)}
-              </Pie>
-              <Ttip/>
-            </PieChart>
-          </ResponsiveContainer>
-        </ChartWrap>
-      </TwoCol>
-    </div>
-  );
-}
-
-function ResourcesTab() {
-  return (
-    <div>
-      <h2 style={{fontSize:20,fontWeight:700,color:'#f8fafc',margin:'0 0 4px'}}>Mineral Resources & Natural Wealth</h2>
-      <p style={{fontSize:12,color:'#64748b',marginBottom:16}}>25 known mineral deposits mapped from USGS Africa Geodatabase and Uganda DGSM data. Uganda holds significant untapped resources.</p>
-      <Row4>
-        <Card icon="⛏️" label="Known Deposits" value="25+" sub="USGS-verified mineral sites" col="#f59e0b"/>
-        <Card icon="🥇" label="Gold Reserves" value="~3.5 Moz" sub="Combined estimated reserves" col="#fbbf24"/>
-        <Card icon="☎️" label="Phosphate" value="235 MT" sub="Tororo — largest single deposit" col="#22c55e"/>
-        <Card icon="🛢️" label="Oil Reserves" value="~1.4 Bbbl" sub="Albertine Graben combined" col="#f97316"/>
-      </Row4>
-      <DataBadge text="⚡ Mineral data sourced from USGS African Mineral Geodatabase & Uganda DGSM"/>
-      <MapPanel>
-        {MINERALS.map(m=>(
-          <CircleMarker key={m.name} center={[m.lat,m.lng]} radius={m.size||8}
-            pathOptions={{color:m.color||'#fbbf24',fillColor:m.color||'#fbbf24',fillOpacity:0.7,weight:1.5}}>
-            <Popup><b>{m.name}</b><br/><em>{m.type}</em><br/>{m.value}</Popup>
-          </CircleMarker>
-        ))}
-        {OIL_FIELDS.map(o=>(
-          <CircleMarker key={o.name} center={[o.lat,o.lng]} radius={o.size||9}
-            pathOptions={{color:'#f97316',fillColor:'#f97316',fillOpacity:0.6,weight:1.5}}>
-            <Popup><b>{o.name}</b><br/><em>{o.type}</em><br/>{o.value}<br/><small>{o.detail}</small></Popup>
-          </CircleMarker>
-        ))}
-      </MapPanel>
-      <Lgd items={[
-        {color:'#fbbf24',label:'Gold'},{color:'#22c55e',label:'Phosphate'},
-        {color:'#b45309',label:'Iron Ore'},{color:'#60a5fa',label:'Cobalt/Nickel'},
-        {color:'#f43f5e',label:'Coltan'},{color:'#94a3b8',label:'Limestone/Marble'},
-        {color:'#fb923c',label:'Tin/Cassiterite'},{color:'#f97316',label:'Oil/Gas Fields'},
-      ]}/>
-      <TwoCol>
-        <ChartWrap title="Mineral Deposit Types">
-          <ResponsiveContainer width="100%" height={170}>
-            <BarChart data={MINERAL_TYPES} layout="vertical">
-              <XAxis type="number" tick={{fill:'#94a3b8',fontSize:10}}/>
-              <YAxis dataKey="name" type="category" tick={{fill:'#94a3b8',fontSize:10}} width={90}/>
-              <Ttip/>
-              <Bar dataKey="n" fill="#f59e0b" name="Deposits"/>
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartWrap>
-        <ChartWrap title="Top Export Commodities (USD M, 2024)">
-          <ResponsiveContainer width="100%" height={170}>
-            <BarChart data={EXPORT_DATA}>
-              <XAxis dataKey="name" tick={{fill:'#94a3b8',fontSize:9}}/>
-              <YAxis tick={{fill:'#94a3b8',fontSize:10}}/>
-              <Ttip/>
-              <Bar dataKey="v" name="USD Million">
-                {EXPORT_DATA.map((_,i)=><Cell key={i} fill={CC[i%CC.length]}/>)}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartWrap>
-      </TwoCol>
-    </div>
-  );
-}
-
-function EnergyTab() {
-  return (
-    <div>
-      <h2 style={{fontSize:20,fontWeight:700,color:'#f8fafc',margin:'0 0 4px'}}>Energy Infrastructure & Oil Development</h2>
-      <p style={{fontSize:12,color:'#64748b',marginBottom:16}}>12 hydropower stations with 1,722 MW total installed capacity. Tilenga & Kingfisher oil fields targeting first oil in 2026.</p>
-      <Row4>
-        <Card icon="⚡" label="Installed Capacity" value="1,722 MW" sub="Predominantly hydro-electric" col="#06b6d4"/>
-        <Card icon="💧" label="Renewable Share" value="87%" sub="Hydro + Solar + Bagasse" col="#10b981"/>
-        <Card icon="🛢️" label="Oil Reserves" value="~1.4 Bbbl" sub="Tilenga 836M + Kingfisher 214M" col="#f97316"/>
-        <Card icon="🔌" label="Electricity Access" value="~35%" sub="National; 72% urban coverage" col="#8b5cf6"/>
-      </Row4>
-      <MapPanel>
-        {DAMS.map(d=>(
-          <CircleMarker key={d.name} center={[d.lat,d.lng]} radius={d.size||8}
-            pathOptions={{color:'#06b6d4',fillColor:'#06b6d4',fillOpacity:0.75,weight:2}}>
-            <Popup><b>{d.name}</b><br/><b style={{color:'#06b6d4'}}>{d.value}</b><br/><small>{d.detail}</small></Popup>
-          </CircleMarker>
-        ))}
-        {OIL_FIELDS.map(o=>(
-          <CircleMarker key={o.name} center={[o.lat,o.lng]} radius={o.size||9}
-            pathOptions={{color:'#f97316',fillColor:'#f97316',fillOpacity:0.6,weight:1.5}}>
-            <Popup><b>{o.name}</b><br/><em>{o.type}</em><br/>{o.value}<br/><small>{o.detail}</small></Popup>
-          </CircleMarker>
-        ))}
-      </MapPanel>
-      <Lgd items={[{color:'#06b6d4',label:'Hydropower Dam'},{color:'#f97316',label:'Oil Field/Block'}]}/>
-      <TwoCol>
-        <ChartWrap title="Hydropower Capacity (MW) — Top Stations">
-          <ResponsiveContainer width="100%" height={170}>
-            <BarChart data={DAM_CAPACITY.filter(d=>d.mw>5).sort((a,b)=>b.mw-a.mw).slice(0,8)}>
-              <XAxis dataKey="name" tick={{fill:'#94a3b8',fontSize:8}} angle={-25} textAnchor="end" height={45}/>
-              <YAxis tick={{fill:'#94a3b8',fontSize:10}}/>
-              <Ttip/>
-              <Bar dataKey="mw" fill="#06b6d4" name="MW"/>
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartWrap>
-        <ChartWrap title="Generation Mix (% of installed capacity)">
-          <ResponsiveContainer width="100%" height={170}>
-            <PieChart>
-              <Pie data={ENERGY_MIX} dataKey="v" nameKey="name" cx="50%" cy="50%" outerRadius={65}
-                label={({name,v})=>`${name} ${v}%`} labelLine={false}>
-                {ENERGY_MIX.map((_,i)=><Cell key={i} fill={CC[i]}/>)}
-              </Pie>
-              <Ttip/>
-            </PieChart>
-          </ResponsiveContainer>
-        </ChartWrap>
-      </TwoCol>
-    </div>
-  );
-}
-
-function AgriTab() {
-  return (
-    <div>
-      <h2 style={{fontSize:20,fontWeight:700,color:'#f8fafc',margin:'0 0 4px'}}>Agriculture, Food & Fishing</h2>
-      <p style={{fontSize:12,color:'#64748b',marginBottom:16}}>Agriculture employs ~70% of the workforce. Uganda is the world's second-largest banana producer and Africa's top vanilla exporter.</p>
-      <Row4>
-        <Card icon="☕" label="Coffee Export" value="$862M" sub="Top foreign exchange earner" col="#92400e"/>
-        <Card icon="🌿" label="Arable Land" value="12.8M Ha" sub="64% of 241,038 km² total area" col="#10b981"/>
-        <Card icon="🐟" label="Fish Production" value="600K MT/yr" sub="L. Victoria, Albert, Edward, George" col="#38bdf8"/>
-        <Card icon="🌾" label="Agri GDP Share" value="27.2%" sub="Employs 70% of workforce" col="#f59e0b"/>
-      </Row4>
-      <MapPanel>
-        {AGRI.map(a=>(
-          <CircleMarker key={a.name} center={[a.lat,a.lng]} radius={a.size||9}
-            pathOptions={{color:a.color||'#22c55e',fillColor:a.color||'#22c55e',fillOpacity:0.7,weight:1.5}}>
-            <Popup><b>{a.name}</b><br/><em>{a.type}</em><br/>{a.value}</Popup>
-          </CircleMarker>
-        ))}
-      </MapPanel>
-      <Lgd items={[
-        {color:'#92400e',label:'Coffee Arabica'},{color:'#d97706',label:'Coffee Robusta'},
-        {color:'#166534',label:'Tea'},{color:'#fbbf24',label:'Sugar Cane'},
-        {color:'#e2e8f0',label:'Cotton'},{color:'#84cc16',label:'Bananas/Matooke'},
-        {color:'#38bdf8',label:'Fishing'},{color:'#c4b5fd',label:'Vanilla'},
-        {color:'#a8a29e',label:'Tobacco'},
-      ]}/>
-      <TwoCol>
-        <ChartWrap title="Crop Revenue (USD Million, 2024)">
-          <ResponsiveContainer width="100%" height={170}>
-            <BarChart data={CROP_REV}>
-              <XAxis dataKey="crop" tick={{fill:'#94a3b8',fontSize:9}}/>
-              <YAxis tick={{fill:'#94a3b8',fontSize:10}}/>
-              <Ttip/>
-              <Bar dataKey="rev" name="USD M">
-                {CROP_REV.map((_,i)=><Cell key={i} fill={CC[i%CC.length]}/>)}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartWrap>
-        <ChartWrap title="Agriculture Production Zones by Crop">
-          <ResponsiveContainer width="100%" height={170}>
-            <PieChart>
-              <Pie data={[
-                {name:'Coffee',v:11},{name:'Sugar',v:3},{name:'Matooke',v:4},
-                {name:'Cotton',v:3},{name:'Tea',v:3},{name:'Fishing',v:3},{name:'Other',v:4},
-              ]} dataKey="v" nameKey="name" cx="50%" cy="50%" outerRadius={65}
-                label={({name})=>name} labelLine={false}>
-                {[0,1,2,3,4,5,6].map(i=><Cell key={i} fill={CC[i%CC.length]}/>)}
-              </Pie>
-              <Ttip/>
-            </PieChart>
-          </ResponsiveContainer>
-        </ChartWrap>
-      </TwoCol>
-    </div>
-  );
-}
-
-function EnvironmentTab() {
-  return (
-    <div>
-      <h2 style={{fontSize:20,fontWeight:700,color:'#f8fafc',margin:'0 0 4px'}}>Protected Areas & Biodiversity</h2>
-      <p style={{fontSize:12,color:'#64748b',marginBottom:16}}>10 National Parks + 7 Wildlife/Game Reserves covering 6.3M Ha. Two UNESCO World Heritage Sites. Home to 50% of Africa's mountain gorillas.</p>
-      <Row4>
-        <Card icon="🦁" label="Protected Areas" value="17" sub="10 NPs + 7 Game Reserves" col="#16a34a"/>
-        <Card icon="🦍" label="Mountain Gorillas" value="~450" sub="50% of world's total (Bwindi+Mgahinga)" col="#22c55e"/>
-        <Card icon="🌿" label="Protected Coverage" value="6.3M Ha" sub="26% of Uganda's land area" col="#4ade80"/>
-        <Card icon="🏔️" label="UNESCO WHS" value="2 Sites" sub="Bwindi + Rwenzori Mountains" col="#a3e635"/>
-      </Row4>
-      <MapPanel>
-        {PROTECTED.map(p=>(
-          <CircleMarker key={p.name} center={[p.lat,p.lng]} radius={p.size||10}
-            pathOptions={{color:p.color||'#16a34a',fillColor:p.color||'#16a34a',fillOpacity:0.55,weight:2}}>
-            <Popup>
-              <b>{p.name}</b><br/>
-              <em style={{color:'#94a3b8'}}>{p.type}</em><br/>
-              <b>{p.value}</b><br/>
-              <small>{p.detail}</small>
-            </Popup>
-          </CircleMarker>
-        ))}
-      </MapPanel>
-      <Lgd items={[{color:'#16a34a',label:'National Park'},{color:'#4ade80',label:'Wildlife Reserve'},{color:'#4ade80',label:'Game Reserve'}]}/>
-      <TwoCol>
-        <ChartWrap title="Largest Protected Areas (km²)">
-          <ResponsiveContainer width="100%" height={170}>
-            <BarChart data={PROTECTED.slice(0,8).map(p=>({name:p.name.replace(' NP','').replace(' WR','').replace(' GR',''), area:parseInt((p.value||'0').replace(/,/g,''))||0})).sort((a,b)=>b.area-a.area)} layout="vertical">
-              <XAxis type="number" tick={{fill:'#94a3b8',fontSize:10}}/>
-              <YAxis dataKey="name" type="category" tick={{fill:'#94a3b8',fontSize:9}} width={105}/>
-              <Ttip/>
-              <Bar dataKey="area" fill="#16a34a" name="km²"/>
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartWrap>
-        <ChartWrap title="PA Classification Breakdown">
-          <ResponsiveContainer width="100%" height={170}>
-            <PieChart>
-              <Pie data={[{name:'National Parks',v:10},{name:'Wildlife Reserves',v:5},{name:'Game Reserves',v:2}]}
-                dataKey="v" nameKey="name" cx="50%" cy="50%" outerRadius={65}
-                label={({name,v})=>`${name}: ${v}`} labelLine={false}>
-                <Cell fill="#16a34a"/><Cell fill="#4ade80"/><Cell fill="#86efac"/>
-              </Pie>
-              <Ttip/>
-            </PieChart>
-          </ResponsiveContainer>
-        </ChartWrap>
-      </TwoCol>
-    </div>
-  );
-}
-
-function EduHealthTab() {
-  const [showSchools, setShowSchools] = useState(false);
-  const [showHosp, setShowHosp] = useState(false);
-  const {data:schools, loading:sl} = useOverpass(Q_SCHOOLS, showSchools);
-  const {data:liveHosp, loading:hl} = useOverpass(Q_HOSPITALS, showHosp);
-
-  return (
-    <div>
-      <h2 style={{fontSize:20,fontWeight:700,color:'#f8fafc',margin:'0 0 4px'}}>Education & Health Infrastructure</h2>
-      <p style={{fontSize:12,color:'#64748b',marginBottom:16}}>12 universities, 14 regional/national referral hospitals. Primary school enrollment at 95%. Literacy rate 76.5%.</p>
-      <Row4>
-        <Card icon="🎓" label="Universities" value="12+" sub="7 public · 5+ private" col="#f59e0b"/>
-        <Card icon="🏥" label="Referral Hospitals" value="14" sub="1 national + 13 regional" col="#ef4444"/>
-        <Card icon="📚" label="Literacy Rate" value="76.5%" sub="Adult literacy, est. 2024" col="#8b5cf6"/>
-        <Card icon="👶" label="Primary Enrollment" value="95%" sub="Net enrollment rate" col="#10b981"/>
-      </Row4>
-      <div style={{display:'flex',gap:10,marginBottom:10}}>
-        <button onClick={()=>setShowSchools(p=>!p)}
-          style={{padding:'7px 14px',borderRadius:8,border:'1px solid rgba(245,158,11,0.4)',background:showSchools?'rgba(245,158,11,0.15)':'transparent',color:'#f59e0b',cursor:'pointer',fontSize:12}}>
-          {sl?'Loading schools…':showSchools?'✓ OSM Schools Active':'📚 Load OSM Schools'}
-        </button>
-        <button onClick={()=>setShowHosp(p=>!p)}
-          style={{padding:'7px 14px',borderRadius:8,border:'1px solid rgba(239,68,68,0.4)',background:showHosp?'rgba(239,68,68,0.15)':'transparent',color:'#ef4444',cursor:'pointer',fontSize:12}}>
-          {hl?'Loading health…':showHosp?'✓ OSM Health Active':'🏥 Load OSM Health'}
-        </button>
+      <div style={S.kpiWrap}>
+        <KPICard label="Total Population" value="49.9M" sub="Census projection 2024; growth 3.0%/yr" color="#3b82f6" icon="👥"/>
+        <KPICard label="GDP (2024)" value="USD 38.1B" sub="Growth 6.3%; GDP/capita USD 963" color="#22c55e" icon="💰"/>
+        <KPICard label="Districts" value="146" sub="135 districts + 11 cities (2024)" color="#a855f7" icon="🗺"/>
+        <KPICard label="Total Area" value="241,551 km²" sub="Land 197,100 km² + water 44,451 km²" color="#eab308" icon="📐"/>
+        <KPICard label="Capital" value="Kampala" sub="Pop 3.6M metro; 0.3476°N 32.5825°E" color="#f97316" icon="🏙"/>
+        <KPICard label="Literacy Rate" value="79.0%" sub="Adult (15+); Male 83% / Female 75%" color="#06b6d4" icon="📚"/>
+        <KPICard label="Poverty Rate" value="21.4%" sub="Below USD 2.15/day (World Bank 2024)" color="#ef4444" icon="📉"/>
+        <KPICard label="HDI Score" value="0.544" sub="Low Human Dev. — rank 159/193 (2023)" color="#84cc16" icon="🎯"/>
       </div>
-      <MapPanel>
-        {UNIVERSITIES.map(u=>(
-          <CircleMarker key={u.name} center={[u.lat,u.lng]} radius={8}
-            pathOptions={{color:'#f59e0b',fillColor:'#f59e0b',fillOpacity:0.7,weight:2}}>
-            <Popup><b>{u.name}</b><br/><em>{u.type} university</em><br/>{u.value}<br/><small>{u.detail}</small></Popup>
-          </CircleMarker>
-        ))}
-        {HOSPITALS.map(h=>(
-          <CircleMarker key={h.name} center={[h.lat,h.lng]} radius={h.type==='National'?11:7}
-            pathOptions={{color:'#ef4444',fillColor:'#ef4444',fillOpacity:0.7,weight:2}}>
-            <Popup><b>{h.name}</b><br/><em>{h.type} Referral</em><br/>{h.value}<br/><small>{h.detail}</small></Popup>
-          </CircleMarker>
-        ))}
-        {showSchools && schools.filter(s=>s.lat||s.center?.lat).map((s,i)=>(
-          <CircleMarker key={`sch-${i}`} center={[s.lat||s.center?.lat,s.lon||s.center?.lon]} radius={3}
-            pathOptions={{color:'#fbbf24',fillColor:'#fbbf24',fillOpacity:0.5,weight:1}}>
-            <Popup>{s.tags?.name||'School'}</Popup>
-          </CircleMarker>
-        ))}
-        {showHosp && liveHosp.filter(h=>h.lat||h.center?.lat).map((h,i)=>(
-          <CircleMarker key={`hp-${i}`} center={[h.lat||h.center?.lat,h.lon||h.center?.lon]} radius={3}
-            pathOptions={{color:'#f87171',fillColor:'#f87171',fillOpacity:0.5,weight:1}}>
-            <Popup>{h.tags?.name||h.tags?.amenity||'Health facility'}</Popup>
-          </CircleMarker>
-        ))}
-      </MapPanel>
-      <Lgd items={[
-        {color:'#f59e0b',label:'University'},{color:'#ef4444',label:'Referral Hospital'},
-        {color:'#fbbf24',label:'OSM Schools (live)'},{color:'#f87171',label:'OSM Health (live)'},
-      ]}/>
-      <TwoCol>
-        <ChartWrap title="School Enrollment by Level (%)">
-          <ResponsiveContainer width="100%" height={170}>
-            <BarChart data={ENROLL}>
-              <XAxis dataKey="level" tick={{fill:'#94a3b8',fontSize:10}}/>
-              <YAxis domain={[0,100]} tick={{fill:'#94a3b8',fontSize:10}}/>
-              <Ttip/>
-              <Bar dataKey="rate" fill="#f59e0b" name="Enrollment %">
-                {ENROLL.map((_,i)=><Cell key={i} fill={CC[i%CC.length]}/>)}
-              </Bar>
-            </BarChart>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:16, marginBottom:20 }}>
+        <div style={S.card}>
+          <SectionHdr>GDP Growth Trend (USD B)</SectionHdr>
+          <ResponsiveContainer width="100%" height={160}>
+            <AreaChart data={gdpTrend}><XAxis dataKey="yr" tick={{fill:'#64748b',fontSize:10}}/><YAxis tick={{fill:'#64748b',fontSize:10}}/><Tooltip contentStyle={{background:'#1e293b',border:'none',borderRadius:6}}/><Area type="monotone" dataKey="v" stroke="#22c55e" fill="rgba(34,197,94,0.1)"/></AreaChart>
           </ResponsiveContainer>
-        </ChartWrap>
-        <ChartWrap title="Regional HDI Comparison">
-          <ResponsiveContainer width="100%" height={170}>
-            <BarChart data={REGIONS} layout="vertical">
-              <XAxis type="number" domain={[0.4,0.65]} tick={{fill:'#94a3b8',fontSize:10}}/>
-              <YAxis dataKey="name" type="category" tick={{fill:'#94a3b8',fontSize:10}} width={60}/>
-              <Ttip/>
-              <Bar dataKey="hdi" name="HDI Score">
-                {REGIONS.map((r,i)=><Cell key={i} fill={r.color}/>)}
-              </Bar>
-            </BarChart>
+        </div>
+        <div style={S.card}>
+          <SectionHdr>Population by Region (M)</SectionHdr>
+          <ResponsiveContainer width="100%" height={160}>
+            <PieChart><Pie data={popByReg} dataKey="v" nameKey="name" cx="50%" cy="50%" innerRadius={28} outerRadius={60} label={({name})=>name}>{popByReg.map((_,i)=><Cell key={i} fill={PIE_C[i]}/>)}</Pie><Tooltip/></PieChart>
           </ResponsiveContainer>
-        </ChartWrap>
-      </TwoCol>
+        </div>
+        <div style={S.card}>
+          <SectionHdr>GDP by Sector (%)</SectionHdr>
+          <ResponsiveContainer width="100%" height={160}>
+            <PieChart><Pie data={gdpBySec} dataKey="v" nameKey="name" cx="50%" cy="50%" innerRadius={28} outerRadius={60} label={({name,v})=>name+' '+v+'%'}>{gdpBySec.map((_,i)=><Cell key={i} fill={PIE_C[i]}/>)}</Pie><Tooltip/></PieChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+      <div style={S.card}>
+        <SectionHdr>🗺 Uganda Administrative Boundaries + Major Cities</SectionHdr>
+        <div style={{ ...S.mapWrap, position:'relative', height:480 }}>
+          <MapContainer center={UGA} zoom={ZOOM} style={{ height:'100%', width:'100%', background:'#0d1117' }} scrollWheelZoom>
+            <TileLayer url={TILES} attribution={ATTRIBUTION}/>
+            {adm1 && (
+              <GeoJSON data={adm1} style={() => ({ color:'#334155', weight:1, fillColor:'#1e3a5f', fillOpacity:0.25 })}
+                onEachFeature={(f,l) => l.bindPopup('<b>'+f.properties?.shapeName+'</b>')}/>
+            )}
+            {CITIES.map((c,i) => (
+              <CircleMarker key={'ct'+i} center={[c.lat,c.lng]} radius={Math.max(4, Math.sqrt(c.pop/250000)*6)}
+                pathOptions={{ color: c.type==='Capital'?'#fbbf24':c.type==='City'?'#60a5fa':'#94a3b8', fillColor: c.type==='Capital'?'#92400e':'#1e3a5f', fillOpacity:0.85, weight:1.5 }}>
+                <Popup>
+                  <b style={{color:'#fcd34d'}}>{c.n}</b><br/>
+                  <span style={{fontSize:11}}>Population: {c.pop.toLocaleString()}<br/>Type: {c.type}<br/>Region: {c.reg}</span>
+                </Popup>
+              </CircleMarker>
+            ))}
+          </MapContainer>
+        </div>
+        <div style={{fontSize:11,color:'#64748b',marginTop:8}}>🟡 Capital &nbsp;🔵 Cities &nbsp;⚪ Towns &nbsp;(size proportional to population) &nbsp;| ADM1 boundaries from geoBoundaries</div>
+      </div>
+      <DataTable title="District-Level Socioeconomic Statistics"
+        cols={['District','Region','Population','Area (km²)','GDP (USD M)','Poverty %','Literacy %']}
+        rows={DISTRICTS.map(d=>[d.n,d.reg,d.pop.toLocaleString(),d.area_km2.toLocaleString(),String(d.gdp_m),String(d.poverty)+'%',String(d.literacy)+'%'])}/>
+      <AnalysisTable title="Regional Development Index — Tier Classification"
+        cols={['Region','Tier','GDP Share','Poverty Rate','Literacy','Key Assets','Development Constraints','Priority Investment']}
+        rows={[
+          ['Central','Tier 1 — Advanced','34%','14%','88%','Kampala; industry; services; transport hub','Urban congestion; inequality; informal settlements','Urban mobility; industrial upskilling; affordable housing'],
+          ['Eastern','Tier 2 — Emerging','18%','33%','74%','Jinja industry; Mbale trade; Mt Elgon agri','Road connectivity; power reliability; flood risk','SEZ expansion; road corridor; irrigation schemes'],
+          ['Western','Tier 2 — Emerging','22%','27%','76%','Oil (Hoima); tourism; highlands agri; Kasese minerals','Oil revenue management; land conflicts; deforestation','Oil value chain; tourism infrastructure; forest management'],
+          ['Northern','Tier 3 — Developing','14%','44%','65%','Post-conflict recovery; large land; Nile access','Lingering conflict legacy; poor infrastructure; youth unemployment','Roads; schools; health; agro-processing; peace dividends'],
+          ['West Nile','Tier 4 — Lagging','8%','50%','61%','Border trade; refugee resources; arable land','Refugee pressure; weak markets; isolation; power gap','Border trade infrastructure; refugee economic integration'],
+          ['Karamoja','Tier 4 — Lagging','4%','77%','38%','Mineral potential; wildlife; pastoral land','Chronic poverty; climate shocks; conflict; minimal services','Emergency services; climate adaptation; mineral formalisation'],
+        ]}/>
+      <SQLPanel title="Overview & Districts" sql={"CREATE TABLE uga_districts (\n  id            SERIAL PRIMARY KEY,\n  district_name VARCHAR(200) NOT NULL,\n  region        VARCHAR(100),\n  population    BIGINT,\n  area_km2      NUMERIC(10,2),\n  gdp_usd_m     NUMERIC(10,2),\n  poverty_pct   NUMERIC(5,2),\n  literacy_pct  NUMERIC(5,2),\n  lat           NUMERIC(9,6),\n  lng           NUMERIC(9,6),\n  updated_at    TIMESTAMP DEFAULT NOW()\n);\n\nCREATE TABLE uga_cities (\n  id          SERIAL PRIMARY KEY,\n  city_name   VARCHAR(200),\n  city_type   VARCHAR(50),\n  region      VARCHAR(100),\n  population  BIGINT,\n  lat         NUMERIC(9,6),\n  lng         NUMERIC(9,6)\n);\n\n-- Poverty-literacy correlation by district\nSELECT district_name, region, poverty_pct, literacy_pct,\n       ROUND(poverty_pct + (100 - literacy_pct), 1) AS deprivation_index\nFROM uga_districts\nORDER BY deprivation_index DESC\nLIMIT 20;"}/>
     </div>
   );
 }
 
+// ─── RESOURCES TAB ────────────────────────────────────────────────────────────
+function ResourcesTab() {
+  const ovpQ = '[out:json][timeout:30]'+BBOX+';(node["landuse"="quarry"];node["man_made"="mineshaft"];way["landuse"="quarry"];node["industrial"="mine"];);out center;';
+  const { data: osmMines, loading, error } = useOverpass(ovpQ);
+  const mineralTypes = [
+    {name:'Phosphate',v:3},{name:'Iron Ore',v:2},{name:'Gold',v:3},{name:'Copper/Co',v:1},
+    {name:'Limestone',v:2},{name:'REE',v:1},{name:'Nickel',v:1},{name:'Other',v:7},
+  ];
+  const reservesVal = [
+    {name:'Phosphate',v:1990},{name:'Iron Ore',v:2100},{name:'Gold',v:300},
+    {name:'Copper',v:320},{name:'REE',v:210},{name:'Nickel',v:85},
+  ];
+  const exportTrend = [
+    {yr:'2019',v:680},{yr:'2020',v:520},{yr:'2021',v:890},{yr:'2022',v:1240},
+    {yr:'2023',v:1380},{yr:'2024',v:1520},
+  ];
+  return (
+    <div>
+      <div style={S.kpiWrap}>
+        <KPICard label="Mineral Sites" value="20+" sub="Documented deposits; 100+ artisanal" color="#eab308" icon="⛏"/>
+        <KPICard label="Active Mines" value="8" sub="Licensed & operational (2024)" color="#22c55e" icon="🏗"/>
+        <KPICard label="Oil Reserves" value="6.5B bbl" sub="In-place; ~1.4B recoverable (Albertine)" color="#3b82f6" icon="🛢"/>
+        <KPICard label="Mining GDP %" value="2.1%" sub="USD 800M direct contribution (2024)" color="#a855f7" icon="📊"/>
+        <KPICard label="Mineral Exports" value="USD 1.52B" sub="Gold 75%, other minerals 25%" color="#f97316" icon="📦"/>
+        <KPICard label="Oil Blocks Total" value="6" sub="EA1, EA2, EA1A, EA3A, EA3B, EACOP" color="#06b6d4" icon="🗺"/>
+        <KPICard label="Phosphate Reserves" value="230Mt" sub="Sukulu + Tororo; world-class deposit" color="#ef4444" icon="🧪"/>
+        <KPICard label="Iron Ore Reserves" value="162Mt" sub="Muko (Kabale); 42% Fe grade" color="#84cc16" icon="⚙"/>
+      </div>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:16, marginBottom:20 }}>
+        <div style={S.card}>
+          <SectionHdr>Mineral Types (# sites)</SectionHdr>
+          <ResponsiveContainer width="100%" height={160}>
+            <PieChart><Pie data={mineralTypes} dataKey="v" nameKey="name" cx="50%" cy="50%" innerRadius={28} outerRadius={58} label={({name})=>name}>{mineralTypes.map((_,i)=><Cell key={i} fill={PIE_C[i]}/>)}</Pie><Tooltip/></PieChart>
+          </ResponsiveContainer>
+        </div>
+        <div style={S.card}>
+          <SectionHdr>Estimated Reserves Value (USD M)</SectionHdr>
+          <ResponsiveContainer width="100%" height={160}>
+            <BarChart data={reservesVal}><XAxis dataKey="name" tick={{fill:'#64748b',fontSize:9}}/><YAxis tick={{fill:'#64748b',fontSize:9}}/><Tooltip contentStyle={{background:'#1e293b',border:'none',borderRadius:6}}/><Bar dataKey="v" fill="#eab308" radius={[3,3,0,0]}/></BarChart>
+          </ResponsiveContainer>
+        </div>
+        <div style={S.card}>
+          <SectionHdr>Mineral Export Revenue Trend (USD M)</SectionHdr>
+          <ResponsiveContainer width="100%" height={160}>
+            <AreaChart data={exportTrend}><XAxis dataKey="yr" tick={{fill:'#64748b',fontSize:10}}/><YAxis tick={{fill:'#64748b',fontSize:10}}/><Tooltip contentStyle={{background:'#1e293b',border:'none',borderRadius:6}}/><Area type="monotone" dataKey="v" stroke="#eab308" fill="rgba(234,179,8,0.1)"/></AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+      <div style={S.card}>
+        <SectionHdr>⛏ Mineral Deposits + Oil Blocks + Live OSM Quarries/Mines</SectionHdr>
+        <div style={{ ...S.mapWrap, position:'relative', height:480 }}>
+          <MapLoadingOverlay loading={loading} error={error}/>
+          <MapContainer center={UGA} zoom={ZOOM} style={{ height:'100%', width:'100%', background:'#0d1117' }} scrollWheelZoom>
+            <TileLayer url={TILES} attribution={ATTRIBUTION}/>
+            {MINERALS.map((m,i) => (
+              <CircleMarker key={'min'+i} center={[m.lat,m.lng]} radius={Math.max(5, Math.sqrt(m.val_usd_m/20))}
+                pathOptions={{ color: m.status==='Active'?'#eab308':'#64748b', fillColor: m.status==='Active'?'#92400e':'#374151', fillOpacity:0.85, weight:1.5 }}>
+                <Popup>
+                  <b style={{color:'#fcd34d'}}>{m.n}</b><br/>
+                  <span style={{fontSize:11}}>Type: {m.type}<br/>Status: {m.status}<br/>District: {m.dist}<br/>Reserves: {m.res}<br/>Grade: {m.grade}<br/>Est. Value: {'USD '+m.val_usd_m+'M'}</span>
+                </Popup>
+              </CircleMarker>
+            ))}
+            {OIL_BLOCKS.map((o,i) => (
+              <CircleMarker key={'oil'+i} center={[o.lat,o.lng]} radius={12}
+                pathOptions={{ color:'#3b82f6', fillColor:'#1e3a5f', fillOpacity:0.7, weight:2 }}>
+                <Popup>
+                  <b style={{color:'#60a5fa'}}>{o.n}</b><br/>
+                  <span style={{fontSize:11}}>Operator: {o.op}<br/>Status: {o.status}<br/>Field: {o.field}<br/>Reserves: {o.res}<br/>First Oil: {o.first_oil}</span>
+                </Popup>
+              </CircleMarker>
+            ))}
+            {osmMines.filter((e:any)=>e.lat||e.center?.lat).map((e:any,i:number) => (
+              <CircleMarker key={'om'+i} center={[e.lat||e.center?.lat,e.lon||e.center?.lon]} radius={4}
+                pathOptions={{ color:'#a855f7', fillColor:'#6b21a8', fillOpacity:0.65, weight:1 }}>
+                <Popup><span style={{fontSize:11}}>OSM: {e.tags?.name||e.tags?.landuse||'Quarry/Mine'}</span></Popup>
+              </CircleMarker>
+            ))}
+          </MapContainer>
+        </div>
+        <div style={{fontSize:11,color:'#64748b',marginTop:8}}>🟡 Active Mine (size=est. value) &nbsp;⚫ Explored &nbsp;🔵 Oil Block &nbsp;🟣 OSM quarries ({osmMines.length} features)</div>
+      </div>
+      <DataTable title="Mineral Deposits — Complete Registry"
+        cols={['Name','Type','Status','District','Reserves','Grade','Est. Value (USD M)']}
+        rows={MINERALS.map(m=>[m.n,m.type,m.status,m.dist,m.res,m.grade,String(m.val_usd_m)])}/>
+      <DataTable title="Oil & Gas Blocks — Albertine Rift"
+        cols={['Block Name','Operator','Status','Field(s)','Reserves','First Oil/Gas']}
+        rows={OIL_BLOCKS.map(o=>[o.n,o.op,o.status,o.field,o.res,o.first_oil])}/>
+      <AnalysisTable title="Extractive Sector Investment Priority Matrix"
+        cols={['Commodity','Reserves Size','Current Dev. Stage','Barriers to Dev.','Strategic Value','Investment Priority','Recommended Action']}
+        rows={[
+          ['Oil (Albertine)','6.5B bbl in-place','Development/FEED','EACOP financing; land acquisition; ESG risk','Transformational — 40% export rev by 2029','CRITICAL','Accelerate EACOP; local content; refinery feasibility'],
+          ['Phosphate (Sukulu/Tororo)','510Mt combined','Early production','Processing plant capex; market access','Food security — fertiliser self-sufficiency','HIGH','Phosphate fertiliser complex; SSP/DAP plant'],
+          ['Iron Ore (Muko)','162Mt @ 42% Fe','Exploration complete','No smelter; power cost; rail required','Steel for construction boom; import substitution','HIGH','DRI-EAF mini-mill; Muko-Kabale rail spur'],
+          ['Gold (Busia, Mubende)','Artisanal + 2Mt ore','Active artisanal + small','Formalisation; mercury pollution; smuggling','USD 300M+ revenue; community wealth','MEDIUM','ASM formalisation; assay labs; export licensing'],
+          ['Copper/Cobalt (Kilembe)','4.5Mt @ 1.8% Cu','Mothballed since 1979','Rehabilitation cost USD 400M; tailings','EV battery value chain; regional refining','MEDIUM','PPP rehabilitation; cobalt refinery; ESG framework'],
+          ['Rare Earth Elements (Agago)','1.8Mt @ 1.2% TREO','Early exploration','Processing complexity; tech transfer','Strategic minerals — EV + defence supply chain','MEDIUM','Strategic partnership; exploration programme'],
+          ['Limestone (Hima)','500Mt','Active — cement','Market demand ceiling; dust/air quality','Cement self-sufficiency; EACOP demand','LOW-MED','Environmental management; capacity expansion'],
+          ['Nickel (Tiira)','4Mt @ 0.6% Ni','Exploration','Low nickel price; laterite processing','EV batteries; stainless steel','LOW','Feasibility study; await nickel price recovery'],
+        ]}/>
+      <SQLPanel title="Mineral Deposits & Oil Blocks" sql={"CREATE TABLE mineral_deposits (\n  id          SERIAL PRIMARY KEY,\n  site_name   VARCHAR(200) NOT NULL,\n  mineral_type VARCHAR(100),\n  status      VARCHAR(50),\n  district    VARCHAR(100),\n  reserves    VARCHAR(200),\n  grade       VARCHAR(100),\n  est_value_usd_m NUMERIC(10,2),\n  lat         NUMERIC(9,6),\n  lng         NUMERIC(9,6)\n);\n\nCREATE TABLE oil_gas_blocks (\n  id          SERIAL PRIMARY KEY,\n  block_name  VARCHAR(200) NOT NULL,\n  operator    VARCHAR(200),\n  status      VARCHAR(100),\n  field_name  VARCHAR(200),\n  reserves_bbl VARCHAR(200),\n  first_oil_yr INTEGER,\n  lat         NUMERIC(9,6),\n  lng         NUMERIC(9,6)\n);\n\n-- Total estimated mineral value by type\nSELECT mineral_type,\n       COUNT(*) AS sites,\n       SUM(est_value_usd_m) AS total_value_m,\n       STRING_AGG(site_name, ', ') AS sites_list\nFROM mineral_deposits\nGROUP BY mineral_type\nORDER BY total_value_m DESC;"}/>
+    </div>
+  );
+}
+
+// ─── ENERGY TAB ───────────────────────────────────────────────────────────────
+function EnergyTab() {
+  const ovpQ = '[out:json][timeout:30]'+BBOX+';(node["power"="plant"];way["power"="plant"];node["waterway"="dam"];way["waterway"="dam"];);out center;';
+  const { data: osmPwr, loading, error } = useOverpass(ovpQ);
+  const energyMix = [{name:'Hydropower',v:94},{name:'Solar',v:3},{name:'Biomass',v:2},{name:'Thermal',v:1}];
+  const capTrend = [{yr:'2015',mw:856},{yr:'2016',mw:862},{yr:'2017',mw:1006},{yr:'2018',mw:1010},{yr:'2019',mw:1804},{yr:'2020',mw:1820},{yr:'2021',mw:1960},{yr:'2022',mw:2050},{yr:'2023',mw:2180},{yr:'2024',mw:2320}];
+  const accessByReg = [{reg:'Central',pct:72},{reg:'Eastern',pct:38},{reg:'Western',pct:32},{reg:'Northern',pct:21},{reg:'West Nile',pct:18},{reg:'Karamoja',pct:9}];
+  const totalCap = POWER_PLANTS.reduce((s:number,p:any)=>s+p.cap_mw,0);
+  return (
+    <div>
+      <div style={S.kpiWrap}>
+        <KPICard label="Installed Capacity" value={totalCap.toFixed(0)+' MW'} sub="Operational + under development" color="#3b82f6" icon="⚡"/>
+        <KPICard label="Electrification Rate" value="48.4%" sub="Urban 72% / Rural 22%" color="#22c55e" icon="💡"/>
+        <KPICard label="Hydropower Share" value="94%" sub="Nile-based generation dominance" color="#06b6d4" icon="💧"/>
+        <KPICard label="Power Plants" value={String(POWER_PLANTS.length)} sub="Hydro + Solar + Thermal sites" color="#eab308" icon="🏭"/>
+        <KPICard label="Energy Access Gap" value="26M people" sub="Without grid electricity (2024)" color="#ef4444" icon="🔌"/>
+        <KPICard label="Peak Demand" value="760 MW" sub="System peak (2024), growing 8%/yr" color="#a855f7" icon="📈"/>
+        <KPICard label="Off-grid Solar" value="1.2M HH" sub="Solar home systems deployed" color="#f97316" icon="☀"/>
+        <KPICard label="NERP Target" value="4,000 MW" sub="National electrification by 2030" color="#14b8a6" icon="🎯"/>
+      </div>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:16, marginBottom:20 }}>
+        <div style={S.card}>
+          <SectionHdr>Generation Mix (%)</SectionHdr>
+          <ResponsiveContainer width="100%" height={160}>
+            <PieChart><Pie data={energyMix} dataKey="v" nameKey="name" cx="50%" cy="50%" innerRadius={30} outerRadius={60} label={({name,v}:{name:string,v:number})=>name+' '+v+'%'}>{energyMix.map((_,i)=><Cell key={i} fill={PIE_C[i]}/>)}</Pie><Tooltip/></PieChart>
+          </ResponsiveContainer>
+        </div>
+        <div style={S.card}>
+          <SectionHdr>Installed Capacity Trend (MW)</SectionHdr>
+          <ResponsiveContainer width="100%" height={160}>
+            <AreaChart data={capTrend}><XAxis dataKey="yr" tick={{fill:'#64748b',fontSize:9}}/><YAxis tick={{fill:'#64748b',fontSize:9}}/><Tooltip contentStyle={{background:'#1e293b',border:'none',borderRadius:6}}/><Area type="monotone" dataKey="mw" stroke="#3b82f6" fill="rgba(59,130,246,0.1)"/></AreaChart>
+          </ResponsiveContainer>
+        </div>
+        <div style={S.card}>
+          <SectionHdr>Electrification Rate by Region (%)</SectionHdr>
+          <ResponsiveContainer width="100%" height={160}>
+            <BarChart data={accessByReg}><XAxis dataKey="reg" tick={{fill:'#64748b',fontSize:9}}/><YAxis tick={{fill:'#64748b',fontSize:9}}/><Tooltip contentStyle={{background:'#1e293b',border:'none',borderRadius:6}}/><Bar dataKey="pct" name="Access %" fill="#22c55e" radius={[3,3,0,0]}/></BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+      <div style={S.card}>
+        <SectionHdr>⚡ Power Plants — Operational & Under Development + Live OSM Infrastructure</SectionHdr>
+        <div style={{ ...S.mapWrap, position:'relative', height:480 }}>
+          <MapLoadingOverlay loading={loading} error={error}/>
+          <MapContainer center={UGA} zoom={ZOOM} style={{ height:'100%', width:'100%', background:'#0d1117' }} scrollWheelZoom>
+            <TileLayer url={TILES} attribution={ATTRIBUTION}/>
+            {POWER_PLANTS.map((p:any,i:number) => (
+              <CircleMarker key={'pp'+i} center={[p.lat,p.lng]} radius={Math.max(5, Math.sqrt(p.cap_mw/6))}
+                pathOptions={{color:p.type==='Hydro'?'#3b82f6':p.type==='Solar'?'#eab308':'#ef4444',fillColor:p.status==='Operational'?p.type==='Hydro'?'#1d4ed8':'#ca8a04':'#374151',fillOpacity:0.85,weight:1.5}}>
+                <Popup>
+                  <b style={{color:'#60a5fa'}}>{p.n}</b><br/>
+                  <span style={{fontSize:11}}>Type: {p.type}<br/>Capacity: {p.cap_mw} MW<br/>Status: {p.status}<br/>River: {p.river}<br/>Year: {p.yr}</span>
+                </Popup>
+              </CircleMarker>
+            ))}
+            {osmPwr.filter((e:any)=>e.lat||e.center?.lat).map((e:any,i:number) => (
+              <CircleMarker key={'op'+i} center={[e.lat||e.center?.lat,e.lon||e.center?.lon]} radius={4}
+                pathOptions={{color:'#a855f7',fillColor:'#7c3aed',fillOpacity:0.65,weight:1}}>
+                <Popup><span style={{fontSize:11}}>OSM: {e.tags?.name||e.tags?.power||'Power facility'}</span></Popup>
+              </CircleMarker>
+            ))}
+          </MapContainer>
+        </div>
+        <div style={{fontSize:11,color:'#64748b',marginTop:8}}>🔵 Hydro (size=capacity MW) &nbsp;🟡 Solar &nbsp;🔴 Thermal &nbsp;⚫ Planned &nbsp;🟣 OSM features ({osmPwr.length})</div>
+      </div>
+      <DataTable title="Power Plants — Complete Registry"
+        cols={['Plant Name','Type','Capacity (MW)','Status','River/Source','Year Commissioned']}
+        rows={POWER_PLANTS.map((p:any)=>[p.n,p.type,String(p.cap_mw),p.status,p.river,String(p.yr)])}/>
+      <AnalysisTable title="Energy Sector Gap & Investment Analysis"
+        cols={['Category','Current Status','Target 2030','Gap','Investment Needed','Key Actions']}
+        rows={[
+          ['Generation Capacity','2,320 MW','4,000 MW','1,680 MW','USD 3.2B','Karuma comm.; Ayago 840MW; Kiba 380MW; Isimba optimization'],
+          ['Grid Electrification','48.4% HH','80% HH','31.6% HH','USD 2.8B','Rural electrification programme; last-mile connections; mini-grids'],
+          ['Transmission Lines','~3,100 km','5,500 km','2,400 km','USD 1.4B','400kV backbone; East African Power Pool interconnectors'],
+          ['Industrial Park Power','840 MW allocated','2,000 MW','1,160 MW','USD 1.1B','Dedicated industrial feeders; SEZ substations; captive power'],
+          ['Solar PV (commercial)','15 MW grid-tied','500 MW','485 MW','USD 450M','Net metering regulation; Feed-in Tariff for solar; rooftop programme'],
+          ['Cooking Energy','12% clean HH','60% clean HH','48% HH','USD 180M','LPG subsidies; improved biomass cookstove national programme'],
+          ['Energy Poverty','26M without power','<5M without','21M people','USD 2.1B','Grid densification + off-grid solar home systems + mini-hydro'],
+          ['Energy Exports','180 MW to neighbours','800 MW','620 MW','USD 600M','Expand EAC interconnectors; SAPP membership; surplus sales to DRC'],
+        ]}/>
+      <SQLPanel title="Power Infrastructure" sql={"CREATE TABLE power_plants (\n  id            SERIAL PRIMARY KEY,\n  plant_name    VARCHAR(200) NOT NULL,\n  plant_type    VARCHAR(50),   -- Hydro/Solar/Thermal/Wind\n  capacity_mw   NUMERIC(8,2),\n  status        VARCHAR(50),   -- Operational/Under Dev/Planned\n  river_source  VARCHAR(100),\n  year_commissioned INTEGER,\n  operator      VARCHAR(200),\n  lat           NUMERIC(9,6),\n  lng           NUMERIC(9,6)\n);\n\nCREATE TABLE electricity_access (\n  id          SERIAL PRIMARY KEY,\n  district    VARCHAR(100),\n  region      VARCHAR(100),\n  access_pct  NUMERIC(5,2),\n  grid_pct    NUMERIC(5,2),\n  solar_pct   NUMERIC(5,2),\n  survey_year INTEGER\n);\n\n-- Capacity by type and status\nSELECT plant_type, status,\n       COUNT(*) AS plants,\n       SUM(capacity_mw) AS total_mw,\n       ROUND(AVG(capacity_mw),1) AS avg_mw\nFROM power_plants\nGROUP BY plant_type, status\nORDER BY total_mw DESC;"}/>
+    </div>
+  );
+}
+
+// ─── AGRICULTURE TAB ──────────────────────────────────────────────────────────
+function AgriTab() {
+  const ovpQ = '[out:json][timeout:30]'+BBOX+';(node["amenity"="marketplace"];node["shop"="agrarian"];way["landuse"="farmland"];);out center;';
+  const { data: osmAgri, loading, error } = useOverpass(ovpQ);
+  const cropRev = [{crop:'Coffee',rev:610},{crop:'Gold',rev:1140},{crop:'Fish',rev:420},{crop:'Maize',rev:380},{crop:'Tea',rev:210},{crop:'Sugar',rev:195},{crop:'Vanilla',rev:145},{crop:'Cotton',rev:95}];
+  const agriGdp = [{yr:'2019',v:22.8},{yr:'2020',v:23.5},{yr:'2021',v:23.9},{yr:'2022',v:24.1},{yr:'2023',v:24.4},{yr:'2024',v:24.0}];
+  const cropProd = [{crop:'Plantain',prod:9800},{crop:'Cassava',prod:7400},{crop:'Maize',prod:3800},{crop:'Sweet Pot.',prod:3200},{crop:'Sugarcane',prod:2900},{crop:'Beans',prod:1800},{crop:'Coffee',prod:960},{crop:'Millet',prod:820}];
+  return (
+    <div>
+      <div style={S.kpiWrap}>
+        <KPICard label="Agricultural Area" value="10.4M ha" sub="43% of total land area (cultivated)" color="#22c55e" icon="🌾"/>
+        <KPICard label="Total Crop Production" value="31.5M t" sub="All crops combined (2024 estimate)" color="#84cc16" icon="🌽"/>
+        <KPICard label="Coffee Exports" value="USD 610M" sub="#1 agricultural export commodity" color="#eab308" icon="☕"/>
+        <KPICard label="Agricultural GDP" value="24.0%" sub="USD 9.1B contribution (2024)" color="#f97316" icon="📊"/>
+        <KPICard label="Farming Households" value="4.0M" sub="77% of population subsistence-dependent" color="#a855f7" icon="👨‍🌾"/>
+        <KPICard label="Irrigated Area" value="145,000 ha" sub="3% of arable land; NAIP target 700k ha by 2030" color="#06b6d4" icon="💧"/>
+        <KPICard label="Fish Exports" value="USD 420M" sub="2024; Lake Victoria + Kyoga + Albert" color="#3b82f6" icon="🐟"/>
+        <KPICard label="Vanilla Export Value" value="USD 145M" sub="Uganda = 2nd largest global vanilla exporter" color="#ef4444" icon="🌿"/>
+      </div>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:16, marginBottom:20 }}>
+        <div style={S.card}>
+          <SectionHdr>Top Export Commodity Revenue (USD M)</SectionHdr>
+          <ResponsiveContainer width="100%" height={160}>
+            <BarChart data={cropRev}><XAxis dataKey="crop" tick={{fill:'#64748b',fontSize:9}}/><YAxis tick={{fill:'#64748b',fontSize:9}}/><Tooltip contentStyle={{background:'#1e293b',border:'none',borderRadius:6}}/><Bar dataKey="rev" fill="#22c55e" radius={[3,3,0,0]}/></BarChart>
+          </ResponsiveContainer>
+        </div>
+        <div style={S.card}>
+          <SectionHdr>Agricultural GDP Share Trend (%)</SectionHdr>
+          <ResponsiveContainer width="100%" height={160}>
+            <AreaChart data={agriGdp}><XAxis dataKey="yr" tick={{fill:'#64748b',fontSize:10}}/><YAxis domain={[20,28]} tick={{fill:'#64748b',fontSize:10}}/><Tooltip contentStyle={{background:'#1e293b',border:'none',borderRadius:6}}/><Area type="monotone" dataKey="v" stroke="#22c55e" fill="rgba(34,197,94,0.1)"/></AreaChart>
+          </ResponsiveContainer>
+        </div>
+        <div style={S.card}>
+          <SectionHdr>Top Crops by Production (000 t)</SectionHdr>
+          <ResponsiveContainer width="100%" height={160}>
+            <BarChart data={cropProd} layout="vertical"><XAxis type="number" tick={{fill:'#64748b',fontSize:9}}/><YAxis dataKey="crop" type="category" tick={{fill:'#64748b',fontSize:9}} width={70}/><Tooltip contentStyle={{background:'#1e293b',border:'none',borderRadius:6}}/><Bar dataKey="prod" fill="#84cc16" radius={[0,3,3,0]}/></BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+      <div style={S.card}>
+        <SectionHdr>🌾 Agricultural Zones, Agro-Markets & Live OSM Farm Data</SectionHdr>
+        <div style={{ ...S.mapWrap, position:'relative', height:480 }}>
+          <MapLoadingOverlay loading={loading} error={error}/>
+          <MapContainer center={UGA} zoom={ZOOM} style={{ height:'100%', width:'100%', background:'#0d1117' }} scrollWheelZoom>
+            <TileLayer url={TILES} attribution={ATTRIBUTION}/>
+            {AGRI_ZONES.map((a:any,i:number) => (
+              <CircleMarker key={'az'+i} center={[a.lat,a.lng]} radius={Math.max(10, Math.sqrt(a.area_ha/35000))}
+                pathOptions={{color:'#22c55e',fillColor:'#166534',fillOpacity:0.6,weight:1.5}}>
+                <Popup>
+                  <b style={{color:'#4ade80'}}>{a.n}</b><br/>
+                  <span style={{fontSize:11}}>Main Crops: {a.crops}<br/>Area: {(a.area_ha/1000).toFixed(0)}k ha<br/>Production: {(a.prod_t/1000).toFixed(0)}k t/yr<br/>Rainfall: {a.rain_mm} mm/yr<br/>Soil: {a.soil}<br/>Export Crop: {a.export_crop}<br/>Farm HH: {a.farmhh.toLocaleString()}</span>
+                </Popup>
+              </CircleMarker>
+            ))}
+            {osmAgri.filter((e:any)=>e.lat||e.center?.lat).map((e:any,i:number) => (
+              <CircleMarker key={'om'+i} center={[e.lat||e.center?.lat,e.lon||e.center?.lon]} radius={3}
+                pathOptions={{color:'#84cc16',fillColor:'#4d7c0f',fillOpacity:0.7,weight:1}}>
+                <Popup><span style={{fontSize:11}}>OSM: {e.tags?.name||e.tags?.amenity||e.tags?.landuse||'Agri feature'}</span></Popup>
+              </CircleMarker>
+            ))}
+          </MapContainer>
+        </div>
+        <div style={{fontSize:11,color:'#64748b',marginTop:8}}>🟢 Agricultural Zone (size=area) &nbsp;🟩 OSM Markets/Farmland ({osmAgri.length} features loaded)</div>
+      </div>
+      <DataTable title="Agricultural Zones — Detailed Production Data"
+        cols={['Zone','Main Crops','Area (ha)','Production (t/yr)','Rainfall (mm)','Soil Type','Export Crop','Farm Households']}
+        rows={AGRI_ZONES.map((a:any)=>[a.n,a.crops,a.area_ha.toLocaleString(),a.prod_t.toLocaleString(),String(a.rain_mm),a.soil,a.export_crop,a.farmhh.toLocaleString()])}/>
+      <AnalysisTable title="Agricultural Productivity & Food Security Analysis"
+        cols={['Zone','Yield t/ha','Nat. Avg t/ha','Yield Gap','Water Access','Market Score','Food Security','Priority Intervention']}
+        rows={[
+          ['Buganda Basin','3.75','2.40','+56%','Rain-fed bimodal + irrigation','8.2/10','Food Secure','Coffee value chain upgrading; post-harvest loss reduction from 35%'],
+          ['Ankole Highlands','3.50','2.40','+46%','Bimodal rain-fed; adequate','6.8/10','Moderately Secure','Arabica certification; dairy + beef value chain development'],
+          ['Nile Valley North','2.21','1.80','+23%','Uni-modal; periodic drought risk','5.1/10','Food Insecure','Drought-tolerant varieties (NARO); small-scale irrigation units'],
+          ['Karamoja Arid Zone','0.90','0.80','+13%','Highly variable; severe dry spells','2.8/10','Severely Insecure','Emergency irrigation; livelihood diversification; livestock insurance'],
+          ['Busoga Sugarbelt','4.57','3.50','+31%','Bimodal; adequate — some waterlog','7.9/10','Food Secure','Sugar processing upgrade; maize + cassava diversification; storage'],
+          ['Rwenzori Slopes','1.68','1.40','+20%','High rainfall; waterlogging risk','5.5/10','Moderately Secure','Tea extension + vanilla premium; terracing; drainage improvement'],
+          ['West Nile Corridor','2.33','1.90','+23%','Uni-modal; adequate','5.8/10','Borderline Insecure','Tobacco crop alternatives; sunflower oil value chain; cooperatives'],
+          ['Teso Cotton Belt','2.18','1.75','+25%','Bi-modal with dry spells','5.4/10','Borderline Insecure','Cotton revival programme; sunflower + groundnuts diversification'],
+        ]}/>
+      <SQLPanel title="Agricultural Zones & Markets" sql={"CREATE TABLE agri_zones (\n  id            SERIAL PRIMARY KEY,\n  zone_name     VARCHAR(200),\n  main_crops    TEXT,\n  area_ha       BIGINT,\n  production_t  BIGINT,\n  rainfall_mm   INTEGER,\n  soil_type     VARCHAR(100),\n  export_crop   VARCHAR(100),\n  farm_hh       INTEGER,\n  lat           NUMERIC(9,6),\n  lng           NUMERIC(9,6)\n);\n\nCREATE TABLE agri_markets (\n  id          SERIAL PRIMARY KEY,\n  market_name VARCHAR(200),\n  district    VARCHAR(100),\n  market_type VARCHAR(50),  -- wholesale/retail/border\n  traders_n   INTEGER,\n  weekly_turnover_m NUMERIC(10,2),\n  lat         NUMERIC(9,6),\n  lng         NUMERIC(9,6)\n);\n\n-- Zone productivity ranking\nSELECT zone_name, main_crops,\n       area_ha, production_t,\n       ROUND(production_t::NUMERIC/area_ha,2) AS yield_t_ha,\n       farm_hh,\n       ROUND(production_t::NUMERIC/farm_hh,1) AS prod_per_hh_t\nFROM agri_zones\nORDER BY yield_t_ha DESC;"}/>
+    </div>
+  );
+}
+
+// ─── ENVIRONMENT TAB ──────────────────────────────────────────────────────────
+function EnvironmentTab() {
+  const ovpQ = '[out:json][timeout:30]'+BBOX+';(way["leisure"="nature_reserve"];relation["boundary"="protected_area"];node["natural"="water"];);out center;';
+  const { data: osmEnv, loading, error } = useOverpass(ovpQ);
+  const paTypes = [{name:'National Parks',v:10},{name:'Forest Reserves',v:506},{name:'Game Reserves',v:12},{name:'Wildlife Sanctuaries',v:9},{name:'Ramsar Wetlands',v:12}];
+  const forestTrend = [{yr:'2000',v:4.9},{yr:'2005',v:4.3},{yr:'2010',v:3.8},{yr:'2015',v:3.4},{yr:'2020',v:3.2},{yr:'2024',v:3.1}];
+  const waterArea = [{name:'L. Victoria',v:31093},{name:'L. Albert',v:5347},{name:'L. Kyoga',v:2700},{name:'L. Edward',v:2325},{name:'Others',v:2763}];
+  return (
+    <div>
+      <div style={S.kpiWrap}>
+        <KPICard label="Protected Areas" value="37,000 km²" sub="15.3% of Uganda total area" color="#22c55e" icon="🌿"/>
+        <KPICard label="National Parks" value="10" sub="~4,903 km² gazetted area" color="#84cc16" icon="🦁"/>
+        <KPICard label="Forest Cover" value="3.1M ha" sub="Down from 4.9M ha in 2000 (-37%)" color="#ef4444" icon="🌳"/>
+        <KPICard label="Wetland Cover" value="13.1%" sub="3.16M ha; declining ~2%/yr" color="#06b6d4" icon="🐊"/>
+        <KPICard label="Freshwater Area" value="44,228 km²" sub="18% of Uganda is water surface" color="#3b82f6" icon="💧"/>
+        <KPICard label="Carbon Stock" value="580 Mt CO₂e" sub="Forests + wetlands combined (est.)" color="#a855f7" icon="🌡"/>
+        <KPICard label="Endangered Species" value="70+" sub="IUCN Red List CR + EN (flora + fauna)" color="#f97316" icon="🦍"/>
+        <KPICard label="UNESCO World Heritage" value="3 sites" sub="Bwindi, Rwenzori Mountains, Kasubi Tombs" color="#eab308" icon="🏆"/>
+      </div>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:16, marginBottom:20 }}>
+        <div style={S.card}>
+          <SectionHdr>Protected Areas by Category</SectionHdr>
+          <ResponsiveContainer width="100%" height={160}>
+            <PieChart><Pie data={paTypes} dataKey="v" nameKey="name" cx="50%" cy="50%" innerRadius={28} outerRadius={58} label={({name}:{name:string})=>name}>{paTypes.map((_,i)=><Cell key={i} fill={PIE_C[i]}/>)}</Pie><Tooltip/></PieChart>
+          </ResponsiveContainer>
+        </div>
+        <div style={S.card}>
+          <SectionHdr>Forest Cover Loss 2000-2024 (M ha)</SectionHdr>
+          <ResponsiveContainer width="100%" height={160}>
+            <AreaChart data={forestTrend}><XAxis dataKey="yr" tick={{fill:'#64748b',fontSize:10}}/><YAxis domain={[2,6]} tick={{fill:'#64748b',fontSize:10}}/><Tooltip contentStyle={{background:'#1e293b',border:'none',borderRadius:6}}/><Area type="monotone" dataKey="v" stroke="#ef4444" fill="rgba(239,68,68,0.1)"/></AreaChart>
+          </ResponsiveContainer>
+        </div>
+        <div style={S.card}>
+          <SectionHdr>Major Lakes Area (km²)</SectionHdr>
+          <ResponsiveContainer width="100%" height={160}>
+            <BarChart data={waterArea}><XAxis dataKey="name" tick={{fill:'#64748b',fontSize:9}}/><YAxis tick={{fill:'#64748b',fontSize:9}}/><Tooltip contentStyle={{background:'#1e293b',border:'none',borderRadius:6}}/><Bar dataKey="v" fill="#06b6d4" radius={[3,3,0,0]}/></BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+      <div style={S.card}>
+        <SectionHdr>🌿 Protected Areas, Lakes & Wetlands + Live OSM Environmental Features</SectionHdr>
+        <div style={{ ...S.mapWrap, position:'relative', height:480 }}>
+          <MapLoadingOverlay loading={loading} error={error}/>
+          <MapContainer center={UGA} zoom={ZOOM} style={{ height:'100%', width:'100%', background:'#0d1117' }} scrollWheelZoom>
+            <TileLayer url={TILES} attribution={ATTRIBUTION}/>
+            {PROTECTED_AREAS.map((p:any,i:number) => (
+              <CircleMarker key={'pa'+i} center={[p.lat,p.lng]} radius={Math.max(7, Math.sqrt(p.area_km2/35))}
+                pathOptions={{color:p.type==='National Park'?'#22c55e':'#84cc16',fillColor:p.type==='National Park'?'#166534':'#3f6212',fillOpacity:0.7,weight:p.whs?2.5:1.5}}>
+                <Popup>
+                  <b style={{color:'#4ade80'}}>{p.n}{p.whs?' 🏆':''}</b><br/>
+                  <span style={{fontSize:11}}>Type: {p.type}<br/>Area: {p.area_km2.toLocaleString()} km²<br/>Key Animals: {p.animals}<br/>Established: {p.established}<br/>UNESCO WHS: {p.whs?'Yes':'No'}</span>
+                </Popup>
+              </CircleMarker>
+            ))}
+            {WETLANDS.map((w:any,i:number) => (
+              <CircleMarker key={'wl'+i} center={[w.lat,w.lng]} radius={Math.max(6, Math.sqrt(w.area_km2/200))}
+                pathOptions={{color:'#06b6d4',fillColor:'#0e7490',fillOpacity:0.6,weight:1.5}}>
+                <Popup>
+                  <b style={{color:'#67e8f9'}}>{w.n}</b><br/>
+                  <span style={{fontSize:11}}>Type: {w.type}<br/>Area: {w.area_km2.toLocaleString()} km²<br/>Depth: {w.depth_m}m<br/>Shared with: {w.sh}</span>
+                </Popup>
+              </CircleMarker>
+            ))}
+            {osmEnv.filter((e:any)=>e.lat||e.center?.lat).map((e:any,i:number) => (
+              <CircleMarker key={'oe'+i} center={[e.lat||e.center?.lat,e.lon||e.center?.lon]} radius={3}
+                pathOptions={{color:'#a855f7',fillColor:'#6b21a8',fillOpacity:0.6,weight:1}}>
+                <Popup><span style={{fontSize:11}}>OSM: {e.tags?.name||e.tags?.leisure||'Protected area'}</span></Popup>
+              </CircleMarker>
+            ))}
+          </MapContainer>
+        </div>
+        <div style={{fontSize:11,color:'#64748b',marginTop:8}}>🟢 National Park &nbsp;🟩 Game/Wildlife Reserve &nbsp;🔵 Lake/Wetland (size=area) &nbsp;🟣 OSM env. features &nbsp;🏆 UNESCO WHS</div>
+      </div>
+      <DataTable title="Protected Areas — Complete Registry"
+        cols={['Name','Type','Area (km²)','Key Wildlife','Established','UNESCO WHS']}
+        rows={PROTECTED_AREAS.map((p:any)=>[p.n,p.type,p.area_km2.toLocaleString(),p.animals,String(p.established),p.whs?'Yes ✓':'No'])}/>
+      <DataTable title="Major Water Bodies & Wetlands"
+        cols={['Name','Type','Area (km²)','Max Depth (m)','Shared With']}
+        rows={WETLANDS.map((w:any)=>[w.n,w.type,w.area_km2.toLocaleString(),String(w.depth_m),w.sh])}/>
+      <AnalysisTable title="Environmental Threat Assessment & Conservation Priorities"
+        cols={['Ecosystem','Threat Level','Primary Threats','Area Lost/yr','Carbon Impact','Priority Actions','Est. Cost (USD M)']}
+        rows={[
+          ['Tropical Forests','CRITICAL','Charcoal/firewood, agriculture encroachment','18,000 ha','22 Mt CO2/yr','REDD+ implementation; community forest management; LPG subsidy','180'],
+          ['Murchison Falls NP','HIGH','Oil development impact, poaching, buffer farming','—','Intact stock','EIA enforcement; wildlife corridor; community benefit sharing','45'],
+          ['Queen Elizabeth NP','HIGH','Human-wildlife conflict, charcoal production','—','Intact stock','Electric fence extension; METT monitoring; tourism reinvestment','38'],
+          ['Bwindi/Rwenzori WHS','MEDIUM','Gorilla disease, climate shift, edge encroachment','—','Critical','Gorilla health screening; climate adaptation; benefit-sharing','25'],
+          ['Lake Victoria','HIGH','Eutrophication, invasive water hyacinth, overfishing','N/A','Critical fishery','Hyacinth harvesting; waste water treatment; landing site upgrade','95'],
+          ['Wetlands (national)','HIGH','Drainage for agriculture, urban expansion','30,000 ha','58 Mt CO2 stored','Wetland demarcation and enforcement; smart agricultural subsidies','65'],
+          ['River Nile Catchment','MEDIUM','Hydropower dams, sedimentation, watershed deforestation','N/A','—','Environmental flow requirements; riparian reforestation programme','40'],
+          ['Albertine Rift','HIGH','Oil exploration, deforestation, road infrastructure','~8,000 ha','High biodiversity','Strict EIA for oil; transboundary conservation with DRC/Rwanda','55'],
+        ]}/>
+      <SQLPanel title="Protected Areas & Environment" sql={"CREATE TABLE protected_areas (\n  id            SERIAL PRIMARY KEY,\n  pa_name       VARCHAR(200) NOT NULL,\n  pa_type       VARCHAR(100),\n  area_km2      NUMERIC(10,2),\n  key_wildlife  TEXT,\n  established_yr INTEGER,\n  is_whs        BOOLEAN DEFAULT FALSE,\n  iucn_category VARCHAR(10),\n  lat           NUMERIC(9,6),\n  lng           NUMERIC(9,6)\n);\n\nCREATE TABLE water_bodies (\n  id            SERIAL PRIMARY KEY,\n  water_name    VARCHAR(200),\n  water_type    VARCHAR(50),\n  area_km2      NUMERIC(10,2),\n  max_depth_m   NUMERIC(6,1),\n  shared_with   VARCHAR(100),\n  ramsar        BOOLEAN DEFAULT FALSE,\n  lat           NUMERIC(9,6),\n  lng           NUMERIC(9,6)\n);\n\n-- PA coverage summary\nSELECT pa_type, COUNT(*) AS sites,\n       SUM(area_km2) AS total_km2,\n       ROUND(100.0*SUM(area_km2)/241551,2) AS pct_of_uganda,\n       COUNT(*) FILTER (WHERE is_whs) AS whs_sites\nFROM protected_areas\nGROUP BY pa_type\nORDER BY total_km2 DESC;"}/>
+    </div>
+  );
+}
+
+// ─── EDUCATION & HEALTH TAB ──────────────────────────────────────────────────
+function EduHealthTab() {
+  const ovpSchool = '[out:json][timeout:30]'+BBOX+';(node["amenity"="school"];node["amenity"="college"];node["amenity"="university"];);out center;';
+  const ovpHealth = '[out:json][timeout:30]'+BBOX+';(node["amenity"="hospital"];node["amenity"="clinic"];node["amenity"="health_post"];);out center;';
+  const { data: osmSchools, loading: sl } = useOverpass(ovpSchool);
+  const { data: osmHospitals, loading: hl } = useOverpass(ovpHealth);
+  const loading = sl || hl;
+  const eduLvl = [{name:'Pre-Primary',v:12842},{name:'Primary',v:17000},{name:'Secondary',v:3500},{name:'Vocational',v:780},{name:'University',v:53}];
+  const healthTrend = [{yr:'2005',imr:70},{yr:'2010',imr:60},{yr:'2015',imr:54},{yr:'2019',imr:45},{yr:'2022',imr:41},{yr:'2024',imr:37}];
+  const healthFac = [{type:'HC II',n:2640},{type:'HC III',n:1250},{type:'HC IV',n:190},{type:'Gen. Hospital',n:82},{type:'Regional Hosp.',n:14},{type:'Natl. Referral',n:4}];
+  return (
+    <div>
+      <div style={S.kpiWrap}>
+        <KPICard label="Literacy Rate" value="79.0%" sub="Adult 15+; Male 83% / Female 75% (2024)" color="#3b82f6" icon="📚"/>
+        <KPICard label="Primary Schools" value="17,000+" sub="Government + private + PNFP (2024)" color="#22c55e" icon="🏫"/>
+        <KPICard label="Universities" value="53" sub="Public (10) + Private (43) accredited" color="#a855f7" icon="🎓"/>
+        <KPICard label="Primary Net Enrolment" value="96.1%" sub="UPE driven; completion rate only 53%" color="#eab308" icon="✏"/>
+        <KPICard label="Infant Mortality Rate" value="37/1,000" sub="Live births (down from 70 in 2005) — improving" color="#ef4444" icon="🏥"/>
+        <KPICard label="Life Expectancy" value="67.4 yr" sub="Male 65.6 / Female 69.2 (2024 est.)" color="#06b6d4" icon="❤"/>
+        <KPICard label="Health Facilities" value="4,180+" sub="NRI + Regional + HC I–IV nationwide" color="#f97316" icon="⚕"/>
+        <KPICard label="Doctor:Patient" value="1 : 24,725" sub="Far below WHO target of 1:1,000" color="#84cc16" icon="👨‍⚕️"/>
+      </div>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:16, marginBottom:20 }}>
+        <div style={S.card}>
+          <SectionHdr>Schools by Education Level</SectionHdr>
+          <ResponsiveContainer width="100%" height={160}>
+            <BarChart data={eduLvl}><XAxis dataKey="name" tick={{fill:'#64748b',fontSize:8}}/><YAxis tick={{fill:'#64748b',fontSize:9}}/><Tooltip contentStyle={{background:'#1e293b',border:'none',borderRadius:6}}/><Bar dataKey="v" fill="#3b82f6" radius={[3,3,0,0]}/></BarChart>
+          </ResponsiveContainer>
+        </div>
+        <div style={S.card}>
+          <SectionHdr>Infant Mortality Rate Trend (per 1,000 LB)</SectionHdr>
+          <ResponsiveContainer width="100%" height={160}>
+            <AreaChart data={healthTrend}><XAxis dataKey="yr" tick={{fill:'#64748b',fontSize:10}}/><YAxis tick={{fill:'#64748b',fontSize:10}}/><Tooltip contentStyle={{background:'#1e293b',border:'none',borderRadius:6}}/><Area type="monotone" dataKey="imr" stroke="#ef4444" fill="rgba(239,68,68,0.1)"/></AreaChart>
+          </ResponsiveContainer>
+        </div>
+        <div style={S.card}>
+          <SectionHdr>Health Facilities by Level</SectionHdr>
+          <ResponsiveContainer width="100%" height={160}>
+            <BarChart data={healthFac} layout="vertical"><XAxis type="number" tick={{fill:'#64748b',fontSize:9}}/><YAxis dataKey="type" type="category" tick={{fill:'#64748b',fontSize:8}} width={90}/><Tooltip contentStyle={{background:'#1e293b',border:'none',borderRadius:6}}/><Bar dataKey="n" fill="#06b6d4" radius={[0,3,3,0]}/></BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+      <div style={S.card}>
+        <SectionHdr>🏫 Live OSM Schools & Health Facilities Across Uganda</SectionHdr>
+        <div style={{ ...S.mapWrap, position:'relative', height:480 }}>
+          <MapLoadingOverlay loading={loading}/>
+          <MapContainer center={UGA} zoom={ZOOM} style={{ height:'100%', width:'100%', background:'#0d1117' }} scrollWheelZoom>
+            <TileLayer url={TILES} attribution={ATTRIBUTION}/>
+            {osmSchools.filter((e:any)=>e.lat).slice(0,400).map((e:any,i:number) => (
+              <CircleMarker key={'sc'+i} center={[e.lat,e.lon]} radius={3}
+                pathOptions={{color:'#3b82f6',fillColor:'#1d4ed8',fillOpacity:0.7,weight:0.8}}>
+                <Popup><span style={{fontSize:11}}>🎓 {e.tags?.name||'School'}<br/>{e.tags?.amenity}</span></Popup>
+              </CircleMarker>
+            ))}
+            {osmHospitals.filter((e:any)=>e.lat).map((e:any,i:number) => (
+              <CircleMarker key={'hp'+i} center={[e.lat,e.lon]} radius={e.tags?.amenity==='hospital'?8:4}
+                pathOptions={{color:'#ef4444',fillColor:'#b91c1c',fillOpacity:0.8,weight:1}}>
+                <Popup><span style={{fontSize:11}}>🏥 {e.tags?.name||'Health Facility'}<br/>{e.tags?.amenity}</span></Popup>
+              </CircleMarker>
+            ))}
+            {CITIES.map((c:any,i:number) => (
+              <CircleMarker key={'cc'+i} center={[c.lat,c.lng]} radius={4}
+                pathOptions={{color:'#fbbf24',fillColor:'#92400e',fillOpacity:0.6,weight:1}}>
+                <Popup><span style={{fontSize:11}}>{c.n}</span></Popup>
+              </CircleMarker>
+            ))}
+          </MapContainer>
+        </div>
+        <div style={{fontSize:11,color:'#64748b',marginTop:8}}>🔵 Schools ({osmSchools.length} OSM, showing 400) &nbsp;🔴 Health Facilities ({osmHospitals.length} OSM) &nbsp;🟡 City reference points</div>
+      </div>
+      <AnalysisTable title="District Education & Health Access Analysis"
+        cols={['District','Literacy %','Schools est.','Primary NER','Hospitals est.','Pop/Doctor','IMR (est.)','Development Tier']}
+        rows={DISTRICTS.map((d:any)=>[
+          d.n,
+          String(d.literacy)+'%',
+          String(Math.round(d.pop/8000+12)),
+          d.literacy>80?'94%':d.literacy>70?'87%':'78%',
+          String(Math.round(d.pop/55000)),
+          (Math.round(d.pop/Math.max(1,Math.round(d.pop/25000)))).toLocaleString(),
+          String(Math.round(48-d.literacy*0.13)),
+          d.gdp_m>2000?'Tier 1':d.gdp_m>400?'Tier 2':d.gdp_m>200?'Tier 3':'Tier 4'
+        ])}/>
+      <AnalysisTable title="Key Education & Health Policy Gaps"
+        cols={['Indicator','Current Value','SDG / NDP Target','Gap','Root Cause','Recommended Intervention']}
+        rows={[
+          ['Primary Completion Rate','53%','≥85%','32pp','Poverty, child labour, distance to school >5km','School Meals Programme; conditional cash transfers; rural school construction'],
+          ['Secondary Enrolment (NER)','34%','60%','26pp','USE cost barriers; pregnancy; early marriage','USE bursary expansion; girl-child protection; boarding subsidies'],
+          ['University Gross Enrolment','9%','20%','11pp','Cost; limited STEM capacity; urban-rural divide','Student loan scheme; STEM infrastructure; distance learning'],
+          ['Skilled Birth Attendance','74%','≥95%','21pp','HC II/III staffing gaps; distance in rural areas','Midwifery training scale-up; maternity waiting homes; MoH incentives'],
+          ['Under-5 Mortality','49/1,000','<25/1,000','24 per 1k','Malaria 30%, diarrhoea 18%, pneumonia 14%','LLIN scale-up; ORS distribution; community health worker (VHT) programme'],
+          ['HIV Prevalence','5.1%','<2%','3.1pp','Behaviour, GBV, low male circumcision coverage','PrEP scale-up; VMMC; PMTCT 100% coverage; stigma reduction'],
+          ['Doctor:Patient Ratio','1:24,725','1:1,000 (WHO)','96% deficit','Emigration; low production; unattractive rural posting','Medical school expansion; rural retention bonuses; task-shifting to nurses'],
+          ['Malnutrition (stunting)','29%','<10%','19pp','Food insecurity, poor WASH, inadequate feeding','SUN multi-sector nutrition; school feeding; fortification'],
+        ]}/>
+      <SQLPanel title="Education & Health Infrastructure" sql={"CREATE TABLE schools (\n  id            SERIAL PRIMARY KEY,\n  school_name   VARCHAR(200),\n  school_level  VARCHAR(50),   -- Pre-primary/Primary/Secondary/Tertiary\n  ownership     VARCHAR(50),   -- Government/Private/PNFP\n  district      VARCHAR(100),\n  enrolment     INTEGER,\n  teachers      INTEGER,\n  classrooms    INTEGER,\n  lat           NUMERIC(9,6),\n  lng           NUMERIC(9,6)\n);\n\nCREATE TABLE health_facilities (\n  id              SERIAL PRIMARY KEY,\n  facility_name   VARCHAR(200),\n  facility_level  VARCHAR(50),  -- HC II / HC III / HC IV / Hospital\n  ownership       VARCHAR(50),  -- Government/Private/PNFP\n  district        VARCHAR(100),\n  beds            INTEGER,\n  doctors         INTEGER,\n  nurses          INTEGER,\n  functional_24h  BOOLEAN,\n  lat             NUMERIC(9,6),\n  lng             NUMERIC(9,6)\n);\n\n-- District facility coverage ratio\nSELECT d.district_name,\n       COUNT(DISTINCT s.id) FILTER (WHERE s.school_level='Primary') AS primary_schools,\n       COUNT(DISTINCT h.id) AS health_facilities,\n       ROUND(d.population::NUMERIC/NULLIF(COUNT(DISTINCT h.id),0)) AS pop_per_facility,\n       SUM(h.beds) AS total_beds,\n       ROUND(1000.0*SUM(h.beds)/d.population,2) AS beds_per_1000\nFROM uga_districts d\nLEFT JOIN schools s ON s.district=d.district_name\nLEFT JOIN health_facilities h ON h.district=d.district_name\nGROUP BY d.district_name, d.population\nORDER BY pop_per_facility DESC NULLS LAST;"}/>
+    </div>
+  );
+}
+
+// ─── DEMOGRAPHICS TAB ─────────────────────────────────────────────────────────
 function DemoTab() {
-  const {geo, loading} = useBoundaries();
-
-  const geoStyle = (feature: any) => {
-    const n = (feature?.properties?.shapeName||'').toLowerCase();
-    const region = REGIONS.find(r=>n.includes(r.name.toLowerCase()));
-    return {
-      fillColor: region?.color||'#334155',
-      weight: 1, opacity: 0.8, color:'#475569', fillOpacity: 0.35,
-    };
-  };
-
+  const popByAge = [{age:'0-4',v:17.2},{age:'5-14',v:26.1},{age:'15-24',v:21.3},{age:'25-34',v:14.9},{age:'35-44',v:9.8},{age:'45-54',v:5.9},{age:'55-64',v:3.2},{age:'65+',v:1.6}];
+  const popGrowth = [{yr:'2000',v:23.3},{yr:'2005',v:27.8},{yr:'2010',v:33.8},{yr:'2015',v:39.6},{yr:'2020',v:45.7},{yr:'2024',v:49.9},{yr:'2030',v:56.8},{yr:'2035',v:65.0},{yr:'2040',v:74.2}];
+  const urbanRural = [{name:'Rural',v:76},{name:'Urban',v:24}];
+  const ethnicGroups = [{name:'Baganda',v:16.5},{name:'Banyankole',v:9.6},{name:'Basoga',v:8.8},{name:'Bakiga',v:7.1},{name:'Iteso',v:7.0},{name:'Langi',v:6.3},{name:'Acholi',v:4.7},{name:'Others',v:40.0}];
   return (
     <div>
-      <h2 style={{fontSize:20,fontWeight:700,color:'#f8fafc',margin:'0 0 4px'}}>Demographics & Population</h2>
-      <p style={{fontSize:12,color:'#64748b',marginBottom:16}}>47.2M people across 4 regions and 135 districts. Uganda has one of the world's youngest populations (median age 16.7 years).</p>
-      <Row4>
-        <Card icon="👥" label="Total Population" value="47.2M" sub="2024 estimate (UBOS)" col="#3b82f6"/>
-        <Card icon="📈" label="Growth Rate" value="2.9%/yr" sub="One of Africa's fastest" col="#ef4444"/>
-        <Card icon="🏙️" label="Urbanisation" value="~27%" sub="Rising from 18% in 2014" col="#8b5cf6"/>
-        <Card icon="👶" label="Median Age" value="16.7 yrs" sub="Youth-dominated demography" col="#10b981"/>
-      </Row4>
-      {loading && <div style={{textAlign:'center',padding:20,color:'#64748b',fontSize:12}}>Loading region boundaries…</div>}
-      <MapPanel>
-        {geo && <GeoJSON key="uga-adm1" data={geo} style={geoStyle}/>}
-        {REGIONS.map(r=>(
-          <CircleMarker key={r.name} center={[r.lat,r.lng]} radius={r.pop*1.8}
-            pathOptions={{color:r.color,fillColor:r.color,fillOpacity:0.2,weight:2}}>
-            <Popup>
-              <b>{r.name} Region</b><br/>
-              Population: <b>{r.pop}M</b><br/>
-              HDI: {r.hdi} &nbsp;|&nbsp; GDP: ${r.gdp}B<br/>
-              Area: {r.area.toLocaleString()} km²
-            </Popup>
-          </CircleMarker>
-        ))}
-      </MapPanel>
-      <Lgd items={REGIONS.map(r=>({color:r.color,label:`${r.name}: ${r.pop}M`}))}/>
-      <TwoCol>
-        <ChartWrap title="Population Age Structure (%)">
-          <ResponsiveContainer width="100%" height={170}>
-            <BarChart data={POP_PYMD}>
-              <XAxis dataKey="age" tick={{fill:'#94a3b8',fontSize:9}}/>
-              <YAxis tick={{fill:'#94a3b8',fontSize:10}}/>
-              <Ttip/>
-              <Bar dataKey="m" fill="#3b82f6" name="Male %" stackId="a"/>
-              <Bar dataKey="f" fill="#ec4899" name="Female %" stackId="a"/>
-            </BarChart>
+      <div style={S.kpiWrap}>
+        <KPICard label="Total Population" value="49.9M" sub="2024 estimate; 3rd most populous EAC state" color="#3b82f6" icon="👥"/>
+        <KPICard label="Population Density" value="207/km²" sub="Ranges 11 (Kaabong) to 6,700 (Kampala)" color="#a855f7" icon="🗺"/>
+        <KPICard label="Annual Growth Rate" value="3.0%/yr" sub="Among highest globally; doubling every 23yr" color="#ef4444" icon="📈"/>
+        <KPICard label="Median Age" value="16.7 yr" sub="One of the youngest populations worldwide" color="#22c55e" icon="🧒"/>
+        <KPICard label="Urban Population" value="24%" sub="10.9M urban; Kampala Metro ~4.5M" color="#eab308" icon="🏙"/>
+        <KPICard label="Total Fertility Rate" value="4.6 TFR" sub="Down from 7.1 in 1990; declining slowly" color="#f97316" icon="👶"/>
+        <KPICard label="Working-Age Pop." value="51%" sub="25.4M aged 15–64; youth dividend opening" color="#06b6d4" icon="💼"/>
+        <KPICard label="Languages" value="65+" sub="Bantu, Nilotic, Central Sudanic language groups" color="#84cc16" icon="🗣"/>
+      </div>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16, marginBottom:20 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
+          <div style={S.card}>
+            <SectionHdr>Population by Age Group (%)</SectionHdr>
+            <ResponsiveContainer width="100%" height={150}>
+              <BarChart data={popByAge}><XAxis dataKey="age" tick={{fill:'#64748b',fontSize:8}}/><YAxis tick={{fill:'#64748b',fontSize:8}}/><Tooltip contentStyle={{background:'#1e293b',border:'none',borderRadius:6}}/><Bar dataKey="v" fill="#3b82f6" radius={[3,3,0,0]}/></BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div style={S.card}>
+            <SectionHdr>Urban vs Rural Split</SectionHdr>
+            <ResponsiveContainer width="100%" height={150}>
+              <PieChart><Pie data={urbanRural} dataKey="v" nameKey="name" cx="50%" cy="50%" innerRadius={35} outerRadius={60} label={({name,v}:{name:string,v:number})=>name+' '+v+'%'}>{urbanRural.map((_,i)=><Cell key={i} fill={PIE_C[i]}/>)}</Pie><Tooltip/></PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        <div style={S.card}>
+          <SectionHdr>Population Growth Projection (M)</SectionHdr>
+          <ResponsiveContainer width="100%" height={150}>
+            <AreaChart data={popGrowth}><XAxis dataKey="yr" tick={{fill:'#64748b',fontSize:10}}/><YAxis tick={{fill:'#64748b',fontSize:10}}/><Tooltip contentStyle={{background:'#1e293b',border:'none',borderRadius:6}}/><Area type="monotone" dataKey="v" stroke="#a855f7" fill="rgba(168,85,247,0.1)"/></AreaChart>
           </ResponsiveContainer>
-        </ChartWrap>
-        <ChartWrap title="Regional Population (Million)">
-          <ResponsiveContainer width="100%" height={170}>
-            <BarChart data={REGIONS}>
-              <XAxis dataKey="name" tick={{fill:'#94a3b8',fontSize:10}}/>
-              <YAxis tick={{fill:'#94a3b8',fontSize:10}}/>
-              <Ttip/>
-              <Bar dataKey="pop" name="Million">
-                {REGIONS.map((r,i)=><Cell key={i} fill={r.color}/>)}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartWrap>
-      </TwoCol>
+        </div>
+      </div>
+      <div style={S.card}>
+        <SectionHdr>Largest Ethnic Groups by Population Share (%)</SectionHdr>
+        <ResponsiveContainer width="100%" height={120}>
+          <BarChart data={ethnicGroups}><XAxis dataKey="name" tick={{fill:'#64748b',fontSize:9}}/><YAxis tick={{fill:'#64748b',fontSize:9}}/><Tooltip contentStyle={{background:'#1e293b',border:'none',borderRadius:6}}/><Bar dataKey="v" fill="#f97316" radius={[3,3,0,0]}/></BarChart>
+        </ResponsiveContainer>
+      </div>
+      <div style={S.card}>
+        <SectionHdr>📍 District Population Density Map (colour = density, size = population)</SectionHdr>
+        <div style={{ ...S.mapWrap, position:'relative', height:480 }}>
+          <MapContainer center={UGA} zoom={ZOOM} style={{ height:'100%', width:'100%', background:'#0d1117' }} scrollWheelZoom>
+            <TileLayer url={TILES} attribution={ATTRIBUTION}/>
+            {DISTRICTS.map((d:any,i:number) => {
+              const density = Math.round(d.pop/d.area_km2);
+              const intensity = Math.min(1, density/500);
+              const r = Math.round(255*intensity);
+              const b = Math.round(255*(1-intensity));
+              const col = 'rgba('+r+',40,'+b+',0.82)';
+              return (
+                <CircleMarker key={'dm'+i} center={[d.lat,d.lng]} radius={Math.max(8, Math.sqrt(d.pop/80000))}
+                  pathOptions={{color:'#fff',fillColor:col,fillOpacity:0.85,weight:0.8}}>
+                  <Popup>
+                    <b style={{color:'#a5b4fc'}}>{d.n} District</b><br/>
+                    <span style={{fontSize:11}}>Population: {d.pop.toLocaleString()}<br/>Area: {d.area_km2.toLocaleString()} km²<br/>Density: {density}/km²<br/>Region: {d.reg}<br/>GDP: USD {d.gdp_m}M<br/>Poverty: {d.poverty}%<br/>Literacy: {d.literacy}%</span>
+                  </Popup>
+                </CircleMarker>
+              );
+            })}
+            {CITIES.map((c:any,i:number) => (
+              <CircleMarker key={'ct'+i} center={[c.lat,c.lng]} radius={Math.max(4, Math.sqrt(c.pop/200000))}
+                pathOptions={{color:'#fbbf24',fillColor:'#92400e',fillOpacity:0.9,weight:1.5}}>
+                <Popup><b style={{color:'#fcd34d'}}>{c.n}</b><br/><span style={{fontSize:11}}>Pop: {c.pop.toLocaleString()}<br/>{c.type} | {c.reg}</span></Popup>
+              </CircleMarker>
+            ))}
+          </MapContainer>
+        </div>
+        <div style={{fontSize:11,color:'#64748b',marginTop:8}}>⭕ District (size=population, blue=sparse → red=dense) &nbsp;🟡 Cities</div>
+      </div>
+      <DataTable title="District-Level Demographics — Full Data (20 sample districts)"
+        cols={['District','Region','Population','Area (km²)','Density/km²','GDP (USD M)','Poverty %','Literacy %']}
+        rows={DISTRICTS.map((d:any)=>[d.n,d.reg,d.pop.toLocaleString(),d.area_km2.toLocaleString(),Math.round(d.pop/d.area_km2).toString(),String(d.gdp_m),String(d.poverty)+'%',String(d.literacy)+'%'])}/>
+      <AnalysisTable title="Regional Demographic Vulnerability & Development Priority Index"
+        cols={['Region','Pop (M est.)','Density/km²','Youth Bulge %','Urban %','Poverty Rate','Food Insecurity','Conflict Risk','Development Priority']}
+        rows={[
+          ['Central','12.8M','820','52%','55%','14%','Low','Low','Consolidate urban services; address inequality; affordable housing'],
+          ['Eastern','11.5M','240','56%','18%','33%','Moderate','Low-Medium','Agricultural productivity; road corridor; flood management'],
+          ['Western','10.8M','170','54%','16%','27%','Low-Moderate','Low','Tourism economy; oil value chain; highlands value chains'],
+          ['Northern','8.9M','80','58%','14%','44%','Moderate','Medium','Post-conflict recovery; infrastructure investment; youth employment'],
+          ['West Nile','3.8M','135','61%','12%','50%','High','Medium','Refugee integration; market access roads; basic services'],
+          ['Karamoja','1.1M','18','63%','6%','77%','Severe','High','Emergency services; climate adaptation; mineral formalisation; peace'],
+        ]}/>
+      <SQLPanel title="Demographics" sql={"-- Population projections table\nCREATE TABLE population_projections (\n  id          SERIAL PRIMARY KEY,\n  year        INTEGER,\n  total_pop   BIGINT,\n  urban_pop   BIGINT,\n  rural_pop   BIGINT,\n  growth_rate NUMERIC(5,3),\n  tfr         NUMERIC(4,2),\n  median_age  NUMERIC(4,1)\n);\n\nCREATE TABLE demographics_district (\n  id          SERIAL PRIMARY KEY,\n  district    VARCHAR(100),\n  region      VARCHAR(100),\n  population  BIGINT,\n  area_km2    NUMERIC(10,2),\n  pop_density NUMERIC(8,2),\n  urban_pct   NUMERIC(5,2),\n  youth_pct   NUMERIC(5,2),   -- 15-35\n  female_pct  NUMERIC(5,2),\n  census_year INTEGER\n);\n\n-- Identify fastest-growing districts\nSELECT d.district, d.region,\n       d.population,\n       ROUND(d.population::NUMERIC/d.area_km2,1) AS density,\n       d.urban_pct, d.youth_pct\nFROM demographics_district d\nORDER BY d.population DESC\nLIMIT 15;"}/>
     </div>
   );
 }
 
+// ─── ECONOMY TAB ──────────────────────────────────────────────────────────────
 function EconomyTab() {
+  const ovpQ = '[out:json][timeout:30]'+BBOX+';(way["landuse"="industrial"];node["office"="company"];node["shop"="bank"];way["office"="financial"];);out center;';
+  const { data: osmEcon, loading, error } = useOverpass(ovpQ);
+  const gdpSectors = [{name:'Services',v:46},{name:'Industry',v:27},{name:'Agriculture',v:24},{name:'Taxes',v:3}];
+  const exports = [{yr:'2018',v:3.3},{yr:'2019',v:3.6},{yr:'2020',v:3.2},{yr:'2021',v:3.9},{yr:'2022',v:4.5},{yr:'2023',v:5.1},{yr:'2024',v:5.8}];
+  const ezInvest = ECONOMIC_ZONES.slice(0,8).map((z:any)=>({name:z.n.replace(' Industrial Park','').replace(' Industrial & Business Park','').replace(/ SEZ$/,'').substring(0,14),invest:z.invest_m}));
   return (
     <div>
-      <h2 style={{fontSize:20,fontWeight:700,color:'#f8fafc',margin:'0 0 4px'}}>Economy, Industry & Trade</h2>
-      <p style={{fontSize:12,color:'#64748b',marginBottom:16}}>GDP $47.2B in 2024. Services dominate at 44.5%. Namanve Industrial Park is East Africa's largest industrial zone at 2,200 Ha.</p>
-      <Row4>
-        <Card icon="💰" label="GDP (2024)" value="$47.2B" sub="5.9% real growth rate" col="#10b981"/>
-        <Card icon="👤" label="GDP per Capita" value="~$934" sub="Based on 47.2M population" col="#3b82f6"/>
-        <Card icon="🏭" label="Industrial Parks" value="10+" sub="Namanve 2,200 Ha flagship" col="#6366f1"/>
-        <Card icon="📦" label="Total Exports" value="$2.1B" sub="Coffee + Gold as top 2" col="#f59e0b"/>
-      </Row4>
-      <MapPanel>
-        {INDUSTRY.map(ind=>(
-          <CircleMarker key={ind.name} center={[ind.lat,ind.lng]} radius={ind.size||9}
-            pathOptions={{color:'#6366f1',fillColor:'#6366f1',fillOpacity:0.7,weight:2}}>
-            <Popup><b>{ind.name}</b><br/><em>{ind.type}</em><br/>{ind.value}<br/><small>{ind.detail}</small></Popup>
-          </CircleMarker>
-        ))}
-        {MINERALS.filter(m=>m.type==='Copper/Cobalt'||m.type?.includes('Phosphate')).map(m=>(
-          <CircleMarker key={`im-${m.name}`} center={[m.lat,m.lng]} radius={8}
-            pathOptions={{color:'#f59e0b',fillColor:'#f59e0b',fillOpacity:0.5,weight:1}}>
-            <Popup><b>{m.name}</b><br/>{m.type}</Popup>
-          </CircleMarker>
-        ))}
-      </MapPanel>
-      <Lgd items={[{color:'#6366f1',label:'Industrial Park/Zone'},{color:'#f59e0b',label:'Key Mineral Processing'}]}/>
-      <TwoCol>
-        <ChartWrap title="Top Exports by Value (USD M, 2024)">
-          <ResponsiveContainer width="100%" height={170}>
-            <BarChart data={EXPORT_DATA} layout="vertical">
-              <XAxis type="number" tick={{fill:'#94a3b8',fontSize:10}}/>
-              <YAxis dataKey="name" type="category" tick={{fill:'#94a3b8',fontSize:9}} width={65}/>
-              <Ttip/>
-              <Bar dataKey="v" name="USD M">
-                {EXPORT_DATA.map((_,i)=><Cell key={i} fill={CC[i%CC.length]}/>)}
-              </Bar>
-            </BarChart>
+      <div style={S.kpiWrap}>
+        <KPICard label="GDP (2024)" value="USD 38.1B" sub="Growth 6.3%; NDP target 6.5%/yr" color="#22c55e" icon="💰"/>
+        <KPICard label="GDP per Capita" value="USD 963" sub="PPP USD 2,870 (2024 WB estimate)" color="#3b82f6" icon="💵"/>
+        <KPICard label="Export Revenue" value="USD 5.8B" sub="Coffee 10.5%; Gold 19.6%; Fish 7.2%" color="#eab308" icon="📦"/>
+        <KPICard label="FDI Inflow" value="USD 1.28B" sub="2024; mainly oil sector + manufacturing" color="#a855f7" icon="🏦"/>
+        <KPICard label="Industrial Parks" value="22" sub="Operational + pipeline (UIA data 2024)" color="#f97316" icon="🏭"/>
+        <KPICard label="Tax-to-GDP Ratio" value="14.2%" sub="URA target 16% by 2026" color="#06b6d4" icon="🧾"/>
+        <KPICard label="Inflation (CPI)" value="4.1%" sub="Annual avg 2024; food component 5.2%" color="#ef4444" icon="📉"/>
+        <KPICard label="Unemployment" value="12.4%" sub="ILO definition; youth 15-24 = 18.3%" color="#84cc16" icon="👷"/>
+      </div>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:16, marginBottom:20 }}>
+        <div style={S.card}>
+          <SectionHdr>GDP by Sector (%)</SectionHdr>
+          <ResponsiveContainer width="100%" height={160}>
+            <PieChart><Pie data={gdpSectors} dataKey="v" nameKey="name" cx="50%" cy="50%" innerRadius={30} outerRadius={58} label={({name,v}:{name:string,v:number})=>name+' '+v+'%'}>{gdpSectors.map((_,i)=><Cell key={i} fill={PIE_C[i]}/>)}</Pie><Tooltip/></PieChart>
           </ResponsiveContainer>
-        </ChartWrap>
-        <ChartWrap title="GDP by Sector (%)">
-          <ResponsiveContainer width="100%" height={170}>
-            <PieChart>
-              <Pie data={SECTOR_GDP} dataKey="v" nameKey="name" cx="50%" cy="50%" outerRadius={65}
-                label={({name,v})=>`${name} ${v}%`} labelLine={false}>
-                {SECTOR_GDP.map((_,i)=><Cell key={i} fill={CC[i]}/>)}
-              </Pie>
-              <Ttip/>
-            </PieChart>
+        </div>
+        <div style={S.card}>
+          <SectionHdr>Total Export Revenue Trend (USD B)</SectionHdr>
+          <ResponsiveContainer width="100%" height={160}>
+            <AreaChart data={exports}><XAxis dataKey="yr" tick={{fill:'#64748b',fontSize:10}}/><YAxis tick={{fill:'#64748b',fontSize:10}}/><Tooltip contentStyle={{background:'#1e293b',border:'none',borderRadius:6}}/><Area type="monotone" dataKey="v" stroke="#22c55e" fill="rgba(34,197,94,0.1)"/></AreaChart>
           </ResponsiveContainer>
-        </ChartWrap>
-      </TwoCol>
+        </div>
+        <div style={S.card}>
+          <SectionHdr>Top Economic Zones — Investment (USD M)</SectionHdr>
+          <ResponsiveContainer width="100%" height={160}>
+            <BarChart data={ezInvest}><XAxis dataKey="name" tick={{fill:'#64748b',fontSize:8}}/><YAxis tick={{fill:'#64748b',fontSize:9}}/><Tooltip contentStyle={{background:'#1e293b',border:'none',borderRadius:6}}/><Bar dataKey="invest" fill="#f97316" radius={[3,3,0,0]}/></BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+      <div style={S.card}>
+        <SectionHdr>🏭 Economic Zones, Industrial Parks & Live OSM Economic Features</SectionHdr>
+        <div style={{ ...S.mapWrap, position:'relative', height:480 }}>
+          <MapLoadingOverlay loading={loading} error={error}/>
+          <MapContainer center={UGA} zoom={ZOOM} style={{ height:'100%', width:'100%', background:'#0d1117' }} scrollWheelZoom>
+            <TileLayer url={TILES} attribution={ATTRIBUTION}/>
+            {ECONOMIC_ZONES.map((z:any,i:number) => (
+              <CircleMarker key={'ez'+i} center={[z.lat,z.lng]} radius={Math.max(7, Math.sqrt(z.area_ha/25))}
+                pathOptions={{color:z.status==='Operational'?'#f97316':'#eab308',fillColor:z.status==='Operational'?'#c2410c':'#92400e',fillOpacity:0.82,weight:1.5}}>
+                <Popup>
+                  <b style={{color:'#fb923c'}}>{z.n}</b><br/>
+                  <span style={{fontSize:11}}>Type: {z.type}<br/>Status: {z.status}<br/>Area: {z.area_ha.toLocaleString()} ha<br/>Investment: USD {z.invest_m}M<br/>Jobs: {z.jobs.toLocaleString()}<br/>Sectors: {z.sectors}</span>
+                </Popup>
+              </CircleMarker>
+            ))}
+            {osmEcon.filter((e:any)=>e.lat||e.center?.lat).slice(0,250).map((e:any,i:number) => (
+              <CircleMarker key={'oe'+i} center={[e.lat||e.center?.lat,e.lon||e.center?.lon]} radius={3}
+                pathOptions={{color:'#a855f7',fillColor:'#6b21a8',fillOpacity:0.6,weight:1}}>
+                <Popup><span style={{fontSize:11}}>OSM: {e.tags?.name||e.tags?.landuse||'Economic feature'}</span></Popup>
+              </CircleMarker>
+            ))}
+          </MapContainer>
+        </div>
+        <div style={{fontSize:11,color:'#64748b',marginTop:8}}>🟠 Operational Park/Zone &nbsp;🟡 Under Development &nbsp;🟣 OSM economic features ({osmEcon.length} loaded)</div>
+      </div>
+      <DataTable title="Economic Zones & Industrial Parks — Full Registry"
+        cols={['Name','Type','Status','Area (ha)','Investment (USD M)','Jobs Created','Key Sectors']}
+        rows={ECONOMIC_ZONES.map((z:any)=>[z.n,z.type,z.status,z.area_ha.toLocaleString(),String(z.invest_m),z.jobs.toLocaleString(),z.sectors])}/>
+      <AnalysisTable title="Macroeconomic Sector Competitiveness Assessment"
+        cols={['Sector','GDP Share','Growth Rate','Employment','Export Share','Competitiveness','Bottlenecks','Strategic Priority']}
+        rows={[
+          ['Agriculture','24% / USD 9.1B','3.8%/yr','8.2M HH','36% (coffee,fish,vanilla)','Medium','Low mechanisation; PHLs 30-40%; weak cooperatives','HIGH — food security; export diversification; agro-processing'],
+          ['Oil & Gas','Pre-production (0%)','—','12,000 (construction)','Expected ~40% by 2029','High potential','EACOP financing delay; ESG scrutiny; local content','HIGH — transformational USD 1.5B/yr revenue from 2026+'],
+          ['Manufacturing','10% / USD 3.8B','6.2%/yr','0.8M','12% (processed goods)','Low-Medium','Power cost USD 0.17/kWh; skills gap; import competition','HIGH — import substitution; SEZ expansion; light industry'],
+          ['ICT & Digital','8% / USD 3.0B','12.1%/yr','0.4M','5%','Growing fast','Broadband 18% penetration; digital skills gap; regulation','HIGH — youth employment; digital economy; fintech'],
+          ['Tourism','4% / USD 1.5B','8.4%/yr','0.5M','8% (services)','Medium','Limited air access; marketing budget; accommodation quality','MEDIUM — wildlife; Nile; gorilla permits (USD 700/visit)'],
+          ['Mining & Quarrying','2% / USD 760M','4.5%/yr','0.1M formal','6% (gold, minerals)','Low-Medium','Artisanal dominance; formalisation; smuggling','MEDIUM — Muko iron ore; Sukulu phosphate; gold formalization'],
+          ['Financial Services','6% / USD 2.3B','9.1%/yr','0.15M','—','Medium','Financial inclusion 58%; MoMo growing; capital markets thin','MEDIUM — capital markets; fintech regulation; pension reform'],
+          ['Construction','5% / USD 1.9B','7.0%/yr','0.5M','—','Medium','Skills gap; imported materials 60%; housing deficit 2.4M units','MEDIUM — housing programme; infra PPPs; local materials'],
+        ]}/>
+      <SQLPanel title="Economic Zones & Macro Data" sql={"CREATE TABLE economic_zones (\n  id            SERIAL PRIMARY KEY,\n  zone_name     VARCHAR(200) NOT NULL,\n  zone_type     VARCHAR(100),  -- Industrial Park / SEZ / Free Zone\n  status        VARCHAR(50),   -- Operational / Developing / Planned\n  area_ha       NUMERIC(10,2),\n  investment_usd_m NUMERIC(10,2),\n  jobs_created  INTEGER,\n  key_sectors   TEXT,\n  operator      VARCHAR(200),\n  lat           NUMERIC(9,6),\n  lng           NUMERIC(9,6)\n);\n\nCREATE TABLE gdp_annual (\n  id            SERIAL PRIMARY KEY,\n  year          INTEGER,\n  gdp_usd_b     NUMERIC(8,2),\n  growth_pct    NUMERIC(5,2),\n  agri_share    NUMERIC(5,2),\n  industry_share NUMERIC(5,2),\n  services_share NUMERIC(5,2),\n  exports_usd_b NUMERIC(8,2),\n  fdi_usd_b     NUMERIC(8,2),\n  inflation_pct NUMERIC(5,2)\n);\n\n-- Zone efficiency: jobs per hectare and cost per job\nSELECT zone_name, zone_type, status,\n       area_ha, investment_usd_m, jobs_created,\n       ROUND(jobs_created::NUMERIC/NULLIF(area_ha,0),2) AS jobs_per_ha,\n       ROUND(investment_usd_m*1e6/NULLIF(jobs_created,0)) AS cost_per_job_usd\nFROM economic_zones\nWHERE status='Operational'\nORDER BY jobs_per_ha DESC;"}/>
     </div>
   );
 }
 
-// ═══════════════════════════════════════════════════════════════
-// MAIN COMPONENT
-// ═══════════════════════════════════════════════════════════════
+// ─── MAIN COMPONENT ───────────────────────────────────────────────────────────
 const TABS = [
-  {id:'overview',label:'🇺🇬 Overview'},
-  {id:'resources',label:'⛏️ Resources'},
-  {id:'energy',label:'⚡ Energy'},
-  {id:'agriculture',label:'🌿 Agriculture'},
-  {id:'environment',label:'🦁 Environment'},
-  {id:'eduheath',label:'🏥 Edu & Health'},
-  {id:'demographics',label:'👥 Demographics'},
-  {id:'economy',label:'💰 Economy'},
+  { id:'overview',      label:'🗺 Overview & Districts' },
+  { id:'resources',     label:'⛏ Natural Resources' },
+  { id:'energy',        label:'⚡ Energy' },
+  { id:'agriculture',   label:'🌾 Agriculture' },
+  { id:'environment',   label:'🌿 Environment' },
+  { id:'eduhealth',     label:'📚 Education & Health' },
+  { id:'demographics',  label:'👥 Demographics' },
+  { id:'economy',       label:'💰 Economy' },
 ];
 
 export default function SocioEconomicSection() {
-  const [tab, setTab] = useState('overview');
-
+  const [tab, setTab] = React.useState('overview');
   return (
-    <div style={{padding:'24px 28px',minHeight:'100vh',background:'transparent',fontFamily:'system-ui,sans-serif'}}>
-      {/* Header */}
-      <div style={{marginBottom:24}}>
-        <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:8}}>
-          <div style={{width:4,height:28,background:'linear-gradient(180deg,#3b82f6,#8b5cf6)',borderRadius:2}}/>
-          <h1 style={{fontSize:26,fontWeight:800,color:'#f8fafc',margin:0}}>Socio-Economic Analysis</h1>
-          <span style={{padding:'3px 10px',background:'rgba(59,130,246,0.15)',border:'1px solid rgba(59,130,246,0.3)',borderRadius:20,fontSize:11,color:'#60a5fa'}}>Uganda · 2024</span>
-        </div>
-        <p style={{fontSize:13,color:'#475569',margin:0,paddingLeft:16}}>
-          Geospatial analysis of minerals, energy, agriculture, environment, health, education, demographics and economy.
+    <div style={{ background:'#0d1117', minHeight:'100vh', color:'#e2e8f0', fontFamily:"'Inter','Segoe UI',system-ui,sans-serif", padding:'16px 20px' }}>
+      <div style={{ marginBottom:20 }}>
+        <h1 style={{ fontSize:22, fontWeight:700, color:'#f1f5f9', margin:0 }}>Uganda — Socio-Economic Analysis</h1>
+        <p style={{ fontSize:12, color:'#64748b', margin:'4px 0 0' }}>
+          Real-time geodata via Overpass API + geoBoundaries ADM1 &nbsp;|&nbsp; Static curated datasets &nbsp;|&nbsp; Live OSM overlay &nbsp;|&nbsp; Supabase-ready schemas
         </p>
       </div>
-
-      {/* Tabs */}
-      <div style={{display:'flex',flexWrap:'wrap',gap:6,marginBottom:22,borderBottom:'1px solid rgba(255,255,255,0.07)',paddingBottom:12}}>
-        {TABS.map(t=>(
+      <div style={{ display:'flex', gap:6, flexWrap:'wrap', marginBottom:20 }}>
+        {TABS.map(t => (
           <button key={t.id} onClick={()=>setTab(t.id)}
-            style={{padding:'7px 14px',borderRadius:8,border:'none',cursor:'pointer',fontSize:12,fontWeight:500,transition:'all 0.15s',
-              background: tab===t.id ? 'rgba(59,130,246,0.2)' : 'rgba(255,255,255,0.04)',
-              color: tab===t.id ? '#60a5fa' : '#94a3b8',
-              outline: tab===t.id ? '1px solid rgba(59,130,246,0.35)' : 'none',
-            }}>
+            style={{ padding:'7px 14px', fontSize:12, fontWeight:600, borderRadius:8, border:'none', cursor:'pointer',
+              background:tab===t.id?'#3b82f6':'#1e293b',
+              color:tab===t.id?'#fff':'#94a3b8',
+              transition:'all 0.15s', outline:'none' }}>
             {t.label}
           </button>
         ))}
       </div>
-
-      {/* Tab Content */}
       <div>
-        {tab==='overview'     && <OverviewTab/>}
-        {tab==='resources'    && <ResourcesTab/>}
-        {tab==='energy'       && <EnergyTab/>}
-        {tab==='agriculture'  && <AgriTab/>}
-        {tab==='environment'  && <EnvironmentTab/>}
-        {tab==='eduheath'     && <EduHealthTab/>}
-        {tab==='demographics' && <DemoTab/>}
-        {tab==='economy'      && <EconomyTab/>}
-      </div>
-
-      {/* Footer */}
-      <div style={{marginTop:32,paddingTop:16,borderTop:'1px solid rgba(255,255,255,0.06)',fontSize:10,color:'#334155',textAlign:'center'}}>
-        Data sources: USGS African Mineral Geodatabase · Uganda DGSM · UBOS Census 2024 · World Bank · geoBoundaries (ADM1) · OpenStreetMap Overpass API · TotalEnergies/CNOOC project data
+        {tab==='overview'      && <OverviewTab/>}
+        {tab==='resources'     && <ResourcesTab/>}
+        {tab==='energy'        && <EnergyTab/>}
+        {tab==='agriculture'   && <AgriTab/>}
+        {tab==='environment'   && <EnvironmentTab/>}
+        {tab==='eduhealth'     && <EduHealthTab/>}
+        {tab==='demographics'  && <DemoTab/>}
+        {tab==='economy'       && <EconomyTab/>}
       </div>
     </div>
   );
