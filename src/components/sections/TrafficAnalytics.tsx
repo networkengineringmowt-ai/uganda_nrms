@@ -331,20 +331,20 @@ function RegionsTab({ A }: { A: ReturnType<typeof useAgg> }) {
   return (
     <div>
       <Tbl title='Regional Master Matrix (heat = relative intensity)'
-        cols={[{h:'Region'},{h:'Links',align:'right'},{h:'Km',align:'right'},{h:'Mean AADT',align:'right'},{h:'VKM/day',align:'right'},{h:'VKM share',align:'right'},{h:'Heavy %',align:'right'},{h:'Growth→2030',align:'right'},{h:'Growth→2040',align:'right'},{h:'Critical+High links',align:'right'}]}
-        rows={A.byRegion.map(r=>[r.rg, fmt(r.links), fmt(r.km), fmt(r.mean), kfmt(r.vkm), pct(100*r.vkm/Math.max(1,A.totalVkm)), pct(r.heavy), '×'+r.g30.toFixed(2), '×'+r.g40.toFixed(2), fmt(r.crit+r.high)])}
+        cols={[{h:'Region'},{h:'Links',align:'right'},{h:'Km',align:'right'},{h:'Mean AADT',align:'right'},{h:'VKM/day',align:'right'},{h:'VKM share',align:'right'},{h:'Heavy %',align:'right'},{h:'Mean AADT 2030',align:'right'},{h:'Mean AADT 2040',align:'right'},{h:'Critical+High links',align:'right'}]}
+        rows={A.byRegion.map(r=>[r.rg, fmt(r.links), fmt(r.km), fmt(r.mean), kfmt(r.vkm), pct(100*r.vkm/Math.max(1,A.totalVkm)), pct(r.heavy), fmt(r.g30), fmt(r.g40), fmt(r.crit+r.high)])}
         styles={(ri,ci,v)=>{
           const r = A.byRegion[ri];
           if (ci===0) return { color:'#e2e8f0', fontWeight:700 };
           if (ci===3) return heat(r.mean, 0, Math.max(...A.byRegion.map(x=>x.mean),1));
           if (ci===4||ci===5) return heat(r.vkm, 0, maxVkm);
           if (ci===6) return heat(r.heavy, 5, 30);
-          if (ci===7) return heat(r.g30, 1.1, 1.8);
-          if (ci===8) return heat(r.g40, 1.3, 2.8);
+          if (ci===7) return heat(r.g30, 0, Math.max(...A.byRegion.map(x=>x.g30),1));
+          if (ci===8) return heat(r.g40, 0, Math.max(...A.byRegion.map(x=>x.g40),1));
           if (ci===9) return heat(r.crit+r.high, 0, Math.max(...A.byRegion.map(x=>x.crit+x.high),1));
           return {};
         }}
-        foot='Heat scale: blue = low intensity → yellow → red = high intensity, computed per column against the regional max. Growth multipliers are ratios of link AADT at horizon vs today.'/>
+        foot='Heat scale: blue = low intensity → yellow → red = high intensity, computed per column against the regional max. AADT 2030/2040 are model-projected absolute volumes at each horizon.'/>
       <Formula title='Regional derivations' lines={[
         'RegionalShare_r = VKM_r / Σ VKM                — travel exposure share',
         'MeanAADT_r      = Σ AADT_i / links_r           — simple link mean',
@@ -491,8 +491,8 @@ function AnalysisTab({ A, featuresRef }: { A: ReturnType<typeof useAgg>; feature
         cols={[{h:'Pair'},{h:'r',align:'right'},{h:'Strength'},{h:'Interpretation'}]}
         rows={[
           ['AADT ↔ Heavy %', r_ah.toFixed(3), Math.abs(r_ah)>0.5?'Strong':Math.abs(r_ah)>0.25?'Moderate':'Weak', r_ah<0?'Busier links skew lighter — freight uses dedicated corridors':'Volume and freight co-locate'],
-          ['AADT ↔ Growth→2030', r_ag.toFixed(3), Math.abs(r_ag)>0.5?'Strong':Math.abs(r_ag)>0.25?'Moderate':'Weak', r_ag<0?'Fastest growth on low-base links (catch-up dynamics)':'Growth compounds on busy links'],
-          ['Heavy % ↔ Growth→2030', r_hg.toFixed(3), Math.abs(r_hg)>0.5?'Strong':Math.abs(r_hg)>0.25?'Moderate':'Weak', 'Freight-growth coupling — signals future ESAL pressure'],
+          ['AADT ↔ AADT 2030', r_ag.toFixed(3), Math.abs(r_ag)>0.5?'Strong':Math.abs(r_ag)>0.25?'Moderate':'Weak', r_ag<0?'Fastest growth on low-base links (catch-up dynamics)':'Growth compounds on busy links'],
+          ['Heavy % ↔ AADT 2030', r_hg.toFixed(3), Math.abs(r_hg)>0.5?'Strong':Math.abs(r_hg)>0.25?'Moderate':'Weak', 'Freight-growth coupling — signals future ESAL pressure'],
         ]}
         styles={(ri,ci,v)=> ci===1? heat(Math.abs(Number(v)), 0, 1):(ci===0?{ color:'#e2e8f0', fontWeight:600 }:{})}
         foot='r computed across all monitored links; |r|>0.5 strong, 0.25–0.5 moderate, <0.25 weak.'/>
@@ -540,24 +540,24 @@ function LinkLedger({ A, features }: { A: ReturnType<typeof useAgg>; features: P
         </select>
         <select style={sel} value={srt} onChange={e=>setSrt(e.target.value as any)}>
           <option value='aadt'>Sort: AADT</option><option value='heavy'>Sort: Heavy %</option>
-          <option value='g30'>Sort: Growth 2030</option><option value='km'>Sort: Length</option>
+          <option value='g30'>Sort: AADT 2030</option><option value='km'>Sort: Length</option>
         </select>
       </div>
       <Tbl title='Complete Link Ledger — every monitored record'
-        cols={[{h:'#',align:'right'},{h:'Road'},{h:'Link'},{h:'Region'},{h:'Class',align:'center'},{h:'Km',align:'right'},{h:'AADT',align:'right'},{h:'Band',align:'center'},{h:'Heavy %',align:'right'},{h:'G→2030',align:'right'},{h:'G→2040',align:'right'},{h:'VKM/day',align:'right'},{h:'Risk',align:'center'},{h:'Y (lat °)',align:'right'},{h:'X (lng °)',align:'right'}]}
+        cols={[{h:'#',align:'right'},{h:'Road'},{h:'Link'},{h:'Region'},{h:'Class',align:'center'},{h:'Km',align:'right'},{h:'AADT',align:'right'},{h:'Band',align:'center'},{h:'Heavy %',align:'right'},{h:'AADT 2030',align:'right'},{h:'AADT 2040',align:'right'},{h:'VKM/day',align:'right'},{h:'Risk',align:'center'},{h:'Y (lat °)',align:'right'},{h:'X (lng °)',align:'right'}]}
         rows={rows.map((f,i)=>{
           const p=f.properties; const c=centroid(f.geometry);
           return [i+1, p.road_no||'—', (p.link_name||p.link_id).slice(0,36), p.region||'—', p.road_class||'M',
             fmt(p.length_km??0,1), fmt(p.aadt_predicted??0), aadtBand(p.aadt_predicted??0).label,
-            pct(p.heavy_vehicle_pct??0), '×'+(p.growth_2030??1).toFixed(2), '×'+(p.growth_2040??1).toFixed(2),
+            pct(p.heavy_vehicle_pct??0), fmt(p.growth_2030??0), fmt(p.growth_2040??0),
             kfmt(p.vehicle_km_daily??0), p.congestion_risk||'—', c?c[0].toFixed(5):'—', c?c[1].toFixed(5):'—'];
         })}
         styles={(ri,ci)=>{
           const p = rows[ri]?.properties; if(!p) return {};
           if (ci===6||ci===7) return aadtBand(p.aadt_predicted??0).style;
           if (ci===8)  return heat(p.heavy_vehicle_pct??0, 5, 30);
-          if (ci===9)  return heat(p.growth_2030??1, 1.1, 1.8);
-          if (ci===10) return heat(p.growth_2040??1, 1.3, 2.8);
+          if (ci===9)  return heat(p.growth_2030??0, 0, 25000);
+          if (ci===10) return heat(p.growth_2040??0, 0, 40000);
           if (ci===12) return riskStyle(p.congestion_risk||'');
           if (ci===13||ci===14) return { color:'#64748b', fontFamily:'ui-monospace, Menlo, monospace' };
           if (ci<=2) return { color:'#e2e8f0' };
