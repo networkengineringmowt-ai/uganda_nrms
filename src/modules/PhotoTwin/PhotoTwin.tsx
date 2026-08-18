@@ -65,7 +65,7 @@ export default function PhotoTwin() {
       {/* PhotoTwin Dashboard overlay */}
       <div style={{ position:'absolute', top:10, left:'50%', transform:'translateX(-50%)', zIndex:1000, display:'flex', gap:6 }}>
         <button onClick={() => setTab(activeTab==='dashboard'?'photos':'dashboard')} style={{ fontSize:11, fontWeight:700, letterSpacing:1, padding:'4px 14px', border:'1px solid #00d4aa', borderRadius:4, cursor:'pointer', background:'#00d4aa', color:'#020202', textTransform:'uppercase', whiteSpace:'nowrap' }}>
-          {activeTab==='dashboard'?'🏗️ 3D Twin':'📊 Dashboard'}
+          {activeTab==='dashboard'?' 3D Twin':' Dashboard'}
         </button>
       </div>
       {activeTab==='dashboard'&&(
@@ -393,7 +393,7 @@ function PhotosView({ structure: s }: { structure: Structure }) {
         </div>
       </div>
 
-      {/* ─── Lightbox (fullscreen) — rendered inline so the ⛶ button works ─── */}
+      {/* ─── Lightbox (fullscreen) — rendered inline so the  button works ─── */}
       {lightbox && currentPhoto && (
         <div
           className="fixed inset-0 z-[9999] bg-black/95 flex flex-col items-center justify-center"
