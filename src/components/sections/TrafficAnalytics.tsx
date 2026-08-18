@@ -137,7 +137,7 @@ function Tbl({ title, cols, rows, styles, foot }:
         <Hdr>{title} — {rows.length.toLocaleString()} records (all shown)</Hdr>
         <button onClick={()=>downloadCSV(title, cols, rows)}
           style={{ background:'rgba(0,245,255,0.08)', border:'1px solid rgba(0,245,255,0.3)', borderRadius:6,
-            color:'#00f5ff', fontSize:10, fontWeight:700, padding:'3px 10px', cursor:'pointer', marginBottom:8 }}>⬇ CSV</button>
+            color:'#00f5ff', fontSize:10, fontWeight:700, padding:'3px 10px', cursor:'pointer', marginBottom:8 }}>CSV</button>
       </div>
       <div style={{ overflowX:'auto', overflowY:'auto', maxHeight:560 }}>
         <table style={{ width:'100%', borderCollapse:'collapse', fontSize:11.5 }}>
@@ -185,7 +185,7 @@ function Narrative({ title, paras }: { title: string; paras: string[] }) {
 function Relations({ title, rows, note }: { title: string; rows: [string,string,string,string][]; note: string }) {
   return (
     <div style={{ ...GLASS, borderLeft:'3px solid '+C.purple }}>
-      <Hdr>⛁ Relations — {title}</Hdr>
+      <Hdr> Relations — {title}</Hdr>
       <table style={{ width:'100%', borderCollapse:'collapse', fontSize:11.5 }}>
         <thead><tr>
           {['Relation','Cardinality','Join Key(s)','Semantics'].map((h,i)=>(
