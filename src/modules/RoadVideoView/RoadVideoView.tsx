@@ -1,4 +1,4 @@
-﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MapContainer, TileLayer, GeoJSON, ZoomControl } from 'react-leaflet';
 import { MapLegend } from '../../shared/MapLegend';
 import { ESRI_TILE_URLS, ESRI_ATTRIBUTIONS } from '../../shared/mapSymbols';
@@ -280,7 +280,7 @@ export default function RoadVideoView() {
       <div style={{ position: 'absolute', top: 10, left: '50%', transform: 'translateX(-50%)', zIndex: 1000, display: 'flex', gap: 6 }}>
         {(['map', 'dashboard'] as const).map(t => (
           <button key={t} onClick={() => setRvTab(t)} style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, padding: '4px 14px', border: `1px solid ${rvTab === t ? '#ffd23f' : 'rgba(255,210,63,0.25)'}`, borderRadius: 4, cursor: 'pointer', background: rvTab === t ? '#ffd23f' : 'rgba(255,210,63,0.08)', color: rvTab === t ? '#020202' : 'rgba(255,210,63,0.7)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
-            {t === 'map' ? '🎥 Road Video' : '📊 Dashboard'}
+            {t === 'map' ? ' Road Video' : ' Dashboard'}
           </button>
         ))}
       </div>
