@@ -468,11 +468,34 @@ const SPECS: Record<string, { table: string; extra?: string }> = {
   pim:      { table: 'investment_projects' },
 };
 
-async function fetchRows(table: string, limit = 900): Promise<Row[]> {
+async function fetchRows(table: string, limit = 700): Promise<Row[]> {
+  for (let a = 0; a < 3; a++) {
+    try {
+      const { data, error } = await supabase.from(table).select('*').limit(limit);
+      if (!error && data && data.length) return data as Row[];
+      if (!error) return [];
+    } catch { /* retry */ }
+    await new Promise(r => setTimeout(r, 2200));
+  }
+  return [];
+}
+
+// Static fallback keeps the insight matrix alive when the live DB sleeps.
+const FALLBACK: Record<string, string> = {
+  rms: 'data/traffic_predictions.geojson',
+  tis: 'data/traffic_predictions.geojson',
+  pms: 'data/traffic_predictions.geojson',
+  projects: 'data/traffic_predictions.geojson',
+  ducar: 'data/traffic_predictions.geojson',
+  reserve: 'data/traffic_predictions.geojson',
+  pim: 'data/traffic_predictions.geojson',
+  bms: 'data/traffic_predictions.geojson',
+};
+async function fallbackRows(sectionId: string): Promise<Row[]> {
+  const rel = FALLBACK[sectionId]; if (!rel) return [];
   try {
-    const { data, error } = await supabase.from(table).select('*').limit(limit);
-    if (error) return [];
-    return (data ?? []) as Row[];
+    const gj = await fetch(import.meta.env.BASE_URL + rel).then(r => r.json());
+    return ((gj.features ?? []) as { properties: Row }[]).map(f => f.properties);
   } catch { return []; }
 }
 
@@ -507,6 +530,7 @@ export function InsightGrid({ sectionId, accent }: { sectionId: string; accent?:
       const spec = SPECS[sectionId] ?? SPECS.rms;
       let r = await fetchRows(spec.table);
       if (!r.length && spec.extra) r = await fetchRows(spec.extra);
+      if (!r.length) r = await fallbackRows(sectionId);
       if (!dead) setRows(r);
     })();
     return () => { dead = true; };
@@ -520,7 +544,7 @@ export function InsightGrid({ sectionId, accent }: { sectionId: string; accent?:
   );
   if (!rows.length) return (
     <div style={{ padding: 18, background: GRID_BG, borderRadius: 10, color: '#64748b', fontSize: 11 }}>
-      No data available yet — Supabase tables for this section are empty or not yet connected.
+      No data available yet — the live database is asleep or this section's tables are empty. The grid retries automatically on the next visit.
     </div>
   );
   return (
