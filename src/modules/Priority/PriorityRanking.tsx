@@ -272,7 +272,7 @@ function StarRating({ value }: { value: number }) {
   return (
     <div className="flex gap-0.5">
       {[1,2,3,4,5].map(i => (
-        <span key={i} className={`text-xs ${i <= value ? 'text-amber-400' : 'text-slate-600'}`}>★</span>
+        <span key={i} className={`text-xs ${i <= value ? 'text-amber-400' : 'text-slate-600'}`}></span>
       ))}
 
     </div>
