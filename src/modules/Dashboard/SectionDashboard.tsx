@@ -726,6 +726,19 @@ function LivePanel({ sectionId, accent }: { sectionId: string; accent: string })
 }
 
 // ── main export ────────────────────────────────────────────────────────────────
+import { CaptureButton } from '../../shared/CaptureButton';
+
+const CAP: Record<string, { c: string; l: string }> = {
+  rms: { c: 'condition', l: 'road condition survey' },
+  pms: { c: 'condition', l: 'pavement condition survey' },
+  tis: { c: 'traffic', l: 'traffic count record' },
+  bms: { c: 'inspection', l: 'bridge inspection record' },
+  ducar: { c: 'works', l: 'DUCAR works record' },
+  reserve: { c: 'encroachment', l: 'road reserve field data' },
+  pim: { c: 'project', l: 'investment project record' },
+  projects: { c: 'works', l: 'project works update' },
+};
+
 export default function SectionDashboard({ sectionId, accent }: { sectionId: string; accent: string }) {
   const def = DEFS[sectionId] ?? DEFS.rms;
   const acc = def?.accent || accent;
@@ -735,31 +748,33 @@ export default function SectionDashboard({ sectionId, accent }: { sectionId: str
     <div style={{ padding: '6px 8px', width: '100%' }}>
       <style>{`@keyframes sd-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
 
-      {/* Live Supabase data panel — data first, no filler */}
-      <LivePanel sectionId={sectionId} accent={acc} />
-
-      {/* Definition card — reference, moved below data */}
+      {/* Definition Strip — Compact · Slim · Full-Width */}
       <div style={{
         background: `rgba(${r},0.04)`, border: `1px solid rgba(${r},0.15)`,
-        borderRadius: 14, padding: '16px 22px', marginBottom: 18,
+        borderRadius: 10, padding: '6px 12px', marginBottom: 10,
       }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{
-            width: 44, height: 44, borderRadius: 12, flexShrink: 0,
+            width: 26, height: 26, borderRadius: 7, flexShrink: 0, fontSize: 13,
             background: `linear-gradient(135deg,rgba(${r},0.2),rgba(0,0,0,0))`,
             border: `1px solid rgba(${r},0.3)`,
             display: 'flex', alignItems: 'center', justifyContent: 'center', color: acc,
           }}>{def?.icon}</div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 16, fontWeight: 900, color: '#e2eaf4' }}>{def?.title} — Definition</div>
-            <div style={{ fontSize: 12, color: 'rgba(203,213,225,0.8)', lineHeight: 1.7, marginTop: 6 }}>{def?.desc}</div>
-            <div style={{ marginTop: 10, display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-              {(def?.chips ?? []).map(t => <Chip key={t} label={t} color={acc} />)}
-            </div>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
+            <span style={{ fontSize: 12.5, fontWeight: 900, color: '#e2eaf4', whiteSpace: 'nowrap' }}>{def?.title}</span>
+            <span style={{ fontSize: 11, color: 'rgba(203,213,225,0.75)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>{def?.desc}</span>
+            <span style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+              {(def?.chips ?? []).slice(0, 3).map(t => <Chip key={t} label={t} color={acc} />)}
+            </span>
           </div>
         </div>
       </div>
 
+      {/* Live Data Dashboard */}
+      <LivePanel sectionId={sectionId} accent={acc} />
+
+      {/* Data Capture — After All Data & SQL Content */}
+      <CaptureButton capture={CAP[sectionId]?.c ?? 'condition'} label={CAP[sectionId]?.l ?? 'field data'} accent={acc} />
     </div>
   );
 }
