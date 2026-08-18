@@ -1310,7 +1310,7 @@ type TabId = 'worldmap' | 'casestudies' | 'analytics' | 'lessons' | 'matrix';
 
 const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
   { id: 'dashboard' as const, label: 'Dashboard', icon: <LayoutDashboard size={13}/> },
-  { id: 'analytics',   label: 'Dashboard', icon: <BarChart3 size={13} /> },
+  { id: 'analytics',   label: 'Comparison Table', icon: <BarChart3 size={13} /> },
   { id: 'worldmap',    label: 'World Map',              icon: <Globe size={13} /> },
   { id: 'casestudies', label: 'Case Studies',           icon: <BookOpen size={13} /> },
   { id: 'lessons',     label: 'Lessons & Recommendations', icon: <Lightbulb size={13} /> },
