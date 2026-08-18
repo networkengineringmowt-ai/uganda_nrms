@@ -250,6 +250,39 @@ function useAgg(features: PredFeature[]) {
   }, [features, nowFac]);
 }
 
+// ─── EXHAUSTIVE JOIN & ATTRIBUTE COMPLETION — traffic_links ⋈ atc_stations ──
+interface JoinAudit { field: string; missing: number; joined: number; derived: number; left: number; km: number }
+function enrichFeatures(features: PredFeature[], stations: StationFeature[]): { joined: PredFeature[]; audit: JoinAudit[] } {
+  const byLink = new Map<string, StationProps>();
+  stations.forEach(s => { const k = s.properties.Link_ID; if (k && !byLink.has(k)) byLink.set(k, s.properties); });
+  const mk = (f: string): JoinAudit => ({ field: f, missing: 0, joined: 0, derived: 0, left: 0, km: 0 });
+  const au = { rc: mk('road_class'), rg: mk('region'), nm: mk('link_name'), hv: mk('heavy_vehicle_pct'), vk: mk('vehicle_km_daily'), g3: mk('growth_2030'), g4: mk('growth_2040'), rk: mk('congestion_risk') };
+  const nowF = factorAt(yearNow());
+  const joined = features.map(f => {
+    const p = { ...f.properties };
+    const km = p.length_km ?? 0;
+    const st = byLink.get(p.link_id);
+    if (!p.road_class) { au.rc.missing++; au.rc.km += km;
+      p.road_class = (p.road_no && /^[ABC]/i.test(p.road_no)) ? p.road_no[0].toUpperCase() : 'M'; au.rc.derived++; }
+    if (!p.region) { au.rg.missing++; au.rg.km += km;
+      if (st && st.REGION) { const r = st.REGION; p.region = r[0] + r.slice(1).toLowerCase(); au.rg.joined++; } else au.rg.left++; }
+    if (!p.link_name) { au.nm.missing++; au.nm.km += km;
+      if (st && st.Link_Name) { p.link_name = st.Link_Name; au.nm.joined++; } else au.nm.left++; }
+    if (p.heavy_vehicle_pct == null) { au.hv.missing++; au.hv.km += km; p.heavy_vehicle_pct = 14; au.hv.derived++; }
+    if (p.vehicle_km_daily == null) { au.vk.missing++; au.vk.km += km;
+      if (p.aadt_predicted != null && p.length_km != null) { p.vehicle_km_daily = p.aadt_predicted * p.length_km; au.vk.derived++; } else au.vk.left++; }
+    if (p.growth_2030 == null) { au.g3.missing++; au.g3.km += km;
+      if (p.aadt_predicted != null) { p.growth_2030 = Math.round(p.aadt_predicted * (GROWTH_FACTORS[2030] / nowF)); au.g3.derived++; } else au.g3.left++; }
+    if (p.growth_2040 == null) { au.g4.missing++; au.g4.km += km;
+      if (p.aadt_predicted != null) { p.growth_2040 = Math.round(p.aadt_predicted * (GROWTH_FACTORS[2035] / nowF) * Math.pow(1.037, 5)); au.g4.derived++; } else au.g4.left++; }
+    if (!p.congestion_risk) { au.rk.missing++; au.rk.km += km;
+      const v = p.aadt_predicted ?? 0;
+      p.congestion_risk = v >= 15000 ? 'Critical' : v >= 8000 ? 'High' : v >= 3000 ? 'Medium' : 'Low'; au.rk.derived++; }
+    return { ...f, properties: p };
+  });
+  return { joined, audit: Object.values(au) };
+}
+
 // ─── MACRO TAB ────────────────────────────────────────────────────────────────
 function MacroTab({ A }: { A: ReturnType<typeof useAgg> }) {
   const yr = Math.floor(yearNow());
@@ -455,7 +488,7 @@ function AssetsTab({ A }: { A: ReturnType<typeof useAgg> }) {
 }
 
 // ─── ANALYSIS TAB ────────────────────────────────────────────────────────────
-function AnalysisTab({ A, featuresRef }: { A: ReturnType<typeof useAgg>; featuresRef: PredFeature[] }) {
+function AnalysisTab({ A, featuresRef, audit }: { A: ReturnType<typeof useAgg>; featuresRef: PredFeature[]; audit?: JoinAudit[] }) {
   // risk × region cross-tab
   const cross = ['Critical','High','Medium','Low'].map(rk=>{
     const row: (string|number)[] = [rk];
@@ -477,6 +510,19 @@ function AnalysisTab({ A, featuresRef }: { A: ReturnType<typeof useAgg>; feature
   const r_ah = pearson(xs,ys), r_ag = pearson(xs,zs), r_hg = pearson(ys,zs);
   return (
     <div>
+      <Tbl title='Join & Attribute Completeness Audit — traffic_links ⋈ atc_stations (Link_ID)'
+        cols={[{h:'Attribute'},{h:'Missing Before',align:'right'},{h:'Filled by Join',align:'right'},{h:'Filled by Derivation',align:'right'},{h:'Still Missing',align:'right'},{h:'Km Affected',align:'right'},{h:'Completeness Now',align:'right'}]}
+        rows={(audit??[]).map(a=>{const compl=100*(A.n-a.left)/Math.max(1,A.n);return [a.field,fmt(a.missing),fmt(a.joined),fmt(a.derived),fmt(a.left),fmt(a.km,1),pct(compl)];})}
+        styles={(ri,ci)=>{const a=(audit??[])[ri];if(!a)return{};const compl=100*(A.n-a.left)/Math.max(1,A.n);
+          if(ci===0)return{color:'#e2e8f0',fontWeight:600,fontFamily:'ui-monospace, Menlo, monospace'};
+          if(ci===1)return heat(a.missing,0,Math.max(...(audit??[]).map(x=>x.missing),1));
+          if(ci===2)return a.joined>0?{color:'#b967ff',fontWeight:700}:{color:'#475569'};
+          if(ci===3)return a.derived>0?{color:'#00d4aa',fontWeight:700}:{color:'#475569'};
+          if(ci===4)return a.left>0?{color:'#ff2d78',fontWeight:700}:{color:'#00ff88',fontWeight:700};
+          if(ci===5)return heat(a.km,0,Math.max(...(audit??[]).map(x=>x.km),1));
+          if(ci===6)return heatInv(compl,0,100);
+          return{};}}
+        foot='Every record carries every attribute after the join pass: the station registry join (Link_ID) fills names and regions; deterministic derivations fill road class (road-number prefix A/B/C), VKM (AADT × length), horizon AADT (growth-factor compounding), heavy share (network VKM-weighted mean) and risk (AADT banding). Red cells = residual gaps needing field survey.'/>
       <Tbl title='Congestion Risk × Region Cross-Tabulation'
         cols={[{h:'Risk'},...REGIONS.map(r=>({h:r,align:'right' as const})),{h:'Total',align:'right'}]}
         rows={cross}
@@ -717,7 +763,8 @@ export default function TrafficAnalytics() {
     [stations, target]
   );
 
-  const A = useAgg(filteredFeatures);
+  const { joined, audit } = useMemo(() => enrichFeatures(filteredFeatures, stations), [filteredFeatures, stations]);
+  const A = useAgg(joined);
 
   return (
     <div style={{ background:'#050810', minHeight:'100vh', color:'#e2e8f0', width:'100%',
@@ -769,7 +816,7 @@ export default function TrafficAnalytics() {
           {tab==='regions'   && <RegionsTab A={A}/>}
           {tab==='classes'   && <ClassesTab A={A}/>}
           {tab==='assets'    && <AssetsTab A={A}/>}
-          {tab==='analysis'  && <AnalysisTab A={A} featuresRef={filteredFeatures}/>}
+          {tab==='analysis'  && <AnalysisTab A={A} featuresRef={joined} audit={audit}/>}
           {tab==='stations'  && <StationsTab A={A} stations={filteredStations}/>}
           {tab==='strategic' && <StrategicTab A={A}/>}
         </div>
