@@ -273,7 +273,7 @@ function DocUploadForm({
             <Upload size={18} className="text-blue-400" />
             <span className="font-bold text-white">Attach Document</span>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-white">✕</button>
+          <button onClick={onClose} className="text-slate-400 hover:text-white"></button>
         </div>
         <div className="p-6 space-y-4">
           <div>
@@ -314,7 +314,7 @@ function DocUploadForm({
           </div>
           {/* Note about S:\PHOTOS */}
           <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 text-[10px] text-blue-300">
-            📸 Bridge photos are automatically linked from <code className="font-mono">S:\PHOTOS\[BridgeID]\</code>
+             Bridge photos are automatically linked from <code className="font-mono">S:\PHOTOS\[BridgeID]\</code>
           </div>
         </div>
         <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-700">
