@@ -20,7 +20,7 @@ export function ProtectedRoute({ permission, fallback, children }: Props) {
   if (permission && !hasPermission(user, permission)) {
     return (
       <div style={{ color:'#f87171', padding:'32px 20px', textAlign:'center' }}>
-        <div style={{ fontSize:32, marginBottom:12 }}>🔒</div>
+        <div style={{ fontSize:32, marginBottom:12 }}></div>
         <div style={{ fontWeight:700, fontSize:14, color:'#fca5a5' }}>Access Restricted</div>
         <div style={{ fontSize:12, color:'#94a3b8', marginTop:6 }}>
           Your role (<strong style={{ color:'#818cf8' }}>{user?.role}</strong>) does not have permission: <code>{permission}</code>.
