@@ -18,7 +18,7 @@ import MapDetailPane, { StatCard, AttributeRow, SectionHeader } from '../../shar
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
 import SectionDashboard from '../Dashboard/SectionDashboard';
 
-// ── Under-construction corridor definitions ───────────────────────────────────
+// ââ Under-construction corridor definitions âââââââââââââââââââââââââââââââââââ
 interface UCorridor {
   id: string; name: string; km: number;
   funder: string; contractor: string; lot: string;
@@ -29,7 +29,7 @@ interface UCorridor {
 const UNDER_CONSTRUCTION: UCorridor[] = [
   {
     id: 'neramp-lot1',
-    name: 'Kamdini – Lira – Soroti – Koloin',
+    name: 'Kamdini â Lira â Soroti â Koloin',
     km: 216,
     funder: 'World Bank (NERAMP)',
     contractor: 'Mota-Engil Consortium',
@@ -40,7 +40,7 @@ const UNDER_CONSTRUCTION: UCorridor[] = [
   },
   {
     id: 'hoima-wanseko',
-    name: 'Hoima – Butiaba – Wanseko (Oil Road)',
+    name: 'Hoima â Butiaba â Wanseko (Oil Road)',
     km: 111,
     funder: 'GoU / TotalEnergies',
     contractor: 'China Harbour Engineering',
@@ -62,7 +62,7 @@ const UNDER_CONSTRUCTION: UCorridor[] = [
   },
   {
     id: 'kla-jinja-exp',
-    name: 'Kampala – Jinja Expressway',
+    name: 'Kampala â Jinja Expressway',
     km: 76,
     funder: 'GoU / PPP',
     contractor: 'China Road & Bridge Corp.',
@@ -73,7 +73,7 @@ const UNDER_CONSTRUCTION: UCorridor[] = [
   },
 ];
 
-// ── Colour helpers ────────────────────────────────────────────────────────────
+// ââ Colour helpers ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 const FUNDER_COLORS: Record<string, string> = {
   GOU: '#3b82f6', GoU: '#3b82f6',
   AFDB: '#10b981', AfDB: '#10b981',
@@ -95,7 +95,7 @@ const STATUS_STYLE = {
   complete: { border: '#22c55e', badge: 'text-green-400 bg-green-900/30 border-green-800/50' },
 } as const;
 
-// ── Works-type categorical colors ─────────────────────────────────────────────
+// ââ Works-type categorical colors âââââââââââââââââââââââââââââââââââââââââââââ
 const WORKS_COLOR: Record<string, string> = {
   'Routine Maintenance':  '#6b7280',
   'Periodic Maintenance': '#eab308',
@@ -120,7 +120,7 @@ const MARKER_COLOR: Record<Project['status'], string> = {
   complete: '#22c55e',
 };
 
-// ── Map controller: flies to target on change ─────────────────────────────────
+// ââ Map controller: flies to target on change âââââââââââââââââââââââââââââââââ
 function MapController({ target }: { target: [number, number] | null }) {
   const map = useMap();
   useEffect(() => {
@@ -129,7 +129,7 @@ function MapController({ target }: { target: [number, number] | null }) {
   return null;
 }
 
-// ── Progress bar strip ────────────────────────────────────────────────────────
+// ââ Progress bar strip ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function ProgressBar({ planned, actual, financial }: {
   planned: number | null; actual: number | null; financial: number | null;
 }) {
@@ -143,7 +143,7 @@ function ProgressBar({ planned, actual, financial }: {
         <div key={b.label}>
           <div className="flex justify-between text-[8px] text-slate-500 mb-0.5">
             <span>{b.label}</span>
-            <span>{b.val !== null ? `${b.val.toFixed(0)}%` : '—'}</span>
+            <span>{b.val !== null ? `${b.val.toFixed(0)}%` : 'â'}</span>
           </div>
           <div className="bg-slate-700 rounded-full h-1.5">
             {b.val !== null && (
@@ -157,7 +157,7 @@ function ProgressBar({ planned, actual, financial }: {
   );
 }
 
-// ── Photo strip ───────────────────────────────────────────────────────────────
+// ââ Photo strip âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function PhotoStrip({ photos, onPhotoClick }: {
   photos: string[];
   onPhotoClick: (src: string) => void;
@@ -197,7 +197,7 @@ function PhotoStrip({ photos, onPhotoClick }: {
   );
 }
 
-// ── Lightbox overlay ──────────────────────────────────────────────────────────
+// ââ Lightbox overlay ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function Lightbox({ src, caption, onClose, onPrev, onNext, hasPrev, hasNext }: {
   src: string; caption: string; onClose: () => void;
   onPrev: () => void; onNext: () => void; hasPrev: boolean; hasNext: boolean;
@@ -253,7 +253,7 @@ function Lightbox({ src, caption, onClose, onPrev, onNext, hasPrev, hasNext }: {
   );
 }
 
-// ── Main component ────────────────────────────────────────────────────────────
+// ââ Main component ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 const UGANDA_CENTER: [number, number] = [1.37, 32.3];
 
 export default function ProjectsView() {
@@ -344,7 +344,7 @@ export default function ProjectsView() {
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="text-center space-y-3">
           <div className="w-8 h-8 rounded-full border-2 border-slate-700 border-t-amber-500 animate-spin mx-auto" />
-          <div className="text-sm text-slate-400">Loading projects…</div>
+          <div className="text-sm text-slate-400">Loading projectsâ¦</div>
         </div>
       </div>
     );
@@ -355,18 +355,18 @@ export default function ProjectsView() {
 
       <CrossLinkChipBar sectionId="projects" />
 
-      {/* ── BMS-style tab bar — FIRST (matches BMS pattern) ── */}
+      {/* ââ BMS-style tab bar â FIRST (matches BMS pattern) ââ */}
       <div style={{
         display: 'flex', gap: 2, padding: '0 14px', flexShrink: 0,
         borderBottom: '1px solid rgba(77,159,255,0.15)',
         background: 'rgba(8,8,8,0.85)',
       }}>
         {([
+          { id: 'dashboard', label: 'Dashboard',      icon: '' },
           { id: 'map',      label: 'Projects Map',   icon: '' },
           { id: 'register', label: 'Works Register', icon: '' },
           { id: 'ndpiv',    label: 'NDPIV Projects', icon: '' },
           { id: 'oprc',     label: 'OPRC Lots',      icon: '' },
-          { id: 'dashboard', label: 'Dashboard',      icon: '' },
         ] as const).map(t => {
           const isActive = t.id === activeTab;
           return (
@@ -385,12 +385,12 @@ export default function ProjectsView() {
         })}
       </div>
 
-      {/* ── Map + MapDetailPane (Map tab) — flex row, map fills space ── */}
+      {/* ââ Map + MapDetailPane (Map tab) â flex row, map fills space ââ */}
       {activeTab === 'map' && <div className="flex flex-1 min-h-0 overflow-hidden border-t border-slate-800">
 
         {/* Map fills remaining space */}
         <div style={{ flex: 1, minWidth: 0, position: 'relative' }}>
-          {/* Floating filter bar — keeps the whole pane for the map */}
+          {/* Floating filter bar â keeps the whole pane for the map */}
           <div style={{
             position: 'absolute', top: 10, left: 54, zIndex: 1000,
             display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center',
@@ -400,7 +400,7 @@ export default function ProjectsView() {
             <div className="relative" style={{ minWidth: 170 }}>
               <Search size={11} className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-500" />
               <input value={search} onChange={e => setSearch(e.target.value)}
-                placeholder="Search projects…" className="bms-input pl-6 w-full text-xs" style={{ height: 26 }} />
+                placeholder="Search projectsâ¦" className="bms-input pl-6 w-full text-xs" style={{ height: 26 }} />
             </div>
             <select value={regionF} onChange={e => setRegionF(e.target.value)} className="bms-input text-xs" style={{ height: 26 }}>
               <option value="all">All Regions</option>
@@ -425,7 +425,7 @@ export default function ProjectsView() {
             <MapLegend title="Projects" items={LEGEND_PROJECTS} />
             <MapController target={flyTarget} />
 
-            {/* ── Road network base layer ── */}
+            {/* ââ Road network base layer ââ */}
             {roadsGeo && (
               <GeoJSONLayer
                 key="roads-base"
@@ -444,7 +444,7 @@ export default function ProjectsView() {
               />
             )}
 
-            {/* ── Under-construction corridors (animated yellow dashes) ── */}
+            {/* ââ Under-construction corridors (animated yellow dashes) ââ */}
             {UNDER_CONSTRUCTION.map(c => (
               <Polyline
                 key={c.id}
@@ -569,7 +569,7 @@ export default function ProjectsView() {
           </div>
         </div>
 
-        {/* Right: MapDetailPane — default=stats, selected=project detail */}
+        {/* Right: MapDetailPane â default=stats, selected=project detail */}
         <MapDetailPane
           width={340}
           accent="#f59e0b"
@@ -637,10 +637,10 @@ export default function ProjectsView() {
         />
       </div>}
 
-      {/* ── Works Register tab ── */}
+      {/* ââ Works Register tab ââ */}
       {activeTab === 'register' && (
         <div style={{ flex: 1, overflowY: 'auto', padding: '14px 18px', minHeight: 0 }}>
-          {/* Programme overview — moved here from the map tab so the map fills its pane */}
+          {/* Programme overview â moved here from the map tab so the map fills its pane */}
           <div className="space-y-3" style={{ marginBottom: 14 }}>
         {/* KPI strip */}
         <div className="grid grid-cols-4 gap-2">
@@ -657,7 +657,7 @@ export default function ProjectsView() {
           ))}
         </div>
 
-        {/* ── OPRC + NDP IV info cards ── */}
+        {/* ââ OPRC + NDP IV info cards ââ */}
         <div className="grid grid-cols-2 gap-2">
 
           {/* OPRC Card */}
@@ -668,18 +668,18 @@ export default function ProjectsView() {
             borderRadius: 8, padding: '8px 12px',
           }}>
             <div style={{ fontSize: 9, fontWeight: 900, color: '#fcd34d', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 5 }}>
-               NERAMP OPRC — Output-Performance Road Contracts
+               NERAMP OPRC â Output-Performance Road Contracts
             </div>
             <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.8)', lineHeight: 1.5 }}>
               <span style={{ color: '#fcd34d', fontWeight: 700 }}>Lot 1 (216 km)</span>
-              {' '}Kamdini–Lira–Soroti–Koloin · Mota-Engil · World Bank · Completion Jun 2027
+              {' '}KamdiniâLiraâSorotiâKoloin Â· Mota-Engil Â· World Bank Â· Completion Jun 2027
             </div>
             <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.8)', lineHeight: 1.5, marginTop: 2 }}>
               <span style={{ color: '#fcd34d', fontWeight: 700 }}>Lot 2 (307 km)</span>
-              {' '}Soroti–Moroto–Kotido · In procurement · World Bank NERAMP
+              {' '}SorotiâMorotoâKotido Â· In procurement Â· World Bank NERAMP
             </div>
             <div style={{ fontSize: 8, color: 'rgba(100,116,139,0.5)', marginTop: 4 }}>
-              NERAMP = North East Road Asset Management Programme · 10-yr performance contracts
+              NERAMP = North East Road Asset Management Programme Â· 10-yr performance contracts
             </div>
           </div>
 
@@ -691,7 +691,7 @@ export default function ProjectsView() {
             borderRadius: 8, padding: '8px 12px',
           }}>
             <div style={{ fontSize: 9, fontWeight: 900, color: '#4d9fff', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 5 }}>
-               NDP IV Targets · FY 2025/26 – 2029/30
+               NDP IV Targets Â· FY 2025/26 â 2029/30
             </div>
             <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.8)', lineHeight: 1.5 }}>
               <span style={{ color: '#00ff88', fontWeight: 700 }}>1,200+ km</span>
@@ -699,10 +699,10 @@ export default function ProjectsView() {
             </div>
             <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.8)', lineHeight: 1.5, marginTop: 2 }}>
               <span style={{ color: '#00f5ff', fontWeight: 700 }}>Key priorities:</span>
-              {' '}Albertine oil roads · GKMA improvements · Northern Bypass Ph 2 · border connectivity
+              {' '}Albertine oil roads Â· GKMA improvements Â· Northern Bypass Ph 2 Â· border connectivity
             </div>
             <div style={{ fontSize: 8, color: 'rgba(100,116,139,0.5)', marginTop: 4 }}>
-              Target: 35% paved network by 2030 · Current baseline: ~30.1% (6,405 km)
+              Target: 35% paved network by 2030 Â· Current baseline: ~30.1% (6,405 km)
             </div>
           </div>
 
@@ -726,7 +726,7 @@ export default function ProjectsView() {
               borderRadius: 10, padding: '10px 12px',
             }}>
               <div style={{ fontSize: 9, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>
-                Projects by Works Type — Count &amp; Length (km)
+                Projects by Works Type â Count &amp; Length (km)
               </div>
               <Chart3DWrap>
                 <ResponsiveContainer width="100%" height={110}>
@@ -765,9 +765,9 @@ export default function ProjectsView() {
 
           </div>
 
-          <div style={{ fontSize: 14, fontWeight: 900, color: '#e2eaf4', marginBottom: 4 }}>Works Register — All Projects</div>
+          <div style={{ fontSize: 14, fontWeight: 900, color: '#e2eaf4', marginBottom: 4 }}>Works Register â All Projects</div>
           <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.55)', marginBottom: 12 }}>
-            {projects.length} projects · source: appStore / NDPIV Excel
+            {projects.length} projects Â· source: appStore / NDPIV Excel
           </div>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', fontSize: 9, borderCollapse: 'collapse', minWidth: 900 }}>
@@ -782,16 +782,16 @@ export default function ProjectsView() {
                 {filtered.map((p, i) => (
                   <tr key={p.id} style={{ borderBottom: '1px solid rgba(148,163,184,0.04)', background: i % 2 === 0 ? 'rgba(15,15,15,0.3)' : 'transparent' }}>
                     <td style={{ padding: '5px 10px', color: '#e2eaf4', maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.project_name}</td>
-                    <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{p.regions ?? '—'}</td>
-                    <td style={{ padding: '5px 10px', color: '#f59e0b', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{p.parsed_length_km ? p.parsed_length_km.toFixed(1) : '—'}</td>
+                    <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{p.regions ?? 'â'}</td>
+                    <td style={{ padding: '5px 10px', color: '#f59e0b', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{p.parsed_length_km ? p.parsed_length_km.toFixed(1) : 'â'}</td>
                     <td style={{ padding: '5px 10px' }}>
                       <span style={{ color: p.status === 'ongoing' ? '#00ff88' : p.status === 'complete' ? '#00f5ff' : '#94a3b8', fontWeight: 600 }}>
-                        {p.status ?? '—'}
+                        {p.status ?? 'â'}
                       </span>
                     </td>
                     <td style={{ padding: '5px 10px', color: '#64748b', maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.funding_agency}</td>
                     <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{inferWorksType(p.project_name)}</td>
-                    <td style={{ padding: '5px 10px', color: '#64748b' }}>{p.target_completion_date ?? '—'}</td>
+                    <td style={{ padding: '5px 10px', color: '#64748b' }}>{p.target_completion_date ?? 'â'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -806,12 +806,12 @@ export default function ProjectsView() {
         </div>
       )}
 
-      {/* ── NDPIV tab ── */}
+      {/* ââ NDPIV tab ââ */}
       {activeTab === 'ndpiv' && (
         <div style={{ flex: 1, overflowY: 'auto', padding: '14px 18px', minHeight: 0 }}>
           <div style={{ fontSize: 14, fontWeight: 900, color: '#e2eaf4', marginBottom: 4 }}>NDP IV Road Projects</div>
           <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.55)', marginBottom: 12 }}>
-            National Development Plan IV · FY 2025/26 – 2029/30 · links matched from master network register
+            National Development Plan IV Â· FY 2025/26 â 2029/30 Â· links matched from master network register
           </div>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', fontSize: 9, borderCollapse: 'collapse', minWidth: 700 }}>
@@ -827,16 +827,16 @@ export default function ProjectsView() {
                   .filter(p => p.project_name.toLowerCase().includes('ndp') || p.funding_agency.toLowerCase().includes('gou'))
                   .map((p, i) => (
                   <tr key={p.id} style={{ borderBottom: '1px solid rgba(148,163,184,0.04)', background: i % 2 === 0 ? 'rgba(15,15,15,0.3)' : 'transparent' }}>
-                    <td style={{ padding: '5px 8px', color: '#00f5ff', fontFamily: 'monospace', fontSize: 8 }}>—</td>
-                    <td style={{ padding: '5px 8px', color: '#94a3b8' }}>—</td>
+                    <td style={{ padding: '5px 8px', color: '#00f5ff', fontFamily: 'monospace', fontSize: 8 }}>â</td>
+                    <td style={{ padding: '5px 8px', color: '#94a3b8' }}>â</td>
                     <td style={{ padding: '5px 8px', color: '#e2eaf4', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.project_name}</td>
-                    <td style={{ padding: '5px 8px', color: '#f59e0b', fontWeight: 700 }}>—</td>
-                    <td style={{ padding: '5px 8px', color: '#f59e0b', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{p.parsed_length_km?.toFixed(1) ?? '—'}</td>
-                    <td style={{ padding: '5px 8px', color: '#94a3b8' }}>—</td>
-                    <td style={{ padding: '5px 8px', color: '#64748b' }}>{p.regions ?? '—'}</td>
+                    <td style={{ padding: '5px 8px', color: '#f59e0b', fontWeight: 700 }}>â</td>
+                    <td style={{ padding: '5px 8px', color: '#f59e0b', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{p.parsed_length_km?.toFixed(1) ?? 'â'}</td>
+                    <td style={{ padding: '5px 8px', color: '#94a3b8' }}>â</td>
+                    <td style={{ padding: '5px 8px', color: '#64748b' }}>{p.regions ?? 'â'}</td>
                     <td style={{ padding: '5px 8px', color: '#94a3b8' }}>{inferWorksType(p.project_name)}</td>
                     <td style={{ padding: '5px 8px', color: '#64748b' }}>{p.funding_agency}</td>
-                    <td style={{ padding: '5px 8px', color: '#94a3b8' }}>—</td>
+                    <td style={{ padding: '5px 8px', color: '#94a3b8' }}>â</td>
                   </tr>
                 ))}
               </tbody>
@@ -845,12 +845,12 @@ export default function ProjectsView() {
         </div>
       )}
 
-      {/* ── OPRC tab ── */}
+      {/* ââ OPRC tab ââ */}
       {activeTab === 'oprc' && (
         <div style={{ flex: 1, overflowY: 'auto', padding: '14px 18px', minHeight: 0 }}>
-          <div style={{ fontSize: 14, fontWeight: 900, color: '#e2eaf4', marginBottom: 4 }}>OPRC — Output & Performance Road Contracts</div>
+          <div style={{ fontSize: 14, fontWeight: 900, color: '#e2eaf4', marginBottom: 4 }}>OPRC â Output & Performance Road Contracts</div>
           <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.55)', marginBottom: 12 }}>
-            Long-term performance-based road maintenance contracts · NERAMP & other OPRC programs
+            Long-term performance-based road maintenance contracts Â· NERAMP & other OPRC programs
           </div>
           {UNDER_CONSTRUCTION.map(uc => (
             <div key={uc.id} style={{ background: 'rgba(8,8,8,0.55)', border: '1px solid rgba(245,158,11,0.2)', borderLeft: '4px solid #f59e0b', borderRadius: 10, padding: '12px 16px', marginBottom: 10 }}>
@@ -875,12 +875,12 @@ export default function ProjectsView() {
             </div>
           ))}
           <div style={{ marginTop: 12, fontSize: 9, color: 'rgba(148,163,184,0.3)' }}>
-            OPRC = Output & Performance Road Contract · long-term maintenance performance agreements · NERAMP = North East Road Asset Management Programme
+            OPRC = Output & Performance Road Contract Â· long-term maintenance performance agreements Â· NERAMP = North East Road Asset Management Programme
           </div>
         </div>
       )}
 
-      {/* ── Lightbox ── */}
+      {/* ââ Lightbox ââ */}
       {lightbox && (
         <Lightbox
           src={lightbox.photos[lightbox.idx]}
