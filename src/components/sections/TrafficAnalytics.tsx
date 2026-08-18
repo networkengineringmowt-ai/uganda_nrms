@@ -5,10 +5,10 @@
  * comprehensive section-specific narrative summaries, explicit formulas and
  * relational definitions, with threshold-driven conditional formatting.
  */
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
+const LazyTAHub = lazy(() => import('../../modules/DataEntry/DataCaptureHub'));
 import { ModuleNavBar } from '../../shared/ModuleNavBar';
 import { factorAt, yearNow, useNowTick } from '../../shared/nowcast';
-import { CaptureButton } from '../../shared/CaptureButton';
 
 // ─── Data types ───────────────────────────────────────────────────────────────
 interface PredProps {
@@ -54,7 +54,7 @@ const VEHICLE_CLASSES = [
 
 const REGIONS = ['Central','Eastern','Southern','Western','Northern','North Eastern'];
 type RegionTarget = 'GLOBAL'|'CENTRAL'|'EASTERN'|'SOUTHERN'|'WESTERN'|'NORTHERN'|'NORTH EASTERN';
-type TabId = 'macro'|'regions'|'classes'|'assets'|'analysis'|'stations'|'strategic';
+type TabId = 'macro'|'regions'|'classes'|'assets'|'analysis'|'stations'|'strategic'|'capture';
 
 // ─── Formatting helpers ───────────────────────────────────────────────────────
 const fmt  = (n: number, d = 0) => n.toLocaleString(undefined,{ maximumFractionDigits:d, minimumFractionDigits:d });
@@ -728,6 +728,7 @@ const TABS: { id:TabId; label:string }[] = [
   { id:'analysis',  label:'ANALYSIS' },
   { id:'stations',  label:'STATIONS' },
   { id:'strategic', label:'STRATEGIC'},
+  { id:'capture',   label:'CAPTURE'  },
 ];
 
 export default function TrafficAnalytics() {
@@ -819,9 +820,9 @@ export default function TrafficAnalytics() {
           {tab==='analysis'  && <AnalysisTab A={A} featuresRef={joined} audit={audit}/>}
           {tab==='stations'  && <StationsTab A={A} stations={filteredStations}/>}
           {tab==='strategic' && <StrategicTab A={A}/>}
+          {tab==='capture' && <Suspense fallback={<div style={{padding:20,color:'#64748b',fontSize:12}}>Loading capture module…</div>}><LazyTAHub/></Suspense>}
         </div>
       )}
-      <CaptureButton capture="traffic" label="traffic count record" accent="#00f5ff" />
     </div>
   );
 }
