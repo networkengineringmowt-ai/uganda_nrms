@@ -96,10 +96,14 @@ export default function TrafficDashboard() {
   const heavyPct = heavyVals.length ? heavyVals.reduce((a, b) => a + b, 0) / heavyVals.length : 14;
   const peakHour = Math.round(meanAadt * 0.09);
   const byClass = grp(links, kClass, kAadt).map(d => ({ name: d.name, value: links.filter(r => String(r[kClass!]) === d.name).length ? Math.round(d.value / links.filter(r => String(r[kClass!]) === d.name).length) : 0 }));
+  const hv = Math.round(heavyPct);
   const mix = [
-    { name: 'Cars & light', value: Math.round(100 - heavyPct - 12) },
-    { name: 'Heavy goods', value: Math.round(heavyPct) },
-    { name: 'Buses & PSV', value: 7 }, { name: 'Motorcycles', value: 5 }];
+    { name: 'Motorcycles', value: 24 },
+    { name: 'Cars & light vehicles', value: Math.max(5, 100 - 24 - 7 - Math.round(hv * 0.55) - Math.round(hv * 0.45)) },
+    { name: 'Buses & PSV', value: 7 },
+    { name: 'Trucks (2-3 axle)', value: Math.round(hv * 0.55) },
+    { name: 'Heavy trucks (4+ axle)', value: Math.round(hv * 0.45) }];
+  const kDir = key(links, /direction|^dir/i);
   const gf = kGrow && meanAadt ? Math.pow((links.reduce((a, r) => a + (num(r[kGrow!]) ?? 0), 0) / links.length) / meanAadt, 1 / 4) : 1.055;
   const trend = [0, 1, 2, 3, 4].map(i => ({ name: String(2026 + i), value: Math.round(meanAadt * Math.pow(gf, i)) }));
   const top = kAadt ? [...links].sort((a, b) => (num(b[kAadt]) ?? 0) - (num(a[kAadt]) ?? 0)).slice(0, 15) : [];
@@ -139,11 +143,12 @@ export default function TrafficDashboard() {
       <Card title='TOP STATIONS / LINKS BY AADT'>
         <div style={{ overflow: 'auto', maxHeight: 340 }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead><tr>{['Rank', 'Road link', 'Class', 'AADT', 'Heavy %', 'Length km'].map(h => <th key={h} style={TBL_TH}>{h}</th>)}</tr></thead>
+            <thead><tr>{['Rank', 'Road link', 'Class', 'Direction', 'AADT', 'Heavy %', 'Length km'].map(h => <th key={h} style={TBL_TH}>{h}</th>)}</tr></thead>
             <tbody>{top.map((r, i) => (
               <tr key={i}><td style={TBL_TD}>{i + 1}</td>
                 <td style={{ ...TBL_TD, color: '#f1f5f9', fontWeight: 700 }}>{String(kName ? r[kName] : '-')}</td>
                 <td style={TBL_TD}>{String(kClass ? r[kClass] : '-')}</td>
+                <td style={TBL_TD}>{String(kDir ? r[kDir] ?? 'Both' : 'Both')}</td>
                 <td style={{ ...TBL_TD, color: HL, fontWeight: 700 }}>{fmtN(num(r[kAadt!]) ?? 0)}</td>
                 <td style={TBL_TD}>{kHeavy ? fmtN(num(r[kHeavy]) ?? 0, 1) + '%' : '-'}</td>
                 <td style={TBL_TD}>{kLen ? fmtN(num(r[kLen]) ?? 0, 1) : '-'}</td></tr>))}
