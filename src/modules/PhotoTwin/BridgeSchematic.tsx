@@ -450,7 +450,7 @@ export default function BridgeSchematic({ structure: s }: Props) {
                   x={clamp(hot.x - 80, 4, W - 170) + 8} y={hot.y - 18}
                   fill="#ef4444" fontSize={9} fontFamily="Inter, sans-serif"
                 >
-                  ⚠ {hot.d}
+                   {hot.d}
                 </text>
               </g>
             )}
@@ -477,7 +477,7 @@ export default function BridgeSchematic({ structure: s }: Props) {
           <>
             <rect x={W / 2 - 70} y={BED_Y + 30} width={140} height={20} rx={6} fill="#14532d" opacity={0.7} />
             <text x={W / 2} y={BED_Y + 44} textAnchor="middle" fill="#4ade80" fontSize={10} fontFamily="Inter">
-              ✓ No defects recorded
+               No defects recorded
             </text>
           </>
         )}
