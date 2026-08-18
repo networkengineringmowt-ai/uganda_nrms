@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
+import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import {
   AreaChart, Area, BarChart, Bar, LineChart, Line, PieChart, Pie,
   XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine,
@@ -1030,7 +1030,7 @@ export default function NetworkStory() {
       <div style={{ position:'absolute', top:10, left:'50%', transform:'translateX(-50%)', zIndex:1000, display:'flex', gap:6 }}>
         {(['story','dashboard'] as const).map(t => (
           <button key={t} onClick={() => setNsTab(t)} style={{ fontSize:11, fontWeight:700, letterSpacing:1, padding:'4px 14px', border:`1px solid ${nsTab===t?'#00f5ff':'rgba(0,245,255,0.25)'}`, borderRadius:4, cursor:'pointer', background:nsTab===t?'#00f5ff':'rgba(0,245,255,0.08)', color:nsTab===t?'#020202':'rgba(0,245,255,0.7)', textTransform:'uppercase', whiteSpace:'nowrap' }}>
-            {t==='story'?'📖 Network Story':'📊 Dashboard'}
+            {t==='story'?' Network Story':' Dashboard'}
           </button>
         ))}
       </div>
@@ -1518,7 +1518,7 @@ export default function NetworkStory() {
         {/* ── MAINTENANCE STATION VCI ── */}
         <Section title="Maintenance Stations · Condition &amp; Network (Indicative)" accent={C.yellow}>
           <div style={{ fontSize: 9, color: 'rgba(100,116,139,0.6)', marginBottom: 12, padding: '5px 8px', background: `rgba(${hexRgb(C.yellow)},0.04)`, border: `1px solid rgba(${hexRgb(C.yellow)},0.12)`, borderRadius: 6 }}>
-            Station paved/unpaved km are proportional estimates from regional totals. VCI values marked ✓ are derived from real survey data; others are regional-proportional estimates.
+            Station paved/unpaved km are proportional estimates from regional totals. VCI values marked  are derived from real survey data; others are regional-proportional estimates.
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 10 }}>
             {filteredStations.map((s, i) => {
@@ -1541,7 +1541,7 @@ export default function NetworkStory() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
                     <div>
                       <div style={{ fontSize: 12, fontWeight: 800, color: rc }}>
-                        {s.station} {s.confirmed_vci && <span style={{ fontSize: 8, color: C.green }}>✓</span>}
+                        {s.station} {s.confirmed_vci && <span style={{ fontSize: 8, color: C.green }}></span>}
                       </div>
                       <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.5)' }}>{s.region}</div>
                     </div>
@@ -1775,7 +1775,7 @@ export default function NetworkStory() {
           Department of National Roads (Department of National Roads) road inventory &amp; ROMDAS condition surveys ·
           Official WTSS statistics (2015/16–2022/23) ·
           Traffic surveys (2017, 2020, 2021, 2025) · VCI from ROMDAS survey cycles (2024/25 &amp; 2025/26) ·
-          Maintenance funding: indicative Roads Fund estimates · Station-level paved/unpaved km are proportional estimates; VCI marked ✓ are survey-verified ·
+          Maintenance funding: indicative Roads Fund estimates · Station-level paved/unpaved km are proportional estimates; VCI marked  are survey-verified ·
           Asset replacement values for planning reference only · Filters apply to charts with available data ·
           Download PNG exports chart SVG at 2× resolution
         </div>
