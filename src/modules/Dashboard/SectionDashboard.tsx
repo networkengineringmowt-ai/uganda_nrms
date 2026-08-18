@@ -781,6 +781,10 @@ export default function SectionDashboard({ sectionId, accent }: { sectionId: str
 }
 
 const LazyHub = lazy(() => import('../DataEntry/DataCaptureHub'));
+const SECTION_ALIAS: Record<string, string> = {
+  traffic: 'tis', condition: 'pms', registry: 'bms', inspections: 'bms', bridgeworks: 'bms',
+  maintenance: 'ducar', priority: 'pim', budget: 'pim', lifecycle: 'pim', roadreserve: 'reserve',
+};
 const SUBTABS = [
   { id: 'dashboard', label: 'Dashboard' },
   { id: 'map', label: 'Interactive Map' },
@@ -791,6 +795,7 @@ const SUBTABS = [
 ];
 function SectionSubTabs({ sectionId, accent }: { sectionId: string; accent: string }) {
   const [tab, setTab] = useState('dashboard');
+  const sid = SECTION_ALIAS[sectionId] ?? sectionId;
   return (
     <div style={{ width: '100%' }}>
       <div style={{ display: 'flex', gap: 2, flexWrap: 'wrap', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: 10, position: 'sticky', top: 0, zIndex: 20, background: 'rgba(2,6,23,0.92)', backdropFilter: 'blur(8px)' }}>
@@ -805,11 +810,11 @@ function SectionSubTabs({ sectionId, accent }: { sectionId: string; accent: stri
           </button>
         ))}
       </div>
-      {tab === 'dashboard' && (<><SectionSignatureBlock sectionId={sectionId} /><InsightGrid sectionId={sectionId} accent={accent} /></>)}
-      {tab === 'map' && <SectionMap sectionId={sectionId} accent={accent} />}
-      {tab === 'tables' && <ExhaustiveTables sectionId={sectionId} accent={accent} />}
-      {tab === 'analytics' && <DeepAnalysisTables sectionId={sectionId} accent={accent} />}
-      {tab === 'sql' && <SchemaExplorer sectionId={sectionId} accent={accent} />}
+      {tab === 'dashboard' && (<><SectionSignatureBlock sectionId={sid} /><InsightGrid sectionId={sid} accent={accent} /></>)}
+      {tab === 'map' && <SectionMap sectionId={sid} accent={accent} />}
+      {tab === 'tables' && <ExhaustiveTables sectionId={sid} accent={accent} />}
+      {tab === 'analytics' && <DeepAnalysisTables sectionId={sid} accent={accent} />}
+      {tab === 'sql' && <SchemaExplorer sectionId={sid} accent={accent} />}
       {tab === 'capture' && (
         <Suspense fallback={<div style={{ padding: 20, color: '#64748b', fontSize: 12 }}>Loading data capture module…</div>}>
           <LazyHub />
