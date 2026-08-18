@@ -14,7 +14,7 @@ import { useBMS } from '../store/BMSContext';
 
 interface Props {
   anchor:  string;       // e.g. 'tbl-006' (without leading #)
-  label?:  string;       // default '📋 Source table'
+  label?:  string;       // default ' Source table'
   inline?: boolean;      // if true, no margins (for inline placement)
   size?:   'sm' | 'md';  // default 'sm'
 }
@@ -73,7 +73,7 @@ export function SourceTableButton({ anchor, label, inline = false, size = 'sm' }
         (e.currentTarget as HTMLButtonElement).style.color = '#7dd3fc';
       }}
     >
-      {label ?? '📋 Source table'}
+      {label ?? ' Source table'}
     </button>
   );
 }
