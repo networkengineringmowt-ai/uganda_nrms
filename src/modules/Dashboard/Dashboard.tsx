@@ -388,7 +388,7 @@ export default function Dashboard() {
             ))}
             {topCritical.length===0 && (
               <div style={{textAlign:'center',padding:'20px 0',fontSize:10,color:N.green,fontWeight:700}}>
-                ✓ Network in good health — no critical structures
+                 Network in good health — no critical structures
               </div>
             )}
           </div>
