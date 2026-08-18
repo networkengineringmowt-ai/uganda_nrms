@@ -23,7 +23,7 @@ export interface MapDetailPaneProps {
   defaultSubtitle?:  string;
   /** Title shown when something is selected. */
   selectedTitle?:    string;
-  /** Optional close handler — shows ✕ in header when selected. */
+  /** Optional close handler — shows  in header when selected. */
   onClose?:          () => void;
   /** Pane width in pixels. Default 340. */
   width?:            number;
@@ -97,7 +97,7 @@ export default function MapDetailPane({
             )}
             {hasSelection && (
               <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.5)', marginTop: 3 }}>
-                Click another feature or close ✕ to return to overview
+                Click another feature or close  to return to overview
               </div>
             )}
           </div>
