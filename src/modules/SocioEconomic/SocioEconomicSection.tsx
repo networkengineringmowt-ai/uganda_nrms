@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { CaptureButton } from '../../shared/CaptureButton';
 import { MapContainer, TileLayer, CircleMarker, Popup, GeoJSON, useMap } from 'react-leaflet';
 import { AreaChart, BarChart, PieChart, Pie, Cell, Bar, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
@@ -1072,6 +1073,7 @@ export default function SocioEconomicSection() {
         {tab==='demographics'  && <DemoTab/>}
         {tab==='economy'       && <EconomyTab/>}
       </div>
+      <CaptureButton capture="condition" label="socio-economic field data" accent="#3b82f6" />
     </div>
   );
 }
