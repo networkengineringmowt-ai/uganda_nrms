@@ -1374,8 +1374,10 @@ const TABS = [
   { id: 'roadmap'       as const, label: 'Road Network Map',  icon: <Map size={13}/> },
   { id: 'inventory'     as const, label: 'Road Inventory',    icon: <Database size={13}/> },
   { id: 'networkstory'  as const, label: 'Network Story',     icon: <BookOpen size={13}/> },
+  { id: 'capture'       as const, label: 'Data Capture',      icon: <Database size={13}/> },
 ];
 type TabId = typeof TABS[number]['id'];
+const LazyCaptureHub = lazy(() => import('../DataEntry/DataCaptureHub'));
 
 function Spinner() {
   return (
@@ -1496,6 +1498,12 @@ export default function RMSSection() {
             <div style={{ position: 'absolute', inset: 0 }}>
               <NET_NetworkStory />
             </div>
+          </Suspense>
+        )}
+
+        {tab === 'capture' && (
+          <Suspense fallback={<Spinner />}>
+            <LazyCaptureHub />
           </Suspense>
         )}
 
