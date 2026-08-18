@@ -1469,11 +1469,11 @@ export default function RMSSection() {
 
         {tab === 'dashboard' && (
       <>
-        <SeamlessDashboardFrame />
-        <RMSDashboard navigate={navigate} />
         <Suspense fallback={<div style={{padding:'1.5rem',color:'#00f5ff',textAlign:'center',opacity:0.7,fontSize:'12px'}}>Loading…</div>}>
           <SectionDashboard sectionId="rms" accent="#00f5ff" />
         </Suspense>
+        <SeamlessDashboardFrame />
+        <RMSDashboard navigate={navigate} />
       </>
     )}
 
