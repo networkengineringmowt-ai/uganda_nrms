@@ -445,7 +445,7 @@ function ConditionMap({
       const iri = t?.iri?.toFixed(2) ?? '—';
       (layer as unknown as { bindTooltip: (s: string, o?: object) => void }).bindTooltip(
         `<div style="font:600 11px/1.5 system-ui">
-           <div style="color:#ff5577;font-weight:800;font-size:12px">⚠ Rank #${rank}</div>
+           <div style="color:#ff5577;font-weight:800;font-size:12px"> Rank #${rank}</div>
            <div style="color:#e2eaf4;font-family:monospace;font-size:10px">${lid}</div>
            <div style="color:#fca5a5;margin-top:3px">IRI ${iri} m/km</div>
          </div>`,
@@ -655,7 +655,7 @@ function ConditionMap({
                 boxShadow: showWorst ? '0 0 12px rgba(255,0,64,0.4)' : 'none',
                 display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center',
               }}>
-              ⚠ {showWorst ? 'Hide' : 'Show'} Worst {WORST_N} Links
+               {showWorst ? 'Hide' : 'Show'} Worst {WORST_N} Links
             </button>
           </div>
         </div>
@@ -673,7 +673,7 @@ function ConditionMap({
               backdropFilter: 'blur(10px)', cursor: 'pointer',
               display: 'flex', alignItems: 'center', gap: 6,
             }}>
-            ☰ Filters {filtersOpen ? '◀' : '▶'}
+             Filters {filtersOpen ? '◀' : '▶'}
           </button>
         </div>
 
@@ -755,7 +755,7 @@ function ConditionMap({
             borderRadius: 8, padding: '6px 10px', backdropFilter: 'blur(8px)',
             fontSize: 9.5, color: '#fca5a5',
           }}>
-            <div style={{ fontWeight: 800, marginBottom: 2 }}>⚠ Worst {WORST_N} Highlighted</div>
+            <div style={{ fontWeight: 800, marginBottom: 2 }}> Worst {WORST_N} Highlighted</div>
             <div style={{ fontSize: 8.5, color: 'rgba(252,165,165,0.7)' }}>
               Sorted by IRI ↓ · click any red link to inspect
             </div>
@@ -1442,8 +1442,8 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
             );
           })()}
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: -4 }}>
-            <SourceTableButton anchor="tbl-006" label="📋 Condition table" />
-            <SourceTableButton anchor="tbl-007" label="📋 IRI table" />
+            <SourceTableButton anchor="tbl-006" label=" Condition table" />
+            <SourceTableButton anchor="tbl-007" label=" IRI table" />
           </div>
           {d && <CondKPIs c24={d.network_condition_2024} c30={d.network_condition_2030} linksProjected={d.links_projected}/>}
 
@@ -1792,7 +1792,7 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
         d ? (
           <>
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <SourceTableButton anchor="tbl-038" label="📋 Distress / Deterioration table" />
+              <SourceTableButton anchor="tbl-038" label=" Distress / Deterioration table" />
             </div>
             <DetCurves
               curves={d.class_deterioration_curves}
