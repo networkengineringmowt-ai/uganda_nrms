@@ -1,8 +1,8 @@
 /**
- * SectionDashboard — per-section dashboards with real Supabase data.
+ * SectionDashboard â per-section dashboards with real Supabase data.
  * Replaces the old static iframe version.
  * Each section queries its own tables; falls back to "No data yet" gracefully.
- * Security: aggregate stats only — no lat/lng as KPI/chart axes, no individual records.
+ * Security: aggregate stats only â no lat/lng as KPI/chart axes, no individual records.
  */
 import { useEffect, useState, useCallback, lazy, Suspense } from 'react';
 import { supabase } from '../../lib/supabase';
@@ -13,7 +13,7 @@ import {
   RefreshCw, Database,
 } from 'lucide-react';
 
-// ── colour palette ─────────────────────────────────────────────────────────────
+// ââ colour palette âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 const A = {
   cyan: '#00f5ff', green: '#00ff88', yellow: '#ffd23f',
   orange: '#ff6b35', purple: '#b967ff', blue: '#4d9fff',
@@ -25,7 +25,7 @@ function rgb(h: string): string {
   return `${parseInt(c.slice(0,2),16)},${parseInt(c.slice(2,4),16)},${parseInt(c.slice(4,6),16)}`;
 }
 
-// ── types ──────────────────────────────────────────────────────────────────────
+// ââ types ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 interface KPI  { label: string; value: string; sub?: string; color: string; }
 interface Bar  { label: string; value: number; color: string; }
 interface Dash {
@@ -37,12 +37,13 @@ interface Dash {
   tableRows: (string | number)[][];
 }
 
-// ── Supabase helpers ───────────────────────────────────────────────────────────
+// ââ Supabase helpers âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+let _dbDown = false;
 async function safeCount(table: string): Promise<number> {
   try {
     const { count } = await supabase.from(table).select('*', { count: 'exact', head: true });
-    return count ?? 0;
-  } catch { return 0; }
+    if (error) { _dbDown = true; return 0; }  return count ?? 0;
+  } catch { _dbDown = true; return 0; }
 }
 
 async function safeRows<T extends Record<string, unknown>>(
@@ -64,7 +65,7 @@ function groupBy<T extends Record<string, unknown>>(rows: T[], key: string): Rec
 }
 
 function pct(n: number, total: number) {
-  return total > 0 ? `${((n / total) * 100).toFixed(1)}%` : '—';
+  return total > 0 ? `${((n / total) * 100).toFixed(1)}%` : 'â';
 }
 
 function topBars(rec: Record<string, number>, limit = 5, color: string): Bar[] {
@@ -74,7 +75,7 @@ function topBars(rec: Record<string, number>, limit = 5, color: string): Bar[] {
     .map(([label, value]) => ({ label, value, color }));
 }
 
-// ── per-section fetchers ───────────────────────────────────────────────────────
+// ââ per-section fetchers âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 async function fetchRMS(): Promise<Dash | null> {
   const [total, rows] = await Promise.all([
     safeCount('road_links'),
@@ -111,7 +112,7 @@ async function fetchRMS(): Promise<Dash | null> {
     kpis: [
       { label: 'Road Links', value: total.toLocaleString(), color: A.cyan },
       { label: 'Road Classes', value: String(Object.keys(byClass).length), color: A.blue },
-      { label: 'Total Length', value: totalKm > 0 ? `${Math.round(totalKm).toLocaleString()} km` : '—', color: A.green },
+      { label: 'Total Length', value: totalKm > 0 ? `${Math.round(totalKm).toLocaleString()} km` : 'â', color: A.green },
     ],
     chartTitle: 'Links by Road Class',
     bars,
@@ -219,7 +220,7 @@ async function fetchBMS(): Promise<Dash | null> {
   return {
     kpis: [
       { label: 'Bridges', value: bridges.toLocaleString(), color: A.cyan },
-      { label: 'Culverts', value: culverts > 0 ? culverts.toLocaleString() : '—', color: A.blue },
+      { label: 'Culverts', value: culverts > 0 ? culverts.toLocaleString() : 'â', color: A.blue },
       { label: 'Good Condition', value: pct(good, bridges), color: A.green },
       { label: 'Need Attention', value: critical.toLocaleString(), sub: 'critical / poor', color: A.red },
     ],
@@ -269,7 +270,7 @@ async function fetchTraffic(): Promise<Dash | null> {
     kpis: [
       { label: 'Counting Stations', value: stations.toLocaleString(), color: A.cyan },
       { label: 'Count Records', value: counts.toLocaleString(), color: A.blue },
-      { label: 'Active Stations', value: active > 0 ? active.toLocaleString() : '—', color: A.green },
+      { label: 'Active Stations', value: active > 0 ? active.toLocaleString() : 'â', color: A.green },
     ],
     chartTitle: 'Stations by Type',
     bars: bars.length > 0 ? bars : [{ label: 'Stations', value: stations, color: A.cyan }],
@@ -332,7 +333,7 @@ async function fetchDUCAR(): Promise<Dash | null> {
 }
 
 
-// ── PIM fetcher (static representative data) ────────────────────────────────
+// ââ PIM fetcher (static representative data) ââââââââââââââââââââââââââââââââ
 async function fetchPIM(): Promise<Dash | null> {
   const bars: Bar[] = [
     { label: 'Road Construction', value: 1280, color: A.yellow },
@@ -356,7 +357,7 @@ async function fetchPIM(): Promise<Dash | null> {
   };
 }
 
-// ── Road Reserve fetcher ─────────────────────────────────────────────────────
+// ââ Road Reserve fetcher âââââââââââââââââââââââââââââââââââââââââââââââââââââ
 async function fetchRoadReserve(): Promise<Dash | null> {
   const URL  = import.meta.env.VITE_SUPABASE_URL as string;
   const KEY  = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
@@ -409,7 +410,7 @@ async function fetchRoadReserve(): Promise<Dash | null> {
   };
 }
 
-// ── fetcher registry ───────────────────────────────────────────────────────────
+// ââ fetcher registry âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 const FETCHERS: Partial<Record<string, () => Promise<Dash | null>>> = {
   rms: fetchRMS,
   pms: fetchPMS,
@@ -425,7 +426,7 @@ const FETCHERS: Partial<Record<string, () => Promise<Dash | null>>> = {
   roadreserve: fetchRoadReserve,
 };
 
-// ── section definitions (label + icon + chips) ─────────────────────────────────
+// ââ section definitions (label + icon + chips) âââââââââââââââââââââââââââââââââ
 interface Def { title: string; desc: React.ReactNode; chips: string[]; icon: React.ReactNode; accent: string; }
 import React from 'react';
 
@@ -551,7 +552,7 @@ const DEFS: Record<string, Def> = {
     icon: <BookOpen size={20} />, accent: A.pink,
   },
   admin: {
-    title: 'Admin — Sources & Evidence',
+    title: 'Admin â Sources & Evidence',
     desc: (<>System administration hub for the Uganda NRMS. Manages <strong style={{ color: A.cyan }}>user roles, data-source configurations, audit logs, SQL schema documentation</strong> and evidence trails for all RMS data submissions and revisions.</>),
     chips: ['Role Management', 'Audit Logs', 'SQL Schema', 'Data Provenance'],
     icon: <Settings size={20} />, accent: A.cyan,
@@ -563,8 +564,8 @@ const DEFS: Record<string, Def> = {
     icon: <TrendingUp size={20} />, accent: A.teal,
   },
   ducar: {
-    title: 'DUCAR — District, Urban & Community Access Roads',
-    desc: (<>The <strong style={{ color: A.orange }}>Department of Urban and Community Access Roads</strong> manages urban roads, district feeder roads, and community access routes across Uganda's 146 Local Government Units — connecting farmers, schools and health centres with the national network.</>),
+    title: 'DUCAR â District, Urban & Community Access Roads',
+    desc: (<>The <strong style={{ color: A.orange }}>Department of Urban and Community Access Roads</strong> manages urban roads, district feeder roads, and community access routes across Uganda's 146 Local Government Units â connecting farmers, schools and health centres with the national network.</>),
     chips: ['Urban Roads', 'District Feeder Roads', 'Community Access', 'Labour-Based Works', 'NDP IV Aligned'],
     icon: <Building2 size={20} />, accent: A.orange,
   },
@@ -576,7 +577,7 @@ const DEFS: Record<string, Def> = {
   },
 };
 
-// ── tiny UI components ─────────────────────────────────────────────────────────
+// ââ tiny UI components âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function Chip({ label, color }: { label: string; color: string }) {
   const r = rgb(color);
   return (
@@ -596,7 +597,7 @@ function KPICard({ kpi }: { kpi: KPI }) {
       background: `rgba(${r},0.07)`, border: `1px solid rgba(${r},0.22)`,
     }}>
       <div style={{ fontSize: 22, fontWeight: 900, color: kpi.color, letterSpacing: -0.5 }}>
-        {kpi.value ?? '—'}
+        {kpi.value ?? 'â'}
       </div>
       <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.8)', marginTop: 3, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
         {kpi.label}
@@ -619,7 +620,7 @@ function BarChart({ title, bars }: { title: string; bars: Bar[] }) {
         {bars.map(bar => (
           <div key={bar.label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.65)', width: 96, flexShrink: 0, textAlign: 'right', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {bar.label ?? '—'}
+              {bar.label ?? 'â'}
             </div>
             <div style={{ flex: 1, height: 14, background: 'rgba(255,255,255,0.04)', borderRadius: 3, overflow: 'hidden' }}>
               <div style={{
@@ -659,7 +660,7 @@ function SummaryTable({ title, headers, rows }: { title: string; headers: string
             <tr key={ri} style={{ background: ri % 2 ? 'rgba(255,255,255,0.02)' : 'transparent' }}>
               {row.map((cell, ci) => (
                 <td key={ci} style={{ padding: '7px 12px', color: ci === 0 ? '#d1d5db' : 'rgba(148,163,184,0.65)', fontVariantNumeric: 'tabular-nums' }}>
-                  {cell ?? '—'}
+                  {cell ?? 'â'}
                 </td>
               ))}
             </tr>
@@ -670,7 +671,7 @@ function SummaryTable({ title, headers, rows }: { title: string; headers: string
   );
 }
 
-// ── live panel (fetches Supabase data) ─────────────────────────────────────────
+// ââ live panel (fetches Supabase data) âââââââââââââââââââââââââââââââââââââââââ
 function LivePanel({ sectionId, accent }: { sectionId: string; accent: string }) {
   const [state, setState] = useState<'loading' | 'empty' | Dash>('loading');
 
@@ -690,7 +691,7 @@ function LivePanel({ sectionId, accent }: { sectionId: string; accent: string })
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '20px 0', color: 'rgba(148,163,184,0.4)', fontSize: 12 }}>
         <RefreshCw size={13} style={{ animation: 'sd-spin 1s linear infinite', color: accent }} />
-        Loading live data…
+        Loading live dataâ¦
       </div>
     );
   }
@@ -725,7 +726,7 @@ function LivePanel({ sectionId, accent }: { sectionId: string; accent: string })
   );
 }
 
-// ── main export ────────────────────────────────────────────────────────────────
+// ââ main export ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 import { InsightGrid } from './InsightGrid';
 import { SchemaExplorer } from './SchemaExplorer';
 import { SectionMap } from './SectionMap';
@@ -752,7 +753,7 @@ export default function SectionDashboard({ sectionId, accent }: { sectionId: str
     <div style={{ padding: '6px 8px', width: '100%' }}>
       <style>{`@keyframes sd-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
 
-      {/* Definition Strip — Compact · Slim · Full-Width */}
+      {/* Definition Strip â Compact Â· Slim Â· Full-Width */}
       <div style={{
         background: `rgba(${r},0.04)`, border: `1px solid rgba(${r},0.15)`,
         borderRadius: 10, padding: '6px 12px', marginBottom: 10,
@@ -816,7 +817,7 @@ function SectionSubTabs({ sectionId, accent }: { sectionId: string; accent: stri
       {tab === 'analytics' && <DeepAnalysisTables sectionId={sid} accent={accent} />}
       {tab === 'sql' && <SchemaExplorer sectionId={sid} accent={accent} />}
       {tab === 'capture' && (
-        <Suspense fallback={<div style={{ padding: 20, color: '#64748b', fontSize: 12 }}>Loading data capture module…</div>}>
+        <Suspense fallback={<div style={{ padding: 20, color: '#64748b', fontSize: 12 }}>Loading data capture moduleâ¦</div>}>
           <LazyHub />
         </Suspense>
       )}
@@ -831,6 +832,19 @@ const LazyMaintenance = lazy(() => import('./sections/MaintenanceDashboard'));
 const LazyInventory = lazy(() => import('./sections/InventoryDashboard'));
 const LazyPriority = lazy(() => import('./sections/PriorityDashboard'));
 const LazyDrainage = lazy(() => import('./sections/DrainageDashboard'));
+
+// — Supabase offline banner ————————————
+function DbOfflineBanner() {
+  if (!_dbDown) return null;
+  return (
+    <div style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)',
+      borderRadius: 8, padding: '8px 14px', marginBottom: 12, fontSize: 11,
+      color: '#fca5a5', display: 'flex', alignItems: 'center', gap: 8 }}>
+      ⚠ Database offline — KPI figures unavailable. Resume the Supabase project to restore live data.
+    </div>
+  );
+}
+
 function SectionSignatureBlock({ sectionId }: { sectionId: string }) {
   const C = sectionId === 'tis' ? LazyTraffic
     : sectionId === 'pms' ? LazyPavement
@@ -841,8 +855,9 @@ function SectionSignatureBlock({ sectionId }: { sectionId: string }) {
     : null;
   if (!C) return null;
   return (
+    <DbOfflineBanner />
     <div style={{ marginBottom: 14 }}>
-      <Suspense fallback={<div style={{ padding: 16, color: '#64748b', fontSize: 12 }}>Loading section dashboard…</div>}>
+      <Suspense fallback={<div style={{ padding: 16, color: '#64748b', fontSize: 12 }}>Loading section dashboardâ¦</div>}>
         <C />
         {sectionId === 'bms' && (
           <>
