@@ -805,7 +805,7 @@ function SectionSubTabs({ sectionId, accent }: { sectionId: string; accent: stri
           </button>
         ))}
       </div>
-      {tab === 'dashboard' && <InsightGrid sectionId={sectionId} accent={accent} />}
+      {tab === 'dashboard' && (<><SectionSignatureBlock sectionId={sectionId} /><InsightGrid sectionId={sectionId} accent={accent} /></>)}
       {tab === 'map' && <SectionMap sectionId={sectionId} accent={accent} />}
       {tab === 'tables' && <ExhaustiveTables sectionId={sectionId} accent={accent} />}
       {tab === 'analytics' && <DeepAnalysisTables sectionId={sectionId} accent={accent} />}
@@ -815,6 +815,37 @@ function SectionSubTabs({ sectionId, accent }: { sectionId: string; accent: stri
           <LazyHub />
         </Suspense>
       )}
+    </div>
+  );
+}
+
+const LazyTraffic = lazy(() => import('./sections/TrafficDashboard'));
+const LazyPavement = lazy(() => import('./sections/PavementDashboard'));
+const LazyStructures = lazy(() => import('./sections/StructuresDashboard'));
+const LazyMaintenance = lazy(() => import('./sections/MaintenanceDashboard'));
+const LazyInventory = lazy(() => import('./sections/InventoryDashboard'));
+const LazyPriority = lazy(() => import('./sections/PriorityDashboard'));
+const LazyDrainage = lazy(() => import('./sections/DrainageDashboard'));
+function SectionSignatureBlock({ sectionId }: { sectionId: string }) {
+  const C = sectionId === 'tis' ? LazyTraffic
+    : sectionId === 'pms' ? LazyPavement
+    : sectionId === 'bms' ? LazyStructures
+    : (sectionId === 'ducar' || sectionId === 'projects') ? LazyMaintenance
+    : sectionId === 'rms' ? LazyInventory
+    : sectionId === 'pim' ? LazyPriority
+    : null;
+  if (!C) return null;
+  return (
+    <div style={{ marginBottom: 14 }}>
+      <Suspense fallback={<div style={{ padding: 16, color: '#64748b', fontSize: 12 }}>Loading section dashboard…</div>}>
+        <C />
+        {sectionId === 'bms' && (
+          <>
+            <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.08em', color: '#38bdf8', margin: '10px 0 8px' }}>DRAINAGE STRUCTURES</div>
+            <LazyDrainage />
+          </>
+        )}
+      </Suspense>
     </div>
   );
 }
