@@ -21,7 +21,7 @@ export default function GisEnterpriseSection() {
     <div className="flex flex-col h-full bg-slate-950 p-6 overflow-y-auto">
       {/* GisEnterprise tab nav */}
       <div style={{ display: 'flex', gap: 6, marginBottom: 18 }}>
-        {['map', 'dashboard'].map(t => (
+        {['dashboard', 'map'].map(t => (
           <button key={t} onClick={() => setTab(t)} style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '5px 14px', borderRadius: 20, border: 'none', cursor: 'pointer', background: tab === t ? '#4d9fff' : 'rgba(77,159,255,0.08)', color: tab === t ? '#020202' : 'rgba(77,159,255,0.7)', transition: 'all .15s' }}>
             {t === 'map' ? 'GIS Map' : 'Dashboard'}
           </button>
@@ -130,12 +130,12 @@ export default function GisEnterpriseSection() {
             style={{ height: '100%', width: '100%', backgroundColor: '#0d0d0d' }}
           >
             <ZoomControl position="bottomright" />
-            {/* Base map — Esri World Imagery + reference labels (always-on, non-removable) */}
+            {/* Base map â Esri World Imagery + reference labels (always-on, non-removable) */}
             <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery} />
             <TileLayer url={ESRI_TILE_URLS.labels}  attribution={ESRI_ATTRIBUTIONS.labels} opacity={0.7} />
-            {/* GeoNode / GeoServer WMS layers — configurable via VITE_GEOSERVER_WMS_URL.
+            {/* GeoNode / GeoServer WMS layers â configurable via VITE_GEOSERVER_WMS_URL.
                 Falls back to a local GeoNode (see geonode/). When offline the tiles
-                simply fail and wmsOnline flips false — the rest of the UI is unaffected. */}
+                simply fail and wmsOnline flips false â the rest of the UI is unaffected. */}
             {(() => {
               const base = GEOSERVER_WMS_URL || 'http://localhost/geoserver/ows';
               const show = GEONODE_LAYERS.filter(l => ['roads', 'condition', 'bridges', 'atc'].includes(l.id));
