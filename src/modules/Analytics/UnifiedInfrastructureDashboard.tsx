@@ -67,7 +67,7 @@ export default function UnifiedInfrastructureDashboard() {
       {/* Header */}
       <div>
         <h2 style={{ color: '#00f5ff', marginBottom: 16, fontSize: 18, fontWeight: 900 }}>
-          🧬 UNIFIED INFRASTRUCTURE & ML PERFORMANCE DASHBOARD
+           UNIFIED INFRASTRUCTURE & ML PERFORMANCE DASHBOARD
         </h2>
         <p style={{ color: 'rgba(148,163,184,0.7)', fontSize: 12, marginBottom: 20 }}>
           Integrated analytics: ML predictions × PMS alignment × Budget effectiveness × Infrastructure connectivity
@@ -77,7 +77,7 @@ export default function UnifiedInfrastructureDashboard() {
       {/* 1. ML Model Performance Summary */}
       <div style={{ background: 'rgba(30,50,80,0.6)', borderRadius: 8, padding: 16, border: '1px solid rgba(0,245,255,0.1)' }}>
         <h3 style={{ color: '#00f5ff', fontSize: 13, fontWeight: 700, marginBottom: 12 }}>
-          🎯 ML Model Performance (Ridge Regression)
+           ML Model Performance (Ridge Regression)
         </h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 16 }}>
           <div style={{ background: 'rgba(15,30,50,0.8)', borderRadius: 6, padding: 12, border: '1px solid rgba(0,255,136,0.2)' }}>
@@ -131,7 +131,7 @@ export default function UnifiedInfrastructureDashboard() {
       {/* 2. Regional Performance Comparison */}
       <div style={{ background: 'rgba(30,50,80,0.6)', borderRadius: 8, padding: 16, border: '1px solid rgba(0,245,255,0.1)' }}>
         <h3 style={{ color: '#00f5ff', fontSize: 13, fontWeight: 700, marginBottom: 12 }}>
-          📊 Regional Performance & Coverage
+           Regional Performance & Coverage
         </h3>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={regPerfChart}>
@@ -151,7 +151,7 @@ export default function UnifiedInfrastructureDashboard() {
       {/* 3. Budget vs Maintenance Alignment */}
       <div style={{ background: 'rgba(30,50,80,0.6)', borderRadius: 8, padding: 16, border: '1px solid rgba(0,245,255,0.1)' }}>
         <h3 style={{ color: '#00f5ff', fontSize: 13, fontWeight: 700, marginBottom: 12 }}>
-          💰 Budget vs Maintenance Need Alignment (2026)
+           Budget vs Maintenance Need Alignment (2026)
         </h3>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
           {budgetChart.map((row, idx) => {
@@ -182,7 +182,7 @@ export default function UnifiedInfrastructureDashboard() {
       {/* 4. Feature Importance */}
       <div style={{ background: 'rgba(30,50,80,0.6)', borderRadius: 8, padding: 16, border: '1px solid rgba(0,245,255,0.1)' }}>
         <h3 style={{ color: '#00f5ff', fontSize: 13, fontWeight: 700, marginBottom: 12 }}>
-          🔍 ML Feature Importance (What Drives IRI Predictions)
+           ML Feature Importance (What Drives IRI Predictions)
         </h3>
         <ResponsiveContainer width="100%" height={250}>
           <BarChart data={featureImportance} layout="vertical">
@@ -204,7 +204,7 @@ export default function UnifiedInfrastructureDashboard() {
       {/* 5. Infrastructure Coverage */}
       <div style={{ background: 'rgba(30,50,80,0.6)', borderRadius: 8, padding: 16, border: '1px solid rgba(0,245,255,0.1)' }}>
         <h3 style={{ color: '#00f5ff', fontSize: 13, fontWeight: 700, marginBottom: 12 }}>
-          🌐 Infrastructure Network Coverage
+           Infrastructure Network Coverage
         </h3>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           <div>
@@ -257,7 +257,7 @@ export default function UnifiedInfrastructureDashboard() {
       {/* Key Insights & Recommendations */}
       <div style={{ background: 'rgba(30,50,80,0.6)', borderRadius: 8, padding: 16, border: '1px solid rgba(0,245,255,0.1)' }}>
         <h3 style={{ color: '#00f5ff', fontSize: 13, fontWeight: 700, marginBottom: 12 }}>
-          💡 Key Insights & Recommendations
+           Key Insights & Recommendations
         </h3>
         <ul style={{ color: 'rgba(200,220,255,0.8)', fontSize: 11, lineHeight: 1.8, paddingLeft: 16 }}>
           <li><strong>Complete Coverage:</strong> Database now covers ALL 7 regions with 23 maintenance stations. 1,028 road links across 88,009 km total network.</li>
