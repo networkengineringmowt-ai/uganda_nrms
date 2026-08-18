@@ -290,7 +290,7 @@ function RequireAdmin({ label, children }: { label: string; children: React.Reac
   if (user && canAccessView(user.role, 'admin')) return <>{children}</>;
   return (
     <div style={{ textAlign: 'center', padding: '60px 20px', color: 'rgba(148,163,184,0.85)' }}>
-      <div style={{ fontSize: 28, marginBottom: 10 }}>🔒</div>
+      <div style={{ fontSize: 28, marginBottom: 10 }}></div>
       <div style={{ fontSize: 14, fontWeight: 700, color: '#e2eaf4' }}>{label} is admin-only</div>
       <div style={{ fontSize: 12, marginTop: 6 }}>
         Your access level (<strong style={{ color: '#fbbf24' }}>{roleLabel(user?.role)}</strong>) is
