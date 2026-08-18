@@ -132,7 +132,7 @@ function StoryLightbox({ images, startIdx, onClose }: { images: StoryImage[]; st
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             <span style={{ color: 'rgba(148,163,184,0.4)', fontSize: 11 }}>{idx + 1}/{images.length}</span>
             <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.12)', border: 'none',
-              borderRadius: 8, padding: '4px 12px', color: 'white', cursor: 'pointer', fontSize: 12 }}>✕</button>
+              borderRadius: 8, padding: '4px 12px', color: 'white', cursor: 'pointer', fontSize: 12 }}></button>
           </div>
         </div>
         {images.length > 1 && <>
@@ -253,7 +253,7 @@ function StoryCard({ image, accentCol, onClick }: {
       <div style={{ position: 'absolute', top: 9, right: 9,
         opacity: hov ? 0.85 : 0, transition: 'opacity 0.2s',
         background: 'rgba(0,0,0,0.5)', borderRadius: 6, padding: '2px 7px',
-        color: 'rgba(255,255,255,0.9)', fontSize: 14 }}>⛶</div>
+        color: 'rgba(255,255,255,0.9)', fontSize: 14 }}></div>
     </div>
   );
 }
@@ -394,7 +394,7 @@ function MediaCard({ item, onOpen, accent }: { item: MediaItem; onOpen: () => vo
       {isPdf && (
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
           background: `linear-gradient(135deg, rgba(${rgb},0.12), rgba(2,2,2,0.95))` }}>
-          <span style={{ fontSize: 36, opacity: 0.4 }}>📄</span>
+          <span style={{ fontSize: 36, opacity: 0.4 }}></span>
         </div>
       )}
 
@@ -669,7 +669,7 @@ export default function MediaSection() {
             boxShadow: '0 0 24px rgba(255,107,53,0.25)',
             fontSize: 18,
           }}>
-            🗂
+            
           </div>
           <div>
             <div style={{ fontSize: 14, fontWeight: 900, color: '#ff6b35', letterSpacing: '0.04em' }}>
