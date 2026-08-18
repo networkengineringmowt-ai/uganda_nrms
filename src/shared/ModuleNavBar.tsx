@@ -36,7 +36,7 @@ export function ModuleNavBar({ module }: Props) {
         border: '1px solid rgba(148,163,184,0.18)',
         color: '#94a3b8',
       }}>
-        📋 Sources
+         Sources
       </button>
       <button onClick={goSummary} style={{
         ...BTN,
