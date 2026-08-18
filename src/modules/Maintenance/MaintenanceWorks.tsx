@@ -253,7 +253,7 @@ function WorkOrderForm({
             <Wrench size={18} className="text-blue-400" />
             <span className="font-bold text-white">{initial ? 'Edit Work Order' : 'New Work Order'}</span>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-white">✕</button>
+          <button onClick={onClose} className="text-slate-400 hover:text-white"></button>
         </div>
         <div className="p-6 grid grid-cols-2 gap-4 overflow-y-auto max-h-[70vh]">
           <div className="col-span-2">
