@@ -7,8 +7,8 @@ import SectionDashboard from '../Dashboard/SectionDashboard';
 function MLChartSourceButton() {
   return (
     <div style={{ display: 'flex', gap: 6 }}>
-      <SourceTableButton anchor="tbl-041" label="📋 Predictions table" />
-      <SourceTableButton anchor="tbl-042" label="📋 Rehab/urgency table" />
+      <SourceTableButton anchor="tbl-041" label=" Predictions table" />
+      <SourceTableButton anchor="tbl-042" label=" Rehab/urgency table" />
     </div>
   );
 }
