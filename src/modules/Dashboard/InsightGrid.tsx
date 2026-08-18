@@ -469,15 +469,17 @@ const SPECS: Record<string, { table: string; extra?: string }> = {
 };
 
 async function fetchRows(table: string, limit = 700): Promise<Row[]> {
-  for (let a = 0; a < 3; a++) {
+  const once = async (): Promise<Row[]> => {
     try {
-      const { data, error } = await supabase.from(table).select('*').limit(limit);
-      if (!error && data && data.length) return data as Row[];
-      if (!error) return [];
-    } catch { /* retry */ }
-    await new Promise(r => setTimeout(r, 2200));
-  }
-  return [];
+      const q = supabase.from(table).select('*').limit(limit);
+      const t = new Promise<{ data: null }>(res => setTimeout(() => res({ data: null }), 4500));
+      const { data } = await Promise.race([q, t]) as { data: Row[] | null };
+      return (data ?? []) as Row[];
+    } catch { return []; }
+  };
+  let r = await once();
+  if (!r.length) { await new Promise(res => setTimeout(res, 1200)); r = await once(); }
+  return r;
 }
 
 // Static fallback keeps the insight matrix alive when the live DB sleeps.
@@ -516,7 +518,7 @@ function LegendStrip({ P }: { P: Profile }) {
       <span style={{ color: BAD }}>■ critical / target line</span>
       <span>· Dimensions: {P.cats.join(', ') || '—'}</span>
       <span>· Measures: {P.nums.join(', ') || '—'}</span>
-      <span>·  on any tile exports PNG</span>
+      <span>· PNG button on any tile exports it</span>
     </div>
   );
 }
@@ -528,9 +530,10 @@ export function InsightGrid({ sectionId, accent }: { sectionId: string; accent?:
     let dead = false;
     (async () => {
       const spec = SPECS[sectionId] ?? SPECS.rms;
-      let r = await fetchRows(spec.table);
+      const [live, fb] = await Promise.all([fetchRows(spec.table), fallbackRows(sectionId)]);
+      let r = live;
       if (!r.length && spec.extra) r = await fetchRows(spec.extra);
-      if (!r.length) r = await fallbackRows(sectionId);
+      if (!r.length) r = fb;
       if (!dead) setRows(r);
     })();
     return () => { dead = true; };
