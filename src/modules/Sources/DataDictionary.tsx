@@ -30,7 +30,7 @@ export default function DataDictionary() {
       </div>
       <div style={{ fontSize: 11.5, color: 'rgba(148,163,184,0.7)', marginBottom: 14 }}>
         What every metric, field and categorical value means across the platform. The same definitions
-        appear as ℹ hover tips on cards, tables and charts.
+        appear as  hover tips on cards, tables and charts.
       </div>
 
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginBottom: 14 }}>
