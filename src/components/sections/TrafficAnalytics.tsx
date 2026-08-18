@@ -8,6 +8,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { ModuleNavBar } from '../../shared/ModuleNavBar';
 import { factorAt, yearNow, useNowTick } from '../../shared/nowcast';
+import { CaptureButton } from '../../shared/CaptureButton';
 
 // ─── Data types ───────────────────────────────────────────────────────────────
 interface PredProps {
@@ -773,6 +774,7 @@ export default function TrafficAnalytics() {
           {tab==='strategic' && <StrategicTab A={A}/>}
         </div>
       )}
+      <CaptureButton capture="traffic" label="traffic count record" accent="#00f5ff" />
     </div>
   );
 }
