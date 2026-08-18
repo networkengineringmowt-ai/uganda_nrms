@@ -37,7 +37,7 @@ export function AirportPopup({ properties, coordinates }: Omit<PopupProps, 'type
         borderBottom: '2px solid #4f46e5',
       }}>
         <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>
-          ✈ {name}
+           {name}
         </div>
         <div style={{ fontSize: 11, opacity: 0.9 }}>
           {category}
@@ -133,7 +133,7 @@ export function FerryPopup({ properties, coordinates }: Omit<PopupProps, 'type'>
         borderBottom: '2px solid #0e7490',
       }}>
         <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>
-          ⛴ {name}
+           {name}
         </div>
         <div style={{ fontSize: 11, opacity: 0.9 }}>
           {waterBody}
@@ -248,7 +248,7 @@ export function ProtectedAreaPopup({ properties, coordinates }: Omit<PopupProps,
         borderBottom: '2px solid #166534',
       }}>
         <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>
-          🌳 {name}
+           {name}
         </div>
         <div style={{ fontSize: 11, opacity: 0.9 }}>
           {areaType}
@@ -296,7 +296,7 @@ export function ProtectedAreaPopup({ properties, coordinates }: Omit<PopupProps,
           display: 'flex',
           gap: '8px',
         }}>
-          <span style={{ fontSize: 14 }}>ℹ</span>
+          <span style={{ fontSize: 14 }}></span>
           <span>This area is protected under Uganda's environmental conservation laws.</span>
         </div>
       </div>
@@ -355,7 +355,7 @@ export function BridgePopup({ properties, coordinates }: Omit<PopupProps, 'type'
         borderBottom: '2px solid #0e7490',
       }}>
         <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>
-          🌉 {name}
+           {name}
         </div>
         <div style={{ fontSize: 11, opacity: 0.9 }}>
           {structureType}
