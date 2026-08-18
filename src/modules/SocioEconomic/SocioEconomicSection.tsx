@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { CaptureButton } from '../../shared/CaptureButton';
+const LazySEHub = React.lazy(() => import('../DataEntry/DataCaptureHub'));
 import { MapContainer, TileLayer, CircleMarker, Popup, GeoJSON, useMap } from 'react-leaflet';
 import { AreaChart, BarChart, PieChart, Pie, Cell, Bar, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
@@ -1040,6 +1040,7 @@ const TABS = [
   { id:'eduhealth',     label:'📚 Education & Health' },
   { id:'demographics',  label:'👥 Demographics' },
   { id:'economy',       label:'💰 Economy' },
+  { id:'capture',       label:'📥 Data Capture' },
 ];
 
 export default function SocioEconomicSection() {
@@ -1072,8 +1073,8 @@ export default function SocioEconomicSection() {
         {tab==='eduhealth'     && <EduHealthTab/>}
         {tab==='demographics'  && <DemoTab/>}
         {tab==='economy'       && <EconomyTab/>}
+        {tab==='capture'       && <React.Suspense fallback={<div style={{padding:20,color:'#64748b',fontSize:12}}>Loading capture module…</div>}><LazySEHub/></React.Suspense>}
       </div>
-      <CaptureButton capture="condition" label="socio-economic field data" accent="#3b82f6" />
     </div>
   );
 }
