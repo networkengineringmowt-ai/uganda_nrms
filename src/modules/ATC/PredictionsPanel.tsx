@@ -240,7 +240,7 @@ function LinkPopup({
         <button onClick={onClose} style={{
           background:'none', border:'none', color:'rgba(148,163,184,0.5)',
           cursor:'pointer', fontSize:14, lineHeight:1, padding:0, marginLeft:8,
-        }}>✕</button>
+        }}></button>
       </div>
 
       {/* Congestion badge */}
