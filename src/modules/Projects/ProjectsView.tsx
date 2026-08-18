@@ -362,11 +362,11 @@ export default function ProjectsView() {
         background: 'rgba(8,8,8,0.85)',
       }}>
         {([
-          { id: 'map',      label: 'Projects Map',   icon: '🗺️' },
-          { id: 'register', label: 'Works Register', icon: '📋' },
-          { id: 'ndpiv',    label: 'NDPIV Projects', icon: '🏗️' },
-          { id: 'oprc',     label: 'OPRC Lots',      icon: '🔧' },
-          { id: 'dashboard', label: 'Dashboard',      icon: '📊' },
+          { id: 'map',      label: 'Projects Map',   icon: '' },
+          { id: 'register', label: 'Works Register', icon: '' },
+          { id: 'ndpiv',    label: 'NDPIV Projects', icon: '' },
+          { id: 'oprc',     label: 'OPRC Lots',      icon: '' },
+          { id: 'dashboard', label: 'Dashboard',      icon: '' },
         ] as const).map(t => {
           const isActive = t.id === activeTab;
           return (
@@ -460,7 +460,7 @@ export default function ProjectsView() {
                 <Popup>
                   <div style={{ fontSize: 11, minWidth: 210, maxWidth: 250 }}>
                     <div style={{ fontWeight: 800, fontSize: 12, color: '#1c1c1c', borderBottom: '1.5px solid #fcd34d', paddingBottom: 4, marginBottom: 6 }}>
-                      🚧 {c.name}
+                       {c.name}
                     </div>
                     <table style={{ fontSize: 10, borderCollapse: 'collapse', width: '100%' }}>
                       {[
@@ -609,7 +609,7 @@ export default function ProjectsView() {
                 )}
                 {p.behind_schedule && (
                   <div style={{ marginTop:6, padding:'5px 10px', borderRadius:6, background:'rgba(239,68,68,0.08)', border:'1px solid rgba(239,68,68,0.25)', fontSize:9.5, color:'#ef4444', fontWeight:700 }}>
-                    ⚠ Behind schedule
+                     Behind schedule
                   </div>
                 )}
                 <SectionHeader title="Progress" accent={wc} />
@@ -668,7 +668,7 @@ export default function ProjectsView() {
             borderRadius: 8, padding: '8px 12px',
           }}>
             <div style={{ fontSize: 9, fontWeight: 900, color: '#fcd34d', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 5 }}>
-              🚧 NERAMP OPRC — Output-Performance Road Contracts
+               NERAMP OPRC — Output-Performance Road Contracts
             </div>
             <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.8)', lineHeight: 1.5 }}>
               <span style={{ color: '#fcd34d', fontWeight: 700 }}>Lot 1 (216 km)</span>
@@ -691,7 +691,7 @@ export default function ProjectsView() {
             borderRadius: 8, padding: '8px 12px',
           }}>
             <div style={{ fontSize: 9, fontWeight: 900, color: '#4d9fff', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 5 }}>
-              📋 NDP IV Targets · FY 2025/26 – 2029/30
+               NDP IV Targets · FY 2025/26 – 2029/30
             </div>
             <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.8)', lineHeight: 1.5 }}>
               <span style={{ color: '#00ff88', fontWeight: 700 }}>1,200+ km</span>
