@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo, useRef, memo, useCallback, useContext } from 'react';
+import React, { useState, useEffect, useMemo, useRef, memo, useCallback, useContext } from 'react';
 import {
   MapContainer, TileLayer, CircleMarker, Tooltip,
   ZoomControl, GeoJSON, useMap,
@@ -129,7 +129,7 @@ export default function GISMapView() {
       <div style={{ position:'absolute', top:10, left:'50%', transform:'translateX(-50%)', zIndex:1000, display:'flex', gap:6 }}>
         {(['map','dashboard'] as const).map(t => (
           <button key={t} onClick={() => setGisTab(t)} style={{ fontSize:11, fontWeight:700, letterSpacing:1, padding:'4px 14px', border:`1px solid ${gisTab===t?'#4d9fff':'rgba(77,159,255,0.25)'}`, borderRadius:4, cursor:'pointer', background:gisTab===t?'#4d9fff':'rgba(77,159,255,0.08)', color:gisTab===t?'#020202':'rgba(77,159,255,0.7)', textTransform:'uppercase', whiteSpace:'nowrap' }}>
-            {t==='map'?'🗺️ GIS Map':'📊 Dashboard'}
+            {t==='map'?' GIS Map':' Dashboard'}
           </button>
         ))}
       </div>
@@ -180,10 +180,10 @@ export default function GISMapView() {
               <Tooltip direction="top" offset={[0, -8]} opacity={1}>
                 <div style={{ fontSize: 12, fontWeight: 900, color: '#111827', marginBottom: 2 }}>{s.name}</div>
                 <div style={{ fontSize: 10, fontWeight: 700, color: '#374151' }}>
-                  {isBridge ? '🌉 Bridge' : '📦 Major Culvert'}
+                  {isBridge ? ' Bridge' : ' Major Culvert'}
                 </div>
                 <div style={{ fontSize: 10, fontWeight: 600, color: isCrit ? '#dc2626' : '#6b7280', marginTop: 4 }}>
-                  Rating: {s.displayRating}/5 {isCrit ? '⚠ CRITICAL' : ''}
+                  Rating: {s.displayRating}/5 {isCrit ? ' CRITICAL' : ''}
                 </div>
               </Tooltip>
             </CircleMarker>
@@ -457,7 +457,7 @@ const StructurePanel = memo(function StructurePanel({
             <div className="flex-1 min-w-0">
               <div className="text-sm font-bold text-white leading-tight truncate">{s.name}</div>
               <div className="text-[10px] text-slate-400 mt-0.5">
-                {s.id} · {isBridge ? '🌉 Bridge' : '📦 Culvert'} · {s.road}
+                {s.id} · {isBridge ? ' Bridge' : ' Culvert'} · {s.road}
               </div>
             </div>
             <button onClick={onClose}
@@ -473,12 +473,12 @@ const StructurePanel = memo(function StructurePanel({
             </span>
             {s.inspectionDue && (
               <span className="flex items-center gap-1 text-[9px] text-red-400 font-bold bg-red-900/30 px-2 py-1 rounded">
-                ⚠ Inspection overdue
+                 Inspection overdue
               </span>
             )}
             {s.priorityScore >= 75 && (
               <span className="flex items-center gap-1 text-[9px] text-orange-400 font-bold bg-orange-900/30 px-2 py-1 rounded">
-                ★ High priority
+                 High priority
               </span>
             )}
             <span className="ml-auto text-[10px] text-slate-500">Rank #{s.priorityRank}/{state.structures.length}</span>
@@ -506,10 +506,10 @@ const StructurePanel = memo(function StructurePanel({
                   ? 'text-blue-400 border-b-2 border-blue-400'
                   : 'text-slate-500 hover:text-slate-300'
               }`}>
-              {t === 'details' ? '📋 Attributes'
-                : t === 'photos' ? `📷 Photos${photos.length > 0 ? ` (${photos.length})` : photosLoading ? ' …' : ''}`
-                : t === 'condition' ? '📈 Condition'
-                : '🔍 Inspections'}
+              {t === 'details' ? ' Attributes'
+                : t === 'photos' ? ` Photos${photos.length > 0 ? ` (${photos.length})` : photosLoading ? ' …' : ''}`
+                : t === 'condition' ? ' Condition'
+                : ' Inspections'}
             </button>
           ))}
         </div>
@@ -574,7 +574,7 @@ const StructurePanel = memo(function StructurePanel({
                 <Grid>
                   <Field l="Last Inspection" v={formatDate(s.lastInspection)} />
                   <Field l="Next Inspection" v={formatDate(s.nextInspection)} />
-                  <Field l="Status" v={s.inspectionDue ? '⚠ Overdue' : '✓ Current'} highlight={s.inspectionDue ? 'amber' : 'green'} />
+                  <Field l="Status" v={s.inspectionDue ? ' Overdue' : ' Current'} highlight={s.inspectionDue ? 'amber' : 'green'} />
                   <Field l="Overall Rating" v={`${s.conditionRating} – ${conditionLabel(s.conditionRating)}`} highlight={s.conditionRating <= 2 ? 'red' : undefined} />
                 </Grid>
                 {s.defects.length > 0 && (
@@ -745,7 +745,7 @@ const StructurePanel = memo(function StructurePanel({
                   <div><span className="text-slate-500">Next:</span> <span className="text-slate-200">{(s.nextInspection || '—').slice(0, 10)}</span></div>
                 </div>
                 {s.inspectionDue && (
-                  <div className="mt-2 text-[10px] font-bold text-amber-400">⚠ Inspection overdue</div>
+                  <div className="mt-2 text-[10px] font-bold text-amber-400"> Inspection overdue</div>
                 )}
               </Section>
               <Section title="Priority">
