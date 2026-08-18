@@ -1,4 +1,4 @@
-﻿/**
+/**
  * RoadNetworkView — Uganda National Road Network
  * Features:
  *  - Animated timeline 1960–2026 showing road paving progression
@@ -143,10 +143,10 @@ function makeInfraIcon(type: 'ferry'|'weighbridge'|'airport'|'port', sz: number)
   const key = `${type}|${sz}`;
   if (infraIconCache.has(key)) return infraIconCache.get(key)!;
   const cfgs: Record<string,{g:[string,string];s:string;l:string}> = {
-    ferry:       { g:['#60a5fa','#1e3a8a'], s:'#bfdbfe', l:'⚓' },
-    weighbridge: { g:['#fcd34d','#92400e'], s:'#fef3c7', l:'⚖' },
-    airport:     { g:['#c084fc','#4c1d95'], s:'#ede9fe', l:'✈' },
-    port:        { g:['#34d399','#064e3b'], s:'#d1fae5', l:'⛵' },
+    ferry:       { g:['#60a5fa','#1e3a8a'], s:'#bfdbfe', l:'' },
+    weighbridge: { g:['#fcd34d','#92400e'], s:'#fef3c7', l:'' },
+    airport:     { g:['#c084fc','#4c1d95'], s:'#ede9fe', l:'' },
+    port:        { g:['#34d399','#064e3b'], s:'#d1fae5', l:'' },
   };
   const c = cfgs[type]; const id = `rni${type}${sz}`;
   const html = `<svg viewBox="0 0 24 24" width="${sz}" height="${sz}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;display:block">
@@ -476,7 +476,7 @@ export default function RoadNetworkView({ showHistory = true, defaultHistory = f
             <Marker key={f.id} position={[f.lat, f.lng]} icon={makeInfraIcon('ferry', getInfraIconSize(mapZoom))}>
               <LeafletTooltip direction="top" offset={[0,-10]} opacity={1}>
                 <div style={{fontSize:12,fontWeight:900,color:'#111827',marginBottom:2}}>{f.name}</div>
-                <div style={{fontSize:10,fontWeight:700,color:'#1d4ed8'}}>⚓ Ferry Crossing</div>
+                <div style={{fontSize:10,fontWeight:700,color:'#1d4ed8'}}> Ferry Crossing</div>
                 <div style={{fontSize:10,fontWeight:600,color:'#374151',marginTop:2}}>
                   Route: {f.route as string}<br/>Capacity: {f.capacity as string} · {f.lake as string}
                 </div>
@@ -488,7 +488,7 @@ export default function RoadNetworkView({ showHistory = true, defaultHistory = f
             <Marker key={w.id} position={[w.lat, w.lng]} icon={makeInfraIcon('weighbridge', getInfraIconSize(mapZoom))}>
               <LeafletTooltip direction="top" offset={[0,-10]} opacity={1}>
                 <div style={{fontSize:12,fontWeight:900,color:'#111827',marginBottom:2}}>{w.name}</div>
-                <div style={{fontSize:10,fontWeight:700,color:'#d97706'}}>⚖ Weighbridge Station</div>
+                <div style={{fontSize:10,fontWeight:700,color:'#d97706'}}> Weighbridge Station</div>
                 <div style={{fontSize:10,fontWeight:600,color:'#374151',marginTop:2}}>
                   Road: {w.road as string} · Cap: {w.capacity as string} · {w.status as string}
                 </div>
@@ -500,7 +500,7 @@ export default function RoadNetworkView({ showHistory = true, defaultHistory = f
             <Marker key={a.id} position={[a.lat, a.lng]} icon={makeInfraIcon('airport', getInfraIconSize(mapZoom))}>
               <LeafletTooltip direction="top" offset={[0,-10]} opacity={1}>
                 <div style={{fontSize:12,fontWeight:900,color:'#111827',marginBottom:2}}>{a.name}</div>
-                <div style={{fontSize:10,fontWeight:700,color:'#7c3aed'}}>✈ {a.type as string} Airport</div>
+                <div style={{fontSize:10,fontWeight:700,color:'#7c3aed'}}> {a.type as string} Airport</div>
                 <div style={{fontSize:10,fontWeight:600,color:'#374151',marginTop:2}}>
                   IATA: {(a.iata as string)||'—'} · Runway: {a.runway as string}
                 </div>
@@ -512,7 +512,7 @@ export default function RoadNetworkView({ showHistory = true, defaultHistory = f
             <Marker key={p.id} position={[p.lat, p.lng]} icon={makeInfraIcon('port', getInfraIconSize(mapZoom))}>
               <LeafletTooltip direction="top" offset={[0,-10]} opacity={1}>
                 <div style={{fontSize:12,fontWeight:900,color:'#111827',marginBottom:2}}>{p.name}</div>
-                <div style={{fontSize:10,fontWeight:700,color:'#0891b2'}}>⛵ {p.type as string}</div>
+                <div style={{fontSize:10,fontWeight:700,color:'#0891b2'}}> {p.type as string}</div>
                 <div style={{fontSize:10,fontWeight:600,color:'#374151',marginTop:2}}>
                   {p.lake as string} · {p.operator as string}
                 </div>
@@ -532,7 +532,7 @@ export default function RoadNetworkView({ showHistory = true, defaultHistory = f
                 <LeafletTooltip direction="top" offset={[0, -8]} opacity={1}>
                   <div style={{fontSize:12,fontWeight:900,color:'#111827',marginBottom:2}}>{s.name}</div>
                   <div style={{fontSize:10,fontWeight:700,color: isBridge ? '#0891b2' : '#b45309'}}>
-                    {isBridge ? '🌉 Bridge' : '🔵 Major Culvert'} · {s.road}
+                    {isBridge ? ' Bridge' : ' Major Culvert'} · {s.road}
                   </div>
                   <div style={{fontSize:10,fontWeight:600,color:'#374151',marginTop:2}}>
                     {s.spanLength} m span · {s.noOfSpans} span{s.noOfSpans !== 1 ? 's' : ''} ·{' '}
@@ -647,10 +647,10 @@ export default function RoadNetworkView({ showHistory = true, defaultHistory = f
             <div style={sectionHead}>Infrastructure Layers</div>
             {(
               [
-                { key:'ferry',       label:'Ferry Crossings', show:showFerries,      toggle:()=>setShowFerries(v=>!v),      color:'#60a5fa', rgb:'96,165,250',  icon:<span style={{fontSize:13}}>⚓</span> },
-                { key:'weighbridge', label:'Weighbridges',    show:showWeighbridges, toggle:()=>setShowWeighbridges(v=>!v), color:'#fcd34d', rgb:'252,211,77',  icon:<span style={{fontSize:13}}>⚖</span> },
-                { key:'airport',     label:'Airports',        show:showAirports,     toggle:()=>setShowAirports(v=>!v),     color:'#c084fc', rgb:'192,132,252', icon:<span style={{fontSize:13}}>✈</span> },
-                { key:'port',        label:'Ports',           show:showPorts,        toggle:()=>setShowPorts(v=>!v),        color:'#34d399', rgb:'52,211,153',  icon:<span style={{fontSize:13}}>⛵</span> },
+                { key:'ferry',       label:'Ferry Crossings', show:showFerries,      toggle:()=>setShowFerries(v=>!v),      color:'#60a5fa', rgb:'96,165,250',  icon:<span style={{fontSize:13}}></span> },
+                { key:'weighbridge', label:'Weighbridges',    show:showWeighbridges, toggle:()=>setShowWeighbridges(v=>!v), color:'#fcd34d', rgb:'252,211,77',  icon:<span style={{fontSize:13}}></span> },
+                { key:'airport',     label:'Airports',        show:showAirports,     toggle:()=>setShowAirports(v=>!v),     color:'#c084fc', rgb:'192,132,252', icon:<span style={{fontSize:13}}></span> },
+                { key:'port',        label:'Ports',           show:showPorts,        toggle:()=>setShowPorts(v=>!v),        color:'#34d399', rgb:'52,211,153',  icon:<span style={{fontSize:13}}></span> },
                 { key:'bridge',      label:'Bridge',          show:showStructures,   toggle:()=>setShowStructures(v=>!v),   color:'#3B82F6', rgb:'59,130,246',  icon:<svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="#3B82F6" stroke="white" strokeWidth="1.5"/></svg> },
                 { key:'culvert',     label:'Culvert',         show:showStructures,   toggle:()=>setShowStructures(v=>!v),   color:'#F59E0B', rgb:'245,158,11',  icon:<svg width="12" height="12" viewBox="0 0 12 12"><rect x="1" y="1" width="10" height="10" rx="2" fill="#F59E0B" stroke="white" strokeWidth="1.5"/></svg> },
               ]
