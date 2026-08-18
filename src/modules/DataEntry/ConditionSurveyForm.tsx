@@ -111,7 +111,7 @@ function SurveyFormInner({ onClose }: Props) {
         body: JSON.stringify({ record: dbRow }), signal: ctrl.signal,
       }).finally(() => clearTimeout(t));
       if (!r.ok) throw new Error(`server ${r.status}`);
-      setSync(`Saved to G: Drive repository ✓ — ${form.link_id} condition updated across the platform.`);
+      setSync(`Saved to G: Drive repository  — ${form.link_id} condition updated across the platform.`);
     } catch {
       // Fallback: direct anon write (works only while anon retains INSERT/UPDATE;
       // after running supabase_enable_rls.sql this degrades to local-queue).
@@ -122,7 +122,7 @@ function SurveyFormInner({ onClose }: Props) {
         if (!error) logEvent('change', { table: 'road_link_condition', link: form.link_id, via: 'supabase-fallback' });
         setSync(error
           ? `Saved locally — sync failed (${error.message}). Start the data-entry server to sync.`
-          : `Synced to Supabase mirror ✓ — ${form.link_id} condition updated across the platform.`);
+          : `Synced to Supabase mirror  — ${form.link_id} condition updated across the platform.`);
       } catch {
         setSync('Saved locally — offline; will sync on next connection.');
       }
@@ -132,10 +132,10 @@ function SurveyFormInner({ onClose }: Props) {
   }
 
   if (submitted) {
-    const ok = sync.includes('✓');
+    const ok = sync.includes('');
     return (
       <div style={{ padding:24, textAlign:'center' }}>
-        <div style={{ fontSize:36, marginBottom:12 }}>{ok ? '✅' : '💾'}</div>
+        <div style={{ fontSize:36, marginBottom:12 }}>{ok ? '' : ''}</div>
         <div style={{ color: ok ? '#4ade80' : '#fbbf24', fontSize:16, fontWeight:700 }}>Survey Submitted</div>
         <div style={{ color:'#94a3b8', fontSize:12, marginTop:6, maxWidth:300, marginInline:'auto' }}>{sync || 'Queued locally.'}</div>
         <button onClick={onClose} style={{ marginTop:18, padding:'8px 20px', borderRadius:8, background:'#6366f1', border:'none', color:'#fff', cursor:'pointer', fontSize:13 }}>Done</button>
