@@ -243,7 +243,7 @@ export default function NTISSection() {
   return (
     <div style={s.wrap}>
       <div style={s.stabs}>
-        {([['overview','📊 Overview'],['counts','🚗 Traffic Counts'],['forecast','📈 Forecasting'],['axle','⚖ Axle Load'],['safety','🚨 Road Safety'],['corridors','🛣 Corridors'],['reports','📄 Reports']] as [Subtab,string][]).map(([id,lbl])=>(
+        {([['overview',' Overview'],['counts',' Traffic Counts'],['forecast',' Forecasting'],['axle',' Axle Load'],['safety',' Road Safety'],['corridors',' Corridors'],['reports',' Reports']] as [Subtab,string][]).map(([id,lbl])=>(
           <button key={id} style={ST(id)} onClick={()=>setTab(id)}>{lbl}</button>
         ))}
       </div>
@@ -454,7 +454,7 @@ export default function NTISSection() {
               {label:'Quarterly Freight Report PDF',style:{borderColor:'#ff660055',color:'#ff6600',background:'#ff660011'}},
               {label:'Annual Traffic Census PDF',style:{borderColor:'#bf00ff55',color:'#bf00ff',background:'#bf00ff11'}},
             ].map(b=>(
-              <a key={b.label} href="#" style={{...s.dl,...b.style}}>📥 {b.label}</a>
+              <a key={b.label} href="#" style={{...s.dl,...b.style}}> {b.label}</a>
             ))}
           </div>
           <table style={s.table}><thead><tr><th style={s.th}>Report Name</th><th style={s.th}>Period</th><th style={s.th}>Size</th><th style={s.th}>Generated</th></tr></thead><tbody>
