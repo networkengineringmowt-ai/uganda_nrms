@@ -877,21 +877,21 @@ const NETWORK_COMPLETENESS = [
 
 // ── §21 Global RMS Case Studies ──────────────────────────────────────────────
 const GLOBAL_CASES_TABLE = [
-  { id:1,  agency:'TANROADS',       country:'Tanzania',        flag:'🇹🇿', km:35000,  paved_pct:25, system:'RAMS / HDM-4 (IDA)',          yrs_active:'2015–now', budget_km_usd:8000,  innovation:'Tropical HDM-4 calibration (−18% treatment costs)',      dnr:'Uganda-specific calibration for Class C/B; ROMDAS + visual survey integration' },
-  { id:2,  agency:'KeNHA',          country:'Kenya',           flag:'🇰🇪', km:11189,  paved_pct:22, system:'RAMS + dTIMS CT',              yrs_active:'2016–now', budget_km_usd:22000, innovation:'Mobile survey apps halved survey costs (KoboToolbox)',     dnr:'Mobile-first Class C survey; twice-yearly frequency achievable' },
-  { id:3,  agency:'RTDA',           country:'Rwanda',          flag:'🇷🇼', km:4700,   paved_pct:31, system:'OPRC + Integrated RAMS',       yrs_active:'2018–now', budget_km_usd:24000, innovation:'Bundled emergency+routine in single OPRC lot',           dnr:'Lot 9 (Karamoja) emergency-response clause; rapid paving 18%→34%' },
-  { id:4,  agency:'SANRAL',         country:'South Africa',    flag:'🇿🇦', km:21400,  paved_pct:95, system:'iRAMS (Integrated RAMS)',       yrs_active:'2010–now', budget_km_usd:48000, innovation:'Public condition portal builds political budget support',   dnr:'Simple public DNR dashboard strengthens case for maintenance funding' },
-  { id:5,  agency:'Highways England',country:'United Kingdom', flag:'🇬🇧', km:7800,   paved_pct:100,system:'HAPMS',                        yrs_active:'2005–now', budget_km_usd:180000,innovation:'50-year planning horizon, ISO 55001 certified',            dnr:'10–15 yr rolling maintenance programme via HDM-4 multi-year analysis' },
-  { id:6,  agency:'Austroads/DPTI', country:'Australia',       flag:'🇦🇺', km:33000,  paved_pct:88, system:'DNR RMS Engine (fmr. dTIMS CT)',yrs_active:'2000–now', budget_km_usd:95000, innovation:'AP-R359/556 low-cost sealed/unsealed roads research series',dnr:'AP-R359 directly applicable to Class B DBST; AP-R556 for wet-tropics C roads' },
-  { id:7,  agency:'NZTA Waka Kotahi',country:'New Zealand',    flag:'🇳🇿', km:11000,  paved_pct:90, system:'ONE Network Framework',         yrs_active:'2014–now', budget_km_usd:68000, innovation:'Service-level targets by road class (ONRC)',               dnr:'Differentiated service levels for DNR Class A/B/C — explicit performance targets' },
-  { id:8,  agency:'FHWA / DOTs',    country:'USA',             flag:'🇺🇸', km:900000, paved_pct:80, system:'FMIS / TAMP (MAP-21)',          yrs_active:'2012–now', budget_km_usd:280000,innovation:'Mandatory TAMP legislation (MAP-21/FAST Act)',              dnr:'Model for Uganda Transport Infrastructure Act: mandatory 10-yr AMP to Parliament' },
-  { id:9,  agency:'NHAI / NRRDA',   country:'India',           flag:'🇮🇳', km:145000, paved_pct:65, system:'RCMS + Gati Shakti GIS',        yrs_active:'2021–now', budget_km_usd:12000, innovation:'RCMS mobile app for rural/gravel roads at scale',          dnr:'Scalable Class C monitoring with community participation in Northern Uganda' },
-  { id:10, agency:'Trafikverket',   country:'Sweden',          flag:'🇸🇪', km:98000,  paved_pct:84, system:'PMS + LCC (12-yr plan)',        yrs_active:'2018–now', budget_km_usd:84000, innovation:'Seasonal rainfall cycle integrated in deterioration model',dnr:'Uganda bi-modal rainfall (MAM+OND) creates analogous cyclic damage patterns' },
-  { id:11, agency:'Rijkswaterstaat',country:'Netherlands',     flag:'🇳🇱', km:5900,   paved_pct:100,system:'Predictive Asset Management',   yrs_active:'2015–now', budget_km_usd:180000,innovation:'Monthly Asset Health Index per link (single KPI to Parliament)',dnr:'DNR AHI simplifies MoWT reporting while retaining technical depth' },
-  { id:12, agency:'MLIT',           country:'Japan',           flag:'🇯🇵', km:127000, paved_pct:92, system:'Bridge Inspection Law + RAMS',  yrs_active:'2014–now', budget_km_usd:124000,innovation:'Mandatory 5-yr bridge inspection cycle (Road Act 2014)',    dnr:'Legal mandatory inspection cycle model for Uganda Transport Infrastructure Act' },
-  { id:13, agency:'DNIT',           country:'Brazil',          flag:'🇧🇷', km:75000,  paved_pct:80, system:'SGEPT / CREMA contracts',       yrs_active:'2010–now', budget_km_usd:18000, innovation:'CREMA OPRC on gravel roads (18% cheaper than traditional)',dnr:'Performance standards for Class C gravel with baseline condition safeguards' },
-  { id:14, agency:'GHA',            country:'Ghana',           flag:'🇬🇭', km:15000,  paved_pct:36, system:'GHIAS (IDA P164887)',           yrs_active:'2018–2022',budget_km_usd:14000, innovation:'Phased RAMS: high-traffic paved first, then gravel',         dnr:'Phase rollout reduces costs; builds institutional capacity before full C-road expansion' },
-  { id:15, agency:'ERA',            country:'Ethiopia',        flag:'🇪🇹', km:130000, paved_pct:13, system:'RRAMPS (AfDB-funded)',           yrs_active:'2019–2024',budget_km_usd:8000,  innovation:'Baseline→analysis→budget: exactly DNR\'s next phase',     dnr:'DNR already has good condition data; prioritise budget optimisation & programme generation now' },
+  { id:1,  agency:'TANROADS',       country:'Tanzania',        flag:'', km:35000,  paved_pct:25, system:'RAMS / HDM-4 (IDA)',          yrs_active:'2015–now', budget_km_usd:8000,  innovation:'Tropical HDM-4 calibration (−18% treatment costs)',      dnr:'Uganda-specific calibration for Class C/B; ROMDAS + visual survey integration' },
+  { id:2,  agency:'KeNHA',          country:'Kenya',           flag:'', km:11189,  paved_pct:22, system:'RAMS + dTIMS CT',              yrs_active:'2016–now', budget_km_usd:22000, innovation:'Mobile survey apps halved survey costs (KoboToolbox)',     dnr:'Mobile-first Class C survey; twice-yearly frequency achievable' },
+  { id:3,  agency:'RTDA',           country:'Rwanda',          flag:'', km:4700,   paved_pct:31, system:'OPRC + Integrated RAMS',       yrs_active:'2018–now', budget_km_usd:24000, innovation:'Bundled emergency+routine in single OPRC lot',           dnr:'Lot 9 (Karamoja) emergency-response clause; rapid paving 18%→34%' },
+  { id:4,  agency:'SANRAL',         country:'South Africa',    flag:'', km:21400,  paved_pct:95, system:'iRAMS (Integrated RAMS)',       yrs_active:'2010–now', budget_km_usd:48000, innovation:'Public condition portal builds political budget support',   dnr:'Simple public DNR dashboard strengthens case for maintenance funding' },
+  { id:5,  agency:'Highways England',country:'United Kingdom', flag:'', km:7800,   paved_pct:100,system:'HAPMS',                        yrs_active:'2005–now', budget_km_usd:180000,innovation:'50-year planning horizon, ISO 55001 certified',            dnr:'10–15 yr rolling maintenance programme via HDM-4 multi-year analysis' },
+  { id:6,  agency:'Austroads/DPTI', country:'Australia',       flag:'', km:33000,  paved_pct:88, system:'DNR RMS Engine (fmr. dTIMS CT)',yrs_active:'2000–now', budget_km_usd:95000, innovation:'AP-R359/556 low-cost sealed/unsealed roads research series',dnr:'AP-R359 directly applicable to Class B DBST; AP-R556 for wet-tropics C roads' },
+  { id:7,  agency:'NZTA Waka Kotahi',country:'New Zealand',    flag:'', km:11000,  paved_pct:90, system:'ONE Network Framework',         yrs_active:'2014–now', budget_km_usd:68000, innovation:'Service-level targets by road class (ONRC)',               dnr:'Differentiated service levels for DNR Class A/B/C — explicit performance targets' },
+  { id:8,  agency:'FHWA / DOTs',    country:'USA',             flag:'', km:900000, paved_pct:80, system:'FMIS / TAMP (MAP-21)',          yrs_active:'2012–now', budget_km_usd:280000,innovation:'Mandatory TAMP legislation (MAP-21/FAST Act)',              dnr:'Model for Uganda Transport Infrastructure Act: mandatory 10-yr AMP to Parliament' },
+  { id:9,  agency:'NHAI / NRRDA',   country:'India',           flag:'', km:145000, paved_pct:65, system:'RCMS + Gati Shakti GIS',        yrs_active:'2021–now', budget_km_usd:12000, innovation:'RCMS mobile app for rural/gravel roads at scale',          dnr:'Scalable Class C monitoring with community participation in Northern Uganda' },
+  { id:10, agency:'Trafikverket',   country:'Sweden',          flag:'', km:98000,  paved_pct:84, system:'PMS + LCC (12-yr plan)',        yrs_active:'2018–now', budget_km_usd:84000, innovation:'Seasonal rainfall cycle integrated in deterioration model',dnr:'Uganda bi-modal rainfall (MAM+OND) creates analogous cyclic damage patterns' },
+  { id:11, agency:'Rijkswaterstaat',country:'Netherlands',     flag:'', km:5900,   paved_pct:100,system:'Predictive Asset Management',   yrs_active:'2015–now', budget_km_usd:180000,innovation:'Monthly Asset Health Index per link (single KPI to Parliament)',dnr:'DNR AHI simplifies MoWT reporting while retaining technical depth' },
+  { id:12, agency:'MLIT',           country:'Japan',           flag:'', km:127000, paved_pct:92, system:'Bridge Inspection Law + RAMS',  yrs_active:'2014–now', budget_km_usd:124000,innovation:'Mandatory 5-yr bridge inspection cycle (Road Act 2014)',    dnr:'Legal mandatory inspection cycle model for Uganda Transport Infrastructure Act' },
+  { id:13, agency:'DNIT',           country:'Brazil',          flag:'', km:75000,  paved_pct:80, system:'SGEPT / CREMA contracts',       yrs_active:'2010–now', budget_km_usd:18000, innovation:'CREMA OPRC on gravel roads (18% cheaper than traditional)',dnr:'Performance standards for Class C gravel with baseline condition safeguards' },
+  { id:14, agency:'GHA',            country:'Ghana',           flag:'', km:15000,  paved_pct:36, system:'GHIAS (IDA P164887)',           yrs_active:'2018–2022',budget_km_usd:14000, innovation:'Phased RAMS: high-traffic paved first, then gravel',         dnr:'Phase rollout reduces costs; builds institutional capacity before full C-road expansion' },
+  { id:15, agency:'ERA',            country:'Ethiopia',        flag:'', km:130000, paved_pct:13, system:'RRAMPS (AfDB-funded)',           yrs_active:'2019–2024',budget_km_usd:8000,  innovation:'Baseline→analysis→budget: exactly DNR\'s next phase',     dnr:'DNR already has good condition data; prioritise budget optimisation & programme generation now' },
 ];
 
 // ── §22 Category B International Standards ────────────────────────────────────
@@ -1018,7 +1018,7 @@ function TablePanel({ id, title, accent = C.cyan, source, chartTab, chartLabel, 
             color: accent, cursor: 'pointer', flexShrink: 0,
           }}>
             <BarChart3 size={9} />
-            {chartLabel ?? '📊 View chart →'}
+            {chartLabel ?? ' View chart →'}
           </button>
         )}
         {source && (
@@ -1385,7 +1385,7 @@ export default function TabularSummaries() {
           {/* tbl-001 */}
           <TablePanel id="tbl-001" title="National Road Network Summary" accent={C.cyan}
             source="DNR GIS Jun 2025 / Official 2026 figure" onNavigate={navigate}
-            chartTab="roadnetwork" chartLabel="📊 Network Map →">
+            chartTab="roadnetwork" chartLabel=" Network Map →">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead><tr><Th>Metric</Th><Th>Value</Th><Th>Unit</Th><Th>Source / Vintage</Th></tr></thead>
               <tbody>
@@ -1413,7 +1413,7 @@ export default function TabularSummaries() {
           {/* tbl-002 */}
           <TablePanel id="tbl-002" title="Road Links by Class (DNR GIS Jun 2025)" accent={C.cyan}
             source="network2026.geojson" onNavigate={navigate}
-            chartTab="roadnetwork" chartLabel="📊 Class Map →">
+            chartTab="roadnetwork" chartLabel=" Class Map →">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead><tr><Th>Class</Th><Th>Links</Th><Th>Total km</Th><Th>Paved km</Th><Th>Unpaved km</Th><Th>% Paved</Th></tr></thead>
               <tbody>
@@ -1441,7 +1441,7 @@ export default function TabularSummaries() {
           {/* tbl-003 */}
           <TablePanel id="tbl-003" title="Road Network by Maintenance Region" accent={C.blue}
             source="network2026.geojson — maintena_1 field" onNavigate={navigate}
-            chartTab="roadnetwork" chartLabel="📊 Regional Map →">
+            chartTab="roadnetwork" chartLabel=" Regional Map →">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead><tr><Th>Region</Th><Th>Links</Th><Th>Total km</Th><Th>Paved km</Th><Th>Unpaved km</Th><Th>% Paved</Th></tr></thead>
               <tbody>
@@ -1461,7 +1461,7 @@ export default function TabularSummaries() {
           {/* tbl-004 */}
           <TablePanel id="tbl-004" title="Paved Network by Pavement Type" accent={C.teal}
             source="NAPR 2025 / Department of National Roads pavement database" onNavigate={navigate}
-            chartTab="roadcondition" chartLabel="📊 Condition →">
+            chartTab="roadcondition" chartLabel=" Condition →">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead><tr><Th>Pavement Type</Th><Th>Length (km)</Th><Th>% of Paved Network</Th></tr></thead>
               <tbody>
@@ -1483,7 +1483,7 @@ export default function TabularSummaries() {
           {/* tbl-005 */}
           <TablePanel id="tbl-005" title="Historical Road Network Growth (1986–2026)" accent={C.purple}
             source="Department of National Roads WTSS / Annual Monitoring Reports" onNavigate={navigate}
-            chartTab="networkstory" chartLabel="📊 Network Story →">
+            chartTab="networkstory" chartLabel=" Network Story →">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead><tr><Th>Year</Th><Th>Paved km</Th><Th>Total km</Th><Th>% Paved</Th><Th>Annual Gain (paved km)</Th></tr></thead>
               <tbody>
@@ -1515,7 +1515,7 @@ export default function TabularSummaries() {
           {/* tbl-006 */}
           <TablePanel id="tbl-006" title="Road Condition Distribution — Paved Network (NAPR July 2025)" accent={C.green}
             source="NAPR Jul 2025 — IRI-based, paved network only" onNavigate={navigate}
-            chartTab="roadcondition" chartLabel="📊 Condition Map →">
+            chartTab="roadcondition" chartLabel=" Condition Map →">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead><tr><Th>Condition Class</Th><Th>IRI Range (m/km)</Th><Th>Length (km)</Th><Th>% Surveyed Paved</Th><Th>Color</Th></tr></thead>
               <tbody>
@@ -1551,7 +1551,7 @@ export default function TabularSummaries() {
           {/* tbl-007 */}
           <TablePanel id="tbl-007" title="Condition by Maintenance Region (% of paved links)" accent={C.green}
             source="NAPR 2025" onNavigate={navigate}
-            chartTab="roadcondition" chartLabel="📊 Regional Chart →">
+            chartTab="roadcondition" chartLabel=" Regional Chart →">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead><tr><Th>Region</Th><Th>Good %</Th><Th>Fair %</Th><Th>Poor %</Th><Th>Bad %</Th></tr></thead>
               <tbody>
@@ -1577,7 +1577,7 @@ export default function TabularSummaries() {
           {/* tbl-008 */}
           <TablePanel id="tbl-008" title="Top 10 Road Links by AADT 2025 (TIS)" accent={C.yellow}
             source="TIS 2025 — Annual Monitoring Report" onNavigate={navigate}
-            chartTab="traffic" chartLabel="📊 Traffic Map →">
+            chartTab="traffic" chartLabel=" Traffic Map →">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead><tr><Th>#</Th><Th>Link ID</Th><Th>Corridor</Th><Th>Class</Th><Th>AADT (veh/day)</Th><Th>Year</Th></tr></thead>
               <tbody>
@@ -1599,7 +1599,7 @@ export default function TabularSummaries() {
           {/* tbl-009 */}
           <TablePanel id="tbl-009" title="Vehicle Class Distribution — National Average (TIS 2025)" accent={C.yellow}
             source="TIS 2025 Annual Monitoring Report" onNavigate={navigate}
-            chartTab="trafficanalytics" chartLabel="📊 Analytics →">
+            chartTab="trafficanalytics" chartLabel=" Analytics →">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead><tr><Th>Vehicle Class</Th><Th>% of AADT</Th><Th>Avg AADT (veh/day)</Th></tr></thead>
               <tbody>
@@ -1616,7 +1616,7 @@ export default function TabularSummaries() {
           {/* tbl-010 */}
           <TablePanel id="tbl-010" title="ATC Permanent Count Stations (New 2025 Deployment)" accent={C.yellow}
             source="ATC 2026 — 10 new stations U0001–U0010" onNavigate={navigate}
-            chartTab="trafficanalytics" chartLabel="📊 Analytics →">
+            chartTab="trafficanalytics" chartLabel=" Analytics →">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead><tr><Th>Site ID</Th><Th>Station Name</Th><Th>Road Link</Th><Th>Installed</Th><Th>AADT (veh/day)</Th></tr></thead>
               <tbody>
@@ -1642,7 +1642,7 @@ export default function TabularSummaries() {
           {/* tbl-011 */}
           <TablePanel id="tbl-011" title="Bridge Inventory by Structural Type (BMS 2025)" accent={C.blue}
             source="bridges2026.geojson / BMS inventory" onNavigate={navigate}
-            chartTab="bms" chartLabel="📊 BMS →">
+            chartTab="bms" chartLabel=" BMS →">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead><tr><Th>Structural Type</Th><Th>Count</Th><Th>Avg Span (m)</Th><Th>Avg Age (yr)</Th></tr></thead>
               <tbody>
@@ -1665,7 +1665,7 @@ export default function TabularSummaries() {
           {/* tbl-012 */}
           <TablePanel id="tbl-012" title="Bridge Condition by Region (BMS 2024, % of structures)" accent={C.blue}
             source="BMS 2024 inspection data" onNavigate={navigate}
-            chartTab="bms" chartLabel="📊 BMS Analytics →">
+            chartTab="bms" chartLabel=" BMS Analytics →">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead><tr><Th>Region</Th><Th>Count</Th><Th>Good %</Th><Th>Fair %</Th><Th>Poor %</Th><Th>Critical %</Th></tr></thead>
               <tbody>
@@ -1692,7 +1692,7 @@ export default function TabularSummaries() {
           {/* tbl-013 */}
           <TablePanel id="tbl-013" title="OPRC Lot Performance Summary (FY 2025/26)" accent={C.purple}
             source="Department of National Roads OPRC Contracts Register FY 2025/26" onNavigate={navigate}
-            chartTab="oprc" chartLabel="📊 OPRC Dashboard →">
+            chartTab="oprc" chartLabel=" OPRC Dashboard →">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead><tr><Th>Lot</Th><Th>Roads Covered</Th><Th>km</Th><Th>Contractor</Th><Th>Status</Th><Th>Performance</Th></tr></thead>
               <tbody>
@@ -1717,7 +1717,7 @@ export default function TabularSummaries() {
           {/* tbl-014 */}
           <TablePanel id="tbl-014" title="NDP IV Road Projects (Active 2025/26)" accent={C.purple}
             source="Department of National Roads Projects & Works Division" onNavigate={navigate}
-            chartTab="ndpiv" chartLabel="📊 NDPIV Dashboard →">
+            chartTab="ndpiv" chartLabel=" NDPIV Dashboard →">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead><tr><Th>Project</Th><Th>Type</Th><Th>km</Th><Th>Budget (Bn UGX)</Th><Th>Progress</Th><Th>Funded By</Th></tr></thead>
               <tbody>
@@ -1771,7 +1771,7 @@ export default function TabularSummaries() {
           {/* tbl-016 */}
           <TablePanel id="tbl-016" title="Weighbridges — Location & Operational Status" accent={C.orange}
             source="new_weigh_bridges.geojson (public/data/)" onNavigate={navigate}
-            chartTab="overloading" chartLabel="📊 Overloading →">
+            chartTab="overloading" chartLabel=" Overloading →">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead><tr><Th>ID</Th><Th>Location</Th><Th>Lat</Th><Th>Lon</Th><Th>Capacity (t)</Th><Th>Status</Th><Th>Daily Trucks</Th></tr></thead>
               <tbody>
@@ -1857,7 +1857,7 @@ export default function TabularSummaries() {
           {/* tbl-020 */}
           <TablePanel id="tbl-020" title="Road Maintenance Budget Allocation by Work Type (Bn UGX)" accent={C.pink}
             source="Department of National Roads Annual Budget Estimates 2022–2026" onNavigate={navigate}
-            chartTab="budget" chartLabel="📊 Budget →">
+            chartTab="budget" chartLabel=" Budget →">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead><tr><Th>Financial Year</Th><Th>Routine (Bn)</Th><Th>Periodic (Bn)</Th><Th>Rehab (Bn)</Th><Th>Development (Bn)</Th><Th>Total (Bn)</Th></tr></thead>
               <tbody>
@@ -1877,7 +1877,7 @@ export default function TabularSummaries() {
           {/* tbl-021 */}
           <TablePanel id="tbl-021" title="Maintenance Backlog by Region and Work Type" accent={C.pink}
             source="Department of National Roads Maintenance Backlog Assessment 2025" onNavigate={navigate}
-            chartTab="budget" chartLabel="📊 Budget →">
+            chartTab="budget" chartLabel=" Budget →">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead><tr><Th>Region</Th><Th>Routine Maint (km)</Th><Th>Periodic Maint (km)</Th><Th>Rehabilitation (km)</Th><Th>Total Cost (Bn UGX)</Th></tr></thead>
               <tbody>
@@ -1910,7 +1910,7 @@ export default function TabularSummaries() {
           {/* tbl-022 */}
           <TablePanel id="tbl-022" title="ML Predicted Pavement Condition — Sample Links" accent="#a855f7"
             source="deep_ml_engine.py output / bot_results.json" onNavigate={navigate}
-            chartTab="mlarchitecture" chartLabel="📊 ML System →">
+            chartTab="mlarchitecture" chartLabel=" ML System →">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead><tr><Th>Link ID</Th><Th>Pred. IRI (m/km)</Th><Th>Rutting (mm)</Th><Th>Cracking (%)</Th><Th>Urgency (0–10)</Th><Th>Anomaly</Th></tr></thead>
               <tbody>
@@ -1920,7 +1920,7 @@ export default function TabularSummaries() {
                     <Td mono align="right">{r.rut_mm}</Td>
                     <Td mono align="right">{r.crack_pct}%</Td>
                     <Td mono align="right"><span style={{ color:r.urgency>7?'#ef4444':r.urgency>4?'#f97316':'#22c55e', fontWeight:700 }}>{r.urgency}</span></Td>
-                    <Td><span style={{ color:r.anomaly?'#ef4444':'#22c55e' }}>{r.anomaly?'⚠ Yes':'No'}</span></Td>
+                    <Td><span style={{ color:r.anomaly?'#ef4444':'#22c55e' }}>{r.anomaly?' Yes':'No'}</span></Td>
                   </tr>
                 ))}
               </tbody>
@@ -1931,7 +1931,7 @@ export default function TabularSummaries() {
           <SectionHeader icon={<Truck size={15} style={{ color: C.orange }}/>} accent={C.orange}
             title="Axle Load & Overloading" sub="Department of National Roads weighbridge network · EACU enforcement data · 2024/25"/>
           {/* tbl-023 */}
-          <TablePanel id="tbl-023" title="Overloading Statistics by Weighbridge (daily averages 2024/25)" accent={C.orange} source="EACU weighbridge records" chartTab="overloading" chartLabel="📊 Overloading →" onNavigate={navigate}>
+          <TablePanel id="tbl-023" title="Overloading Statistics by Weighbridge (daily averages 2024/25)" accent={C.orange} source="EACU weighbridge records" chartTab="overloading" chartLabel=" Overloading →" onNavigate={navigate}>
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Weighbridge</Th><Th>Daily Screened</Th><Th>Daily Overloaded</Th><Th>% Overloaded</Th><Th>Top Vehicle</Th></tr></thead>
             <tbody>{OVERLOADING_BY_WB.map(r=><tr key={r.wb}><Td>{r.wb}</Td><Td align="right" mono>{r.screened.toLocaleString()}</Td><Td align="right" mono style={{ color:C.orange }}>{r.overloaded}</Td><Td align="right" mono style={{ color:r.pct>12?'#ef4444':C.yellow }}>{r.pct.toFixed(1)}%</Td><Td>{r.top_veh}</Td></tr>)}</tbody></table>
           </TablePanel>
@@ -2232,12 +2232,12 @@ export default function TabularSummaries() {
           <SectionHeader icon={<Database size={15} style={{ color: C.pink }}/>} accent={C.pink}
             title="Data Quality & Audit" sub="GeoJSON completeness · survey coverage · KPI cross-validation · known gaps register"/>
           {/* tbl-076 */}
-          <TablePanel id="tbl-076" title="GeoJSON Field Completeness — network2026.geojson (1,013 features)" accent={C.pink} source="DNR GIS Section audit Jun 2025" chartTab="dataaudit" chartLabel="🔍 Data Audit →" onNavigate={navigate}>
+          <TablePanel id="tbl-076" title="GeoJSON Field Completeness — network2026.geojson (1,013 features)" accent={C.pink} source="DNR GIS Section audit Jun 2025" chartTab="dataaudit" chartLabel=" Data Audit →" onNavigate={navigate}>
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Field</Th><Th>Total Features</Th><Th>Filled</Th><Th>Completeness %</Th></tr></thead>
             <tbody>{GEOJSON_COMPLETENESS.map(r=><tr key={r.field}><Td mono style={{ color:C.cyan }}>{r.field}</Td><Td align="right" mono>{r.features}</Td><Td align="right" mono>{r.filled}</Td><Td align="right" mono style={{ color:r.pct===100?C.green:r.pct>90?C.yellow:'#ef4444', fontWeight:700 }}>{r.pct.toFixed(1)}%</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-077 */}
-          <TablePanel id="tbl-077" title="Condition Survey Coverage by Region (2024 NAPR Survey)" accent={C.pink} source="NAPR survey completion register 2024" chartTab="dataaudit" chartLabel="🔍 Data Audit →" onNavigate={navigate}>
+          <TablePanel id="tbl-077" title="Condition Survey Coverage by Region (2024 NAPR Survey)" accent={C.pink} source="NAPR survey completion register 2024" chartTab="dataaudit" chartLabel=" Data Audit →" onNavigate={navigate}>
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Region</Th><Th>Total Links</Th><Th>Surveyed</Th><Th>Coverage %</Th><Th>Last Survey</Th></tr></thead>
             <tbody>{SURVEY_COVERAGE.map(r=><tr key={r.region}><Td>{r.region}</Td><Td align="right" mono>{r.total_links}</Td><Td align="right" mono style={{ color:C.green }}>{r.surveyed}</Td><Td align="right" mono style={{ color:r.pct>80?C.green:r.pct>70?C.yellow:C.orange }}>{r.pct.toFixed(1)}%</Td><Td mono style={{ color:'rgba(148,163,184,0.5)' }}>{r.last_survey}</Td></tr>)}</tbody></table>
           </TablePanel>
@@ -2252,9 +2252,9 @@ export default function TabularSummaries() {
             <tbody>{DATA_GAPS.map(r=><tr key={r.gap}><Td>{r.gap}</Td><Td><span style={{ color:r.severity==='High'?'#ef4444':r.severity==='Medium'?C.orange:C.yellow }}>{r.severity}</span></Td><Td align="right" mono style={{ fontWeight:700, color:r.priority===1?'#ef4444':r.priority===2?C.orange:C.yellow }}>P{r.priority}</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-080 */}
-          <TablePanel id="tbl-080" title="KPI Cross-Validation — Platform vs Official Statistics" accent={C.pink} source="DNR / DataAuditEngine automated check" chartTab="dataaudit" chartLabel="🔍 Data Audit →" onNavigate={navigate}>
+          <TablePanel id="tbl-080" title="KPI Cross-Validation — Platform vs Official Statistics" accent={C.pink} source="DNR / DataAuditEngine automated check" chartTab="dataaudit" chartLabel=" Data Audit →" onNavigate={navigate}>
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>KPI</Th><Th>Official Value</Th><Th>Source</Th><Th>GeoJSON Value</Th><Th>Delta</Th><Th>Status</Th></tr></thead>
-            <tbody>{KPI_VALIDATION.map(r=><tr key={r.kpi}><Td>{r.kpi}</Td><Td mono style={{ color:C.cyan, fontWeight:700 }}>{r.value}</Td><Td style={{ color:'rgba(148,163,184,0.5)' }}>{r.source}</Td><Td mono>{r.geojson}</Td><Td mono>{r.delta}</Td><Td><span style={{ color:r.ok?C.green:'#ef4444' }}>{r.ok?'✓ OK':'✗ FAIL'}</span></Td></tr>)}</tbody></table>
+            <tbody>{KPI_VALIDATION.map(r=><tr key={r.kpi}><Td>{r.kpi}</Td><Td mono style={{ color:C.cyan, fontWeight:700 }}>{r.value}</Td><Td style={{ color:'rgba(148,163,184,0.5)' }}>{r.source}</Td><Td mono>{r.geojson}</Td><Td mono>{r.delta}</Td><Td><span style={{ color:r.ok?C.green:'#ef4444' }}>{r.ok?' OK':' FAIL'}</span></Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-081 */}
           <TablePanel id="tbl-081" title="Duplicate Link & Geometry Check Results — DNR GIS QA" accent={C.pink} source="DNR GIS QA automated audit">
@@ -2266,7 +2266,7 @@ export default function TabularSummaries() {
           <SectionHeader icon={<HardHat size={15} style={{ color: C.orange }}/>} accent={C.orange}
             title="Construction & Rehabilitation" sub="Active contracts · procurement timelines · contractor performance · FY 2024/25"/>
           {/* tbl-082 */}
-          <TablePanel id="tbl-082" title="Active Road Construction Contracts (FY 2024/25)" accent={C.orange} source="DNR contracts department" chartTab="projecttracker" chartLabel="📊 Projects →" onNavigate={navigate}>
+          <TablePanel id="tbl-082" title="Active Road Construction Contracts (FY 2024/25)" accent={C.orange} source="DNR contracts department" chartTab="projecttracker" chartLabel=" Projects →" onNavigate={navigate}>
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Contract</Th><Th>km</Th><Th>Contractor</Th><Th>Cost (Bn UGX)</Th><Th>Progress %</Th><Th>Start</Th></tr></thead>
             <tbody>{ACTIVE_CONTRACTS.map(r=><tr key={r.contract}><Td>{r.contract}</Td><Td align="right" mono>{r.km}</Td><Td>{r.contractor}</Td><Td align="right" mono style={{ color:C.orange }}>{r.cost_bn}</Td><Td align="right" mono><div style={{ background:`rgba(0,255,136,0.08)`, borderRadius:4, padding:'1px 6px' }}><span style={{ color:r.progress_pct>60?C.green:r.progress_pct>30?C.yellow:C.orange }}>{r.progress_pct}%</span></div></Td><Td mono>{r.yr}</Td></tr>)}</tbody></table>
           </TablePanel>
@@ -2360,7 +2360,7 @@ export default function TabularSummaries() {
             <tbody>{SERVICE_CENTERS.map(r=><tr key={r.service}><Td>{r.service}</Td><Td align="right" mono>{r.total.toLocaleString()}</Td><Td align="right" mono style={{ color:r.paved_access_pct>75?C.green:C.yellow }}>{r.paved_access_pct}%</Td><Td align="right" mono>{r.gravel_pct}%</Td><Td align="right" mono style={{ color:r.no_road_pct>10?'#ef4444':C.orange }}>{r.no_road_pct}%</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-100 */}
-          <TablePanel id="tbl-100" title="National Road Network Completeness Index 2025" accent={C.cyan} source="DNR data management / platform QA summary" chartTab="dataaudit" chartLabel="🔍 Data Audit →" onNavigate={navigate}>
+          <TablePanel id="tbl-100" title="National Road Network Completeness Index 2025" accent={C.cyan} source="DNR data management / platform QA summary" chartTab="dataaudit" chartLabel=" Data Audit →" onNavigate={navigate}>
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Coverage Dimension</Th><Th>Target</Th><Th>Achieved</Th><Th>Gap</Th></tr></thead>
             <tbody>{NETWORK_COMPLETENESS.map(r=><tr key={r.dimension}><Td>{r.dimension}</Td><Td align="right" mono style={{ color:'rgba(148,163,184,0.4)' }}>{r.target}</Td><Td align="right" mono style={{ color:parseFloat(r.achieved)>90?C.green:parseFloat(r.achieved)>80?C.yellow:C.orange, fontWeight:700 }}>{r.achieved}</Td><Td style={{ color:'rgba(148,163,184,0.5)', fontSize:10 }}>{r.gap}</Td></tr>)}</tbody></table>
           </TablePanel>
@@ -2373,7 +2373,7 @@ export default function TabularSummaries() {
           </div>
           {/* tbl-101 */}
           <TablePanel id="tbl-101" title="Global RMS Case Studies — All 15 Countries Analysed" accent={C.green}
-            source="DNR RMS research synthesis (Jun 2026) — RMS section case studies" chartTab="rms" chartLabel="🌍 View in RMS →" onNavigate={navigate}>
+            source="DNR RMS research synthesis (Jun 2026) — RMS section case studies" chartTab="rms" chartLabel=" View in RMS →" onNavigate={navigate}>
             <table style={{ width:'100%', borderCollapse:'collapse', fontSize:9 }}>
               <thead><tr>
                 <Th>#</Th><Th>Agency</Th><Th>Country</Th><Th>Network km</Th>
@@ -2405,7 +2405,7 @@ export default function TabularSummaries() {
           </div>
           {/* tbl-102 */}
           <TablePanel id="tbl-102" title="Category B — International Standards, Guidelines & Manuals (All 20)" accent={C.blue}
-            source="Sources Catalogue Category B · DNR platform evidence base" chartTab="sources" chartLabel="📚 Sources →" onNavigate={navigate}>
+            source="Sources Catalogue Category B · DNR platform evidence base" chartTab="sources" chartLabel=" Sources →" onNavigate={navigate}>
             <table style={{ width:'100%', borderCollapse:'collapse', fontSize:9 }}>
               <thead><tr>
                 <Th>#</Th><Th>Standard / Manual</Th><Th>Issuing Body</Th>
@@ -2435,7 +2435,7 @@ export default function TabularSummaries() {
           </div>
           {/* tbl-103 */}
           <TablePanel id="tbl-103" title="Category C — Global Research Papers & Studies (All 53)" accent={C.purple}
-            source="Sources Catalogue Category C · DNR evidence base for ML, PMS, BMS, HDM4, Traffic modules" chartTab="sources" chartLabel="📚 Sources →" onNavigate={navigate}>
+            source="Sources Catalogue Category C · DNR evidence base for ML, PMS, BMS, HDM4, Traffic modules" chartTab="sources" chartLabel=" Sources →" onNavigate={navigate}>
             <table style={{ width:'100%', borderCollapse:'collapse', fontSize:9 }}>
               <thead><tr>
                 <Th>Ref</Th><Th>Title</Th><Th>Author / Publisher</Th>
