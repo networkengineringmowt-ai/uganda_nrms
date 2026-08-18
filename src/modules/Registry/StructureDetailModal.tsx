@@ -137,7 +137,7 @@ export default function StructureDetailModal({ structure: s, onClose }: Props) {
                     <Calendar size={13} className="text-slate-500" />
                     <span className="text-slate-400">Next Inspection:</span>
                     <span className={`font-medium ${s.inspectionDue ? 'text-red-400' : 'text-green-400'}`}>
-                      {formatDate(s.nextInspection)} {s.inspectionDue ? '⚠ OVERDUE' : '✓'}
+                      {formatDate(s.nextInspection)} {s.inspectionDue ? ' OVERDUE' : ''}
                     </span>
                   </div>
                 </div>
