@@ -1,7 +1,7 @@
 /**
  * InfoTip / Term / Tip — universal hover tooltips backed by the data dictionary.
  *
- *   <InfoTip term="iri" />                 ℹ icon; hover → full definition card
+ *   <InfoTip term="iri" />                  icon; hover → full definition card
  *   <Term k="vci">VCI</Term>               dotted-underline text; hover → definition
  *   <Tip text="free-form note">label</Tip> generic tooltip for anything not in the dict
  *
@@ -69,7 +69,7 @@ function useHover() {
   return { pos, handlers };
 }
 
-/** ℹ info icon — hover shows the dictionary definition for `term`. */
+/**  info icon — hover shows the dictionary definition for `term`. */
 export function InfoTip({ term, size = 12 }: { term: string; size?: number }) {
   const e = lookup(term);
   const { pos, handlers } = useHover();
@@ -109,5 +109,5 @@ export function Tip({ text, children }: { text: string; children: ReactNode }) {
   );
 }
 
-/** True if the dictionary has a definition for this key/label (for conditional ℹ). */
+/** True if the dictionary has a definition for this key/label (for conditional ). */
 export { lookup as hasDefinition } from './dataDictionary';
