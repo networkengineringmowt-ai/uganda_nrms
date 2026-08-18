@@ -164,10 +164,10 @@ export default function NPMSSection() {
     <div style={s.wrap}>
       {/* Subtabs — Budget Allocation removed (duplicated the Maintenance register) */}
       <div style={s.subtabs}>
-        <button style={ST('kpis')}        onClick={() => setTab('kpis')}>📊 KPIs by Region</button>
-        <button style={ST('iri')}         onClick={() => setTab('iri')}>📉 IRI Distribution</button>
-        <button style={ST('heatmap')}     onClick={() => setTab('heatmap')}>🗺 Condition Map</button>
-        <button style={ST('maintenance')} onClick={() => setTab('maintenance')}>🔧 Maintenance Needs</button>
+        <button style={ST('kpis')}        onClick={() => setTab('kpis')}> KPIs by Region</button>
+        <button style={ST('iri')}         onClick={() => setTab('iri')}> IRI Distribution</button>
+        <button style={ST('heatmap')}     onClick={() => setTab('heatmap')}> Condition Map</button>
+        <button style={ST('maintenance')} onClick={() => setTab('maintenance')}> Maintenance Needs</button>
       </div>
 
       {/* KPIs */}
