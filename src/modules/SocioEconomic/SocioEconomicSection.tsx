@@ -220,7 +220,7 @@ function MapLoadingOverlay({ loading, error }: { loading?: boolean; error?: stri
   if (!loading && !error) return null;
   return (
     <div style={{ position:'absolute', top:8, right:8, zIndex:9999, background:'rgba(15,23,42,0.88)', borderRadius:6, padding:'4px 10px', fontSize:11, color: error?'#f87171':'#94a3b8' }}>
-      {error ? '⚠ '+error : '⟳ Loading geodata…'}
+      {error ? ' '+error : '⟳ Loading geodata…'}
     </div>
   );
 }
@@ -313,14 +313,14 @@ function OverviewTab() {
   return (
     <div>
       <div style={S.kpiWrap}>
-        <KPICard label="Total Population" value="49.9M" sub="Census projection 2024; growth 3.0%/yr" color="#3b82f6" icon="👥"/>
-        <KPICard label="GDP (2024)" value="USD 38.1B" sub="Growth 6.3%; GDP/capita USD 963" color="#22c55e" icon="💰"/>
-        <KPICard label="Districts" value="146" sub="135 districts + 11 cities (2024)" color="#a855f7" icon="🗺"/>
-        <KPICard label="Total Area" value="241,551 km²" sub="Land 197,100 km² + water 44,451 km²" color="#eab308" icon="📐"/>
-        <KPICard label="Capital" value="Kampala" sub="Pop 3.6M metro; 0.3476°N 32.5825°E" color="#f97316" icon="🏙"/>
-        <KPICard label="Literacy Rate" value="79.0%" sub="Adult (15+); Male 83% / Female 75%" color="#06b6d4" icon="📚"/>
-        <KPICard label="Poverty Rate" value="21.4%" sub="Below USD 2.15/day (World Bank 2024)" color="#ef4444" icon="📉"/>
-        <KPICard label="HDI Score" value="0.544" sub="Low Human Dev. — rank 159/193 (2023)" color="#84cc16" icon="🎯"/>
+        <KPICard label="Total Population" value="49.9M" sub="Census projection 2024; growth 3.0%/yr" color="#3b82f6" icon=""/>
+        <KPICard label="GDP (2024)" value="USD 38.1B" sub="Growth 6.3%; GDP/capita USD 963" color="#22c55e" icon=""/>
+        <KPICard label="Districts" value="146" sub="135 districts + 11 cities (2024)" color="#a855f7" icon=""/>
+        <KPICard label="Total Area" value="241,551 km²" sub="Land 197,100 km² + water 44,451 km²" color="#eab308" icon=""/>
+        <KPICard label="Capital" value="Kampala" sub="Pop 3.6M metro; 0.3476°N 32.5825°E" color="#f97316" icon=""/>
+        <KPICard label="Literacy Rate" value="79.0%" sub="Adult (15+); Male 83% / Female 75%" color="#06b6d4" icon=""/>
+        <KPICard label="Poverty Rate" value="21.4%" sub="Below USD 2.15/day (World Bank 2024)" color="#ef4444" icon=""/>
+        <KPICard label="HDI Score" value="0.544" sub="Low Human Dev. — rank 159/193 (2023)" color="#84cc16" icon=""/>
       </div>
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:16, marginBottom:20 }}>
         <div style={S.card}>
@@ -343,7 +343,7 @@ function OverviewTab() {
         </div>
       </div>
       <div style={S.card}>
-        <SectionHdr>🗺 Uganda Administrative Boundaries + Major Cities</SectionHdr>
+        <SectionHdr> Uganda Administrative Boundaries + Major Cities</SectionHdr>
         <div style={{ ...S.mapWrap, position:'relative', height:480 }}>
           <MapContainer center={UGA} zoom={ZOOM} style={{ height:'100%', width:'100%', background:'#0d1117' }} scrollWheelZoom>
             <TileLayer url={TILES} attribution={ATTRIBUTION}/>
@@ -362,7 +362,7 @@ function OverviewTab() {
             ))}
           </MapContainer>
         </div>
-        <div style={{fontSize:11,color:'#64748b',marginTop:8}}>🟡 Capital &nbsp;🔵 Cities &nbsp;⚪ Towns &nbsp;(size proportional to population) &nbsp;| ADM1 boundaries from geoBoundaries</div>
+        <div style={{fontSize:11,color:'#64748b',marginTop:8}}> Capital &nbsp; Cities &nbsp; Towns &nbsp;(size proportional to population) &nbsp;| ADM1 boundaries from geoBoundaries</div>
       </div>
       <DataTable title="District-Level Socioeconomic Statistics"
         cols={['District','Region','Population','Area (km²)','GDP (USD M)','Poverty %','Literacy %']}
@@ -401,14 +401,14 @@ function ResourcesTab() {
   return (
     <div>
       <div style={S.kpiWrap}>
-        <KPICard label="Mineral Sites" value="20+" sub="Documented deposits; 100+ artisanal" color="#eab308" icon="⛏"/>
-        <KPICard label="Active Mines" value="8" sub="Licensed & operational (2024)" color="#22c55e" icon="🏗"/>
-        <KPICard label="Oil Reserves" value="6.5B bbl" sub="In-place; ~1.4B recoverable (Albertine)" color="#3b82f6" icon="🛢"/>
-        <KPICard label="Mining GDP %" value="2.1%" sub="USD 800M direct contribution (2024)" color="#a855f7" icon="📊"/>
-        <KPICard label="Mineral Exports" value="USD 1.52B" sub="Gold 75%, other minerals 25%" color="#f97316" icon="📦"/>
-        <KPICard label="Oil Blocks Total" value="6" sub="EA1, EA2, EA1A, EA3A, EA3B, EACOP" color="#06b6d4" icon="🗺"/>
-        <KPICard label="Phosphate Reserves" value="230Mt" sub="Sukulu + Tororo; world-class deposit" color="#ef4444" icon="🧪"/>
-        <KPICard label="Iron Ore Reserves" value="162Mt" sub="Muko (Kabale); 42% Fe grade" color="#84cc16" icon="⚙"/>
+        <KPICard label="Mineral Sites" value="20+" sub="Documented deposits; 100+ artisanal" color="#eab308" icon=""/>
+        <KPICard label="Active Mines" value="8" sub="Licensed & operational (2024)" color="#22c55e" icon=""/>
+        <KPICard label="Oil Reserves" value="6.5B bbl" sub="In-place; ~1.4B recoverable (Albertine)" color="#3b82f6" icon=""/>
+        <KPICard label="Mining GDP %" value="2.1%" sub="USD 800M direct contribution (2024)" color="#a855f7" icon=""/>
+        <KPICard label="Mineral Exports" value="USD 1.52B" sub="Gold 75%, other minerals 25%" color="#f97316" icon=""/>
+        <KPICard label="Oil Blocks Total" value="6" sub="EA1, EA2, EA1A, EA3A, EA3B, EACOP" color="#06b6d4" icon=""/>
+        <KPICard label="Phosphate Reserves" value="230Mt" sub="Sukulu + Tororo; world-class deposit" color="#ef4444" icon=""/>
+        <KPICard label="Iron Ore Reserves" value="162Mt" sub="Muko (Kabale); 42% Fe grade" color="#84cc16" icon=""/>
       </div>
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:16, marginBottom:20 }}>
         <div style={S.card}>
@@ -431,7 +431,7 @@ function ResourcesTab() {
         </div>
       </div>
       <div style={S.card}>
-        <SectionHdr>⛏ Mineral Deposits + Oil Blocks + Live OSM Quarries/Mines</SectionHdr>
+        <SectionHdr> Mineral Deposits + Oil Blocks + Live OSM Quarries/Mines</SectionHdr>
         <div style={{ ...S.mapWrap, position:'relative', height:480 }}>
           <MapLoadingOverlay loading={loading} error={error}/>
           <MapContainer center={UGA} zoom={ZOOM} style={{ height:'100%', width:'100%', background:'#0d1117' }} scrollWheelZoom>
@@ -462,7 +462,7 @@ function ResourcesTab() {
             ))}
           </MapContainer>
         </div>
-        <div style={{fontSize:11,color:'#64748b',marginTop:8}}>🟡 Active Mine (size=est. value) &nbsp;⚫ Explored &nbsp;🔵 Oil Block &nbsp;🟣 OSM quarries ({osmMines.length} features)</div>
+        <div style={{fontSize:11,color:'#64748b',marginTop:8}}> Active Mine (size=est. value) &nbsp; Explored &nbsp; Oil Block &nbsp; OSM quarries ({osmMines.length} features)</div>
       </div>
       <DataTable title="Mineral Deposits — Complete Registry"
         cols={['Name','Type','Status','District','Reserves','Grade','Est. Value (USD M)']}
@@ -498,14 +498,14 @@ function EnergyTab() {
   return (
     <div>
       <div style={S.kpiWrap}>
-        <KPICard label="Installed Capacity" value={totalCap.toFixed(0)+' MW'} sub="Operational + under development" color="#3b82f6" icon="⚡"/>
-        <KPICard label="Electrification Rate" value="48.4%" sub="Urban 72% / Rural 22%" color="#22c55e" icon="💡"/>
-        <KPICard label="Hydropower Share" value="94%" sub="Nile-based generation dominance" color="#06b6d4" icon="💧"/>
-        <KPICard label="Power Plants" value={String(POWER_PLANTS.length)} sub="Hydro + Solar + Thermal sites" color="#eab308" icon="🏭"/>
-        <KPICard label="Energy Access Gap" value="26M people" sub="Without grid electricity (2024)" color="#ef4444" icon="🔌"/>
-        <KPICard label="Peak Demand" value="760 MW" sub="System peak (2024), growing 8%/yr" color="#a855f7" icon="📈"/>
-        <KPICard label="Off-grid Solar" value="1.2M HH" sub="Solar home systems deployed" color="#f97316" icon="☀"/>
-        <KPICard label="NERP Target" value="4,000 MW" sub="National electrification by 2030" color="#14b8a6" icon="🎯"/>
+        <KPICard label="Installed Capacity" value={totalCap.toFixed(0)+' MW'} sub="Operational + under development" color="#3b82f6" icon=""/>
+        <KPICard label="Electrification Rate" value="48.4%" sub="Urban 72% / Rural 22%" color="#22c55e" icon=""/>
+        <KPICard label="Hydropower Share" value="94%" sub="Nile-based generation dominance" color="#06b6d4" icon=""/>
+        <KPICard label="Power Plants" value={String(POWER_PLANTS.length)} sub="Hydro + Solar + Thermal sites" color="#eab308" icon=""/>
+        <KPICard label="Energy Access Gap" value="26M people" sub="Without grid electricity (2024)" color="#ef4444" icon=""/>
+        <KPICard label="Peak Demand" value="760 MW" sub="System peak (2024), growing 8%/yr" color="#a855f7" icon=""/>
+        <KPICard label="Off-grid Solar" value="1.2M HH" sub="Solar home systems deployed" color="#f97316" icon=""/>
+        <KPICard label="NERP Target" value="4,000 MW" sub="National electrification by 2030" color="#14b8a6" icon=""/>
       </div>
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:16, marginBottom:20 }}>
         <div style={S.card}>
@@ -528,7 +528,7 @@ function EnergyTab() {
         </div>
       </div>
       <div style={S.card}>
-        <SectionHdr>⚡ Power Plants — Operational & Under Development + Live OSM Infrastructure</SectionHdr>
+        <SectionHdr> Power Plants — Operational & Under Development + Live OSM Infrastructure</SectionHdr>
         <div style={{ ...S.mapWrap, position:'relative', height:480 }}>
           <MapLoadingOverlay loading={loading} error={error}/>
           <MapContainer center={UGA} zoom={ZOOM} style={{ height:'100%', width:'100%', background:'#0d1117' }} scrollWheelZoom>
@@ -550,7 +550,7 @@ function EnergyTab() {
             ))}
           </MapContainer>
         </div>
-        <div style={{fontSize:11,color:'#64748b',marginTop:8}}>🔵 Hydro (size=capacity MW) &nbsp;🟡 Solar &nbsp;🔴 Thermal &nbsp;⚫ Planned &nbsp;🟣 OSM features ({osmPwr.length})</div>
+        <div style={{fontSize:11,color:'#64748b',marginTop:8}}> Hydro (size=capacity MW) &nbsp; Solar &nbsp; Thermal &nbsp; Planned &nbsp; OSM features ({osmPwr.length})</div>
       </div>
       <DataTable title="Power Plants — Complete Registry"
         cols={['Plant Name','Type','Capacity (MW)','Status','River/Source','Year Commissioned']}
@@ -582,14 +582,14 @@ function AgriTab() {
   return (
     <div>
       <div style={S.kpiWrap}>
-        <KPICard label="Agricultural Area" value="10.4M ha" sub="43% of total land area (cultivated)" color="#22c55e" icon="🌾"/>
-        <KPICard label="Total Crop Production" value="31.5M t" sub="All crops combined (2024 estimate)" color="#84cc16" icon="🌽"/>
-        <KPICard label="Coffee Exports" value="USD 610M" sub="#1 agricultural export commodity" color="#eab308" icon="☕"/>
-        <KPICard label="Agricultural GDP" value="24.0%" sub="USD 9.1B contribution (2024)" color="#f97316" icon="📊"/>
-        <KPICard label="Farming Households" value="4.0M" sub="77% of population subsistence-dependent" color="#a855f7" icon="👨‍🌾"/>
-        <KPICard label="Irrigated Area" value="145,000 ha" sub="3% of arable land; NAIP target 700k ha by 2030" color="#06b6d4" icon="💧"/>
-        <KPICard label="Fish Exports" value="USD 420M" sub="2024; Lake Victoria + Kyoga + Albert" color="#3b82f6" icon="🐟"/>
-        <KPICard label="Vanilla Export Value" value="USD 145M" sub="Uganda = 2nd largest global vanilla exporter" color="#ef4444" icon="🌿"/>
+        <KPICard label="Agricultural Area" value="10.4M ha" sub="43% of total land area (cultivated)" color="#22c55e" icon=""/>
+        <KPICard label="Total Crop Production" value="31.5M t" sub="All crops combined (2024 estimate)" color="#84cc16" icon=""/>
+        <KPICard label="Coffee Exports" value="USD 610M" sub="#1 agricultural export commodity" color="#eab308" icon=""/>
+        <KPICard label="Agricultural GDP" value="24.0%" sub="USD 9.1B contribution (2024)" color="#f97316" icon=""/>
+        <KPICard label="Farming Households" value="4.0M" sub="77% of population subsistence-dependent" color="#a855f7" icon=""/>
+        <KPICard label="Irrigated Area" value="145,000 ha" sub="3% of arable land; NAIP target 700k ha by 2030" color="#06b6d4" icon=""/>
+        <KPICard label="Fish Exports" value="USD 420M" sub="2024; Lake Victoria + Kyoga + Albert" color="#3b82f6" icon=""/>
+        <KPICard label="Vanilla Export Value" value="USD 145M" sub="Uganda = 2nd largest global vanilla exporter" color="#ef4444" icon=""/>
       </div>
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:16, marginBottom:20 }}>
         <div style={S.card}>
@@ -612,7 +612,7 @@ function AgriTab() {
         </div>
       </div>
       <div style={S.card}>
-        <SectionHdr>🌾 Agricultural Zones, Agro-Markets & Live OSM Farm Data</SectionHdr>
+        <SectionHdr> Agricultural Zones, Agro-Markets & Live OSM Farm Data</SectionHdr>
         <div style={{ ...S.mapWrap, position:'relative', height:480 }}>
           <MapLoadingOverlay loading={loading} error={error}/>
           <MapContainer center={UGA} zoom={ZOOM} style={{ height:'100%', width:'100%', background:'#0d1117' }} scrollWheelZoom>
@@ -634,7 +634,7 @@ function AgriTab() {
             ))}
           </MapContainer>
         </div>
-        <div style={{fontSize:11,color:'#64748b',marginTop:8}}>🟢 Agricultural Zone (size=area) &nbsp;🟩 OSM Markets/Farmland ({osmAgri.length} features loaded)</div>
+        <div style={{fontSize:11,color:'#64748b',marginTop:8}}> Agricultural Zone (size=area) &nbsp; OSM Markets/Farmland ({osmAgri.length} features loaded)</div>
       </div>
       <DataTable title="Agricultural Zones — Detailed Production Data"
         cols={['Zone','Main Crops','Area (ha)','Production (t/yr)','Rainfall (mm)','Soil Type','Export Crop','Farm Households']}
@@ -666,14 +666,14 @@ function EnvironmentTab() {
   return (
     <div>
       <div style={S.kpiWrap}>
-        <KPICard label="Protected Areas" value="37,000 km²" sub="15.3% of Uganda total area" color="#22c55e" icon="🌿"/>
-        <KPICard label="National Parks" value="10" sub="~4,903 km² gazetted area" color="#84cc16" icon="🦁"/>
-        <KPICard label="Forest Cover" value="3.1M ha" sub="Down from 4.9M ha in 2000 (-37%)" color="#ef4444" icon="🌳"/>
-        <KPICard label="Wetland Cover" value="13.1%" sub="3.16M ha; declining ~2%/yr" color="#06b6d4" icon="🐊"/>
-        <KPICard label="Freshwater Area" value="44,228 km²" sub="18% of Uganda is water surface" color="#3b82f6" icon="💧"/>
-        <KPICard label="Carbon Stock" value="580 Mt CO₂e" sub="Forests + wetlands combined (est.)" color="#a855f7" icon="🌡"/>
-        <KPICard label="Endangered Species" value="70+" sub="IUCN Red List CR + EN (flora + fauna)" color="#f97316" icon="🦍"/>
-        <KPICard label="UNESCO World Heritage" value="3 sites" sub="Bwindi, Rwenzori Mountains, Kasubi Tombs" color="#eab308" icon="🏆"/>
+        <KPICard label="Protected Areas" value="37,000 km²" sub="15.3% of Uganda total area" color="#22c55e" icon=""/>
+        <KPICard label="National Parks" value="10" sub="~4,903 km² gazetted area" color="#84cc16" icon=""/>
+        <KPICard label="Forest Cover" value="3.1M ha" sub="Down from 4.9M ha in 2000 (-37%)" color="#ef4444" icon=""/>
+        <KPICard label="Wetland Cover" value="13.1%" sub="3.16M ha; declining ~2%/yr" color="#06b6d4" icon=""/>
+        <KPICard label="Freshwater Area" value="44,228 km²" sub="18% of Uganda is water surface" color="#3b82f6" icon=""/>
+        <KPICard label="Carbon Stock" value="580 Mt CO₂e" sub="Forests + wetlands combined (est.)" color="#a855f7" icon=""/>
+        <KPICard label="Endangered Species" value="70+" sub="IUCN Red List CR + EN (flora + fauna)" color="#f97316" icon=""/>
+        <KPICard label="UNESCO World Heritage" value="3 sites" sub="Bwindi, Rwenzori Mountains, Kasubi Tombs" color="#eab308" icon=""/>
       </div>
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:16, marginBottom:20 }}>
         <div style={S.card}>
@@ -696,7 +696,7 @@ function EnvironmentTab() {
         </div>
       </div>
       <div style={S.card}>
-        <SectionHdr>🌿 Protected Areas, Lakes & Wetlands + Live OSM Environmental Features</SectionHdr>
+        <SectionHdr> Protected Areas, Lakes & Wetlands + Live OSM Environmental Features</SectionHdr>
         <div style={{ ...S.mapWrap, position:'relative', height:480 }}>
           <MapLoadingOverlay loading={loading} error={error}/>
           <MapContainer center={UGA} zoom={ZOOM} style={{ height:'100%', width:'100%', background:'#0d1117' }} scrollWheelZoom>
@@ -705,7 +705,7 @@ function EnvironmentTab() {
               <CircleMarker key={'pa'+i} center={[p.lat,p.lng]} radius={Math.max(7, Math.sqrt(p.area_km2/35))}
                 pathOptions={{color:p.type==='National Park'?'#22c55e':'#84cc16',fillColor:p.type==='National Park'?'#166534':'#3f6212',fillOpacity:0.7,weight:p.whs?2.5:1.5}}>
                 <Popup>
-                  <b style={{color:'#4ade80'}}>{p.n}{p.whs?' 🏆':''}</b><br/>
+                  <b style={{color:'#4ade80'}}>{p.n}{p.whs?' ':''}</b><br/>
                   <span style={{fontSize:11}}>Type: {p.type}<br/>Area: {p.area_km2.toLocaleString()} km²<br/>Key Animals: {p.animals}<br/>Established: {p.established}<br/>UNESCO WHS: {p.whs?'Yes':'No'}</span>
                 </Popup>
               </CircleMarker>
@@ -727,11 +727,11 @@ function EnvironmentTab() {
             ))}
           </MapContainer>
         </div>
-        <div style={{fontSize:11,color:'#64748b',marginTop:8}}>🟢 National Park &nbsp;🟩 Game/Wildlife Reserve &nbsp;🔵 Lake/Wetland (size=area) &nbsp;🟣 OSM env. features &nbsp;🏆 UNESCO WHS</div>
+        <div style={{fontSize:11,color:'#64748b',marginTop:8}}> National Park &nbsp; Game/Wildlife Reserve &nbsp; Lake/Wetland (size=area) &nbsp; OSM env. features &nbsp; UNESCO WHS</div>
       </div>
       <DataTable title="Protected Areas — Complete Registry"
         cols={['Name','Type','Area (km²)','Key Wildlife','Established','UNESCO WHS']}
-        rows={PROTECTED_AREAS.map((p:any)=>[p.n,p.type,p.area_km2.toLocaleString(),p.animals,String(p.established),p.whs?'Yes ✓':'No'])}/>
+        rows={PROTECTED_AREAS.map((p:any)=>[p.n,p.type,p.area_km2.toLocaleString(),p.animals,String(p.established),p.whs?'Yes ':'No'])}/>
       <DataTable title="Major Water Bodies & Wetlands"
         cols={['Name','Type','Area (km²)','Max Depth (m)','Shared With']}
         rows={WETLANDS.map((w:any)=>[w.n,w.type,w.area_km2.toLocaleString(),String(w.depth_m),w.sh])}/>
@@ -765,14 +765,14 @@ function EduHealthTab() {
   return (
     <div>
       <div style={S.kpiWrap}>
-        <KPICard label="Literacy Rate" value="79.0%" sub="Adult 15+; Male 83% / Female 75% (2024)" color="#3b82f6" icon="📚"/>
-        <KPICard label="Primary Schools" value="17,000+" sub="Government + private + PNFP (2024)" color="#22c55e" icon="🏫"/>
-        <KPICard label="Universities" value="53" sub="Public (10) + Private (43) accredited" color="#a855f7" icon="🎓"/>
-        <KPICard label="Primary Net Enrolment" value="96.1%" sub="UPE driven; completion rate only 53%" color="#eab308" icon="✏"/>
-        <KPICard label="Infant Mortality Rate" value="37/1,000" sub="Live births (down from 70 in 2005) — improving" color="#ef4444" icon="🏥"/>
-        <KPICard label="Life Expectancy" value="67.4 yr" sub="Male 65.6 / Female 69.2 (2024 est.)" color="#06b6d4" icon="❤"/>
-        <KPICard label="Health Facilities" value="4,180+" sub="NRI + Regional + HC I–IV nationwide" color="#f97316" icon="⚕"/>
-        <KPICard label="Doctor:Patient" value="1 : 24,725" sub="Far below WHO target of 1:1,000" color="#84cc16" icon="👨‍⚕️"/>
+        <KPICard label="Literacy Rate" value="79.0%" sub="Adult 15+; Male 83% / Female 75% (2024)" color="#3b82f6" icon=""/>
+        <KPICard label="Primary Schools" value="17,000+" sub="Government + private + PNFP (2024)" color="#22c55e" icon=""/>
+        <KPICard label="Universities" value="53" sub="Public (10) + Private (43) accredited" color="#a855f7" icon=""/>
+        <KPICard label="Primary Net Enrolment" value="96.1%" sub="UPE driven; completion rate only 53%" color="#eab308" icon=""/>
+        <KPICard label="Infant Mortality Rate" value="37/1,000" sub="Live births (down from 70 in 2005) — improving" color="#ef4444" icon=""/>
+        <KPICard label="Life Expectancy" value="67.4 yr" sub="Male 65.6 / Female 69.2 (2024 est.)" color="#06b6d4" icon=""/>
+        <KPICard label="Health Facilities" value="4,180+" sub="NRI + Regional + HC I–IV nationwide" color="#f97316" icon=""/>
+        <KPICard label="Doctor:Patient" value="1 : 24,725" sub="Far below WHO target of 1:1,000" color="#84cc16" icon=""/>
       </div>
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:16, marginBottom:20 }}>
         <div style={S.card}>
@@ -795,7 +795,7 @@ function EduHealthTab() {
         </div>
       </div>
       <div style={S.card}>
-        <SectionHdr>🏫 Live OSM Schools & Health Facilities Across Uganda</SectionHdr>
+        <SectionHdr> Live OSM Schools & Health Facilities Across Uganda</SectionHdr>
         <div style={{ ...S.mapWrap, position:'relative', height:480 }}>
           <MapLoadingOverlay loading={loading}/>
           <MapContainer center={UGA} zoom={ZOOM} style={{ height:'100%', width:'100%', background:'#0d1117' }} scrollWheelZoom>
@@ -803,13 +803,13 @@ function EduHealthTab() {
             {osmSchools.filter((e:any)=>e.lat).slice(0,400).map((e:any,i:number) => (
               <CircleMarker key={'sc'+i} center={[e.lat,e.lon]} radius={3}
                 pathOptions={{color:'#3b82f6',fillColor:'#1d4ed8',fillOpacity:0.7,weight:0.8}}>
-                <Popup><span style={{fontSize:11}}>🎓 {e.tags?.name||'School'}<br/>{e.tags?.amenity}</span></Popup>
+                <Popup><span style={{fontSize:11}}> {e.tags?.name||'School'}<br/>{e.tags?.amenity}</span></Popup>
               </CircleMarker>
             ))}
             {osmHospitals.filter((e:any)=>e.lat).map((e:any,i:number) => (
               <CircleMarker key={'hp'+i} center={[e.lat,e.lon]} radius={e.tags?.amenity==='hospital'?8:4}
                 pathOptions={{color:'#ef4444',fillColor:'#b91c1c',fillOpacity:0.8,weight:1}}>
-                <Popup><span style={{fontSize:11}}>🏥 {e.tags?.name||'Health Facility'}<br/>{e.tags?.amenity}</span></Popup>
+                <Popup><span style={{fontSize:11}}> {e.tags?.name||'Health Facility'}<br/>{e.tags?.amenity}</span></Popup>
               </CircleMarker>
             ))}
             {CITIES.map((c:any,i:number) => (
@@ -820,7 +820,7 @@ function EduHealthTab() {
             ))}
           </MapContainer>
         </div>
-        <div style={{fontSize:11,color:'#64748b',marginTop:8}}>🔵 Schools ({osmSchools.length} OSM, showing 400) &nbsp;🔴 Health Facilities ({osmHospitals.length} OSM) &nbsp;🟡 City reference points</div>
+        <div style={{fontSize:11,color:'#64748b',marginTop:8}}> Schools ({osmSchools.length} OSM, showing 400) &nbsp; Health Facilities ({osmHospitals.length} OSM) &nbsp; City reference points</div>
       </div>
       <AnalysisTable title="District Education & Health Access Analysis"
         cols={['District','Literacy %','Schools est.','Primary NER','Hospitals est.','Pop/Doctor','IMR (est.)','Development Tier']}
@@ -860,14 +860,14 @@ function DemoTab() {
   return (
     <div>
       <div style={S.kpiWrap}>
-        <KPICard label="Total Population" value="49.9M" sub="2024 estimate; 3rd most populous EAC state" color="#3b82f6" icon="👥"/>
-        <KPICard label="Population Density" value="207/km²" sub="Ranges 11 (Kaabong) to 6,700 (Kampala)" color="#a855f7" icon="🗺"/>
-        <KPICard label="Annual Growth Rate" value="3.0%/yr" sub="Among highest globally; doubling every 23yr" color="#ef4444" icon="📈"/>
-        <KPICard label="Median Age" value="16.7 yr" sub="One of the youngest populations worldwide" color="#22c55e" icon="🧒"/>
-        <KPICard label="Urban Population" value="24%" sub="10.9M urban; Kampala Metro ~4.5M" color="#eab308" icon="🏙"/>
-        <KPICard label="Total Fertility Rate" value="4.6 TFR" sub="Down from 7.1 in 1990; declining slowly" color="#f97316" icon="👶"/>
-        <KPICard label="Working-Age Pop." value="51%" sub="25.4M aged 15–64; youth dividend opening" color="#06b6d4" icon="💼"/>
-        <KPICard label="Languages" value="65+" sub="Bantu, Nilotic, Central Sudanic language groups" color="#84cc16" icon="🗣"/>
+        <KPICard label="Total Population" value="49.9M" sub="2024 estimate; 3rd most populous EAC state" color="#3b82f6" icon=""/>
+        <KPICard label="Population Density" value="207/km²" sub="Ranges 11 (Kaabong) to 6,700 (Kampala)" color="#a855f7" icon=""/>
+        <KPICard label="Annual Growth Rate" value="3.0%/yr" sub="Among highest globally; doubling every 23yr" color="#ef4444" icon=""/>
+        <KPICard label="Median Age" value="16.7 yr" sub="One of the youngest populations worldwide" color="#22c55e" icon=""/>
+        <KPICard label="Urban Population" value="24%" sub="10.9M urban; Kampala Metro ~4.5M" color="#eab308" icon=""/>
+        <KPICard label="Total Fertility Rate" value="4.6 TFR" sub="Down from 7.1 in 1990; declining slowly" color="#f97316" icon=""/>
+        <KPICard label="Working-Age Pop." value="51%" sub="25.4M aged 15–64; youth dividend opening" color="#06b6d4" icon=""/>
+        <KPICard label="Languages" value="65+" sub="Bantu, Nilotic, Central Sudanic language groups" color="#84cc16" icon=""/>
       </div>
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16, marginBottom:20 }}>
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
@@ -898,7 +898,7 @@ function DemoTab() {
         </ResponsiveContainer>
       </div>
       <div style={S.card}>
-        <SectionHdr>📍 District Population Density Map (colour = density, size = population)</SectionHdr>
+        <SectionHdr> District Population Density Map (colour = density, size = population)</SectionHdr>
         <div style={{ ...S.mapWrap, position:'relative', height:480 }}>
           <MapContainer center={UGA} zoom={ZOOM} style={{ height:'100%', width:'100%', background:'#0d1117' }} scrollWheelZoom>
             <TileLayer url={TILES} attribution={ATTRIBUTION}/>
@@ -926,7 +926,7 @@ function DemoTab() {
             ))}
           </MapContainer>
         </div>
-        <div style={{fontSize:11,color:'#64748b',marginTop:8}}>⭕ District (size=population, blue=sparse → red=dense) &nbsp;🟡 Cities</div>
+        <div style={{fontSize:11,color:'#64748b',marginTop:8}}> District (size=population, blue=sparse → red=dense) &nbsp; Cities</div>
       </div>
       <DataTable title="District-Level Demographics — Full Data (20 sample districts)"
         cols={['District','Region','Population','Area (km²)','Density/km²','GDP (USD M)','Poverty %','Literacy %']}
@@ -956,14 +956,14 @@ function EconomyTab() {
   return (
     <div>
       <div style={S.kpiWrap}>
-        <KPICard label="GDP (2024)" value="USD 38.1B" sub="Growth 6.3%; NDP target 6.5%/yr" color="#22c55e" icon="💰"/>
-        <KPICard label="GDP per Capita" value="USD 963" sub="PPP USD 2,870 (2024 WB estimate)" color="#3b82f6" icon="💵"/>
-        <KPICard label="Export Revenue" value="USD 5.8B" sub="Coffee 10.5%; Gold 19.6%; Fish 7.2%" color="#eab308" icon="📦"/>
-        <KPICard label="FDI Inflow" value="USD 1.28B" sub="2024; mainly oil sector + manufacturing" color="#a855f7" icon="🏦"/>
-        <KPICard label="Industrial Parks" value="22" sub="Operational + pipeline (UIA data 2024)" color="#f97316" icon="🏭"/>
-        <KPICard label="Tax-to-GDP Ratio" value="14.2%" sub="URA target 16% by 2026" color="#06b6d4" icon="🧾"/>
-        <KPICard label="Inflation (CPI)" value="4.1%" sub="Annual avg 2024; food component 5.2%" color="#ef4444" icon="📉"/>
-        <KPICard label="Unemployment" value="12.4%" sub="ILO definition; youth 15-24 = 18.3%" color="#84cc16" icon="👷"/>
+        <KPICard label="GDP (2024)" value="USD 38.1B" sub="Growth 6.3%; NDP target 6.5%/yr" color="#22c55e" icon=""/>
+        <KPICard label="GDP per Capita" value="USD 963" sub="PPP USD 2,870 (2024 WB estimate)" color="#3b82f6" icon=""/>
+        <KPICard label="Export Revenue" value="USD 5.8B" sub="Coffee 10.5%; Gold 19.6%; Fish 7.2%" color="#eab308" icon=""/>
+        <KPICard label="FDI Inflow" value="USD 1.28B" sub="2024; mainly oil sector + manufacturing" color="#a855f7" icon=""/>
+        <KPICard label="Industrial Parks" value="22" sub="Operational + pipeline (UIA data 2024)" color="#f97316" icon=""/>
+        <KPICard label="Tax-to-GDP Ratio" value="14.2%" sub="URA target 16% by 2026" color="#06b6d4" icon=""/>
+        <KPICard label="Inflation (CPI)" value="4.1%" sub="Annual avg 2024; food component 5.2%" color="#ef4444" icon=""/>
+        <KPICard label="Unemployment" value="12.4%" sub="ILO definition; youth 15-24 = 18.3%" color="#84cc16" icon=""/>
       </div>
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:16, marginBottom:20 }}>
         <div style={S.card}>
@@ -986,7 +986,7 @@ function EconomyTab() {
         </div>
       </div>
       <div style={S.card}>
-        <SectionHdr>🏭 Economic Zones, Industrial Parks & Live OSM Economic Features</SectionHdr>
+        <SectionHdr> Economic Zones, Industrial Parks & Live OSM Economic Features</SectionHdr>
         <div style={{ ...S.mapWrap, position:'relative', height:480 }}>
           <MapLoadingOverlay loading={loading} error={error}/>
           <MapContainer center={UGA} zoom={ZOOM} style={{ height:'100%', width:'100%', background:'#0d1117' }} scrollWheelZoom>
@@ -1008,7 +1008,7 @@ function EconomyTab() {
             ))}
           </MapContainer>
         </div>
-        <div style={{fontSize:11,color:'#64748b',marginTop:8}}>🟠 Operational Park/Zone &nbsp;🟡 Under Development &nbsp;🟣 OSM economic features ({osmEcon.length} loaded)</div>
+        <div style={{fontSize:11,color:'#64748b',marginTop:8}}> Operational Park/Zone &nbsp; Under Development &nbsp; OSM economic features ({osmEcon.length} loaded)</div>
       </div>
       <DataTable title="Economic Zones & Industrial Parks — Full Registry"
         cols={['Name','Type','Status','Area (ha)','Investment (USD M)','Jobs Created','Key Sectors']}
@@ -1032,15 +1032,15 @@ function EconomyTab() {
 
 // ─── MAIN COMPONENT ───────────────────────────────────────────────────────────
 const TABS = [
-  { id:'overview',      label:'🗺 Overview & Districts' },
-  { id:'resources',     label:'⛏ Natural Resources' },
-  { id:'energy',        label:'⚡ Energy' },
-  { id:'agriculture',   label:'🌾 Agriculture' },
-  { id:'environment',   label:'🌿 Environment' },
-  { id:'eduhealth',     label:'📚 Education & Health' },
-  { id:'demographics',  label:'👥 Demographics' },
-  { id:'economy',       label:'💰 Economy' },
-  { id:'capture',       label:'📥 Data Capture' },
+  { id:'overview',      label:' Overview & Districts' },
+  { id:'resources',     label:' Natural Resources' },
+  { id:'energy',        label:' Energy' },
+  { id:'agriculture',   label:' Agriculture' },
+  { id:'environment',   label:' Environment' },
+  { id:'eduhealth',     label:' Education & Health' },
+  { id:'demographics',  label:' Demographics' },
+  { id:'economy',       label:' Economy' },
+  { id:'capture',       label:' Data Capture' },
 ];
 
 export default function SocioEconomicSection() {
