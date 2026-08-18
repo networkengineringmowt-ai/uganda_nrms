@@ -106,7 +106,7 @@ function Tile({ title, sub, children }: { title: string; sub?: string; children:
           color: 'rgba(148,163,184,0.9)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{title}</div>
         <button title='Download PNG'
           onClick={() => { const s = ref.current?.querySelector('svg'); if (s) pngFromSvg(s as SVGSVGElement, title); }}
-          style={{ background: 'none', border: 'none', color: 'rgba(0,245,255,0.7)', cursor: 'pointer', fontSize: 10, padding: 0 }}>⬇</button>
+          style={{ background: 'none', border: 'none', color: 'rgba(0,245,255,0.7)', cursor: 'pointer', fontSize: 10, padding: 0 }}>PNG</button>
       </div>
       {sub && <div style={{ fontSize: 9.5, color: 'rgba(100,116,139,0.9)', marginBottom: 2 }}>{sub}</div>}
       <div style={{ flex: 1, minHeight: 0 }}>{children}</div>
@@ -516,7 +516,7 @@ function LegendStrip({ P }: { P: Profile }) {
       <span style={{ color: BAD }}>■ critical / target line</span>
       <span>· Dimensions: {P.cats.join(', ') || '—'}</span>
       <span>· Measures: {P.nums.join(', ') || '—'}</span>
-      <span>· ⬇ on any tile exports PNG</span>
+      <span>·  on any tile exports PNG</span>
     </div>
   );
 }
