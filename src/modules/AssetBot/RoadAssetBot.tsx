@@ -32,13 +32,13 @@ function buildDataContext(botResults: Record<string, Row[]>): string {
 }
 
 // ── Confidence level logic ─────────────────────────────────────────────────────
-function getConfidence(queryId: string, hasRows: boolean): { conf: '🟢' | '🟡' | '🔴'; label: string } {
-  if (!hasRows) return { conf: '🔴', label: 'Low — no data found' };
+function getConfidence(queryId: string, hasRows: boolean): { conf: '' | '' | ''; label: string } {
+  if (!hasRows) return { conf: '', label: 'Low — no data found' };
   const realData = ['Q01','Q02','Q03','Q04','Q05','Q06','Q08','Q09','Q10','Q11','Q12','Q13','Q15','Q16','Q20','LINK_DETAIL','ROAD_ALL_LINKS','LINK_STRUCTURES'];
   const projected = ['Q10','Q11','Q24'];
-  if (projected.includes(queryId)) return { conf: '🟡', label: 'Medium — projected/estimated' };
-  if (realData.includes(queryId)) return { conf: '🟢', label: 'High — from real database' };
-  return { conf: '🟡', label: 'Medium — platform knowledge base' };
+  if (projected.includes(queryId)) return { conf: '', label: 'Medium — projected/estimated' };
+  if (realData.includes(queryId)) return { conf: '', label: 'High — from real database' };
+  return { conf: '', label: 'Medium — platform knowledge base' };
 }
 
 // ── Response text generator ───────────────────────────────────────────────────
@@ -136,7 +136,7 @@ function MessageBubble({ msg, onNavigateSources }: { msg: BotMessage; onNavigate
                 color: ACCENT, fontWeight: 600,
               }}
             >
-              📋 Sources
+               Sources
             </button>
             {msg.linkIds && msg.linkIds.length > 0 && (
               <span style={{ fontSize: 10, color: '#64748b', lineHeight: '20px' }}>
@@ -170,7 +170,7 @@ export default function RoadAssetBot() {
   const historyRef = useRef<FableTurn[]>([]);
   useEffect(() => {
     historyRef.current = messages
-      .filter(m => m.text && !m.text.startsWith('🧠'))
+      .filter(m => m.text && !m.text.startsWith(''))
       .slice(-10)
       .map(m => ({
         role: m.role === 'user' ? 'user' as const : 'assistant' as const,
@@ -214,7 +214,7 @@ export default function RoadAssetBot() {
           role: 'bot',
           text: NETWORK_SUMMARY_RESPONSE,
           queryId: 'Q21',
-          confidence: '🟢',
+          confidence: '',
           confidenceLabel: 'High — official NDPIV FY25/26 figures',
         }]);
         return;
@@ -226,7 +226,7 @@ export default function RoadAssetBot() {
           role: 'bot',
           text: explanationText ?? LINK_ID_EXPLAINER,
           queryId: 'LINK_EXPLAINER',
-          confidence: '🟢',
+          confidence: '',
           confidenceLabel: 'High — system reference data',
         }]);
         return;
@@ -244,7 +244,7 @@ export default function RoadAssetBot() {
           rows: allRows.length ? allRows : undefined,
           queryId: 'LINK_DETAIL',
           linkIds: [linkId],
-          confidence: allRows.length ? '🟢' : '🔴',
+          confidence: allRows.length ? '' : '',
           confidenceLabel: allRows.length ? 'High — from real data' : 'Low — insufficient data',
         }]);
         if (linkId) setHighlightedLinks([linkId]);
@@ -270,7 +270,7 @@ export default function RoadAssetBot() {
           role: 'bot',
           text: `No data available for this query in the current database (${queryId}). The dataset may not include this category yet.`,
           queryId,
-          confidence: '🔴',
+          confidence: '',
           confidenceLabel: 'Low — no data found',
         }]);
       } else {
@@ -282,19 +282,19 @@ export default function RoadAssetBot() {
           history.push({ role: 'user', content: text });
         }
         setMessages(prev => [...prev, {
-          role: 'bot', text: '🧠 Asking **Fable 5**…',
-          confidence: '🟡', confidenceLabel: 'Fable 5 — generating',
+          role: 'bot', text: ' Asking **Fable 5**…',
+          confidence: '', confidenceLabel: 'Fable 5 — generating',
         }]);
         askFable(history, buildDataContext(botResults))
           .then(answer => {
             setMessages(prev => [...prev.slice(0, -1), answer ? {
               role: 'bot', text: answer,
-              confidence: '🟢',
+              confidence: '',
               confidenceLabel: 'Fable 5 — LLM answer grounded in platform data',
             } : {
               role: 'bot',
-              text: 'I didn\'t recognise that query, and Fable 5 isn\'t connected (start the local data-entry server, or set an API key with the 🔑 button). Try: "roads needing rehab", "budget by region", "top risk links", "overloading hotspots", "bridge condition", or "What is link A001_Link01?"',
-              confidence: '🔴',
+              text: 'I didn\'t recognise that query, and Fable 5 isn\'t connected (start the local data-entry server, or set an API key with the  button). Try: "roads needing rehab", "budget by region", "top risk links", "overloading hotspots", "bridge condition", or "What is link A001_Link01?"',
+              confidence: '',
               confidenceLabel: 'Low — query not matched',
             }]);
           })
@@ -302,8 +302,8 @@ export default function RoadAssetBot() {
             const msg = err instanceof Error ? err.message : String(err);
             setMessages(prev => [...prev.slice(0, -1), {
               role: 'bot',
-              text: `Fable 5 request failed: ${msg}. Check the API key (🔑) or the local server.`,
-              confidence: '🔴', confidenceLabel: 'Fable 5 — error',
+              text: `Fable 5 request failed: ${msg}. Check the API key () or the local server.`,
+              confidence: '', confidenceLabel: 'Fable 5 — error',
             }]);
           });
       }
@@ -335,7 +335,7 @@ export default function RoadAssetBot() {
         onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.1)'; }}
         onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = open ? 'rotate(15deg)' : 'none'; }}
       >
-        🤖
+        
         {!open && loading === false && Object.keys(botResults).length > 0 && (
           <span style={{
             position: 'absolute', top: 0, right: 0,
@@ -343,7 +343,7 @@ export default function RoadAssetBot() {
             background: '#22c55e', border: '2px solid rgba(10,16,30,0.9)',
             fontSize: 7, fontWeight: 900, color: '#fff',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>✓</span>
+          }}></span>
         )}
       </button>
 
@@ -371,7 +371,7 @@ export default function RoadAssetBot() {
                 width: 32, height: 32, borderRadius: 8,
                 background: `linear-gradient(135deg, ${ACCENT}, #818cf8)`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16,
-              }}>🤖</div>
+              }}></div>
               <div>
                 <div style={{ fontSize: 13, fontWeight: 800, color: '#e2eaf4' }}>Road Asset Bot</div>
                 <div style={{ fontSize: 10, color: '#64748b' }}>
@@ -493,7 +493,7 @@ export default function RoadAssetBot() {
                 color: getApiKey() ? '#22c55e' : '#94a3b8', flexShrink: 0,
               }}
             >
-              🔑
+              
             </button>
           </div>
         </div>
