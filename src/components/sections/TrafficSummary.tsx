@@ -186,7 +186,7 @@ function RoadLinksTab({ features }: { features: PredFeature[] }) {
             style={{ background:'rgba(0,255,136,0.1)', border:'1px solid rgba(0,255,136,0.3)',
               borderRadius:8, color:C.green, fontSize:11, fontWeight:700,
               padding:'5px 14px', cursor:'pointer' }}>
-            ⬇ Export CSV
+             Export CSV
           </button>
         </div>
       </div>
@@ -346,7 +346,7 @@ function StationsTab({ stations, features }: { stations: StationFeature[]; featu
             style={{ background:'rgba(0,212,170,0.1)', border:'1px solid rgba(0,212,170,0.3)',
               borderRadius:8, color:C.teal, fontSize:11, fontWeight:700,
               padding:'5px 14px', cursor:'pointer' }}>
-            ⬇ Export CSV
+             Export CSV
           </button>
         </div>
       </div>
