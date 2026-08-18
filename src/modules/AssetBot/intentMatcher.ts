@@ -73,12 +73,12 @@ export function matchIntentFull(text: string): MatchResult {
 }
 
 export const QUICK_QUERIES = [
-  { label: '🚧 Roads needing rehab',   text: 'Which roads need rehabilitation this FY?',   queryId: 'Q01' },
-  { label: '💰 Budget by region',       text: 'Budget needed for maintenance by region',     queryId: 'Q02' },
-  { label: '⚠️ Top 20 risk links',     text: 'Top 20 highest risk road links',              queryId: 'Q03' },
-  { label: '🌉 Bridge condition',       text: 'Bridge condition summary by region',          queryId: 'Q05' },
-  { label: '📊 Network summary',        text: 'Network condition statistics summary',        queryId: 'Q12' },
-  { label: '🔮 Failing in 2 years',    text: 'Roads likely to fail within 2 years',         queryId: 'Q10' },
-  { label: '🚛 Overloading hotspots',  text: 'Overloading hotspots at weighbridges',         queryId: 'Q13' },
-  { label: '🔗 Link ID lookup',        text: 'What is link A001_Link01?',                   queryId: 'LINK_EXPLAINER' },
+  { label: ' Roads needing rehab',   text: 'Which roads need rehabilitation this FY?',   queryId: 'Q01' },
+  { label: ' Budget by region',       text: 'Budget needed for maintenance by region',     queryId: 'Q02' },
+  { label: ' Top 20 risk links',     text: 'Top 20 highest risk road links',              queryId: 'Q03' },
+  { label: ' Bridge condition',       text: 'Bridge condition summary by region',          queryId: 'Q05' },
+  { label: ' Network summary',        text: 'Network condition statistics summary',        queryId: 'Q12' },
+  { label: ' Failing in 2 years',    text: 'Roads likely to fail within 2 years',         queryId: 'Q10' },
+  { label: ' Overloading hotspots',  text: 'Overloading hotspots at weighbridges',         queryId: 'Q13' },
+  { label: ' Link ID lookup',        text: 'What is link A001_Link01?',                   queryId: 'LINK_EXPLAINER' },
 ];
