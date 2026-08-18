@@ -726,7 +726,7 @@ function LivePanel({ sectionId, accent }: { sectionId: string; accent: string })
 }
 
 // ── main export ────────────────────────────────────────────────────────────────
-import { CaptureButton } from '../../shared/CaptureButton';
+import { InsightGrid } from './InsightGrid';
 
 const CAP: Record<string, { c: string; l: string }> = {
   rms: { c: 'condition', l: 'road condition survey' },
@@ -770,11 +770,8 @@ export default function SectionDashboard({ sectionId, accent }: { sectionId: str
         </div>
       </div>
 
-      {/* Live Data Dashboard */}
-      <LivePanel sectionId={sectionId} accent={acc} />
-
-      {/* Data Capture — After All Data & SQL Content */}
-      <CaptureButton capture={CAP[sectionId]?.c ?? 'condition'} label={CAP[sectionId]?.l ?? 'field data'} accent={acc} />
+      {/* Dynamic Insight Dashboard — 50+ auto-derived, cross-analysed views */}
+      <InsightGrid sectionId={sectionId} accent={acc} />
     </div>
   );
 }
