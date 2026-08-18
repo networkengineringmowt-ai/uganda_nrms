@@ -68,7 +68,7 @@ interface Publication {
 
 const CASE_STUDIES: CaseStudy[] = [
   {
-    id: 1, agency: 'TANROADS', country: 'Tanzania', flag: '🇹🇿', networkKm: 35_000,
+    id: 1, agency: 'TANROADS', country: 'Tanzania', flag: '', networkKm: 35_000,
     system: 'RAMS / HDM-4 (IDA-funded)',
     keyFeatures: [
       'Full HDM-4 implementation for 35,000 km national network',
@@ -82,7 +82,7 @@ const CASE_STUDIES: CaseStudy[] = [
     metrics: '68% of paved network in good/fair condition (2024); 12% reduction in road user costs 2018–2024',
   },
   {
-    id: 2, agency: 'KeNHA', country: 'Kenya', flag: '🇰🇪', networkKm: 11_189,
+    id: 2, agency: 'KeNHA', country: 'Kenya', flag: '', networkKm: 11_189,
     system: 'Road Asset Management System (RAMS) + GIS',
     keyFeatures: [
       'Pavement Management System (PMS) using dTIMS CT for strategic analysis',
@@ -96,7 +96,7 @@ const CASE_STUDIES: CaseStudy[] = [
     metrics: '74% paved network serviceability ≥ 3.5 PSI; bridge safety compliance 89%',
   },
   {
-    id: 3, agency: 'RTDA', country: 'Rwanda', flag: '🇷🇼', networkKm: 4_700,
+    id: 3, agency: 'RTDA', country: 'Rwanda', flag: '', networkKm: 4_700,
     system: 'Integrated RAMS + Performance-Based Contracts',
     keyFeatures: [
       'Rapid network expansion from 18% to 34% paved in 10 years',
@@ -110,7 +110,7 @@ const CASE_STUDIES: CaseStudy[] = [
     metrics: 'Network roughness reduced from avg IRI 4.8 to 3.1 m/km (2015–2024); road sector GDP contribution +2.4%',
   },
   {
-    id: 4, agency: 'SANRAL', country: 'South Africa', flag: '🇿🇦', networkKm: 21_400,
+    id: 4, agency: 'SANRAL', country: 'South Africa', flag: '', networkKm: 21_400,
     system: 'iRAMS (Integrated Road Asset Management System)',
     keyFeatures: [
       'Whole-life cost optimisation across full 21,400 km national network',
@@ -125,7 +125,7 @@ const CASE_STUDIES: CaseStudy[] = [
     metrics: '92% network in acceptable condition; R3.2 benefit per R1 maintenance investment',
   },
   {
-    id: 5, agency: 'Highways England (NHTSA)', country: 'United Kingdom', flag: '🇬🇧', networkKm: 7_800,
+    id: 5, agency: 'Highways England (NHTSA)', country: 'United Kingdom', flag: '', networkKm: 7_800,
     system: 'HAPMS (Highways Agency Pavement Management System)',
     keyFeatures: [
       'Whole-life cost optimisation with 50-year planning horizon',
@@ -140,7 +140,7 @@ const CASE_STUDIES: CaseStudy[] = [
     metrics: '97.4% network meeting serviceability standard; £6 return per £1 preventive maintenance',
   },
   {
-    id: 6, agency: 'DPTI / Austroads', country: 'Australia', flag: '🇦🇺', networkKm: 33_000,
+    id: 6, agency: 'DPTI / Austroads', country: 'Australia', flag: '', networkKm: 33_000,
     system: 'dTIMS CT + Austroads AP-R series',
     keyFeatures: [
       'dTIMS CT (Deighton Total Infrastructure Management System) for strategic programming',
@@ -155,7 +155,7 @@ const CASE_STUDIES: CaseStudy[] = [
     metrics: '88% paved national network meeting ride quality standard; A$4.2 VfM per A$1 maintenance',
   },
   {
-    id: 7, agency: 'NZTA Waka Kotahi', country: 'New Zealand', flag: '🇳🇿', networkKm: 11_000,
+    id: 7, agency: 'NZTA Waka Kotahi', country: 'New Zealand', flag: '', networkKm: 11_000,
     system: 'ONE Network Framework + Asset Management Plans',
     keyFeatures: [
       'ONE Network Road Classification (ONRC) — road function-based service levels',
@@ -170,7 +170,7 @@ const CASE_STUDIES: CaseStudy[] = [
     metrics: 'NZ$6.8 VfM per NZ$1 maintenance; 94% resilience target achieved on SH network',
   },
   {
-    id: 8, agency: 'FHWA / State DOTs', country: 'USA', flag: '🇺🇸', networkKm: 900_000,
+    id: 8, agency: 'FHWA / State DOTs', country: 'USA', flag: '', networkKm: 900_000,
     system: 'FMIS / TAMP (MAP-21 / FAST Act requirements)',
     keyFeatures: [
       'Federal requirement for Transportation Asset Management Plans (TAMPs) for NHS',
@@ -185,7 +185,7 @@ const CASE_STUDIES: CaseStudy[] = [
     metrics: '43% NHS in good pavement condition (2023); IIJA targeting 10% improvement by 2030',
   },
   {
-    id: 9, agency: 'NHAI / NRRDA', country: 'India', flag: '🇮🇳', networkKm: 145_000,
+    id: 9, agency: 'NHAI / NRRDA', country: 'India', flag: '', networkKm: 145_000,
     system: 'RCMS + PM Gati Shakti Digital Platform',
     keyFeatures: [
       'PM Gati Shakti NMP — multi-modal national master plan integrating all transport',
@@ -200,7 +200,7 @@ const CASE_STUDIES: CaseStudy[] = [
     metrics: '98% PMGSY connectivity target achieved; 62% NH in good condition (2024)',
   },
   {
-    id: 10, agency: 'Trafikverket', country: 'Sweden', flag: '🇸🇪', networkKm: 98_000,
+    id: 10, agency: 'Trafikverket', country: 'Sweden', flag: '', networkKm: 98_000,
     system: 'Pavement Management System + LCC framework',
     keyFeatures: [
       'Long-term National Infrastructure Plan (12-year horizon)',
@@ -215,7 +215,7 @@ const CASE_STUDIES: CaseStudy[] = [
     metrics: '91% main roads in acceptable condition; SEK 9.2 bn annual maintenance budget',
   },
   {
-    id: 11, agency: 'Rijkswaterstaat (RWS)', country: 'Netherlands', flag: '🇳🇱', networkKm: 5_900,
+    id: 11, agency: 'Rijkswaterstaat (RWS)', country: 'Netherlands', flag: '', networkKm: 5_900,
     system: 'Data-driven Predictive Asset Management',
     keyFeatures: [
       'Asset health index (AHI) for each road segment updated monthly',
@@ -230,7 +230,7 @@ const CASE_STUDIES: CaseStudy[] = [
     metrics: '99.2% availability of main road network; predictive maintenance savings €180m/yr',
   },
   {
-    id: 12, agency: 'MLIT', country: 'Japan', flag: '🇯🇵', networkKm: 127_000,
+    id: 12, agency: 'MLIT', country: 'Japan', flag: '', networkKm: 127_000,
     system: 'Bridge Inspection Law + Road Management Cycle',
     keyFeatures: [
       'Mandatory 5-year bridge inspection cycle (amended Road Act 2014)',
@@ -245,7 +245,7 @@ const CASE_STUDIES: CaseStudy[] = [
     metrics: '78% of bridges in good condition (2024, up from 59% in 2014); target 85% by 2030',
   },
   {
-    id: 13, agency: 'DNIT', country: 'Brazil', flag: '🇧🇷', networkKm: 75_000,
+    id: 13, agency: 'DNIT', country: 'Brazil', flag: '', networkKm: 75_000,
     system: 'SGEPT / PRO-INFRA + Performance-Based Contracts',
     keyFeatures: [
       'Performance-based concession contracts on 22,000 km federal highways',
@@ -260,7 +260,7 @@ const CASE_STUDIES: CaseStudy[] = [
     metrics: '64% federal network in good/fair condition (2024); CREMA contracts 18% cheaper than traditional works',
   },
   {
-    id: 14, agency: 'GHA', country: 'Ghana', flag: '🇬🇭', networkKm: 15_000,
+    id: 14, agency: 'GHA', country: 'Ghana', flag: '', networkKm: 15_000,
     system: 'GHIAS (Ghana Highway Information and Asset System)',
     keyFeatures: [
       'World Bank-funded RAMS implemented 2018–2022 (P164887)',
@@ -275,7 +275,7 @@ const CASE_STUDIES: CaseStudy[] = [
     metrics: '58% paved network in good/fair condition; 22% reduction in average roughness 2019–2023',
   },
   {
-    id: 15, agency: 'ERA (Ethiopian Roads Authority)', country: 'Ethiopia', flag: '🇪🇹', networkKm: 130_000,
+    id: 15, agency: 'ERA (Ethiopian Roads Authority)', country: 'Ethiopia', flag: '', networkKm: 130_000,
     system: 'RRAMPS (Road and River Asset Management Planning System)',
     keyFeatures: [
       'AfDB-funded RAMS covering 15,000 km federal roads (Phase 1)',
