@@ -4,7 +4,7 @@
  * Each section queries its own tables; falls back to "No data yet" gracefully.
  * Security: aggregate stats only — no lat/lng as KPI/chart axes, no individual records.
  */
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, lazy, Suspense } from 'react';
 import { supabase } from '../../lib/supabase';
 import {
   Shield, Layers, Activity, BarChart2, Map, BookOpen,
@@ -729,6 +729,8 @@ function LivePanel({ sectionId, accent }: { sectionId: string; accent: string })
 import { InsightGrid } from './InsightGrid';
 import { SchemaExplorer } from './SchemaExplorer';
 import { SectionMap } from './SectionMap';
+import { ExhaustiveTables } from './ExhaustiveTables';
+import { DeepAnalysisTables } from './DeepAnalysisTables';
 
 const CAP: Record<string, { c: string; l: string }> = {
   rms: { c: 'condition', l: 'road condition survey' },
@@ -772,14 +774,47 @@ export default function SectionDashboard({ sectionId, accent }: { sectionId: str
         </div>
       </div>
 
-      {/* Dynamic Insight Dashboard — 50+ auto-derived, cross-analysed views */}
-      <InsightGrid sectionId={sectionId} accent={acc} />
+      {/* Section Sub-Tabs: Dashboard | Map | Tables | Deep Analytics | SQL | Data Capture */}
+      <SectionSubTabs sectionId={sectionId} accent={acc} />
+    </div>
+  );
+}
 
-      {/* Interactive Section-Specific Map */}
-      <SectionMap sectionId={sectionId} accent={acc} />
-
-      {/* SQL Database and Schema — section table + linked tables + all queries */}
-      <SchemaExplorer sectionId={sectionId} accent={acc} />
+const LazyHub = lazy(() => import('../DataEntry/DataCaptureHub'));
+const SUBTABS = [
+  { id: 'dashboard', label: 'Dashboard' },
+  { id: 'map', label: 'Interactive Map' },
+  { id: 'tables', label: 'Exhaustive Tables' },
+  { id: 'analytics', label: 'Deep Analytics' },
+  { id: 'sql', label: 'SQL Database & Schema' },
+  { id: 'capture', label: 'Data Capture' },
+];
+function SectionSubTabs({ sectionId, accent }: { sectionId: string; accent: string }) {
+  const [tab, setTab] = useState('dashboard');
+  return (
+    <div style={{ width: '100%' }}>
+      <div style={{ display: 'flex', gap: 2, flexWrap: 'wrap', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: 10, position: 'sticky', top: 0, zIndex: 20, background: 'rgba(2,6,23,0.92)', backdropFilter: 'blur(8px)' }}>
+        {SUBTABS.map(t => (
+          <button key={t.id} onClick={() => setTab(t.id)}
+            style={{ padding: '9px 16px', fontSize: 11, fontWeight: 800, letterSpacing: '0.07em',
+              background: tab === t.id ? 'rgba(0,245,255,0.06)' : 'transparent',
+              border: 'none', borderBottom: tab === t.id ? '2px solid ' + accent : '2px solid transparent',
+              cursor: 'pointer', fontFamily: 'inherit',
+              color: tab === t.id ? accent : 'rgba(148,163,184,0.7)', borderRadius: '8px 8px 0 0' }}>
+            {t.label.toUpperCase()}
+          </button>
+        ))}
+      </div>
+      {tab === 'dashboard' && <InsightGrid sectionId={sectionId} accent={accent} />}
+      {tab === 'map' && <SectionMap sectionId={sectionId} accent={accent} />}
+      {tab === 'tables' && <ExhaustiveTables sectionId={sectionId} accent={accent} />}
+      {tab === 'analytics' && <DeepAnalysisTables sectionId={sectionId} accent={accent} />}
+      {tab === 'sql' && <SchemaExplorer sectionId={sectionId} accent={accent} />}
+      {tab === 'capture' && (
+        <Suspense fallback={<div style={{ padding: 20, color: '#64748b', fontSize: 12 }}>Loading data capture module…</div>}>
+          <LazyHub />
+        </Suspense>
+      )}
     </div>
   );
 }
