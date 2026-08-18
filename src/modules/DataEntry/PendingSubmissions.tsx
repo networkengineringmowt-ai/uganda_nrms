@@ -78,7 +78,7 @@ function PendingSubmissionsInner() {
 
       {submissions.length === 0 ? (
         <div style={{ textAlign:'center', padding:'40px 20px', color:'#475569' }}>
-          <div style={{ fontSize:28, marginBottom:8 }}>📋</div>
+          <div style={{ fontSize:28, marginBottom:8 }}></div>
           <div style={{ fontSize:13 }}>No pending submissions</div>
           <div style={{ fontSize:11, marginTop:4 }}>Submit condition surveys from the Road Condition module</div>
         </div>
@@ -103,7 +103,7 @@ function PendingSubmissionsInner() {
                   <td style={{ padding:'6px 10px', whiteSpace:'nowrap' }}>{s.surveyor_name}</td>
                   <td style={{ padding:'6px 10px', color:'#64748b', whiteSpace:'nowrap' }}>{new Date(s.submitted_at).toLocaleString()}</td>
                   <td style={{ padding:'6px 10px' }}>
-                    <button onClick={() => remove(s.id)} style={{ background:'none', border:'none', color:'#f87171', cursor:'pointer', fontSize:13, padding:0 }}>✕</button>
+                    <button onClick={() => remove(s.id)} style={{ background:'none', border:'none', color:'#f87171', cursor:'pointer', fontSize:13, padding:0 }}></button>
                   </td>
                 </tr>
               ))}
