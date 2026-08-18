@@ -281,7 +281,7 @@ export default function ProjectTracker() {
                         color: done || active ? pc : 'rgba(100,116,139,0.4)',
                         border: active ? `1px solid rgba(${hexRgb(pc)},0.5)` : '1px solid transparent',
                         boxShadow: active ? `0 0 10px rgba(${hexRgb(pc)},0.3)` : 'none',
-                      }}>{done ? '✓ ' : ''}{ph}</div>
+                      }}>{done ? ' ' : ''}{ph}</div>
                       {i < PHASE_ORDER.length - 1 && (
                         <div style={{ width: 16, height: 1, background: done ? `rgba(${hexRgb(pc)},0.4)` : 'rgba(255,255,255,0.06)' }}/>
                       )}
