@@ -728,6 +728,7 @@ function LivePanel({ sectionId, accent }: { sectionId: string; accent: string })
 // ── main export ────────────────────────────────────────────────────────────────
 import { InsightGrid } from './InsightGrid';
 import { SchemaExplorer } from './SchemaExplorer';
+import { SectionMap } from './SectionMap';
 
 const CAP: Record<string, { c: string; l: string }> = {
   rms: { c: 'condition', l: 'road condition survey' },
@@ -773,6 +774,9 @@ export default function SectionDashboard({ sectionId, accent }: { sectionId: str
 
       {/* Dynamic Insight Dashboard — 50+ auto-derived, cross-analysed views */}
       <InsightGrid sectionId={sectionId} accent={acc} />
+
+      {/* Interactive Section-Specific Map */}
+      <SectionMap sectionId={sectionId} accent={acc} />
 
       {/* SQL Database and Schema — section table + linked tables + all queries */}
       <SchemaExplorer sectionId={sectionId} accent={acc} />
