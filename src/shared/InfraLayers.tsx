@@ -101,7 +101,7 @@ function makeSimpleCircle(size: number, color: string): L.DivIcon {
 }
 
 // ── SVG DivIcon factories ──────────────────────────────────────────────────────
-function makePlaneIcon(size: number, bg: string, glow: string, emoji = '✈'): L.DivIcon {
+function makePlaneIcon(size: number, bg: string, glow: string, emoji = ''): L.DivIcon {
   return L.divIcon({
     className: '',
     html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${bg};display:flex;align-items:center;justify-content:center;font-size:${Math.round(size * 0.55)}px;filter:drop-shadow(0 0 4px ${glow});line-height:1;border:1.5px solid rgba(255,255,255,0.35);">${emoji}</div>`,
@@ -114,7 +114,7 @@ function makePlaneIcon(size: number, bg: string, glow: string, emoji = '✈'): L
 function makeScaleIcon(size: number): L.DivIcon {
   return L.divIcon({
     className: '',
-    html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:rgba(249,115,22,0.85);display:flex;align-items:center;justify-content:center;font-size:${Math.round(size * 0.55)}px;filter:drop-shadow(0 0 4px rgba(249,115,22,0.6));line-height:1;border:1.5px solid rgba(255,255,255,0.35);">⚖</div>`,
+    html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:rgba(249,115,22,0.85);display:flex;align-items:center;justify-content:center;font-size:${Math.round(size * 0.55)}px;filter:drop-shadow(0 0 4px rgba(249,115,22,0.6));line-height:1;border:1.5px solid rgba(255,255,255,0.35);"></div>`,
     iconSize:   [size, size] as L.PointExpression,
     iconAnchor: [size / 2, size / 2] as L.PointExpression,
     popupAnchor:[0, -(size / 2 + 4)] as L.PointExpression,
@@ -124,7 +124,7 @@ function makeScaleIcon(size: number): L.DivIcon {
 function makeBoatIcon(size: number): L.DivIcon {
   return L.divIcon({
     className: '',
-    html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:rgba(6,182,212,0.85);display:flex;align-items:center;justify-content:center;font-size:${Math.round(size * 0.55)}px;filter:drop-shadow(0 0 4px rgba(6,182,212,0.6));line-height:1;border:1.5px solid rgba(255,255,255,0.35);">⛴</div>`,
+    html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:rgba(6,182,212,0.85);display:flex;align-items:center;justify-content:center;font-size:${Math.round(size * 0.55)}px;filter:drop-shadow(0 0 4px rgba(6,182,212,0.6));line-height:1;border:1.5px solid rgba(255,255,255,0.35);"></div>`,
     iconSize:   [size, size] as L.PointExpression,
     iconAnchor: [size / 2, size / 2] as L.PointExpression,
     popupAnchor:[0, -(size / 2 + 4)] as L.PointExpression,
@@ -134,7 +134,7 @@ function makeBoatIcon(size: number): L.DivIcon {
 function makeWrenchIcon(size: number): L.DivIcon {
   return L.divIcon({
     className: '',
-    html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:rgba(234,179,8,0.85);display:flex;align-items:center;justify-content:center;font-size:${Math.round(size * 0.55)}px;filter:drop-shadow(0 0 4px rgba(234,179,8,0.5));line-height:1;border:1.5px solid rgba(255,255,255,0.35);">🔧</div>`,
+    html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:rgba(234,179,8,0.85);display:flex;align-items:center;justify-content:center;font-size:${Math.round(size * 0.55)}px;filter:drop-shadow(0 0 4px rgba(234,179,8,0.5));line-height:1;border:1.5px solid rgba(255,255,255,0.35);"></div>`,
     iconSize:   [size, size] as L.PointExpression,
     iconAnchor: [size / 2, size / 2] as L.PointExpression,
     popupAnchor:[0, -(size / 2 + 4)] as L.PointExpression,
@@ -214,7 +214,7 @@ export function InfraLayers({ show = ALL_GROUPS }: InfraLayersProps = {}) {
           >
             <Popup>
               <div style={{ fontFamily: "'Inter','Segoe UI',sans-serif", fontSize: 12 }}>
-                <strong>⛴ {String(p.ferry_cros ?? p.remarks ?? 'Ferry')}</strong>
+                <strong> {String(p.ferry_cros ?? p.remarks ?? 'Ferry')}</strong>
                 {p.water_body && <div style={{ color: '#64748b' }}>{String(p.water_body)}</div>}
                 {p.remarks && p.remarks !== p.ferry_cros && (
                   <div style={{ color: '#64748b' }}>{String(p.remarks)}</div>
@@ -240,7 +240,7 @@ export function InfraLayers({ show = ALL_GROUPS }: InfraLayersProps = {}) {
           >
             <Popup>
               <div style={{ fontFamily: "'Inter','Segoe UI',sans-serif", fontSize: 12, color: '#1c1c1c' }}>
-                <strong>⚖ {String(p.eng_name ?? 'Weighbridge')}</strong>
+                <strong> {String(p.eng_name ?? 'Weighbridge')}</strong>
                 <div style={{ color: '#64748b' }}>{wbType}</div>
               </div>
             </Popup>
@@ -263,7 +263,7 @@ export function InfraLayers({ show = ALL_GROUPS }: InfraLayersProps = {}) {
           >
             <Popup>
               <div style={{ fontFamily: "'Inter','Segoe UI',sans-serif", fontSize: 12, color: '#1c1c1c' }}>
-                <strong>✈ {String(p.name ?? p.town ?? 'Airport')}</strong>
+                <strong> {String(p.name ?? p.town ?? 'Airport')}</strong>
                 <div style={{ color: '#64748b' }}>{cls}</div>
                 {p.country && <div style={{ color: '#64748b' }}>{String(p.country)}</div>}
               </div>
@@ -285,7 +285,7 @@ export function InfraLayers({ show = ALL_GROUPS }: InfraLayersProps = {}) {
           >
             <Popup>
               <div style={{ fontFamily: "'Inter','Segoe UI',sans-serif", fontSize: 12, color: '#1c1c1c' }}>
-                <strong>✈ {String(p.f9 ?? p.AIRPNAME ?? 'Airfield')}</strong>
+                <strong> {String(p.f9 ?? p.AIRPNAME ?? 'Airfield')}</strong>
                 {p.category && <div style={{ color: '#64748b' }}>{String(p.category)}</div>}
               </div>
             </Popup>
@@ -312,7 +312,7 @@ export function InfraLayers({ show = ALL_GROUPS }: InfraLayersProps = {}) {
           >
             <Popup>
               <div style={{ fontFamily: "'Inter','Segoe UI',sans-serif", fontSize: 12, color: '#1c1c1c' }}>
-                <strong>🔧 {String(p.name ?? 'Maintenance Station')}</strong>
+                <strong> {String(p.name ?? 'Maintenance Station')}</strong>
                 <div style={{ color: '#64748b' }}>{String(p.region ?? '')} · {stationType}</div>
                 {p.district && <div style={{ color: '#94a3b8', fontSize: 11 }}>{String(p.district)}</div>}
               </div>
