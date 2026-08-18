@@ -329,7 +329,7 @@ function InspectionForm({
             <ClipboardCheck size={18} className="text-blue-400" />
             <span className="font-bold text-white">Log New Inspection</span>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-white">✕</button>
+          <button onClick={onClose} className="text-slate-400 hover:text-white"></button>
         </div>
 
         <div className="p-6 grid grid-cols-2 gap-4 overflow-y-auto max-h-[70vh]">
