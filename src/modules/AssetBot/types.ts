@@ -6,8 +6,8 @@ export interface BotMessage {
   rows?: Row[];
   queryId?: string;
   linkIds?: string[];
-  /** 🟢 High = real DB data · 🟡 Medium = estimated/projected · 🔴 Low = insufficient data */
-  confidence?: '🟢' | '🟡' | '🔴';
+  /**  High = real DB data ·  Medium = estimated/projected ·  Low = insufficient data */
+  confidence?: '' | '' | '';
   confidenceLabel?: string;
 }
 
