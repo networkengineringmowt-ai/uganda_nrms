@@ -77,7 +77,7 @@ export default function TrafficDashboard() {
     (async () => {
       const [live, fb, st, stFb, acc] = await Promise.all([
         q('traffic_counts'), gjRows('traffic_predictions.geojson'),
-        q('traffic_stations'), gjRows('atc_stations.geojson'), q('road_accidents')]);
+        q('traffic_stations'), (async () => { try { const gz = await fetch(import.meta.env.BASE_URL + 'atc_stations.geojson').then(r => r.json()); return ((gz.features ?? []) as { properties: Row }[]).map(f => f.properties); } catch { return [] as Row[]; } })(), q('road_accidents')]);
       if (d) return;
       setLinks(live.length ? live : fb);
       setStations(st.length ? st : stFb);
