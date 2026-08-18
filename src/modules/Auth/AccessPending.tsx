@@ -34,7 +34,7 @@ export function AccessPending() {
         <div style={{ display: 'inline-flex', width: 64, height: 64, borderRadius: 16,
           alignItems: 'center', justifyContent: 'center', margin: '4px auto 16px',
           background: `${accent}14`, border: `1px solid ${accent}30`, fontSize: 30 }}>
-          {revoked ? '⛔' : '⏳'}
+          {revoked ? '' : '⏳'}
         </div>
         <div style={{ fontSize: 20, fontWeight: 800, color: '#e2eaf4', marginBottom: 8 }}>
           {revoked ? 'Access revoked' : 'Access request pending'}
