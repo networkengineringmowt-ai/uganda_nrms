@@ -60,7 +60,7 @@ export default function StructureRegistry() {
   }, [structures, query, typeFilter, condFilter, regionFilter, sortKey, sortAsc]);
 
   const pageCount = Math.ceil(filtered.length / PAGE_SIZE);
-  const pageData  = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const pageData  = filtered; // pagination removed per requirement — show all records, single scroll container
 
   function sort(key: SortKey) {
     if (key === sortKey) setSortAsc(a => !a);
@@ -262,29 +262,7 @@ export default function StructureRegistry() {
         </table>
       </div>
 
-      {/* Pagination */}
-      <div className="flex-shrink-0 flex items-center justify-between px-6 py-3 border-t border-slate-700/60 bg-slate-900/50">
-        <span className="text-xs text-slate-500">
-          Showing {((page - 1) * PAGE_SIZE) + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length}
-        </span>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setPage(p => Math.max(1, p - 1))}
-            disabled={page === 1}
-            className="bms-btn-secondary text-xs py-1 px-3 disabled:opacity-40"
-          >
-            ← Prev
-          </button>
-          <span className="text-xs text-slate-400">Page {page} / {pageCount}</span>
-          <button
-            onClick={() => setPage(p => Math.min(pageCount, p + 1))}
-            disabled={page === pageCount}
-            className="bms-btn-secondary text-xs py-1 px-3 disabled:opacity-40"
-          >
-            Next →
-          </button>
-        </div>
-      </div>
+      
 
       {/* Detail modal */}
       {selected && <StructureDetailModal structure={selected} onClose={() => setSelected(null)} />}
