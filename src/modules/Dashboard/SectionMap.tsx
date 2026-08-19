@@ -7,8 +7,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { MapContainer, TileLayer, GeoJSON, CircleMarker, Popup } from 'react-leaflet';
 
-const TILES = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-const ATTR = '(c) CARTO (c) OSM contributors';
+const TILES = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+const ATTR = 'Esri, Maxar';
+const LABEL_TILES = 'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}';
 const UGA: [number, number] = [1.3733, 32.2903];
 
 type ThemeId = 'class' | 'risk' | 'aadt' | 'region';
@@ -88,6 +89,7 @@ export function SectionMap({ sectionId, accent = '#00f5ff' }: { sectionId: strin
       <div style={{ borderRadius: 10, overflow: 'hidden', height: 430, border: '1px solid rgba(255,255,255,0.07)' }}>
         <MapContainer center={UGA} zoom={7} style={{ height: '100%', width: '100%', background: '#0d1117' }} scrollWheelZoom>
           <TileLayer url={TILES} attribution={ATTR}/>
+          <TileLayer url={LABEL_TILES} opacity={0.85} attribution="Esri"/>
           {gj && (
             <GeoJSON data={gj} style={styleFn}
               onEachFeature={(f: any, l: any) => {
