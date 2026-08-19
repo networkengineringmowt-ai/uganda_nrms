@@ -107,7 +107,7 @@ export default function TrafficProjectionTable() {
     return true;
   }), [links, classFilter, regionFilter, search]);
 
-  const paginated = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+  const paginated = filtered; // pagination removed per requirement — show all records, single scroll container
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
 
   function exportCSV() {
@@ -179,15 +179,7 @@ export default function TrafficProjectionTable() {
           <span style={{ fontSize:10, color:'rgba(148,163,184,0.5)' }}>
             {filtered.length.toLocaleString()} / {links.length.toLocaleString()} links
           </span>
-          {totalPages > 1 && (
-            <div style={{ marginLeft:'auto', display:'flex', gap:4, alignItems:'center' }}>
-              <button onClick={() => setPage(p => Math.max(0,p-1))} disabled={page===0}
-                style={{ padding:'3px 8px', borderRadius:5, fontSize:10, background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.1)', color:'#94a3b8', cursor:'pointer' }}>←</button>
-              <span style={{ fontSize:10, color:'#94a3b8' }}>Page {page+1}/{totalPages}</span>
-              <button onClick={() => setPage(p => Math.min(totalPages-1,p+1))} disabled={page===totalPages-1}
-                style={{ padding:'3px 8px', borderRadius:5, fontSize:10, background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.1)', color:'#94a3b8', cursor:'pointer' }}>→</button>
-            </div>
-          )}
+          
         </div>
       </div>
 
