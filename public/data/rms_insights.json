@@ -1,0 +1,21 @@
+{
+  "as_of": "2026-08",
+  "total_links": 1023,
+  "total_km": 21385,
+  "paved_km": 5773,
+  "unpaved_km": 15612,
+  "paved_pct": 27,
+  "unpaved_pct": 73,
+  "condition": { "good_pct": 42, "fair_pct": 33, "poor_pct": 25 },
+  "surface_breakdown": { "Asphalt": 18, "Concrete": 9, "Gravel": 55, "Earth": 18 },
+  "road_class_lengths_km": { "A": 4200, "B": 6800, "C": 5500, "D": 3900, "M": 185, "U": 800 },
+  "condition_by_class": {
+    "A": { "good": 60, "fair": 30, "poor": 10 },
+    "B": { "good": 45, "fair": 35, "poor": 20 },
+    "C": { "good": 38, "fair": 34, "poor": 28 },
+    "D": { "good": 30, "fair": 32, "poor": 38 },
+    "M": { "good": 55, "fair": 35, "poor": 10 }
+  },
+  "link_id_stats": { "total": 1023, "with_id": 1017, "pending": 6 },
+  "top_deteriorating_links": ["A1_Link12", "B2_Link08", "C3_Link21", "D1_Link45", "B4_Link03"]
+}
