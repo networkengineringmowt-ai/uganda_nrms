@@ -4,11 +4,12 @@
  * admin before they can use the app; admins can revoke access. Legacy roster
  * users (allowedUsers.ts) are auto-accepted and never gated.
  *
- * Backing store mirrors auditLog: the data-entry server persists the directory
- * to the G: Drive repo (directory/users.json) — the shared, canonical store.
- * When the server is unreachable (public static site) it falls back to this
- * browser's localStorage so the flow still works locally; it reconciles with
- * the server the next time one is reachable.
+ * Backing store mirrors auditLog: on the deployed public site there is no
+ * live server, so this always reads/writes this browser's own localStorage
+ * (per-browser, not shared across users). When the optional local
+ * data-entry server is running (dev only) it instead persists the directory
+ * to the G: Drive repo (directory/users.json) as a shared store, and
+ * reconciles with it the next time it is reachable.
  */
 import type { UserRole } from './authTypes';
 import { ALLOWED_USERS } from './allowedUsers';
