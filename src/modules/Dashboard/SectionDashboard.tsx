@@ -756,20 +756,20 @@ export default function SectionDashboard({ sectionId, accent }: { sectionId: str
       {/* Definition Strip â Compact Â· Slim Â· Full-Width */}
       <div style={{
         background: `rgba(${r},0.04)`, border: `1px solid rgba(${r},0.15)`,
-        borderRadius: 10, padding: '6px 12px', marginBottom: 10,
+        borderRadius: 10, padding: '10px 14px', marginBottom: 10,
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
           <div style={{
             width: 26, height: 26, borderRadius: 7, flexShrink: 0, fontSize: 13,
             background: `linear-gradient(135deg,rgba(${r},0.2),rgba(0,0,0,0))`,
             border: `1px solid rgba(${r},0.3)`,
             display: 'flex', alignItems: 'center', justifyContent: 'center', color: acc,
           }}>{def?.icon}</div>
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
-            <span style={{ fontSize: 12.5, fontWeight: 900, color: '#e2eaf4', whiteSpace: 'nowrap' }}>{def?.title}</span>
-            <span style={{ fontSize: 11, color: 'rgba(203,213,225,0.75)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>{def?.desc}</span>
-            <span style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
-              {(def?.chips ?? []).slice(0, 3).map(t => <Chip key={t} label={t} color={acc} />)}
+          <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, minWidth: 0, rowGap: 4 }}>
+            <span style={{ fontSize: 13, fontWeight: 900, color: '#e2eaf4', flexShrink: 0 }}>{def?.title}</span>
+            <span style={{ fontSize: 11.5, color: 'rgba(203,213,225,0.85)', lineHeight: 1.5, flex: '1 1 320px', minWidth: 260 }}>{def?.desc}</span>
+            <span style={{ display: 'flex', flexWrap: 'wrap', gap: 6, flexShrink: 0 }}>
+              {(def?.chips ?? []).map(t => <Chip key={t} label={t} color={acc} />)}
             </span>
           </div>
         </div>
