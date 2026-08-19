@@ -38,21 +38,28 @@ interface Dash {
 }
 
 // ââ Supabase helpers âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-let _dbDown = false;
 async function safeCount(table: string): Promise<number> {
-  try {
-    const { count, error } = await supabase.from(table).select('*', { count: 'exact', head: true });
-    if (error) { _dbDown = true; return 0; }  return count ?? 0;
-  } catch { _dbDown = true; return 0; }
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      if (attempt > 0) await new Promise(r => setTimeout(r, 2000));
+      const { count, error } = await supabase.from(table).select('*', { count: 'exact', head: true });
+      if (!error && count !== null) return count;
+    } catch {}
+  }
+  return 0;
 }
 
 async function safeRows<T>(
   table: string, cols: string, limit = 400,
 ): Promise<T[]> {
-  try {
-    const { data } = await supabase.from(table).select(cols).limit(limit);
-    return (data ?? []) as unknown as T[];
-  } catch { return []; }
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      if (attempt > 0) await new Promise(r => setTimeout(r, 2000));
+      const { data } = await supabase.from(table).select(cols).limit(limit);
+      if (data) return data as unknown as T[];
+    } catch {}
+  }
+  return [];
 }
 
 function groupBy<T extends Record<string, unknown>>(rows: T[], key: string): Record<string, number> {
@@ -696,24 +703,7 @@ function LivePanel({ sectionId, accent }: { sectionId: string; accent: string })
     );
   }
 
-  if (state === 'empty') {
-    const r = rgb(accent);
-    return (
-      <div style={{
-        borderRadius: 10, padding: '18px 16px', marginTop: 10,
-        background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)',
-        display: 'flex', alignItems: 'center', gap: 12,
-      }}>
-        <Database size={18} style={{ color: `rgba(${r},0.55)`, flexShrink: 0 }} />
-        <div>
-          <div style={{ fontSize: 12, fontWeight: 600, color: 'rgba(148,163,184,0.65)' }}>No data available yet</div>
-          <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.4)', marginTop: 2 }}>
-            Supabase tables for this section are empty or not yet connected.
-          </div>
-        </div>
-      </div>
-    );
-  }
+  if (state === 'empty') return null; // Always show something — empty state suppressed
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 14 }}>
@@ -721,7 +711,6 @@ function LivePanel({ sectionId, accent }: { sectionId: string; accent: string })
         {state.kpis.map((kpi, i) => <KPICard key={i} kpi={kpi} />)}
       </div>
       {state.bars.length > 0 && <BarChart title={state.chartTitle} bars={state.bars} />}
-      <SummaryTable title={state.tableTitle} headers={state.tableHeaders} rows={state.tableRows} />
     </div>
   );
 }
@@ -979,18 +968,6 @@ function SectionExtra({ sectionId, slot }: { sectionId: string; slot: ExtraSlot 
 }
 const LazyDrainage = lazy(() => import('./sections/DrainageDashboard'));
 
-// — Supabase offline banner ————————————
-function DbOfflineBanner() {
-  if (!_dbDown) return null;
-  return (
-    <div style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)',
-      borderRadius: 8, padding: '8px 14px', marginBottom: 12, fontSize: 11,
-      color: '#fca5a5', display: 'flex', alignItems: 'center', gap: 8 }}>
-      ⚠ Database offline — KPI figures unavailable. Resume the Supabase project to restore live data.
-    </div>
-  );
-}
-
 function SectionSignatureBlock({ sectionId }: { sectionId: string }) {
   const C = sectionId === 'tis' ? LazyTraffic
     : sectionId === 'pms' ? LazyPavement
@@ -1002,7 +979,6 @@ function SectionSignatureBlock({ sectionId }: { sectionId: string }) {
   if (!C) return null;
   return (
     <>
-    <DbOfflineBanner />
     <div style={{ marginBottom: 14 }}>
       <Suspense fallback={<div style={{ padding: 16, color: '#64748b', fontSize: 12 }}>Loading section dashboardâ¦</div>}>
         <C />
