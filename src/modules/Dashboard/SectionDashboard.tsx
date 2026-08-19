@@ -892,6 +892,14 @@ function ReserveRegisterLegacy() { return <LazyReserveLegacy initialTab="registe
 function ReserveGazetteLegacy() { return <LazyReserveLegacy initialTab="gazette" hideTabBar />; }
 function ReservePermitsLegacy() { return <LazyReserveLegacy initialTab="permits" hideTabBar />; }
 
+// — Global Case Studies legacy content ————————————————————
+const LazyCaseStudiesLegacy = lazy(() => import('../GlobalCaseStudies/GlobalCaseStudiesLegacyContent'));
+function CaseStudiesWorldMapLegacy() { return <LazyCaseStudiesLegacy initialTab="worldmap" hideTabBar />; }
+function CaseStudiesComparisonLegacy() { return <LazyCaseStudiesLegacy initialTab="analytics" hideTabBar />; }
+function CaseStudiesMatrixLegacy() { return <LazyCaseStudiesLegacy initialTab="matrix" hideTabBar />; }
+function CaseStudiesNarrativeLegacy() { return <LazyCaseStudiesLegacy initialTab="casestudies" hideTabBar />; }
+function CaseStudiesLessonsLegacy() { return <LazyCaseStudiesLegacy initialTab="lessons" hideTabBar />; }
+
 type ExtraSlot = 'dashboard' | 'map' | 'tables' | 'analytics' | 'capture';
 const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentType<any>[]>>> = {
   rms: {
@@ -929,6 +937,12 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
     dashboard: [ReserveOverviewLegacy],
     map: [ReserveMapLegacy],
     tables: [ReserveRegisterLegacy, ReserveGazetteLegacy, ReservePermitsLegacy],
+  },
+  casestudies: {
+    dashboard: [CaseStudiesNarrativeLegacy],
+    map: [CaseStudiesWorldMapLegacy],
+    tables: [CaseStudiesComparisonLegacy],
+    analytics: [CaseStudiesMatrixLegacy, CaseStudiesLessonsLegacy],
   },
 };
 
