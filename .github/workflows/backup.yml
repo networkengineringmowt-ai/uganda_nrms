@@ -1,0 +1,15 @@
+name: Backup on Push
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  log:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log backup
+        run: |
+          echo "Backup triggered at $(date -u)"
+          echo "Commit: ${{ github.sha }}"
+          echo "Repo: ${{ github.repository }}"
+          echo "Branch: ${{ github.ref_name }}"
