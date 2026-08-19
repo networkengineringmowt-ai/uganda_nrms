@@ -55,7 +55,7 @@ export default function DataCaptureHub() {
         <div>
           <div style={{ fontSize: 18, fontWeight: 900, color: '#e2eaf4' }}>Data Capture</div>
           <div style={{ fontSize: 11, color: 'rgba(148,163,184,0.7)', marginTop: 2 }}>
-            Field data entry · saved to the G: Drive repository (canonical store) · updates the whole platform
+            Field data entry · saved locally in this browser, and synced live when the optional local data-entry server is running
           </div>
         </div>
         <UserBadge />
