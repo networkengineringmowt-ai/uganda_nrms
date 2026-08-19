@@ -15,14 +15,6 @@ interface Section {
   color:  string;
 }
 
-interface Group {
-  id:    string;
-  label: string;
-  icon:  React.ReactNode;
-  color: string;
-  items: ActiveView[];
-}
-
 const N = {
   indigo: '#6366f1', cyan:   '#00f5ff', orange: '#ff6b35',
   teal:   '#00d4aa', blue:   '#4d9fff', purple: '#b967ff',
@@ -56,16 +48,6 @@ const SECTIONS: Record<string, Section> = {
   documents:     { id: 'documents',     label: 'Document Store',            icon: <FileText size={14}/>,     color: N.gray   },
   downloads:     { id: 'downloads',     label: 'Downloads',                 icon: <Download size={14}/>,     color: N.gray   },
 };
-
-// Four top-level tabs  -  each groups its child sections. Navigation is unchanged
-// (each child still calls navigate(id)); this is a presentation/IA grouping only.
-const GROUPS: Group[] = [
-  { id: 'assets',    label: 'Network & Assets',      icon: <Network size={15}/>,      color: N.cyan,   items: ['rms', 'roadcondition', 'bms', 'bridgeworks', 'roadreserve', 'roadatlas', 'roadvideo'] },
-  { id: 'traffic',   label: 'Traffic & Performance', icon: <Activity size={15}/>,     color: N.orange, items: ['traffic', 'atc'] },
-  { id: 'planning',  label: 'Planning & Investment', icon: <Building2 size={15}/>,    color: N.green,  items: ['projects', 'pim', 'budget', 'lifecycle'] },
-  { id: 'socioeconomic', label: 'Socio-Economic Analysis', icon: Globe },
-  { id: 'knowledge', label: 'Knowledge & Admin',     icon: <Shield size={15}/>,       color: N.purple, items: ['casestudies', 'sources', 'documents', 'downloads', 'gisenterprise', 'admin'] },
-];
 
 export default function Sidebar() {
   const { state, navigate } = useBMS();
