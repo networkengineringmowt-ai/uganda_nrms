@@ -1,8 +1,10 @@
 /**
  * ActivityLog — admin-only login summaries + full audit trail.
- * Reads logs/audit_YYYY-MM.jsonl from the G: Drive repository via the local
- * data-entry server (GET /api/audit). When the server is unreachable it shows
- * this browser's still-queued events so nothing is invisible.
+ * On the public deployed site there is no live server: this always shows the
+ * events queued in this browser's own localStorage (per-browser, not shared
+ * across users). When running the optional local data-entry server (dev
+ * only), it instead reads the shared logs/audit_YYYY-MM.jsonl history from
+ * the G: Drive repository via GET /api/audit.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { RefreshCw, Download, ShieldAlert } from 'lucide-react';
@@ -45,7 +47,7 @@ export default function ActivityLog() {
     try {
       const ctl = new AbortController();
       const t = setTimeout(() => ctl.abort(), 3000);
-      if (!import.meta.env.DEV) { clearTimeout(t); return; }
+      if (!import.meta.env.DEV) { clearTimeout(t); throw new Error('no-local-server'); }
       const r = await fetch(`http://localhost:3001/api/audit${m ? `?month=${m}` : ''}`, { signal: ctl.signal });
       clearTimeout(t);
       if (!r.ok) throw new Error(String(r.status));
@@ -138,7 +140,7 @@ export default function ActivityLog() {
         <div style={{ flex: 1, minWidth: 220 }}>
           <div style={{ fontSize: 16, fontWeight: 900, color: '#e2eaf4' }}>Activity Log — track &amp; trace</div>
           <div style={{ fontSize: 10.5, color: 'rgba(148,163,184,0.65)' }}>
-            Logins, failed attempts, page views and every change · stored in the G: Drive repository (logs/audit_*.jsonl)
+            Logins, failed attempts, page views and every change · this browser's local queue on the public site (synced to the G: Drive repository only when the optional local data-entry server is running)
           </div>
         </div>
         {months.length > 0 && (
@@ -167,8 +169,8 @@ export default function ActivityLog() {
           background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 8,
           fontSize: 11.5, color: '#fbbf24' }}>
           <ShieldAlert size={14} />
-          Data-entry server offline — showing only this browser's {events.length} queued event(s).
-          Start the server (cd server &amp;&amp; npm run dev) to read the full G: Drive trail.
+          Showing this browser's {events.length} locally queued event(s) — the public site has no live audit server to sync against.
+          Run the optional local data-entry server (cd server && npm run dev) to read the full shared G: Drive trail during development.
         </div>
       )}
 
