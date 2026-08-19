@@ -2,6 +2,16 @@ import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 
 type Row = Record<string, unknown>;
+const ACRONYMS = new Set(['aadt','id','km','esal','gps','pci','iri','vci','wim','atc','esa','fwd','mef','tcs','vcpd','gis','sql','ndpiv','osm','wgs']);
+function prettyLabel(key: string): string {
+  return key.split('_').map(w => {
+    const lw = w.toLowerCase();
+    if (ACRONYMS.has(lw)) return lw.toUpperCase();
+    if (lw === 'pct') return '%';
+    if (/^\d+$/.test(w)) return w;
+    return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+  }).join(' ');
+}
 const SPECS: Record<string, string> = { rms:'road_links', pms:'road_condition_assessments', tis:'traffic_stations', bms:'bridge_inventory', ducar:'maintenance_works', projects:'maintenance_works', reserve:'encroachments', pim:'investment_projects' };
 async function loadRows(sectionId: string): Promise<Row[]> {
   const table = SPECS[sectionId] ?? 'road_links';
@@ -82,7 +92,7 @@ export function DeepAnalysisTables({ sectionId, accent = '#00f5ff' }: { sectionI
               if (!v.length) return null; const sum = v.reduce((a,b)=>a+b,0); const mean = sum/v.length;
               const sd = Math.sqrt(v.reduce((a,b)=>a+(b-mean)*(b-mean),0)/v.length); const cv = mean ? sd/mean*100 : 0;
               return (<tr key={c} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                <td style={{ ...TD, color: '#e2e8f0', fontWeight: 700 }}>{c}</td>
+                <td style={{ ...TD, color: '#e2e8f0', fontWeight: 700 }}>{prettyLabel(c)}</td>
                 <td style={TD}>{fmtN(v.length)}</td><td style={TD}>{fmtN(sum)}</td><td style={TD}>{fmtN(mean,1)}</td>
                 <td style={TD}>{fmtN(v[0],1)}</td><td style={TD}>{fmtN(qtile(v,0.25),1)}</td>
                 <td style={{ ...TD, ...heatCss(0.5) }}>{fmtN(qtile(v,0.5),1)}</td>
@@ -99,9 +109,9 @@ export function DeepAnalysisTables({ sectionId, accent = '#00f5ff' }: { sectionI
         const ents = [...groups.entries()].sort((a,b) => b[1].length - a[1].length);
         const maxN = ents[0][1].length;
         return (
-        <Card key={cat} title={'GROUP ANALYSIS BY ' + cat.toUpperCase() + ' - ' + ents.length + ' CATEGORIES x ' + N.toLocaleString() + ' RECORDS'} accent={accent}
+        <Card key={cat} title={'GROUP ANALYSIS BY ' + prettyLabel(cat).toUpperCase() + ' - ' + ents.length + ' CATEGORIES x ' + N.toLocaleString() + ' RECORDS'} accent={accent}
           right={<button onClick={() => csvOut(sectionId + '_by_' + cat,
-            [cat,'Count','Share%', ...(P.lenCol ? ['Km affected'] : []), ...P.nums.slice(0,5).map(n=>'Mean '+n)],
+            [prettyLabel(cat),'Count','Share%', ...(P.lenCol ? ['Km affected'] : []), ...P.nums.slice(0,5).map(n=>'Mean '+prettyLabel(n))],
             ents.map(([k, g]) => [k, g.length, (g.length/N*100).toFixed(1),
               ...(P.lenCol ? [g.reduce((a,r)=>a+(num(r[P.lenCol!])??0),0).toFixed(1)] : []),
               ...P.nums.slice(0,5).map(n => { const v = g.map(r=>num(r[n])).filter(x=>x!=null) as number[];
@@ -109,7 +119,7 @@ export function DeepAnalysisTables({ sectionId, accent = '#00f5ff' }: { sectionI
             style={{ background: 'rgba(0,245,255,0.08)', border: '1px solid rgba(0,245,255,0.3)', borderRadius: 6, color: accent, fontSize: 10, fontWeight: 700, padding: '3px 10px', cursor: 'pointer' }}>CSV</button>}>
           <div style={{ overflow: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10.5 }}>
-              <thead><tr>{[cat, 'Count', 'Share %', ...(P.lenCol ? ['Km affected','Km share %'] : []), ...P.nums.slice(0,5).map(n => 'Mean ' + n)].map(h => <th key={h} style={TH}>{h}</th>)}</tr></thead>
+              <thead><tr>{[prettyLabel(cat), 'Count', 'Share %', ...(P.lenCol ? ['Km affected','Km share %'] : []), ...P.nums.slice(0,5).map(n => 'Mean ' + prettyLabel(n))].map(h => <th key={h} style={TH}>{h}</th>)}</tr></thead>
               <tbody>{ents.map(([k, g]) => { const kmTot = P.lenCol ? rows.reduce((a,r)=>a+(num(r[P.lenCol!])??0),0) : 0;
                 const km = P.lenCol ? g.reduce((a,r)=>a+(num(r[P.lenCol!])??0),0) : 0;
                 return (<tr key={k} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
@@ -133,7 +143,7 @@ export function DeepAnalysisTables({ sectionId, accent = '#00f5ff' }: { sectionI
         rows.forEach(r => { const k = String(r[a] ?? 'Unknown') + '|' + String(r[b] ?? 'Unknown');
           const v = (cell.get(k) ?? 0) + 1; cell.set(k, v); if (v > mx) mx = v; });
         return (
-        <Card title={'CROSS-RELATION MATRIX - ' + a.toUpperCase() + ' x ' + b.toUpperCase() + ' (RECORD COUNTS, ALL DATA)'} accent={accent}>
+        <Card title={'CROSS-RELATION MATRIX - ' + prettyLabel(a).toUpperCase() + ' x ' + prettyLabel(b).toUpperCase() + ' (RECORD COUNTS, ALL DATA)'} accent={accent}>
           <div style={{ overflow: 'auto' }}>
             <table style={{ borderCollapse: 'collapse', fontSize: 10.5 }}>
               <thead><tr><th style={TH}>{a} \\ {b}</th>{kb.map(k => <th key={k} style={TH}>{k}</th>)}<th style={TH}>Total</th></tr></thead>
