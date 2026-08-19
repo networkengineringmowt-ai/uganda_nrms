@@ -80,7 +80,7 @@ export default function Sidebar() {
   // 10 top-level sections; everything else lives as tabs inside these hubs.
   const FLAT_ORDER: ActiveView[] = [
     'rms', 'pms', 'traffic', 'bms', 'ducar', 'projects',
-    'roadreserve', 'pim', 'casestudies', 'gisenterprise', 'sources',
+    'roadreserve', 'pim', 'casestudies', 'gisenterprise', 'sources', 'documents',
   ];
   const navItems = FLAT_ORDER.filter(id => (id !== 'admin' || isAdmin) && SECTIONS[id]);
 
