@@ -1,0 +1,20 @@
+{
+  "as_of": "2026-08",
+  "total_km": 21385,
+  "paved_km": 5773,
+  "unpaved_km": 15612,
+  "bridges": 423,
+  "traffic_stations": 47,
+  "districts_with_ducar": 146,
+  "condition_index": 52,
+  "road_classes": {
+    "A_km": 4200, "B_km": 6800, "C_km": 5500, "D_km": 3900, "M_km": 185, "U_km": 800
+  },
+  "M_class_note": "Grade-Separated Highways",
+  "mean_aadt": 2889,
+  "overloading_pct": 23,
+  "accident_fatalities_yr": 2800,
+  "maintenance_budget_fy2526_usd_m": 48.3,
+  "network_condition": { "good_pct": 42, "fair_pct": 33, "poor_pct": 25 },
+  "ml_model": { "algorithm": "RandomForest", "trees": 200, "rms_accuracy_pct": 97.1, "bms_accuracy_pct": 98.8 }
+}
