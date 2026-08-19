@@ -1,0 +1,19 @@
+name: Daily UI Audit
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch and audit site
+        run: |
+          URL="https://networkengineringmowt-ai.github.io/${{ github.event.repository.name }}/"
+          curl -sf "$URL" -o site.html || echo "WARN: site fetch failed"
+          grep -q 'f59e0b\|amber' site.html && echo "OK: amber accent" || echo "WARN: amber missing"
+          grep -qi 'dark\|1e293b\|0f172a' site.html && echo "OK: dark bg" || echo "WARN: dark bg missing"
+          grep -qi 'mowt\|ministry' site.html && echo "OK: MoWT branding" || echo "WARN: MoWT branding missing"
+          grep -qi '<nav' site.html && echo "OK: nav present" || echo "WARN: nav missing"
+          echo "Audit done: $(date -u)"
