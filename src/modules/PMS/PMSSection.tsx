@@ -62,60 +62,9 @@ export default function PMSSection() {
 
       {!import.meta.env.VITE_STANDALONE && <CrossLinkChipBar sectionId="pms" />}
 
-      <nav aria-label="NPMS workspaces" style={{
-        display: 'flex', gap: 30, padding: '0 18px',
-        borderBottom: '1px solid #1b2433', background: '#05070b', flexShrink: 0,
-        overflowX: 'auto', scrollbarWidth: 'thin', whiteSpace: 'nowrap',
-      }}>
-        {MAIN_TABS.map(tab => {
-          const isActive = tab.id === mainTab;
-          return (
-            <button
-              className="npms-workspace-tab"
-              key={tab.id}
-              type="button"
-              onClick={() => setMainTab(tab.id)}
-              aria-current={isActive ? 'page' : undefined}
-              style={{
-                display: 'flex', alignItems: 'center', padding: '12px 0 11px',
-                fontSize: 11, fontWeight: isActive ? 800 : 600,
-                background: 'none', border: 'none', cursor: 'pointer',
-                color: isActive ? '#5da7ff' : '#747d8d',
-                borderBottom: isActive ? '2px solid #5da7ff' : '2px solid transparent',
-                transition: 'color 0.13s', flexShrink: 0,
-              }}
-            >
-              {tab.label}
-            </button>
-          );
-        })}
-      </nav>
-
-      <main style={{ flex: 1, minHeight: 0,
-        overflow: mainTab === 'conditionmap' ? 'hidden' : 'auto' }}>
+      <main style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
         <Suspense fallback={<Spinner />}>
-          {mainTab === 'dashboard' && (
-            <SectionDashboard sectionId="pms" accent="#4d9fff" />
-          )}
-          {mainTab === 'conditionmap' && (
-            <RoadConditionView activeTab={'conditionmap' as RoadConditionTabId} embedded />
-          )}
-          {mainTab === 'surveys' && (<>
-            <Block><RoadConditionView activeTab={'inventory' as RoadConditionTabId} embedded /></Block>
-            <Block><RoadVideoView /></Block>
-          </>)}
-          {mainTab === 'analytics' && (<>
-            <Block><CrossSectionAnalytics /></Block>
-            <Block><RoadConditionView activeTab={'analytics' as RoadConditionTabId} embedded /></Block>
-            <Block><RoadConditionView activeTab={'age' as RoadConditionTabId} embedded /></Block>
-            <Block><RoadConditionView activeTab={'fwd' as RoadConditionTabId} embedded /></Block>
-          </>)}
-          {mainTab === 'lifecycle' && <LifecycleView />}
-          {mainTab === 'design' && (<>
-            <Block><PavementCatalogue /></Block>
-            <Block><AIVisionDashboard /></Block>
-            <Block><DigitalTwin /></Block>
-          </>)}
+          <SectionDashboard sectionId="pms" accent="#4d9fff" />
         </Suspense>
       </main>
     </div>
