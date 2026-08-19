@@ -1438,7 +1438,7 @@ export default function RMSSection() {
 
       <CrossLinkChipBar sectionId="rms" />
 
-      {/* Single navigation layer: Dashboard | Interactive Map | Exhaustive Tables | Deep Analytics | SQL Database & Schema | Data Capture (rendered inside SectionDashboard) */
+      {/* Single navigation layer: Dashboard | Interactive Map | Exhaustive Tables | Deep Analytics | SQL Database & Schema | Data Capture (rendered inside SectionDashboard) */}
       <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
         <Suspense fallback={<div style={{padding:'1.5rem',color:'#00f5ff',textAlign:'center',opacity:0.7,fontSize:'12px'}}>Loading…</div>}>
           <SectionDashboard sectionId="rms" accent="#00f5ff" />
