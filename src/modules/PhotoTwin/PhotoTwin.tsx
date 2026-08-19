@@ -192,7 +192,7 @@ function StructureListItem({
         <div className="text-[10px] text-slate-500 truncate">{s.road}</div>
         <div className="flex items-center gap-1 mt-0.5">
           <span className="text-[9px] font-mono text-blue-400">{s.id}</span>
-          {s.inspectionDue && <span className="text-[9px] text-red-400">● DUE</span>}
+          {s.inspectionDue && <span className="text-[9px] text-red-400">â DUE</span>}
         </div>
       </div>
 
