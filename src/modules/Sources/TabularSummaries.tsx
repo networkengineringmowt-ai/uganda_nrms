@@ -1124,9 +1124,9 @@ function AdtProjectionTable() {
   const pageCount = Math.max(1, Math.ceil(filtered.length / ADT_PAGE_SIZE));
   const safePage  = Math.min(page, pageCount - 1);
   const pageStart = safePage * ADT_PAGE_SIZE;
-  const pageLinks = filtered.slice(pageStart, pageStart + ADT_PAGE_SIZE);
+  const pageLinks = filtered; // pagination removed per requirement — show all records, single scroll container
   const rangeFrom = filtered.length === 0 ? 0 : pageStart + 1;
-  const rangeTo   = Math.min(pageStart + ADT_PAGE_SIZE, filtered.length);
+  const rangeTo   = filtered.length;
 
   function toggleExpand(linkId: string) {
     setExpanded(e => ({ ...e, [linkId]: !e[linkId] }));
@@ -1232,31 +1232,7 @@ function AdtProjectionTable() {
         </table>
       </div>
 
-      {/* ── Pagination controls ── */}
-      <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10,
-        padding: '10px 14px', borderTop: '1px solid rgba(255,255,255,0.05)',
-      }}>
-        <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.6)' }}>
-          {filtered.length === 0 ? 'No links' : `Links ${rangeFrom}–${rangeTo} of ${filtered.length.toLocaleString()}`} · Page {safePage + 1} of {pageCount}
-        </div>
-        <div style={{ display: 'flex', gap: 6 }}>
-          <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={safePage === 0}
-            style={{
-              padding: '4px 12px', fontSize: 9, fontWeight: 700, borderRadius: 6,
-              border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(15,15,15,0.6)',
-              color: safePage === 0 ? 'rgba(148,163,184,0.35)' : '#e2e8f0',
-              cursor: safePage === 0 ? 'default' : 'pointer',
-            }}>← Previous</button>
-          <button onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))} disabled={safePage >= pageCount - 1}
-            style={{
-              padding: '4px 12px', fontSize: 9, fontWeight: 700, borderRadius: 6,
-              border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(15,15,15,0.6)',
-              color: safePage >= pageCount - 1 ? 'rgba(148,163,184,0.35)' : '#e2e8f0',
-              cursor: safePage >= pageCount - 1 ? 'default' : 'pointer',
-            }}>Next →</button>
-        </div>
-      </div>
+      
 
       <div style={{ padding: '4px 14px 12px', fontSize: 9, color: 'rgba(148,163,184,0.45)', fontStyle: 'italic' }}>
         Full dataset (all 1,013 links × {ADT_PROJECTION_YEARS.length} years × {VC_CLASSES.length} vehicle classes) available via Supabase query: SELECT * FROM traffic_projections
