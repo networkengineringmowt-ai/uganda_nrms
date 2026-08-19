@@ -119,6 +119,13 @@ export interface BridgeDocument {
   uploadedAt: string;
   version: string;
   url?: string;
+  // Real extracted content (populated on upload for PDF/TXT manuals) — used for
+  // full-text search, the in-app reader, keyword tags, and .txt export.
+  extractedText?: string;
+  pageCount?: number;
+  wordCount?: number;
+  keywords?: string[];
+  extractionStatus?: 'ok' | 'unsupported' | 'failed';
 }
 
 // ─── App State ───────────────────────────────────────────────────────────────
