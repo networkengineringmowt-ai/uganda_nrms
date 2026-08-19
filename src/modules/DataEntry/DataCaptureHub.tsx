@@ -47,19 +47,9 @@ export default function DataCaptureHub() {
 
   const canSubmit = hasPermission(user, 'canSubmitSurvey');
 
-  const [tab, setTab] = useState<'content' | 'dashboard'>('content');
   return (
     <div style={{ padding: '22px 20px', minHeight: '100%' }}>
-      {/* ── Tab nav ── */}
-      <div style={{ display:'flex', gap:6, padding:'8px 14px', borderBottom:'1px solid rgba(100,100,200,0.15)' }}>
-        {(['content','dashboard'] as const).map(t => (
-          <button key={t} onClick={() => setTab(t)} style={{ fontSize:11, fontWeight:700, letterSpacing:1, padding:'4px 14px', border:`1px solid ${t===tab?'#00f5ff':'rgba(100,100,200,0.2)'}`, borderRadius:4, cursor:'pointer', background:t===tab?'#00f5ff':'rgba(100,100,200,0.06)', color:t===tab?'#020202':'rgba(200,200,200,0.7)', textTransform:'uppercase' }}>
-            {t==='content'?'Data Entry':'Dashboard'}
-          </button>
-        ))}
-      </div>
-      {tab==='dashboard'&&<SectionDashboard sectionId="dataentry" accent="#00f5ff"/>}
-      {tab==='content'&&(<>
+      <>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
         <div>
@@ -120,7 +110,7 @@ export default function DataCaptureHub() {
           Select a capture type above to begin.
         </div>
       )}
-      </>)}
+      </>
 
     </div>
   );
