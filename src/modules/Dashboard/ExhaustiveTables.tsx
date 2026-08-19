@@ -13,20 +13,26 @@ function prettyLabel(key: string): string {
   }).join(' ');
 }
 const SPECS: Record<string, string> = { rms:'road_links', pms:'road_condition_assessments', tis:'traffic_stations', bms:'bridge_inventory', ducar:'maintenance_works', projects:'maintenance_works', reserve:'encroachments', pim:'investment_projects' };
+const FALLBACK_GEOJSON: Record<string, string> = {
+  tis: 'data/traffic_predictions.geojson',
+  rms: 'data/road_network.geojson',
+  pms: 'data/road_network.geojson',
+};
 async function loadRows(sectionId: string): Promise<Row[]> {
   const table = SPECS[sectionId] ?? 'road_links';
-  const live = (async () => { try {
+  try {
     const q = supabase.from(table).select('*').limit(900);
     const t = new Promise<{ data: null }>(res => setTimeout(() => res({ data: null }), 4500));
     const { data } = await Promise.race([q, t]) as { data: Row[] | null };
-    return (data ?? []) as Row[];
-  } catch { return [] as Row[]; } })();
-  const fb = (async () => { try {
-    const gj = await fetch(import.meta.env.BASE_URL + 'data/traffic_predictions.geojson').then(r => r.json());
+    if (data && data.length) return data as Row[];
+  } catch {}
+  // section-specific GeoJSON fallback
+  const gjPath = FALLBACK_GEOJSON[sectionId];
+  if (!gjPath) return [];
+  try {
+    const gj = await fetch(import.meta.env.BASE_URL + gjPath).then(r => r.json());
     return ((gj.features ?? []) as { properties: Row }[]).map(f => f.properties);
-  } catch { return [] as Row[]; } })();
-  const [l, f] = await Promise.all([live, fb]);
-  return l.length ? l : f;
+  } catch { return []; }
 }
 const num = (v: unknown): number | null => { if (typeof v === 'number' && isFinite(v)) return v; if (typeof v === 'string' && v !== '' && isFinite(Number(v))) return Number(v); return null; };
 const fmtN = (n: number, d = 0) => n.toLocaleString(undefined, { maximumFractionDigits: d });
