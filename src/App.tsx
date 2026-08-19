@@ -135,7 +135,8 @@ function AppShell() {
   const { activeView, isLoading } = state;
   const { user } = useAuth();
 
-  // Track & trace: every page view goes to the G: Drive audit trail.
+  // Track & trace: queues in this browser's local audit log; also mirrors to
+  // the shared G: Drive audit trail when the optional local data-entry server is running.
   useEffect(() => {
     if (user) logEvent('view', { view: activeView });
   }, [user, activeView]);
