@@ -16,9 +16,9 @@ const DOCS: DocSection[] = [
       { bullets: [
         'Frontend: React 18 + TypeScript + Vite, dark glassmorphism design system (src/shared/glass.ts)',
         'Hosting: static build on GitHub Pages (gh-pages branch); no server required to view dashboards',
-        'Canonical data store: the Google Drive repository "G:\\My Drive\\MOWT\\Uganda National Road Network Repository"',
-        'Optional mirror: Supabase Postgres (42 tables) — read-only to the public, opt-in for writes',
-        'Local data-entry server: Express (server/, port 3001) for writes, audit logging and the Fable 5 bot proxy',
+        'Live data source: Supabase Postgres (project vbidhkvzjigatfygnyc, 42 tables) — the deployed app reads this directly',
+        'Fallback data: bundled static JSON/GeoJSON under public/data/ (44+ files) — served automatically whenever Supabase is unreachable, so the public site never shows a blank screen',
+        'DNR internal archive: the G: Drive repository ("G:\\My Drive\\MOWT\\Uganda National Road Network Repository") is used to prepare and version source manuals, spreadsheets and scripts before a release is bundled — it is not reachable by the deployed public site',
       ]},
     ],
   },
@@ -46,12 +46,12 @@ const DOCS: DocSection[] = [
     id: 'datastores', title: '3 · Data Stores',
     body: [
       { table: { head: ['Store', 'Location', 'Role'], rows: [
-        ['G: Drive repository', 'G:\\My Drive\\MOWT\\Uganda National Road Network Repository', 'CANONICAL — all data, manuals, schema, scripts'],
-        ['App data bundle', 'uganda-roads/public/data/ (44+ JSON/GeoJSON files)', 'What the deployed site reads'],
-        ['Field captures', 'captures/<table>.jsonl (G: root)', 'Append-only submissions from the data-entry server'],
-        ['Audit logs', 'logs/audit_YYYY-MM.jsonl (G: root)', 'Logins, failed logins, page views, changes'],
-        ['Supabase mirror', 'Project vbidhkvzjigatfygnyc (42 tables)', 'Optional mirror; RLS read-only for the public'],
-        ['Git history', 'github.com/priscananjehe1996/uganda-roads (main + gh-pages)', 'Versioned source + deploys'],
+        ['Supabase Postgres', 'Project vbidhkvzjigatfygnyc (42 tables)', 'PRIMARY — the deployed site reads this live'],
+        ['App data bundle', 'uganda_nrms/public/data/ (44+ JSON/GeoJSON files)', 'Automatic fallback whenever Supabase is unreachable'],
+        ['G: Drive repository', 'G:\\My Drive\\MOWT\\Uganda National Road Network Repository', 'DNR internal working archive — not reachable by the deployed public site'],
+        ['Field captures', 'Data Capture forms write to Supabase', 'No local file server is part of this deployment'],
+        ['Audit logs', 'Browser session + Supabase activity records', 'No local "G: root" log path is reachable from the public site'],
+        ['Git history', 'github.com/networkengineringmowt-ai/uganda_nrms (main + gh-pages)', 'Versioned source + deploys'],
       ]}},
       { p: 'Key bundle files: network2026.geojson (road network), network_links.json (1,017 links, FY25-26), network_stats.json, link_condition_lookup.json, bridges2026.geojson (546, BMS inventory + element conditions + predicted 2026 AADT), tcs_stations.json, traffic/ROMDAS/overloading summaries, bundle.json (RoadAtlas), plus rail/ferry/airport/hydrology layers.' },
     ],
@@ -124,11 +124,11 @@ const DOCS: DocSection[] = [
     id: 'build', title: '8 · Build & Deployment Workflow',
     body: [
       { bullets: [
-        'Source of truth: the G: Drive clone (git repo, branch main)',
-        'Builds run on local disk (C:\\tmp\\uganda-build) because node_modules cannot live on Google Drive',
-        'Steps: copy changed src → tsc -b (typecheck) → vite build → overlay dist/ onto the gh-pages worktree → push',
+        'Source of truth: main branch of github.com/networkengineringmowt-ai/uganda_nrms',
+        'Builds run automatically via GitHub Actions ("Deploy to GitHub Pages" workflow): npm install --legacy-peer-deps → npx vite build',
+        'Steps: push to main → Actions builds and commits dist/ to the gh-pages branch → a second "pages build and deployment" Action publishes it',
         'Deploys are overlay-style: old hashed assets remain so cached clients keep working',
-        'Live site: https://priscananjehe1996.github.io/uganda-roads/',
+        'Live site: https://networkengineringmowt-ai.github.io/uganda_nrms/',
       ]},
     ],
   },
@@ -262,7 +262,7 @@ export default function SystemDocumentation() {
         </div>
       </header>
       ${body}
-      <footer><span>UGROADS · DNR · Ministry of Works &amp; Transport</span><span>Canonical store: G: Drive repository</span></footer>
+      <footer><span>UGROADS · DNR · Ministry of Works &amp; Transport</span><span>Live data: Supabase + bundled JSON</span></footer>
       <script>window.onload = () => setTimeout(() => window.print(), 350);</scr` + `ipt></body></html>`;
     const w = window.open('', '_blank');
     if (!w) { alert('Allow pop-ups to export the PDF.'); return; }
