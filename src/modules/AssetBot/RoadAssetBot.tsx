@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useContext, useCallback } from 'react';
+import { Bot, X } from 'lucide-react';
 import { useBMS } from '../../store/BMSContext';
 import { BotHighlightContext, type BotMessage, type Row } from './types';
 import { matchIntentFull, QUICK_QUERIES } from './intentMatcher';
@@ -335,7 +336,7 @@ export default function RoadAssetBot() {
         onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.1)'; }}
         onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = open ? 'rotate(15deg)' : 'none'; }}
       >
-        
+        {open ? <X size={22} /> : <Bot size={24} />}
         {!open && loading === false && Object.keys(botResults).length > 0 && (
           <span style={{
             position: 'absolute', top: 0, right: 0,
