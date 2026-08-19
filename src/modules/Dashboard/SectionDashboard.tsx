@@ -811,10 +811,11 @@ function SectionSubTabs({ sectionId, accent }: { sectionId: string; accent: stri
           </button>
         ))}
       </div>
-      {tab === 'dashboard' && (<><SectionSignatureBlock sectionId={sid} /><InsightGrid sectionId={sid} accent={accent} /></>)}
-      {tab === 'map' && <SectionMap sectionId={sid} accent={accent} />}
-      {tab === 'tables' && <ExhaustiveTables sectionId={sid} accent={accent} />}
-      {tab === 'analytics' && <DeepAnalysisTables sectionId={sid} accent={accent} />}
+      {tab === 'dashboard' && (<><SectionSignatureBlock sectionId={sid} /><InsightGrid sectionId={sid} accent={accent} /><SectionExtra sectionId={sid} slot="dashboard" /></>)}
+      {tab === 'map' && (<><SectionExtra sectionId={sid} slot="map" />
+        <div style={{ marginTop: 18 }}><SectionMap sectionId={sid} accent={accent} /></div></>)}
+      {tab === 'tables' && (<><ExhaustiveTables sectionId={sid} accent={accent} /><SectionExtra sectionId={sid} slot="tables" /></>)}
+      {tab === 'analytics' && (<><DeepAnalysisTables sectionId={sid} accent={accent} /><SectionExtra sectionId={sid} slot="analytics" /></>)}
       {tab === 'sql' && <SchemaExplorer sectionId={sid} accent={accent} />}
       {tab === 'capture' && (
         <Suspense fallback={<div style={{ padding: 20, color: '#64748b', fontSize: 12 }}>Loading data capture moduleâ¦</div>}>
@@ -831,6 +832,34 @@ const LazyStructures = lazy(() => import('./sections/StructuresDashboard'));
 const LazyMaintenance = lazy(() => import('./sections/MaintenanceDashboard'));
 const LazyInventory = lazy(() => import('./sections/InventoryDashboard'));
 const LazyPriority = lazy(() => import('./sections/PriorityDashboard'));
+
+// — Legacy per-section content, re-homed into the 6-tab structure ——
+const LazyRoadNetworkMap = lazy(() => import('../RoadNetwork/RoadNetworkView'));
+const LazyNetworkStory = lazy(() => import('../NetworkStory/NetworkStory'));
+const LazyRoadInventoryTbl = lazy(() => import('../RMS/RoadInventory'));
+
+type ExtraSlot = 'dashboard' | 'map' | 'tables' | 'analytics' | 'capture';
+const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentType<any>[]>>> = {
+  rms: {
+    dashboard: [LazyNetworkStory],
+    map: [LazyRoadNetworkMap],
+    tables: [LazyRoadInventoryTbl],
+  },
+};
+
+function SectionExtra({ sectionId, slot }: { sectionId: string; slot: ExtraSlot }) {
+  const list = SECTION_EXTRAS[sectionId]?.[slot];
+  if (!list || !list.length) return null;
+  return (
+    <>
+      {list.map((Comp, i) => (
+        <Suspense key={i} fallback={<div style={{ padding: 20, color: '#64748b', fontSize: 12 }}>Loading…</div>}>
+          <div style={{ marginTop: 18 }}><Comp /></div>
+        </Suspense>
+      ))}
+    </>
+  );
+}
 const LazyDrainage = lazy(() => import('./sections/DrainageDashboard'));
 
 // — Supabase offline banner ————————————
