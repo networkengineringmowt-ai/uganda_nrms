@@ -3,7 +3,7 @@ import { supabase } from '../../../lib/supabase';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell, LineChart, Line, ScatterChart, Scatter, ZAxis } from 'recharts';
 
 type Row = Record<string, unknown>;
-const CARD = '#1c2a3a'; const HL = '#f59e0b';
+const CARD = 'rgba(10,16,32,0.72)'; const HL = '#00f5ff';
 const SEV: Record<string, string> = { good: '#22c55e', warn: '#f59e0b', bad: '#f43f5e', info: '#38bdf8' };
 const PAL = ['#38bdf8', '#22c55e', '#f59e0b', '#f43f5e', '#a78bfa', '#34d399', '#fb923c', '#e879f9', '#facc15', '#94a3b8'];
 const num = (v: unknown): number | null => { if (typeof v === 'number' && isFinite(v)) return v; if (typeof v === 'string' && v !== '' && isFinite(Number(v))) return Number(v); return null; };
