@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { RoadsAPI } from '../lib/roadsAPI';
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
 
@@ -53,19 +54,6 @@ const FORECAST = [
   { yr:2035,normal:5656,  opt:8743,  pess:3797 },
 ];
 
-const BLACKSPOTS = [
-  { name:'Busega Junction',     lat:0.286, lng:32.541, accidents:42, fatalities:8,  severity:'Critical' },
-  { name:'Namawojjolo km 24',   lat:0.418, lng:32.900, accidents:38, fatalities:6,  severity:'Critical' },
-  { name:'Lugazi Town',         lat:0.380, lng:33.020, accidents:31, fatalities:5,  severity:'High' },
-  { name:'Katosi Corner',       lat:0.350, lng:32.980, accidents:28, fatalities:4,  severity:'High' },
-  { name:'Kyambogo Hill',       lat:0.330, lng:32.640, accidents:26, fatalities:3,  severity:'High' },
-  { name:'Namasuba km 18',      lat:0.199, lng:32.467, accidents:24, fatalities:4,  severity:'High' },
-  { name:'Wakiso Town',         lat:0.400, lng:32.480, accidents:22, fatalities:3,  severity:'Moderate' },
-  { name:'Luwero Town',         lat:0.840, lng:32.490, accidents:19, fatalities:2,  severity:'Moderate' },
-  { name:'Mityana Junction',    lat:0.420, lng:32.030, accidents:18, fatalities:3,  severity:'Moderate' },
-  { name:'Masaka Bypass',       lat:-0.330,lng:31.740, accidents:17, fatalities:2,  severity:'Moderate' },
-];
-
 const CORRIDORS = [
   { name:'Kampala–Gulu',    road:'A109 N', km:336, aadt:2140, cond:'Fair',   iri:4.8, fatalities:84, trucks:22 },
   { name:'Kampala–Mbarara', road:'A109 W', km:266, aadt:3820, cond:'Poor',   iri:5.9, fatalities:112,trucks:28 },
@@ -74,15 +62,35 @@ const CORRIDORS = [
   { name:'Kampala–Entebbe', road:'A104 E', km:42,  aadt:18400,cond:'Good',   iri:2.8, fatalities:32, trucks:12 },
 ];
 
-const FATALITIES = [
-  {yr:2016,n:3891},{yr:2017,n:3744},{yr:2018,n:3820},{yr:2019,n:3698},
-  {yr:2020,n:2940},{yr:2021,n:3180},{yr:2022,n:3340},{yr:2023,n:3480},
-  {yr:2024,n:3380},{yr:2025,n:3247},
-];
-
 const COND_COLOR: Record<string,string> = { Good:'#00ff88', Fair:'#ffee00', Poor:'#ff6600', Critical:'#ff0040' };
 
-type Subtab = 'overview'|'counts'|'forecast'|'axle'|'safety'|'corridors'|'reports';
+// ─── Road safety: flexible field access ────────────────────────────────────
+// road_accidents / road_blackspots column names aren't fixed in this codebase
+// yet, so each value is read from the first matching candidate key present on
+// the row rather than a single hardcoded name.
+function pick<T = any>(row: any, keys: string[], fallback: T): T {
+  if (!row) return fallback;
+  for (const k of keys) {
+    if (row[k] !== undefined && row[k] !== null && row[k] !== '') return row[k];
+  }
+  return fallback;
+}
+const SEVERITY_KEYS  = ['severity','severity_level','accident_severity','crash_severity','injury_severity','risk_level'];
+const FATALITY_KEYS  = ['fatalities','fatality_count','deaths','num_fatalities'];
+const INJURY_KEYS     = ['injuries','injury_count','num_injuries'];
+const NAME_KEYS       = ['name','location_name','blackspot_name','spot_name','site_name','location','junction_name'];
+const ACCIDENT_CT_KEYS= ['accident_count','accidents','total_accidents','crash_count','num_accidents'];
+const LAT_KEYS         = ['latitude','lat'];
+const LNG_KEYS         = ['longitude','lng','lon'];
+const REGION_KEYS      = ['region','district'];
+const ROAD_KEYS        = ['road_name','link_name','road','link_id'];
+const SEVERITY_COLOR: Record<string,string> = {
+  critical:'#ff0040', high:'#ff6600', severe:'#ff0040', fatal:'#ff0040',
+  moderate:'#ffee00', medium:'#ffee00', minor:'#00ff88', low:'#00ff88',
+};
+const severityColor = (sev: string) => SEVERITY_COLOR[String(sev).toLowerCase()] ?? '#4d9fff';
+
+type Subtab = 'dashboard'|'counts'|'forecast'|'axle'|'safety'|'corridors'|'reports';
 type Scenario = 'normal'|'opt'|'pess';
 
 const s = {
@@ -112,11 +120,18 @@ function condBadge(c:string){
 }
 
 export default function NTISSection() {
-  const [tab, setTab] = useState<Subtab>('overview');
+  const [tab, setTab] = useState<Subtab>('dashboard');
   const [scenario, setScenario] = useState<Scenario>('normal');
   const [regionFilter, setRegionFilter] = useState('all');
   const [sortCol, setSortCol] = useState('aadt');
   const [sortDir, setSortDir] = useState<'asc'|'desc'>('desc');
+
+  // Road safety — live from Supabase (road_accidents / road_blackspots)
+  const [accidents, setAccidents]           = useState<any[]>([]);
+  const [blackspots, setBlackspots]         = useState<any[]>([]);
+  const [safetyLoading, setSafetyLoading]   = useState(false);
+  const [safetyLoaded, setSafetyLoaded]     = useState(false);
+  const [safetyError, setSafetyError]       = useState<string | null>(null);
 
   const ovChartRef  = useRef<HTMLCanvasElement>(null);
   const fcChartRef  = useRef<HTMLCanvasElement>(null);
@@ -127,6 +142,7 @@ export default function NTISSection() {
   const mapOvInst   = useRef<any>(null);
   const mapAxleInst = useRef<any>(null);
   const mapSafeInst = useRef<any>(null);
+  const mapSafeMarkersRef = useRef<any>(null);
 
   const ESRI_BASE   = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
   const ESRI_LABELS = 'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}';
@@ -141,15 +157,15 @@ export default function NTISSection() {
     return m;
   }
 
-  // Overview chart + map
+  // Dashboard chart + map (traffic-only: AADT trend + ATC station network)
   useEffect(()=>{
-    if(tab!=='overview') return;
+    if(tab!=='dashboard') return;
     const C=(window as any).Chart;
     if(C&&ovChartRef.current){
       const ex=(window as any).__ovChart; if(ex) ex.destroy();
       const ch=new C(ovChartRef.current.getContext('2d'),{
         type:'line',
-        data:{labels:FATALITIES.map(f=>f.yr),datasets:[{label:'Avg AADT',data:[2890,3010,3126,3251,3141,3267,3397,3533,3675,3847],borderColor:'#00f5ff',backgroundColor:'#00f5ff15',fill:true,tension:.4,pointRadius:3}]},
+        data:{labels:[2016,2017,2018,2019,2020,2021,2022,2023,2024,2025],datasets:[{label:'Avg AADT',data:[2890,3010,3126,3251,3141,3267,3397,3533,3675,3847],borderColor:'#00f5ff',backgroundColor:'#00f5ff15',fill:true,tension:.4,pointRadius:3}]},
         options:{responsive:true,maintainAspectRatio:false,scales:{x:{ticks:{color:'#888'}},y:{ticks:{color:'#888'},min:2500}},plugins:{legend:{labels:{color:'#aaa'}}}},
       });
       (window as any).__ovChart=ch;
@@ -205,30 +221,68 @@ export default function NTISSection() {
     });
   },[tab]);
 
-  // Safety map + chart
+  // Road safety — fetch real rows from Supabase once, when the tab first opens
+  useEffect(()=>{
+    if(tab!=='safety' || safetyLoaded) return;
+    let cancelled = false;
+    setSafetyLoading(true);
+    Promise.all([RoadsAPI.getAccidents(), RoadsAPI.getBlackspots()]).then(([acc, bs])=>{
+      if (cancelled) return;
+      setAccidents(acc ?? []);
+      setBlackspots(bs ?? []);
+      setSafetyError((acc?.length ?? 0) === 0 && (bs?.length ?? 0) === 0
+        ? 'No rows returned from road_accidents / road_blackspots.' : null);
+    }).finally(()=>{ if(!cancelled){ setSafetyLoading(false); setSafetyLoaded(true); } });
+    return ()=>{ cancelled = true; };
+  },[tab, safetyLoaded]);
+
+  // Safety map — blackspot markers from road_blackspots
   useEffect(()=>{
     if(tab!=='safety') return;
     const L=(window as any).L;
-    if(L&&mapSafeRef.current&&!mapSafeInst.current){
-      const m=makeMap(mapSafeRef, mapSafeInst, [0.8,32.4],8)!;
-      BLACKSPOTS.forEach(b=>{
-        const col=b.severity==='Critical'?'#ff0040':b.severity==='High'?'#ff6600':'#ffee00';
-        L.circleMarker([b.lat,b.lng],{radius:b.fatalities+4,fillColor:col,color:'#000',weight:1,fillOpacity:.8})
-          .bindPopup(`<div style="background:#111;padding:10px;color:#ccc;min-width:180px"><b style="color:#ff0040">${b.name}</b><br>Accidents/yr: <b>${b.accidents}</b><br>Fatalities/yr: <b style="color:#ff0040">${b.fatalities}</b><br>Severity: <b style="color:${col}">${b.severity}</b></div>`)
-          .addTo(m);
-      });
-    }
+    if(!L||!mapSafeRef.current) return;
+    const m = mapSafeInst.current ?? makeMap(mapSafeRef, mapSafeInst, [0.8,32.4],8);
+    if(!m) return;
+    if(mapSafeMarkersRef.current){ m.removeLayer(mapSafeMarkersRef.current); mapSafeMarkersRef.current=null; }
+    if(!blackspots.length) return;
+    const layer = L.layerGroup();
+    blackspots.forEach(b=>{
+      const lat = Number(pick(b, LAT_KEYS, NaN));
+      const lng = Number(pick(b, LNG_KEYS, NaN));
+      if(!isFinite(lat)||!isFinite(lng)) return;
+      const sev  = String(pick(b, SEVERITY_KEYS, 'Moderate'));
+      const col  = severityColor(sev);
+      const name = pick(b, NAME_KEYS, 'Blackspot');
+      const accN = pick(b, ACCIDENT_CT_KEYS, 0);
+      const fat  = Number(pick(b, FATALITY_KEYS, 0)) || 0;
+      L.circleMarker([lat,lng],{radius:Math.min(20, fat+6),fillColor:col,color:'#000',weight:1,fillOpacity:.8})
+        .bindPopup(`<div style="background:#111;padding:10px;color:#ccc;min-width:180px"><b style="color:#ff0040">${name}</b><br>Accidents: <b>${accN}</b><br>Fatalities: <b style="color:#ff0040">${fat}</b><br>Severity: <b style="color:${col}">${sev}</b></div>`)
+        .addTo(layer);
+    });
+    layer.addTo(m);
+    mapSafeMarkersRef.current = layer;
+  },[tab, blackspots]);
+
+  // Accident severity chart — grouped from road_accidents rows
+  useEffect(()=>{
+    if(tab!=='safety') return;
     const C=(window as any).Chart;
-    if(C&&ftChartRef.current){
-      const ex=(window as any).__ftChart; if(ex) ex.destroy();
-      const ch=new C(ftChartRef.current.getContext('2d'),{
-        type:'line',
-        data:{labels:FATALITIES.map(f=>f.yr),datasets:[{label:'Road Fatalities',data:FATALITIES.map(f=>f.n),borderColor:'#ff006e',backgroundColor:'#ff006e15',fill:true,tension:.4,pointRadius:4}]},
-        options:{responsive:true,maintainAspectRatio:false,scales:{x:{ticks:{color:'#888'}},y:{ticks:{color:'#888'},min:2500}},plugins:{legend:{labels:{color:'#aaa'}}}},
-      });
-      (window as any).__ftChart=ch;
-    }
-  },[tab]);
+    if(!C||!ftChartRef.current) return;
+    const ex=(window as any).__ftChart; if(ex) ex.destroy();
+    if(!accidents.length) return;
+    const counts: Record<string, number> = {};
+    accidents.forEach(a=>{
+      const sev = String(pick(a, SEVERITY_KEYS, 'Unknown'));
+      counts[sev] = (counts[sev] ?? 0) + 1;
+    });
+    const labels = Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
+    const ch=new C(ftChartRef.current.getContext('2d'),{
+      type:'bar',
+      data:{labels,datasets:[{label:'Accidents',data:labels.map(l=>counts[l]),backgroundColor:labels.map(severityColor)}]},
+      options:{responsive:true,maintainAspectRatio:false,scales:{x:{ticks:{color:'#888'}},y:{ticks:{color:'#888'},beginAtZero:true}},plugins:{legend:{display:false}}},
+    });
+    (window as any).__ftChart=ch;
+  },[tab, accidents]);
 
   // Sort/filter ATC
   const atcFiltered = ATC_STATIONS
@@ -243,13 +297,13 @@ export default function NTISSection() {
   return (
     <div style={s.wrap}>
       <div style={s.stabs}>
-        {([['overview',' Overview'],['counts',' Traffic Counts'],['forecast',' Forecasting'],['axle',' Axle Load'],['safety',' Road Safety'],['corridors',' Corridors'],['reports',' Reports']] as [Subtab,string][]).map(([id,lbl])=>(
+        {([['dashboard','Dashboard'],['counts','Traffic Counts'],['forecast','Forecasting'],['axle','Axle Load'],['safety','Road Safety'],['corridors','Corridors'],['reports','Reports']] as [Subtab,string][]).map(([id,lbl])=>(
           <button key={id} style={ST(id)} onClick={()=>setTab(id)}>{lbl}</button>
         ))}
       </div>
 
-      {/* OVERVIEW */}
-      {tab==='overview' && <>
+      {/* DASHBOARD — traffic-only: AADT, ATC stations, station network */}
+      {tab==='dashboard' && <>
         <div style={s.kpiRow}>
           <div style={s.kpi}><div style={s.lbl}>ATC Stations</div><div style={s.val}>38</div><div style={s.sub}>automatic traffic counters</div></div>
           <div style={{...s.kpi,borderLeftColor:'#00ff88'}}><div style={s.lbl}>Avg AADT</div><div style={{...s.val,color:'#00ff88'}}>3,847</div><div style={s.sub}>vehicles/day national avg</div></div>
@@ -376,28 +430,62 @@ export default function NTISSection() {
         </div>
       </>}
 
-      {/* SAFETY */}
+      {/* SAFETY — live from road_accidents / road_blackspots */}
       {tab==='safety' && <>
-        <div style={s.kpiRow}>
-          <div style={{...s.kpi,borderLeftColor:'#ff006e'}}><div style={s.lbl}>2025 Fatalities</div><div style={{...s.val,color:'#ff006e'}}>3,247</div><div style={s.sub}>road deaths (UNRA/Police)</div></div>
-          <div style={{...s.kpi,borderLeftColor:'#ff6600'}}><div style={s.lbl}>Rate per 10k Veh</div><div style={{...s.val,color:'#ff6600'}}>4.2</div><div style={s.sub}>2025 baseline</div></div>
-          <div style={{...s.kpi,borderLeftColor:'#ffee00'}}><div style={s.lbl}>Blackspots</div><div style={{...s.val,color:'#ffee00'}}>847</div><div style={s.sub}>nationally identified</div></div>
-          <div style={{...s.kpi,borderLeftColor:'#00ff88'}}><div style={s.lbl}>YoY Change</div><div style={{...s.val,color:'#00ff88'}}>-3.2%</div><div style={s.sub}>improving trend</div></div>
-        </div>
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:16}}>
-          <div style={s.card}><div style={s.h3}>Fatality Trend 2016–2025</div><div style={{height:240}}><canvas ref={ftChartRef}></canvas></div></div>
-          <div style={s.card}><div style={s.h3}>Top 10 Blackspots</div>
-            <table style={s.table}><thead><tr><th style={s.th}>Location</th><th style={s.th}>Accidents/yr</th><th style={s.th}>Fatalities/yr</th><th style={s.th}>Severity</th></tr></thead><tbody>
-              {BLACKSPOTS.map(b=>(
-                <tr key={b.name}><td style={s.td}>{b.name}</td><td style={s.td}>{b.accidents}</td>
-                  <td style={s.td}><b style={{color:'#ff006e'}}>{b.fatalities}</b></td>
-                  <td style={s.td}><span style={{...s.badge,background:b.severity==='Critical'?'#ff004020':b.severity==='High'?'#ff660020':'#ffee0020',color:b.severity==='Critical'?'#ff0040':b.severity==='High'?'#ff6600':'#ffee00'}}>{b.severity}</span></td>
-                </tr>
-              ))}
-            </tbody></table>
-          </div>
-        </div>
-        <div style={s.card}><div style={s.h3}>Blackspot Map — Uganda</div><div ref={mapSafeRef} style={s.mapBox}></div></div>
+        {safetyLoading && (
+          <div style={{...s.card,textAlign:'center',color:'#666'}}>Loading road safety data…</div>
+        )}
+        {!safetyLoading && safetyError && (
+          <div style={{...s.card,borderLeft:'3px solid #ff6600',color:'#ff6600'}}>{safetyError}</div>
+        )}
+        {!safetyLoading && (() => {
+          const totalAccidents  = accidents.length;
+          const totalFatalities = accidents.reduce((sum,a)=> sum + (Number(pick(a, FATALITY_KEYS, 0)) || 0), 0);
+          const totalInjuries   = accidents.reduce((sum,a)=> sum + (Number(pick(a, INJURY_KEYS, 0)) || 0), 0);
+          const totalBlackspots = blackspots.length;
+          const criticalCount   = blackspots.filter(b=>{
+            const sev = String(pick(b, SEVERITY_KEYS, '')).toLowerCase();
+            return sev==='critical'||sev==='high'||sev==='severe';
+          }).length;
+          const density = [...blackspots].sort((a,b)=>
+            (Number(pick(b, ACCIDENT_CT_KEYS, 0))||0) - (Number(pick(a, ACCIDENT_CT_KEYS, 0))||0));
+          return (<>
+            <div style={s.kpiRow}>
+              <div style={{...s.kpi,borderLeftColor:'#ff006e'}}><div style={s.lbl}>Recorded Accidents</div><div style={{...s.val,color:'#ff006e'}}>{totalAccidents.toLocaleString()}</div><div style={s.sub}>road_accidents rows</div></div>
+              <div style={{...s.kpi,borderLeftColor:'#ff6600'}}><div style={s.lbl}>Fatalities</div><div style={{...s.val,color:'#ff6600'}}>{totalFatalities.toLocaleString()}</div><div style={s.sub}>{totalInjuries.toLocaleString()} injuries</div></div>
+              <div style={{...s.kpi,borderLeftColor:'#ffee00'}}><div style={s.lbl}>Blackspots</div><div style={{...s.val,color:'#ffee00'}}>{totalBlackspots.toLocaleString()}</div><div style={s.sub}>identified locations</div></div>
+              <div style={{...s.kpi,borderLeftColor:'#ff0040'}}><div style={s.lbl}>High / Critical</div><div style={{...s.val,color:'#ff0040'}}>{criticalCount.toLocaleString()}</div><div style={s.sub}>of {totalBlackspots} blackspots</div></div>
+            </div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:16}}>
+              <div style={s.card}><div style={s.h3}>Accident Severity Distribution</div>
+                {totalAccidents>0
+                  ? <div style={{height:240}}><canvas ref={ftChartRef}></canvas></div>
+                  : <div style={{color:'#555',fontSize:12,padding:'40px 0',textAlign:'center'}}>No accident records to chart.</div>}
+              </div>
+              <div style={s.card}><div style={s.h3}>Blackspot Density — {totalBlackspots} locations</div>
+                {totalBlackspots>0 ? (
+                  <div style={{maxHeight:280,overflowY:'auto'}}>
+                    <table style={s.table}><thead><tr><th style={s.th}>Location</th><th style={s.th}>Region</th><th style={s.th}>Accidents</th><th style={s.th}>Fatalities</th><th style={s.th}>Severity</th></tr></thead><tbody>
+                      {density.map((b,i)=>{
+                        const sev = String(pick(b, SEVERITY_KEYS, '—'));
+                        return (
+                          <tr key={i}>
+                            <td style={s.td}>{pick(b, NAME_KEYS, pick(b, ROAD_KEYS, '—'))}</td>
+                            <td style={s.td}>{pick(b, REGION_KEYS, '—')}</td>
+                            <td style={s.td}>{pick(b, ACCIDENT_CT_KEYS, '—')}</td>
+                            <td style={s.td}><b style={{color:'#ff006e'}}>{pick(b, FATALITY_KEYS, '—')}</b></td>
+                            <td style={s.td}>{sev!=='—' ? <span style={{...s.badge,background:severityColor(sev)+'20',color:severityColor(sev)}}>{sev}</span> : '—'}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody></table>
+                  </div>
+                ) : <div style={{color:'#555',fontSize:12,padding:'40px 0',textAlign:'center'}}>No blackspots on record.</div>}
+              </div>
+            </div>
+            <div style={s.card}><div style={s.h3}>Blackspot Map — Uganda</div><div ref={mapSafeRef} style={s.mapBox}></div></div>
+          </>);
+        })()}
       </>}
 
       {/* CORRIDORS */}

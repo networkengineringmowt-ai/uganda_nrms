@@ -57,12 +57,12 @@ async function safeCount(table: string, filter?: Record<string, string>): Promis
   } catch { return 0; }
 }
 
-async function safeRows<T extends Record<string, unknown>>(
+async function safeRows<T>(
   table: string, cols: string, limit = 500,
 ): Promise<T[]> {
   try {
     const { data } = await supabase.from(table).select(cols).limit(limit);
-    return (data ?? []) as T[];
+    return (data ?? []) as unknown as T[];
   } catch { return []; }
 }
 

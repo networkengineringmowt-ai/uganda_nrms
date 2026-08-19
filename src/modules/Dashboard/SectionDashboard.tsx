@@ -41,17 +41,17 @@ interface Dash {
 let _dbDown = false;
 async function safeCount(table: string): Promise<number> {
   try {
-    const { count } = await supabase.from(table).select('*', { count: 'exact', head: true });
+    const { count, error } = await supabase.from(table).select('*', { count: 'exact', head: true });
     if (error) { _dbDown = true; return 0; }  return count ?? 0;
   } catch { _dbDown = true; return 0; }
 }
 
-async function safeRows<T extends Record<string, unknown>>(
+async function safeRows<T>(
   table: string, cols: string, limit = 400,
 ): Promise<T[]> {
   try {
     const { data } = await supabase.from(table).select(cols).limit(limit);
-    return (data ?? []) as T[];
+    return (data ?? []) as unknown as T[];
   } catch { return []; }
 }
 
@@ -794,13 +794,23 @@ const SUBTABS = [
   { id: 'sql', label: 'SQL Database & Schema' },
   { id: 'capture', label: 'Data Capture' },
 ];
+// TIS (Traffic Information System) gets its own Road Safety sub-tab, inserted
+// right after Dashboard — kept out of the Dashboard tab so that one stays
+// traffic-only (AADT/station data), not mixed with accident/blackspot stats.
+function subtabsFor(sid: string) {
+  if (sid !== 'tis') return SUBTABS;
+  const out = [...SUBTABS];
+  out.splice(1, 0, { id: 'safety', label: 'Road Safety' });
+  return out;
+}
 function SectionSubTabs({ sectionId, accent }: { sectionId: string; accent: string }) {
   const [tab, setTab] = useState('dashboard');
   const sid = SECTION_ALIAS[sectionId] ?? sectionId;
+  const tabs = subtabsFor(sid);
   return (
     <div style={{ width: '100%' }}>
       <div style={{ display: 'flex', gap: 2, flexWrap: 'wrap', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: 10, position: 'sticky', top: 0, zIndex: 20, background: 'rgba(2,6,23,0.92)', backdropFilter: 'blur(8px)' }}>
-        {SUBTABS.map(t => (
+        {tabs.map(t => (
           <button key={t.id} onClick={() => setTab(t.id)}
             style={{ padding: '9px 16px', fontSize: 11, fontWeight: 800, letterSpacing: '0.07em',
               background: tab === t.id ? 'rgba(0,245,255,0.06)' : 'transparent',
@@ -812,6 +822,11 @@ function SectionSubTabs({ sectionId, accent }: { sectionId: string; accent: stri
         ))}
       </div>
       {tab === 'dashboard' && (<><SectionSignatureBlock sectionId={sid} /><InsightGrid sectionId={sid} accent={accent} /><SectionExtra sectionId={sid} slot="dashboard" /></>)}
+      {tab === 'safety' && sid === 'tis' && (
+        <Suspense fallback={<div style={{ padding: 20, color: '#64748b', fontSize: 12 }}>Loading road safety data...</div>}>
+          <TrafficRoadSafetyLegacy />
+        </Suspense>
+      )}
       {tab === 'map' && (<><SectionExtra sectionId={sid} slot="map" />
         <div style={{ marginTop: 18 }}><SectionMap sectionId={sid} accent={accent} /></div></>)}
       {tab === 'tables' && (<><ExhaustiveTables sectionId={sid} accent={accent} /><SectionExtra sectionId={sid} slot="tables" /></>)}
@@ -908,7 +923,6 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
     tables: [LazyRoadInventoryTbl],
   },
   tis: {
-    dashboard: [TrafficRoadSafetyLegacy],
     map: [TrafficMapLegacy],
     tables: [TrafficCountsLegacy, TrafficStationsLegacy],
     analytics: [TrafficTrendsLegacy],

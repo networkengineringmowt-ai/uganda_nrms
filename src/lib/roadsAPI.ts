@@ -64,4 +64,16 @@ export const RoadsAPI = {
     const { data, error } = await supabase.from('bridge_works').select('*').order('id');
     return error ? [] : data;
   },
+
+  /** Individual crash/accident records (road_accidents). */
+  async getAccidents() {
+    const { data, error } = await supabase.from('road_accidents').select('*');
+    return error ? [] : data;
+  },
+
+  /** Identified blackspot locations (road_blackspots). */
+  async getBlackspots() {
+    const { data, error } = await supabase.from('road_blackspots').select('*');
+    return error ? [] : data;
+  },
 };
