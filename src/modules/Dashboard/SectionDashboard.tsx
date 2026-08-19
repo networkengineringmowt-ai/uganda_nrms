@@ -952,7 +952,7 @@ function SectionExtra({ sectionId, slot }: { sectionId: string; slot: ExtraSlot 
   return (
     <>
       {list.map((Comp, i) => (
-        <Suspense key={i} fallback={<div style={{ padding: 20, color: '#64748b', fontSize: 12 }}>Loading…</div>}>
+        <Suspense key={i} fallback={null}>
           <div style={{
             marginTop: 18, position: 'relative', isolation: 'isolate',
             contain: 'layout paint style', overflow: 'hidden auto', maxHeight: '90vh',
