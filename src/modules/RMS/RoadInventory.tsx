@@ -10,6 +10,7 @@ import {
   INVENTORY_CATEGORIES, GRADE_SCALE, MANUAL_SOURCE_NOTE,
 } from '../../shared/unraStandards';
 import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
+import { RoadClassPill, PercentCell, NullableCell } from '../../shared/tableFormatting';
 
 interface InvLink {
   link_id: string; link_name: string | null; region: string | null; station: string | null;
@@ -73,11 +74,13 @@ export default function RoadInventory() {
     { key: 'link_id',    label: 'Link ID',  comment: 'UNRA AMS location-referencing link identifier.' },
     { key: 'road_no',    label: 'Road No.', comment: 'Nationally accepted road/route number (manual: Inventory Items).' },
     { key: 'link_name',  label: 'Link Name' },
-    { key: 'road_class', label: 'Class',    comment: 'Road class A / B / C / M.' },
+    { key: 'road_class', label: 'Class',    comment: 'Road class A / B / C / M.',
+      render: r => <RoadClassPill cls={r.road_class} /> },
     { key: 'surface_type', label: 'Pavement Type',
       comment: 'Official inventory item "Pavement Type" — carriageway paved/unpaved + wearing course.' },
     { key: 'length_km',  label: 'Length (km)', numeric: true, total: 'sum',
-      comment: 'Official inventory item "Dimensions" — section length. SUM = network total.' },
+      comment: 'Official inventory item "Dimensions" — section length. SUM = network total.',
+      render: r => <NullableCell value={r.length_km}>{r.length_km}</NullableCell> },
     { key: 'maintenance_region',  label: 'Region' },
     { key: 'maintenance_station', label: 'Station',
       comment: 'Maintenance station responsible (manual: Inventory Items → Station).' },
@@ -132,7 +135,8 @@ export default function RoadInventory() {
     ];
     const extras: STColumn<InvRow>[] =
       cat === 'shoulders' ? [
-        { key: 'shoulder_pct',     label: 'Shoulder %',  numeric: true },
+        { key: 'shoulder_pct',     label: 'Shoulder %',  numeric: true,
+          render: r => <PercentCell value={r.shoulder_pct == null ? null : Number(r.shoulder_pct)} /> },
         { key: 'shoulder_width_m', label: 'Shldr W (m)', numeric: true },
         { key: 'material',         label: 'Material' },
       ] : cat === 'environs' ? [
@@ -146,7 +150,8 @@ export default function RoadInventory() {
     return [
       ...base, ...extras, ...perSubtype,
       { key: 'cat_records', label: 'Total', numeric: true, total: 'sum',
-        comment: `All ${active.label} records on the link.` },
+        comment: `All ${active.label} records on the link.`,
+        render: r => <NullableCell value={r.cat_records}>{r.cat_records}</NullableCell> },
     ];
   }, [cat, active.label, subtypes]);
 

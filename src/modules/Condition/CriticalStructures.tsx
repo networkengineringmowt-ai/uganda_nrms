@@ -7,6 +7,7 @@ import { useMemo } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { useBMS } from '../../store/BMSContext';
 import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
+import { criticalRowStyle, NullableCell } from '../../shared/tableFormatting';
 
 const RATING_LABEL: Record<number, string> = {
   1: 'Critical', 2: 'Poor', 3: 'Marginal', 4: 'Satisfactory', 5: 'Good',
@@ -69,11 +70,14 @@ export default function CriticalStructures() {
     { key: 'priorityRank',  label: 'Rank',     numeric: true,
       comment: 'Network-wide priority rank (1 = most urgent).' },
     { key: 'spanLength',    label: 'Span (m)', numeric: true, total: 'sum',
-      comment: 'Total span length in metres.' },
+      comment: 'Total span length in metres.',
+      render: r => <NullableCell value={r.spanLength}>{r.spanLength}</NullableCell> },
     { key: 'lastInspection', label: 'Last Inspection',
-      comment: 'Date of most recent field inspection (ISO).' },
+      comment: 'Date of most recent field inspection (ISO).',
+      render: r => <NullableCell value={r.lastInspection}>{r.lastInspection}</NullableCell> },
     { key: 'replacementCostBnUgx', label: 'Repl. Cost (Bn UGX)', numeric: true, total: 'sum',
-      comment: 'Estimated full replacement cost in billions of UGX — SUM gives the total exposure of the critical backlog.' },
+      comment: 'Estimated full replacement cost in billions of UGX — SUM gives the total exposure of the critical backlog.',
+      render: r => <NullableCell value={r.replacementCostBnUgx}>{r.replacementCostBnUgx}</NullableCell> },
   ];
 
   const criticalCount = rows.filter(r => r.rating === 1).length;
@@ -94,6 +98,7 @@ export default function CriticalStructures() {
         accent="#ff3366"
         exportName="critical-structures"
         initialSort="priorityRank"
+        rowStyle={r => criticalRowStyle(r.rating === 1)}
       />
     </div>
   );

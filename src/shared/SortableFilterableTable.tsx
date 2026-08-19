@@ -10,6 +10,9 @@ import { exportTableToCSV } from './exportUtils';
 import { exportTableToExcel } from './excelExport';
 import { InfoTip } from './InfoTip';
 import { lookup } from './dataDictionary';
+import { useVirtualRows } from './useVirtualRows';
+
+const ROW_HEIGHT = 36;
 
 export interface STColumn<T> {
   key: keyof T & string;
@@ -34,11 +37,13 @@ interface Props<T> {
   /** Initial sort column key. */
   initialSort?: string;
   emptyText?: string;
+  /** Optional per-row style (e.g. a red left border on critical rows). */
+  rowStyle?: (row: T) => React.CSSProperties | undefined;
 }
 
 export function SortableFilterableTable<T extends Record<string, any>>({
   columns, rows, accent = '#4d9fff', exportName = 'table-export',
-  initialSort, emptyText = 'No rows match the current filter.',
+  initialSort, emptyText = 'No rows match the current filter.', rowStyle,
 }: Props<T>) {
   const [sortKey, setSortKey] = useState<string | null>(initialSort ?? null);
   const [sortAsc, setSortAsc] = useState(true);
@@ -71,6 +76,9 @@ export function SortableFilterableTable<T extends Record<string, any>>({
     }
     return out;
   }, [rows, columns, filter, sortKey, sortAsc]);
+
+  const { containerRef, visibleRows, topSpacerHeight, bottomSpacerHeight } =
+    useVirtualRows(visible, { rowHeight: ROW_HEIGHT });
 
   const doExport = () => {
     exportTableToCSV(
@@ -118,9 +126,7 @@ export function SortableFilterableTable<T extends Record<string, any>>({
               color: '#e2eaf4', fontSize: 11.5 }}
           />
         </div>
-        <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.6)' }}>
-          {visible.length} of {rows.length} rows
-        </div>
+        <span className="record-badge">{visible.length.toLocaleString()} of {rows.length.toLocaleString()} rows</span>
         <div style={{ flex: 1 }} />
         <button onClick={doExport} style={{
           display: 'flex', alignItems: 'center', gap: 6, padding: '6px 13px',
@@ -139,9 +145,8 @@ export function SortableFilterableTable<T extends Record<string, any>>({
         </button>
       </div>
 
-      {/* Table */}
-      <div style={{ overflow: 'auto', maxHeight: 'calc(100vh - 270px)',
-        border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10 }}>
+      {/* Table — fixed-height virtualized scroll container, sticky header */}
+      <div ref={containerRef} className="dt-scroll">
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10.5 }}>
           <thead>
             <tr style={{ borderBottom: `1px solid ${accent}33` }}>
@@ -171,10 +176,14 @@ export function SortableFilterableTable<T extends Record<string, any>>({
             </tr>
           </thead>
           <tbody>
-            {visible.map((r, i) => (
+            {topSpacerHeight > 0 && (
+              <tr aria-hidden style={{ height: topSpacerHeight }}><td colSpan={columns.length} style={{ padding: 0, border: 'none' }} /></tr>
+            )}
+            {visibleRows.map((r, i) => (
               <tr key={i} style={{
                 borderBottom: '1px solid rgba(255,255,255,0.04)',
                 background: i % 2 ? 'rgba(255,255,255,0.012)' : 'transparent',
+                ...rowStyle?.(r),
               }}>
                 {columns.map(c => (
                   <td key={c.key} style={{
@@ -189,6 +198,9 @@ export function SortableFilterableTable<T extends Record<string, any>>({
             {visible.length === 0 && (
               <tr><td colSpan={columns.length} style={{ padding: '18px 12px', textAlign: 'center',
                 color: 'rgba(148,163,184,0.5)', fontSize: 11 }}>{emptyText}</td></tr>
+            )}
+            {bottomSpacerHeight > 0 && (
+              <tr aria-hidden style={{ height: bottomSpacerHeight }}><td colSpan={columns.length} style={{ padding: 0, border: 'none' }} /></tr>
             )}
           </tbody>
         </table>

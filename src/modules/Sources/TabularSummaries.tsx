@@ -6,6 +6,7 @@ import { Table2, Download, ArrowUpRight, FileText, FolderOpen, BarChart3, Extern
 import type { ActiveView } from '../../types';
 import { projectAllClasses, projectAADTByClass, VC_CLASSES, NETWORK_BLENDED_GROWTH } from '../../shared/trafficProjection';
 import { useVirtualRows } from '../../shared/useVirtualRows';
+import { RoadClassPill, AadtHeatCell } from '../../shared/tableFormatting';
 
 const DocumentStore = lazy(() => import('../Documents/DocumentStore'));
 const DownloadsView  = lazy(() => import('../Downloads/DownloadsView'));
@@ -1059,7 +1060,6 @@ function Td({ children, align = 'left', mono = false, style }: { children?: Reac
 // Paginated (50/page) + searchable; base AADT loaded from the full GeoJSON network
 // (network2026.geojson — `aadt` property if present, else derived from road class).
 const ADT_PROJECTION_YEARS = [2016, 2020, 2025, 2026, 2030, 2035, 2040];
-const ADT_CLASS_COLOR: Record<string, string> = { A: C.cyan, B: C.green, C: C.yellow, M: C.purple };
 const ADT_BASE_YEAR = 2016; // base year for ALL traffic statistics
 const ADT_SURVEY_YEAR = 2025; // GeoJSON network survey reference (DNR GIS Jun 2025)
 
@@ -1185,12 +1185,12 @@ function AdtProjectionTable() {
                     {link.link_id}
                   </Td>
                   <Td style={{ color: 'rgba(226,232,240,0.85)', whiteSpace: 'nowrap' }}>{link.link_name ?? '—'}</Td>
-                  <Td align="center" style={{ color: ADT_CLASS_COLOR[link.road_class] ?? '#94a3b8', fontWeight: 800 }}>{link.road_class}</Td>
+                  <Td align="center"><RoadClassPill cls={link.road_class} /></Td>
                   {ADT_PROJECTION_YEARS.map(yr => {
                     const total = projectAADTByClass(link.base_aadt, link.base_year, yr);
                     return (
-                      <Td key={yr} align="right" mono style={{ color: yr === 2026 ? C.cyan : C.yellow, fontWeight: yr === 2026 ? 800 : 700 }}>
-                        {Math.round(total).toLocaleString()}
+                      <Td key={yr} align="right" mono>
+                        <AadtHeatCell value={Math.round(total)} />
                       </Td>
                     );
                   })}

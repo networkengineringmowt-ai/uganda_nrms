@@ -5,6 +5,7 @@ import {
 } from 'recharts';
 import { AlertTriangle, TrendingUp, DollarSign, Wrench, Filter, Download } from 'lucide-react';
 import { useVirtualRows } from '../../shared/useVirtualRows';
+import { RoadClassPill, ConditionLabelBadge, criticalRowStyle, NullableCell } from '../../shared/tableFormatting';
 
 const ROW_HEIGHT = 40;
 const COLUMN_COUNT = 8;
@@ -358,18 +359,20 @@ export default function MaintenanceProgrammeView() {
                 <tr aria-hidden style={{ height: topSpacerHeight }}><td colSpan={COLUMN_COUNT} style={{ padding: 0, border: 'none' }} /></tr>
               )}
               {paginated.map((link, idx) => (
-                <tr key={idx} style={{ borderBottom: '1px solid rgba(77,159,255,0.1)', background: idx % 2 ? 'rgba(77,159,255,0.02)' : 'transparent' }}>
+                <tr key={idx} style={{ borderBottom: '1px solid rgba(77,159,255,0.1)', background: idx % 2 ? 'rgba(77,159,255,0.02)' : 'transparent', ...criticalRowStyle(link.condition_now === 'Very Poor') }}>
                   <td style={{ padding: '10px 8px', color: C.cyan, fontWeight: 600 }}>#{link.priority_rank}</td>
                   <td style={{ padding: '10px 8px', color: '#e2eaf4' }}>{link.road_name}</td>
-                  <td style={{ padding: '10px 8px', color: 'rgba(148,163,184,0.8)' }}>{link.road_class}</td>
+                  <td style={{ padding: '10px 8px' }}><RoadClassPill cls={link.road_class} /></td>
                   <td style={{ padding: '10px 8px', textAlign: 'center', color: link.current_iri > 9 ? C.red : link.current_iri > 6.5 ? C.orange : C.green }}>
                     {link.current_iri.toFixed(1)}
                   </td>
-                  <td style={{ padding: '10px 8px', color: 'rgba(148,163,184,0.8)' }}>{link.condition_now}</td>
+                  <td style={{ padding: '10px 8px' }}><ConditionLabelBadge label={link.condition_now} /></td>
                   <td style={{ padding: '10px 8px', color: 'rgba(148,163,184,0.8)', fontSize: 11 }}>{link.intervention_type}</td>
-                  <td style={{ padding: '10px 8px', textAlign: 'center', color: 'rgba(148,163,184,0.8)' }}>{link.length_km.toFixed(1)}</td>
+                  <td style={{ padding: '10px 8px', textAlign: 'center', color: 'rgba(148,163,184,0.8)' }}>
+                    <NullableCell value={link.length_km}>{link.length_km.toFixed(1)}</NullableCell>
+                  </td>
                   <td style={{ padding: '10px 8px', textAlign: 'right', color: C.yellow, fontWeight: 600 }}>
-                    ${(link.estimated_cost_usd / 1e6).toFixed(1)}M
+                    <NullableCell value={link.estimated_cost_usd}>${(link.estimated_cost_usd / 1e6).toFixed(1)}M</NullableCell>
                   </td>
                 </tr>
               ))}

@@ -7,6 +7,7 @@ import { downloadGeoJSON, downloadKML } from '../../utils/downloads';
 import StructureDetailModal from './StructureDetailModal';
 import SectionDashboard from '../Dashboard/SectionDashboard';
 import { useVirtualRows } from '../../shared/useVirtualRows';
+import { criticalRowStyle, NullableCell, percentageColor } from '../../shared/tableFormatting';
 
 const ROW_HEIGHT = 44;
 const COLUMN_COUNT = 18;
@@ -207,7 +208,7 @@ export default function StructureRegistry() {
               <tr aria-hidden style={{ height: topSpacerHeight }}><td colSpan={COLUMN_COUNT} style={{ padding: 0, border: 'none' }} /></tr>
             )}
             {visibleRows.map(s => (
-              <tr key={s.id} onClick={() => setSelected(s)} className="hover:bg-slate-700/30 transition-colors cursor-pointer">
+              <tr key={s.id} onClick={() => setSelected(s)} className="hover:bg-slate-700/30 transition-colors cursor-pointer" style={criticalRowStyle(s.conditionRating === 1)}>
                 <td className="px-4 py-3 text-slate-400 text-xs font-mono">#{s.priorityRank}</td>
                 <td className="px-4 py-3 text-xs font-mono text-blue-400 font-bold">{s.id}</td>
                 <td className="px-4 py-3 text-sm text-slate-200 font-medium max-w-[200px] truncate">{s.name}</td>
@@ -219,9 +220,9 @@ export default function StructureRegistry() {
                 <td className="px-4 py-3 text-xs text-slate-400 max-w-[160px] truncate">{s.road}</td>
                 <td className="px-4 py-3 text-xs text-slate-400">{s.region}</td>
                 <td className="px-4 py-3 text-xs text-slate-400 font-mono">{s.chainage.toFixed(1)}</td>
-                <td className="px-4 py-3 text-xs text-slate-400">{s.spanLength} m</td>
-                <td className="px-4 py-3 text-xs text-slate-400 text-center">{s.noOfSpans}</td>
-                <td className="px-4 py-3 text-xs text-slate-400 text-center">{s.noOfLanes}</td>
+                <td className="px-4 py-3 text-xs text-slate-400"><NullableCell value={s.spanLength}>{s.spanLength} m</NullableCell></td>
+                <td className="px-4 py-3 text-xs text-slate-400 text-center"><NullableCell value={s.noOfSpans}>{s.noOfSpans}</NullableCell></td>
+                <td className="px-4 py-3 text-xs text-slate-400 text-center"><NullableCell value={s.noOfLanes}>{s.noOfLanes}</NullableCell></td>
                 <td className="px-4 py-3 text-xs text-slate-400 max-w-[120px] truncate">{s.material}</td>
                 <td className="px-4 py-3 text-xs text-slate-400 font-mono">{s.yearBuilt}</td>
                 <td className="px-4 py-3">
@@ -250,7 +251,7 @@ export default function StructureRegistry() {
                         style={{ width: `${s.priorityScore}%`, background: conditionColor(s.conditionRating) }}
                       />
                     </div>
-                    <span className="text-xs text-slate-400 font-mono w-6 text-right">{s.priorityScore}</span>
+                    <span className="text-xs font-mono w-6 text-right font-bold" style={{ color: percentageColor(s.priorityScore, true) }}>{s.priorityScore}</span>
                   </div>
                 </td>
                 <td className="px-4 py-3">

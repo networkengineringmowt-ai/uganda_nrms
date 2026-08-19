@@ -5,6 +5,7 @@ import { conditionColor, conditionLabel, conditionBadge, formatUGX, CONDITION_CO
 import type { Structure } from '../../types';
 import SectionDashboard from '../Dashboard/SectionDashboard';
 import { useVirtualRows } from '../../shared/useVirtualRows';
+import { criticalRowStyle, NullableCell } from '../../shared/tableFormatting';
 import {
   ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Cell,
 } from 'recharts';
@@ -115,7 +116,7 @@ export default function PriorityRanking() {
                   <tr aria-hidden style={{ height: topSpacerHeight }}><td colSpan={COLUMN_COUNT} style={{ padding: 0, border: 'none' }} /></tr>
                 )}
                 {visibleRows.map(s => (
-                  <tr key={s.id}>
+                  <tr key={s.id} style={criticalRowStyle(s.conditionRating === 1)}>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0
@@ -164,7 +165,7 @@ export default function PriorityRanking() {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-xs text-slate-400 font-mono whitespace-nowrap">
-                      {formatUGX(s.estimatedReplacementCost)}
+                      <NullableCell value={s.estimatedReplacementCost}>{formatUGX(s.estimatedReplacementCost)}</NullableCell>
                     </td>
                   </tr>
                 ))}

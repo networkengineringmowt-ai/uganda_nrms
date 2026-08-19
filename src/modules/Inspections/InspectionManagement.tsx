@@ -6,6 +6,7 @@ import { conditionColor, conditionLabel, conditionBadge, formatDate, INSPECTORS 
 import { v4 as uuidv4 } from 'uuid';
 import SectionDashboard from '../Dashboard/SectionDashboard';
 import { useVirtualRows } from '../../shared/useVirtualRows';
+import { criticalRowStyle, PercentCell, NULL_ZERO_STYLE } from '../../shared/tableFormatting';
 
 const ROW_HEIGHT = 44;
 const COLUMN_COUNT = 12;
@@ -172,7 +173,7 @@ function InspectionRow({ insp }: { insp: Inspection }) {
 
   return (
     <>
-      <tr onClick={() => setExpanded(e => !e)} className="hover:bg-slate-700/30 transition-colors cursor-pointer">
+      <tr onClick={() => setExpanded(e => !e)} className="hover:bg-slate-700/30 transition-colors cursor-pointer" style={criticalRowStyle(insp.overallCondition === 1)}>
         <td className="px-4 py-3">
           <div className="text-xs font-semibold text-slate-200">{insp.structureName}</div>
           <div className="text-[10px] text-slate-500">{insp.structureId}</div>
@@ -198,7 +199,7 @@ function InspectionRow({ insp }: { insp: Inspection }) {
                 style={{ width: `${insp.visualScore}%`, background: conditionColor(insp.overallCondition) }}
               />
             </div>
-            <span className="text-[10px] text-slate-400 w-7 text-right">{insp.visualScore}</span>
+            <span className="text-[10px] w-9 text-right"><PercentCell value={insp.visualScore} /></span>
           </div>
         </td>
         <td className="px-4 py-3">
@@ -208,10 +209,14 @@ function InspectionRow({ insp }: { insp: Inspection }) {
         </td>
         <td className="px-4 py-3 text-xs text-slate-400 whitespace-nowrap">{formatDate(insp.nextInspection)}</td>
         <td className="px-4 py-3 text-xs text-slate-500">
-          <div className="flex items-center gap-1">
-            <Camera size={12} />
-            <span>{insp.photos.length}</span>
-          </div>
+          {insp.photos.length === 0 ? (
+            <span style={NULL_ZERO_STYLE}>0 photos</span>
+          ) : (
+            <div className="flex items-center gap-1">
+              <Camera size={12} />
+              <span>{insp.photos.length}</span>
+            </div>
+          )}
         </td>
       </tr>
       {expanded && (

@@ -6,6 +6,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { VC_CLASSES, projectClass, VC_GROWTH } from '../../shared/trafficProjection';
 import { useVirtualRows } from '../../shared/useVirtualRows';
+import { RoadClassPill, AadtHeatCell } from '../../shared/tableFormatting';
 import { Download } from 'lucide-react';
 
 const BASE = import.meta.env.BASE_URL;
@@ -131,7 +132,6 @@ export default function TrafficProjectionTable() {
   }
 
   const BG = 'rgba(15,15,15,0.55)';
-  const classColor: Record<string,string> = { A:'#00f5ff', B:'#00ff88', C:'#ffd23f', M:'#b967ff' };
 
   if (loading) return (
     <div style={{ textAlign:'center', padding:40, color:'#64748b', fontSize:12 }}>
@@ -215,7 +215,6 @@ export default function TrafficProjectionTable() {
               <tr aria-hidden style={{ height: topSpacerHeight }}><td colSpan={columnCount} style={{ padding: 0, border: 'none' }} /></tr>
             )}
             {paginated.map((l, i) => {
-              const cc = classColor[l.road_class] ?? '#94a3b8';
               const isExp = expandedId === l.link_id;
               const totals = SNAPSHOT_YEARS.map(y => totalAt(l.base_aadt, l.base_year, y));
               return (
@@ -224,14 +223,12 @@ export default function TrafficProjectionTable() {
                     borderBottom:'1px solid rgba(255,255,255,0.03)' }}>
                     <td style={{ padding:'5px 8px', color:'#00f5ff', fontFamily:'monospace', fontSize:9, whiteSpace:'nowrap' }}>{l.link_id}</td>
                     <td style={{ padding:'5px 8px', color:'#e2eaf4', maxWidth:200, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{l.link_name}</td>
-                    <td style={{ padding:'5px 8px', color:cc, fontWeight:700 }}>{l.road_class}</td>
+                    <td style={{ padding:'5px 8px' }}><RoadClassPill cls={l.road_class} /></td>
                     <td style={{ padding:'5px 8px', color:'#94a3b8' }}>{l.region}</td>
                     <td style={{ padding:'5px 8px', color:'#94a3b8' }}>{l.length_km.toFixed(0)}</td>
                     {totals.map((t, j) => (
-                      <td key={j} style={{ padding:'5px 8px', textAlign:'right', fontFamily:'monospace',
-                        color: SNAPSHOT_YEARS[j]===2026?'#00f5ff':'#d4dde8',
-                        background: SNAPSHOT_YEARS[j]===2026?'rgba(0,245,255,0.04)':undefined }}>
-                        {t.toLocaleString()}
+                      <td key={j} style={{ padding:'5px 8px', textAlign:'right', fontFamily:'monospace' }}>
+                        <AadtHeatCell value={t} />
                       </td>
                     ))}
                     <td style={{ padding:'5px 8px' }}>
