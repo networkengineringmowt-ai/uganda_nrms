@@ -2,6 +2,16 @@ import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 
 type Row = Record<string, unknown>;
+const ACRONYMS = new Set(['aadt','id','km','esal','gps','pci','iri','vci','wim','atc','esa','fwd','mef','tcs','vcpd','gis','sql','ndpiv','osm','wgs']);
+function prettyLabel(key: string): string {
+  return key.split('_').map(w => {
+    const lw = w.toLowerCase();
+    if (ACRONYMS.has(lw)) return lw.toUpperCase();
+    if (lw === 'pct') return '%';
+    if (/^\d+$/.test(w)) return w;
+    return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+  }).join(' ');
+}
 const SPECS: Record<string, string> = { rms:'road_links', pms:'road_condition_assessments', tis:'traffic_stations', bms:'bridge_inventory', ducar:'maintenance_works', projects:'maintenance_works', reserve:'encroachments', pim:'investment_projects' };
 async function loadRows(sectionId: string): Promise<Row[]> {
   const table = SPECS[sectionId] ?? 'road_links';
@@ -55,14 +65,14 @@ export function ExhaustiveTables({ sectionId, accent = '#00f5ff' }: { sectionId:
           <option value=''>Sort: none</option>
           {numCols.map(c => <option key={c} value={c}>Sort: {c}</option>)}
         </select>
-        <button onClick={() => csvOut(sectionId + '_all_records', cols, sorted.map(r => cols.map(c => String(r[c] ?? ''))))}
+        <button onClick={() => csvOut(sectionId + '_all_records', cols.map(prettyLabel), sorted.map(r => cols.map(c => String(r[c] ?? ''))))}
           style={{ background: 'rgba(0,245,255,0.08)', border: '1px solid rgba(0,245,255,0.3)', borderRadius: 6, color: accent, fontSize: 10, fontWeight: 700, padding: '4px 12px', cursor: 'pointer' }}>CSV</button>
       </div>
       <div style={{ overflow: 'auto', maxHeight: 640, border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10 }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10.5 }}>
           <thead><tr>{cols.map(c => (
             <th key={c} onClick={() => setSrt(c)} style={{ padding: '6px 9px', background: 'rgba(2,6,23,0.95)', color: srt === c ? accent : '#64748b',
-              textAlign: 'left', fontWeight: 700, whiteSpace: 'nowrap', position: 'sticky', top: 0, cursor: 'pointer' }}>{c}</th>))}</tr></thead>
+              textAlign: 'left', fontWeight: 700, whiteSpace: 'nowrap', position: 'sticky', top: 0, cursor: 'pointer' }}>{prettyLabel(c)}</th>))}</tr></thead>
           <tbody>{sorted.map((r, ri) => (
             <tr key={ri} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
               {cols.map(c => { const v = r[c]; const n = num(v); const rg = ranges[c];
