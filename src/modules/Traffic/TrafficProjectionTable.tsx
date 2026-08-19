@@ -5,9 +5,11 @@
  */
 import { useState, useMemo, useEffect } from 'react';
 import { VC_CLASSES, projectClass, VC_GROWTH } from '../../shared/trafficProjection';
+import { useVirtualRows } from '../../shared/useVirtualRows';
 import { Download } from 'lucide-react';
 
 const BASE = import.meta.env.BASE_URL;
+const ROW_HEIGHT = 28;
 
 interface LinkRow {
   link_id: string; link_name: string; road_class: string; region: string;
@@ -50,9 +52,7 @@ export default function TrafficProjectionTable() {
   const [search, setSearch]     = useState('');
   const [classFilter, setClass] = useState('All');
   const [regionFilter, setReg]  = useState('All');
-  const [page, setPage]         = useState(0);
   const [expandedId, setExpId]  = useState<string | null>(null);
-  const PAGE_SIZE = 50;
 
   useEffect(() => {
     fetch(`${BASE}data/network2026.geojson`)
@@ -107,8 +107,9 @@ export default function TrafficProjectionTable() {
     return true;
   }), [links, classFilter, regionFilter, search]);
 
-  const paginated = filtered; // pagination removed per requirement — show all records, single scroll container
-  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const { containerRef, visibleRows: paginated, topSpacerHeight, bottomSpacerHeight } =
+    useVirtualRows(filtered, { rowHeight: ROW_HEIGHT });
+  const columnCount = SNAPSHOT_YEARS.length + 6;
 
   function exportCSV() {
     const vcKeys = VC_CLASSES.map(c => c.key);
@@ -162,29 +163,28 @@ export default function TrafficProjectionTable() {
 
         {/* Filters */}
         <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
-          <input value={search} onChange={e => { setSearch(e.target.value); setPage(0); }}
+          <input value={search} onChange={e => { setSearch(e.target.value); }}
             placeholder="Search link ID or name…"
             style={{ fontSize:10, padding:'5px 10px', borderRadius:6, background:'rgba(15,15,15,0.7)',
               border:'1px solid rgba(148,163,184,0.18)', color:'#e2eaf4', outline:'none', minWidth:220 }}/>
-          <select value={classFilter} onChange={e => { setClass(e.target.value); setPage(0); }}
+          <select value={classFilter} onChange={e => { setClass(e.target.value); }}
             style={{ fontSize:10, padding:'5px 8px', borderRadius:6, background:'rgba(15,15,15,0.7)',
               border:'1px solid rgba(148,163,184,0.18)', color:'#e2eaf4' }}>
             {classes.map(c => <option key={c} value={c}>{c === 'All' ? 'All Classes' : `Class ${c}`}</option>)}
           </select>
-          <select value={regionFilter} onChange={e => { setReg(e.target.value); setPage(0); }}
+          <select value={regionFilter} onChange={e => { setReg(e.target.value); }}
             style={{ fontSize:10, padding:'5px 8px', borderRadius:6, background:'rgba(15,15,15,0.7)',
               border:'1px solid rgba(148,163,184,0.18)', color:'#e2eaf4' }}>
             {regions.map(r => <option key={r} value={r}>{r}</option>)}
           </select>
-          <span style={{ fontSize:10, color:'rgba(148,163,184,0.5)' }}>
+          <span className="record-badge">
             {filtered.length.toLocaleString()} / {links.length.toLocaleString()} links
           </span>
-          
         </div>
       </div>
 
-      {/* Table */}
-      <div style={{ overflowX:'auto', borderRadius:10, border:'1px solid rgba(255,255,255,0.06)' }}>
+      {/* Table — fixed-height virtualized scroll container, sticky header */}
+      <div ref={containerRef} className="dt-scroll">
         <table style={{ fontSize:10, borderCollapse:'collapse', minWidth:1200 }}>
           <thead style={{ position:'sticky', top:0, background:'rgba(15,15,15,0.97)', zIndex:2 }}>
             <tr>
@@ -211,6 +211,9 @@ export default function TrafficProjectionTable() {
             </tr>
           </thead>
           <tbody>
+            {topSpacerHeight > 0 && (
+              <tr aria-hidden style={{ height: topSpacerHeight }}><td colSpan={columnCount} style={{ padding: 0, border: 'none' }} /></tr>
+            )}
             {paginated.map((l, i) => {
               const cc = classColor[l.road_class] ?? '#94a3b8';
               const isExp = expandedId === l.link_id;
@@ -262,9 +265,12 @@ export default function TrafficProjectionTable() {
               );
             })}
             {paginated.length === 0 && (
-              <tr><td colSpan={SNAPSHOT_YEARS.length+6} style={{ padding:32, textAlign:'center', color:'#64748b', fontSize:11 }}>
+              <tr><td colSpan={columnCount} style={{ padding:32, textAlign:'center', color:'#64748b', fontSize:11 }}>
                 No links match filters.
               </td></tr>
+            )}
+            {bottomSpacerHeight > 0 && (
+              <tr aria-hidden style={{ height: bottomSpacerHeight }}><td colSpan={columnCount} style={{ padding: 0, border: 'none' }} /></tr>
             )}
           </tbody>
         </table>

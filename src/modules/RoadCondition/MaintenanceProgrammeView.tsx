@@ -4,6 +4,10 @@ import {
   CartesianGrid, Legend, Cell, PieChart, Pie,
 } from 'recharts';
 import { AlertTriangle, TrendingUp, DollarSign, Wrench, Filter, Download } from 'lucide-react';
+import { useVirtualRows } from '../../shared/useVirtualRows';
+
+const ROW_HEIGHT = 40;
+const COLUMN_COUNT = 8;
 
 const C = {
   cyan: '#00f5ff', green: '#00ff88', yellow: '#ffd23f',
@@ -55,7 +59,6 @@ export default function MaintenanceProgrammeView() {
   const [filterClass, setFilterClass] = useState<string>('all');
   const [filterIntervention, setFilterIntervention] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'priority' | 'cost' | 'iri'>('priority');
-  const [pageIdx, setPageIdx] = useState(0);
 
   useEffect(() => {
     fetch('/data/maintenance_programme.json')
@@ -125,6 +128,9 @@ export default function MaintenanceProgrammeView() {
     return sorted;
   }, [data, filterClass, filterIntervention, sortBy]);
 
+  const { containerRef, visibleRows: paginated, topSpacerHeight, bottomSpacerHeight } =
+    useVirtualRows(filteredAndSorted, { rowHeight: ROW_HEIGHT });
+
   if (!data) {
     return (
       <div className="flex items-center justify-center h-full w-full">
@@ -132,10 +138,6 @@ export default function MaintenanceProgrammeView() {
       </div>
     );
   }
-
-  const pageSize = 25;
-  const paginated = filteredAndSorted.slice(pageIdx * pageSize, (pageIdx + 1) * pageSize);
-  const totalPages = Math.ceil(filteredAndSorted.length / pageSize);
 
   const roadClasses = [...new Set(data.all_links.map(l => l.road_class))].sort();
   const interventionTypes = [...new Set(data.all_links.map(l => l.intervention_type))].sort();
@@ -285,10 +287,13 @@ export default function MaintenanceProgrammeView() {
         borderRadius: 12,
         padding: 20,
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <h3 style={{ fontSize: 13, fontWeight: 700, color: '#e2eaf4' }}>Priority Links</h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <h3 style={{ fontSize: 13, fontWeight: 700, color: '#e2eaf4' }}>Priority Links</h3>
+            <span className="record-badge">{filteredAndSorted.length.toLocaleString()} links</span>
+          </div>
           <div style={{ display: 'flex', gap: 8 }}>
-            <select value={filterClass} onChange={(e) => { setFilterClass(e.target.value); setPageIdx(0); }}
+            <select value={filterClass} onChange={(e) => { setFilterClass(e.target.value); }}
               style={{
                 background: 'rgba(15,15,15,0.8)',
                 border: `1px solid rgba(77,159,255,0.3)`,
@@ -303,7 +308,7 @@ export default function MaintenanceProgrammeView() {
               ))}
             </select>
 
-            <select value={filterIntervention} onChange={(e) => { setFilterIntervention(e.target.value); setPageIdx(0); }}
+            <select value={filterIntervention} onChange={(e) => { setFilterIntervention(e.target.value); }}
               style={{
                 background: 'rgba(15,15,15,0.8)',
                 border: `1px solid rgba(77,159,255,0.3)`,
@@ -334,21 +339,24 @@ export default function MaintenanceProgrammeView() {
           </div>
         </div>
 
-        <div style={{ overflowX: 'auto' }}>
+        <div ref={containerRef} className="dt-scroll">
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
             <thead>
               <tr style={{ borderBottom: '1px solid rgba(77,159,255,0.2)' }}>
-                <th style={{ padding: '10px 8px', textAlign: 'left', color: 'rgba(148,163,184,0.7)', fontWeight: 600 }}>Rank</th>
-                <th style={{ padding: '10px 8px', textAlign: 'left', color: 'rgba(148,163,184,0.7)', fontWeight: 600 }}>Road</th>
-                <th style={{ padding: '10px 8px', textAlign: 'left', color: 'rgba(148,163,184,0.7)', fontWeight: 600 }}>Class</th>
-                <th style={{ padding: '10px 8px', textAlign: 'center', color: 'rgba(148,163,184,0.7)', fontWeight: 600 }}>Current IRI</th>
-                <th style={{ padding: '10px 8px', textAlign: 'left', color: 'rgba(148,163,184,0.7)', fontWeight: 600 }}>Condition</th>
-                <th style={{ padding: '10px 8px', textAlign: 'left', color: 'rgba(148,163,184,0.7)', fontWeight: 600 }}>Intervention</th>
-                <th style={{ padding: '10px 8px', textAlign: 'center', color: 'rgba(148,163,184,0.7)', fontWeight: 600 }}>Length (km)</th>
-                <th style={{ padding: '10px 8px', textAlign: 'right', color: 'rgba(148,163,184,0.7)', fontWeight: 600 }}>Cost (USD)</th>
+                <th className="dt-sticky-th" style={{ padding: '10px 8px', textAlign: 'left', color: 'rgba(148,163,184,0.7)', fontWeight: 600, background: '#0f0f0f' }}>Rank</th>
+                <th className="dt-sticky-th" style={{ padding: '10px 8px', textAlign: 'left', color: 'rgba(148,163,184,0.7)', fontWeight: 600, background: '#0f0f0f' }}>Road</th>
+                <th className="dt-sticky-th" style={{ padding: '10px 8px', textAlign: 'left', color: 'rgba(148,163,184,0.7)', fontWeight: 600, background: '#0f0f0f' }}>Class</th>
+                <th className="dt-sticky-th" style={{ padding: '10px 8px', textAlign: 'center', color: 'rgba(148,163,184,0.7)', fontWeight: 600, background: '#0f0f0f' }}>Current IRI</th>
+                <th className="dt-sticky-th" style={{ padding: '10px 8px', textAlign: 'left', color: 'rgba(148,163,184,0.7)', fontWeight: 600, background: '#0f0f0f' }}>Condition</th>
+                <th className="dt-sticky-th" style={{ padding: '10px 8px', textAlign: 'left', color: 'rgba(148,163,184,0.7)', fontWeight: 600, background: '#0f0f0f' }}>Intervention</th>
+                <th className="dt-sticky-th" style={{ padding: '10px 8px', textAlign: 'center', color: 'rgba(148,163,184,0.7)', fontWeight: 600, background: '#0f0f0f' }}>Length (km)</th>
+                <th className="dt-sticky-th" style={{ padding: '10px 8px', textAlign: 'right', color: 'rgba(148,163,184,0.7)', fontWeight: 600, background: '#0f0f0f' }}>Cost (USD)</th>
               </tr>
             </thead>
             <tbody>
+              {topSpacerHeight > 0 && (
+                <tr aria-hidden style={{ height: topSpacerHeight }}><td colSpan={COLUMN_COUNT} style={{ padding: 0, border: 'none' }} /></tr>
+              )}
               {paginated.map((link, idx) => (
                 <tr key={idx} style={{ borderBottom: '1px solid rgba(77,159,255,0.1)', background: idx % 2 ? 'rgba(77,159,255,0.02)' : 'transparent' }}>
                   <td style={{ padding: '10px 8px', color: C.cyan, fontWeight: 600 }}>#{link.priority_rank}</td>
@@ -365,49 +373,11 @@ export default function MaintenanceProgrammeView() {
                   </td>
                 </tr>
               ))}
+              {bottomSpacerHeight > 0 && (
+                <tr aria-hidden style={{ height: bottomSpacerHeight }}><td colSpan={COLUMN_COUNT} style={{ padding: 0, border: 'none' }} /></tr>
+              )}
             </tbody>
           </table>
-        </div>
-
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 16 }}>
-          <div style={{ fontSize: 11, color: 'rgba(148,163,184,0.6)' }}>
-            Showing {pageIdx * pageSize + 1}–{Math.min((pageIdx + 1) * pageSize, filteredAndSorted.length)} of {filteredAndSorted.length} links
-          </div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button
-              onClick={() => setPageIdx(Math.max(0, pageIdx - 1))}
-              disabled={pageIdx === 0}
-              style={{
-                padding: '6px 12px',
-                background: pageIdx === 0 ? 'rgba(77,159,255,0.1)' : 'rgba(77,159,255,0.2)',
-                border: `1px solid rgba(77,159,255,0.3)`,
-                borderRadius: 6,
-                color: pageIdx === 0 ? 'rgba(148,163,184,0.4)' : '#4d9fff',
-                fontSize: 11,
-                fontWeight: 600,
-                cursor: pageIdx === 0 ? 'not-allowed' : 'pointer',
-              }}>
-              ← Prev
-            </button>
-            <div style={{ fontSize: 11, color: 'rgba(148,163,184,0.6)', display: 'flex', alignItems: 'center' }}>
-              Page {pageIdx + 1} of {totalPages}
-            </div>
-            <button
-              onClick={() => setPageIdx(Math.min(totalPages - 1, pageIdx + 1))}
-              disabled={pageIdx >= totalPages - 1}
-              style={{
-                padding: '6px 12px',
-                background: pageIdx >= totalPages - 1 ? 'rgba(77,159,255,0.1)' : 'rgba(77,159,255,0.2)',
-                border: `1px solid rgba(77,159,255,0.3)`,
-                borderRadius: 6,
-                color: pageIdx >= totalPages - 1 ? 'rgba(148,163,184,0.4)' : '#4d9fff',
-                fontSize: 11,
-                fontWeight: 600,
-                cursor: pageIdx >= totalPages - 1 ? 'not-allowed' : 'pointer',
-              }}>
-              Next →
-            </button>
-          </div>
         </div>
       </div>
     </div>

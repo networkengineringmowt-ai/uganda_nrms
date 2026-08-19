@@ -6,6 +6,10 @@ import { conditionLabel, conditionColor, conditionBadge, formatDate, formatUGX }
 import { downloadGeoJSON, downloadKML } from '../../utils/downloads';
 import StructureDetailModal from './StructureDetailModal';
 import SectionDashboard from '../Dashboard/SectionDashboard';
+import { useVirtualRows } from '../../shared/useVirtualRows';
+
+const ROW_HEIGHT = 44;
+const COLUMN_COUNT = 18;
 
 type SortKey = keyof Structure;
 
@@ -19,9 +23,7 @@ export default function StructureRegistry() {
   const [regionFilter, setRegion]  = useState('all');
   const [sortKey,   setSortKey]   = useState<SortKey>('priorityRank');
   const [sortAsc,   setSortAsc]   = useState(true);
-  const [page,      setPage]      = useState(1);
   const [selected,  setSelected]  = useState<Structure | null>(null);
-  const PAGE_SIZE = 25;
 
   const regions = useMemo(() => {
     const r = new Set(structures.map(s => s.region).filter(Boolean));
@@ -59,13 +61,12 @@ export default function StructureRegistry() {
     return list;
   }, [structures, query, typeFilter, condFilter, regionFilter, sortKey, sortAsc]);
 
-  const pageCount = Math.ceil(filtered.length / PAGE_SIZE);
-  const pageData  = filtered; // pagination removed per requirement — show all records, single scroll container
+  const { containerRef, visibleRows, topSpacerHeight, bottomSpacerHeight } =
+    useVirtualRows(filtered, { rowHeight: ROW_HEIGHT });
 
   function sort(key: SortKey) {
     if (key === sortKey) setSortAsc(a => !a);
     else { setSortKey(key); setSortAsc(true); }
-    setPage(1);
   }
 
   function SortIcon({ k }: { k: SortKey }) {
@@ -99,7 +100,7 @@ export default function StructureRegistry() {
   }
 
   const Th = ({ label, k }: { label: string; k: SortKey }) => (
-    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider bg-slate-900 border-b border-slate-700 whitespace-nowrap cursor-pointer hover:text-slate-200 select-none" onClick={() => sort(k)}>
+    <th className="dt-sticky-th px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider bg-slate-900 border-b border-slate-700 whitespace-nowrap cursor-pointer hover:text-slate-200 select-none" onClick={() => sort(k)}>
       <span className="flex items-center gap-1">{label} <SortIcon k={k} /></span>
     </th>
   );
@@ -127,20 +128,20 @@ export default function StructureRegistry() {
               className="bms-input pl-9 py-1.5 text-xs"
               placeholder="Name, ID, road, region…"
               value={query}
-              onChange={e => { setQuery(e.target.value); setPage(1); }}
+              onChange={e => { setQuery(e.target.value); }}
             />
           </div>
 
           {/* Filters */}
           <div className="flex items-center gap-1">
             <Filter size={13} className="text-slate-500" />
-            <select className="bms-select text-xs py-1.5" value={typeFilter} onChange={e => { setTypeFilter(e.target.value as typeof typeFilter); setPage(1); }}>
+            <select className="bms-select text-xs py-1.5" value={typeFilter} onChange={e => { setTypeFilter(e.target.value as typeof typeFilter); }}>
               <option value="all">All Types</option>
               <option value="bridge">Bridges</option>
               <option value="culvert">Culverts</option>
             </select>
           </div>
-          <select className="bms-select text-xs py-1.5" value={condFilter} onChange={e => { setCondFilter(e.target.value as typeof condFilter); setPage(1); }}>
+          <select className="bms-select text-xs py-1.5" value={condFilter} onChange={e => { setCondFilter(e.target.value as typeof condFilter); }}>
             <option value="all">All Conditions</option>
             <option value="5">5 - Good</option>
             <option value="4">4 - Good</option>
@@ -148,7 +149,7 @@ export default function StructureRegistry() {
             <option value="2">2 - Poor</option>
             <option value="1">1 - Critical</option>
           </select>
-          <select className="bms-select text-xs py-1.5" value={regionFilter} onChange={e => { setRegion(e.target.value); setPage(1); }}>
+          <select className="bms-select text-xs py-1.5" value={regionFilter} onChange={e => { setRegion(e.target.value); }}>
             {regions.map(r => (
               <option key={r} value={r}>{r === 'all' ? 'All Regions' : r}</option>
             ))}
@@ -156,7 +157,7 @@ export default function StructureRegistry() {
 
           {/* Spacer + count + export */}
           <div className="flex-1" />
-          <span className="text-xs text-slate-500">{filtered.length.toLocaleString()} structures</span>
+          <span className="record-badge">{filtered.length.toLocaleString()} structures</span>
           <button onClick={exportCSV} className="bms-btn-secondary text-xs py-1.5">
             <Download size={13} /> CSV
           </button>
@@ -175,8 +176,9 @@ export default function StructureRegistry() {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="flex-1 overflow-auto">
+      {/* Table — fixed-height virtualized scroll container, sticky header */}
+      <div className="flex-1 min-h-0 px-6 pb-6 pt-3">
+      <div ref={containerRef} className="dt-scroll">
         <table className="bms-table">
           <thead>
             <tr>
@@ -197,11 +199,14 @@ export default function StructureRegistry() {
               <Th label="Next Insp."  k="nextInspection" />
               <Th label="Traffic"     k="traffic" />
               <Th label="Priority"    k="priorityScore" />
-              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider bg-slate-900 border-b border-slate-700">Details</th>
+              <th className="dt-sticky-th px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider bg-slate-900 border-b border-slate-700">Details</th>
             </tr>
           </thead>
           <tbody>
-            {pageData.map(s => (
+            {topSpacerHeight > 0 && (
+              <tr aria-hidden style={{ height: topSpacerHeight }}><td colSpan={COLUMN_COUNT} style={{ padding: 0, border: 'none' }} /></tr>
+            )}
+            {visibleRows.map(s => (
               <tr key={s.id} onClick={() => setSelected(s)} className="hover:bg-slate-700/30 transition-colors cursor-pointer">
                 <td className="px-4 py-3 text-slate-400 text-xs font-mono">#{s.priorityRank}</td>
                 <td className="px-4 py-3 text-xs font-mono text-blue-400 font-bold">{s.id}</td>
@@ -258,11 +263,13 @@ export default function StructureRegistry() {
                 </td>
               </tr>
             ))}
+            {bottomSpacerHeight > 0 && (
+              <tr aria-hidden style={{ height: bottomSpacerHeight }}><td colSpan={COLUMN_COUNT} style={{ padding: 0, border: 'none' }} /></tr>
+            )}
           </tbody>
         </table>
       </div>
-
-      
+      </div>
 
       {/* Detail modal */}
       {selected && <StructureDetailModal structure={selected} onClose={() => setSelected(null)} />}

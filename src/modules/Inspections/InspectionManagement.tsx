@@ -5,6 +5,10 @@ import type { Inspection, InspectionType } from '../../types';
 import { conditionColor, conditionLabel, conditionBadge, formatDate, INSPECTORS } from '../../utils/helpers';
 import { v4 as uuidv4 } from 'uuid';
 import SectionDashboard from '../Dashboard/SectionDashboard';
+import { useVirtualRows } from '../../shared/useVirtualRows';
+
+const ROW_HEIGHT = 44;
+const COLUMN_COUNT = 12;
 
 export default function InspectionManagement() {
   const { state, dispatch } = useBMS();
@@ -13,8 +17,6 @@ export default function InspectionManagement() {
   const [query,       setQuery]       = useState('');
   const [typeFilter,  setTypeFilter]  = useState<'all' | InspectionType>('all');
   const [showForm,    setShowForm]    = useState(false);
-  const [page,        setPage]        = useState(1);
-  const PAGE_SIZE = 20;
 
   const filtered = useMemo(() => {
     let list = [...inspections].sort((a, b) =>
@@ -32,8 +34,8 @@ export default function InspectionManagement() {
     return list;
   }, [inspections, query, typeFilter]);
 
-  const pageCount = Math.ceil(filtered.length / PAGE_SIZE);
-  const pageData  = filtered; // pagination removed per requirement — show all records, single scroll container
+  const { containerRef, visibleRows, topSpacerHeight, bottomSpacerHeight } =
+    useVirtualRows(filtered, { rowHeight: ROW_HEIGHT });
 
   // Upcoming due
   const upcomingDue = useMemo(() =>
@@ -65,10 +67,10 @@ export default function InspectionManagement() {
               className="bms-input pl-9 py-1.5 text-xs"
               placeholder="Search by structure, inspector…"
               value={query}
-              onChange={e => { setQuery(e.target.value); setPage(1); }}
+              onChange={e => { setQuery(e.target.value); }}
             />
           </div>
-          <select className="bms-select text-xs py-1.5" value={typeFilter} onChange={e => { setTypeFilter(e.target.value as typeof typeFilter); setPage(1); }}>
+          <select className="bms-select text-xs py-1.5" value={typeFilter} onChange={e => { setTypeFilter(e.target.value as typeof typeFilter); }}>
             <option value="all">All Types</option>
             <option value="Routine">Routine</option>
             <option value="Principal">Principal</option>
@@ -76,7 +78,7 @@ export default function InspectionManagement() {
             <option value="Emergency">Emergency</option>
           </select>
           <div className="flex-1" />
-          <span className="text-xs text-slate-500">{filtered.length} inspections</span>
+          <span className="record-badge">{filtered.length.toLocaleString()} inspections</span>
           <button onClick={() => setShowForm(true)} className="bms-btn-primary text-xs py-1.5">
             <Plus size={13} /> Log Inspection
           </button>
@@ -84,35 +86,39 @@ export default function InspectionManagement() {
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Main table */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <div className="flex-1 overflow-auto">
+        {/* Main table — fixed-height virtualized scroll container, sticky header */}
+        <div className="flex-1 flex flex-col overflow-hidden p-4">
+          <div ref={containerRef} className="dt-scroll">
             <table className="bms-table">
               <thead>
                 <tr>
-                  <th>Structure</th>
-                  <th>Date</th>
-                  <th>Inspector</th>
-                  <th>Type</th>
-                  <th>Deck</th>
-                  <th>Super.</th>
-                  <th>Sub.</th>
-                  <th>Channel</th>
-                  <th>Visual Score</th>
-                  <th>Overall</th>
-                  <th>Next Due</th>
-                  <th>Photos</th>
+                  <th className="dt-sticky-th">Structure</th>
+                  <th className="dt-sticky-th">Date</th>
+                  <th className="dt-sticky-th">Inspector</th>
+                  <th className="dt-sticky-th">Type</th>
+                  <th className="dt-sticky-th">Deck</th>
+                  <th className="dt-sticky-th">Super.</th>
+                  <th className="dt-sticky-th">Sub.</th>
+                  <th className="dt-sticky-th">Channel</th>
+                  <th className="dt-sticky-th">Visual Score</th>
+                  <th className="dt-sticky-th">Overall</th>
+                  <th className="dt-sticky-th">Next Due</th>
+                  <th className="dt-sticky-th">Photos</th>
                 </tr>
               </thead>
               <tbody>
-                {pageData.map(insp => (
+                {topSpacerHeight > 0 && (
+                  <tr aria-hidden style={{ height: topSpacerHeight }}><td colSpan={COLUMN_COUNT} style={{ padding: 0, border: 'none' }} /></tr>
+                )}
+                {visibleRows.map(insp => (
                   <InspectionRow key={insp.id} insp={insp} />
                 ))}
+                {bottomSpacerHeight > 0 && (
+                  <tr aria-hidden style={{ height: bottomSpacerHeight }}><td colSpan={COLUMN_COUNT} style={{ padding: 0, border: 'none' }} /></tr>
+                )}
               </tbody>
             </table>
           </div>
-
-          
         </div>
 
         {/* Right panel: upcoming due */}

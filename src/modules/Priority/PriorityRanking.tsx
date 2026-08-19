@@ -4,18 +4,20 @@ import { useBMS } from '../../store/BMSContext';
 import { conditionColor, conditionLabel, conditionBadge, formatUGX, CONDITION_COLORS } from '../../utils/helpers';
 import type { Structure } from '../../types';
 import SectionDashboard from '../Dashboard/SectionDashboard';
+import { useVirtualRows } from '../../shared/useVirtualRows';
 import {
   ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Cell,
 } from 'recharts';
 
 type FilterMode = 'all' | 'bridges' | 'culverts' | 'critical' | 'poor';
 
+const ROW_HEIGHT = 44;
+const COLUMN_COUNT = 12;
+
 export default function PriorityRanking() {
   const { state }    = useBMS();
   const { structures } = state;
   const [mode, setMode] = useState<FilterMode>('all');
-  const [page, setPage] = useState(1);
-  const PAGE_SIZE = 30;
 
   const filtered = useMemo(() => {
     let list = [...structures].sort((a, b) => b.priorityScore - a.priorityScore);
@@ -27,8 +29,8 @@ export default function PriorityRanking() {
   }, [structures, mode]);
 
   const top10 = filtered.slice(0, 10);
-  const pageData = filtered; // pagination removed per requirement — show all records, single scroll container
-  const pageCount = Math.ceil(filtered.length / PAGE_SIZE);
+  const { containerRef, visibleRows, topSpacerHeight, bottomSpacerHeight } =
+    useVirtualRows(filtered, { rowHeight: ROW_HEIGHT });
 
   // Scatter data: priority score vs age
   const scatterData = useMemo(() =>
@@ -62,13 +64,13 @@ export default function PriorityRanking() {
           {(['all','bridges','culverts','critical','poor'] as FilterMode[]).map(m => (
             <button
               key={m}
-              onClick={() => { setMode(m); setPage(1); }}
+              onClick={() => { setMode(m); }}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-colors
                 ${mode === m ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-400 hover:text-white'}`}
             >{m}</button>
           ))}
           <div className="flex-1" />
-          <span className="text-xs text-slate-500">{filtered.length} structures ranked</span>
+          <span className="record-badge">{filtered.length.toLocaleString()} structures ranked</span>
         </div>
       </div>
 
@@ -88,33 +90,37 @@ export default function PriorityRanking() {
             </div>
           </div>
 
-          {/* Full table */}
-          <div className="flex-1 overflow-auto">
+          {/* Full table — fixed-height virtualized scroll container, sticky header */}
+          <div className="flex-1 p-4">
+          <div ref={containerRef} className="dt-scroll">
             <table className="bms-table">
               <thead>
                 <tr>
-                  <th>Rank</th>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Type</th>
-                  <th>Road</th>
-                  <th>Region</th>
-                  <th>Condition</th>
-                  <th>Traffic</th>
-                  <th>Age (yrs)</th>
-                  <th>Strategic Imp.</th>
-                  <th>Priority Score</th>
-                  <th>Est. Cost</th>
+                  <th className="dt-sticky-th">Rank</th>
+                  <th className="dt-sticky-th">ID</th>
+                  <th className="dt-sticky-th">Name</th>
+                  <th className="dt-sticky-th">Type</th>
+                  <th className="dt-sticky-th">Road</th>
+                  <th className="dt-sticky-th">Region</th>
+                  <th className="dt-sticky-th">Condition</th>
+                  <th className="dt-sticky-th">Traffic</th>
+                  <th className="dt-sticky-th">Age (yrs)</th>
+                  <th className="dt-sticky-th">Strategic Imp.</th>
+                  <th className="dt-sticky-th">Priority Score</th>
+                  <th className="dt-sticky-th">Est. Cost</th>
                 </tr>
               </thead>
               <tbody>
-                {pageData.map((s, i) => (
+                {topSpacerHeight > 0 && (
+                  <tr aria-hidden style={{ height: topSpacerHeight }}><td colSpan={COLUMN_COUNT} style={{ padding: 0, border: 'none' }} /></tr>
+                )}
+                {visibleRows.map(s => (
                   <tr key={s.id}>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0
-                          ${i + ((page-1)*PAGE_SIZE) < 3 ? 'bg-red-500 text-white' :
-                            i + ((page-1)*PAGE_SIZE) < 10 ? 'bg-orange-500/20 text-orange-400' :
+                          ${(s.priorityRank ?? 999) <= 3 ? 'bg-red-500 text-white' :
+                            (s.priorityRank ?? 999) <= 10 ? 'bg-orange-500/20 text-orange-400' :
                             'bg-slate-700 text-slate-400'}`}
                         >
                           {s.priorityRank}
@@ -162,11 +168,13 @@ export default function PriorityRanking() {
                     </td>
                   </tr>
                 ))}
+                {bottomSpacerHeight > 0 && (
+                  <tr aria-hidden style={{ height: bottomSpacerHeight }}><td colSpan={COLUMN_COUNT} style={{ padding: 0, border: 'none' }} /></tr>
+                )}
               </tbody>
             </table>
           </div>
-
-          
+          </div>
         </div>
 
         {/* Right: scatter plot */}

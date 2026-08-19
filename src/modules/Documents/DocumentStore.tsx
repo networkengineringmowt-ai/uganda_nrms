@@ -8,6 +8,10 @@ import type { BridgeDocument, DocumentCategory } from '../../types';
 import { formatDate } from '../../utils/helpers';
 import { v4 as uuidv4 } from 'uuid';
 import SectionDashboard from '../Dashboard/SectionDashboard';
+import { useVirtualRows } from '../../shared/useVirtualRows';
+
+const DOC_ROW_HEIGHT = 56;
+const DOC_COLUMN_COUNT = 7;
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   'Design Drawing':     <FileText size={14} className="text-blue-400" />,
@@ -127,6 +131,9 @@ export default function DocumentStore() {
     }
     return list;
   }, [documents, catFilter, typeFilter, query]);
+
+  const { containerRef, visibleRows, topSpacerHeight, bottomSpacerHeight } =
+    useVirtualRows(filtered, { rowHeight: DOC_ROW_HEIGHT });
 
   // Stats by category
   const catStats = useMemo(() => {
@@ -273,12 +280,12 @@ export default function DocumentStore() {
           <select className="bms-input py-1.5 text-xs" value={typeFilter} onChange={e => setType(e.target.value)}>
             {fileTypes.map(t => <option key={t} value={t}>{t === 'all' ? 'All file types' : t}</option>)}
           </select>
-          <span className="text-xs text-slate-500 ml-auto">{filtered.length.toLocaleString()} of {documents.length.toLocaleString()} shown</span>
+          <span className="record-badge ml-auto">{filtered.length.toLocaleString()} of {documents.length.toLocaleString()} shown</span>
         </div>
       </div>
 
-      {/* Document list — single scroll container, no pagination */}
-      <div className="flex-1 overflow-auto">
+      {/* Document list — fixed-height virtualized scroll container, sticky header */}
+      <div className="flex-1 p-4">
         {filtered.length === 0 ? (
           <div style={{ padding: 40, textAlign: 'center', color: '#64748b', fontSize: 12 }}>
             {documents.length === 0
@@ -286,24 +293,32 @@ export default function DocumentStore() {
               : 'No documents match the current search/filter.'}
           </div>
         ) : (
+          <div ref={containerRef} className="dt-scroll">
           <table className="bms-table w-full">
             <thead>
               <tr>
-                <th className="px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">Document</th>
-                <th className="px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">Structure</th>
-                <th className="px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">Category</th>
-                <th className="px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">Content</th>
-                <th className="px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">Size</th>
-                <th className="px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">Uploaded</th>
-                <th className="px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500"></th>
+                <th className="dt-sticky-th px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">Document</th>
+                <th className="dt-sticky-th px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">Structure</th>
+                <th className="dt-sticky-th px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">Category</th>
+                <th className="dt-sticky-th px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">Content</th>
+                <th className="dt-sticky-th px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">Size</th>
+                <th className="dt-sticky-th px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">Uploaded</th>
+                <th className="dt-sticky-th px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500"></th>
               </tr>
             </thead>
             <tbody>
-              {filtered.map(doc => (
+              {topSpacerHeight > 0 && (
+                <tr aria-hidden style={{ height: topSpacerHeight }}><td colSpan={DOC_COLUMN_COUNT} style={{ padding: 0, border: 'none' }} /></tr>
+              )}
+              {visibleRows.map(doc => (
                 <DocRow key={doc.id} doc={doc} query={query} onOpen={() => setReading(doc)} />
               ))}
+              {bottomSpacerHeight > 0 && (
+                <tr aria-hidden style={{ height: bottomSpacerHeight }}><td colSpan={DOC_COLUMN_COUNT} style={{ padding: 0, border: 'none' }} /></tr>
+              )}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 

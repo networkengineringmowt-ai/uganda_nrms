@@ -5,6 +5,7 @@ import { Table2, Download, ArrowUpRight, FileText, FolderOpen, BarChart3, Extern
   HardHat, Route, Activity } from 'lucide-react';
 import type { ActiveView } from '../../types';
 import { projectAllClasses, projectAADTByClass, VC_CLASSES, NETWORK_BLENDED_GROWTH } from '../../shared/trafficProjection';
+import { useVirtualRows } from '../../shared/useVirtualRows';
 
 const DocumentStore = lazy(() => import('../Documents/DocumentStore'));
 const DownloadsView  = lazy(() => import('../Downloads/DownloadsView'));
@@ -1061,7 +1062,6 @@ const ADT_PROJECTION_YEARS = [2016, 2020, 2025, 2026, 2030, 2035, 2040];
 const ADT_CLASS_COLOR: Record<string, string> = { A: C.cyan, B: C.green, C: C.yellow, M: C.purple };
 const ADT_BASE_YEAR = 2016; // base year for ALL traffic statistics
 const ADT_SURVEY_YEAR = 2025; // GeoJSON network survey reference (DNR GIS Jun 2025)
-const ADT_PAGE_SIZE = 50;
 
 interface AdtBaseLink {
   link_id: string;
@@ -1077,9 +1077,10 @@ function adtBaseFor(roadClass: string): number {
   return 200;
 }
 
+const ADT_ROW_HEIGHT = 24;
+
 function AdtProjectionTable() {
   const [links, setLinks] = useState<AdtBaseLink[]>([]);
-  const [page, setPage] = useState(0);
   const [search, setSearch] = useState('');
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
@@ -1121,12 +1122,9 @@ function AdtProjectionTable() {
     return l.link_id.toLowerCase().includes(q) || (l.link_name ?? '').toLowerCase().includes(q);
   });
 
-  const pageCount = Math.max(1, Math.ceil(filtered.length / ADT_PAGE_SIZE));
-  const safePage  = Math.min(page, pageCount - 1);
-  const pageStart = safePage * ADT_PAGE_SIZE;
-  const pageLinks = filtered; // pagination removed per requirement — show all records, single scroll container
-  const rangeFrom = filtered.length === 0 ? 0 : pageStart + 1;
-  const rangeTo   = filtered.length;
+  const { containerRef, visibleRows: pageLinks, topSpacerHeight, bottomSpacerHeight } =
+    useVirtualRows(filtered, { rowHeight: ADT_ROW_HEIGHT });
+  const columnCount = 3 + ADT_PROJECTION_YEARS.length;
 
   function toggleExpand(linkId: string) {
     setExpanded(e => ({ ...e, [linkId]: !e[linkId] }));
@@ -1136,18 +1134,21 @@ function AdtProjectionTable() {
     <TablePanel id="tbl-adt-projection"
       title="Annual Daily Traffic (ADT) Projections 2016–2040 by Road Link and Vehicle Class"
       accent={C.yellow}
-      source="network2026.geojson (aadt property, else derived from road class) projected via projectAADTByClass / per-class growth rates in trafficProjection.ts — all 1,013 links, paginated">
+      source="network2026.geojson (aadt property, else derived from road class) projected via projectAADTByClass / per-class growth rates in trafficProjection.ts — all 1,013 links, virtualized single scroll">
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8,
         padding: '8px 14px 4px',
       }}>
+        <span className="record-badge">
+          {links.length === 0 ? 'Loading…' : `${filtered.length.toLocaleString()} links${search.trim() !== '' ? ` (of ${links.length.toLocaleString()})` : ''}`}
+        </span>
         <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.5)' }}>
-          {links.length === 0 ? 'Loading…' :
-            `Links ${rangeFrom}–${rangeTo} of ${filtered.length.toLocaleString()}${search.trim() !== '' ? ` (filtered from ${links.length.toLocaleString()})` : ''} · ${ADT_PROJECTION_YEARS.length} years (${ADT_PROJECTION_YEARS[0]}–${ADT_PROJECTION_YEARS[ADT_PROJECTION_YEARS.length - 1]}) · ${VC_CLASSES.length} vehicle classes — click a row to expand class breakdown`}
+          {links.length === 0 ? '' :
+            `${ADT_PROJECTION_YEARS.length} years (${ADT_PROJECTION_YEARS[0]}–${ADT_PROJECTION_YEARS[ADT_PROJECTION_YEARS.length - 1]}) · ${VC_CLASSES.length} vehicle classes — click a row to expand class breakdown`}
         </div>
         <input
           value={search}
-          onChange={e => { setSearch(e.target.value); setPage(0); }}
+          onChange={e => { setSearch(e.target.value); }}
           placeholder="Search link ID or road name…"
           style={{
             background: 'rgba(15,15,15,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6,
@@ -1156,7 +1157,7 @@ function AdtProjectionTable() {
         />
       </div>
 
-      <div style={{ maxHeight: 640, overflow: 'auto' }}>
+      <div ref={containerRef} className="dt-scroll">
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 8, minWidth: 1100 }}>
           <thead style={{ position: 'sticky', top: 0, background: 'rgba(8,8,8,0.97)', zIndex: 1 }}>
             <tr>
@@ -1165,6 +1166,9 @@ function AdtProjectionTable() {
             </tr>
           </thead>
           <tbody>
+            {topSpacerHeight > 0 && (
+              <tr aria-hidden style={{ height: topSpacerHeight }}><td colSpan={columnCount} style={{ padding: 0, border: 'none' }} /></tr>
+            )}
             {pageLinks.length === 0 && (
               <tr><td colSpan={3 + ADT_PROJECTION_YEARS.length} style={{ padding: '18px 14px', fontSize: 10, color: 'rgba(148,163,184,0.5)', textAlign: 'center' }}>
                 {links.length === 0 ? 'Loading network links…' : 'No links match your search.'}
@@ -1228,11 +1232,12 @@ function AdtProjectionTable() {
               );
               return [mainRow, expandRow];
             })}
+            {bottomSpacerHeight > 0 && (
+              <tr aria-hidden style={{ height: bottomSpacerHeight }}><td colSpan={columnCount} style={{ padding: 0, border: 'none' }} /></tr>
+            )}
           </tbody>
         </table>
       </div>
-
-      
 
       <div style={{ padding: '4px 14px 12px', fontSize: 9, color: 'rgba(148,163,184,0.45)', fontStyle: 'italic' }}>
         Full dataset (all 1,013 links × {ADT_PROJECTION_YEARS.length} years × {VC_CLASSES.length} vehicle classes) available via Supabase query: SELECT * FROM traffic_projections
