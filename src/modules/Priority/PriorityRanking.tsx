@@ -6,14 +6,21 @@ import type { Structure } from '../../types';
 import SectionDashboard from '../Dashboard/SectionDashboard';
 import { useVirtualRows } from '../../shared/useVirtualRows';
 import { criticalRowStyle, NullableCell } from '../../shared/tableFormatting';
+import { useSortableColumns, sortRows, SortArrow, type ColumnType } from '../../shared/useSortableColumns';
 import {
   ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Cell,
 } from 'recharts';
 
 type FilterMode = 'all' | 'bridges' | 'culverts' | 'critical' | 'poor';
+type SortKey = keyof Structure;
 
 const ROW_HEIGHT = 44;
 const COLUMN_COUNT = 12;
+
+const SORT_TYPES: Partial<Record<SortKey, ColumnType>> = {
+  priorityRank: 'numeric', conditionRating: 'numeric', yearBuilt: 'numeric',
+  strategicImportance: 'numeric', priorityScore: 'numeric', estimatedReplacementCost: 'numeric',
+};
 
 export default function PriorityRanking() {
   const { state }    = useBMS();
@@ -30,8 +37,20 @@ export default function PriorityRanking() {
   }, [structures, mode]);
 
   const top10 = filtered.slice(0, 10);
+  const { sortKey, sortDir, cycleSort } = useSortableColumns<SortKey>();
+  const sorted = useMemo(
+    () => sortRows(filtered, sortKey, sortDir, sortKey ? (SORT_TYPES[sortKey] ?? 'text') : 'text'),
+    [filtered, sortKey, sortDir],
+  );
   const { containerRef, visibleRows, topSpacerHeight, bottomSpacerHeight } =
-    useVirtualRows(filtered, { rowHeight: ROW_HEIGHT });
+    useVirtualRows(sorted, { rowHeight: ROW_HEIGHT });
+
+  const Th = ({ label, k, align }: { label: string; k: SortKey; align?: 'left' | 'right' | 'center' }) => (
+    <th className="dt-sticky-th px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider bg-slate-900 border-b border-slate-700 whitespace-nowrap cursor-pointer hover:text-slate-200 select-none"
+      style={{ textAlign: align ?? 'left' }} onClick={() => cycleSort(k)}>
+      {label}<SortArrow active={sortKey === k} dir={sortDir} />
+    </th>
+  );
 
   // Scatter data: priority score vs age
   const scatterData = useMemo(() =>
@@ -97,18 +116,18 @@ export default function PriorityRanking() {
             <table className="bms-table">
               <thead>
                 <tr>
-                  <th className="dt-sticky-th">Rank</th>
-                  <th className="dt-sticky-th">ID</th>
-                  <th className="dt-sticky-th">Name</th>
-                  <th className="dt-sticky-th">Type</th>
-                  <th className="dt-sticky-th">Road</th>
-                  <th className="dt-sticky-th">Region</th>
-                  <th className="dt-sticky-th">Condition</th>
-                  <th className="dt-sticky-th">Traffic</th>
-                  <th className="dt-sticky-th">Age (yrs)</th>
-                  <th className="dt-sticky-th">Strategic Imp.</th>
-                  <th className="dt-sticky-th">Priority Score</th>
-                  <th className="dt-sticky-th">Est. Cost</th>
+                  <Th label="Rank" k="priorityRank" />
+                  <Th label="ID" k="id" />
+                  <Th label="Name" k="name" />
+                  <Th label="Type" k="type" />
+                  <Th label="Road" k="road" />
+                  <Th label="Region" k="region" />
+                  <Th label="Condition" k="conditionRating" />
+                  <Th label="Traffic" k="traffic" />
+                  <Th label="Age (yrs)" k="yearBuilt" />
+                  <Th label="Strategic Imp." k="strategicImportance" />
+                  <Th label="Priority Score" k="priorityScore" />
+                  <Th label="Est. Cost" k="estimatedReplacementCost" />
                 </tr>
               </thead>
               <tbody>

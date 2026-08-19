@@ -7,6 +7,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { VC_CLASSES, projectClass, VC_GROWTH } from '../../shared/trafficProjection';
 import { useVirtualRows } from '../../shared/useVirtualRows';
 import { RoadClassPill, AadtHeatCell } from '../../shared/tableFormatting';
+import { useSortableColumns, sortRows, SortArrow } from '../../shared/useSortableColumns';
 import { Download } from 'lucide-react';
 
 const BASE = import.meta.env.BASE_URL;
@@ -108,9 +109,23 @@ export default function TrafficProjectionTable() {
     return true;
   }), [links, classFilter, regionFilter, search]);
 
+  const { sortKey, sortDir, cycleSort } = useSortableColumns<string>();
+  const sorted = useMemo(() => sortRows(
+    filtered, sortKey, sortDir,
+    sortKey === 'length_km' || sortKey?.startsWith('year-') ? 'numeric' : 'text',
+    (row, key) => key.startsWith('year-')
+      ? totalAt(row.base_aadt, row.base_year, Number(key.slice(5)))
+      : (row as any)[key],
+  ), [filtered, sortKey, sortDir]);
   const { containerRef, visibleRows: paginated, topSpacerHeight, bottomSpacerHeight } =
-    useVirtualRows(filtered, { rowHeight: ROW_HEIGHT });
+    useVirtualRows(sorted, { rowHeight: ROW_HEIGHT });
   const columnCount = SNAPSHOT_YEARS.length + 6;
+
+  const HeadCell = ({ label, k, style: st, rowSpan }: { label: React.ReactNode; k: string; style?: React.CSSProperties; rowSpan?: number }) => (
+    <th rowSpan={rowSpan} style={{ ...st, cursor: 'pointer', userSelect: 'none', color: sortKey === k ? '#ffd23f' : st?.color }} onClick={() => cycleSort(k)}>
+      {label}<SortArrow active={sortKey === k} dir={sortDir} />
+    </th>
+  );
 
   function exportCSV() {
     const vcKeys = VC_CLASSES.map(c => c.key);
@@ -188,16 +203,14 @@ export default function TrafficProjectionTable() {
         <table style={{ fontSize:10, borderCollapse:'collapse', minWidth:1200 }}>
           <thead style={{ position:'sticky', top:0, background:'rgba(15,15,15,0.97)', zIndex:2 }}>
             <tr>
-              <th style={TH} rowSpan={2}>Link ID</th>
-              <th style={{ ...TH, minWidth:160 }} rowSpan={2}>Road Name</th>
-              <th style={TH} rowSpan={2}>Cls</th>
-              <th style={TH} rowSpan={2}>Region</th>
-              <th style={TH} rowSpan={2}>km</th>
+              <HeadCell label="Link ID" k="link_id" style={TH} rowSpan={2} />
+              <HeadCell label="Road Name" k="link_name" style={{ ...TH, minWidth:160 }} rowSpan={2} />
+              <HeadCell label="Cls" k="road_class" style={TH} rowSpan={2} />
+              <HeadCell label="Region" k="region" style={TH} rowSpan={2} />
+              <HeadCell label="km" k="length_km" style={TH} rowSpan={2} />
               {SNAPSHOT_YEARS.map(y => (
-                <th key={y} style={{ ...TH, textAlign:'center', minWidth:52, color: y===2026?'#00f5ff':'#94a3b8',
-                  background: y===2026?'rgba(0,245,255,0.06)':undefined }}>
-                  {y}
-                </th>
+                <HeadCell key={y} label={y} k={`year-${y}`} style={{ ...TH, textAlign:'center', minWidth:52, color: y===2026?'#00f5ff':'#94a3b8',
+                  background: y===2026?'rgba(0,245,255,0.06)':undefined }} />
               ))}
               <th style={TH} rowSpan={2}>Detail</th>
             </tr>

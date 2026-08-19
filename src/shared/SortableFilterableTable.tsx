@@ -5,12 +5,13 @@
  * dark table convention so it can be dropped into any section.
  */
 import { useMemo, useState } from 'react';
-import { ArrowUp, ArrowDown, ArrowUpDown, Search, Download, FileSpreadsheet } from 'lucide-react';
+import { Search, Download, FileSpreadsheet } from 'lucide-react';
 import { exportTableToCSV } from './exportUtils';
 import { exportTableToExcel } from './excelExport';
 import { InfoTip } from './InfoTip';
 import { lookup } from './dataDictionary';
 import { useVirtualRows } from './useVirtualRows';
+import { useSortableColumns, sortRows, SortArrow } from './useSortableColumns';
 
 const ROW_HEIGHT = 36;
 
@@ -18,6 +19,8 @@ export interface STColumn<T> {
   key: keyof T & string;
   label: string;
   numeric?: boolean;
+  /** Sort this column chronologically instead of lexicographically. */
+  date?: boolean;
   /** Optional custom cell renderer; defaults to String(value). */
   render?: (row: T) => React.ReactNode;
   width?: number | string;
@@ -45,37 +48,21 @@ export function SortableFilterableTable<T extends Record<string, any>>({
   columns, rows, accent = '#4d9fff', exportName = 'table-export',
   initialSort, emptyText = 'No rows match the current filter.', rowStyle,
 }: Props<T>) {
-  const [sortKey, setSortKey] = useState<string | null>(initialSort ?? null);
-  const [sortAsc, setSortAsc] = useState(true);
+  const { sortKey, sortDir, cycleSort } = useSortableColumns(initialSort ?? null);
   const [filter, setFilter] = useState('');
 
-  const onSort = (key: string) => {
-    if (sortKey === key) setSortAsc(a => !a);
-    else { setSortKey(key); setSortAsc(true); }
-  };
+  const filtered = useMemo(() => {
+    const q = filter.trim().toLowerCase();
+    if (!q) return rows;
+    return rows.filter(r =>
+      columns.some(c => String(r[c.key] ?? '').toLowerCase().includes(q)));
+  }, [rows, columns, filter]);
 
   const visible = useMemo(() => {
-    let out = rows;
-    const q = filter.trim().toLowerCase();
-    if (q) {
-      out = out.filter(r =>
-        columns.some(c => String(r[c.key] ?? '').toLowerCase().includes(q)));
-    }
-    if (sortKey) {
-      const col = columns.find(c => c.key === sortKey);
-      out = [...out].sort((a, b) => {
-        const av = a[sortKey], bv = b[sortKey];
-        if (av == null && bv == null) return 0;
-        if (av == null) return 1;
-        if (bv == null) return -1;
-        const cmp = col?.numeric
-          ? Number(av) - Number(bv)
-          : String(av).localeCompare(String(bv), undefined, { numeric: true });
-        return sortAsc ? cmp : -cmp;
-      });
-    }
-    return out;
-  }, [rows, columns, filter, sortKey, sortAsc]);
+    const col = columns.find(c => c.key === sortKey);
+    const type = col?.numeric ? 'numeric' : col?.date ? 'date' : 'text';
+    return sortRows(filtered, sortKey, sortDir, type);
+  }, [filtered, columns, sortKey, sortDir]);
 
   const { containerRef, visibleRows, topSpacerHeight, bottomSpacerHeight } =
     useVirtualRows(visible, { rowHeight: ROW_HEIGHT });
@@ -101,7 +88,7 @@ export function SortableFilterableTable<T extends Record<string, any>>({
         rows: visible as Record<string, unknown>[],
         meta: {
           'Filter applied': filter.trim() || '(none)',
-          'Sorted by': sortKey ? `${sortKey} (${sortAsc ? 'asc' : 'desc'})` : '(none)',
+          'Sorted by': sortKey && sortDir ? `${sortKey} (${sortDir})` : '(none)',
         },
       });
     } finally {
@@ -153,7 +140,7 @@ export function SortableFilterableTable<T extends Record<string, any>>({
               {columns.map(c => {
                 const active = sortKey === c.key;
                 return (
-                  <th key={c.key} onClick={() => onSort(c.key)} style={{
+                  <th key={c.key} onClick={() => cycleSort(c.key)} style={{
                     textAlign: c.numeric ? 'right' : 'left', padding: '9px 12px',
                     color: active ? accent : 'rgba(148,163,184,0.8)', fontWeight: 800,
                     textTransform: 'uppercase', letterSpacing: '0.06em', fontSize: 9.5,
@@ -166,9 +153,7 @@ export function SortableFilterableTable<T extends Record<string, any>>({
                       {(lookup(c.key) || lookup(c.label)) && (
                         <InfoTip term={lookup(c.key) ? c.key : c.label} />
                       )}
-                      {active
-                        ? (sortAsc ? <ArrowUp size={10} /> : <ArrowDown size={10} />)
-                        : <ArrowUpDown size={10} style={{ opacity: 0.35 }} />}
+                      <SortArrow active={active} dir={sortDir} />
                     </span>
                   </th>
                 );

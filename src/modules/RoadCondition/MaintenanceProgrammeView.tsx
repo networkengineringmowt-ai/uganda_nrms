@@ -6,9 +6,16 @@ import {
 import { AlertTriangle, TrendingUp, DollarSign, Wrench, Filter, Download } from 'lucide-react';
 import { useVirtualRows } from '../../shared/useVirtualRows';
 import { RoadClassPill, ConditionLabelBadge, criticalRowStyle, NullableCell } from '../../shared/tableFormatting';
+import { useSortableColumns, sortRows, SortArrow, type ColumnType } from '../../shared/useSortableColumns';
 
 const ROW_HEIGHT = 40;
 const COLUMN_COUNT = 8;
+
+type LinkSortKey = 'priority_rank' | 'road_name' | 'road_class' | 'current_iri' |
+  'condition_now' | 'intervention_type' | 'length_km' | 'estimated_cost_usd';
+const LINK_SORT_TYPES: Partial<Record<LinkSortKey, ColumnType>> = {
+  priority_rank: 'numeric', current_iri: 'numeric', length_km: 'numeric', estimated_cost_usd: 'numeric',
+};
 
 const C = {
   cyan: '#00f5ff', green: '#00ff88', yellow: '#ffd23f',
@@ -129,8 +136,13 @@ export default function MaintenanceProgrammeView() {
     return sorted;
   }, [data, filterClass, filterIntervention, sortBy]);
 
+  const { sortKey: colSortKey, sortDir: colSortDir, cycleSort } = useSortableColumns<LinkSortKey>();
+  const columnSorted = useMemo(
+    () => sortRows(filteredAndSorted, colSortKey, colSortDir, colSortKey ? (LINK_SORT_TYPES[colSortKey] ?? 'text') : 'text'),
+    [filteredAndSorted, colSortKey, colSortDir],
+  );
   const { containerRef, visibleRows: paginated, topSpacerHeight, bottomSpacerHeight } =
-    useVirtualRows(filteredAndSorted, { rowHeight: ROW_HEIGHT });
+    useVirtualRows(columnSorted, { rowHeight: ROW_HEIGHT });
 
   if (!data) {
     return (
@@ -344,14 +356,21 @@ export default function MaintenanceProgrammeView() {
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
             <thead>
               <tr style={{ borderBottom: '1px solid rgba(77,159,255,0.2)' }}>
-                <th className="dt-sticky-th" style={{ padding: '10px 8px', textAlign: 'left', color: 'rgba(148,163,184,0.7)', fontWeight: 600, background: '#0f0f0f' }}>Rank</th>
-                <th className="dt-sticky-th" style={{ padding: '10px 8px', textAlign: 'left', color: 'rgba(148,163,184,0.7)', fontWeight: 600, background: '#0f0f0f' }}>Road</th>
-                <th className="dt-sticky-th" style={{ padding: '10px 8px', textAlign: 'left', color: 'rgba(148,163,184,0.7)', fontWeight: 600, background: '#0f0f0f' }}>Class</th>
-                <th className="dt-sticky-th" style={{ padding: '10px 8px', textAlign: 'center', color: 'rgba(148,163,184,0.7)', fontWeight: 600, background: '#0f0f0f' }}>Current IRI</th>
-                <th className="dt-sticky-th" style={{ padding: '10px 8px', textAlign: 'left', color: 'rgba(148,163,184,0.7)', fontWeight: 600, background: '#0f0f0f' }}>Condition</th>
-                <th className="dt-sticky-th" style={{ padding: '10px 8px', textAlign: 'left', color: 'rgba(148,163,184,0.7)', fontWeight: 600, background: '#0f0f0f' }}>Intervention</th>
-                <th className="dt-sticky-th" style={{ padding: '10px 8px', textAlign: 'center', color: 'rgba(148,163,184,0.7)', fontWeight: 600, background: '#0f0f0f' }}>Length (km)</th>
-                <th className="dt-sticky-th" style={{ padding: '10px 8px', textAlign: 'right', color: 'rgba(148,163,184,0.7)', fontWeight: 600, background: '#0f0f0f' }}>Cost (USD)</th>
+                {([
+                  ['Rank', 'priority_rank', 'left'],
+                  ['Road', 'road_name', 'left'],
+                  ['Class', 'road_class', 'left'],
+                  ['Current IRI', 'current_iri', 'center'],
+                  ['Condition', 'condition_now', 'left'],
+                  ['Intervention', 'intervention_type', 'left'],
+                  ['Length (km)', 'length_km', 'center'],
+                  ['Cost (USD)', 'estimated_cost_usd', 'right'],
+                ] as [string, LinkSortKey, 'left' | 'center' | 'right'][]).map(([label, key, align]) => (
+                  <th key={key} className="dt-sticky-th" style={{ padding: '10px 8px', textAlign: align, color: colSortKey === key ? '#ffd23f' : 'rgba(148,163,184,0.7)', fontWeight: 600, background: '#0f0f0f', cursor: 'pointer', userSelect: 'none' }}
+                    onClick={() => cycleSort(key)}>
+                    {label}<SortArrow active={colSortKey === key} dir={colSortDir} />
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>

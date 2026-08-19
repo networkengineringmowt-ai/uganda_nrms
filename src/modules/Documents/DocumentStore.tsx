@@ -9,9 +9,15 @@ import { formatDate } from '../../utils/helpers';
 import { v4 as uuidv4 } from 'uuid';
 import SectionDashboard from '../Dashboard/SectionDashboard';
 import { useVirtualRows } from '../../shared/useVirtualRows';
+import { useSortableColumns, sortRows, SortArrow, type ColumnType } from '../../shared/useSortableColumns';
 
 const DOC_ROW_HEIGHT = 56;
 const DOC_COLUMN_COUNT = 7;
+
+type DocSortKey = 'name' | 'structureName' | 'category' | 'wordCount' | 'fileSize' | 'uploadedAt';
+const DOC_SORT_TYPES: Partial<Record<DocSortKey, ColumnType>> = {
+  wordCount: 'numeric', uploadedAt: 'date',
+};
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   'Design Drawing':     <FileText size={14} className="text-blue-400" />,
@@ -132,8 +138,21 @@ export default function DocumentStore() {
     return list;
   }, [documents, catFilter, typeFilter, query]);
 
+  const { sortKey: docSortKey, sortDir: docSortDir, cycleSort: cycleDocSort } = useSortableColumns<DocSortKey>();
+  const sortedDocs = useMemo(() => sortRows(
+    filtered, docSortKey, docSortDir, docSortKey ? (DOC_SORT_TYPES[docSortKey] ?? 'text') : 'text',
+    (row, key) => key === 'wordCount' ? (row.wordCount ?? 0) : (row as any)[key],
+  ), [filtered, docSortKey, docSortDir]);
   const { containerRef, visibleRows, topSpacerHeight, bottomSpacerHeight } =
-    useVirtualRows(filtered, { rowHeight: DOC_ROW_HEIGHT });
+    useVirtualRows(sortedDocs, { rowHeight: DOC_ROW_HEIGHT });
+
+  const DocTh = ({ label, k }: { label: string; k: DocSortKey }) => (
+    <th className="dt-sticky-th px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500 cursor-pointer select-none"
+      style={{ color: docSortKey === k ? '#ffd23f' : undefined }}
+      onClick={() => cycleDocSort(k)}>
+      {label}<SortArrow active={docSortKey === k} dir={docSortDir} />
+    </th>
+  );
 
   // Stats by category
   const catStats = useMemo(() => {
@@ -297,12 +316,12 @@ export default function DocumentStore() {
           <table className="bms-table w-full">
             <thead>
               <tr>
-                <th className="dt-sticky-th px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">Document</th>
-                <th className="dt-sticky-th px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">Structure</th>
-                <th className="dt-sticky-th px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">Category</th>
-                <th className="dt-sticky-th px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">Content</th>
-                <th className="dt-sticky-th px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">Size</th>
-                <th className="dt-sticky-th px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">Uploaded</th>
+                <DocTh label="Document" k="name" />
+                <DocTh label="Structure" k="structureName" />
+                <DocTh label="Category" k="category" />
+                <DocTh label="Content" k="wordCount" />
+                <DocTh label="Size" k="fileSize" />
+                <DocTh label="Uploaded" k="uploadedAt" />
                 <th className="dt-sticky-th px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500"></th>
               </tr>
             </thead>

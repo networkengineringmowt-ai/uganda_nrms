@@ -7,9 +7,17 @@ import { v4 as uuidv4 } from 'uuid';
 import SectionDashboard from '../Dashboard/SectionDashboard';
 import { useVirtualRows } from '../../shared/useVirtualRows';
 import { criticalRowStyle, PercentCell, NULL_ZERO_STYLE } from '../../shared/tableFormatting';
+import { useSortableColumns, sortRows, SortArrow, type ColumnType } from '../../shared/useSortableColumns';
 
 const ROW_HEIGHT = 44;
 const COLUMN_COUNT = 12;
+
+type SortKey = keyof Inspection;
+const SORT_TYPES: Partial<Record<SortKey, ColumnType>> = {
+  date: 'date', nextInspection: 'date',
+  deckRating: 'numeric', superstructureRating: 'numeric', substructureRating: 'numeric',
+  channelRating: 'numeric', visualScore: 'numeric', overallCondition: 'numeric',
+};
 
 export default function InspectionManagement() {
   const { state, dispatch } = useBMS();
@@ -35,8 +43,19 @@ export default function InspectionManagement() {
     return list;
   }, [inspections, query, typeFilter]);
 
+  const { sortKey, sortDir, cycleSort } = useSortableColumns<SortKey | 'photoCount'>();
+  const sorted = useMemo(() => sortRows(
+    filtered, sortKey, sortDir, sortKey ? (SORT_TYPES[sortKey as SortKey] ?? (sortKey === 'photoCount' ? 'numeric' : 'text')) : 'text',
+    (row, key) => key === 'photoCount' ? row.photos.length : (row as any)[key],
+  ), [filtered, sortKey, sortDir]);
   const { containerRef, visibleRows, topSpacerHeight, bottomSpacerHeight } =
-    useVirtualRows(filtered, { rowHeight: ROW_HEIGHT });
+    useVirtualRows(sorted, { rowHeight: ROW_HEIGHT });
+
+  const Th = ({ label, k, align }: { label: string; k: SortKey | 'photoCount'; align?: 'left' | 'right' | 'center' }) => (
+    <th className="dt-sticky-th cursor-pointer select-none" style={{ textAlign: align }} onClick={() => cycleSort(k)}>
+      {label}<SortArrow active={sortKey === k} dir={sortDir} />
+    </th>
+  );
 
   // Upcoming due
   const upcomingDue = useMemo(() =>
@@ -93,18 +112,18 @@ export default function InspectionManagement() {
             <table className="bms-table">
               <thead>
                 <tr>
-                  <th className="dt-sticky-th">Structure</th>
-                  <th className="dt-sticky-th">Date</th>
-                  <th className="dt-sticky-th">Inspector</th>
-                  <th className="dt-sticky-th">Type</th>
-                  <th className="dt-sticky-th">Deck</th>
-                  <th className="dt-sticky-th">Super.</th>
-                  <th className="dt-sticky-th">Sub.</th>
-                  <th className="dt-sticky-th">Channel</th>
-                  <th className="dt-sticky-th">Visual Score</th>
-                  <th className="dt-sticky-th">Overall</th>
-                  <th className="dt-sticky-th">Next Due</th>
-                  <th className="dt-sticky-th">Photos</th>
+                  <Th label="Structure" k="structureName" />
+                  <Th label="Date" k="date" />
+                  <Th label="Inspector" k="inspector" />
+                  <Th label="Type" k="type" />
+                  <Th label="Deck" k="deckRating" />
+                  <Th label="Super." k="superstructureRating" />
+                  <Th label="Sub." k="substructureRating" />
+                  <Th label="Channel" k="channelRating" />
+                  <Th label="Visual Score" k="visualScore" />
+                  <Th label="Overall" k="overallCondition" />
+                  <Th label="Next Due" k="nextInspection" />
+                  <Th label="Photos" k="photoCount" />
                 </tr>
               </thead>
               <tbody>

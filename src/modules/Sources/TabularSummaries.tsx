@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState, useEffect } from 'react';
+import { lazy, Suspense, useState, useEffect, useMemo } from 'react';
 import { useBMS } from '../../store/BMSContext';
 import { Table2, Download, ArrowUpRight, FileText, FolderOpen, BarChart3, ExternalLink,
   Truck, Shield, Wrench, Clock, Leaf, Globe, Users, Network, DollarSign, Database,
@@ -7,6 +7,7 @@ import type { ActiveView } from '../../types';
 import { projectAllClasses, projectAADTByClass, VC_CLASSES, NETWORK_BLENDED_GROWTH } from '../../shared/trafficProjection';
 import { useVirtualRows } from '../../shared/useVirtualRows';
 import { RoadClassPill, AadtHeatCell } from '../../shared/tableFormatting';
+import { useSortableColumns, sortRows, SortArrow } from '../../shared/useSortableColumns';
 
 const DocumentStore = lazy(() => import('../Documents/DocumentStore'));
 const DownloadsView  = lazy(() => import('../Downloads/DownloadsView'));
@@ -1122,9 +1123,29 @@ function AdtProjectionTable() {
     return l.link_id.toLowerCase().includes(q) || (l.link_name ?? '').toLowerCase().includes(q);
   });
 
+  const { sortKey: adtSortKey, sortDir: adtSortDir, cycleSort: cycleAdtSort } = useSortableColumns<string>();
+  const sortedLinks = useMemo(() => sortRows(
+    filtered, adtSortKey, adtSortDir,
+    adtSortKey?.startsWith('year-') ? 'numeric' : 'text',
+    (row, key) => key.startsWith('year-')
+      ? projectAADTByClass(row.base_aadt, row.base_year, Number(key.slice(5)))
+      : (row as any)[key],
+  ), [filtered, adtSortKey, adtSortDir]);
+
   const { containerRef, visibleRows: pageLinks, topSpacerHeight, bottomSpacerHeight } =
-    useVirtualRows(filtered, { rowHeight: ADT_ROW_HEIGHT });
+    useVirtualRows(sortedLinks, { rowHeight: ADT_ROW_HEIGHT });
   const columnCount = 3 + ADT_PROJECTION_YEARS.length;
+
+  const AdtTh = ({ label, k }: { label: React.ReactNode; k: string }) => (
+    <th style={{
+      padding: '7px 11px', textAlign: 'left', fontSize: 7.5, fontWeight: 900,
+      color: adtSortKey === k ? '#ffd23f' : 'rgba(0,245,255,0.65)', textTransform: 'uppercase', letterSpacing: '0.1em',
+      borderBottom: '1px solid rgba(0,245,255,0.1)', whiteSpace: 'nowrap',
+      cursor: 'pointer', userSelect: 'none',
+    }} onClick={() => cycleAdtSort(k)}>
+      {label}<SortArrow active={adtSortKey === k} dir={adtSortDir} />
+    </th>
+  );
 
   function toggleExpand(linkId: string) {
     setExpanded(e => ({ ...e, [linkId]: !e[linkId] }));
@@ -1161,8 +1182,8 @@ function AdtProjectionTable() {
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 8, minWidth: 1100 }}>
           <thead style={{ position: 'sticky', top: 0, background: 'rgba(8,8,8,0.97)', zIndex: 1 }}>
             <tr>
-              <Th>Link ID</Th><Th>Road Name</Th><Th>Class</Th>
-              {ADT_PROJECTION_YEARS.map(yr => <Th key={yr}>{yr} Total ADT</Th>)}
+              <AdtTh label="Link ID" k="link_id" /><AdtTh label="Road Name" k="link_name" /><AdtTh label="Class" k="road_class" />
+              {ADT_PROJECTION_YEARS.map(yr => <AdtTh key={yr} label={`${yr} Total ADT`} k={`year-${yr}`} />)}
             </tr>
           </thead>
           <tbody>
