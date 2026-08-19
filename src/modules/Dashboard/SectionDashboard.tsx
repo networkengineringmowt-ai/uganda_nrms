@@ -880,6 +880,10 @@ function PimPppLegacy() { return <LazyPimLegacy initialTab="ppp" hideTabBar />; 
 function PimDonorLegacy() { return <LazyPimLegacy initialTab="donor" hideTabBar />; }
 function PimNdpivLegacy() { return <LazyPimLegacy initialTab="ndpiv" hideTabBar />; }
 
+// — GIS Enterprise legacy content ————————————————————
+const LazyGisLegacy = lazy(() => import('../GisEnterprise/GisEnterpriseLegacyContent'));
+function GisMapLegacy() { return <LazyGisLegacy hideTabBar />; }
+
 type ExtraSlot = 'dashboard' | 'map' | 'tables' | 'analytics' | 'capture';
 const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentType<any>[]>>> = {
   rms: {
@@ -909,6 +913,9 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
   pim: {
     tables: [PimPppLegacy, PimDonorLegacy, PimBudgetLegacy],
     analytics: [PimFrameworkLegacy, PimNdpivLegacy],
+  },
+  gisenterprise: {
+    map: [GisMapLegacy],
   },
 };
 
