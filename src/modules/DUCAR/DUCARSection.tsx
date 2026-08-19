@@ -116,41 +116,11 @@ export default function DUCARSection() {
 
   return (
     <div className="flex flex-col h-full animate-fade-in" style={{ background: 'rgba(6,6,16,0.8)' }}>
-      {/* Tab bar */}
-      <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid rgba(255,107,53,0.12)', background: 'rgba(0,0,0,0.4)', paddingLeft: 2, flexShrink: 0 }}>
-        {TABS.map(t => (
-          <button key={t.id} onClick={() => setTab(t.id)} style={{
-            display: 'flex', alignItems: 'center', gap: 5,
-            padding: '9px 14px',
-            border: 'none', borderBottom: tab === t.id ? `2px solid ${ACC}` : '2px solid transparent',
-            background: 'transparent',
-            color: tab === t.id ? ACC : 'rgba(180,180,200,0.55)',
-            fontSize: 11, fontWeight: 700, letterSpacing: '0.05em',
-            cursor: 'pointer', textTransform: 'uppercase', transition: 'all 0.15s',
-          }}>
-            {t.icon}{t.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Content */}
+      {/* Single navigation layer: Dashboard | Interactive Map | Exhaustive Tables | Deep Analytics | SQL Database & Schema | Data Capture (rendered inside SectionDashboard) */}
       <div style={{ flex: 1, overflow: 'auto', position: 'relative' }}>
-        {tab === 'dashboard' && (
-          <Suspense fallback={<div style={{ padding: 24, color: ACC, textAlign: 'center', opacity: 0.7 }}>Loading dashboard…</div>}>
-            <SectionDashboard sectionId="ducar" accent={ACC} />
-          </Suspense>
-        )}
-        {tab === 'overview' && <OverviewTab />}
-        {tab === 'network' && (
-          <div style={{ padding: 24, color: 'rgba(200,200,200,0.7)', fontSize: 13 }}>
-            District &amp; urban road network map — coming soon.
-          </div>
-        )}
-        {tab === 'works' && (
-          <div style={{ padding: 24, color: 'rgba(200,200,200,0.7)', fontSize: 13 }}>
-            Works &amp; maintenance programme — coming soon.
-          </div>
-        )}
+        <Suspense fallback={<div style={{padding:'1.5rem',color:ACC,textAlign:'center',opacity:0.7,fontSize:'12px'}}>Loading dashboard…</div>}>
+          <SectionDashboard sectionId="ducar" accent={ACC} />
+        </Suspense>
       </div>
     </div>
   );
