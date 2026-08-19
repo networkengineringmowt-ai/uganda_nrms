@@ -837,6 +837,13 @@ const LazyPriority = lazy(() => import('./sections/PriorityDashboard'));
 const LazyRoadNetworkMap = lazy(() => import('../RoadNetwork/RoadNetworkView'));
 const LazyNetworkStory = lazy(() => import('../NetworkStory/NetworkStory'));
 const LazyRoadInventoryTbl = lazy(() => import('../RMS/RoadInventory'));
+const LazyTrafficLegacy = lazy(() => import('../Traffic/TrafficLegacyContent'));
+
+function TrafficMapLegacy() { return <LazyTrafficLegacy initialTab="map" hideTabBar />; }
+function TrafficCountsLegacy() { return <LazyTrafficLegacy initialTab="counts" hideTabBar />; }
+function TrafficStationsLegacy() { return <LazyTrafficLegacy initialTab="stations" hideTabBar />; }
+function TrafficTrendsLegacy() { return <LazyTrafficLegacy initialTab="trends" hideTabBar />; }
+function TrafficRoadSafetyLegacy() { return <LazyTrafficLegacy initialTab="roadsafety" hideTabBar />; }
 
 type ExtraSlot = 'dashboard' | 'map' | 'tables' | 'analytics' | 'capture';
 const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentType<any>[]>>> = {
@@ -844,6 +851,12 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
     dashboard: [LazyNetworkStory],
     map: [LazyRoadNetworkMap],
     tables: [LazyRoadInventoryTbl],
+  },
+  tis: {
+    dashboard: [TrafficRoadSafetyLegacy],
+    map: [TrafficMapLegacy],
+    tables: [TrafficCountsLegacy, TrafficStationsLegacy],
+    analytics: [TrafficTrendsLegacy],
   },
 };
 
