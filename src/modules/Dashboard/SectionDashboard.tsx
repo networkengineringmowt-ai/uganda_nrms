@@ -855,6 +855,7 @@ function SectionSignatureBlock({ sectionId }: { sectionId: string }) {
     : null;
   if (!C) return null;
   return (
+    <>
     <DbOfflineBanner />
     <div style={{ marginBottom: 14 }}>
       <Suspense fallback={<div style={{ padding: 16, color: '#64748b', fontSize: 12 }}>Loading section dashboardâ¦</div>}>
@@ -867,5 +868,6 @@ function SectionSignatureBlock({ sectionId }: { sectionId: string }) {
         )}
       </Suspense>
     </div>
+    </>
   );
 }
