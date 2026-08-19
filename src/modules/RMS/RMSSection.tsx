@@ -1438,76 +1438,13 @@ export default function RMSSection() {
 
       <CrossLinkChipBar sectionId="rms" />
 
-      {/* Main tab bar */}
-      <div style={{
-        display: 'flex', gap: 2, padding: '0 14px', flexShrink: 0,
-        borderBottom: '1px solid rgba(0,245,255,0.15)',
-        background: 'rgba(8,8,8,0.85)',
-      }}>
-        {TABS.map(t => {
-          const isActive = t.id === tab;
-          return (
-            <button key={t.id} onClick={() => setTab(t.id)} style={{
-              display: 'flex', alignItems: 'center', gap: 6,
-              padding: '10px 14px 11px', fontSize: 11, fontWeight: isActive ? 800 : 500,
-              background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0,
-              color: isActive ? '#00f5ff' : 'rgba(148,163,184,0.70)',
-              borderBottom: isActive ? '2px solid #00f5ff' : '2px solid transparent',
-              transition: 'all 0.13s',
-            }}>
-              {t.icon}
-              <span>{t.label}</span>
-            </button>
-          );
-        })}
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', paddingRight: 4 }}>
-          <Chip label="RMS v4.0 · FY25-26" color={C.cyan} />
-        </div>
-      </div>
-
-      {/* Content */}
-      <div style={contentStyle}>
-
-
-        {tab === 'dashboard' && (
-      <>
+      {/* Single navigation layer: Dashboard | Interactive Map | Exhaustive Tables | Deep Analytics | SQL Database & Schema | Data Capture (rendered inside SectionDashboard) */
+      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
         <Suspense fallback={<div style={{padding:'1.5rem',color:'#00f5ff',textAlign:'center',opacity:0.7,fontSize:'12px'}}>Loading…</div>}>
           <SectionDashboard sectionId="rms" accent="#00f5ff" />
         </Suspense>
-        <SeamlessDashboardFrame />
-        <RMSDashboard navigate={navigate} />
-      </>
-    )}
-
-        {tab === 'roadmap' && (
-          <Suspense fallback={<Spinner />}>
-            <div style={{ position: 'absolute', inset: 0 }}>
-              <NET_RoadNetworkView showHistory={false} />
-            </div>
-          </Suspense>
-        )}
-
-        {tab === 'inventory' && (
-          <Suspense fallback={<Spinner />}>
-            <RMS_RoadInventory />
-          </Suspense>
-        )}
-
-        {tab === 'networkstory' && (
-          <Suspense fallback={<Spinner />}>
-            <div style={{ position: 'absolute', inset: 0 }}>
-              <NET_NetworkStory />
-            </div>
-          </Suspense>
-        )}
-
-        {tab === 'capture' && (
-          <Suspense fallback={<Spinner />}>
-            <LazyCaptureHub />
-          </Suspense>
-        )}
-
       </div>
+
     </div>
   );
 }
