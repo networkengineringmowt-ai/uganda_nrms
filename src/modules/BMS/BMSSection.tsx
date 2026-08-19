@@ -110,67 +110,10 @@ export default function BMSSection() {
       {/* Cross-section links are hidden in the standalone NBMS build (no other sections to jump to) */}
       {!import.meta.env.VITE_STANDALONE && <CrossLinkChipBar sectionId="bms" />}
 
-      {/* ── Main tab bar ── */}
-      <div style={{
-        display: 'flex', gap: 2, padding: '0 14px',
-        borderBottom: '1px solid rgba(77,159,255,0.15)',
-        background: 'rgba(8,8,8,0.85)', flexShrink: 0,
-      }}>
-        {MAIN_TABS.map(t => {
-          const isActive = t.id === mainTab;
-          return (
-            <button key={t.id} onClick={() => setMainTab(t.id)} style={{
-              display: 'flex', alignItems: 'center', gap: 6,
-              padding: '10px 14px 11px', fontSize: 11, fontWeight: isActive ? 800 : 500,
-              background: 'none', border: 'none', cursor: 'pointer',
-              color: isActive ? '#00f5ff' : 'rgba(148,163,184,0.70)',
-              borderBottom: isActive ? '2px solid #00f5ff' : '2px solid transparent',
-              transition: 'all 0.13s', flexShrink: 0,
-            }}>
-              {t.icon}
-              <span>{t.label}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* ── Sub-tab bar for Inventory & Condition (incl. Analytics & Digital Twin) ── */}
-      {mainTab === 'inventory' && (
-        <SubTabBar tabs={INVENTORY_TABS} active={inventoryTab} onSelect={setInventoryTab} />
-      )}
-
-      {/* ── Content area ── */}
-      <div style={contentStyle}>
+      {/* Single navigation layer: Dashboard | Interactive Map | Exhaustive Tables | Deep Analytics | SQL Database & Schema | Data Capture (rendered inside SectionDashboard) */}
+      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', position: 'relative' }}>
         <Suspense fallback={<Spinner />}>
-
-          {/* Tab 1: Dashboard */}
-          {mainTab === 'overview' && <SectionDashboard sectionId="bms" accent="#00f5ff" />}
-
-          {/* Tab 2: Structure Map (full-height, position absolute) */}
-          {mainTab === 'map' && (
-            <div style={{ position: 'absolute', inset: 0 }}>
-              <BMS_GISMap />
-            </div>
-          )}
-
-          {/* Tab 3: Inventory & Condition (incl. merged Analytics & Digital Twin) */}
-          {mainTab === 'inventory' && (
-            <>
-              {inventoryTab === 'registry'    && <BMS_Registry />}
-              {inventoryTab === 'inspections' && (<><BMS_Inspections /><BMS_Condition /></>)}
-              {inventoryTab === 'critical'    && <BMS_Critical />}
-              {inventoryTab === 'analytics'   && <BMS_Analytics />}
-              {inventoryTab === 'phototwin'   && (
-                <div style={{ position: 'relative', minHeight: '100%' }}>
-                  <BMS_PhotoTwin />
-                </div>
-              )}
-            </>
-          )}
-
-          {/* Tab 4: Bridge Works (MOWT bridges development projects) */}
-          {mainTab === 'works' && (<><BMS_BridgeWorks /><BMS_Maintenance /></>)}
-
+          <SectionDashboard sectionId="bms" accent="#00f5ff" />
         </Suspense>
       </div>
     </div>
