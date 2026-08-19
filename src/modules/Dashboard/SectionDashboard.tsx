@@ -896,14 +896,12 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
   pms: {
     map: [PmsConditionMapLegacy],
     tables: [PmsInventoryLegacy, PMS_RoadVideoView],
-    analytics: [PMS_CrossSectionAnalytics, PmsAnalyticsViewLegacy, PmsAgeLegacy, PmsFwdLegacy, PMS_LifecycleView],
-    dashboard: [PMS_PavementCatalogue, PMS_AIVisionDashboard, PMS_DigitalTwin],
+    analytics: [PMS_CrossSectionAnalytics, PmsAnalyticsViewLegacy, PmsAgeLegacy, PmsFwdLegacy, PMS_LifecycleView, PMS_PavementCatalogue, PMS_AIVisionDashboard, PMS_DigitalTwin],
   },
   bms: {
     map: [BMS_GISMap],
     tables: [BMS_Registry, BMS_Inspections, BMS_BridgeWorks, BMS_Maintenance],
-    analytics: [BMS_Condition, BMS_Critical, BMS_Analytics],
-    dashboard: [BMS_PhotoTwin],
+    analytics: [BMS_Condition, BMS_Critical, BMS_Analytics, BMS_PhotoTwin],
   },
   ducar: {
     dashboard: [LazyDucarOverview],
@@ -921,7 +919,11 @@ function SectionExtra({ sectionId, slot }: { sectionId: string; slot: ExtraSlot 
     <>
       {list.map((Comp, i) => (
         <Suspense key={i} fallback={<div style={{ padding: 20, color: '#64748b', fontSize: 12 }}>Loading…</div>}>
-          <div style={{ marginTop: 18 }}><Comp /></div>
+          <div style={{
+            marginTop: 18, position: 'relative', isolation: 'isolate',
+            contain: 'layout paint style', overflow: 'hidden auto', maxHeight: '90vh',
+            border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10,
+          }}><Comp /></div>
         </Suspense>
       ))}
     </>
