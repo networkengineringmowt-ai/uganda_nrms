@@ -884,6 +884,14 @@ function PimNdpivLegacy() { return <LazyPimLegacy initialTab="ndpiv" hideTabBar 
 const LazyGisLegacy = lazy(() => import('../GisEnterprise/GisEnterpriseLegacyContent'));
 function GisMapLegacy() { return <LazyGisLegacy hideTabBar />; }
 
+// — Road Reserve legacy content ————————————————————
+const LazyReserveLegacy = lazy(() => import('../RoadReserve/RoadReserveLegacyContent'));
+function ReserveOverviewLegacy() { return <LazyReserveLegacy initialTab="overview" hideTabBar />; }
+function ReserveMapLegacy() { return <LazyReserveLegacy initialTab="map" hideTabBar />; }
+function ReserveRegisterLegacy() { return <LazyReserveLegacy initialTab="register" hideTabBar />; }
+function ReserveGazetteLegacy() { return <LazyReserveLegacy initialTab="gazette" hideTabBar />; }
+function ReservePermitsLegacy() { return <LazyReserveLegacy initialTab="permits" hideTabBar />; }
+
 type ExtraSlot = 'dashboard' | 'map' | 'tables' | 'analytics' | 'capture';
 const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentType<any>[]>>> = {
   rms: {
@@ -916,6 +924,11 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
   },
   gisenterprise: {
     map: [GisMapLegacy],
+  },
+  reserve: {
+    dashboard: [ReserveOverviewLegacy],
+    map: [ReserveMapLegacy],
+    tables: [ReserveRegisterLegacy, ReserveGazetteLegacy, ReservePermitsLegacy],
   },
 };
 
