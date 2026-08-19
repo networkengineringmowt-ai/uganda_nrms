@@ -1,4 +1,4 @@
-import { Bell, Search, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Bell, Search, RefreshCw, ChevronLeft, ChevronRight, Menu } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useBMS } from '../../store/BMSContext';
 import { UserBadge } from '../../modules/Auth/UserBadge';
@@ -59,7 +59,7 @@ const VIEW_TITLES: Record<string, { title: string; sub: string; color?: string }
   hdm4:          { title: 'HDM-4 Analysis',               sub: 'Highway Development & Management · works cost matrix · economic appraisal', color: '#00f5ff' },
 };
 
-export default function Header({ showSearch }: { showSearch?: boolean }) {
+export default function Header({ showSearch, onMenuClick }: { showSearch?: boolean; onMenuClick?: () => void }) {
   const { state, navigate, goBack, goForward, canGoBack, canGoForward } = useBMS();
   const [query, setQuery] = useState('');
   const [now, setNow]     = useState(new Date());
@@ -97,6 +97,22 @@ export default function Header({ showSearch }: { showSearch?: boolean }) {
         background: `linear-gradient(to bottom, transparent, ${accent}, transparent)`,
         opacity: 0.7,
       }}/>
+
+      {/* Mobile hamburger — opens the sidebar drawer, hidden on desktop */}
+      <button
+        className="mobile-menu-btn"
+        onClick={onMenuClick}
+        aria-label="Open menu"
+        style={{
+          display: 'none', flexShrink: 0,
+          width: 34, height: 34, alignItems: 'center', justifyContent: 'center',
+          borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)',
+          background: 'rgba(255,255,255,0.04)', color: 'rgba(148,163,184,0.85)',
+          cursor: 'pointer',
+        }}
+      >
+        <Menu size={16}/>
+      </button>
 
       {/* Back / Forward navigation */}
       <div style={{ display: 'flex', gap: 3, flexShrink: 0 }}>

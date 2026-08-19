@@ -1,0 +1,105 @@
+/* ══════════════════════════════════════════════════════════════════════════════
+   MOBILE RESPONSIVENESS — Uganda NRMS Platform
+   Everything in this file is scoped to @media (max-width: 768px). Desktop
+   layout (>768px) is completely untouched — nothing here has an effect above
+   that breakpoint.
+   ══════════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* ---------- 1. No horizontal page overflow ---------- */
+  html, body, #root {
+    max-width: 100vw;
+  }
+  img, svg, video, iframe, canvas,
+  .recharts-wrapper, .recharts-responsive-container, .recharts-surface {
+    max-width: 100%;
+  }
+
+  /* ---------- 2. Sidebar → slide-in overlay drawer ---------- */
+  .app-sidebar {
+    position: fixed !important;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 60;
+    width: 82vw !important;
+    max-width: 300px !important;
+    min-width: 0 !important;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    box-shadow: 8px 0 40px rgba(0,0,0,0.6);
+  }
+  .app-sidebar.app-sidebar-open {
+    transform: translateX(0);
+  }
+  .sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 55;
+  }
+  .sidebar-mobile-close {
+    display: flex !important;
+  }
+  .mobile-menu-btn {
+    display: flex !important;
+  }
+  .mobile-menu-btn-floating {
+    position: fixed !important;
+    top: 10px;
+    left: 10px;
+    z-index: 45;
+  }
+
+  /* ---------- 3. KPI / stat grids stack to a single column ---------- */
+  [class*="grid-cols-"],
+  [style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ---------- 4. Charts fill the available width ---------- */
+  .recharts-wrapper,
+  .recharts-responsive-container {
+    width: 100% !important;
+  }
+
+  /* ---------- 5. Tables scroll horizontally instead of being clipped ---------- */
+  table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  table th, table td {
+    white-space: nowrap;
+  }
+
+  /* ---------- 6. Font sizes scale down on large Tailwind headings ---------- */
+  .text-4xl { font-size: 1.75rem  !important; line-height: 2.1rem  !important; }
+  .text-3xl { font-size: 1.5rem   !important; line-height: 1.9rem  !important; }
+  .text-2xl { font-size: 1.25rem  !important; line-height: 1.7rem  !important; }
+  .text-xl  { font-size: 1.05rem  !important; line-height: 1.5rem  !important; }
+
+  /* ---------- 7. Touch-friendly tap targets (44px minimum) ---------- */
+  button, .btn, .bms-btn, a[role="button"],
+  input[type="button"], input[type="submit"] {
+    min-height: 44px;
+  }
+  .app-sidebar nav button {
+    min-height: 44px;
+  }
+  /* Dense in-table row actions stay compact — 44px rows would break data tables */
+  table button, .bms-table button, td button, th button {
+    min-height: 32px;
+  }
+
+  /* ---------- 8. Section sub-tab / toolbar button rows scroll, never wrap ---------- */
+  .flex:has(> button:nth-child(3)):not(.flex-col) {
+    overflow-x: auto;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  .flex:has(> button:nth-child(3)):not(.flex-col) > button {
+    flex-shrink: 0;
+  }
+}

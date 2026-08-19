@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {
   Activity, Shield, Construction, Layers, Network, Building2,
   DollarSign, Clock, Database, ShieldCheck, Route, Globe, Landmark,
-  ChevronDown, Gauge, Map, Video, Hammer, FileText, Download,
+  ChevronDown, Gauge, Map, Video, Hammer, FileText, Download, X,
 } from 'lucide-react';
 import { useBMS } from '../../store/BMSContext';
 import { useAuth } from '../../modules/Auth/AuthContext';
@@ -49,7 +49,12 @@ const SECTIONS: Record<string, Section> = {
   downloads:     { id: 'downloads',     label: 'Downloads',                 icon: <Download size={14}/>,     color: N.gray   },
 };
 
-export default function Sidebar() {
+interface SidebarProps {
+  mobileOpen?: boolean;
+  onClose?: () => void;
+}
+
+export default function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
   const { state, navigate } = useBMS();
   const { structures, activeView } = state;
   const { user } = useAuth();
@@ -67,17 +72,19 @@ export default function Sidebar() {
   const navItems = FLAT_ORDER.filter(id => (id !== 'admin' || isAdmin) && SECTIONS[id]);
 
   return (
-    <aside
-      className="flex flex-col z-20 flex-shrink-0"
-      style={{
-        width: 240, minWidth: 240,
-        background: 'rgba(8,8,8,0.72)',
-        backdropFilter: 'blur(28px) saturate(200%)',
-        WebkitBackdropFilter: 'blur(28px) saturate(200%)',
-        borderRight: '1px solid rgba(255,255,255,0.06)',
-        boxShadow: '4px 0 32px rgba(0,0,0,0.6), 1px 0 0 rgba(0,245,255,0.05)',
-      }}
-    >
+    <>
+      {mobileOpen && <div className="sidebar-backdrop" onClick={onClose} />}
+      <aside
+        className={`app-sidebar flex flex-col z-20 flex-shrink-0${mobileOpen ? ' app-sidebar-open' : ''}`}
+        style={{
+          width: 240, minWidth: 240,
+          background: 'rgba(8,8,8,0.72)',
+          backdropFilter: 'blur(28px) saturate(200%)',
+          WebkitBackdropFilter: 'blur(28px) saturate(200%)',
+          borderRight: '1px solid rgba(255,255,255,0.06)',
+          boxShadow: '4px 0 32px rgba(0,0,0,0.6), 1px 0 0 rgba(0,245,255,0.05)',
+        }}
+      >
       {/* Brand header */}
       <div style={{ padding: '14px 14px 12px', borderBottom: '1px solid rgba(0,245,255,0.08)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
@@ -99,6 +106,19 @@ export default function Sidebar() {
               Ministry of Works & Transport  -  DNR
             </div>
           </div>
+          <button
+            className="sidebar-mobile-close"
+            onClick={onClose}
+            aria-label="Close menu"
+            style={{
+              marginLeft: 'auto', display: 'none', flexShrink: 0,
+              width: 32, height: 32, alignItems: 'center', justifyContent: 'center',
+              borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)',
+              background: 'rgba(255,255,255,0.05)', color: '#e2eaf4', cursor: 'pointer',
+            }}
+          >
+            <X size={16}/>
+          </button>
         </div>
         <div style={{
           marginTop: 9, height: 1,
@@ -116,7 +136,7 @@ export default function Sidebar() {
           return (
             <button
               key={id}
-              onClick={() => navigate(id)}
+              onClick={() => { navigate(id); onClose?.(); }}
               style={{
                 width: '100%', display: 'flex', alignItems: 'center', gap: 9,
                 padding: '7px 11px', borderRadius: 7, marginBottom: 1,
@@ -159,7 +179,8 @@ export default function Sidebar() {
           <span style={{ fontSize: 7.5, color: 'rgba(0,255,136,0.6)' }}>System Online</span>
         </div>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }
 

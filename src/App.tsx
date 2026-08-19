@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
+import { Menu } from 'lucide-react';
 import { logEvent } from './modules/Auth/auditLog';
 import { BMSProvider, useBMS } from './store/BMSContext';
 import { BotHighlightContext } from './modules/AssetBot/types';
@@ -134,12 +135,18 @@ function AppShell() {
   const { state, navigate } = useBMS();
   const { activeView, isLoading } = state;
   const { user } = useAuth();
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   // Track & trace: queues in this browser's local audit log; also mirrors to
   // the shared G: Drive audit trail when the optional local data-entry server is running.
   useEffect(() => {
     if (user) logEvent('view', { view: activeView });
   }, [user, activeView]);
+
+  // Close the mobile drawer whenever the active section changes.
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [activeView]);
 
   const showHeaderSearch = useMemo(() =>
     ['registry', 'inspections', 'documents', 'priority', 'sources'].includes(activeView),
@@ -154,9 +161,25 @@ function AppShell() {
 
   return (
     <div className="flex h-full w-full overflow-hidden bg-slate-950">
-      <Sidebar />
+      <Sidebar mobileOpen={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-        {!isFullView && <Header showSearch={showHeaderSearch} />}
+        {!isFullView && <Header showSearch={showHeaderSearch} onMenuClick={() => setMobileNavOpen(o => !o)} />}
+        {isFullView && (
+          <button
+            className="mobile-menu-btn mobile-menu-btn-floating"
+            onClick={() => setMobileNavOpen(o => !o)}
+            aria-label="Open menu"
+            style={{
+              display: 'none', alignItems: 'center', justifyContent: 'center',
+              width: 38, height: 38, borderRadius: 9,
+              border: '1px solid rgba(0,245,255,0.25)',
+              background: 'rgba(6,13,24,0.85)', color: '#e2eaf4', cursor: 'pointer',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
+            }}
+          >
+            <Menu size={16}/>
+          </button>
+        )}
         <main className="flex-1 min-h-0 relative overflow-hidden">
           <Suspense fallback={<ModuleSpinner />}>
 
