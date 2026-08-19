@@ -542,9 +542,7 @@ export function InsightGrid({ sectionId, accent }: { sectionId: string; accent?:
   const P = useMemo(() => profile(rows ?? []), [rows]);
   const tiles = useMemo(() => deriveTiles(rows ?? [], P), [rows, P]);
 
-  if (rows === null) return (
-    <div style={{ padding: 24, textAlign: 'center', color: '#64748b', fontSize: 11 }}>Deriving insight tiles…</div>
-  );
+  if (rows === null) return null; // no loading placeholder — render nothing until real content is ready, avoids flash/wasted space
   if (!rows.length) return (
     <div style={{ padding: 18, background: GRID_BG, borderRadius: 10, color: '#64748b', fontSize: 11 }}>
       No data available yet — the live database is asleep or this section's tables are empty. The grid retries automatically on the next visit.
