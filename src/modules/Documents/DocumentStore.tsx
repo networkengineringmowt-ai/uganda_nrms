@@ -1,5 +1,8 @@
-import { useState, useMemo } from 'react';
-import { FolderOpen, Search, Plus, FileText, Image, File, Download, Upload } from 'lucide-react';
+import { useState, useMemo, useRef } from 'react';
+import {
+  FolderOpen, Search, Plus, FileText, Image, File, Download, Upload,
+  X, ChevronLeft, ChevronRight, Loader2, AlertTriangle, Tag,
+} from 'lucide-react';
 import { useBMS } from '../../store/BMSContext';
 import type { BridgeDocument, DocumentCategory } from '../../types';
 import { formatDate } from '../../utils/helpers';
@@ -13,7 +16,7 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   'Contract':           <FileText size={14} className="text-purple-400" />,
   'Photo':              <Image size={14} className="text-amber-400" />,
   'Maintenance Record': <FileText size={14} className="text-orange-400" />,
-  'Environmental':      <FileText size={14} className="text-lime-400" />,
+  'Environmental':      <FileText size={14} className="text-emerald-400" />,
   'Other':              <File size={14} className="text-slate-400" />,
 };
 
@@ -22,16 +25,83 @@ const CATEGORIES: DocumentCategory[] = [
   'Photo', 'Maintenance Record', 'Environmental', 'Other',
 ];
 
+// ─── PDF.js loader (CDN, no bundler dependency) ────────────────────────────────
+// Loaded lazily on first extraction so the app shell stays light. Cached as a
+// module-level promise so repeated uploads reuse the same instance.
+let pdfjsPromise: Promise<any> | null = null;
+function loadPdfJs(): Promise<any> {
+  if (pdfjsPromise) return pdfjsPromise;
+  pdfjsPromise = new Promise((resolve, reject) => {
+    const w = window as any;
+    if (w.pdfjsLib) { resolve(w.pdfjsLib); return; }
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+    script.async = true;
+    script.onload = () => {
+      const lib = w.pdfjsLib;
+      if (!lib) { reject(new Error('pdf.js failed to initialize')); return; }
+      lib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      resolve(lib);
+    };
+    script.onerror = () => reject(new Error('Could not load pdf.js from CDN'));
+    document.head.appendChild(script);
+  });
+  return pdfjsPromise;
+}
+
+const PAGE_BREAK = '\f';
+
+async function extractPdfText(file: File): Promise<{ text: string; pageCount: number }> {
+  const pdfjsLib = await loadPdfJs();
+  const buf = await file.arrayBuffer();
+  const doc = await pdfjsLib.getDocument({ data: buf }).promise;
+  const pages: string[] = [];
+  for (let i = 1; i <= doc.numPages; i++) {
+    const page = await doc.getPage(i);
+    const content = await page.getTextContent();
+    const text = content.items.map((it: any) => it.str || '').join(' ').replace(/\s+/g, ' ').trim();
+    pages.push(text);
+  }
+  return { text: pages.join(PAGE_BREAK), pageCount: doc.numPages };
+}
+
+const STOPWORDS = new Set([
+  'the','and','for','are','but','not','you','all','can','was','with','this','that',
+  'from','have','has','been','were','will','shall','when','where','which','while',
+  'their','they','them','than','then','into','onto','also','such','each','any','per',
+  'these','those','its','his','her','our','your','out','over','under','more','most',
+  'other','some','only','own','same','both','after','before','above','below','off',
+  'again','further','once','here','there','who','whom','how','what','why','being',
+  'does','did','doing','because','until','through','during','between','about','against',
+]);
+
+function topKeywords(text: string, n = 8): string[] {
+  const freq = new Map<string, number>();
+  const words = text.toLowerCase().match(/[a-z][a-z'-]{3,}/g) || [];
+  for (const w of words) {
+    if (STOPWORDS.has(w)) continue;
+    freq.set(w, (freq.get(w) || 0) + 1);
+  }
+  return [...freq.entries()].sort((a, b) => b[1] - a[1]).slice(0, n).map(([w]) => w);
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 export default function DocumentStore() {
   const { state, dispatch } = useBMS();
   const { documents, structures } = state;
 
-  const [query,    setQuery]    = useState('');
-  const [catFilter, setCat]     = useState<'all' | DocumentCategory>('all');
-  const [typeFilter, setType]   = useState('all');
-  const [showForm, setShowForm] = useState(false);
-  const [page,     setPage]     = useState(1);
-  const PAGE_SIZE = 25;
+  const [query,     setQuery]     = useState('');
+  const [catFilter, setCat]       = useState<'all' | DocumentCategory>('all');
+  const [typeFilter, setType]     = useState('all');
+  const [showForm, setShowForm]   = useState(false);
+  const [reading,  setReading]    = useState<BridgeDocument | null>(null);
+  const [processing, setProcessing] = useState<string[]>([]);
+  const [uploadErrors, setUploadErrors] = useState<string[]>([]);
 
   const fileTypes = useMemo(() => {
     const types = new Set(documents.map(d => d.fileType));
@@ -44,20 +114,19 @@ export default function DocumentStore() {
     );
     if (catFilter !== 'all') list = list.filter(d => d.category === catFilter);
     if (typeFilter !== 'all') list = list.filter(d => d.fileType === typeFilter);
-    if (query.trim()) {
-      const q = query.toLowerCase();
+    const q = query.trim().toLowerCase();
+    if (q) {
       list = list.filter(d =>
         d.name.toLowerCase().includes(q) ||
+        d.description.toLowerCase().includes(q) ||
+        d.category.toLowerCase().includes(q) ||
         d.structureName.toLowerCase().includes(q) ||
-        d.structureId.toLowerCase().includes(q) ||
-        d.uploadedBy.toLowerCase().includes(q),
+        (d.extractedText || '').toLowerCase().includes(q) ||
+        (d.keywords || []).some(k => k.includes(q)),
       );
     }
     return list;
-  }, [documents, query, catFilter, typeFilter]);
-
-  const pageCount = Math.ceil(filtered.length / PAGE_SIZE);
-  const pageData  = filtered; // pagination removed per requirement — show all records, single scroll container
+  }, [documents, catFilter, typeFilter, query]);
 
   // Stats by category
   const catStats = useMemo(() => {
@@ -66,32 +135,121 @@ export default function DocumentStore() {
     return counts;
   }, [documents]);
 
+  const extractedCount = useMemo(
+    () => documents.filter(d => d.extractionStatus === 'ok' && d.extractedText).length,
+    [documents],
+  );
+
+  async function handleFiles(fileList: FileList, meta: { structureId: string; category: DocumentCategory; description: string }) {
+    const files = Array.from(fileList);
+    for (const file of files) {
+      setProcessing(prev => [...prev, file.name]);
+      const ext = (file.name.split('.').pop() || 'FILE').toUpperCase();
+      let extractedText = '';
+      let pageCount = 0;
+      let extractionStatus: 'ok' | 'unsupported' | 'failed' = 'unsupported';
+      try {
+        if (ext === 'PDF') {
+          const res = await extractPdfText(file);
+          extractedText = res.text;
+          pageCount = res.pageCount;
+          extractionStatus = 'ok';
+        } else if (ext === 'TXT' || ext === 'MD' || ext === 'CSV') {
+          extractedText = await file.text();
+          pageCount = 1;
+          extractionStatus = 'ok';
+        }
+      } catch (e) {
+        extractionStatus = 'failed';
+        setUploadErrors(prev => [...prev, `${file.name}: could not extract text (${(e as Error).message})`]);
+      }
+      const wordCount = extractedText.trim()
+        ? extractedText.replace(/\f/g, ' ').trim().split(/\s+/).length
+        : 0;
+      const keywords = extractedText ? topKeywords(extractedText.replace(/\f/g, ' ')) : [];
+      const struct = structures.find(s => s.id === meta.structureId);
+      const doc: BridgeDocument = {
+        id: uuidv4(),
+        structureId: meta.structureId,
+        structureName: struct?.name || meta.structureId || 'Unassigned',
+        name: file.name,
+        category: meta.category,
+        description: meta.description,
+        fileType: ext,
+        fileSize: formatBytes(file.size),
+        uploadedBy: 'DNR User',
+        uploadedAt: new Date().toISOString(),
+        version: '1.0',
+        extractedText: extractedText || undefined,
+        pageCount: pageCount || undefined,
+        wordCount: wordCount || undefined,
+        keywords: keywords.length ? keywords : undefined,
+        extractionStatus,
+      };
+      dispatch({ type: 'ADD_DOCUMENT', payload: doc });
+      setProcessing(prev => prev.filter(n => n !== file.name));
+    }
+  }
+
   const [tab, setTab] = useState<'content' | 'dashboard'>('content');
   return (
     <div className="flex flex-col h-full animate-fade-in">
       {/* ── Tab nav ── */}
       <div style={{ display:'flex', gap:6, padding:'8px 14px', borderBottom:'1px solid rgba(100,100,200,0.15)' }}>
         {(['content','dashboard'] as const).map(t => (
-          <button key={t} onClick={() => setTab(t)} style={{ fontSize:11, fontWeight:700, letterSpacing:1, padding:'4px 14px', border:`1px solid ${t===tab?'#4d9fff':'rgba(100,100,200,0.2)'}`, borderRadius:4, cursor:'pointer', background:t===tab?'#4d9fff':'rgba(100,100,200,0.06)', color:t===tab?'#020202':'rgba(200,200,200,0.7)', textTransform:'uppercase' }}>
-            {t==='content'?'Documents':'Dashboard'}
+          <button key={t} onClick={() => setTab(t)} style={{ fontSize:11, fontWeight:700, letterSpacing:1, padding:'4px 14px', border:`1px solid ${t===tab?'#3b82f6':'rgba(100,100,200,0.2)'}`, borderRadius:4, cursor:'pointer', background:t===tab?'#3b82f6':'rgba(100,100,200,0.06)', color:t===tab?'#020202':'rgba(200,200,200,0.7)', textTransform:'uppercase' }}>
+            {t==='content'?'Document Store':'Dashboard'}
           </button>
         ))}
       </div>
-      {tab==='dashboard'&&<SectionDashboard sectionId="documents" accent="#4d9fff"/>}
+      {tab==='dashboard'&&<SectionDashboard sectionId="documents" accent="#3b82f6"/>}
       {tab==='content'&&(<>
-      {/* Category strip */}
-      <div className="flex-shrink-0 flex items-center gap-2 px-6 py-3 border-b border-slate-700/60 bg-slate-900/50 overflow-x-auto">
+      {/* Header */}
+      <div className="flex-shrink-0 px-6 py-4 border-b border-slate-700/60 bg-slate-900/40">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <FolderOpen size={18} className="text-blue-400" />
+            <h2 className="text-sm font-bold text-slate-100">Document Store</h2>
+            <span className="text-xs text-slate-500">
+              {documents.length} document{documents.length === 1 ? '' : 's'} · {extractedCount} with searchable text
+            </span>
+          </div>
+          <button
+            onClick={() => setShowForm(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white hover:bg-blue-500 transition-colors"
+          >
+            <Upload size={13} /> Upload manual / PDF
+          </button>
+        </div>
+        {processing.length > 0 && (
+          <div className="mt-2 flex items-center gap-2 text-xs text-amber-400">
+            <Loader2 size={12} className="animate-spin" /> Extracting text: {processing.join(', ')}…
+          </div>
+        )}
+        {uploadErrors.length > 0 && (
+          <div className="mt-2 space-y-1">
+            {uploadErrors.map((e, i) => (
+              <div key={i} className="flex items-center gap-2 text-xs text-red-400">
+                <AlertTriangle size={12} /> {e}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Category filter chips */}
+      <div className="flex-shrink-0 flex items-center gap-2 px-6 py-2 overflow-x-auto border-b border-slate-700/40">
         <button
-          onClick={() => { setCat('all'); setPage(1); }}
+          onClick={() => setCat('all')}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors
             ${catFilter === 'all' ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-400 hover:text-white'}`}
         >
-          <FolderOpen size={12} /> All ({documents.length})
+          All ({documents.length})
         </button>
         {CATEGORIES.map(cat => (
           <button
             key={cat}
-            onClick={() => { setCat(cat); setPage(1); }}
+            onClick={() => setCat(cat)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors
               ${catFilter === cat ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-400 hover:text-white'}`}
           >
@@ -103,112 +261,132 @@ export default function DocumentStore() {
       {/* Toolbar */}
       <div className="flex-shrink-0 px-6 py-4 border-b border-slate-700/60 bg-slate-900/30">
         <div className="flex items-center gap-3 flex-wrap">
-          <div className="relative flex-1 min-w-[200px] max-w-xs">
+          <div className="relative flex-1 min-w-[240px] max-w-md">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-            <input className="bms-input pl-9 py-1.5 text-xs" placeholder="Search documents…" value={query} onChange={e => { setQuery(e.target.value); setPage(1); }} />
+            <input
+              className="bms-input pl-9 py-1.5 text-xs"
+              placeholder="Search titles, descriptions — and the full text inside manuals/PDFs…"
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+            />
           </div>
-          <select className="bms-select text-xs py-1.5" value={typeFilter} onChange={e => setType(e.target.value)}>
-            {fileTypes.map(t => <option key={t}>{t === 'all' ? 'All File Types' : t}</option>)}
+          <select className="bms-input py-1.5 text-xs" value={typeFilter} onChange={e => setType(e.target.value)}>
+            {fileTypes.map(t => <option key={t} value={t}>{t === 'all' ? 'All file types' : t}</option>)}
           </select>
-          <div className="flex-1" />
-          <span className="text-xs text-slate-500">{filtered.length} documents</span>
-          <button onClick={() => setShowForm(true)} className="bms-btn-primary text-xs py-1.5">
-            <Plus size={13} /> Attach Document
-          </button>
+          <span className="text-xs text-slate-500 ml-auto">{filtered.length.toLocaleString()} of {documents.length.toLocaleString()} shown</span>
         </div>
       </div>
 
-      {/* Document grid / table */}
+      {/* Document list — single scroll container, no pagination */}
       <div className="flex-1 overflow-auto">
-        <table className="bms-table">
-          <thead>
-            <tr>
-              <th>Document Name</th>
-              <th>Category</th>
-              <th>Structure</th>
-              <th>File Type</th>
-              <th>Size</th>
-              <th>Version</th>
-              <th>Uploaded By</th>
-              <th>Upload Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {pageData.map(doc => (
-              <DocRow key={doc.id} doc={doc} />
-            ))}
-          </tbody>
-        </table>
+        {filtered.length === 0 ? (
+          <div style={{ padding: 40, textAlign: 'center', color: '#64748b', fontSize: 12 }}>
+            {documents.length === 0
+              ? 'No documents yet — upload a manual or PDF to extract its content for search and reporting.'
+              : 'No documents match the current search/filter.'}
+          </div>
+        ) : (
+          <table className="bms-table w-full">
+            <thead>
+              <tr>
+                <th className="px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">Document</th>
+                <th className="px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">Structure</th>
+                <th className="px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">Category</th>
+                <th className="px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">Content</th>
+                <th className="px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">Size</th>
+                <th className="px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500">Uploaded</th>
+                <th className="px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map(doc => (
+                <DocRow key={doc.id} doc={doc} query={query} onOpen={() => setReading(doc)} />
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
-
-      
 
       {/* Upload form */}
       {showForm && (
         <DocUploadForm
           structures={structures.map(s => ({ id: s.id, name: s.name }))}
-          onSave={doc => { dispatch({ type: 'ADD_DOCUMENT', payload: doc }); setShowForm(false); }}
+          onUpload={async (fileList, meta) => { setShowForm(false); await handleFiles(fileList, meta); }}
           onClose={() => setShowForm(false)}
         />
       )}
-      </>
-      )}
+
+      {/* Reader panel */}
+      {reading && <DocReader doc={reading} onClose={() => setReading(null)} />}
+      </>)}
     </div>
   );
 }
 
 // ─── Row ──────────────────────────────────────────────────────────────────────
-function DocRow({ doc }: { doc: BridgeDocument }) {
-  // Build S:\PHOTOS path for photo type
-  const isPhoto = doc.category === 'Photo' || doc.fileType === 'JPG';
-  const openPath = isPhoto
-    ? `file:///S:/PHOTOS/${doc.structureId.replace('BRG-', '')}/`
-    : undefined;
+function DocRow({ doc, query, onOpen }: { doc: BridgeDocument; query: string; onOpen: () => void }) {
+  const hasContent = doc.extractionStatus === 'ok' && !!doc.extractedText;
+  const matchedInContent = !!query.trim() &&
+    !doc.name.toLowerCase().includes(query.toLowerCase()) &&
+    hasContent && (doc.extractedText || '').toLowerCase().includes(query.toLowerCase());
+
+  function downloadText() {
+    if (!doc.extractedText) return;
+    const blob = new Blob([doc.extractedText.replace(/\f/g, '\n\n— page break —\n\n')], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = doc.name.replace(/\.[^.]+$/, '') + '_extracted.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 
   return (
-    <tr className="hover:bg-slate-700/30 transition-colors">
+    <tr className="hover:bg-slate-700/30 transition-colors cursor-pointer" onClick={hasContent ? onOpen : undefined}>
       <td className="px-4 py-3">
         <div className="flex items-center gap-2">
           {CATEGORY_ICONS[doc.category] ?? <File size={14} className="text-slate-400" />}
           <div>
-            <div className="text-xs font-medium text-slate-200 max-w-[200px] truncate">{doc.name}</div>
-            {doc.description && <div className="text-[10px] text-slate-500 truncate">{doc.description}</div>}
+            <div className="text-xs font-medium text-slate-200 max-w-[260px] truncate">{doc.name}</div>
+            {doc.description && <div className="text-[10px] text-slate-500 max-w-[260px] truncate">{doc.description}</div>}
+            {matchedInContent && (
+              <div className="text-[10px] text-emerald-400 mt-0.5">match found inside document text</div>
+            )}
+            {doc.keywords && doc.keywords.length > 0 && (
+              <div className="flex items-center gap-1 mt-1 flex-wrap">
+                {doc.keywords.slice(0, 4).map(k => (
+                  <span key={k} className="flex items-center gap-0.5 text-[9px] px-1.5 py-0.5 rounded bg-slate-700/60 text-slate-400">
+                    <Tag size={8} />{k}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </td>
-      <td className="px-4 py-3">
-        <span className="badge badge-blue text-[9px]">{doc.category}</span>
-      </td>
-      <td className="px-4 py-3">
-        <div className="text-xs text-slate-300 max-w-[140px] truncate">{doc.structureName}</div>
-        <div className="text-[10px] text-slate-500">{doc.structureId}</div>
-      </td>
-      <td className="px-4 py-3">
-        <span className="badge badge-slate text-[9px]">{doc.fileType}</span>
+      <td className="px-4 py-3 text-xs text-slate-400">{doc.structureName}</td>
+      <td className="px-4 py-3 text-xs text-slate-400">{doc.category}</td>
+      <td className="px-4 py-3 text-xs">
+        {doc.extractionStatus === 'ok' ? (
+          <span className="text-emerald-400">{doc.pageCount ?? 1} page{(doc.pageCount ?? 1) === 1 ? '' : 's'} · {(doc.wordCount ?? 0).toLocaleString()} words</span>
+        ) : doc.extractionStatus === 'failed' ? (
+          <span className="text-red-400">extraction failed</span>
+        ) : (
+          <span className="text-slate-500">{doc.fileType} — not extractable</span>
+        )}
       </td>
       <td className="px-4 py-3 text-xs text-slate-400">{doc.fileSize}</td>
-      <td className="px-4 py-3 text-xs text-slate-400">{doc.version}</td>
-      <td className="px-4 py-3 text-xs text-slate-400">{doc.uploadedBy}</td>
-      <td className="px-4 py-3 text-xs text-slate-400 whitespace-nowrap">{formatDate(doc.uploadedAt)}</td>
+      <td className="px-4 py-3 text-xs text-slate-400">{formatDate(doc.uploadedAt)}</td>
       <td className="px-4 py-3">
-        <div className="flex items-center gap-1.5">
-          {isPhoto && openPath ? (
-            <a
-              href={openPath}
-              target="_blank"
-              rel="noreferrer"
-              className="p-1.5 rounded-md bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 transition-colors"
-              title="Open photo folder"
-            >
-              <Image size={12} />
-            </a>
-          ) : (
-            <button
-              className="p-1.5 rounded-md bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 transition-colors"
-              title="Download (simulated)"
-            >
-              <Download size={12} />
+        <div className="flex items-center gap-2">
+          {hasContent && (
+            <button onClick={(e) => { e.stopPropagation(); onOpen(); }} className="bms-btn-secondary text-[10px] py-1 px-2">
+              Read
+            </button>
+          )}
+          {hasContent && (
+            <button onClick={(e) => { e.stopPropagation(); downloadText(); }} className="bms-btn-secondary text-[10px] py-1 px-2 flex items-center gap-1">
+              <Download size={11} /> .txt
             </button>
           )}
         </div>
@@ -217,102 +395,153 @@ function DocRow({ doc }: { doc: BridgeDocument }) {
   );
 }
 
+// ─── Reader panel ───────────────────────────────────────────────────────────────
+function DocReader({ doc, onClose }: { doc: BridgeDocument; onClose: () => void }) {
+  const pages = useMemo(() => (doc.extractedText || '').split(PAGE_BREAK), [doc.extractedText]);
+  const [pageIdx, setPageIdx] = useState(0);
+  const [search, setSearch] = useState('');
+
+  const pageText = pages[pageIdx] || '';
+  const highlighted = useMemo(() => {
+    if (!search.trim()) return pageText;
+    const re = new RegExp(`(${search.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    return pageText.split(re);
+  }, [pageText, search]);
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(2,6,15,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }} onClick={onClose}>
+      <div
+        style={{ width: 'min(900px, 100%)', height: '85vh', background: '#0b1220', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between px-5 py-3 border-b border-slate-700/60 bg-slate-900/60 flex-shrink-0">
+          <div>
+            <div className="text-sm font-semibold text-slate-100">{doc.name}</div>
+            <div className="text-[10px] text-slate-500">{doc.structureName} · {doc.category} · {doc.pageCount ?? 1} page{(doc.pageCount ?? 1) === 1 ? '' : 's'} · {(doc.wordCount ?? 0).toLocaleString()} words</div>
+          </div>
+          <button onClick={onClose} className="text-slate-400 hover:text-white"><X size={18} /></button>
+        </div>
+
+        <div className="flex items-center gap-2 px-5 py-2 border-b border-slate-700/40 flex-shrink-0">
+          <Search size={13} className="text-slate-500" />
+          <input
+            className="bms-input py-1 text-xs flex-1"
+            placeholder="Search within this document…"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+          {pages.length > 1 && (
+            <div className="flex items-center gap-1 flex-shrink-0">
+              <button disabled={pageIdx === 0} onClick={() => setPageIdx(p => Math.max(0, p - 1))} className="bms-btn-secondary text-[10px] py-1 px-2 disabled:opacity-30">
+                <ChevronLeft size={12} />
+              </button>
+              <span className="text-[10px] text-slate-400 w-16 text-center">Page {pageIdx + 1} / {pages.length}</span>
+              <button disabled={pageIdx === pages.length - 1} onClick={() => setPageIdx(p => Math.min(pages.length - 1, p + 1))} className="bms-btn-secondary text-[10px] py-1 px-2 disabled:opacity-30">
+                <ChevronRight size={12} />
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div className="flex-1 overflow-auto px-5 py-4">
+          <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'inherit', fontSize: 12.5, lineHeight: 1.7, color: '#cbd5e1' }}>
+            {Array.isArray(highlighted)
+              ? highlighted.map((chunk, i) =>
+                  i % 2 === 1
+                    ? <mark key={i} style={{ background: '#f59e0b', color: '#020202', padding: '0 2px', borderRadius: 2 }}>{chunk}</mark>
+                    : <span key={i}>{chunk}</span>,
+                )
+              : (pageText || 'No text on this page.')}
+          </pre>
+        </div>
+
+        {doc.keywords && doc.keywords.length > 0 && (
+          <div className="flex items-center gap-1.5 flex-wrap px-5 py-2.5 border-t border-slate-700/40 flex-shrink-0">
+            <span className="text-[10px] text-slate-500 mr-1">Key terms:</span>
+            {doc.keywords.map(k => (
+              <span key={k} className="text-[10px] px-2 py-0.5 rounded-full bg-slate-700/60 text-slate-300">{k}</span>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─── Upload form ──────────────────────────────────────────────────────────────
 function DocUploadForm({
-  structures, onSave, onClose,
+  structures, onUpload, onClose,
 }: {
   structures: { id: string; name: string }[];
-  onSave: (d: BridgeDocument) => void;
+  onUpload: (files: FileList, meta: { structureId: string; category: DocumentCategory; description: string }) => void;
   onClose: () => void;
 }) {
-  const [f, setF] = useState({
-    structureId:  structures[0]?.id ?? '',
-    name:         '',
-    category:     'Inspection Report' as DocumentCategory,
-    description:  '',
-    fileType:     'PDF',
-    version:      '1.0',
-    uploadedBy:   'DNR User',
-  });
+  const [structureId, setStructureId] = useState(structures[0]?.id || '');
+  const [category, setCategory] = useState<DocumentCategory>('Inspection Report');
+  const [description, setDescription] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [dragOver, setDragOver] = useState(false);
 
-  function set(k: string, v: string) { setF(prev => ({ ...prev, [k]: v })); }
-
-  function save() {
-    const struct = structures.find(s => s.id === f.structureId);
-    const doc: BridgeDocument = {
-      id:             uuidv4(),
-      structureId:    f.structureId,
-      structureName:  struct?.name ?? f.structureId,
-      name:           f.name || `${f.structureId}_${f.category}.${f.fileType.toLowerCase()}`,
-      category:       f.category,
-      description:    f.description,
-      fileType:       f.fileType,
-      fileSize:       'Pending',
-      uploadedBy:     f.uploadedBy,
-      uploadedAt:     new Date().toISOString().split('T')[0],
-      version:        f.version,
-    };
-    onSave(doc);
+  function submitFiles(files: FileList | null) {
+    if (!files || files.length === 0) return;
+    onUpload(files, { structureId, category, description });
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="w-full max-w-lg bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700">
-          <div className="flex items-center gap-2">
-            <Upload size={18} className="text-blue-400" />
-            <span className="font-bold text-white">Attach Document</span>
-          </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-white"></button>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(2,6,15,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }} onClick={onClose}>
+      <div
+        style={{ width: 'min(520px, 100%)', background: '#0b1220', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, overflow: 'hidden' }}
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between px-5 py-3 border-b border-slate-700/60 bg-slate-900/60">
+          <div className="text-sm font-semibold text-slate-100">Upload manual / PDF</div>
+          <button onClick={onClose} className="text-slate-400 hover:text-white"><X size={18} /></button>
         </div>
-        <div className="p-6 space-y-4">
+
+        <div className="p-5 space-y-4">
           <div>
-            <label className="bms-label">Structure</label>
-            <select className="bms-select" value={f.structureId} onChange={e => set('structureId', e.target.value)}>
-              {structures.map(s => <option key={s.id} value={s.id}>{s.name} ({s.id})</option>)}
+            <label className="text-[10px] font-bold uppercase tracking-wide text-slate-500 block mb-1">Structure (optional)</label>
+            <select className="bms-input text-xs" value={structureId} onChange={e => setStructureId(e.target.value)}>
+              <option value="">Unassigned / general reference</option>
+              {structures.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
           </div>
           <div>
-            <label className="bms-label">Category</label>
-            <select className="bms-select" value={f.category} onChange={e => set('category', e.target.value)}>
-              {CATEGORIES.map(c => <option key={c}>{c}</option>)}
+            <label className="text-[10px] font-bold uppercase tracking-wide text-slate-500 block mb-1">Category</label>
+            <select className="bms-input text-xs" value={category} onChange={e => setCategory(e.target.value as DocumentCategory)}>
+              {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
           <div>
-            <label className="bms-label">Document Name</label>
-            <input className="bms-input" value={f.name} onChange={e => set('name', e.target.value)} placeholder="filename.pdf" />
+            <label className="text-[10px] font-bold uppercase tracking-wide text-slate-500 block mb-1">Description (optional)</label>
+            <input className="bms-input text-xs" value={description} onChange={e => setDescription(e.target.value)} placeholder="e.g. FWD testing manual, 2024 revision" />
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="bms-label">File Type</label>
-              <select className="bms-select" value={f.fileType} onChange={e => set('fileType', e.target.value)}>
-                {['PDF','DWG','XLSX','DOCX','JPG','PNG','DXF','SHP'].map(t => <option key={t}>{t}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="bms-label">Version</label>
-              <input className="bms-input" value={f.version} onChange={e => set('version', e.target.value)} />
-            </div>
+
+          <div
+            onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={e => { e.preventDefault(); setDragOver(false); submitFiles(e.dataTransfer.files); }}
+            onClick={() => fileInputRef.current?.click()}
+            style={{
+              border: `2px dashed ${dragOver ? '#3b82f6' : 'rgba(148,163,184,0.3)'}`,
+              borderRadius: 10, padding: '28px 16px', textAlign: 'center', cursor: 'pointer',
+              background: dragOver ? 'rgba(59,130,246,0.08)' : 'transparent',
+            }}
+          >
+            <Upload size={22} className="mx-auto mb-2 text-slate-500" />
+            <div className="text-xs text-slate-300 font-medium">Drop PDF or text files here, or click to browse</div>
+            <div className="text-[10px] text-slate-500 mt-1">Text is extracted in your browser — nothing is sent to a server. PDF and TXT/MD/CSV are fully searchable; other file types are stored as metadata only.</div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              accept=".pdf,.txt,.md,.csv,.doc,.docx,.jpg,.jpeg,.png"
+              style={{ display: 'none' }}
+              onChange={e => submitFiles(e.target.files)}
+            />
           </div>
-          <div>
-            <label className="bms-label">Uploaded By</label>
-            <input className="bms-input" value={f.uploadedBy} onChange={e => set('uploadedBy', e.target.value)} />
-          </div>
-          <div>
-            <label className="bms-label">Description</label>
-            <textarea className="bms-input h-20 resize-none" value={f.description} onChange={e => set('description', e.target.value)} placeholder="Brief description…" />
-          </div>
-          {/* Note about S:\PHOTOS */}
-          <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 text-[10px] text-blue-300">
-             Bridge photos are automatically linked from <code className="font-mono">S:\PHOTOS\[BridgeID]\</code>
-          </div>
-        </div>
-        <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-700">
-          <button onClick={onClose} className="bms-btn-secondary">Cancel</button>
-          <button onClick={save} className="bms-btn-primary"><Upload size={14} /> Attach</button>
         </div>
       </div>
-
     </div>
   );
 }
