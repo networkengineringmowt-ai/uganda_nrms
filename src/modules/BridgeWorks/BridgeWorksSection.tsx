@@ -44,8 +44,9 @@ export default function BridgeWorksSection() {
   useEffect(() => {
     let alive = true;
     (async () => {
-      // Drive-first: the bundled JSON (exported from the G: Drive repository)
-      // is the canonical store; Supabase is only an optional mirror fallback.
+      // Bundle-first: the pre-built JSON bundle in this repo (produced at build
+      // time from the DNR's G: Drive source archive) is tried first; Supabase is
+      // an optional live fallback if the bundle can't be fetched.
       try {
         const r = await fetch(`${import.meta.env.BASE_URL}data/bridge_works_2026.json`);
         if (r.ok) {
@@ -107,7 +108,7 @@ export default function BridgeWorksSection() {
           </div>
           <span style={{ ...glass(src === 'supabase' ? C.green : C.gray, 999), padding: '5px 12px',
             fontSize: 10, fontWeight: 800, color: src === 'supabase' ? C.green : C.gray }}>
-            {src === 'supabase' ? '● SUPABASE MIRROR' : src === 'bundle' ? '● DRIVE DATA (G:)' : '… loading'}
+            {src === 'supabase' ? 'â SUPABASE MIRROR' : src === 'bundle' ? 'â DRIVE DATA (G:)' : '… loading'}
           </span>
         </div>
       </div>
@@ -190,7 +191,7 @@ export default function BridgeWorksSection() {
 
       <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.45)', marginTop: 18, textAlign: 'center' }}>
         Source: MOWT Projects Status Report — §1.4 Bridges Development Projects (April 2026).
-        {src === 'bundle' && ' Serving from the G: Drive data bundle (canonical store).'}
+        {src === 'bundle' && ' Serving from the pre-built data bundle.'}
       </div>
       </>)}
     </div>
