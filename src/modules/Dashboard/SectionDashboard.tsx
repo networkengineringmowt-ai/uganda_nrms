@@ -844,6 +844,41 @@ function TrafficCountsLegacy() { return <LazyTrafficLegacy initialTab="counts" h
 function TrafficStationsLegacy() { return <LazyTrafficLegacy initialTab="stations" hideTabBar />; }
 function TrafficTrendsLegacy() { return <LazyTrafficLegacy initialTab="trends" hideTabBar />; }
 function TrafficRoadSafetyLegacy() { return <LazyTrafficLegacy initialTab="roadsafety" hideTabBar />; }
+// — PMS legacy content ————————————————————
+const PMS_CrossSectionAnalytics = lazy(() => import('../PMS/CrossSectionAnalytics'));
+const PMS_RoadConditionView = lazy(() => import('../RoadCondition/RoadConditionView'));
+const PMS_PavementCatalogue = lazy(() => import('../PMS/PavementCatalogue'));
+const PMS_AIVisionDashboard = lazy(() => import('../PMS/AIVisionDashboard'));
+const PMS_DigitalTwin = lazy(() => import('../PMS/DigitalTwin'));
+const PMS_LifecycleView = lazy(() => import('../Lifecycle/LifecycleView'));
+const PMS_RoadVideoView = lazy(() => import('../RoadVideoView/RoadVideoView'));
+function PmsConditionMapLegacy() { return <PMS_RoadConditionView activeTab={'conditionmap' as any} embedded />; }
+function PmsInventoryLegacy() { return <PMS_RoadConditionView activeTab={'inventory' as any} embedded />; }
+function PmsAnalyticsViewLegacy() { return <PMS_RoadConditionView activeTab={'analytics' as any} embedded />; }
+function PmsAgeLegacy() { return <PMS_RoadConditionView activeTab={'age' as any} embedded />; }
+function PmsFwdLegacy() { return <PMS_RoadConditionView activeTab={'fwd' as any} embedded />; }
+
+// — BMS legacy content ————————————————————
+const BMS_GISMap = lazy(() => import('../GISMap/GISMapView'));
+const BMS_Registry = lazy(() => import('../Registry/StructureRegistry'));
+const BMS_Inspections = lazy(() => import('../Inspections/InspectionManagement'));
+const BMS_Condition = lazy(() => import('../Condition/ConditionAssessment'));
+const BMS_Maintenance = lazy(() => import('../Maintenance/MaintenanceWorks'));
+const BMS_Analytics = lazy(() => import('../Analytics/Analytics'));
+const BMS_PhotoTwin = lazy(() => import('../PhotoTwin/PhotoTwin'));
+const BMS_BridgeWorks = lazy(() => import('../BridgeWorks/BridgeWorksSection'));
+const BMS_Critical = lazy(() => import('../Condition/CriticalStructures'));
+
+// — DUCAR legacy content ————————————————————
+const LazyDucarOverview = lazy(() => import('../DUCAR/DucarOverviewPanel'));
+
+// — PIM legacy content ————————————————————
+const LazyPimLegacy = lazy(() => import('../PIM/PimLegacyContent'));
+function PimBudgetLegacy() { return <LazyPimLegacy initialTab="budget" hideTabBar />; }
+function PimFrameworkLegacy() { return <LazyPimLegacy initialTab="pim" hideTabBar />; }
+function PimPppLegacy() { return <LazyPimLegacy initialTab="ppp" hideTabBar />; }
+function PimDonorLegacy() { return <LazyPimLegacy initialTab="donor" hideTabBar />; }
+function PimNdpivLegacy() { return <LazyPimLegacy initialTab="ndpiv" hideTabBar />; }
 
 type ExtraSlot = 'dashboard' | 'map' | 'tables' | 'analytics' | 'capture';
 const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentType<any>[]>>> = {
@@ -857,6 +892,25 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
     map: [TrafficMapLegacy],
     tables: [TrafficCountsLegacy, TrafficStationsLegacy],
     analytics: [TrafficTrendsLegacy],
+  },
+  pms: {
+    map: [PmsConditionMapLegacy],
+    tables: [PmsInventoryLegacy, PMS_RoadVideoView],
+    analytics: [PMS_CrossSectionAnalytics, PmsAnalyticsViewLegacy, PmsAgeLegacy, PmsFwdLegacy, PMS_LifecycleView],
+    dashboard: [PMS_PavementCatalogue, PMS_AIVisionDashboard, PMS_DigitalTwin],
+  },
+  bms: {
+    map: [BMS_GISMap],
+    tables: [BMS_Registry, BMS_Inspections, BMS_BridgeWorks, BMS_Maintenance],
+    analytics: [BMS_Condition, BMS_Critical, BMS_Analytics],
+    dashboard: [BMS_PhotoTwin],
+  },
+  ducar: {
+    dashboard: [LazyDucarOverview],
+  },
+  pim: {
+    tables: [PimPppLegacy, PimDonorLegacy, PimBudgetLegacy],
+    analytics: [PimFrameworkLegacy, PimNdpivLegacy],
   },
 };
 
