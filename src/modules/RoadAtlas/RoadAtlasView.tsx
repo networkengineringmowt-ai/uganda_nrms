@@ -18,7 +18,7 @@ function AtlasSpinner() {
   return (
     <div style={{
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      height: '100%', background: '#000',
+      height: '100%', background: '#030712',
     }}>
       <div style={{ textAlign: 'center', color: '#94a3b8' }}>
         <div style={{
@@ -37,7 +37,7 @@ function AtlasSpinner() {
 
 export default function RoadAtlasView() {
   return (
-    <div style={{ position: 'absolute', inset: 0, overflow: 'auto', background: '#000000' }}>
+    <div style={{ position: 'absolute', inset: 0, overflow: 'auto', background: '#030712' }}>
       <Suspense fallback={<AtlasSpinner />}>
         <AtlasContent />
       </Suspense>
