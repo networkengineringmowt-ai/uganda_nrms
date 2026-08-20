@@ -13,7 +13,6 @@ import { LoginPage } from '../Auth/LoginPage';
 import { UserBadge } from '../Auth/UserBadge';
 import { hasPermission } from '../Auth/authTypes';
 import { ConditionSurveyForm } from './ConditionSurveyForm';
-import SectionDashboard from '../Dashboard/SectionDashboard';
 
 type CaptureId = 'condition' | 'encroachment' | 'gazette' | 'inspection' | 'reserve-permit';
 
@@ -49,13 +48,12 @@ export default function DataCaptureHub() {
 
   return (
     <div style={{ padding: '22px 20px', minHeight: '100%' }}>
-      <>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
         <div>
           <div style={{ fontSize: 18, fontWeight: 900, color: '#e2eaf4' }}>Data Capture</div>
           <div style={{ fontSize: 11, color: 'rgba(148,163,184,0.7)', marginTop: 2 }}>
-            Field data entry · saved locally in this browser, and synced live when the optional local data-entry server is running
+            Field data entry · saved to the G: Drive repository (canonical store) · updates the whole platform
           </div>
         </div>
         <UserBadge />
@@ -76,7 +74,7 @@ export default function DataCaptureHub() {
             <button key={c.id} disabled={!c.live} onClick={() => c.live && setActive(c.id)} style={{
               display: 'flex', alignItems: 'flex-start', gap: 11, padding: '14px 15px', textAlign: 'left',
               cursor: c.live ? 'pointer' : 'not-allowed', opacity: c.live ? 1 : 0.5,
-              background: on ? `rgba(0,212,170,0.14)` : 'rgba(15,15,15,0.7)',
+              background: on ? `rgba(0,212,170,0.14)` : 'rgba(15,23,42,0.7)',
               border: `1px solid ${on ? C.teal : 'rgba(255,255,255,0.1)'}`, borderRadius: 12,
             }}>
               <div style={{ width: 34, height: 34, borderRadius: 9, flexShrink: 0, color: C.teal,
@@ -101,7 +99,7 @@ export default function DataCaptureHub() {
 
       {/* Active capture form */}
       {active === 'condition' && (
-        <div style={{ background: 'rgba(8,8,8,0.6)', border: `1px solid rgba(0,212,170,0.25)`, borderRadius: 14, maxWidth: 640 }}>
+        <div style={{ background: 'rgba(8,14,28,0.6)', border: `1px solid rgba(0,212,170,0.25)`, borderRadius: 14, maxWidth: 640 }}>
           <ConditionSurveyForm onClose={() => setActive(null)} />
         </div>
       )}
@@ -110,8 +108,6 @@ export default function DataCaptureHub() {
           Select a capture type above to begin.
         </div>
       )}
-      </>
-
     </div>
   );
 }
