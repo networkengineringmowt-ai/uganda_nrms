@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react';
 import { CheckCircle2, AlertTriangle, XCircle, RefreshCw, ShieldCheck } from 'lucide-react';
 import { useNetworkStats } from '../../shared/useNetworkStats';
 import { runDataAudit, type AuditResult } from './DataAuditEngine';
-import SectionDashboard from '../Dashboard/SectionDashboard';
 
 const BASE = import.meta.env.BASE_URL;
 
@@ -47,23 +46,12 @@ export default function DataAuditPanel() {
   const okCount   = results.filter(r => r.status === 'ok').length;
   const infoCount = results.filter(r => r.status === 'info').length;
 
-  const [tab, setTab] = useState<'content' | 'dashboard'>('content');
   return (
     <div style={{
       position: 'absolute', inset: 0, overflowY: 'auto',
-      background: 'rgba(2,2,2,0.98)', fontFamily: "'Inter','Segoe UI',sans-serif",
+      background: 'rgba(2,5,8,0.98)', fontFamily: "'Inter','Segoe UI',sans-serif",
       padding: '24px 20px',
     }}>
-      {/* ── Tab nav ── */}
-      <div style={{ display:'flex', gap:6, padding:'8px 14px', borderBottom:'1px solid rgba(100,100,200,0.15)' }}>
-        {(['content','dashboard'] as const).map(t => (
-          <button key={t} onClick={() => setTab(t)} style={{ fontSize:11, fontWeight:700, letterSpacing:1, padding:'4px 14px', border:`1px solid ${t===tab?'#ff6b35':'rgba(100,100,200,0.2)'}`, borderRadius:4, cursor:'pointer', background:t===tab?'#ff6b35':'rgba(100,100,200,0.06)', color:t===tab?'#020202':'rgba(200,200,200,0.7)', textTransform:'uppercase' }}>
-            {t==='content'?'Data Audit':'Dashboard'}
-          </button>
-        ))}
-      </div>
-      {tab==='dashboard'&&<SectionDashboard sectionId="dataaudit" accent="#ff6b35"/>}
-      {tab==='content'&&(<>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
         <div style={{
@@ -113,7 +101,7 @@ export default function DataAuditPanel() {
 
       {/* Network stats summary */}
       <div style={{
-        background: 'rgba(8,8,8,0.55)', border: '1px solid rgba(255,255,255,0.07)',
+        background: 'rgba(8,14,28,0.55)', border: '1px solid rgba(255,255,255,0.07)',
         borderRadius: 12, padding: '14px 16px', marginBottom: 20,
       }}>
         <div style={{ fontSize: 10, fontWeight: 900, color: 'rgba(0,245,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>
@@ -143,7 +131,7 @@ export default function DataAuditPanel() {
           Running audit…
         </div>
       ) : (
-        <div style={{ background: 'rgba(8,8,8,0.55)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, overflow: 'hidden' }}>
+        <div style={{ background: 'rgba(8,14,28,0.55)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ background: 'rgba(0,245,255,0.05)', borderBottom: '1px solid rgba(0,245,255,0.1)' }}>
@@ -181,8 +169,6 @@ export default function DataAuditPanel() {
           </table>
         </div>
       )}
-      </>)}
-
     </div>
   );
 }
