@@ -8,12 +8,13 @@ import 'leaflet/dist/leaflet.css';
 import { ESRI_TILE_URLS, ESRI_ATTRIBUTIONS } from '../../shared/mapSymbols';
 import { OFFICIAL_NETWORK_KM } from '../../shared/useNetworkStats';
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
-import { MapLegend } from '../../shared/MapLegend';
+import { WaterLayers } from '../../shared/WaterLayers';
+import { InfraLayers } from '../../shared/InfraLayers';
+import { MapLegend, LEGEND_FULL } from '../../shared/MapLegend';
 import { Clock, Search } from 'lucide-react';
 import { ModuleNavBar } from '../../shared/ModuleNavBar';
 import SourceTableButton from '../../shared/SourceTableButton';
 import MapDetailPane, { StatCard, AttributeRow, SectionHeader } from '../../shared/MapDetailPane';
-import SectionDashboard from '../Dashboard/SectionDashboard';
 
 // ── Palette ──────────────────────────────────────────────────────────────────
 const C = {
@@ -97,7 +98,7 @@ function classifyInt(type: string): IntType {
 const LINKS: LinkDef[] = [];
 
 // ── Helper: build a LinkDef from a GeoJSON feature ─────────────────────────
-function featureToLink(p: Record<string, unknown>, idx: number, geom?: { type?: string; coordinates?: unknown }): LinkDef {
+function featureToLink(p: Record<string, unknown>, idx: number): LinkDef {
   const id        = String(p.link_id        ?? `Link${idx}`);
   const name      = String(p.link_nam_1     ?? p.link_name ?? id);
   const road      = String(p.road_no        ?? id.split('_')[0] ?? '?');
@@ -195,25 +196,20 @@ function featureToLink(p: Record<string, unknown>, idx: number, geom?: { type?: 
     : builtYear < 2010 ? 'Multiple (DBST)'
     : 'NDPIV / OPRC contractor';
 
-  // Coords — prefer the REAL GeoJSON geometry (so every road is mapped to its
-  // true shape); fall back to a start/end straight line, then to centre.
-  let coords: [number, number][] = [];
-  const gType = geom?.type;
-  const gCoords = geom?.coordinates as unknown;
-  if (gType === 'LineString' && Array.isArray(gCoords)) {
-    coords = (gCoords as number[][])
-      .filter(c => Array.isArray(c) && c.length >= 2)
-      .map(c => [c[1], c[0]] as [number, number]);
-  } else if (gType === 'MultiLineString' && Array.isArray(gCoords)) {
-    coords = (gCoords as number[][][])
-      .flat()
-      .filter(c => Array.isArray(c) && c.length >= 2)
-      .map(c => [c[1], c[0]] as [number, number]);
-  }
-  if (coords.length < 2) {
-    coords = (startY && startX && endY && endX)
-      ? [[startY, startX], [endY, endX]]
-      : [[1.37, 32.29], [1.37, 32.30]];
+  // Coords — straight line between start/end (synthesised)
+  const coords: [number, number][] = [];
+  if (startY && startX && endY && endX) {
+    const steps = 4;
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      coords.push([
+        startY + (endY - startY) * t,
+        startX + (endX - startX) * t,
+      ]);
+    }
+  } else {
+    // Fallback to Uganda center
+    coords.push([1.37, 32.29], [1.37, 32.30]);
   }
 
   return {
@@ -313,7 +309,7 @@ function MapFlyTo({ center, zoom }: { center: [number, number]; zoom: number }) 
 function SparkTip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   return (
-    <div style={{ background: 'rgba(8,8,8,0.95)', border: '1px solid rgba(255,255,255,0.1)',
+    <div style={{ background: 'rgba(8,14,28,0.95)', border: '1px solid rgba(255,255,255,0.1)',
       padding: '6px 10px', borderRadius: 6, fontSize: 10 }}>
       <div style={{ color: '#94a3b8', marginBottom: 2 }}>{label}</div>
       <div style={{ color: C.teal, fontWeight: 700 }}>IRI: {payload[0]?.value?.toFixed(2)} m/km</div>
@@ -398,14 +394,13 @@ export default function LifecycleSection() {
   const [classFilter,  setClassFilter]  = useState<RoadClass | 'All'>('All');
   const [showAllLinks, setShowAllLinks] = useState(false);
   const [mapClickedLink, setMapClickedLink] = useState<LinkDef | null>(null);
-  const [tab, setTab] = useState('links');
 
   useEffect(() => {
     const base = (import.meta as { env: { BASE_URL: string } }).env.BASE_URL;
     fetch(`${base}data/network2026.geojson`)
       .then(r => r.json())
-      .then((g: { features: Array<{ properties: Record<string, unknown>; geometry?: { type?: string; coordinates?: unknown } }> }) => {
-        const links: LinkDef[] = g.features.map((f, i) => featureToLink(f.properties ?? {}, i, f.geometry));
+      .then((g: { features: Array<{ properties: Record<string, unknown> }> }) => {
+        const links: LinkDef[] = g.features.map((f, i) => featureToLink(f.properties ?? {}, i));
         setAllLinks(links);
         if (links.length && !selectedId) setSelectedId(links[0].id);
       })
@@ -503,7 +498,7 @@ export default function LifecycleSection() {
       <div style={{
         display: 'flex', gap: 2, padding: '0 14px', flexShrink: 0,
         borderBottom: '1px solid rgba(77,159,255,0.15)',
-        background: 'rgba(8,8,8,0.85)',
+        background: 'rgba(4,9,18,0.85)',
       }}>
         {([
           { id: 'detail', label: 'Selected Link Lifecycle' },
@@ -616,28 +611,18 @@ export default function LifecycleSection() {
             >
               <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery}/>
               <TileLayer url={ESRI_TILE_URLS.labels} attribution={ESRI_ATTRIBUTIONS.labels} opacity={0.6}/>
-              <MapLegend title="Condition (IRI)" items={[
-                { color: C.green,  label: 'Good   IRI < 4' },
-                { color: C.yellow, label: 'Fair   IRI 4–6' },
-                { color: C.orange, label: 'Poor   IRI 6–9' },
-                { color: C.red,    label: 'Very Poor  IRI ≥ 9' },
-              ]} />
+              <WaterLayers />
+              <InfraLayers />
+              <MapLegend title="Map Features" items={LEGEND_FULL} />
               <ZoomControl position="bottomright"/>
               <MapFlyTo center={center} zoom={mapZoom}/>
 
-              {/* ALL road links — every road mapped, coloured by condition (IRI).
-                  The selected link is emphasised. Click any to inspect its lifecycle. */}
-              {allLinks.map((l, i) => {
-                const sel = l.id === (mapClickedLink?.id ?? selectedId);
-                return (
-                  <Polyline
-                    key={i}
-                    positions={l.coords}
-                    pathOptions={{ color: conditionColor(l.currentIRI), weight: sel ? 5 : 2, opacity: sel ? 0.95 : 0.55 }}
-                    eventHandlers={{ click: () => { setMapClickedLink(l); setSelectedId(l.id); } }}
-                  />
-                );
-              })}
+              {/* Road link — colored by condition — click opens MapDetailPane */}
+              <Polyline
+                positions={link.coords}
+                pathOptions={{ color: iriColor, weight: 5, opacity: 0.9 }}
+                eventHandlers={{ click: () => setMapClickedLink(link) }}
+              />
 
               {/* Intervention markers */}
               {markers.map((m, i) => (
@@ -831,17 +816,7 @@ function AllLinksTable({
 
   return (
     <div>
-      {/* Lifecycle tab nav */}
-      <div style={{ display: 'flex', gap: 6, padding: '8px 14px', borderBottom: '1px solid rgba(0,212,170,0.15)' }}>
-        {['links', 'dashboard'].map(t => (
-          <button key={t} onClick={() => setTab(t)} style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '5px 14px', borderRadius: 20, border: 'none', cursor: 'pointer', background: tab === t ? '#00d4aa' : 'rgba(0,212,170,0.08)', color: tab === t ? '#020202' : 'rgba(0,212,170,0.7)', transition: 'all .15s' }}>
-            {t === 'links' ? 'Network Links' : 'Dashboard'}
-          </button>
-        ))}
-      </div>
-      {tab === 'dashboard' && <SectionDashboard sectionId="lifecycle" accent="#00d4aa" />}
-      {tab === 'links' && (
-      <>
+      {/* Filter row */}
       <div style={{ display: 'flex', gap: 10, marginBottom: 12, flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ position: 'relative', flex: 1, minWidth: 220 }}>
           <Search size={11} style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: 'rgba(148,163,184,0.5)' }}/>
@@ -849,18 +824,18 @@ function AllLinksTable({
             placeholder="Search link_id, road name, road no, station…"
             style={{
               width: '100%', padding: '6px 8px 6px 26px', fontSize: 11,
-              background: 'rgba(15,15,15,0.7)', border: '1px solid rgba(148,163,184,0.18)',
+              background: 'rgba(15,23,42,0.7)', border: '1px solid rgba(148,163,184,0.18)',
               borderRadius: 6, color: '#e2eaf4', outline: 'none',
             }}/>
         </div>
         <select value={regionFilter} onChange={e => setRegionFilter(e.target.value)}
-          style={{ fontSize: 11, padding: '6px 8px', background: 'rgba(15,15,15,0.7)',
+          style={{ fontSize: 11, padding: '6px 8px', background: 'rgba(15,23,42,0.7)',
             border: '1px solid rgba(148,163,184,0.18)', borderRadius: 6, color: '#e2eaf4' }}>
           <option value="All">All Regions</option>
           {allRegions.map(r => <option key={r} value={r}>{r}</option>)}
         </select>
         <select value={classFilter} onChange={e => setClassFilter(e.target.value as RoadClass | 'All')}
-          style={{ fontSize: 11, padding: '6px 8px', background: 'rgba(15,15,15,0.7)',
+          style={{ fontSize: 11, padding: '6px 8px', background: 'rgba(15,23,42,0.7)',
             border: '1px solid rgba(148,163,184,0.18)', borderRadius: 6, color: '#e2eaf4' }}>
           <option value="All">All Classes</option>
           {(['A','B','C','M'] as RoadClass[]).map(c => <option key={c} value={c}>Class {c}</option>)}
@@ -874,7 +849,7 @@ function AllLinksTable({
       <div style={{ overflowX: 'auto', borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)' }}>
         <table style={{ width: '100%', fontSize: 10, borderCollapse: 'collapse', minWidth: 1100 }}>
           <thead>
-            <tr style={{ background: 'rgba(15,15,15,0.85)', borderBottom: '1px solid rgba(148,163,184,0.15)' }}>
+            <tr style={{ background: 'rgba(15,23,42,0.85)', borderBottom: '1px solid rgba(148,163,184,0.15)' }}>
               {([
                 ['id',         'Link ID'],
                 ['name',       'Road Name'],
@@ -903,7 +878,7 @@ function AllLinksTable({
             {sorted.slice(0, 1200).map((l, i) => {
               const condC = conditionColor(l.currentIRI);
               const condL = conditionLabel(l.currentIRI);
-              const bg = i % 2 === 0 ? 'rgba(15,15,15,0.35)' : 'transparent';
+              const bg = i % 2 === 0 ? 'rgba(15,23,42,0.35)' : 'transparent';
               return (
                 <tr key={l.id} style={{ background: bg, borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
                   <td style={{ padding: '5px 10px', color: '#00f5ff', fontFamily: 'monospace', fontSize: 9.5, whiteSpace: 'nowrap' }}>{l.id}</td>
@@ -937,8 +912,6 @@ function AllLinksTable({
         <div style={{ padding: '8px 12px', fontSize: 9.5, color: 'rgba(148,163,184,0.5)', textAlign: 'center' }}>
           Showing first 1,200 rows of {sorted.length.toLocaleString()} — narrow filters to see more.
         </div>
-      )}
-      </>
       )}
     </div>
   );
