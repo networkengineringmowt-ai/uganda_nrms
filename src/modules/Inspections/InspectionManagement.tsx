@@ -4,20 +4,6 @@ import { useBMS } from '../../store/BMSContext';
 import type { Inspection, InspectionType } from '../../types';
 import { conditionColor, conditionLabel, conditionBadge, formatDate, INSPECTORS } from '../../utils/helpers';
 import { v4 as uuidv4 } from 'uuid';
-import SectionDashboard from '../Dashboard/SectionDashboard';
-import { useVirtualRows } from '../../shared/useVirtualRows';
-import { criticalRowStyle, PercentCell, NULL_ZERO_STYLE } from '../../shared/tableFormatting';
-import { useSortableColumns, sortRows, SortArrow, type ColumnType } from '../../shared/useSortableColumns';
-
-const ROW_HEIGHT = 44;
-const COLUMN_COUNT = 12;
-
-type SortKey = keyof Inspection;
-const SORT_TYPES: Partial<Record<SortKey, ColumnType>> = {
-  date: 'date', nextInspection: 'date',
-  deckRating: 'numeric', superstructureRating: 'numeric', substructureRating: 'numeric',
-  channelRating: 'numeric', visualScore: 'numeric', overallCondition: 'numeric',
-};
 
 export default function InspectionManagement() {
   const { state, dispatch } = useBMS();
@@ -26,6 +12,8 @@ export default function InspectionManagement() {
   const [query,       setQuery]       = useState('');
   const [typeFilter,  setTypeFilter]  = useState<'all' | InspectionType>('all');
   const [showForm,    setShowForm]    = useState(false);
+  const [page,        setPage]        = useState(1);
+  const PAGE_SIZE = 20;
 
   const filtered = useMemo(() => {
     let list = [...inspections].sort((a, b) =>
@@ -43,19 +31,8 @@ export default function InspectionManagement() {
     return list;
   }, [inspections, query, typeFilter]);
 
-  const { sortKey, sortDir, cycleSort } = useSortableColumns<SortKey | 'photoCount'>();
-  const sorted = useMemo(() => sortRows(
-    filtered, sortKey, sortDir, sortKey ? (SORT_TYPES[sortKey as SortKey] ?? (sortKey === 'photoCount' ? 'numeric' : 'text')) : 'text',
-    (row, key) => key === 'photoCount' ? row.photos.length : (row as any)[key],
-  ), [filtered, sortKey, sortDir]);
-  const { containerRef, visibleRows, topSpacerHeight, bottomSpacerHeight } =
-    useVirtualRows(sorted, { rowHeight: ROW_HEIGHT });
-
-  const Th = ({ label, k, align }: { label: string; k: SortKey | 'photoCount'; align?: 'left' | 'right' | 'center' }) => (
-    <th className="dt-sticky-th cursor-pointer select-none" style={{ textAlign: align }} onClick={() => cycleSort(k)}>
-      {label}<SortArrow active={sortKey === k} dir={sortDir} />
-    </th>
-  );
+  const pageCount = Math.ceil(filtered.length / PAGE_SIZE);
+  const pageData  = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   // Upcoming due
   const upcomingDue = useMemo(() =>
@@ -65,19 +42,8 @@ export default function InspectionManagement() {
     [structures],
   );
 
-  const [tab, setTab] = useState<'content' | 'dashboard'>('content');
   return (
     <div className="flex flex-col h-full animate-fade-in">
-      {/* ── Tab nav ── */}
-      <div style={{ display:'flex', gap:6, padding:'8px 14px', borderBottom:'1px solid rgba(100,100,200,0.15)' }}>
-        {(['content','dashboard'] as const).map(t => (
-          <button key={t} onClick={() => setTab(t)} style={{ fontSize:11, fontWeight:700, letterSpacing:1, padding:'4px 14px', border:`1px solid ${t===tab?'#b967ff':'rgba(100,100,200,0.2)'}`, borderRadius:4, cursor:'pointer', background:t===tab?'#b967ff':'rgba(100,100,200,0.06)', color:t===tab?'#020202':'rgba(200,200,200,0.7)', textTransform:'uppercase' }}>
-            {t==='content'?'Inspections':'Dashboard'}
-          </button>
-        ))}
-      </div>
-      {tab==='dashboard'&&<SectionDashboard sectionId="inspections" accent="#b967ff"/>}
-      {tab==='content'&&(<>
       {/* Toolbar */}
       <div className="flex-shrink-0 px-6 py-4 border-b border-slate-700/60 bg-slate-900/50">
         <div className="flex flex-wrap items-center gap-3">
@@ -87,10 +53,10 @@ export default function InspectionManagement() {
               className="bms-input pl-9 py-1.5 text-xs"
               placeholder="Search by structure, inspector…"
               value={query}
-              onChange={e => { setQuery(e.target.value); }}
+              onChange={e => { setQuery(e.target.value); setPage(1); }}
             />
           </div>
-          <select className="bms-select text-xs py-1.5" value={typeFilter} onChange={e => { setTypeFilter(e.target.value as typeof typeFilter); }}>
+          <select className="bms-select text-xs py-1.5" value={typeFilter} onChange={e => { setTypeFilter(e.target.value as typeof typeFilter); setPage(1); }}>
             <option value="all">All Types</option>
             <option value="Routine">Routine</option>
             <option value="Principal">Principal</option>
@@ -98,7 +64,7 @@ export default function InspectionManagement() {
             <option value="Emergency">Emergency</option>
           </select>
           <div className="flex-1" />
-          <span className="record-badge">{filtered.length.toLocaleString()} inspections</span>
+          <span className="text-xs text-slate-500">{filtered.length} inspections</span>
           <button onClick={() => setShowForm(true)} className="bms-btn-primary text-xs py-1.5">
             <Plus size={13} /> Log Inspection
           </button>
@@ -106,38 +72,44 @@ export default function InspectionManagement() {
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Main table — fixed-height virtualized scroll container, sticky header */}
-        <div className="flex-1 flex flex-col overflow-hidden p-4">
-          <div ref={containerRef} className="dt-scroll">
+        {/* Main table */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <div className="flex-1 mowt-table-wrap">
             <table className="bms-table">
               <thead>
                 <tr>
-                  <Th label="Structure" k="structureName" />
-                  <Th label="Date" k="date" />
-                  <Th label="Inspector" k="inspector" />
-                  <Th label="Type" k="type" />
-                  <Th label="Deck" k="deckRating" />
-                  <Th label="Super." k="superstructureRating" />
-                  <Th label="Sub." k="substructureRating" />
-                  <Th label="Channel" k="channelRating" />
-                  <Th label="Visual Score" k="visualScore" />
-                  <Th label="Overall" k="overallCondition" />
-                  <Th label="Next Due" k="nextInspection" />
-                  <Th label="Photos" k="photoCount" />
+                  <th>Structure</th>
+                  <th>Date</th>
+                  <th>Inspector</th>
+                  <th>Type</th>
+                  <th>Deck</th>
+                  <th>Super.</th>
+                  <th>Sub.</th>
+                  <th>Channel</th>
+                  <th>Visual Score</th>
+                  <th>Overall</th>
+                  <th>Next Due</th>
+                  <th>Photos</th>
                 </tr>
               </thead>
               <tbody>
-                {topSpacerHeight > 0 && (
-                  <tr aria-hidden style={{ height: topSpacerHeight }}><td colSpan={COLUMN_COUNT} style={{ padding: 0, border: 'none' }} /></tr>
-                )}
-                {visibleRows.map(insp => (
+                {pageData.map(insp => (
                   <InspectionRow key={insp.id} insp={insp} />
                 ))}
-                {bottomSpacerHeight > 0 && (
-                  <tr aria-hidden style={{ height: bottomSpacerHeight }}><td colSpan={COLUMN_COUNT} style={{ padding: 0, border: 'none' }} /></tr>
-                )}
               </tbody>
             </table>
+          </div>
+
+          {/* Pagination */}
+          <div className="flex items-center justify-between px-6 py-3 border-t border-slate-700/60 bg-slate-900/50 flex-shrink-0">
+            <span className="text-xs text-slate-500">
+              Showing {((page - 1) * PAGE_SIZE) + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length}
+            </span>
+            <div className="flex items-center gap-2">
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="bms-btn-secondary text-xs py-1 px-3 disabled:opacity-40">← Prev</button>
+              <span className="text-xs text-slate-400">Page {page} / {pageCount}</span>
+              <button onClick={() => setPage(p => Math.min(pageCount, p + 1))} disabled={page === pageCount} className="bms-btn-secondary text-xs py-1 px-3 disabled:opacity-40">Next →</button>
+            </div>
           </div>
         </div>
 
@@ -181,7 +153,6 @@ export default function InspectionManagement() {
           onClose={() => setShowForm(false)}
         />
       )}
-      </>)}
     </div>
   );
 }
@@ -192,7 +163,7 @@ function InspectionRow({ insp }: { insp: Inspection }) {
 
   return (
     <>
-      <tr onClick={() => setExpanded(e => !e)} className="hover:bg-slate-700/30 transition-colors cursor-pointer" style={criticalRowStyle(insp.overallCondition === 1)}>
+      <tr onClick={() => setExpanded(e => !e)} className="hover:bg-slate-700/30 transition-colors cursor-pointer">
         <td className="px-4 py-3">
           <div className="text-xs font-semibold text-slate-200">{insp.structureName}</div>
           <div className="text-[10px] text-slate-500">{insp.structureId}</div>
@@ -218,7 +189,7 @@ function InspectionRow({ insp }: { insp: Inspection }) {
                 style={{ width: `${insp.visualScore}%`, background: conditionColor(insp.overallCondition) }}
               />
             </div>
-            <span className="text-[10px] w-9 text-right"><PercentCell value={insp.visualScore} /></span>
+            <span className="text-[10px] text-slate-400 w-7 text-right">{insp.visualScore}</span>
           </div>
         </td>
         <td className="px-4 py-3">
@@ -228,14 +199,10 @@ function InspectionRow({ insp }: { insp: Inspection }) {
         </td>
         <td className="px-4 py-3 text-xs text-slate-400 whitespace-nowrap">{formatDate(insp.nextInspection)}</td>
         <td className="px-4 py-3 text-xs text-slate-500">
-          {insp.photos.length === 0 ? (
-            <span style={NULL_ZERO_STYLE}>0 photos</span>
-          ) : (
-            <div className="flex items-center gap-1">
-              <Camera size={12} />
-              <span>{insp.photos.length}</span>
-            </div>
-          )}
+          <div className="flex items-center gap-1">
+            <Camera size={12} />
+            <span>{insp.photos.length}</span>
+          </div>
         </td>
       </tr>
       {expanded && (
@@ -349,7 +316,7 @@ function InspectionForm({
             <ClipboardCheck size={18} className="text-blue-400" />
             <span className="font-bold text-white">Log New Inspection</span>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-white"></button>
+          <button onClick={onClose} className="text-slate-400 hover:text-white">✕</button>
         </div>
 
         <div className="p-6 grid grid-cols-2 gap-4 overflow-y-auto max-h-[70vh]">
@@ -418,7 +385,6 @@ function FormField({
         max={max}
         onChange={e => onChange(e.target.value)}
       />
-
     </div>
   );
 }
