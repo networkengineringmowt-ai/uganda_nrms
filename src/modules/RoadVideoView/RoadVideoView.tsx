@@ -1,6 +1,8 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MapContainer, TileLayer, GeoJSON, ZoomControl } from 'react-leaflet';
-import { MapLegend } from '../../shared/MapLegend';
+import { WaterLayers } from '../../shared/WaterLayers';
+import { InfraLayers } from '../../shared/InfraLayers';
+import { MapLegend, LEGEND_ROAD_NETWORK } from '../../shared/MapLegend';
 import { ESRI_TILE_URLS, ESRI_ATTRIBUTIONS } from '../../shared/mapSymbols';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -9,7 +11,6 @@ import {
   AlertCircle, ChevronLeft, ChevronRight, X,
 } from 'lucide-react';
 import type { Feature, FeatureCollection, LineString } from 'geojson';
-import SectionDashboard from '../Dashboard/SectionDashboard';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface YearInfo { has_pave: boolean; has_360: boolean; frame_count: number }
@@ -71,7 +72,7 @@ const topBarStyle: React.CSSProperties = {
   position: 'absolute', top: 0, left: 0, right: 0, zIndex: 1000,
   display: 'flex', alignItems: 'center', gap: 14,
   padding: '8px 16px',
-  background: 'rgba(2,2,2,0.85)',
+  background: 'rgba(2,5,8,0.85)',
   backdropFilter: 'blur(8px)',
   borderBottom: `1px solid rgba(${ACCENT_RGB},0.14)`,
 };
@@ -90,7 +91,6 @@ export default function RoadVideoView() {
   const [viewType,      setViewType]      = useState<ViewType>('PAVE');
   const [frame,         setFrame]         = useState(1);
   const [imgError,      setImgError]      = useState(false);
-  const [rvTab, setRvTab] = useState<'map' | 'dashboard'>('map');
 
   const geoJsonRef = useRef<L.GeoJSON | null>(null);
   const selectedKeyRef = useRef<string | null>(null);
@@ -276,19 +276,6 @@ export default function RoadVideoView() {
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div style={{ position: 'absolute', inset: 0, display: 'flex', overflow: 'hidden' }}>
-      {/* ── RoadVideo tab nav ── */}
-      <div style={{ position: 'absolute', top: 10, left: '50%', transform: 'translateX(-50%)', zIndex: 1000, display: 'flex', gap: 6 }}>
-        {(['map', 'dashboard'] as const).map(t => (
-          <button key={t} onClick={() => setRvTab(t)} style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, padding: '4px 14px', border: `1px solid ${rvTab === t ? '#ffd23f' : 'rgba(255,210,63,0.25)'}`, borderRadius: 4, cursor: 'pointer', background: rvTab === t ? '#ffd23f' : 'rgba(255,210,63,0.08)', color: rvTab === t ? '#020202' : 'rgba(255,210,63,0.7)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
-            {t === 'map' ? ' Road Video' : ' Dashboard'}
-          </button>
-        ))}
-      </div>
-      {rvTab === 'dashboard' && (
-        <div style={{ position: 'absolute', inset: 0, zIndex: 999, background: '#0a0a1a', overflow: 'auto' }}>
-          <SectionDashboard sectionId="roadvideo" accent="#ffd23f" />
-        </div>
-      )}
 
       {/* ── Map fills flex: 1 ── */}
       <div style={{ flex: 1, position: 'relative', minWidth: 0 }}>
@@ -322,7 +309,7 @@ export default function RoadVideoView() {
         {/* Legend — bottom-left */}
         <div style={{
           position: 'absolute', bottom: 24, left: 12, zIndex: 1000,
-          background: 'rgba(2,2,2,0.82)', backdropFilter: 'blur(6px)',
+          background: 'rgba(2,5,8,0.82)', backdropFilter: 'blur(6px)',
           border: `1px solid rgba(${ACCENT_RGB},0.15)`,
           borderRadius: 8, padding: '8px 12px',
           fontSize: 10, color: '#94a3b8',
@@ -348,11 +335,9 @@ export default function RoadVideoView() {
         >
           <TileLayer url={TILE_URL} attribution={ATTRIBUTION}/>
           <TileLayer url={ESRI_TILE_URLS.labels} attribution={ESRI_ATTRIBUTIONS.labels} opacity={0.7}/>
-          <MapLegend title="Video Coverage" items={[
-            { color: ACCENT,                  label: 'Video available' },
-            { color: '#ffd23f',               label: 'Selected link' },
-            { color: 'rgba(100,116,139,0.5)', label: 'No video' },
-          ]} />
+          <WaterLayers />
+          <InfraLayers />
+          <MapLegend title="Road Network" items={LEGEND_ROAD_NETWORK} />
           <ZoomControl position="bottomright"/>
 
           {enrichedGeoJson && (
@@ -374,7 +359,7 @@ export default function RoadVideoView() {
         transition: 'transform 0.25s ease',
         position: 'relative', zIndex: 900,
         display: 'flex', flexDirection: 'column',
-        background: 'rgba(2,2,2,0.97)',
+        background: 'rgba(2,5,8,0.97)',
         borderLeft: `1px solid rgba(${ACCENT_RGB},0.14)`,
         overflow: 'hidden',
       }}>
@@ -546,7 +531,7 @@ export default function RoadVideoView() {
                     <div style={{
                       position: 'absolute', top: 8, left: 8,
                       padding: '3px 8px', borderRadius: 6,
-                      background: 'rgba(2,2,2,0.78)', border: `1px solid rgba(${ACCENT_RGB},0.2)`,
+                      background: 'rgba(2,5,8,0.78)', border: `1px solid rgba(${ACCENT_RGB},0.2)`,
                       fontSize: 9, fontWeight: 800, color: ACCENT,
                     }}>
                       {String(frame).padStart(5, '0')} / {String(frameCount).padStart(5, '0')}
@@ -556,7 +541,7 @@ export default function RoadVideoView() {
                     <div style={{
                       position: 'absolute', top: 8, right: 8,
                       padding: '3px 8px', borderRadius: 6,
-                      background: 'rgba(2,2,2,0.78)', border: '1px solid rgba(0,245,255,0.2)',
+                      background: 'rgba(2,5,8,0.78)', border: '1px solid rgba(0,245,255,0.2)',
                       fontSize: 9, fontWeight: 800, color: '#00f5ff',
                     }}>
                       {viewType === 'PAVE' ? 'PAVEMENT' : '360°'}
