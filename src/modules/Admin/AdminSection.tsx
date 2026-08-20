@@ -4,16 +4,14 @@
  * Follows the exact BMS tab-bar pattern.
  */
 import { lazy, Suspense, useState } from 'react';
-import { Activity, BookOpen, Cpu, Database, ShieldCheck, Users , LayoutDashboard } from 'lucide-react';
+import { Activity, BookOpen, Cpu, ShieldCheck, Users } from 'lucide-react';
 import type { ActiveView } from '../../types';
-const SectionDashboard = lazy(() => import('../Dashboard/SectionDashboard'));
 
 const ADMIN_Identity  = lazy(() => import('./IdentityManager'));
 const ADMIN_Activity  = lazy(() => import('./ActivityLog'));
 const ADMIN_MindMap   = lazy(() => import('../MindMap/MindMapSection'));
 const ADMIN_DataAudit = lazy(() => import('../DataAudit/DataAuditPanel'));
 const ADMIN_Docs      = lazy(() => import('./SystemDocumentation'));
-const ADMIN_SqlSchema = lazy(() => import('./SqlSchemaViewer'));
 
 function Spinner() {
   return (
@@ -28,14 +26,11 @@ function Spinner() {
 }
 
 const MAIN_TABS = [
-  { id: 'dashboard' as const, label: 'Dashboard', icon: <LayoutDashboard size={13}/> },
-
   { id: 'identity'  as const, label: 'Identity Manager',   icon: <Users size={13}/> },
   { id: 'activity'  as const, label: 'Activity Log',       icon: <Activity size={13}/> },
   { id: 'mindmap'   as const, label: 'Platform Mind Map',  icon: <Cpu size={13}/> },
   { id: 'dataaudit' as const, label: 'Data Audit',         icon: <ShieldCheck size={13}/> },
   { id: 'docs'      as const, label: 'System Documentation', icon: <BookOpen size={13}/> },
-  { id: 'sqlschema' as const, label: 'SQL Schema',          icon: <Database size={13}/> },
 ];
 type TabId = typeof MAIN_TABS[number]['id'];
 
@@ -49,7 +44,7 @@ export default function AdminSection({
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
-      background: 'rgba(2,2,2,0.97)',
+      background: 'rgba(2,5,8,0.97)',
       fontFamily: "'Inter','Segoe UI',sans-serif",
     }}>
       <style>{`
@@ -60,7 +55,7 @@ export default function AdminSection({
       <div style={{
         display: 'flex', gap: 2, padding: '0 14px', flexShrink: 0,
         borderBottom: '1px solid rgba(77,159,255,0.15)',
-        background: 'rgba(8,8,8,0.85)',
+        background: 'rgba(4,9,18,0.85)',
       }}>
         {MAIN_TABS.map(t => {
           const isActive = t.id === tab;
@@ -83,11 +78,6 @@ export default function AdminSection({
       {/* ── Content area ──────────────────────────────────────────────────── */}
       <div style={{ flex: 1, minHeight: 0, position: 'relative', overflow: 'hidden' }}>
         <Suspense fallback={<Spinner />}>
-        {tab === 'dashboard' && (
-          <Suspense fallback={<div style={{padding:'1.5rem',color:'#a855f7',textAlign:'center',opacity:0.7,fontSize:'12px'}}>Loading dashboard…</div>}>
-            <SectionDashboard sectionId="admin" accent="#a855f7" />
-          </Suspense>
-        )}
           {tab === 'identity' && (
             <div style={{ position:'absolute', inset:0, overflowY:'auto' }}>
               <ADMIN_Identity />
@@ -111,11 +101,6 @@ export default function AdminSection({
           {tab === 'docs' && (
             <div style={{ position:'absolute', inset:0, overflowY:'auto' }}>
               <ADMIN_Docs />
-            </div>
-          )}
-          {tab === 'sqlschema' && (
-            <div style={{ position:'absolute', inset:0, overflowY:'auto' }}>
-              <ADMIN_SqlSchema />
             </div>
           )}
         </Suspense>

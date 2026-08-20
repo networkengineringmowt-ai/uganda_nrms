@@ -2,10 +2,8 @@
  * IdentityManager — admin-only "active directory" console.
  * Lists every user (legacy roster auto-accepted + dynamic requests), with the
  * access-approval workflow: approve / reject pending requests, revoke active
- * users, restore revoked ones. Backed by directory.ts: on the public
- * deployed site this is always this browser's localStorage (per-browser,
- * not shared); it also syncs to a shared G: Drive-backed store when the
- * optional local data-entry server is running.
+ * users, restore revoked ones. Backed by directory.ts (G: Drive via the
+ * data-entry server, localStorage fallback).
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { RefreshCw, UserCheck, UserX, ShieldAlert, RotateCcw, Search } from 'lucide-react';
@@ -52,8 +50,8 @@ export default function IdentityManager() {
     return !n || `${r.email} ${r.name ?? ''} ${r.role ?? ''}`.toLowerCase().includes(n);
   }), [rows, filter, q]);
 
-  const CARD: React.CSSProperties = { background: 'rgba(8,8,8,0.7)', border: '1px solid rgba(77,159,255,0.14)', borderRadius: 10, padding: '12px 14px' };
-  const TH: React.CSSProperties = { textAlign: 'left', padding: '8px 11px', fontSize: 9.5, fontWeight: 800, color: 'rgba(148,163,184,0.7)', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid rgba(77,159,255,0.15)', position: 'sticky', top: 0, background: 'rgba(8,8,8,0.95)' };
+  const CARD: React.CSSProperties = { background: 'rgba(8,14,28,0.7)', border: '1px solid rgba(77,159,255,0.14)', borderRadius: 10, padding: '12px 14px' };
+  const TH: React.CSSProperties = { textAlign: 'left', padding: '8px 11px', fontSize: 9.5, fontWeight: 800, color: 'rgba(148,163,184,0.7)', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid rgba(77,159,255,0.15)', position: 'sticky', top: 0, background: 'rgba(4,9,18,0.95)' };
   const TD: React.CSSProperties = { padding: '8px 11px', fontSize: 12, color: 'rgba(203,213,225,0.9)', borderBottom: '1px solid rgba(255,255,255,0.04)', whiteSpace: 'nowrap' };
   const btn = (bg: string): React.CSSProperties => ({ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 10px', borderRadius: 7, fontSize: 10.5, fontWeight: 700, cursor: 'pointer', border: `1px solid ${bg}55`, background: `${bg}1a`, color: bg });
 
@@ -64,7 +62,7 @@ export default function IdentityManager() {
           <div style={{ fontSize: 16, fontWeight: 900, color: '#e2eaf4' }}>Identity Manager — active directory</div>
           <div style={{ fontSize: 10.5, color: 'rgba(148,163,184,0.65)' }}>
             Approve new access requests, revoke or restore users. Legacy roster users are auto-accepted.
-            Stored in this browser's local storage on the public site; also synced to a shared directory/users.json store when the optional local data-entry server is running.
+            Stored in the G: Drive directory (directory/users.json) via the data-entry server.
           </div>
         </div>
         <button onClick={() => void load()} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 11px', cursor: 'pointer', background: 'rgba(77,159,255,0.12)', border: '1px solid rgba(77,159,255,0.3)', borderRadius: 7, color: '#4d9fff', fontSize: 11, fontWeight: 700 }}>
