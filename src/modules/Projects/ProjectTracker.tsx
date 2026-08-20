@@ -117,7 +117,7 @@ const CAT_COLOR = { OPRC: C.cyan, NDPIV: C.purple, Vision2040: C.teal, Emergency
 const CT = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
   return (
-    <div style={{ background: 'rgba(8,8,8,0.95)', border: '1px solid rgba(255,255,255,0.1)',
+    <div style={{ background: 'rgba(8,14,28,0.95)', border: '1px solid rgba(255,255,255,0.1)',
       padding: '8px 12px', borderRadius: 7, fontSize: 10 }}>
       <div style={{ color: '#94a3b8', marginBottom: 4 }}>{label}</div>
       {payload.map((p: any) => (
@@ -211,7 +211,7 @@ export default function ProjectTracker() {
       </div>
 
       {/* Progress chart */}
-      <div style={{ background: 'rgba(15,15,15,0.7)', border: '1px solid rgba(255,255,255,0.07)',
+      <div style={{ background: 'rgba(15,23,42,0.7)', border: '1px solid rgba(255,255,255,0.07)',
         borderRadius: 12, padding: '16px 18px', marginBottom: 16 }}>
         <div style={{ fontSize: 10, fontWeight: 900, color: 'rgba(148,163,184,0.6)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14 }}>
           Physical vs Financial Progress (%)
@@ -239,7 +239,7 @@ export default function ProjectTracker() {
           const phColor  = PHASE_COLOR[p.phase];
           const catColor = CAT_COLOR[p.category];
           return (
-            <div key={p.id} style={{ background: 'rgba(15,15,15,0.7)',
+            <div key={p.id} style={{ background: 'rgba(15,23,42,0.7)',
               border: `1px solid rgba(${hexRgb(p.behind ? C.red : phColor)},0.2)`,
               borderRadius: 12, padding: '14px 16px',
               boxShadow: p.behind ? `0 0 20px rgba(${hexRgb(C.red)},0.08)` : 'none' }}>
@@ -281,7 +281,7 @@ export default function ProjectTracker() {
                         color: done || active ? pc : 'rgba(100,116,139,0.4)',
                         border: active ? `1px solid rgba(${hexRgb(pc)},0.5)` : '1px solid transparent',
                         boxShadow: active ? `0 0 10px rgba(${hexRgb(pc)},0.3)` : 'none',
-                      }}>{done ? ' ' : ''}{ph}</div>
+                      }}>{done ? '✓ ' : ''}{ph}</div>
                       {i < PHASE_ORDER.length - 1 && (
                         <div style={{ width: 16, height: 1, background: done ? `rgba(${hexRgb(pc)},0.4)` : 'rgba(255,255,255,0.06)' }}/>
                       )}
