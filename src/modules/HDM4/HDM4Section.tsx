@@ -7,7 +7,6 @@ import { Chart3DWrap, Bar3D, TT_NEON, TICK } from '../../lib/chart3d';
 import { Calculator, BookOpen, Table2, TrendingUp, DollarSign, Activity } from 'lucide-react';
 import { ModuleNavBar } from '../../shared/ModuleNavBar';
 import { useTableSort } from '../../shared/useTableSort';
-import SectionDashboard from '../Dashboard/SectionDashboard';
 
 const C = {
   purple: '#b967ff', cyan: '#00f5ff', green: '#00ff88',
@@ -16,7 +15,7 @@ const C = {
 };
 
 const card = (accent: string) => ({
-  background: 'rgba(15,15,15,0.7)',
+  background: 'rgba(15,23,42,0.7)',
   border: `1px solid rgba(${hexRgb(accent)},0.2)`,
   borderRadius: 12,
   padding: '18px 20px',
@@ -24,7 +23,6 @@ const card = (accent: string) => ({
 });
 
 const TABS = [
-  { id: 'dashboard' as const, label: 'Dashboard', icon: <LayoutDashboard size={13}/> },
   { id: 'overview',    label: 'Overview',           icon: <BookOpen size={13}/> },
   { id: 'models',      label: 'Deterioration Models', icon: <Activity size={13}/> },
   { id: 'calibration', label: 'Uganda Calibration', icon: <Table2 size={13}/> },
@@ -142,7 +140,7 @@ export default function HDM4Section() {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload?.length) return null;
     return (
-      <div style={{ background: 'rgba(8,8,8,0.95)', border: '1px solid rgba(255,255,255,0.1)',
+      <div style={{ background: 'rgba(8,14,28,0.95)', border: '1px solid rgba(255,255,255,0.1)',
         padding: '8px 12px', borderRadius: 7, fontSize: 10 }}>
         <div style={{ color: '#94a3b8', marginBottom: 4 }}>{label}</div>
         {payload.map((p: any) => (
@@ -156,7 +154,7 @@ export default function HDM4Section() {
 
   return (
     <div style={{ padding: '20px 18px', minHeight: '100%',
-      background: 'linear-gradient(180deg, rgba(8,8,8,0.4) 0%, transparent 100%)' }}>
+      background: 'linear-gradient(180deg, rgba(8,14,28,0.4) 0%, transparent 100%)' }}>
 
       <ModuleNavBar module="HDM4" />
 
@@ -184,7 +182,7 @@ export default function HDM4Section() {
       <div style={{
         display: 'flex', gap: 2, marginBottom: 20, flexShrink: 0,
         borderBottom: '1px solid rgba(77,159,255,0.15)',
-        background: 'rgba(8,8,8,0.85)', marginLeft: -20, marginRight: -20, paddingLeft: 14,
+        background: 'rgba(4,9,18,0.85)', marginLeft: -20, marginRight: -20, paddingLeft: 14,
       }}>
         {TABS.map(t => {
           const isActive = activeTab === t.id;
@@ -204,7 +202,6 @@ export default function HDM4Section() {
       </div>
 
       {/* ── OVERVIEW TAB ── */}
-          {TABS[activeTab].id === 'dashboard' && <SectionDashboard sectionId="hdm4" />}
       {activeTab === 'overview' && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16 }}>
           <div style={card(C.purple)}>
