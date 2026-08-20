@@ -5,7 +5,6 @@
  */
 import { lazy, Suspense, useState } from 'react';
 import { FileText, Table2, BookOpen } from 'lucide-react';
-import SectionDashboard from '../Dashboard/SectionDashboard';
 
 const SRC_Catalogue = lazy(() => import('./SourcesCatalogueSection'));
 const SRC_Tables    = lazy(() => import('./TabularSummaries'));
@@ -27,7 +26,6 @@ const MAIN_TABS = [
   { id: 'catalogue'  as const, label: 'Evidence Catalogue',  icon: <FileText size={13}/> },
   { id: 'tables'     as const, label: 'Tabular Summaries',   icon: <Table2 size={13}/> },
   { id: 'dictionary' as const, label: 'Data Dictionary',     icon: <BookOpen size={13}/> },
-  { id: 'dashboard' as const, label: 'Dashboard', icon: <BookOpen size={13}/> },
 ];
 type TabId = typeof MAIN_TABS[number]['id'];
 
@@ -37,7 +35,7 @@ export default function SourcesSection() {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
-      background: 'rgba(2,2,2,0.97)',
+      background: 'rgba(2,5,8,0.97)',
       fontFamily: "'Inter','Segoe UI',sans-serif",
     }}>
       <style>{`
@@ -48,7 +46,7 @@ export default function SourcesSection() {
       <div style={{
         display: 'flex', gap: 2, padding: '0 14px', flexShrink: 0,
         borderBottom: '1px solid rgba(77,159,255,0.15)',
-        background: 'rgba(8,8,8,0.85)',
+        background: 'rgba(4,9,18,0.85)',
       }}>
         {MAIN_TABS.map(t => {
           const isActive = t.id === tab;
@@ -76,7 +74,6 @@ export default function SourcesSection() {
           {tab === 'dictionary' && <SRC_Dictionary />}
         </Suspense>
       </div>
-      {tab === 'dashboard' && <SectionDashboard sectionId="sources" accent="#4d9fff" />}
     </div>
   );
 }

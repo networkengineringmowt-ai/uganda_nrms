@@ -30,11 +30,11 @@ export default function DataDictionary() {
       </div>
       <div style={{ fontSize: 11.5, color: 'rgba(148,163,184,0.7)', marginBottom: 14 }}>
         What every metric, field and categorical value means across the platform. The same definitions
-        appear as  hover tips on cards, tables and charts.
+        appear as ℹ hover tips on cards, tables and charts.
       </div>
 
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginBottom: 14 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(15,15,15,0.7)',
+        <div style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(15,23,42,0.7)',
           border: '1px solid rgba(148,163,184,0.2)', borderRadius: 8, padding: '7px 11px', flex: '1 1 240px', maxWidth: 380 }}>
           <Search size={13} style={{ color: 'rgba(148,163,184,0.6)' }} />
           <input value={q} onChange={e => setQ(e.target.value)} placeholder="Search terms, definitions, values…"
