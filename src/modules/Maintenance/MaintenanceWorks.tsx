@@ -4,7 +4,6 @@ import { useBMS } from '../../store/BMSContext';
 import type { WorkOrder, WorkOrderStatus, WorkOrderType, WorkOrderPriority } from '../../types';
 import { formatDate, formatUGX } from '../../utils/helpers';
 import { v4 as uuidv4 } from 'uuid';
-import SectionDashboard from '../Dashboard/SectionDashboard';
 
 const STATUS_COLORS: Record<WorkOrderStatus, string> = {
   'Planned':     'badge-blue',
@@ -69,19 +68,8 @@ export default function MaintenanceWorks() {
     dispatch({ type: 'UPDATE_WORK_ORDER', payload: { ...wo, status } });
   }
 
-  const [tab, setTab] = useState<'content' | 'dashboard'>('content');
   return (
     <div className="flex flex-col h-full animate-fade-in">
-      {/* ── Tab nav ── */}
-      <div style={{ display:'flex', gap:6, padding:'8px 14px', borderBottom:'1px solid rgba(100,100,200,0.15)' }}>
-        {(['content','dashboard'] as const).map(t => (
-          <button key={t} onClick={() => setTab(t)} style={{ fontSize:11, fontWeight:700, letterSpacing:1, padding:'4px 14px', border:`1px solid ${t===tab?'#00d4aa':'rgba(100,100,200,0.2)'}`, borderRadius:4, cursor:'pointer', background:t===tab?'#00d4aa':'rgba(100,100,200,0.06)', color:t===tab?'#020202':'rgba(200,200,200,0.7)', textTransform:'uppercase' }}>
-            {t==='content'?'Maintenance':'Dashboard'}
-          </button>
-        ))}
-      </div>
-      {tab==='dashboard'&&<SectionDashboard sectionId="maintenance" accent="#00d4aa"/>}
-      {tab==='content'&&(<>
       {/* KPI strip */}
       <div className="flex-shrink-0 grid grid-cols-5 gap-px bg-slate-700/40 border-b border-slate-700/60">
         <KPIStrip label="Planned"    value={kpis.planned}   color="text-blue-400" />
@@ -115,7 +103,7 @@ export default function MaintenanceWorks() {
       </div>
 
       {/* Table */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 mowt-table-wrap">
         <table className="bms-table">
           <thead>
             <tr>
@@ -179,8 +167,6 @@ export default function MaintenanceWorks() {
           onSave={wo => { dispatch({ type: 'ADD_WORK_ORDER', payload: wo }); setShowForm(false); }}
           onClose={() => setShowForm(false)}
         />
-      )}
-      </>
       )}
     </div>
   );
@@ -253,7 +239,7 @@ function WorkOrderForm({
             <Wrench size={18} className="text-blue-400" />
             <span className="font-bold text-white">{initial ? 'Edit Work Order' : 'New Work Order'}</span>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-white"></button>
+          <button onClick={onClose} className="text-slate-400 hover:text-white">✕</button>
         </div>
         <div className="p-6 grid grid-cols-2 gap-4 overflow-y-auto max-h-[70vh]">
           <div className="col-span-2">
@@ -316,7 +302,6 @@ function WorkOrderForm({
           </button>
         </div>
       </div>
-
     </div>
   );
 }
