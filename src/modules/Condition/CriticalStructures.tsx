@@ -7,10 +7,9 @@ import { useMemo } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { useBMS } from '../../store/BMSContext';
 import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
-import { criticalRowStyle, NullableCell } from '../../shared/tableFormatting';
 
 const RATING_LABEL: Record<number, string> = {
-  1: 'Critical', 2: 'Poor', 3: 'Marginal', 4: 'Satisfactory', 5: 'Good',
+  1: 'Critical', 2: 'Poor', 3: 'Fair', 4: 'Good', 5: 'Excellent',
 };
 const RATING_COLOR: Record<number, string> = {
   1: '#ff3366', 2: '#ff6b35', 3: '#ffd23f', 4: '#00f5ff', 5: '#00ff88',
@@ -57,7 +56,7 @@ export default function CriticalStructures() {
     { key: 'road',   label: 'Road',      comment: 'Road the structure carries (national network).' },
     { key: 'region', label: 'Region' },
     { key: 'ratingLabel', label: 'Condition',
-      comment: 'DNR BMS condition category: 1 Critical · 2 Poor · 3 Marginal · 4 Satisfactory · 5 Good (from the 0–10 overall rating: 0–1 Critical, 2–3 Poor, 4–5 Marginal, 6 Satisfactory, 7–10 Good). This view shows only Critical & Poor.',
+      comment: 'BMS condition rating: 1 Critical · 2 Poor · 3 Fair · 4 Good · 5 Excellent. This view shows only 1–2.',
       render: r => (
       <span style={{ display: 'inline-block', padding: '2px 9px', borderRadius: 999,
         fontSize: 9.5, fontWeight: 800, color: RATING_COLOR[r.rating],
@@ -70,14 +69,11 @@ export default function CriticalStructures() {
     { key: 'priorityRank',  label: 'Rank',     numeric: true,
       comment: 'Network-wide priority rank (1 = most urgent).' },
     { key: 'spanLength',    label: 'Span (m)', numeric: true, total: 'sum',
-      comment: 'Total span length in metres.',
-      render: r => <NullableCell value={r.spanLength}>{r.spanLength}</NullableCell> },
+      comment: 'Total span length in metres.' },
     { key: 'lastInspection', label: 'Last Inspection',
-      comment: 'Date of most recent field inspection (ISO).',
-      render: r => <NullableCell value={r.lastInspection}>{r.lastInspection}</NullableCell> },
+      comment: 'Date of most recent field inspection (ISO).' },
     { key: 'replacementCostBnUgx', label: 'Repl. Cost (Bn UGX)', numeric: true, total: 'sum',
-      comment: 'Estimated full replacement cost in billions of UGX — SUM gives the total exposure of the critical backlog.',
-      render: r => <NullableCell value={r.replacementCostBnUgx}>{r.replacementCostBnUgx}</NullableCell> },
+      comment: 'Estimated full replacement cost in billions of UGX — SUM gives the total exposure of the critical backlog.' },
   ];
 
   const criticalCount = rows.filter(r => r.rating === 1).length;
@@ -98,7 +94,6 @@ export default function CriticalStructures() {
         accent="#ff3366"
         exportName="critical-structures"
         initialSort="priorityRank"
-        rowStyle={r => criticalRowStyle(r.rating === 1)}
       />
     </div>
   );

@@ -3,7 +3,6 @@ import { Activity, Search, ChevronDown, ChevronUp } from 'lucide-react';
 import { useBMS } from '../../store/BMSContext';
 import { conditionColor, conditionLabel, conditionBadge, formatDate } from '../../utils/helpers';
 import type { Structure } from '../../types';
-import SectionDashboard from '../Dashboard/SectionDashboard';
 import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis,
   CartesianGrid, Tooltip, ReferenceLine,
@@ -33,19 +32,8 @@ export default function ConditionAssessment() {
   }, [structures, query, sortKey]);
 
 
-  const [tab, setTab] = useState<'content' | 'dashboard'>('content');
   return (
     <div className="flex flex-col h-full animate-fade-in">
-      {/* ── Tab nav ── */}
-      <div style={{ display:'flex', gap:6, padding:'8px 14px', borderBottom:'1px solid rgba(100,100,200,0.15)' }}>
-        {(['content','dashboard'] as const).map(t => (
-          <button key={t} onClick={() => setTab(t)} style={{ fontSize:11, fontWeight:700, letterSpacing:1, padding:'4px 14px', border:`1px solid ${t===tab?'#00ff88':'rgba(100,100,200,0.2)'}`, borderRadius:4, cursor:'pointer', background:t===tab?'#00ff88':'rgba(100,100,200,0.06)', color:t===tab?'#020202':'rgba(200,200,200,0.7)', textTransform:'uppercase' }}>
-            {t==='content'?'Condition':'Dashboard'}
-          </button>
-        ))}
-      </div>
-      {tab==='dashboard'&&<SectionDashboard sectionId="condition" accent="#00ff88"/>}
-      {tab==='content'&&(<>
       {/* Top toolbar */}
       <div className="flex-shrink-0 px-6 py-4 border-b border-slate-700/60 bg-slate-900/50">
         <div className="flex items-center gap-3">
@@ -105,8 +93,6 @@ export default function ConditionAssessment() {
           )}
         </div>
       </div>
-      </>
-      )}
     </div>
   );
 }
@@ -170,13 +156,13 @@ function ConditionDetail({ structure: s }: { structure: Structure }) {
         </div>
         <ResponsiveContainer width="100%" height={200}>
           <LineChart data={histData} margin={{ top: 4, right: 12, left: -16, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1c1c1c" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
             <XAxis dataKey="year" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
             <YAxis domain={[0, 5.5]} ticks={[1,2,3,4,5]} tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
             <ReferenceLine y={3} stroke="#f59e0b" strokeDasharray="4 4" strokeOpacity={0.6} label={{ value: 'Fair', position: 'insideRight', fill: '#f59e0b', fontSize: 10 }} />
             <ReferenceLine y={2} stroke="#ef4444" strokeDasharray="4 4" strokeOpacity={0.6} label={{ value: 'Poor', position: 'insideRight', fill: '#ef4444', fontSize: 10 }} />
             <Tooltip
-              contentStyle={{ background: '#0d0d0d', border: '1px solid #334155', borderRadius: 8, fontSize: 11 }}
+              contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 8, fontSize: 11 }}
               formatter={(v: number) => [conditionLabel(v), 'Condition Rating']}
             />
             <Line
@@ -241,7 +227,7 @@ function NetworkConditionOverview({ structures }: { structures: Structure[] }) {
   const byCond: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
   structures.forEach(s => { byCond[s.conditionRating]++; });
 
-  const labels: Record<number, string> = { 5: 'Good', 4: 'Satisfactory', 3: 'Marginal', 2: 'Poor', 1: 'Critical' };
+  const labels: Record<number, string> = { 5: 'Excellent', 4: 'Good', 3: 'Fair', 2: 'Poor', 1: 'Critical' };
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -269,7 +255,6 @@ function NetworkConditionOverview({ structures }: { structures: Structure[] }) {
           ))}
         </div>
       </div>
-
     </div>
   );
 }
