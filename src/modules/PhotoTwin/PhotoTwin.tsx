@@ -14,9 +14,8 @@ import type { Structure } from '../../types';
 import { conditionColor, conditionLabel, conditionBadge, formatDate } from '../../utils/helpers';
 import { usePhotoLoader } from './usePhotoLoader';
 import BridgeSchematic from './BridgeSchematic';
-import SectionDashboard from '../Dashboard/SectionDashboard';
 
-type Tab = 'photos' | 'twin' | 'timeline' | 'dashboard';
+type Tab = 'photos' | 'twin' | 'timeline';
 
 export default function PhotoTwin() {
   const { state, dispatch, selectStructure } = useBMS();
@@ -61,18 +60,7 @@ export default function PhotoTwin() {
   );
 
   return (
-    <div className="relative flex h-full overflow-hidden animate-fade-in">
-      {/* PhotoTwin Dashboard overlay */}
-      <div style={{ position:'absolute', top:10, left:'50%', transform:'translateX(-50%)', zIndex:1000, display:'flex', gap:6 }}>
-        <button onClick={() => setTab(activeTab==='dashboard'?'photos':'dashboard')} style={{ fontSize:11, fontWeight:700, letterSpacing:1, padding:'4px 14px', border:'1px solid #00d4aa', borderRadius:4, cursor:'pointer', background:'#00d4aa', color:'#020202', textTransform:'uppercase', whiteSpace:'nowrap' }}>
-          {activeTab==='dashboard'?' 3D Twin':' Dashboard'}
-        </button>
-      </div>
-      {activeTab==='dashboard'&&(
-        <div style={{ position:'absolute', inset:0, zIndex:999, background:'#0a0a1a', overflow:'auto' }}>
-          <SectionDashboard sectionId="phototwin" accent="#00d4aa" />
-        </div>
-      )}
+    <div className="flex h-full overflow-hidden animate-fade-in">
       {/* ─── Left: Structure List ─── */}
       <div className="w-72 flex-shrink-0 flex flex-col border-r border-slate-700/60 bg-slate-900/50">
         {/* Search */}
@@ -192,7 +180,7 @@ function StructureListItem({
         <div className="text-[10px] text-slate-500 truncate">{s.road}</div>
         <div className="flex items-center gap-1 mt-0.5">
           <span className="text-[9px] font-mono text-blue-400">{s.id}</span>
-          {s.inspectionDue && <span className="text-[9px] text-red-400">â DUE</span>}
+          {s.inspectionDue && <span className="text-[9px] text-red-400">● DUE</span>}
         </div>
       </div>
 
@@ -380,7 +368,7 @@ function PhotosView({ structure: s }: { structure: Structure }) {
                 alt={`thumb ${i + 1}`}
                 className="w-full h-full object-cover"
                 onError={e => {
-                  (e.target as HTMLElement).parentElement!.style.background = '#1c1c1c';
+                  (e.target as HTMLElement).parentElement!.style.background = '#1e293b';
                   (e.target as HTMLImageElement).style.display = 'none';
                 }}
               />
@@ -393,7 +381,7 @@ function PhotosView({ structure: s }: { structure: Structure }) {
         </div>
       </div>
 
-      {/* ─── Lightbox (fullscreen) — rendered inline so the  button works ─── */}
+      {/* ─── Lightbox (fullscreen) — rendered inline so the ⛶ button works ─── */}
       {lightbox && currentPhoto && (
         <div
           className="fixed inset-0 z-[9999] bg-black/95 flex flex-col items-center justify-center"
