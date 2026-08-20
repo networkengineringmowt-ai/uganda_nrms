@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef, memo, useCallback, useContext } from 'react';
+﻿import React, { useState, useEffect, useMemo, useRef, memo, useCallback, useContext } from 'react';
 import {
   MapContainer, TileLayer, CircleMarker, Tooltip,
   ZoomControl, GeoJSON, useMap,
@@ -7,7 +7,9 @@ import {
   ESRI_TILE_URLS, ESRI_ATTRIBUTIONS,
   ROAD_STYLES, STRUCTURE_STYLES, surfaceCategory,
 } from '../../shared/mapSymbols';
-import { MapLegend, LEGEND_STRUCTURES, LEGEND_STRUCTURE_CONDITION } from '../../shared/MapLegend';
+import { WaterLayers } from '../../shared/WaterLayers';
+import { ImprovedInfraLayers } from '../../shared/ImprovedInfraLayers';
+import { MapLegend, LEGEND_STRUCTURES, LEGEND_STRUCTURE_CONDITION, LEGEND_FULL } from '../../shared/MapLegend';
 import { BotHighlightContext } from '../AssetBot/types';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -24,7 +26,6 @@ import {
   formatDate, formatUGX, CONDITION_COLORS,
 } from '../../utils/helpers';
 import { usePhotoLoader } from '../PhotoTwin/usePhotoLoader';
-import SectionDashboard from '../Dashboard/SectionDashboard';
 
 const YEARS = [2018, 2019, 2020, 2021, 2022, 2023, 2024];
 const CENTER: [number, number] = [1.373, 32.29];
@@ -58,7 +59,6 @@ export default function GISMapView() {
   const [selected,    setSelected]    = useState<DisplayStructure | null>(null);
   const [roadGeo,     setRoadGeo]     = useState<GeoJSON.FeatureCollection | null>(null);
   const [zoom,        setZoom]        = useState(7);
-  const [gisTab, setGisTab] = useState<'map' | 'dashboard'>('map');
   const { highlightedLinks } = useContext(BotHighlightContext);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const handleZoom  = useCallback((z: number) => setZoom(z), []);
@@ -125,19 +125,6 @@ export default function GISMapView() {
 
   return (
     <div className="relative flex h-full w-full overflow-hidden">
-      {/* ── GISMap tab nav ── */}
-      <div style={{ position:'absolute', top:10, left:'50%', transform:'translateX(-50%)', zIndex:1000, display:'flex', gap:6 }}>
-        {(['map','dashboard'] as const).map(t => (
-          <button key={t} onClick={() => setGisTab(t)} style={{ fontSize:11, fontWeight:700, letterSpacing:1, padding:'4px 14px', border:`1px solid ${gisTab===t?'#4d9fff':'rgba(77,159,255,0.25)'}`, borderRadius:4, cursor:'pointer', background:gisTab===t?'#4d9fff':'rgba(77,159,255,0.08)', color:gisTab===t?'#020202':'rgba(77,159,255,0.7)', textTransform:'uppercase', whiteSpace:'nowrap' }}>
-            {t==='map'?' GIS Map':' Dashboard'}
-          </button>
-        ))}
-      </div>
-      {gisTab==='dashboard'&&(
-        <div style={{ position:'absolute', inset:0, zIndex:999, background:'#0a0a1a', overflow:'auto' }}>
-          <SectionDashboard sectionId="gismap" accent="#4d9fff" />
-        </div>
-      )}
 
       {/* ── Map canvas ── */}
       <MapContainer
@@ -150,7 +137,10 @@ export default function GISMapView() {
 
         <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery}/>
         <TileLayer url={ESRI_TILE_URLS.labels}  attribution={ESRI_ATTRIBUTIONS.labels} opacity={0.7}/>
+        <WaterLayers />
+        <ImprovedInfraLayers />
         <MapLegend title="STRUCTURES" items={[...LEGEND_STRUCTURES, ...LEGEND_STRUCTURE_CONDITION]} position="bottomleft" />
+        <MapLegend title="MAP FEATURES" items={LEGEND_FULL} position="bottomright" />
         {roadGeo && (
           <GeoJSON
             key={`roads-${highlightedLinks.length}`}
@@ -180,10 +170,10 @@ export default function GISMapView() {
               <Tooltip direction="top" offset={[0, -8]} opacity={1}>
                 <div style={{ fontSize: 12, fontWeight: 900, color: '#111827', marginBottom: 2 }}>{s.name}</div>
                 <div style={{ fontSize: 10, fontWeight: 700, color: '#374151' }}>
-                  {isBridge ? ' Bridge' : ' Major Culvert'}
+                  {isBridge ? '🌉 Bridge' : '📦 Major Culvert'}
                 </div>
                 <div style={{ fontSize: 10, fontWeight: 600, color: isCrit ? '#dc2626' : '#6b7280', marginTop: 4 }}>
-                  Rating: {s.displayRating}/5 {isCrit ? ' CRITICAL' : ''}
+                  Rating: {s.displayRating}/5 {isCrit ? '⚠ CRITICAL' : ''}
                 </div>
               </Tooltip>
             </CircleMarker>
@@ -457,7 +447,7 @@ const StructurePanel = memo(function StructurePanel({
             <div className="flex-1 min-w-0">
               <div className="text-sm font-bold text-white leading-tight truncate">{s.name}</div>
               <div className="text-[10px] text-slate-400 mt-0.5">
-                {s.id} · {isBridge ? ' Bridge' : ' Culvert'} · {s.road}
+                {s.id} · {isBridge ? '🌉 Bridge' : '📦 Culvert'} · {s.road}
               </div>
             </div>
             <button onClick={onClose}
@@ -473,12 +463,12 @@ const StructurePanel = memo(function StructurePanel({
             </span>
             {s.inspectionDue && (
               <span className="flex items-center gap-1 text-[9px] text-red-400 font-bold bg-red-900/30 px-2 py-1 rounded">
-                 Inspection overdue
+                ⚠ Inspection overdue
               </span>
             )}
             {s.priorityScore >= 75 && (
               <span className="flex items-center gap-1 text-[9px] text-orange-400 font-bold bg-orange-900/30 px-2 py-1 rounded">
-                 High priority
+                ★ High priority
               </span>
             )}
             <span className="ml-auto text-[10px] text-slate-500">Rank #{s.priorityRank}/{state.structures.length}</span>
@@ -506,10 +496,10 @@ const StructurePanel = memo(function StructurePanel({
                   ? 'text-blue-400 border-b-2 border-blue-400'
                   : 'text-slate-500 hover:text-slate-300'
               }`}>
-              {t === 'details' ? ' Attributes'
-                : t === 'photos' ? ` Photos${photos.length > 0 ? ` (${photos.length})` : photosLoading ? ' …' : ''}`
-                : t === 'condition' ? ' Condition'
-                : ' Inspections'}
+              {t === 'details' ? '📋 Attributes'
+                : t === 'photos' ? `📷 Photos${photos.length > 0 ? ` (${photos.length})` : photosLoading ? ' …' : ''}`
+                : t === 'condition' ? '📈 Condition'
+                : '🔍 Inspections'}
             </button>
           ))}
         </div>
@@ -574,7 +564,7 @@ const StructurePanel = memo(function StructurePanel({
                 <Grid>
                   <Field l="Last Inspection" v={formatDate(s.lastInspection)} />
                   <Field l="Next Inspection" v={formatDate(s.nextInspection)} />
-                  <Field l="Status" v={s.inspectionDue ? ' Overdue' : ' Current'} highlight={s.inspectionDue ? 'amber' : 'green'} />
+                  <Field l="Status" v={s.inspectionDue ? '⚠ Overdue' : '✓ Current'} highlight={s.inspectionDue ? 'amber' : 'green'} />
                   <Field l="Overall Rating" v={`${s.conditionRating} – ${conditionLabel(s.conditionRating)}`} highlight={s.conditionRating <= 2 ? 'red' : undefined} />
                 </Grid>
                 {s.defects.length > 0 && (
@@ -737,7 +727,7 @@ const StructurePanel = memo(function StructurePanel({
                     );
                   })}
                 </div>
-                <div className="text-[9px] text-slate-500 mt-1">Category 1 Critical → 5 Good (DNR BMS)</div>
+                <div className="text-[9px] text-slate-500 mt-1">Rating 1 Critical → 5 Excellent (BMS scale)</div>
               </Section>
               <Section title="Inspection Schedule">
                 <div className="grid grid-cols-2 gap-2 text-[11px]">
@@ -745,7 +735,7 @@ const StructurePanel = memo(function StructurePanel({
                   <div><span className="text-slate-500">Next:</span> <span className="text-slate-200">{(s.nextInspection || '—').slice(0, 10)}</span></div>
                 </div>
                 {s.inspectionDue && (
-                  <div className="mt-2 text-[10px] font-bold text-amber-400"> Inspection overdue</div>
+                  <div className="mt-2 text-[10px] font-bold text-amber-400">⚠ Inspection overdue</div>
                 )}
               </Section>
               <Section title="Priority">
