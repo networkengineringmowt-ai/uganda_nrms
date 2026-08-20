@@ -2,13 +2,12 @@ import { useState, useCallback, useEffect } from 'react';
 import { X, ChevronRight, Cpu, Database, GitBranch, BarChart3, Layers, Target, ArrowRight } from 'lucide-react';
 import SourceTableButton from '../../shared/SourceTableButton';
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
-import SectionDashboard from '../Dashboard/SectionDashboard';
 
 function MLChartSourceButton() {
   return (
     <div style={{ display: 'flex', gap: 6 }}>
-      <SourceTableButton anchor="tbl-041" label=" Predictions table" />
-      <SourceTableButton anchor="tbl-042" label=" Rehab/urgency table" />
+      <SourceTableButton anchor="tbl-041" label="📋 Predictions table" />
+      <SourceTableButton anchor="tbl-042" label="📋 Rehab/urgency table" />
     </div>
   );
 }
@@ -23,8 +22,8 @@ const C = {
   model:    '#ff6b35',   // orange — ML Models
   output:   '#00ff88',   // green  — Outputs
   decision: '#4d9fff',   // blue   — Decision Support
-  bg:       'rgba(8,8,8,0.72)',
-  card:     'rgba(15,15,15,0.80)',
+  bg:       'rgba(8,14,28,0.72)',
+  card:     'rgba(15,23,42,0.80)',
   border:   'rgba(255,255,255,0.07)',
 };
 
@@ -485,20 +484,9 @@ export default function MLArchitectureDiagram() {
     );
   }, [selected]);
 
-  const [tab, setTab] = useState<'content' | 'dashboard'>('content');
   return (
     <div style={{ position: 'relative', background: C.bg, borderRadius: 16,
       border: `1px solid ${C.border}`, overflow: 'hidden', userSelect: 'none' }}>
-      {/* ── Tab nav ── */}
-      <div style={{ display:'flex', gap:6, padding:'8px 14px', borderBottom:'1px solid rgba(100,100,200,0.15)' }}>
-        {(['content','dashboard'] as const).map(t => (
-          <button key={t} onClick={() => setTab(t)} style={{ fontSize:11, fontWeight:700, letterSpacing:1, padding:'4px 14px', border:`1px solid ${t===tab?'#00f5ff':'rgba(100,100,200,0.2)'}`, borderRadius:4, cursor:'pointer', background:t===tab?'#00f5ff':'rgba(100,100,200,0.06)', color:t===tab?'#020202':'rgba(200,200,200,0.7)', textTransform:'uppercase' }}>
-            {t==='content'?'ML Architecture':'Dashboard'}
-          </button>
-        ))}
-      </div>
-      {tab==='dashboard'&&<SectionDashboard sectionId="mlarchitecture" accent="#00f5ff"/>}
-      {tab==='content'&&(<>
 
       <CrossLinkChipBar sectionId="hdm4" />
 
@@ -666,7 +654,7 @@ export default function MLArchitectureDiagram() {
                 <rect x={0} y={0} width={120} height={36} rx={9}
                   fill={isActive
                     ? `rgba(${hexToRgb(color)},0.18)`
-                    : isHov ? `rgba(${hexToRgb(color)},0.10)` : 'rgba(15,15,15,0.85)'}
+                    : isHov ? `rgba(${hexToRgb(color)},0.10)` : 'rgba(15,23,42,0.85)'}
                   stroke={color}
                   strokeWidth={isActive ? 1.5 : 0.5}
                   strokeOpacity={isActive ? 0.8 : 0.3}
@@ -713,7 +701,7 @@ export default function MLArchitectureDiagram() {
       {selected && (
         <div style={{
           position: 'absolute', top: 0, right: 0, bottom: 0, width: 340,
-          background: 'rgba(8,8,8,0.97)', backdropFilter: 'blur(24px)',
+          background: 'rgba(8,14,28,0.97)', backdropFilter: 'blur(24px)',
           borderLeft: `1px solid rgba(${hexToRgb(LAYER_COLORS[selected.layer])},0.3)`,
           display: 'flex', flexDirection: 'column',
           boxShadow: `-8px 0 40px rgba(0,0,0,0.6), inset 1px 0 0 rgba(${hexToRgb(LAYER_COLORS[selected.layer])},0.1)`,
@@ -841,8 +829,6 @@ export default function MLArchitectureDiagram() {
           </div>
         </div>
       )}
-      </>)}
-
     </div>
   );
 }
