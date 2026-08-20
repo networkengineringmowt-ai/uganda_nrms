@@ -8,7 +8,6 @@ import { useBMS } from '../../store/BMSContext';
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
 import { CaptureButton } from '../../shared/CaptureButton';
 import type { ActiveView } from '../../types';
-const SectionDashboard = lazy(() => import('../Dashboard/SectionDashboard'));
 import {
   LayoutDashboard, Map, BookOpen, Network,
   CheckCircle, AlertCircle, XCircle,
@@ -68,7 +67,7 @@ interface Publication {
 
 const CASE_STUDIES: CaseStudy[] = [
   {
-    id: 1, agency: 'TANROADS', country: 'Tanzania', flag: '', networkKm: 35_000,
+    id: 1, agency: 'TANROADS', country: 'Tanzania', flag: '🇹🇿', networkKm: 35_000,
     system: 'RAMS / HDM-4 (IDA-funded)',
     keyFeatures: [
       'Full HDM-4 implementation for 35,000 km national network',
@@ -82,7 +81,7 @@ const CASE_STUDIES: CaseStudy[] = [
     metrics: '68% of paved network in good/fair condition (2024); 12% reduction in road user costs 2018–2024',
   },
   {
-    id: 2, agency: 'KeNHA', country: 'Kenya', flag: '', networkKm: 11_189,
+    id: 2, agency: 'KeNHA', country: 'Kenya', flag: '🇰🇪', networkKm: 11_189,
     system: 'Road Asset Management System (RAMS) + GIS',
     keyFeatures: [
       'Pavement Management System (PMS) using dTIMS CT for strategic analysis',
@@ -96,7 +95,7 @@ const CASE_STUDIES: CaseStudy[] = [
     metrics: '74% paved network serviceability ≥ 3.5 PSI; bridge safety compliance 89%',
   },
   {
-    id: 3, agency: 'RTDA', country: 'Rwanda', flag: '', networkKm: 4_700,
+    id: 3, agency: 'RTDA', country: 'Rwanda', flag: '🇷🇼', networkKm: 4_700,
     system: 'Integrated RAMS + Performance-Based Contracts',
     keyFeatures: [
       'Rapid network expansion from 18% to 34% paved in 10 years',
@@ -110,7 +109,7 @@ const CASE_STUDIES: CaseStudy[] = [
     metrics: 'Network roughness reduced from avg IRI 4.8 to 3.1 m/km (2015–2024); road sector GDP contribution +2.4%',
   },
   {
-    id: 4, agency: 'SANRAL', country: 'South Africa', flag: '', networkKm: 21_400,
+    id: 4, agency: 'SANRAL', country: 'South Africa', flag: '🇿🇦', networkKm: 21_400,
     system: 'iRAMS (Integrated Road Asset Management System)',
     keyFeatures: [
       'Whole-life cost optimisation across full 21,400 km national network',
@@ -125,7 +124,7 @@ const CASE_STUDIES: CaseStudy[] = [
     metrics: '92% network in acceptable condition; R3.2 benefit per R1 maintenance investment',
   },
   {
-    id: 5, agency: 'Highways England (NHTSA)', country: 'United Kingdom', flag: '', networkKm: 7_800,
+    id: 5, agency: 'Highways England (NHTSA)', country: 'United Kingdom', flag: '🇬🇧', networkKm: 7_800,
     system: 'HAPMS (Highways Agency Pavement Management System)',
     keyFeatures: [
       'Whole-life cost optimisation with 50-year planning horizon',
@@ -140,7 +139,7 @@ const CASE_STUDIES: CaseStudy[] = [
     metrics: '97.4% network meeting serviceability standard; £6 return per £1 preventive maintenance',
   },
   {
-    id: 6, agency: 'DPTI / Austroads', country: 'Australia', flag: '', networkKm: 33_000,
+    id: 6, agency: 'DPTI / Austroads', country: 'Australia', flag: '🇦🇺', networkKm: 33_000,
     system: 'dTIMS CT + Austroads AP-R series',
     keyFeatures: [
       'dTIMS CT (Deighton Total Infrastructure Management System) for strategic programming',
@@ -155,7 +154,7 @@ const CASE_STUDIES: CaseStudy[] = [
     metrics: '88% paved national network meeting ride quality standard; A$4.2 VfM per A$1 maintenance',
   },
   {
-    id: 7, agency: 'NZTA Waka Kotahi', country: 'New Zealand', flag: '', networkKm: 11_000,
+    id: 7, agency: 'NZTA Waka Kotahi', country: 'New Zealand', flag: '🇳🇿', networkKm: 11_000,
     system: 'ONE Network Framework + Asset Management Plans',
     keyFeatures: [
       'ONE Network Road Classification (ONRC) — road function-based service levels',
@@ -170,7 +169,7 @@ const CASE_STUDIES: CaseStudy[] = [
     metrics: 'NZ$6.8 VfM per NZ$1 maintenance; 94% resilience target achieved on SH network',
   },
   {
-    id: 8, agency: 'FHWA / State DOTs', country: 'USA', flag: '', networkKm: 900_000,
+    id: 8, agency: 'FHWA / State DOTs', country: 'USA', flag: '🇺🇸', networkKm: 900_000,
     system: 'FMIS / TAMP (MAP-21 / FAST Act requirements)',
     keyFeatures: [
       'Federal requirement for Transportation Asset Management Plans (TAMPs) for NHS',
@@ -185,7 +184,7 @@ const CASE_STUDIES: CaseStudy[] = [
     metrics: '43% NHS in good pavement condition (2023); IIJA targeting 10% improvement by 2030',
   },
   {
-    id: 9, agency: 'NHAI / NRRDA', country: 'India', flag: '', networkKm: 145_000,
+    id: 9, agency: 'NHAI / NRRDA', country: 'India', flag: '🇮🇳', networkKm: 145_000,
     system: 'RCMS + PM Gati Shakti Digital Platform',
     keyFeatures: [
       'PM Gati Shakti NMP — multi-modal national master plan integrating all transport',
@@ -200,7 +199,7 @@ const CASE_STUDIES: CaseStudy[] = [
     metrics: '98% PMGSY connectivity target achieved; 62% NH in good condition (2024)',
   },
   {
-    id: 10, agency: 'Trafikverket', country: 'Sweden', flag: '', networkKm: 98_000,
+    id: 10, agency: 'Trafikverket', country: 'Sweden', flag: '🇸🇪', networkKm: 98_000,
     system: 'Pavement Management System + LCC framework',
     keyFeatures: [
       'Long-term National Infrastructure Plan (12-year horizon)',
@@ -215,7 +214,7 @@ const CASE_STUDIES: CaseStudy[] = [
     metrics: '91% main roads in acceptable condition; SEK 9.2 bn annual maintenance budget',
   },
   {
-    id: 11, agency: 'Rijkswaterstaat (RWS)', country: 'Netherlands', flag: '', networkKm: 5_900,
+    id: 11, agency: 'Rijkswaterstaat (RWS)', country: 'Netherlands', flag: '🇳🇱', networkKm: 5_900,
     system: 'Data-driven Predictive Asset Management',
     keyFeatures: [
       'Asset health index (AHI) for each road segment updated monthly',
@@ -230,7 +229,7 @@ const CASE_STUDIES: CaseStudy[] = [
     metrics: '99.2% availability of main road network; predictive maintenance savings €180m/yr',
   },
   {
-    id: 12, agency: 'MLIT', country: 'Japan', flag: '', networkKm: 127_000,
+    id: 12, agency: 'MLIT', country: 'Japan', flag: '🇯🇵', networkKm: 127_000,
     system: 'Bridge Inspection Law + Road Management Cycle',
     keyFeatures: [
       'Mandatory 5-year bridge inspection cycle (amended Road Act 2014)',
@@ -245,7 +244,7 @@ const CASE_STUDIES: CaseStudy[] = [
     metrics: '78% of bridges in good condition (2024, up from 59% in 2014); target 85% by 2030',
   },
   {
-    id: 13, agency: 'DNIT', country: 'Brazil', flag: '', networkKm: 75_000,
+    id: 13, agency: 'DNIT', country: 'Brazil', flag: '🇧🇷', networkKm: 75_000,
     system: 'SGEPT / PRO-INFRA + Performance-Based Contracts',
     keyFeatures: [
       'Performance-based concession contracts on 22,000 km federal highways',
@@ -260,7 +259,7 @@ const CASE_STUDIES: CaseStudy[] = [
     metrics: '64% federal network in good/fair condition (2024); CREMA contracts 18% cheaper than traditional works',
   },
   {
-    id: 14, agency: 'GHA', country: 'Ghana', flag: '', networkKm: 15_000,
+    id: 14, agency: 'GHA', country: 'Ghana', flag: '🇬🇭', networkKm: 15_000,
     system: 'GHIAS (Ghana Highway Information and Asset System)',
     keyFeatures: [
       'World Bank-funded RAMS implemented 2018–2022 (P164887)',
@@ -275,7 +274,7 @@ const CASE_STUDIES: CaseStudy[] = [
     metrics: '58% paved network in good/fair condition; 22% reduction in average roughness 2019–2023',
   },
   {
-    id: 15, agency: 'ERA (Ethiopian Roads Authority)', country: 'Ethiopia', flag: '', networkKm: 130_000,
+    id: 15, agency: 'ERA (Ethiopian Roads Authority)', country: 'Ethiopia', flag: '🇪🇹', networkKm: 130_000,
     system: 'RRAMPS (Road and River Asset Management Planning System)',
     keyFeatures: [
       'AfDB-funded RAMS covering 15,000 km federal roads (Phase 1)',
@@ -497,6 +496,112 @@ function RMSDashboard({ navigate }: { navigate: (v: ActiveView) => void }) {
         </div>
       </div>
 
+      {/* KPI banner */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 10, marginBottom: 22 }}>
+        <KpiCard label="Total Network" value={String(OFFICIAL_NETWORK_KM)} unit="km" color={C.cyan}
+          tooltip={`Official NDPIV FY 2025/26 figure · GIS-mapped: ${net.totalKm.toLocaleString()} km · Source: MoWT/DNR`}
+          navChips={[{ label: 'Road Network', view: 'roadnetwork' }]} />
+        <KpiCard label="Paved Roads" value={String(net.pavedKm)} unit="km" color={C.green}
+          tooltip={`${net.pavedKm.toLocaleString()} km paved (bituminous) · ${net.pavedPct}% of mapped GeoJSON · Source: network2026.geojson`}
+          navChips={[{ label: 'Condition Map', view: 'roadcondition' }, { label: 'Traffic', view: 'traffic' }]} />
+        <KpiCard label="Paved %" value={String(net.pavedPct)} unit="%" color={C.teal}
+          tooltip={`Paved share = ${net.pavedKm.toLocaleString()} / ${net.totalKm.toLocaleString()} km · NDP IV target: 35% by 2030`}
+          navChips={[{ label: 'Lifecycle', view: 'lifecycle' }]} />
+        <KpiCard label="Structures" value={String(net.totalBridges)} unit="" color={C.blue}
+          tooltip={`${net.totalBridges} bridges and culverts registered in BMS · Source: bridges2026.geojson`}
+          navChips={[{ label: 'BMS', view: 'bms' }]} />
+        <KpiCard label="ATC Stations" value="25" unit="active" color={C.purple}
+          tooltip="25 ATC stations total: 15 legacy (2016–2022) + 10 new (2025+) · Plus 298 manual TIS stations"
+          navChips={[{ label: 'Traffic TIS', view: 'traffic' }]} />
+        <KpiCard label="Data Sources" value="150" unit="+" color={C.yellow}
+          tooltip="150+ catalogued data sources across 4 categories: surveys, studies, policy, GIS"
+          navChips={[{ label: 'Sources', view: 'sources' }]} />
+      </div>
+
+      {/* Network consistency banner */}
+      <div style={{
+        display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center',
+        background: 'rgba(0,245,255,0.04)', border: '1px solid rgba(0,245,255,0.1)',
+        borderRadius: 8, padding: '8px 14px', marginBottom: 16, fontSize: 10,
+      }}>
+        <span style={{ color: 'rgba(148,163,184,0.5)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginRight: 6 }}>Network Figures</span>
+        <span style={{ color: '#00f5ff', fontWeight: 800 }}>Official: 21,302 km</span>
+        <span style={{ color: 'rgba(148,163,184,0.35)', margin: '0 6px' }}>|</span>
+        <span style={{ color: 'rgba(148,163,184,0.7)' }}>Source: NDPIV FY25-26 (MoWT)</span>
+        <span style={{ color: 'rgba(148,163,184,0.35)', margin: '0 6px' }}>|</span>
+        <span style={{ color: '#00d4aa', fontWeight: 800 }}>Mapped in GeoJSON: {net.totalKm.toLocaleString()} km ({net.totalLinks} links)</span>
+        <span style={{ color: 'rgba(148,163,184,0.35)', margin: '0 6px' }}>|</span>
+        <span style={{ color: '#ffd23f' }}>Gap: {(21302 - net.totalKm).toLocaleString()} km (unmapped/rural)</span>
+        <span style={{ color: 'rgba(148,163,184,0.35)', margin: '0 6px' }}>|</span>
+        <span style={{ color: 'rgba(148,163,184,0.5)', fontSize: 9 }}>Condition % based on surveyed links only</span>
+      </div>
+
+      {/* Module health + quick-links */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
+
+        {/* System Health */}
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 900, color: C.cyan,
+            marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            System Health — Module Status
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {MODULE_HEALTH.map(m => {
+              const color = m.status === 'ok' ? C.green : m.status === 'warn' ? C.yellow : C.gray;
+              const Icon  = m.status === 'ok' ? CheckCircle : m.status === 'warn' ? AlertCircle : XCircle;
+              return (
+                <button key={m.id} onClick={() => navigate(m.view)} style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  padding: '9px 14px', borderRadius: 9,
+                  background: `rgba(${rgb(color)},0.05)`,
+                  border: `1px solid rgba(${rgb(color)},0.15)`,
+                  cursor: 'pointer', textAlign: 'left',
+                }}>
+                  <Icon size={14} style={{ color, flexShrink: 0 }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: '#d4dde8' }}>{m.name}</div>
+                    <div style={{ fontSize: 9, color: 'rgba(100,116,139,0.7)', marginTop: 1 }}>{m.note}</div>
+                  </div>
+                  <ArrowRight size={11} style={{ color: 'rgba(100,116,139,0.4)', flexShrink: 0 }} />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Quick-links grid */}
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 900, color: C.cyan,
+            marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            Quick Navigation — All Modules
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            {[
+              { label: 'Network Overview',    icon: <Globe size={14}/>,        view: 'network' as ActiveView,   color: C.blue   },
+              { label: 'Pavement Mgmt (PMS)', icon: <Activity size={14}/>,     view: 'roadcondition' as ActiveView, color: C.orange },
+              { label: 'Bridge Mgmt (BMS)',   icon: <Network size={14}/>,      view: 'bms' as ActiveView,       color: C.blue   },
+              { label: 'Traffic Info (TIS)',  icon: <TrendingUp size={14}/>,   view: 'traffic' as ActiveView,   color: C.cyan   },
+              { label: 'HDM-4 Analysis',      icon: <BarChart3 size={14}/>,    view: 'hdm4' as ActiveView,      color: C.purple },
+              { label: 'NDPIV / Projects',    icon: <Layers size={14}/>,       view: 'projects' as ActiveView,  color: C.green  },
+              { label: 'Budget & Maint.',     icon: <Database size={14}/>,     view: 'budget' as ActiveView,    color: C.yellow },
+              { label: 'Lifecycle Mgmt',      icon: <Shield size={14}/>,       view: 'lifecycle' as ActiveView, color: C.teal   },
+              { label: 'Sources & Evidence',  icon: <BookOpen size={14}/>,     view: 'sources' as ActiveView,   color: C.gray   },
+            ].map(q => (
+              <button key={q.view} onClick={() => navigate(q.view)} style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '10px 13px', borderRadius: 8,
+                background: `rgba(${rgb(q.color)},0.06)`,
+                border: `1px solid rgba(${rgb(q.color)},0.2)`,
+                cursor: 'pointer', color: '#d4dde8', fontSize: 11, fontWeight: 600,
+              }}>
+                <span style={{ color: q.color }}>{q.icon}</span>
+                <span>{q.label}</span>
+                <ArrowRight size={10} style={{ color: 'rgba(100,116,139,0.4)', marginLeft: 'auto' }} />
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -520,7 +625,7 @@ function RMSArchitecture({ navigate }: { navigate: (v: ActiveView) => void }) {
         </div>
       </div>
 
-      <div style={{ width: '100%' }}>
+      <div style={{ maxWidth: 800, margin: '0 auto' }}>
         {TIERS.map((tier, i) => {
           const col = TIER_COLORS[i];
           const isHov = hovered === i;
@@ -628,7 +733,7 @@ function GlobalCaseStudies() {
           const regCol = region === 'Africa' ? C.green : region === 'Europe' ? C.blue : region === 'Asia-Pacific' ? C.cyan : C.orange;
           return (
             <div key={cs.id} style={{
-              background: 'rgba(8,8,8,0.7)',
+              background: 'rgba(8,14,28,0.7)',
               border: `1px solid ${isOpen ? `rgba(${rgb(regCol)},0.4)` : 'rgba(255,255,255,0.07)'}`,
               borderRadius: 12, overflow: 'hidden',
               transition: 'border-color 0.15s',
@@ -734,10 +839,10 @@ function StandardsEvidence() {
         <div style={{ fontSize: 14, fontWeight: 900, color: '#e2eaf4', marginBottom: 14 }}>
           Key Publications &amp; Research Papers
         </div>
-        <div style={{ background: 'rgba(8,8,8,0.6)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, overflow: 'hidden' }}>
+        <div style={{ background: 'rgba(8,14,28,0.6)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10 }}>
             <thead>
-              <tr style={{ background: 'rgba(8,8,8,0.9)' }}>
+              <tr style={{ background: 'rgba(8,14,28,0.9)' }}>
                 {['Ref', 'Title', 'Authors', 'Year', 'Publisher', 'DNR Relevance'].map(h => (
                   <th key={h} style={{
                     padding: '9px 12px', textAlign: 'left',
@@ -909,7 +1014,7 @@ function UNRARMSArchitecture({ navigate }: { navigate: (v: ActiveView) => void }
         ))}
       </div>
 
-      <div style={{ width: '100%' }}>
+      <div style={{ maxWidth: 900, margin: '0 auto' }}>
         {UNRA_LAYERS.map((layer, i) => {
           const isHov = hovered === i;
           const isExp = expanded === i;
@@ -1370,14 +1475,12 @@ export function DTIMSArchitecture({ navigate }: { navigate: (v: ActiveView) => v
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 const TABS = [
-  { id: 'dashboard'     as const, label: 'Dashboard',        icon: <LayoutDashboard size={13}/> },
+  { id: 'overview'      as const, label: 'Overview',          icon: <LayoutDashboard size={13}/> },
   { id: 'roadmap'       as const, label: 'Road Network Map',  icon: <Map size={13}/> },
   { id: 'inventory'     as const, label: 'Road Inventory',    icon: <Database size={13}/> },
   { id: 'networkstory'  as const, label: 'Network Story',     icon: <BookOpen size={13}/> },
-  { id: 'capture'       as const, label: 'Data Capture',      icon: <Database size={13}/> },
 ];
 type TabId = typeof TABS[number]['id'];
-const LazyCaptureHub = lazy(() => import('../DataEntry/DataCaptureHub'));
 
 function Spinner() {
   return (
@@ -1389,36 +1492,9 @@ function Spinner() {
   );
 }
 
-function SeamlessDashboardFrame() {
-  const ref = useRef<HTMLIFrameElement>(null);
-  useEffect(() => {
-    const iv = window.setInterval(() => {
-      const el = ref.current;
-      try {
-        const doc = el?.contentWindow?.document;
-        if (el && doc) {
-          const h = Math.max(doc.documentElement?.scrollHeight ?? 0, doc.body?.scrollHeight ?? 0);
-          if (h > 400 && Math.abs(h - el.offsetHeight) > 24) el.style.height = `${h + 24}px`;
-        }
-      } catch { /* ignore until loaded */ }
-    }, 700);
-    return () => window.clearInterval(iv);
-  }, []);
-  return (
-    <iframe
-      ref={ref}
-      src={`${import.meta.env.BASE_URL}dashboard.html?v=${Date.now()}`}
-      title="NRMS Live Dashboard"
-      scrolling="no"
-      style={{ display: 'block', width: '100%', height: '80vh', border: 'none', overflow: 'hidden',
-        borderTop: '1px solid rgba(0,245,255,0.15)', background: '#020202' }}
-    />
-  );
-}
-
 export default function RMSSection() {
   const { navigate } = useBMS();
-  const [tab, setTab] = useState<TabId>('dashboard');
+  const [tab, setTab] = useState<TabId>('overview');
 
   const isFullHeight = tab === 'roadmap' || tab === 'networkstory';
   const contentStyle: React.CSSProperties = isFullHeight
@@ -1428,7 +1504,7 @@ export default function RMSSection() {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
-      background: 'rgba(2,2,2,0.97)',
+      background: 'rgba(2,5,8,0.97)',
       fontFamily: "'Inter','Segoe UI',sans-serif",
     }}>
       <style>{`
@@ -1438,13 +1514,63 @@ export default function RMSSection() {
 
       <CrossLinkChipBar sectionId="rms" />
 
-      {/* Single navigation layer: Dashboard | Interactive Map | Exhaustive Tables | Deep Analytics | SQL Database & Schema | Data Capture (rendered inside SectionDashboard) */}
-      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
-        <Suspense fallback={<div style={{padding:'1.5rem',color:'#00f5ff',textAlign:'center',opacity:0.7,fontSize:'12px'}}>Loading…</div>}>
-          <SectionDashboard sectionId="rms" accent="#00f5ff" />
-        </Suspense>
+      {/* Main tab bar */}
+      <div style={{
+        display: 'flex', gap: 2, padding: '0 14px', flexShrink: 0,
+        borderBottom: '1px solid rgba(0,245,255,0.15)',
+        background: 'rgba(4,9,18,0.85)',
+      }}>
+        {TABS.map(t => {
+          const isActive = t.id === tab;
+          return (
+            <button key={t.id} onClick={() => setTab(t.id)} style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '10px 14px 11px', fontSize: 11, fontWeight: isActive ? 800 : 500,
+              background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0,
+              color: isActive ? '#00f5ff' : 'rgba(148,163,184,0.70)',
+              borderBottom: isActive ? '2px solid #00f5ff' : '2px solid transparent',
+              transition: 'all 0.13s',
+            }}>
+              {t.icon}
+              <span>{t.label}</span>
+            </button>
+          );
+        })}
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', paddingRight: 4 }}>
+          <Chip label="RMS v4.0 · FY25-26" color={C.cyan} />
+        </div>
       </div>
 
+      {/* Content */}
+      <div style={contentStyle}>
+
+        {tab === 'overview' && (
+          <RMSDashboard navigate={navigate} />
+        )}
+
+        {tab === 'roadmap' && (
+          <Suspense fallback={<Spinner />}>
+            <div style={{ position: 'absolute', inset: 0 }}>
+              <NET_RoadNetworkView />
+            </div>
+          </Suspense>
+        )}
+
+        {tab === 'inventory' && (
+          <Suspense fallback={<Spinner />}>
+            <RMS_RoadInventory />
+          </Suspense>
+        )}
+
+        {tab === 'networkstory' && (
+          <Suspense fallback={<Spinner />}>
+            <div style={{ position: 'absolute', inset: 0 }}>
+              <NET_NetworkStory />
+            </div>
+          </Suspense>
+        )}
+
+      </div>
     </div>
   );
 }

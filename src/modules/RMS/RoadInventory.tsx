@@ -10,7 +10,6 @@ import {
   INVENTORY_CATEGORIES, GRADE_SCALE, MANUAL_SOURCE_NOTE,
 } from '../../shared/unraStandards';
 import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
-import { RoadClassPill, PercentCell, NullableCell } from '../../shared/tableFormatting';
 
 interface InvLink {
   link_id: string; link_name: string | null; region: string | null; station: string | null;
@@ -74,13 +73,11 @@ export default function RoadInventory() {
     { key: 'link_id',    label: 'Link ID',  comment: 'UNRA AMS location-referencing link identifier.' },
     { key: 'road_no',    label: 'Road No.', comment: 'Nationally accepted road/route number (manual: Inventory Items).' },
     { key: 'link_name',  label: 'Link Name' },
-    { key: 'road_class', label: 'Class',    comment: 'Road class A / B / C / M.',
-      render: r => <RoadClassPill cls={r.road_class} /> },
+    { key: 'road_class', label: 'Class',    comment: 'Road class A / B / C / M.' },
     { key: 'surface_type', label: 'Pavement Type',
       comment: 'Official inventory item "Pavement Type" — carriageway paved/unpaved + wearing course.' },
     { key: 'length_km',  label: 'Length (km)', numeric: true, total: 'sum',
-      comment: 'Official inventory item "Dimensions" — section length. SUM = network total.',
-      render: r => <NullableCell value={r.length_km}>{r.length_km}</NullableCell> },
+      comment: 'Official inventory item "Dimensions" — section length. SUM = network total.' },
     { key: 'maintenance_region',  label: 'Region' },
     { key: 'maintenance_station', label: 'Station',
       comment: 'Maintenance station responsible (manual: Inventory Items → Station).' },
@@ -135,8 +132,7 @@ export default function RoadInventory() {
     ];
     const extras: STColumn<InvRow>[] =
       cat === 'shoulders' ? [
-        { key: 'shoulder_pct',     label: 'Shoulder %',  numeric: true,
-          render: r => <PercentCell value={r.shoulder_pct == null ? null : Number(r.shoulder_pct)} /> },
+        { key: 'shoulder_pct',     label: 'Shoulder %',  numeric: true },
         { key: 'shoulder_width_m', label: 'Shldr W (m)', numeric: true },
         { key: 'material',         label: 'Material' },
       ] : cat === 'environs' ? [
@@ -150,8 +146,7 @@ export default function RoadInventory() {
     return [
       ...base, ...extras, ...perSubtype,
       { key: 'cat_records', label: 'Total', numeric: true, total: 'sum',
-        comment: `All ${active.label} records on the link.`,
-        render: r => <NullableCell value={r.cat_records}>{r.cat_records}</NullableCell> },
+        comment: `All ${active.label} records on the link.` },
     ];
   }, [cat, active.label, subtypes]);
 
@@ -162,7 +157,7 @@ export default function RoadInventory() {
       <div style={{
         display: 'flex', gap: 4, padding: '4px 12px 0', flexWrap: 'wrap',
         borderBottom: '1px solid rgba(255,255,255,0.06)',
-        background: 'rgba(8,8,8,0.6)', flexShrink: 0,
+        background: 'rgba(4,9,18,0.6)', flexShrink: 0,
       }}>
         {INVENTORY_CATEGORIES.map(c => {
           const on = c.id === cat;
@@ -204,7 +199,7 @@ export default function RoadInventory() {
           <div style={{
             display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 12,
             padding: '10px 12px', marginBottom: 10, borderRadius: 8,
-            background: 'rgba(15,15,15,0.6)', border: '1px solid rgba(255,255,255,0.07)',
+            background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(255,255,255,0.07)',
           }}>
             <div>
               <div style={{ fontSize: 8.5, fontWeight: 800, color: C.teal, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>
@@ -278,7 +273,7 @@ export default function RoadInventory() {
           </>
         ) : (
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px',
-            borderRadius: 8, background: 'rgba(15,15,15,0.6)', border: '1px dashed rgba(148,163,184,0.3)' }}>
+            borderRadius: 8, background: 'rgba(15,23,42,0.6)', border: '1px dashed rgba(148,163,184,0.3)' }}>
             <Database size={14} style={{ color: C.gray }} />
             <div style={{ fontSize: 10.5, color: 'rgba(148,163,184,0.8)' }}>
               Loading the 2022-23 measured inventory…
