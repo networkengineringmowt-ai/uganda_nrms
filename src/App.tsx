@@ -1,5 +1,4 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
-import { Menu } from 'lucide-react';
 import { logEvent } from './modules/Auth/auditLog';
 import { BMSProvider, useBMS } from './store/BMSContext';
 import { BotHighlightContext } from './modules/AssetBot/types';
@@ -9,9 +8,9 @@ import { AccessPending } from './modules/Auth/AccessPending';
 import { canAccessView, isFieldRole } from './modules/Auth/permissions';
 import { roleLabel } from './modules/Auth/authTypes';
 import CrossLinkChipBar from './shared/CrossLinkChipBar';
+import { AmbientParticles, useEchoRipple, useMetallizeObserver } from './shared/EchoFX';
 
 const RMSFieldShell = lazy(() => import('./modules/RMS/RMSFieldShell'));
-import SectionHub from './components/Layout/SectionHub';
 import Sidebar from './components/Layout/Sidebar';
 import Header  from './components/Layout/Header';
 
@@ -22,7 +21,6 @@ const NetworkSection    = lazy(() => import('./modules/Network/NetworkSection'))
 const PlatformDashboard = lazy(() => import('./modules/PlatformDashboard/PlatformDashboard'));
 const NetworkStory      = lazy(() => import('./modules/NetworkStory/NetworkStory'));
 const RoadNetworkView   = lazy(() => import('./modules/RoadNetwork/RoadNetworkView'));
-const LifecycleView     = lazy(() => import('./modules/Lifecycle/LifecycleView'));
 const TrafficSection    = lazy(() => import('./modules/Traffic/TrafficSection'));
 const RoadConditionView       = lazy(() => import('./modules/RoadCondition/RoadConditionView'));
 const MaintenanceProgrammeView = lazy(() => import('./modules/RoadCondition/MaintenanceProgrammeView'));
@@ -55,7 +53,6 @@ const LifecycleSection        = lazy(() => import('./modules/Lifecycle/Lifecycle
 const SourcesCatalogueSection = lazy(() => import('./modules/Sources/SourcesCatalogueSection'));
 const TabularSummaries        = lazy(() => import('./modules/Sources/TabularSummaries'));
 const SourcesSection          = lazy(() => import('./modules/Sources/SourcesSection'));
-const DataDictionary          = lazy(() => import('./modules/Sources/DataDictionary'));
 
 // ── Data entry ────────────────────────────────────────────────────────────────
 const PendingSubmissions = lazy(() => import('./modules/DataEntry/PendingSubmissions').then(m => ({ default: m.PendingSubmissions })));
@@ -63,14 +60,9 @@ const DataCaptureHub     = lazy(() => import('./modules/DataEntry/DataCaptureHub
 
 // ── BMS unified view ──────────────────────────────────────────────────────────
 const BMSSection = lazy(() => import('./modules/BMS/BMSSection'));
-const DUCARSection = lazy(() => import('./modules/DUCAR/DUCARSection'));
 
 // ── PMS unified view ──────────────────────────────────────────────────────────
 const PMSSection = lazy(() => import('./modules/PMS/PMSSection'));
-
-// ── New External Sections ─────────────────────────────────────────────────────
-const NTISSection = lazy(() => import('./sections/NTISSection'));
-const NPMSSection = lazy(() => import('./sections/NPMSSection'));
 
 // ── RMS top-level hub ─────────────────────────────────────────────────────────
 const RMSSection            = lazy(() => import('./modules/RMS/RMSSection'));
@@ -88,7 +80,6 @@ const DocumentStore    = lazy(() => import('./modules/Documents/DocumentStore'))
 const DownloadsView    = lazy(() => import('./modules/Downloads/DownloadsView'));
 const RoadAtlasView    = lazy(() => import('./modules/RoadAtlas/RoadAtlasView'));
 const RoadVideoView    = lazy(() => import('./modules/RoadVideoView/RoadVideoView'));
-const SocioEconomicSection = lazy(() => import('./modules/SocioEconomic/SocioEconomicSection'));
 
 const FULL_VIEWS      = new Set(['gismap', 'roadnetwork']);
 const SELF_SCROLL_VIEWS = new Set(['networkstory']);
@@ -135,18 +126,13 @@ function AppShell() {
   const { state, navigate } = useBMS();
   const { activeView, isLoading } = state;
   const { user } = useAuth();
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  useEchoRipple();           // global click-ripple (Echo design language)
+  useMetallizeObserver();    // platform-wide liquid-metal shimmer on numbers & headings
 
-  // Track & trace: queues in this browser's local audit log; also mirrors to
-  // the shared G: Drive audit trail when the optional local data-entry server is running.
+  // Track & trace: every page view goes to the G: Drive audit trail.
   useEffect(() => {
     if (user) logEvent('view', { view: activeView });
   }, [user, activeView]);
-
-  // Close the mobile drawer whenever the active section changes.
-  useEffect(() => {
-    setMobileNavOpen(false);
-  }, [activeView]);
 
   const showHeaderSearch = useMemo(() =>
     ['registry', 'inspections', 'documents', 'priority', 'sources'].includes(activeView),
@@ -160,26 +146,11 @@ function AppShell() {
   }
 
   return (
-    <div className="flex h-full w-full overflow-hidden bg-slate-950">
-      <Sidebar mobileOpen={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />
+    <div className="flex h-full w-full overflow-hidden">
+      <AmbientParticles />
+      <Sidebar />
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-        {!isFullView && <Header showSearch={showHeaderSearch} onMenuClick={() => setMobileNavOpen(o => !o)} />}
-        {isFullView && (
-          <button
-            className="mobile-menu-btn mobile-menu-btn-floating"
-            onClick={() => setMobileNavOpen(o => !o)}
-            aria-label="Open menu"
-            style={{
-              display: 'none', alignItems: 'center', justifyContent: 'center',
-              width: 38, height: 38, borderRadius: 9,
-              border: '1px solid rgba(0,245,255,0.25)',
-              background: 'rgba(6,13,24,0.85)', color: '#e2eaf4', cursor: 'pointer',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
-            }}
-          >
-            <Menu size={16}/>
-          </button>
-        )}
+        {!isFullView && <Header showSearch={showHeaderSearch} />}
         <main className="flex-1 min-h-0 relative overflow-hidden">
           <Suspense fallback={<ModuleSpinner />}>
 
@@ -241,25 +212,16 @@ function AppShell() {
                 {activeView === 'rms'             && <RMSSection />}
                 {activeView === 'roadreserve'    && <RoadReserveSection />}
                 {activeView === 'casestudies'    && <GlobalCaseStudiesSection />}
-                {activeView === 'lifecycle'       && <LifecycleView />}
-                {activeView === 'sources'         && (
-                  <SectionHub accent="#94a3b8" badge="KNOWLEDGE & ADMIN" tabs={[
-                    { id: 'catalogue',  label: 'Evidence Catalogue', element: <SourcesCatalogueSection /> },
-                    { id: 'tables',     label: 'Tabular Summaries', element: <TabularSummaries /> },
-                    { id: 'dictionary', label: 'Data Dictionary', element: <DataDictionary /> },
-                    { id: 'admin',      label: 'Admin Tools', element: (
-                      <RequireAdmin label="Admin Tools"><AdminSection onNavigate={navigate} /></RequireAdmin>
-                    ) },
-                  ]} />
-                )}
+                {activeView === 'lifecycle'       && <LifecycleSection />}
+                {activeView === 'sources'         && <SourcesSection />}
+                {activeView === 'tabularsummaries' && <TabularSummaries />}
                 {activeView === 'gisenterprise'    && <GisEnterpriseSection />}
                 {activeView === 'atc'              && <ATCView />}
                 {activeView === 'bridgeworks'      && <BridgeWorksSection />}
                 {activeView === 'documents'        && <DocumentStore />}
                 {activeView === 'downloads'        && <DownloadsView />}
                 {activeView === 'roadatlas'        && <RoadAtlasView />}
-                {activeView === 'roadvideo'         && <RoadVideoView />}
-                {activeView === 'socioeconomic'       && <SocioEconomicSection />}
+                {activeView === 'roadvideo'        && <RoadVideoView />}
 
                 {activeView === 'admin' && (
                   <Suspense fallback={<ModuleSpinner />}>
@@ -294,10 +256,7 @@ function AppShell() {
                 )}
 
                 {activeView === 'bms' && <BMSSection />}
-                {activeView === 'ducar' && <DUCARSection />}
                 {activeView === 'pms' && <PMSSection />}
-                {activeView === 'ntis' && <NTISSection />}
-                {activeView === 'npms' && <NPMSSection />}
               </div>
             )}
 
@@ -314,7 +273,7 @@ function RequireAdmin({ label, children }: { label: string; children: React.Reac
   if (user && canAccessView(user.role, 'admin')) return <>{children}</>;
   return (
     <div style={{ textAlign: 'center', padding: '60px 20px', color: 'rgba(148,163,184,0.85)' }}>
-      <div style={{ fontSize: 28, marginBottom: 10 }}></div>
+      <div style={{ fontSize: 28, marginBottom: 10 }}>🔒</div>
       <div style={{ fontSize: 14, fontWeight: 700, color: '#e2eaf4' }}>{label} is admin-only</div>
       <div style={{ fontSize: 12, marginTop: 6 }}>
         Your access level (<strong style={{ color: '#fbbf24' }}>{roleLabel(user?.role)}</strong>) is
