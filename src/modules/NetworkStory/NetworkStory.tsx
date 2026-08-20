@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
+﻿import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import {
   AreaChart, Area, BarChart, Bar, LineChart, Line, PieChart, Pie,
   XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine,
@@ -11,7 +11,6 @@ import {
 } from 'lucide-react';
 import { hexRgb, lightenHex, darkenHex, TICK, TICK_SM, AX_LINE } from '../../lib/chart3d';
 import { loadPlatformAnalytics, type PlatformAnalytics } from '../../data/platformData';
-import SectionDashboard from '../Dashboard/SectionDashboard';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface StoryData {
@@ -57,7 +56,7 @@ const MILESTONES = [
   { year: 2023, label: 'OPRC Scale-Up',       color: C.pink,   detail: 'Continued rehabilitation under OPRC performance contracts; bridge and culvert inventory completed — 1,031 structures in the 2026 BMS register' },
   { year: 2024, label: 'Digital Transform',   color: C.indigo, detail: 'Digital transformation initiative; DNR RMS Engine development begins; ML-powered pavement condition assessment model (PyTorch, R²=0.93) enters training' },
   { year: 2025, label: 'Platform Live',       color: C.green,  detail: 'DNR Road Management System goes live; 1,013 links in GeoJSON; ML IRI prediction and HDM-4 analysis integrated; real-time ATC data feeds activated' },
-  { year: 2026, label: 'Current (FY25/26)',   color: C.cyan,   detail: 'Current year: Official network 21,302 km (NDPIV FY25-26) | GeoJSON mapped 21,354.9 km (1,020 links) | Paved 6,405 km (30.1%) | Unpaved 14,897 km (69.9%)' },
+  { year: 2026, label: 'Current (FY25/26)',   color: C.cyan,   detail: 'Current year: Official network 21,302 km (NDPIV FY25-26) | GeoJSON mapped 21,160 km (1,013 links) | Paved 6,405 km (30.1%) | Unpaved 14,897 km (69.9%)' },
 ];
 
 const MAINTENANCE_FY = [
@@ -177,7 +176,7 @@ function downloadPng(ref: React.RefObject<HTMLDivElement>, fname: string) {
     cv.width = w * 2; cv.height = h * 2;
     const ctx = cv.getContext('2d')!;
     ctx.scale(2, 2);
-    ctx.fillStyle = '#000000';
+    ctx.fillStyle = '#020508';
     ctx.fillRect(0, 0, w, h);
     ctx.drawImage(img, 0, 0, w, h);
     const a = document.createElement('a');
@@ -282,7 +281,7 @@ function KpiTile({ icon, label, value, color, sub }: {
   const rgb = hexRgb(color);
   return (
     <div style={{
-      background: `linear-gradient(135deg, rgba(${rgb},0.13) 0%, rgba(${rgb},0.04) 70%, rgba(2,2,2,0.8) 100%)`,
+      background: `linear-gradient(135deg, rgba(${rgb},0.13) 0%, rgba(${rgb},0.04) 70%, rgba(2,5,8,0.8) 100%)`,
       border: `1px solid rgba(${rgb},0.28)`,
       borderRadius: 14, padding: '16px 18px 14px',
       boxShadow: `0 0 28px rgba(${rgb},0.1), inset 0 1px 0 rgba(255,255,255,0.04)`,
@@ -312,7 +311,7 @@ function AssetCard({ label, value, unit, detail, color, icon }: {
   const rgb = hexRgb(color);
   return (
     <div style={{
-      background: `linear-gradient(145deg, rgba(${rgb},0.16) 0%, rgba(${rgb},0.05) 50%, rgba(2,2,2,0.85) 100%)`,
+      background: `linear-gradient(145deg, rgba(${rgb},0.16) 0%, rgba(${rgb},0.05) 50%, rgba(2,5,8,0.85) 100%)`,
       border: `1px solid rgba(${rgb},0.32)`,
       borderRadius: 14, padding: '16px 15px',
       boxShadow: `0 0 32px rgba(${rgb},0.13), inset 0 1px 0 rgba(255,255,255,0.05)`,
@@ -348,7 +347,7 @@ function ChartSection({ title, accent = C.purple, children, note, minHeight = 26
   return (
     <div style={{
       marginBottom: 28,
-      background: `linear-gradient(135deg, rgba(${rgb},0.06) 0%, rgba(2,2,2,0.55) 60%, rgba(${rgb},0.02) 100%)`,
+      background: `linear-gradient(135deg, rgba(${rgb},0.06) 0%, rgba(2,5,8,0.55) 60%, rgba(${rgb},0.02) 100%)`,
       border: `1px solid rgba(${rgb},0.15)`,
       borderLeft: `3px solid ${accent}`,
       borderRadius: 14, padding: '18px 20px',
@@ -398,7 +397,7 @@ function Section({ title, accent = C.purple, children }: {
   return (
     <div style={{
       marginBottom: 28,
-      background: `linear-gradient(135deg, rgba(${rgb},0.06) 0%, rgba(2,2,2,0.55) 60%, rgba(${rgb},0.02) 100%)`,
+      background: `linear-gradient(135deg, rgba(${rgb},0.06) 0%, rgba(2,5,8,0.55) 60%, rgba(${rgb},0.02) 100%)`,
       border: `1px solid rgba(${rgb},0.15)`,
       borderLeft: `3px solid ${accent}`,
       borderRadius: 14, padding: '18px 20px',
@@ -419,7 +418,7 @@ function GlassTooltip({ active, payload, label, color = C.purple }: any) {
   if (!active || !payload?.length) return null;
   return (
     <div style={{
-      background: 'rgba(2,2,2,0.96)', border: `1px solid rgba(${hexRgb(color)},0.35)`,
+      background: 'rgba(2,5,8,0.96)', border: `1px solid rgba(${hexRgb(color)},0.35)`,
       borderRadius: 8, padding: '8px 12px', fontSize: 11,
     }}>
       <div style={{ color, fontWeight: 800, marginBottom: 4 }}>{label}</div>
@@ -505,9 +504,9 @@ function ProjectCard({ p }: { p: typeof PROJECT_GALLERY[number] }) {
       <div style={{
         position: 'absolute', inset: 0,
         background: `linear-gradient(to top,
-          rgba(2,2,2,0.97) 0%,
-          rgba(2,2,2,0.55) 45%,
-          rgba(2,2,2,0.05) 100%)`,
+          rgba(2,5,8,0.97) 0%,
+          rgba(2,5,8,0.55) 45%,
+          rgba(2,5,8,0.05) 100%)`,
       }} />
 
       {/* Top accent bar */}
@@ -593,7 +592,7 @@ function FilterBar({
   return (
     <div style={{
       position: 'sticky', top: 3, zIndex: 20,
-      background: 'rgba(2,2,2,0.95)',
+      background: 'rgba(2,5,8,0.95)',
       borderBottom: '1px solid rgba(255,255,255,0.06)',
       backdropFilter: 'blur(12px)',
       padding: '10px 28px',
@@ -605,7 +604,7 @@ function FilterBar({
         <span style={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Filters</span>
         {filterCount > 0 && (
           <span style={{
-            background: C.purple, color: '#000000', borderRadius: '50%',
+            background: C.purple, color: '#020508', borderRadius: '50%',
             width: 16, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 9, fontWeight: 900,
           }}>{filterCount}</span>
@@ -820,8 +819,7 @@ export default function NetworkStory() {
   const [sortCol, setSortCol] = useState<'region'|'paved_km'|'unpaved_km'|'total'|'pct'|'links'>('paved_km');
   const [sortDir, setSortDir] = useState<'asc'|'desc'>('desc');
   const [hovRow,  setHovRow]  = useState<string|null>(null);
-  const [hovStation, setHovStation] = useState<string|null>(null)
-  const [nsTab, setNsTab] = useState<'story' | 'dashboard'>('story');;
+  const [hovStation, setHovStation] = useState<string|null>(null);
 
   // Load data + inject slider CSS
   useEffect(() => {
@@ -834,9 +832,9 @@ export default function NetworkStory() {
 
     const style = document.createElement('style');
     style.textContent = `
-      input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:${C.purple};border:2px solid #000000;cursor:pointer;box-shadow:0 0 8px ${C.purple}88;}
+      input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:${C.purple};border:2px solid #020508;cursor:pointer;box-shadow:0 0 8px ${C.purple}88;}
       input[type=range]::-webkit-slider-runnable-track{height:4px;background:transparent;}
-      input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:${C.purple};border:2px solid #000000;cursor:pointer;}
+      input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:${C.purple};border:2px solid #020508;cursor:pointer;}
       @keyframes ns-pulse{0%,100%{opacity:1}50%{opacity:0.45}}
       @keyframes ns-fadeup{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
     `;
@@ -976,7 +974,7 @@ export default function NetworkStory() {
   }, [data, filters.yearRange]);
 
   // ── Loading / Error ───────────────────────────────────────────────────────
-  const CEN: React.CSSProperties = { position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(2,2,2,0.98)' };
+  const CEN: React.CSSProperties = { position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(2,5,8,0.98)' };
   if (loading) return (
     <div style={CEN}>
       <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
@@ -1025,20 +1023,7 @@ export default function NetworkStory() {
 
   // ══════════════════════════════════════════════════════════════════════════
   return (
-    <div style={{ position: 'absolute', inset: 0, overflowY: 'auto', overflowX: 'hidden', background: 'rgba(2,2,2,0.98)', fontFamily: 'inherit' }}>
-      {/* NetworkStory tab nav */}
-      <div style={{ position:'absolute', top:10, left:'50%', transform:'translateX(-50%)', zIndex:1000, display:'flex', gap:6 }}>
-        {(['story','dashboard'] as const).map(t => (
-          <button key={t} onClick={() => setNsTab(t)} style={{ fontSize:11, fontWeight:700, letterSpacing:1, padding:'4px 14px', border:`1px solid ${nsTab===t?'#00f5ff':'rgba(0,245,255,0.25)'}`, borderRadius:4, cursor:'pointer', background:nsTab===t?'#00f5ff':'rgba(0,245,255,0.08)', color:nsTab===t?'#020202':'rgba(0,245,255,0.7)', textTransform:'uppercase', whiteSpace:'nowrap' }}>
-            {t==='story'?' Network Story':' Dashboard'}
-          </button>
-        ))}
-      </div>
-      {nsTab==='dashboard'&&(
-        <div style={{ position:'absolute', inset:0, zIndex:999, background:'#0a0a1a', overflow:'auto' }}>
-          <SectionDashboard sectionId="networkstory" accent="#00f5ff" />
-        </div>
-      )}
+    <div style={{ position: 'absolute', inset: 0, overflowY: 'auto', overflowX: 'hidden', background: 'rgba(2,5,8,0.98)', fontFamily: 'inherit' }}>
 
       {/* Top rainbow bar */}
       <div style={{
@@ -1176,7 +1161,7 @@ export default function NetworkStory() {
                     stroke={C.purple} strokeWidth={2.5}
                     fill="url(#pavedGrad)" dot={false}
                     isAnimationActive animationDuration={1400}
-                    activeDot={{ r: 5, fill: C.purple, stroke: 'rgba(2,2,2,0.9)', strokeWidth: 2 }}
+                    activeDot={{ r: 5, fill: C.purple, stroke: 'rgba(2,5,8,0.9)', strokeWidth: 2 }}
                     style={{ filter: 'url(#lineGlow)' } as any}
                   />
                 </AreaChart>
@@ -1224,7 +1209,7 @@ export default function NetworkStory() {
                 <ReferenceLine yAxisId="left" x="2020/21" stroke={C.orange} strokeDasharray="4 4" strokeOpacity={0.6}
                   label={{ value: 'NDP III', position: 'insideTopRight', fill: C.orange, fontSize: 8, fontWeight: 700 }} />
                 <Line yAxisId="left" type="monotone" dataKey="stock" name="Stock km" stroke={C.green} strokeWidth={2.5}
-                  dot={{ r: 4, fill: C.green, stroke: 'rgba(2,2,2,0.9)', strokeWidth: 2 }}
+                  dot={{ r: 4, fill: C.green, stroke: 'rgba(2,5,8,0.9)', strokeWidth: 2 }}
                   isAnimationActive animationDuration={1400}
                   style={{ filter: 'url(#wtssGlow)' } as any} />
                 <Line yAxisId="right" type="monotone" dataKey="pct" name="% paved" stroke={C.yellow} strokeWidth={2}
@@ -1271,7 +1256,7 @@ export default function NetworkStory() {
                   tickFormatter={v => v.toLocaleString()} width={52} />
                 <Tooltip content={(p: any) => <GlassTooltip {...p} color={C.orange} />} />
                 <Line type="monotone" dataKey="motorised" name="Motorised AADT" stroke={C.orange} strokeWidth={3}
-                  dot={{ r: 5, fill: C.orange, stroke: 'rgba(2,2,2,0.9)', strokeWidth: 2 }}
+                  dot={{ r: 5, fill: C.orange, stroke: 'rgba(2,5,8,0.9)', strokeWidth: 2 }}
                   isAnimationActive animationDuration={1400}
                   style={{ filter: 'url(#trafficGlow)' } as any} />
                 <Line type="monotone" dataKey="non_motorised" name="Non-motorised AADT" stroke={C.yellow} strokeWidth={2}
@@ -1361,7 +1346,7 @@ export default function NetworkStory() {
                   <Tooltip
                     formatter={(v: number, name: string, entry: any) =>
                       [`${v.toFixed(1)}% (${entry.payload.km.toLocaleString()} km)`, name]}
-                    contentStyle={{ background: 'rgba(2,2,2,0.95)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 10 }}
+                    contentStyle={{ background: 'rgba(2,5,8,0.95)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 10 }}
                     labelStyle={{ color: C.teal }}
                   />
                   <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 9, color: 'rgba(148,163,184,0.65)' }} />
@@ -1518,7 +1503,7 @@ export default function NetworkStory() {
         {/* ── MAINTENANCE STATION VCI ── */}
         <Section title="Maintenance Stations · Condition &amp; Network (Indicative)" accent={C.yellow}>
           <div style={{ fontSize: 9, color: 'rgba(100,116,139,0.6)', marginBottom: 12, padding: '5px 8px', background: `rgba(${hexRgb(C.yellow)},0.04)`, border: `1px solid rgba(${hexRgb(C.yellow)},0.12)`, borderRadius: 6 }}>
-            Station paved/unpaved km are proportional estimates from regional totals. VCI values marked  are derived from real survey data; others are regional-proportional estimates.
+            Station paved/unpaved km are proportional estimates from regional totals. VCI values marked ✓ are derived from real survey data; others are regional-proportional estimates.
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 10 }}>
             {filteredStations.map((s, i) => {
@@ -1531,8 +1516,8 @@ export default function NetworkStory() {
                   onClick={() => toggleRegion(s.region)}
                   style={{
                     background: hovStation === s.station
-                      ? `linear-gradient(135deg, rgba(${hexRgb(rc)},0.18), rgba(2,2,2,0.8))`
-                      : `linear-gradient(135deg, rgba(${hexRgb(rc)},0.08), rgba(2,2,2,0.6))`,
+                      ? `linear-gradient(135deg, rgba(${hexRgb(rc)},0.18), rgba(2,5,8,0.8))`
+                      : `linear-gradient(135deg, rgba(${hexRgb(rc)},0.08), rgba(2,5,8,0.6))`,
                     border: `1px solid rgba(${hexRgb(rc)},${hovStation === s.station ? 0.4 : 0.18})`,
                     borderRadius: 10, padding: '12px 12px', cursor: 'pointer',
                     transition: 'all 0.15s',
@@ -1541,7 +1526,7 @@ export default function NetworkStory() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
                     <div>
                       <div style={{ fontSize: 12, fontWeight: 800, color: rc }}>
-                        {s.station} {s.confirmed_vci && <span style={{ fontSize: 8, color: C.green }}></span>}
+                        {s.station} {s.confirmed_vci && <span style={{ fontSize: 8, color: C.green }}>✓</span>}
                       </div>
                       <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.5)' }}>{s.region}</div>
                     </div>
@@ -1716,7 +1701,7 @@ export default function NetworkStory() {
                 }}>
                   <div style={{
                     width: 16, height: 16, borderRadius: '50%', flexShrink: 0,
-                    background: m.color, border: '2px solid rgba(2,2,2,0.85)',
+                    background: m.color, border: '2px solid rgba(2,5,8,0.85)',
                     boxShadow: `0 0 12px ${m.color}, 0 0 24px rgba(${hexRgb(m.color)},0.3)`,
                     marginTop: 1, marginLeft: -8, zIndex: 1,
                   }} />
@@ -1744,10 +1729,10 @@ export default function NetworkStory() {
         <Section title="Bridge &amp; Structure Inventory" accent={C.teal}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
             {[
-              { label: 'Total Structures', value: '998', color: C.teal, sub: '546 bridges · 452 culverts' },
+              { label: 'Total Structures', value: '1,031', color: C.teal, sub: '546 bridges · 485 culverts' },
               { label: 'Total Length', value: '8,517 m', color: C.cyan, sub: 'Combined bridge deck' },
               { label: 'Avg Length', value: '19.6 m', color: C.blue, sub: 'Per bridge average' },
-              { label: 'Road C-Class', value: '300 (55%)', color: C.green, sub: 'Community road bridges' },
+              { label: 'Road C-Class', value: '284 (65%)', color: C.green, sub: 'Community road bridges' },
             ].map(s => (
               <div key={s.label} style={{
                 padding: '14px 14px',
@@ -1766,7 +1751,7 @@ export default function NetworkStory() {
         {/* ── FOOTER ── */}
         <div style={{
           padding: '12px 16px',
-          background: `linear-gradient(135deg, rgba(${hexRgb(C.purple)},0.04), rgba(2,2,2,0.6))`,
+          background: `linear-gradient(135deg, rgba(${hexRgb(C.purple)},0.04), rgba(2,5,8,0.6))`,
           border: `1px solid rgba(${hexRgb(C.purple)},0.08)`,
           borderRadius: 10,
           fontSize: 9, color: 'rgba(100,116,139,0.45)', lineHeight: 1.8,
@@ -1775,7 +1760,7 @@ export default function NetworkStory() {
           Department of National Roads (Department of National Roads) road inventory &amp; ROMDAS condition surveys ·
           Official WTSS statistics (2015/16–2022/23) ·
           Traffic surveys (2017, 2020, 2021, 2025) · VCI from ROMDAS survey cycles (2024/25 &amp; 2025/26) ·
-          Maintenance funding: indicative Roads Fund estimates · Station-level paved/unpaved km are proportional estimates; VCI marked  are survey-verified ·
+          Maintenance funding: indicative Roads Fund estimates · Station-level paved/unpaved km are proportional estimates; VCI marked ✓ are survey-verified ·
           Asset replacement values for planning reference only · Filters apply to charts with available data ·
           Download PNG exports chart SVG at 2× resolution
         </div>
