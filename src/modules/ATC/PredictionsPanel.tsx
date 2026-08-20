@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { CURRENT_YEAR } from '../../shared/year';
 import { MapContainer, TileLayer, ZoomControl, GeoJSON } from 'react-leaflet';
+import { WaterLayers } from '../../shared/WaterLayers';
+import { InfraLayers } from '../../shared/InfraLayers';
 import { MapLegend, LEGEND_CONGESTION } from '../../shared/MapLegend';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -60,7 +62,7 @@ const CONG: Record<string, { color: string; label: string }> = {
 };
 
 const glass = (accent = C.cyan): React.CSSProperties => ({
-  background:     'rgba(2,2,2,0.82)',
+  background:     'rgba(2,5,8,0.82)',
   border:         `1px solid rgba(${hexRgb(accent)},0.18)`,
   borderRadius:   14,
   backdropFilter: 'blur(18px)',
@@ -240,7 +242,7 @@ function LinkPopup({
         <button onClick={onClose} style={{
           background:'none', border:'none', color:'rgba(148,163,184,0.5)',
           cursor:'pointer', fontSize:14, lineHeight:1, padding:0, marginLeft:8,
-        }}></button>
+        }}>✕</button>
       </div>
 
       {/* Congestion badge */}
@@ -345,7 +347,7 @@ export default function PredictionsPanel() {
   const [forecastYr, setForecastYr] = useState<number>(CURRENT_YEAR);
   const [selLink,    setSelLink]    = useState<PredProps | null>(null);
   const [loading,    setLoading]    = useState(true);
-  const [liveMode,   setLiveMode]   = useState(false);
+  const [liveMode,   setLiveMode]   = useState(true);
   const [now,        setNow]        = useState(() => new Date());
 
   // Auto-refresh every 60s when live mode is on
@@ -644,9 +646,11 @@ export default function PredictionsPanel() {
             boxShadow:`0 0 28px rgba(${hexRgb(accentColor)},0.15)` }}>
             {features.length > 0 && (
               <MapContainer center={[1.37, 32.3]} zoom={6} zoomControl={false}
-                style={{ height:'100%', width:'100%', background:'#000000' }}>
+                style={{ height:'100%', width:'100%', background:'#020508' }}>
                 <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery}/>
                 <TileLayer url={ESRI_TILE_URLS.labels}  attribution={ESRI_ATTRIBUTIONS.labels} opacity={0.7}/>
+                <WaterLayers />
+                <InfraLayers />
                 <MapLegend title="Congestion" items={LEGEND_CONGESTION} />
                 <ZoomControl position="bottomright"/>
                 <PredLayer

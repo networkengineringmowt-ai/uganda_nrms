@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ATCView – Automatic Traffic Counter Live Dashboard
  * Uganda National Roads Management Platform · DNR
  *
@@ -9,7 +9,9 @@
 import { useEffect, useState, useMemo } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Tooltip as LeafletTooltip, ZoomControl } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { MapLegend, LEGEND_ATC_REGIONS } from '../../shared/MapLegend';
+import { WaterLayers } from '../../shared/WaterLayers';
+import { InfraLayers } from '../../shared/InfraLayers';
+import { MapLegend, LEGEND_CONGESTION } from '../../shared/MapLegend';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   AreaChart, Area, PieChart, Pie, Cell, Legend, LineChart, Line, RadarChart,
@@ -54,7 +56,7 @@ const SITE_COLORS = [C.cyan, C.green, C.orange, C.purple, C.yellow, C.pink, C.bl
 
 // ─── Style helpers ────────────────────────────────────────────────────────────
 const glass = (accent = C.cyan): React.CSSProperties => ({
-  background:  `rgba(2,2,2,0.82)`,
+  background:  `rgba(2,5,8,0.82)`,
   border:      `1px solid rgba(${hexRgb(accent)},0.18)`,
   borderRadius: 14,
   backdropFilter: 'blur(18px)',
@@ -163,7 +165,9 @@ function StationMapPanel({ allStations, aadtRows, monthlyRows }: {
               style={{ height:'100%', width:'100%' }}>
               <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery}/>
               <TileLayer url={ESRI_TILE_URLS.labels}  attribution={ESRI_ATTRIBUTIONS.labels} opacity={0.7}/>
-              <MapLegend title="ATC Stations · Region" items={LEGEND_ATC_REGIONS} />
+              <WaterLayers />
+              <InfraLayers />
+              <MapLegend title="Congestion" items={LEGEND_CONGESTION} />
               <ZoomControl position="bottomright"/>
               {visible.map((f, i) => {
                 const [lng, lat] = f.geometry?.coordinates || [0,0];
@@ -192,7 +196,7 @@ function StationMapPanel({ allStations, aadtRows, monthlyRows }: {
                     }}}>
                     <LeafletTooltip>
                       <div style={{
-                        background:'rgba(2,2,2,0.96)', color:col,
+                        background:'rgba(2,5,8,0.96)', color:col,
                         border:`1px solid ${col}55`, borderRadius:6,
                         padding:'5px 9px', fontSize:9, fontWeight:800, maxWidth:220,
                       }}>
@@ -237,7 +241,7 @@ export default function ATCView() {
   const [speed,   setSpeed]   = useState<SpeedRow[]>([]);
   const [cls,     setCls]     = useState<ClassRow[]>([]);
   const [selSite,    setSelSite]    = useState<string>('STA-A00107');
-  const [activeTab,  setActiveTab]  = useState<'dashboard'|'stationmap'|'predictions'>('dashboard');
+  const [activeTab,  setActiveTab]  = useState<'dashboard'|'stationmap'|'predictions'>('predictions');
   const [allStations,setAllStations]= useState<any[]>([]);
   const [now,        setNow]        = useState(new Date());
 
@@ -339,9 +343,9 @@ export default function ATCView() {
       {/* ── TAB BAR ──────────────────────────────────────────────────────── */}
       <div style={{ display:'flex', gap:8, alignItems:'center', flexWrap:'wrap' }}>
         {([
-          ['dashboard',   'Live Dashboard',                              C.cyan],
+          ['dashboard',   'ATC Statistics',                              C.cyan],
           ['stationmap',  `Station Map (${allStations.length||308})`,   C.green],
-          ['predictions', 'Traffic Forecast Map',                       C.purple],
+          ['predictions', 'Live Prediction Map',                         C.purple],
         ] as [typeof activeTab, string, string][]).map(([tab, label, accent]) => (
           <button key={tab} onClick={()=>setActiveTab(tab)} style={{
             fontSize:11, fontWeight:800, padding:'6px 16px', borderRadius:8, cursor:'pointer',
@@ -416,10 +420,13 @@ export default function ATCView() {
               center={[1.37, 32.3]}
               zoom={6}
               zoomControl={false}
-              style={{ height:'100%', width:'100%', background:'#000000' }}
+              style={{ height:'100%', width:'100%', background:'#020508' }}
             >
               <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery}/>
               <TileLayer url={ESRI_TILE_URLS.labels}  attribution={ESRI_ATTRIBUTIONS.labels} opacity={0.7}/>
+              <WaterLayers />
+              <InfraLayers />
+              <MapLegend title="Congestion" items={LEGEND_CONGESTION} />
               <ZoomControl position="bottomright"/>
               {sites.map((s,i)=>{
                 const aRow = aadtRows.find(r=>r.id===s.id);
@@ -440,7 +447,7 @@ export default function ATCView() {
                     eventHandlers={{ click: ()=>setSelSite(s.id) }}
                   >
                     <LeafletTooltip permanent={isActive}>
-                      <div style={{ background:'rgba(2,2,2,0.95)', color:col,
+                      <div style={{ background:'rgba(2,5,8,0.95)', color:col,
                         border:`1px solid ${col}44`, borderRadius:6,
                         padding:'3px 7px', fontSize:9, fontWeight:800 }}>
                         {s.id} · {s.road.split(' - ').join('→')}
