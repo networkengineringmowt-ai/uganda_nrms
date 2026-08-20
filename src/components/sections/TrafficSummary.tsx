@@ -1,5 +1,5 @@
-/**
- * TrafficSummary — Summary Tables view.
+﻿/**
+ * TrafficSummary â€” Summary Tables view.
  * Sub-tabs: Road Links Data | Traffic Counting Stations
  * Year pills 2016-2035 with interpolated AADT values.
  * Export CSV, search, sortable columns.
@@ -7,7 +7,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { CURRENT_YEAR } from '../../shared/year';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface PredProps {
   link_id: string; link_name: string | null; road_no: string | null;
   road_class: string | null; region: string | null; length_km: number | null;
@@ -18,7 +18,7 @@ interface PredFeature { type: 'Feature'; geometry: unknown; properties: PredProp
 interface StationProps { TCS_NAME?: string; STATION?: string; Link_Name?: string; Link_ID?: string; REGION?: string; TCS_NO?: number }
 interface StationFeature { properties: StationProps }
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const C = {
   cyan:'#00f5ff', green:'#00ff88', orange:'#ff6b35', yellow:'#ffd23f',
   pink:'#ff2d78', teal:'#00d4aa', blue:'#4d9fff', amber:'#f59e0b',
@@ -30,7 +30,7 @@ const REGION_CLR: Record<string,string> = {
   Northern:'#b967ff', 'North Eastern':C.pink,
 };
 const GLASS: React.CSSProperties = {
-  background:'rgba(15,15,15,0.55)', backdropFilter:'blur(20px)',
+  background:'rgba(15,23,42,0.55)', backdropFilter:'blur(20px)',
   WebkitBackdropFilter:'blur(20px)', border:'1px solid rgba(99,102,241,0.12)', borderRadius:14,
 };
 
@@ -52,13 +52,13 @@ function hexRgb(hex: string): string {
   return `${parseInt(h.slice(0,2),16)},${parseInt(h.slice(2,4),16)},${parseInt(h.slice(4,6),16)}`;
 }
 
-// ─── AADT interpolation for a given year ─────────────────────────────────────
+// â”€â”€â”€ AADT interpolation for a given year â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function aadtForYear(p: PredProps, year: number): number {
   const base = p.aadt_predicted ?? 0;
   return Math.round(base * gfTo(year));
 }
 
-// ─── Capacity estimate for congestion alert ───────────────────────────────────
+// â”€â”€â”€ Capacity estimate for congestion alert â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function growthAlert(p: PredProps, year: number): string {
   const cap: Record<string,number> = { A:10000, B:5000, C:2500, M:15000 };
   const c = cap[p.road_class??'C'] ?? 2500;
@@ -69,7 +69,7 @@ function growthAlert(p: PredProps, year: number): string {
   return 'Low';
 }
 
-// ─── CSV export helper ────────────────────────────────────────────────────────
+// â”€â”€â”€ CSV export helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function downloadCSV(rows: string[][], filename: string) {
   const content = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
   const blob = new Blob([content], { type:'text/csv' });
@@ -79,7 +79,7 @@ function downloadCSV(rows: string[][], filename: string) {
   URL.revokeObjectURL(url);
 }
 
-// ─── Road Links Data tab ──────────────────────────────────────────────────────
+// â”€â”€â”€ Road Links Data tab â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function RoadLinksTab({ features }: { features: PredFeature[] }) {
   const [year,    setYear]    = useState(CURRENT_YEAR);
   const [search,  setSearch]  = useState('');
@@ -126,7 +126,7 @@ function RoadLinksTab({ features }: { features: PredFeature[] }) {
         p.link_id, p.link_name??'', p.road_class??'', 'Unknown', p.region??'',
         (p.length_km??0).toFixed(1), String(adt), String(adt),
         String(Math.round(adt*0.705)), String(Math.round(adt*0.08)),
-        growthAlert(p, year), `${p.heavy_vehicle_pct?.toFixed(0)??'—'}%`,
+        growthAlert(p, year), `${p.heavy_vehicle_pct?.toFixed(0)??'â€”'}%`,
       ];
     });
     downloadCSV([header, ...rows], `uganda-roads-traffic-${year}.csv`);
@@ -139,7 +139,7 @@ function RoadLinksTab({ features }: { features: PredFeature[] }) {
         style={{ padding:'5px 8px', textAlign:'left', fontSize:8, fontWeight:800, cursor:'pointer',
           color: active ? C.cyan : 'rgba(99,102,241,0.55)', textTransform:'uppercase',
           letterSpacing:'0.07em', whiteSpace:'nowrap' }}>
-        {label}{active?(sortDir===-1?' ↓':' ↑'):''}
+        {label}{active?(sortDir===-1?' â†“':' â†‘'):''}
       </th>
     );
   }
@@ -164,7 +164,7 @@ function RoadLinksTab({ features }: { features: PredFeature[] }) {
 
       {/* Controls */}
       <div style={{ display:'flex', gap:8, alignItems:'center', flexWrap:'wrap' }}>
-        <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search links…"
+        <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search linksâ€¦"
           style={{ background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.12)',
             borderRadius:8, color:'#e2eaf4', fontSize:11, padding:'5px 10px', outline:'none', width:200 }}/>
         <select value={classF} onChange={e=>setClassF(e.target.value)}
@@ -180,13 +180,13 @@ function RoadLinksTab({ features }: { features: PredFeature[] }) {
         </select>
         <div style={{ marginLeft:'auto', display:'flex', alignItems:'center', gap:8 }}>
           <span style={{ fontSize:10, color:'rgba(148,163,184,0.4)' }}>
-            {filtered.length} links · showing {Math.min(filtered.length, 200)} rows
+            {filtered.length} links Â· showing {Math.min(filtered.length, 200)} rows
           </span>
           <button onClick={handleExport}
             style={{ background:'rgba(0,255,136,0.1)', border:'1px solid rgba(0,255,136,0.3)',
               borderRadius:8, color:C.green, fontSize:11, fontWeight:700,
               padding:'5px 14px', cursor:'pointer' }}>
-             Export CSV
+            â¬‡ Export CSV
           </button>
         </div>
       </div>
@@ -236,10 +236,10 @@ function RoadLinksTab({ features }: { features: PredFeature[] }) {
                       overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', fontWeight:600 }}>
                       {p.link_name ?? p.link_id}
                     </td>
-                    <td style={{ padding:'5px 8px', color:clsCol, fontWeight:800 }}>{cls||'—'}</td>
-                    <td style={{ padding:'5px 8px', color:regCol, whiteSpace:'nowrap' }}>{p.region??'—'}</td>
+                    <td style={{ padding:'5px 8px', color:clsCol, fontWeight:800 }}>{cls||'â€”'}</td>
+                    <td style={{ padding:'5px 8px', color:regCol, whiteSpace:'nowrap' }}>{p.region??'â€”'}</td>
                     <td style={{ padding:'5px 8px', color:'rgba(148,163,184,0.55)', fontFamily:'monospace' }}>
-                      {p.length_km?.toFixed(1)??'—'}
+                      {p.length_km?.toFixed(1)??'â€”'}
                     </td>
                     <td style={{ padding:'5px 8px', color:C.cyan, fontFamily:'monospace', fontWeight:700 }}>
                       {adt.toLocaleString()}
@@ -261,7 +261,7 @@ function RoadLinksTab({ features }: { features: PredFeature[] }) {
                       </span>
                     </td>
                     <td style={{ padding:'5px 8px', color:C.orange, fontFamily:'monospace' }}>
-                      {p.heavy_vehicle_pct!=null?`${p.heavy_vehicle_pct.toFixed(0)}%`:'—'}
+                      {p.heavy_vehicle_pct!=null?`${p.heavy_vehicle_pct.toFixed(0)}%`:'â€”'}
                     </td>
                   </tr>
                 );
@@ -272,7 +272,7 @@ function RoadLinksTab({ features }: { features: PredFeature[] }) {
         {filtered.length > 200 && (
           <div style={{ padding:'8px 16px', fontSize:9, color:'rgba(148,163,184,0.35)', textAlign:'center',
             borderTop:'1px solid rgba(255,255,255,0.04)' }}>
-            Showing 200 of {filtered.length} links · use search/filters to narrow results
+            Showing 200 of {filtered.length} links Â· use search/filters to narrow results
           </div>
         )}
       </div>
@@ -280,7 +280,7 @@ function RoadLinksTab({ features }: { features: PredFeature[] }) {
   );
 }
 
-// ─── Stations tab ─────────────────────────────────────────────────────────────
+// â”€â”€â”€ Stations tab â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function StationsTab({ stations, features }: { stations: StationFeature[]; features: PredFeature[] }) {
   const [year,   setYear]   = useState(CURRENT_YEAR);
   const [search, setSearch] = useState('');
@@ -310,7 +310,7 @@ function StationsTab({ stations, features }: { stations: StationFeature[]; featu
       return [
         p.TCS_NAME??p.STATION??String(p.TCS_NO??''),
         p.Link_Name??'', p.REGION??'', String(adt),
-        pred?.heavy_vehicle_pct!=null?`${pred.heavy_vehicle_pct.toFixed(0)}%`:'—',
+        pred?.heavy_vehicle_pct!=null?`${pred.heavy_vehicle_pct.toFixed(0)}%`:'â€”',
         String(year),
       ];
     });
@@ -337,7 +337,7 @@ function StationsTab({ stations, features }: { stations: StationFeature[]; featu
 
       {/* Controls */}
       <div style={{ display:'flex', gap:8, alignItems:'center' }}>
-        <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search stations…"
+        <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search stationsâ€¦"
           style={{ background:'rgba(255,255,255,0.06)', border:'1px solid rgba(0,212,170,0.2)',
             borderRadius:8, color:'#e2eaf4', fontSize:11, padding:'5px 10px', outline:'none', width:220 }}/>
         <div style={{ marginLeft:'auto', display:'flex', gap:8, alignItems:'center' }}>
@@ -346,7 +346,7 @@ function StationsTab({ stations, features }: { stations: StationFeature[]; featu
             style={{ background:'rgba(0,212,170,0.1)', border:'1px solid rgba(0,212,170,0.3)',
               borderRadius:8, color:C.teal, fontSize:11, fontWeight:700,
               padding:'5px 14px', cursor:'pointer' }}>
-             Export CSV
+            â¬‡ Export CSV
           </button>
         </div>
       </div>
@@ -378,14 +378,14 @@ function StationsTab({ stations, features }: { stations: StationFeature[]; featu
                     </td>
                     <td style={{ padding:'5px 8px', color:'rgba(226,234,244,0.7)',
                       maxWidth:160, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-                      {p.Link_Name??'—'}
+                      {p.Link_Name??'â€”'}
                     </td>
-                    <td style={{ padding:'5px 8px', color:rCol }}>{p.REGION??'—'}</td>
+                    <td style={{ padding:'5px 8px', color:rCol }}>{p.REGION??'â€”'}</td>
                     <td style={{ padding:'5px 8px', color:C.cyan, fontFamily:'monospace', fontWeight:700 }}>
-                      {adt!=null?adt.toLocaleString():'—'}
+                      {adt!=null?adt.toLocaleString():'â€”'}
                     </td>
                     <td style={{ padding:'5px 8px', color:C.orange, fontFamily:'monospace' }}>
-                      {pred?.heavy_vehicle_pct!=null?`${pred.heavy_vehicle_pct.toFixed(0)}%`:'—'}
+                      {pred?.heavy_vehicle_pct!=null?`${pred.heavy_vehicle_pct.toFixed(0)}%`:'â€”'}
                     </td>
                     <td style={{ padding:'5px 8px', color:'rgba(148,163,184,0.4)' }}>
                       {year<=2025?String(year):`Forecast ${year}`}
@@ -401,7 +401,7 @@ function StationsTab({ stations, features }: { stations: StationFeature[]; featu
   );
 }
 
-// ─── Main export ──────────────────────────────────────────────────────────────
+// â”€â”€â”€ Main export â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 type SubTab = 'links' | 'stations';
 
 export default function TrafficSummary() {
@@ -427,7 +427,7 @@ export default function TrafficSummary() {
       <div style={{ display:'flex', alignItems:'center', justifyContent:'center',
         height:'100%', color:'rgba(148,163,184,0.5)', fontSize:13,
         fontFamily:"'Inter','Segoe UI',sans-serif" }}>
-        Loading summary tables…
+        Loading summary tablesâ€¦
       </div>
     );
   }
@@ -438,7 +438,7 @@ export default function TrafficSummary() {
       <div style={{ marginBottom:18 }}>
         <div style={{ fontSize:9, fontWeight:800, color:'rgba(99,102,241,0.55)',
           letterSpacing:'0.18em', textTransform:'uppercase', marginBottom:3 }}>
-          Uganda National Roads · Department of National Roads / DNR 2025
+          Uganda National Roads Â· Department of National Roads / DNR 2025
         </div>
         <div style={{ fontSize:22, fontWeight:900, color:C.cyan, lineHeight:1.2,
           textShadow:'0 0 22px rgba(0,245,255,0.35)' }}>

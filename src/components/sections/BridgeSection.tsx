@@ -6,7 +6,9 @@ import { useEffect, useState, useMemo } from 'react';
 import {
   MapContainer, TileLayer, CircleMarker, Popup, ZoomControl,
 } from 'react-leaflet';
-import { MapLegend } from '../../shared/MapLegend';
+import { WaterLayers } from '../../shared/WaterLayers';
+import { InfraLayers } from '../../shared/InfraLayers';
+import { MapLegend, LEGEND_FULL } from '../../shared/MapLegend';
 import 'leaflet/dist/leaflet.css';
 import {
   ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend,
@@ -62,7 +64,7 @@ const COND_COLOR: Record<string, string> = {
 };
 const ACCENT = '#3b82f6';
 const BG     = '#0a0f1e';
-const GLASS  = 'rgba(15,15,15,0.55)';
+const GLASS  = 'rgba(15,23,42,0.55)';
 
 function condScore(dist: Record<string, number>): number {
   const W: Record<string, number> = { Good: 4, Fair: 3, Poor: 2, Critical: 1, Unknown: 0 };
@@ -89,13 +91,9 @@ function StructureMap({ features, showCulverts }: {
     >
       <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery} />
       <TileLayer url={ESRI_TILE_URLS.labels}  attribution={ESRI_ATTRIBUTIONS.labels}  />
-      <MapLegend title="Structure Condition" items={[
-        { color: '#22c55e', label: 'Good',     circle: true },
-        { color: '#eab308', label: 'Fair',     circle: true },
-        { color: '#f97316', label: 'Poor',     circle: true },
-        { color: '#ef4444', label: 'Critical', circle: true },
-        { color: '#64748b', label: 'Unknown',  circle: true },
-      ]} />
+      <WaterLayers />
+      <InfraLayers />
+      <MapLegend title="Map Features" items={LEGEND_FULL} />
       <ZoomControl position="bottomright" />
       {visible.map((f, i) => {
         const [lon, lat] = f.geometry.coordinates;
@@ -476,7 +474,7 @@ export default function BridgeSection() {
                   {condDonutBr.map((e,i) => <Cell key={i} fill={e.color}/>)}
                 </Pie>
                 <Tooltip
-                  contentStyle={{ background: '#0d0d0d', border: '1px solid #1c1c1c',
+                  contentStyle={{ background: '#0f172a', border: '1px solid #1e293b',
                     borderRadius: 8, fontSize: 12 }}
                   formatter={(v: number, n: string) => [`${v} bridges`, n]}
                 />
@@ -495,7 +493,7 @@ export default function BridgeSection() {
                   {condDonutCu.map((e,i) => <Cell key={i} fill={e.color}/>)}
                 </Pie>
                 <Tooltip
-                  contentStyle={{ background: '#0d0d0d', border: '1px solid #1c1c1c',
+                  contentStyle={{ background: '#0f172a', border: '1px solid #1e293b',
                     borderRadius: 8, fontSize: 12 }}
                   formatter={(v: number, n: string) => [`${v} culverts`, n]}
                 />
@@ -514,7 +512,7 @@ export default function BridgeSection() {
                 <XAxis type="number" tick={{ fontSize: 11, fill: '#64748b' }} />
                 <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: '#94a3b8' }} width={68}/>
                 <Tooltip
-                  contentStyle={{ background:'#0d0d0d', border:'1px solid #1c1c1c',
+                  contentStyle={{ background:'#0f172a', border:'1px solid #1e293b',
                     borderRadius:8, fontSize:12 }}
                 />
                 <Bar dataKey="value" fill={ACCENT} radius={[0,4,4,0]} name="Bridges"/>
@@ -532,7 +530,7 @@ export default function BridgeSection() {
                 <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#94a3b8' }}/>
                 <YAxis tick={{ fontSize: 11, fill: '#64748b' }}/>
                 <Tooltip
-                  contentStyle={{ background:'#0d0d0d', border:'1px solid #1c1c1c',
+                  contentStyle={{ background:'#0f172a', border:'1px solid #1e293b',
                     borderRadius:8, fontSize:12 }}
                 />
                 <Bar dataKey="value" fill="#8b5cf6" radius={[4,4,0,0]} name="Bridges"/>

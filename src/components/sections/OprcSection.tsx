@@ -8,6 +8,8 @@ import {
 } from 'recharts';
 import { Chart3DWrap, Bar3D, TT_NEON, TICK } from '../../lib/chart3d';
 import { ESRI_TILE_URLS, ESRI_ATTRIBUTIONS, ROAD_STYLES, surfaceCategory } from '../../shared/mapSymbols';
+import { WaterLayers } from '../../shared/WaterLayers';
+import { InfraLayers } from '../../shared/InfraLayers';
 import { MapLegend, LEGEND_PROJECTS } from '../../shared/MapLegend';
 import { TrendingUp } from 'lucide-react';
 import { ModuleNavBar } from '../../shared/ModuleNavBar';
@@ -43,7 +45,7 @@ function hexRgb(hex: string): string {
   const h = hex.replace('#', '');
   return `${parseInt(h.slice(0,2),16)},${parseInt(h.slice(2,4),16)},${parseInt(h.slice(4,6),16)}`;
 }
-const TT_STYLE = { background: 'rgba(8,8,8,0.96)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 11 };
+const TT_STYLE = { background: 'rgba(8,14,28,0.96)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 11 };
 
 function roadStyle(feature?: GeoJSON.Feature): L.PathOptions {
   const surf = (feature?.properties as { surface?: string })?.surface ?? '';
@@ -52,7 +54,7 @@ function roadStyle(feature?: GeoJSON.Feature): L.PathOptions {
 }
 
 const GLASS: React.CSSProperties = {
-  background: 'rgba(15,15,15,0.55)',
+  background: 'rgba(15,23,42,0.55)',
   backdropFilter: 'blur(20px)',
   WebkitBackdropFilter: 'blur(20px)',
   border: '1px solid rgba(255,255,255,0.08)',
@@ -255,6 +257,8 @@ export default function OprcSection() {
           <MapContainer center={[1.373, 32.29]} zoom={7} style={{ width: '100%', height: '100%' }} zoomControl>
             <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery} />
             <TileLayer url={ESRI_TILE_URLS.labels}  attribution={ESRI_ATTRIBUTIONS.labels}  />
+            <WaterLayers />
+            <InfraLayers />
             <MapLegend title="OPRC Roads" items={LEGEND_PROJECTS} />
             {roadGeo && <GeoJSON key="roads" data={roadGeo} style={roadStyle} />}
 

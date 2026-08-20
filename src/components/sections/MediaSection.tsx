@@ -132,7 +132,7 @@ function StoryLightbox({ images, startIdx, onClose }: { images: StoryImage[]; st
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             <span style={{ color: 'rgba(148,163,184,0.4)', fontSize: 11 }}>{idx + 1}/{images.length}</span>
             <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.12)', border: 'none',
-              borderRadius: 8, padding: '4px 12px', color: 'white', cursor: 'pointer', fontSize: 12 }}></button>
+              borderRadius: 8, padding: '4px 12px', color: 'white', cursor: 'pointer', fontSize: 12 }}>✕</button>
           </div>
         </div>
         {images.length > 1 && <>
@@ -166,7 +166,7 @@ function HeroCarousel() {
 
   return (
     <div style={{ position: 'relative', width: '100%', height: 420, overflow: 'hidden',
-      borderRadius: 16, background: '#000000', border: '1px solid rgba(255,255,255,0.05)' }}>
+      borderRadius: 16, background: '#020508', border: '1px solid rgba(255,255,255,0.05)' }}>
       {HERO_SLIDES.map((slide, i) => (
         <div key={i} style={{ position: 'absolute', inset: 0,
           opacity: i === current ? 1 : 0,
@@ -175,7 +175,7 @@ function HeroCarousel() {
             style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }}
             onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}/>
           <div style={{ position: 'absolute', inset: 0,
-            background: 'linear-gradient(to top,rgba(2,2,2,0.9) 0%,rgba(2,2,2,0.15) 55%,transparent 100%)' }}/>
+            background: 'linear-gradient(to top,rgba(2,5,8,0.9) 0%,rgba(2,5,8,0.15) 55%,transparent 100%)' }}/>
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '26px 30px' }}>
             <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(0,245,255,0.75)',
               textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 6 }}>
@@ -240,7 +240,7 @@ function StoryCard({ image, accentCol, onClick }: {
         style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block',
           transform: hov ? 'scale(1.07)' : 'scale(1)', transition: 'transform 0.38s ease' }}/>
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0,
-        background: 'linear-gradient(transparent, rgba(2,2,2,0.93))',
+        background: 'linear-gradient(transparent, rgba(2,5,8,0.93))',
         padding: hov ? '30px 13px 13px' : '18px 13px 10px',
         transform: hov ? 'translateY(0)' : 'translateY(25%)',
         opacity: hov ? 1 : 0.55,
@@ -253,7 +253,7 @@ function StoryCard({ image, accentCol, onClick }: {
       <div style={{ position: 'absolute', top: 9, right: 9,
         opacity: hov ? 0.85 : 0, transition: 'opacity 0.2s',
         background: 'rgba(0,0,0,0.5)', borderRadius: 6, padding: '2px 7px',
-        color: 'rgba(255,255,255,0.9)', fontSize: 14 }}></div>
+        color: 'rgba(255,255,255,0.9)', fontSize: 14 }}>⛶</div>
     </div>
   );
 }
@@ -380,7 +380,7 @@ function MediaCard({ item, onOpen, accent }: { item: MediaItem; onOpen: () => vo
         transform: hov ? 'translateY(-3px)' : 'translateY(0)',
         transition: 'all 0.25s ease',
         cursor: 'pointer',
-        background: 'rgba(2,2,2,0.9)',
+        background: 'rgba(2,5,8,0.9)',
       }}>
 
       {!isPdf && (
@@ -393,13 +393,13 @@ function MediaCard({ item, onOpen, accent }: { item: MediaItem; onOpen: () => vo
 
       {isPdf && (
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: `linear-gradient(135deg, rgba(${rgb},0.12), rgba(2,2,2,0.95))` }}>
-          <span style={{ fontSize: 36, opacity: 0.4 }}></span>
+          background: `linear-gradient(135deg, rgba(${rgb},0.12), rgba(2,5,8,0.95))` }}>
+          <span style={{ fontSize: 36, opacity: 0.4 }}>📄</span>
         </div>
       )}
 
       <div style={{ position: 'absolute', inset: 0,
-        background: 'linear-gradient(to top, rgba(2,2,2,0.96) 0%, rgba(2,2,2,0.4) 50%, rgba(2,2,2,0.05) 100%)' }} />
+        background: 'linear-gradient(to top, rgba(2,5,8,0.96) 0%, rgba(2,5,8,0.4) 50%, rgba(2,5,8,0.05) 100%)' }} />
 
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2,
         background: `linear-gradient(90deg, ${accent}, rgba(${rgb},0))`,
@@ -669,7 +669,7 @@ export default function MediaSection() {
             boxShadow: '0 0 24px rgba(255,107,53,0.25)',
             fontSize: 18,
           }}>
-            
+            🗂
           </div>
           <div>
             <div style={{ fontSize: 14, fontWeight: 900, color: '#ff6b35', letterSpacing: '0.04em' }}>
