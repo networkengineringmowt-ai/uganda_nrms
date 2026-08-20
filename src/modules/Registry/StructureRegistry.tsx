@@ -1,26 +1,12 @@
 import { useState, useMemo } from 'react';
-import { Search, Filter, Download, Eye } from 'lucide-react';
+import { Search, Filter, Download, ChevronUp, ChevronDown, Eye } from 'lucide-react';
 import { useBMS } from '../../store/BMSContext';
 import type { Structure } from '../../types';
 import { conditionLabel, conditionColor, conditionBadge, formatDate, formatUGX } from '../../utils/helpers';
 import { downloadGeoJSON, downloadKML } from '../../utils/downloads';
 import StructureDetailModal from './StructureDetailModal';
-import SectionDashboard from '../Dashboard/SectionDashboard';
-import { useVirtualRows } from '../../shared/useVirtualRows';
-import { criticalRowStyle, NullableCell, percentageColor } from '../../shared/tableFormatting';
-import { useSortableColumns, sortRows, SortArrow, type ColumnType } from '../../shared/useSortableColumns';
-
-const ROW_HEIGHT = 44;
-const COLUMN_COUNT = 18;
 
 type SortKey = keyof Structure;
-
-const SORT_TYPES: Partial<Record<SortKey, ColumnType>> = {
-  chainage: 'numeric', spanLength: 'numeric', noOfSpans: 'numeric', noOfLanes: 'numeric',
-  width: 'numeric', yearBuilt: 'numeric', conditionRating: 'numeric', priorityScore: 'numeric',
-  priorityRank: 'numeric', estimatedReplacementCost: 'numeric',
-  lastInspection: 'date', nextInspection: 'date',
-};
 
 export default function StructureRegistry() {
   const { state } = useBMS();
@@ -30,8 +16,11 @@ export default function StructureRegistry() {
   const [typeFilter, setTypeFilter] = useState<'all' | 'bridge' | 'culvert'>('all');
   const [condFilter, setCondFilter] = useState<'all' | '1' | '2' | '3' | '4' | '5'>('all');
   const [regionFilter, setRegion]  = useState('all');
-  const { sortKey, sortDir, cycleSort } = useSortableColumns<SortKey>('priorityRank' as SortKey);
+  const [sortKey,   setSortKey]   = useState<SortKey>('priorityRank');
+  const [sortAsc,   setSortAsc]   = useState(true);
+  const [page,      setPage]      = useState(1);
   const [selected,  setSelected]  = useState<Structure | null>(null);
+  const PAGE_SIZE = 25;
 
   const regions = useMemo(() => {
     const r = new Set(structures.map(s => s.region).filter(Boolean));
@@ -53,11 +42,37 @@ export default function StructureRegistry() {
         s.river.toLowerCase().includes(q),
       );
     }
-    return sortRows(list, sortKey, sortDir, sortKey ? (SORT_TYPES[sortKey] ?? 'text') : 'text');
-  }, [structures, query, typeFilter, condFilter, regionFilter, sortKey, sortDir]);
+    // Sort
+    list = [...list].sort((a, b) => {
+      const av = a[sortKey];
+      const bv = b[sortKey];
+      if (av == null) return 1;
+      if (bv == null) return -1;
+      if (typeof av === 'number' && typeof bv === 'number') {
+        return sortAsc ? av - bv : bv - av;
+      }
+      return sortAsc
+        ? String(av).localeCompare(String(bv))
+        : String(bv).localeCompare(String(av));
+    });
+    return list;
+  }, [structures, query, typeFilter, condFilter, regionFilter, sortKey, sortAsc]);
 
-  const { containerRef, visibleRows, topSpacerHeight, bottomSpacerHeight } =
-    useVirtualRows(filtered, { rowHeight: ROW_HEIGHT });
+  const pageCount = Math.ceil(filtered.length / PAGE_SIZE);
+  const pageData  = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  function sort(key: SortKey) {
+    if (key === sortKey) setSortAsc(a => !a);
+    else { setSortKey(key); setSortAsc(true); }
+    setPage(1);
+  }
+
+  function SortIcon({ k }: { k: SortKey }) {
+    if (k !== sortKey) return <ChevronUp size={12} className="text-slate-600" />;
+    return sortAsc
+      ? <ChevronUp size={12} className="text-blue-400" />
+      : <ChevronDown size={12} className="text-blue-400" />;
+  }
 
   function exportCSV() {
     const rows = [
@@ -83,24 +98,13 @@ export default function StructureRegistry() {
   }
 
   const Th = ({ label, k }: { label: string; k: SortKey }) => (
-    <th className="dt-sticky-th px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider bg-slate-900 border-b border-slate-700 whitespace-nowrap cursor-pointer hover:text-slate-200 select-none" onClick={() => cycleSort(k)}>
-      <span className="flex items-center gap-1">{label} <SortArrow active={sortKey === k} dir={sortDir} /></span>
+    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider bg-slate-900 border-b border-slate-700 whitespace-nowrap cursor-pointer hover:text-slate-200 select-none" onClick={() => sort(k)}>
+      <span className="flex items-center gap-1">{label} <SortIcon k={k} /></span>
     </th>
   );
 
-  const [tab, setTab] = useState<'content' | 'dashboard'>('content');
   return (
     <div className="flex flex-col h-full animate-fade-in">
-      {/* ── Tab nav ── */}
-      <div style={{ display:'flex', gap:6, padding:'8px 14px', borderBottom:'1px solid rgba(100,100,200,0.15)' }}>
-        {(['content','dashboard'] as const).map(t => (
-          <button key={t} onClick={() => setTab(t)} style={{ fontSize:11, fontWeight:700, letterSpacing:1, padding:'4px 14px', border:`1px solid ${t===tab?'#b967ff':'rgba(100,100,200,0.2)'}`, borderRadius:4, cursor:'pointer', background:t===tab?'#b967ff':'rgba(100,100,200,0.06)', color:t===tab?'#020202':'rgba(200,200,200,0.7)', textTransform:'uppercase' }}>
-            {t==='content'?'Registry':'Dashboard'}
-          </button>
-        ))}
-      </div>
-      {tab==='dashboard'&&<SectionDashboard sectionId="registry" accent="#b967ff"/>}
-      {tab==='content'&&(<>
       {/* Toolbar */}
       <div className="flex-shrink-0 px-6 py-4 border-b border-slate-700/60 bg-slate-900/50">
         <div className="flex flex-wrap items-center gap-3">
@@ -111,28 +115,28 @@ export default function StructureRegistry() {
               className="bms-input pl-9 py-1.5 text-xs"
               placeholder="Name, ID, road, region…"
               value={query}
-              onChange={e => { setQuery(e.target.value); }}
+              onChange={e => { setQuery(e.target.value); setPage(1); }}
             />
           </div>
 
           {/* Filters */}
           <div className="flex items-center gap-1">
             <Filter size={13} className="text-slate-500" />
-            <select className="bms-select text-xs py-1.5" value={typeFilter} onChange={e => { setTypeFilter(e.target.value as typeof typeFilter); }}>
+            <select className="bms-select text-xs py-1.5" value={typeFilter} onChange={e => { setTypeFilter(e.target.value as typeof typeFilter); setPage(1); }}>
               <option value="all">All Types</option>
               <option value="bridge">Bridges</option>
               <option value="culvert">Culverts</option>
             </select>
           </div>
-          <select className="bms-select text-xs py-1.5" value={condFilter} onChange={e => { setCondFilter(e.target.value as typeof condFilter); }}>
+          <select className="bms-select text-xs py-1.5" value={condFilter} onChange={e => { setCondFilter(e.target.value as typeof condFilter); setPage(1); }}>
             <option value="all">All Conditions</option>
-            <option value="5">5 - Good</option>
+            <option value="5">5 - Excellent</option>
             <option value="4">4 - Good</option>
             <option value="3">3 - Fair</option>
             <option value="2">2 - Poor</option>
             <option value="1">1 - Critical</option>
           </select>
-          <select className="bms-select text-xs py-1.5" value={regionFilter} onChange={e => { setRegion(e.target.value); }}>
+          <select className="bms-select text-xs py-1.5" value={regionFilter} onChange={e => { setRegion(e.target.value); setPage(1); }}>
             {regions.map(r => (
               <option key={r} value={r}>{r === 'all' ? 'All Regions' : r}</option>
             ))}
@@ -140,7 +144,7 @@ export default function StructureRegistry() {
 
           {/* Spacer + count + export */}
           <div className="flex-1" />
-          <span className="record-badge">{filtered.length.toLocaleString()} structures</span>
+          <span className="text-xs text-slate-500">{filtered.length.toLocaleString()} structures</span>
           <button onClick={exportCSV} className="bms-btn-secondary text-xs py-1.5">
             <Download size={13} /> CSV
           </button>
@@ -159,9 +163,8 @@ export default function StructureRegistry() {
         </div>
       </div>
 
-      {/* Table — fixed-height virtualized scroll container, sticky header */}
-      <div className="flex-1 min-h-0 px-6 pb-6 pt-3">
-      <div ref={containerRef} className="dt-scroll">
+      {/* Table */}
+      <div className="flex-1 overflow-auto">
         <table className="bms-table">
           <thead>
             <tr>
@@ -182,15 +185,12 @@ export default function StructureRegistry() {
               <Th label="Next Insp."  k="nextInspection" />
               <Th label="Traffic"     k="traffic" />
               <Th label="Priority"    k="priorityScore" />
-              <th className="dt-sticky-th px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider bg-slate-900 border-b border-slate-700">Details</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider bg-slate-900 border-b border-slate-700">Details</th>
             </tr>
           </thead>
           <tbody>
-            {topSpacerHeight > 0 && (
-              <tr aria-hidden style={{ height: topSpacerHeight }}><td colSpan={COLUMN_COUNT} style={{ padding: 0, border: 'none' }} /></tr>
-            )}
-            {visibleRows.map(s => (
-              <tr key={s.id} onClick={() => setSelected(s)} className="hover:bg-slate-700/30 transition-colors cursor-pointer" style={criticalRowStyle(s.conditionRating === 1)}>
+            {pageData.map(s => (
+              <tr key={s.id} onClick={() => setSelected(s)} className="hover:bg-slate-700/30 transition-colors cursor-pointer">
                 <td className="px-4 py-3 text-slate-400 text-xs font-mono">#{s.priorityRank}</td>
                 <td className="px-4 py-3 text-xs font-mono text-blue-400 font-bold">{s.id}</td>
                 <td className="px-4 py-3 text-sm text-slate-200 font-medium max-w-[200px] truncate">{s.name}</td>
@@ -202,9 +202,9 @@ export default function StructureRegistry() {
                 <td className="px-4 py-3 text-xs text-slate-400 max-w-[160px] truncate">{s.road}</td>
                 <td className="px-4 py-3 text-xs text-slate-400">{s.region}</td>
                 <td className="px-4 py-3 text-xs text-slate-400 font-mono">{s.chainage.toFixed(1)}</td>
-                <td className="px-4 py-3 text-xs text-slate-400"><NullableCell value={s.spanLength}>{s.spanLength} m</NullableCell></td>
-                <td className="px-4 py-3 text-xs text-slate-400 text-center"><NullableCell value={s.noOfSpans}>{s.noOfSpans}</NullableCell></td>
-                <td className="px-4 py-3 text-xs text-slate-400 text-center"><NullableCell value={s.noOfLanes}>{s.noOfLanes}</NullableCell></td>
+                <td className="px-4 py-3 text-xs text-slate-400">{s.spanLength} m</td>
+                <td className="px-4 py-3 text-xs text-slate-400 text-center">{s.noOfSpans}</td>
+                <td className="px-4 py-3 text-xs text-slate-400 text-center">{s.noOfLanes}</td>
                 <td className="px-4 py-3 text-xs text-slate-400 max-w-[120px] truncate">{s.material}</td>
                 <td className="px-4 py-3 text-xs text-slate-400 font-mono">{s.yearBuilt}</td>
                 <td className="px-4 py-3">
@@ -233,7 +233,7 @@ export default function StructureRegistry() {
                         style={{ width: `${s.priorityScore}%`, background: conditionColor(s.conditionRating) }}
                       />
                     </div>
-                    <span className="text-xs font-mono w-6 text-right font-bold" style={{ color: percentageColor(s.priorityScore, true) }}>{s.priorityScore}</span>
+                    <span className="text-xs text-slate-400 font-mono w-6 text-right">{s.priorityScore}</span>
                   </div>
                 </td>
                 <td className="px-4 py-3">
@@ -246,18 +246,36 @@ export default function StructureRegistry() {
                 </td>
               </tr>
             ))}
-            {bottomSpacerHeight > 0 && (
-              <tr aria-hidden style={{ height: bottomSpacerHeight }}><td colSpan={COLUMN_COUNT} style={{ padding: 0, border: 'none' }} /></tr>
-            )}
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      <div className="flex-shrink-0 flex items-center justify-between px-6 py-3 border-t border-slate-700/60 bg-slate-900/50">
+        <span className="text-xs text-slate-500">
+          Showing {((page - 1) * PAGE_SIZE) + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length}
+        </span>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="bms-btn-secondary text-xs py-1 px-3 disabled:opacity-40"
+          >
+            ← Prev
+          </button>
+          <span className="text-xs text-slate-400">Page {page} / {pageCount}</span>
+          <button
+            onClick={() => setPage(p => Math.min(pageCount, p + 1))}
+            disabled={page === pageCount}
+            className="bms-btn-secondary text-xs py-1 px-3 disabled:opacity-40"
+          >
+            Next →
+          </button>
+        </div>
       </div>
 
       {/* Detail modal */}
       {selected && <StructureDetailModal structure={selected} onClose={() => setSelected(null)} />}
-      </>)}
-
     </div>
   );
 }
