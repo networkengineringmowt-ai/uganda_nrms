@@ -1,4 +1,4 @@
-/**
+﻿/**
  * RoadNetworkView — Uganda National Road Network
  * Features:
  *  - Animated timeline 1960–2026 showing road paving progression
@@ -27,8 +27,9 @@ import type { Structure } from '../../types';
 import { ROAD_STYLES, surfaceCategory } from '../../shared/mapSymbols';
 import FeatureAnalyticsPanel from '../../shared/FeatureAnalyticsPanel';
 import type { FeatureData } from '../../shared/FeatureAnalyticsPanel';
+import { WaterLayers } from '../../shared/WaterLayers';
 import { InfraLayers } from '../../shared/InfraLayers';
-import { MapLegend, LEGEND_INFRA_POINTS } from "../../shared/MapLegend";
+import { MapLegend, LEGEND_FULL } from "../../shared/MapLegend";
 import SourceTableButton from '../../shared/SourceTableButton';
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
 import { BotHighlightContext } from '../AssetBot/types';
@@ -68,8 +69,8 @@ interface NdpivData {
 const C = {
   paved:   '#00f5ff',   // neon cyan  (charts/stats only)
   unsealed:'#ff8c00',  // amber-orange (charts/stats only)
-  bgVoid:  '#000000',
-  glass:   'rgba(8,8,8,0.88)',
+  bgVoid:  '#020508',
+  glass:   'rgba(6,13,24,0.88)',
 };
 
 // ── Road line symbology — sourced from shared/mapSymbols.ts ──────────────────
@@ -143,10 +144,10 @@ function makeInfraIcon(type: 'ferry'|'weighbridge'|'airport'|'port', sz: number)
   const key = `${type}|${sz}`;
   if (infraIconCache.has(key)) return infraIconCache.get(key)!;
   const cfgs: Record<string,{g:[string,string];s:string;l:string}> = {
-    ferry:       { g:['#60a5fa','#1e3a8a'], s:'#bfdbfe', l:'' },
-    weighbridge: { g:['#fcd34d','#92400e'], s:'#fef3c7', l:'' },
-    airport:     { g:['#c084fc','#4c1d95'], s:'#ede9fe', l:'' },
-    port:        { g:['#34d399','#064e3b'], s:'#d1fae5', l:'' },
+    ferry:       { g:['#60a5fa','#1e3a8a'], s:'#bfdbfe', l:'⚓' },
+    weighbridge: { g:['#fcd34d','#92400e'], s:'#fef3c7', l:'⚖' },
+    airport:     { g:['#c084fc','#4c1d95'], s:'#ede9fe', l:'✈' },
+    port:        { g:['#34d399','#064e3b'], s:'#d1fae5', l:'⛵' },
   };
   const c = cfgs[type]; const id = `rni${type}${sz}`;
   const html = `<svg viewBox="0 0 24 24" width="${sz}" height="${sz}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;display:block">
@@ -208,15 +209,7 @@ const ANIM_MAX = 2026;
 const ANIM_STEP = 1;
 
 // ── Main component ─────────────────────────────────────────────────────────────
-interface RoadNetworkViewProps {
-  /** Show the Current/History mode toggle. RMS passes false — current map only;
-   *  the historical timeline lives in Life Cycle Management. */
-  showHistory?: boolean;
-  /** Start in History (timeline) mode — used by Life Cycle Management. */
-  defaultHistory?: boolean;
-}
-
-export default function RoadNetworkView({ showHistory = true, defaultHistory = false }: RoadNetworkViewProps = {}) {
+export default function RoadNetworkView() {
   // Data
   const [geoData,    setGeoData]    = useState<GeoJSON.FeatureCollection | null>(null);
   const [paveYears,  setPaveYears]  = useState<Record<string, number | null>>({});
@@ -233,7 +226,7 @@ export default function RoadNetworkView({ showHistory = true, defaultHistory = f
   const [animYear,   setAnimYear]   = useState(CURRENT_YEAR);
   const [playing,    setPlaying]    = useState(false);
   const [speed,      setSpeed]      = useState(600); // ms per year
-  const [animMode,   setAnimMode]   = useState(showHistory && defaultHistory); // false = current state
+  const [animMode,   setAnimMode]   = useState(false); // false = current state
 
   // Filter (current mode)
   const [colorBy,    setColorBy]    = useState<'surface'|'class'|'region'>('surface');
@@ -425,7 +418,7 @@ export default function RoadNetworkView({ showHistory = true, defaultHistory = f
         {loading && (
           <div style={{ position:'absolute', inset:0, zIndex:2000, display:'flex',
             alignItems:'center', justifyContent:'center',
-            background:'rgba(2,2,2,0.85)', backdropFilter:'blur(8px)' }}>
+            background:'rgba(2,5,8,0.85)', backdropFilter:'blur(8px)' }}>
             <div style={{ textAlign:'center', color:'#00f5ff' }}>
               <div style={{ width:32, height:32, border:'2px solid rgba(0,245,255,0.2)',
                 borderTopColor:'#00f5ff', borderRadius:'50%',
@@ -449,8 +442,9 @@ export default function RoadNetworkView({ showHistory = true, defaultHistory = f
             opacity={0.85}
             attribution='Esri'
           />
+          <WaterLayers />
           <InfraLayers />
-          <MapLegend title="Infrastructure" items={LEGEND_INFRA_POINTS} position="bottomleft" />
+          <MapLegend title="Road Network" items={LEGEND_FULL} position="bottomleft" />
           <ZoomControl position="bottomright"/>
           <ZoomWatcher onZoom={setMapZoom}/>
           {geoData && (
@@ -476,7 +470,7 @@ export default function RoadNetworkView({ showHistory = true, defaultHistory = f
             <Marker key={f.id} position={[f.lat, f.lng]} icon={makeInfraIcon('ferry', getInfraIconSize(mapZoom))}>
               <LeafletTooltip direction="top" offset={[0,-10]} opacity={1}>
                 <div style={{fontSize:12,fontWeight:900,color:'#111827',marginBottom:2}}>{f.name}</div>
-                <div style={{fontSize:10,fontWeight:700,color:'#1d4ed8'}}> Ferry Crossing</div>
+                <div style={{fontSize:10,fontWeight:700,color:'#1d4ed8'}}>⚓ Ferry Crossing</div>
                 <div style={{fontSize:10,fontWeight:600,color:'#374151',marginTop:2}}>
                   Route: {f.route as string}<br/>Capacity: {f.capacity as string} · {f.lake as string}
                 </div>
@@ -488,7 +482,7 @@ export default function RoadNetworkView({ showHistory = true, defaultHistory = f
             <Marker key={w.id} position={[w.lat, w.lng]} icon={makeInfraIcon('weighbridge', getInfraIconSize(mapZoom))}>
               <LeafletTooltip direction="top" offset={[0,-10]} opacity={1}>
                 <div style={{fontSize:12,fontWeight:900,color:'#111827',marginBottom:2}}>{w.name}</div>
-                <div style={{fontSize:10,fontWeight:700,color:'#d97706'}}> Weighbridge Station</div>
+                <div style={{fontSize:10,fontWeight:700,color:'#d97706'}}>⚖ Weighbridge Station</div>
                 <div style={{fontSize:10,fontWeight:600,color:'#374151',marginTop:2}}>
                   Road: {w.road as string} · Cap: {w.capacity as string} · {w.status as string}
                 </div>
@@ -500,7 +494,7 @@ export default function RoadNetworkView({ showHistory = true, defaultHistory = f
             <Marker key={a.id} position={[a.lat, a.lng]} icon={makeInfraIcon('airport', getInfraIconSize(mapZoom))}>
               <LeafletTooltip direction="top" offset={[0,-10]} opacity={1}>
                 <div style={{fontSize:12,fontWeight:900,color:'#111827',marginBottom:2}}>{a.name}</div>
-                <div style={{fontSize:10,fontWeight:700,color:'#7c3aed'}}> {a.type as string} Airport</div>
+                <div style={{fontSize:10,fontWeight:700,color:'#7c3aed'}}>✈ {a.type as string} Airport</div>
                 <div style={{fontSize:10,fontWeight:600,color:'#374151',marginTop:2}}>
                   IATA: {(a.iata as string)||'—'} · Runway: {a.runway as string}
                 </div>
@@ -512,7 +506,7 @@ export default function RoadNetworkView({ showHistory = true, defaultHistory = f
             <Marker key={p.id} position={[p.lat, p.lng]} icon={makeInfraIcon('port', getInfraIconSize(mapZoom))}>
               <LeafletTooltip direction="top" offset={[0,-10]} opacity={1}>
                 <div style={{fontSize:12,fontWeight:900,color:'#111827',marginBottom:2}}>{p.name}</div>
-                <div style={{fontSize:10,fontWeight:700,color:'#0891b2'}}> {p.type as string}</div>
+                <div style={{fontSize:10,fontWeight:700,color:'#0891b2'}}>⛵ {p.type as string}</div>
                 <div style={{fontSize:10,fontWeight:600,color:'#374151',marginTop:2}}>
                   {p.lake as string} · {p.operator as string}
                 </div>
@@ -532,12 +526,12 @@ export default function RoadNetworkView({ showHistory = true, defaultHistory = f
                 <LeafletTooltip direction="top" offset={[0, -8]} opacity={1}>
                   <div style={{fontSize:12,fontWeight:900,color:'#111827',marginBottom:2}}>{s.name}</div>
                   <div style={{fontSize:10,fontWeight:700,color: isBridge ? '#0891b2' : '#b45309'}}>
-                    {isBridge ? ' Bridge' : ' Major Culvert'} · {s.road}
+                    {isBridge ? '🌉 Bridge' : '🔵 Major Culvert'} · {s.road}
                   </div>
                   <div style={{fontSize:10,fontWeight:600,color:'#374151',marginTop:2}}>
                     {s.spanLength} m span · {s.noOfSpans} span{s.noOfSpans !== 1 ? 's' : ''} ·{' '}
                     Cond: <span style={{color: isCritical ? '#dc2626' : '#166534', fontWeight:800}}>
-                      {['','Critical','Poor','Marginal','Satisfactory','Good'][s.conditionRating]}
+                      {['','Critical','Poor','Fair','Good','Excellent'][s.conditionRating]}
                     </span>
                   </div>
                 </LeafletTooltip>
@@ -549,13 +543,11 @@ export default function RoadNetworkView({ showHistory = true, defaultHistory = f
         {/* ── Map top-left legend/controls ── */}
         <div style={{ position:'absolute', top:12, left:12, zIndex:999, display:'flex', flexDirection:'column', gap:8 }}>
 
-          {/* Mode toggle — hidden in RMS (current-only); history lives in Life Cycle */}
-          {showHistory && (
-            <div style={{ ...glassStyle, padding:'8px 10px', display:'flex', gap:6 }}>
-              <ModeBtn active={!animMode} onClick={() => { setAnimMode(false); setPlaying(false); }} icon={<MapIcon size={12}/>} label="Current"/>
-              <ModeBtn active={animMode}  onClick={() => setAnimMode(true)}  icon={<Play size={12}/>} label="History"/>
-            </div>
-          )}
+          {/* Mode toggle */}
+          <div style={{ ...glassStyle, padding:'8px 10px', display:'flex', gap:6 }}>
+            <ModeBtn active={!animMode} onClick={() => { setAnimMode(false); setPlaying(false); }} icon={<MapIcon size={12}/>} label="Current"/>
+            <ModeBtn active={animMode}  onClick={() => setAnimMode(true)}  icon={<Play size={12}/>} label="History"/>
+          </div>
 
           {/* Legend */}
           <div style={{ ...glassStyle, padding:'10px 12px', minWidth:180 }}>
@@ -647,10 +639,10 @@ export default function RoadNetworkView({ showHistory = true, defaultHistory = f
             <div style={sectionHead}>Infrastructure Layers</div>
             {(
               [
-                { key:'ferry',       label:'Ferry Crossings', show:showFerries,      toggle:()=>setShowFerries(v=>!v),      color:'#60a5fa', rgb:'96,165,250',  icon:<span style={{fontSize:13}}></span> },
-                { key:'weighbridge', label:'Weighbridges',    show:showWeighbridges, toggle:()=>setShowWeighbridges(v=>!v), color:'#fcd34d', rgb:'252,211,77',  icon:<span style={{fontSize:13}}></span> },
-                { key:'airport',     label:'Airports',        show:showAirports,     toggle:()=>setShowAirports(v=>!v),     color:'#c084fc', rgb:'192,132,252', icon:<span style={{fontSize:13}}></span> },
-                { key:'port',        label:'Ports',           show:showPorts,        toggle:()=>setShowPorts(v=>!v),        color:'#34d399', rgb:'52,211,153',  icon:<span style={{fontSize:13}}></span> },
+                { key:'ferry',       label:'Ferry Crossings', show:showFerries,      toggle:()=>setShowFerries(v=>!v),      color:'#60a5fa', rgb:'96,165,250',  icon:<span style={{fontSize:13}}>⚓</span> },
+                { key:'weighbridge', label:'Weighbridges',    show:showWeighbridges, toggle:()=>setShowWeighbridges(v=>!v), color:'#fcd34d', rgb:'252,211,77',  icon:<span style={{fontSize:13}}>⚖</span> },
+                { key:'airport',     label:'Airports',        show:showAirports,     toggle:()=>setShowAirports(v=>!v),     color:'#c084fc', rgb:'192,132,252', icon:<span style={{fontSize:13}}>✈</span> },
+                { key:'port',        label:'Ports',           show:showPorts,        toggle:()=>setShowPorts(v=>!v),        color:'#34d399', rgb:'52,211,153',  icon:<span style={{fontSize:13}}>⛵</span> },
                 { key:'bridge',      label:'Bridge',          show:showStructures,   toggle:()=>setShowStructures(v=>!v),   color:'#3B82F6', rgb:'59,130,246',  icon:<svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="#3B82F6" stroke="white" strokeWidth="1.5"/></svg> },
                 { key:'culvert',     label:'Culvert',         show:showStructures,   toggle:()=>setShowStructures(v=>!v),   color:'#F59E0B', rgb:'245,158,11',  icon:<svg width="12" height="12" viewBox="0 0 12 12"><rect x="1" y="1" width="10" height="10" rx="2" fill="#F59E0B" stroke="white" strokeWidth="1.5"/></svg> },
               ]
@@ -674,7 +666,7 @@ export default function RoadNetworkView({ showHistory = true, defaultHistory = f
         {animMode && (
           <div style={{
             position:'absolute', bottom:0, left:0, right:0, zIndex:999,
-            background:'rgba(2,2,2,0.92)', backdropFilter:'blur(16px)',
+            background:'rgba(2,5,8,0.92)', backdropFilter:'blur(16px)',
             borderTop:'1px solid rgba(0,245,255,0.10)',
             padding:'10px 20px 12px',
           }}>
@@ -790,7 +782,7 @@ export default function RoadNetworkView({ showHistory = true, defaultHistory = f
               />
               {selectedRaw && selected && (
                 <div style={{
-                  width: 270, background:'rgba(8,8,8,0.97)', backdropFilter:'blur(16px)',
+                  width: 270, background:'rgba(6,13,24,0.97)', backdropFilter:'blur(16px)',
                   border:'1px solid rgba(0,245,255,0.12)', borderRadius:10, padding:'10px 12px',
                 }}>
                   <div style={{ fontSize:9, fontWeight:800, color:'rgba(0,245,255,0.5)',
@@ -824,7 +816,7 @@ export default function RoadNetworkView({ showHistory = true, defaultHistory = f
         position:'absolute', right: sideOpen ? 420 : 0, top:'50%',
         transform:'translateY(-50%)', zIndex:1001,
         padding:'10px 4px',
-        background:'rgba(2,2,2,0.9)', backdropFilter:'blur(10px)',
+        background:'rgba(2,5,8,0.9)', backdropFilter:'blur(10px)',
         border:'1px solid rgba(0,245,255,0.15)',
         borderRight: sideOpen ? undefined : 'none',
         borderRadius: sideOpen ? '8px 0 0 8px' : '0 8px 8px 0',
@@ -836,7 +828,7 @@ export default function RoadNetworkView({ showHistory = true, defaultHistory = f
       {/* ══ RIGHT PANEL — Dashboard ══════════════════════════════════════════ */}
       {sideOpen && (
         <div style={{ width:420, flexShrink:0,
-          background:'rgba(2,2,2,0.95)', backdropFilter:'blur(24px)',
+          background:'rgba(2,5,8,0.95)', backdropFilter:'blur(24px)',
           borderLeft:'1px solid rgba(0,245,255,0.08)',
           display:'flex', flexDirection:'column', overflow:'hidden' }}>
 
@@ -1072,7 +1064,7 @@ function DashboardPanel({ stats, storyData, networkSummary }: {
               <YAxis tick={{ fill:'#64748b', fontSize:8 }} tickLine={false} axisLine={false}
                 tickFormatter={v => `${(v/1000).toFixed(0)}k`} width={28}/>
               <RechartsTip
-                contentStyle={{ background:'rgba(8,8,8,0.95)', border:'1px solid rgba(0,245,255,0.2)', borderRadius:8, fontSize:10 }}
+                contentStyle={{ background:'rgba(6,13,24,0.95)', border:'1px solid rgba(0,245,255,0.2)', borderRadius:8, fontSize:10 }}
                 labelStyle={{ color:'#00f5ff' }}
                 formatter={(v: number) => [`${v.toLocaleString()} km`, 'Paved']}
               />
@@ -1098,7 +1090,7 @@ function DashboardPanel({ stats, storyData, networkSummary }: {
               <YAxis type="category" dataKey="region" tick={{ fill:'#94a3b8', fontSize:9 }}
                 tickLine={false} axisLine={false} width={54}/>
               <RechartsTip
-                contentStyle={{ background:'rgba(8,8,8,0.95)', border:'1px solid rgba(0,245,255,0.2)', borderRadius:8, fontSize:10 }}
+                contentStyle={{ background:'rgba(6,13,24,0.95)', border:'1px solid rgba(0,245,255,0.2)', borderRadius:8, fontSize:10 }}
                 formatter={(v: number, name: string) => [`${v.toFixed(0)} km`, name === 'paved_km' ? 'Paved' : 'Unsealed']}
               />
               <Bar dataKey="paved_km" stackId="a" radius={[0,0,0,0]} maxBarSize={14}>
