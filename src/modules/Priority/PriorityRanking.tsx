@@ -3,29 +3,18 @@ import { AlertTriangle, TrendingUp, Filter } from 'lucide-react';
 import { useBMS } from '../../store/BMSContext';
 import { conditionColor, conditionLabel, conditionBadge, formatUGX, CONDITION_COLORS } from '../../utils/helpers';
 import type { Structure } from '../../types';
-import SectionDashboard from '../Dashboard/SectionDashboard';
-import { useVirtualRows } from '../../shared/useVirtualRows';
-import { criticalRowStyle, NullableCell } from '../../shared/tableFormatting';
-import { useSortableColumns, sortRows, SortArrow, type ColumnType } from '../../shared/useSortableColumns';
 import {
   ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Cell,
 } from 'recharts';
 
 type FilterMode = 'all' | 'bridges' | 'culverts' | 'critical' | 'poor';
-type SortKey = keyof Structure;
-
-const ROW_HEIGHT = 44;
-const COLUMN_COUNT = 12;
-
-const SORT_TYPES: Partial<Record<SortKey, ColumnType>> = {
-  priorityRank: 'numeric', conditionRating: 'numeric', yearBuilt: 'numeric',
-  strategicImportance: 'numeric', priorityScore: 'numeric', estimatedReplacementCost: 'numeric',
-};
 
 export default function PriorityRanking() {
   const { state }    = useBMS();
   const { structures } = state;
   const [mode, setMode] = useState<FilterMode>('all');
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 30;
 
   const filtered = useMemo(() => {
     let list = [...structures].sort((a, b) => b.priorityScore - a.priorityScore);
@@ -37,20 +26,8 @@ export default function PriorityRanking() {
   }, [structures, mode]);
 
   const top10 = filtered.slice(0, 10);
-  const { sortKey, sortDir, cycleSort } = useSortableColumns<SortKey>();
-  const sorted = useMemo(
-    () => sortRows(filtered, sortKey, sortDir, sortKey ? (SORT_TYPES[sortKey] ?? 'text') : 'text'),
-    [filtered, sortKey, sortDir],
-  );
-  const { containerRef, visibleRows, topSpacerHeight, bottomSpacerHeight } =
-    useVirtualRows(sorted, { rowHeight: ROW_HEIGHT });
-
-  const Th = ({ label, k, align }: { label: string; k: SortKey; align?: 'left' | 'right' | 'center' }) => (
-    <th className="dt-sticky-th px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider bg-slate-900 border-b border-slate-700 whitespace-nowrap cursor-pointer hover:text-slate-200 select-none"
-      style={{ textAlign: align ?? 'left' }} onClick={() => cycleSort(k)}>
-      {label}<SortArrow active={sortKey === k} dir={sortDir} />
-    </th>
-  );
+  const pageData = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const pageCount = Math.ceil(filtered.length / PAGE_SIZE);
 
   // Scatter data: priority score vs age
   const scatterData = useMemo(() =>
@@ -64,19 +41,8 @@ export default function PriorityRanking() {
     [structures],
   );
 
-  const [tab, setTab] = useState<'content' | 'dashboard'>('content');
   return (
     <div className="flex flex-col h-full animate-fade-in">
-      {/* ── Tab nav ── */}
-      <div style={{ display:'flex', gap:6, padding:'8px 14px', borderBottom:'1px solid rgba(100,100,200,0.15)' }}>
-        {(['content','dashboard'] as const).map(t => (
-          <button key={t} onClick={() => setTab(t)} style={{ fontSize:11, fontWeight:700, letterSpacing:1, padding:'4px 14px', border:`1px solid ${t===tab?'#ff6b35':'rgba(100,100,200,0.2)'}`, borderRadius:4, cursor:'pointer', background:t===tab?'#ff6b35':'rgba(100,100,200,0.06)', color:t===tab?'#020202':'rgba(200,200,200,0.7)', textTransform:'uppercase' }}>
-            {t==='content'?'Priority Ranking':'Dashboard'}
-          </button>
-        ))}
-      </div>
-      {tab==='dashboard'&&<SectionDashboard sectionId="priority" accent="#ff6b35"/>}
-      {tab==='content'&&(<>
       {/* Header / filter bar */}
       <div className="flex-shrink-0 px-6 py-4 border-b border-slate-700/60 bg-slate-900/50">
         <div className="flex items-center gap-3 flex-wrap">
@@ -84,13 +50,13 @@ export default function PriorityRanking() {
           {(['all','bridges','culverts','critical','poor'] as FilterMode[]).map(m => (
             <button
               key={m}
-              onClick={() => { setMode(m); }}
+              onClick={() => { setMode(m); setPage(1); }}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-colors
                 ${mode === m ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-400 hover:text-white'}`}
             >{m}</button>
           ))}
           <div className="flex-1" />
-          <span className="record-badge">{filtered.length.toLocaleString()} structures ranked</span>
+          <span className="text-xs text-slate-500">{filtered.length} structures ranked</span>
         </div>
       </div>
 
@@ -110,37 +76,33 @@ export default function PriorityRanking() {
             </div>
           </div>
 
-          {/* Full table — fixed-height virtualized scroll container, sticky header */}
-          <div className="flex-1 p-4">
-          <div ref={containerRef} className="dt-scroll">
+          {/* Full table */}
+          <div className="flex-1 mowt-table-wrap">
             <table className="bms-table">
               <thead>
                 <tr>
-                  <Th label="Rank" k="priorityRank" />
-                  <Th label="ID" k="id" />
-                  <Th label="Name" k="name" />
-                  <Th label="Type" k="type" />
-                  <Th label="Road" k="road" />
-                  <Th label="Region" k="region" />
-                  <Th label="Condition" k="conditionRating" />
-                  <Th label="Traffic" k="traffic" />
-                  <Th label="Age (yrs)" k="yearBuilt" />
-                  <Th label="Strategic Imp." k="strategicImportance" />
-                  <Th label="Priority Score" k="priorityScore" />
-                  <Th label="Est. Cost" k="estimatedReplacementCost" />
+                  <th>Rank</th>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Road</th>
+                  <th>Region</th>
+                  <th>Condition</th>
+                  <th>Traffic</th>
+                  <th>Age (yrs)</th>
+                  <th>Strategic Imp.</th>
+                  <th>Priority Score</th>
+                  <th>Est. Cost</th>
                 </tr>
               </thead>
               <tbody>
-                {topSpacerHeight > 0 && (
-                  <tr aria-hidden style={{ height: topSpacerHeight }}><td colSpan={COLUMN_COUNT} style={{ padding: 0, border: 'none' }} /></tr>
-                )}
-                {visibleRows.map(s => (
-                  <tr key={s.id} style={criticalRowStyle(s.conditionRating === 1)}>
+                {pageData.map((s, i) => (
+                  <tr key={s.id}>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0
-                          ${(s.priorityRank ?? 999) <= 3 ? 'bg-red-500 text-white' :
-                            (s.priorityRank ?? 999) <= 10 ? 'bg-orange-500/20 text-orange-400' :
+                          ${i + ((page-1)*PAGE_SIZE) < 3 ? 'bg-red-500 text-white' :
+                            i + ((page-1)*PAGE_SIZE) < 10 ? 'bg-orange-500/20 text-orange-400' :
                             'bg-slate-700 text-slate-400'}`}
                         >
                           {s.priorityRank}
@@ -184,16 +146,22 @@ export default function PriorityRanking() {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-xs text-slate-400 font-mono whitespace-nowrap">
-                      <NullableCell value={s.estimatedReplacementCost}>{formatUGX(s.estimatedReplacementCost)}</NullableCell>
+                      {formatUGX(s.estimatedReplacementCost)}
                     </td>
                   </tr>
                 ))}
-                {bottomSpacerHeight > 0 && (
-                  <tr aria-hidden style={{ height: bottomSpacerHeight }}><td colSpan={COLUMN_COUNT} style={{ padding: 0, border: 'none' }} /></tr>
-                )}
               </tbody>
             </table>
           </div>
+
+          {/* Pagination */}
+          <div className="flex items-center justify-between px-6 py-3 border-t border-slate-700/60 bg-slate-900/50 flex-shrink-0">
+            <span className="text-xs text-slate-500">Showing {((page-1)*PAGE_SIZE)+1}–{Math.min(page*PAGE_SIZE, filtered.length)} of {filtered.length}</span>
+            <div className="flex items-center gap-2">
+              <button onClick={() => setPage(p => Math.max(1, p-1))} disabled={page===1} className="bms-btn-secondary text-xs py-1 px-3 disabled:opacity-40">← Prev</button>
+              <span className="text-xs text-slate-400">Page {page}/{pageCount}</span>
+              <button onClick={() => setPage(p => Math.min(pageCount, p+1))} disabled={page===pageCount} className="bms-btn-secondary text-xs py-1 px-3 disabled:opacity-40">Next →</button>
+            </div>
           </div>
         </div>
 
@@ -207,12 +175,12 @@ export default function PriorityRanking() {
           <div className="bms-card p-3">
             <ResponsiveContainer width="100%" height={240}>
               <ScatterChart margin={{ top:4, right:8, left:-20, bottom:0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1c1c1c" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
                 <XAxis dataKey="x" name="Age (yrs)" tick={{ fill:'#64748b', fontSize:9 }} label={{ value:'Age (yrs)', position:'insideBottom', fill:'#475569', fontSize:10, dy:8 }} />
                 <YAxis dataKey="y" name="Priority" tick={{ fill:'#64748b', fontSize:9 }} label={{ value:'Priority', angle:-90, position:'insideLeft', fill:'#475569', fontSize:10 }} />
                 <Tooltip
                   cursor={{ strokeDasharray:'3 3', stroke:'#475569' }}
-                  contentStyle={{ background:'#0d0d0d', border:'1px solid #334155', borderRadius:8, fontSize:10 }}
+                  contentStyle={{ background:'#0f172a', border:'1px solid #334155', borderRadius:8, fontSize:10 }}
                   content={({ payload }) => {
                     if (!payload?.length) return null;
                     const d = payload[0].payload;
@@ -256,8 +224,6 @@ export default function PriorityRanking() {
           </div>
         </div>
       </div>
-      </>
-      )}
     </div>
   );
 }
@@ -292,9 +258,8 @@ function StarRating({ value }: { value: number }) {
   return (
     <div className="flex gap-0.5">
       {[1,2,3,4,5].map(i => (
-        <span key={i} className={`text-xs ${i <= value ? 'text-amber-400' : 'text-slate-600'}`}></span>
+        <span key={i} className={`text-xs ${i <= value ? 'text-amber-400' : 'text-slate-600'}`}>★</span>
       ))}
-
     </div>
   );
 }
