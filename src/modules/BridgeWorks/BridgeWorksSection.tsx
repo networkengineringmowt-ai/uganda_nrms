@@ -11,7 +11,6 @@ import {
 } from 'lucide-react';
 import { glass, neu, liquidGlass, neuProgressTrack, progressFill } from '../../shared/glass';
 import { supabase } from '../../lib/supabase';
-import SectionDashboard from '../Dashboard/SectionDashboard';
 
 interface BridgeWork {
   id: string; lot: string; funder: string;
@@ -39,14 +38,12 @@ export default function BridgeWorksSection() {
   const [works, setWorks] = useState<BridgeWork[]>([]);
   const [src, setSrc] = useState<'supabase' | 'bundle' | 'loading'>('loading');
   const [q, setQ] = useState('');
-  const [tab, setTab] = useState('works');
 
   useEffect(() => {
     let alive = true;
     (async () => {
-      // Bundle-first: the pre-built JSON bundle in this repo (produced at build
-      // time from the DNR's G: Drive source archive) is tried first; Supabase is
-      // an optional live fallback if the bundle can't be fetched.
+      // Drive-first: the bundled JSON (exported from the G: Drive repository)
+      // is the canonical store; Supabase is only an optional mirror fallback.
       try {
         const r = await fetch(`${import.meta.env.BASE_URL}data/bridge_works_2026.json`);
         if (r.ok) {
@@ -79,17 +76,7 @@ export default function BridgeWorksSection() {
 
   return (
     <div style={{ padding: '22px 20px', minHeight: '100%',
-      background: 'radial-gradient(1200px 600px at 80% -10%, rgba(0,212,170,0.10), transparent), linear-gradient(180deg, rgba(8,8,8,0.5), transparent)' }}>
-      {/* BridgeWorks tab nav */}
-      <div style={{ display: 'flex', gap: 6, marginBottom: 18 }}>
-        {['works', 'dashboard'].map(t => (
-          <button key={t} onClick={() => setTab(t)} style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '5px 14px', borderRadius: 20, border: 'none', cursor: 'pointer', background: tab === t ? '#b967ff' : 'rgba(185,103,255,0.08)', color: tab === t ? '#020202' : 'rgba(185,103,255,0.7)', transition: 'all .15s' }}>
-            {t === 'works' ? 'Bridge Works' : 'Dashboard'}
-          </button>
-        ))}
-      </div>
-      {tab === 'dashboard' && <SectionDashboard sectionId="bridgeworks" accent="#b967ff" />}
-      {tab === 'works' && (<>
+      background: 'radial-gradient(1200px 600px at 80% -10%, rgba(0,212,170,0.10), transparent), linear-gradient(180deg, rgba(8,14,28,0.5), transparent)' }}>
 
       {/* ── Liquid-glass header ── */}
       <div style={{ ...liquidGlass(C.teal, 20), padding: '18px 22px', marginBottom: 18 }}>
@@ -108,7 +95,7 @@ export default function BridgeWorksSection() {
           </div>
           <span style={{ ...glass(src === 'supabase' ? C.green : C.gray, 999), padding: '5px 12px',
             fontSize: 10, fontWeight: 800, color: src === 'supabase' ? C.green : C.gray }}>
-            {src === 'supabase' ? 'â SUPABASE MIRROR' : src === 'bundle' ? 'â DRIVE DATA (G:)' : '… loading'}
+            {src === 'supabase' ? '● SUPABASE MIRROR' : src === 'bundle' ? '● DRIVE DATA (G:)' : '… loading'}
           </span>
         </div>
       </div>
@@ -142,58 +129,71 @@ export default function BridgeWorksSection() {
           style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#eaf6ff', fontSize: 12 }} />
       </div>
 
-      {/* ── Bridge projects table ── */}
-      <div style={{ ...glass(C.teal, 14), padding: 0, overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11.5 }}>
-          <thead>
-            <tr style={{ background: 'rgba(0,212,170,0.08)' }}>
-              {['Project / Lot', 'Funder', 'Contractor', 'PM', 'PE', 'Progress', 'Contract Sum', 'Certified', 'Paid', 'Outstanding'].map(h => (
-                <th key={h} style={{ padding: '11px 12px', textAlign: 'left', fontSize: 10, fontWeight: 900,
-                  color: C.teal, textTransform: 'uppercase', letterSpacing: '0.06em',
-                  borderBottom: '1px solid rgba(0,212,170,0.25)', whiteSpace: 'nowrap' }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map(w => {
-              const pc = progColor(w.physical_progress_pct);
-              return (
-                <tr key={w.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                  <td style={{ padding: '10px 12px', fontWeight: 800, color: '#eaf6ff', minWidth: 240, lineHeight: 1.4 }}>
-                    {w.lot}
-                    {w.status && <div style={{ fontSize: 9.5, fontWeight: 400, color: 'rgba(200,225,235,0.55)', marginTop: 3,
-                      display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', maxWidth: 340 }}>{w.status}</div>}
-                  </td>
-                  <td style={{ padding: '10px 12px' }}>
-                    <span style={{ ...glass(C.teal, 999), padding: '3px 9px', fontSize: 9, fontWeight: 800, color: C.teal, whiteSpace: 'nowrap' }}>{w.funder}</span>
-                  </td>
-                  <td style={{ padding: '10px 12px', color: 'rgba(200,225,235,0.9)', maxWidth: 200 }}>{w.contractor || '—'}</td>
-                  <td style={{ padding: '10px 12px', color: 'rgba(200,225,235,0.75)', whiteSpace: 'nowrap' }}>{w.project_manager || '—'}</td>
-                  <td style={{ padding: '10px 12px', color: 'rgba(200,225,235,0.75)', whiteSpace: 'nowrap' }}>{w.project_engineer || '—'}</td>
-                  <td style={{ padding: '10px 12px', minWidth: 120 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <div style={{ ...neuProgressTrack(), flex: 1, minWidth: 60 }}><div style={progressFill(w.physical_progress_pct || 0, pc)} /></div>
-                      <span style={{ color: pc, fontWeight: 900, fontSize: 11, whiteSpace: 'nowrap' }}>
-                        {w.physical_progress_pct != null ? `${w.physical_progress_pct}%` : 'N/A'}
-                      </span>
-                    </div>
-                  </td>
-                  <td style={{ padding: '10px 12px', fontWeight: 800, color: C.cyan, whiteSpace: 'nowrap' }}>UGX {bn(w.contract_sum_ugx)}</td>
-                  <td style={{ padding: '10px 12px', fontWeight: 700, color: C.teal, whiteSpace: 'nowrap' }}>UGX {bn(w.amount_certified_ugx)}</td>
-                  <td style={{ padding: '10px 12px', fontWeight: 700, color: C.green, whiteSpace: 'nowrap' }}>UGX {bn(w.amount_paid_ugx)}</td>
-                  <td style={{ padding: '10px 12px', fontWeight: 700, color: w.outstanding_ugx ? C.orange : C.gray, whiteSpace: 'nowrap' }}>UGX {bn(w.outstanding_ugx)}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+      {/* ── Project cards (glass + neumorphic progress) ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: 16 }}>
+        {filtered.map(w => {
+          const pc = progColor(w.physical_progress_pct);
+          return (
+            <div key={w.id} style={{ ...glass(pc, 18), padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 11 }}>
+              {/* title row */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 }}>
+                <div style={{ fontSize: 13, fontWeight: 800, color: '#eaf6ff', lineHeight: 1.35 }}>{w.lot}</div>
+                <span style={{ ...glass(C.teal, 999), padding: '3px 9px', fontSize: 9, fontWeight: 800, color: C.teal, flexShrink: 0 }}>{w.funder}</span>
+              </div>
+
+              {/* contractor */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 11, color: 'rgba(200,225,235,0.85)' }}>
+                <Building2 size={13} style={{ color: C.blue }} /> {w.contractor || '—'}
+              </div>
+
+              {/* progress */}
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9.5, marginBottom: 5 }}>
+                  <span style={{ color: 'rgba(200,225,235,0.6)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 700 }}>Physical Progress</span>
+                  <span style={{ color: pc, fontWeight: 900 }}>{w.physical_progress_pct != null ? `${w.physical_progress_pct}%` : 'N/A'}</span>
+                </div>
+                <div style={neuProgressTrack()}><div style={progressFill(w.physical_progress_pct || 0, pc)} /></div>
+              </div>
+
+              {/* financials grid (neumorphic) */}
+              <div style={{ ...neu(12, false), padding: '11px 12px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 9 }}>
+                {[
+                  ['Contract Sum', bn(w.contract_sum_ugx), C.cyan],
+                  ['Certified', bn(w.amount_certified_ugx), C.teal],
+                  ['Paid', bn(w.amount_paid_ugx), C.green],
+                  ['Outstanding', bn(w.outstanding_ugx), w.outstanding_ugx ? C.orange : C.gray],
+                ].map(([l, v, col]) => (
+                  <div key={l as string}>
+                    <div style={{ fontSize: 8, color: 'rgba(200,225,235,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{l}</div>
+                    <div style={{ fontSize: 12, fontWeight: 800, color: col as string }}>UGX {v}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* team */}
+              {(w.project_manager || w.project_engineer) && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, fontSize: 9.5, color: 'rgba(200,225,235,0.7)' }}>
+                  {w.project_manager && <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><UserCog size={11} style={{ color: C.purple }} /> PM: {w.project_manager}</span>}
+                  {w.project_engineer && <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><HardHat size={11} style={{ color: C.yellow }} /> PE: {w.project_engineer}</span>}
+                </div>
+              )}
+
+              {/* status excerpt */}
+              {w.status && (
+                <div style={{ fontSize: 10, color: 'rgba(200,225,235,0.6)', lineHeight: 1.5,
+                  display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                  {w.status}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.45)', marginTop: 18, textAlign: 'center' }}>
         Source: MOWT Projects Status Report — §1.4 Bridges Development Projects (April 2026).
-        {src === 'bundle' && ' Serving from the pre-built data bundle.'}
+        {src === 'bundle' && ' Serving from the G: Drive data bundle (canonical store).'}
       </div>
-      </>)}
     </div>
   );
 }
