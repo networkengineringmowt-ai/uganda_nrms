@@ -1,15 +1,23 @@
-name: Backup on Push
+name: Backup on Deploy
 on:
   push:
     branches: [main]
-  workflow_dispatch:
+
+permissions:
+  contents: write
+
 jobs:
-  log:
+  backup:
     runs-on: ubuntu-latest
     steps:
-      - name: Log backup
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create backup branch snapshot
         run: |
-          echo "Backup triggered at $(date -u)"
-          echo "Commit: ${{ github.sha }}"
-          echo "Repo: ${{ github.repository }}"
-          echo "Branch: ${{ github.ref_name }}"
+          git config user.name "MoWT Backup Bot"
+          git config user.email "backup@mowt.go.ug"
+          BACKUP_BRANCH="backup/$(date +%Y-%m-%d-%H%M)"
+          git checkout -b "$BACKUP_BRANCH"
+          git push origin "$BACKUP_BRANCH"
