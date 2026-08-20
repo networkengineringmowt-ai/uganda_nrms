@@ -10,7 +10,6 @@ import SourceTableButton from '../../shared/SourceTableButton';
 import { useSectionData } from '../../hooks/useSectionData';
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
 import { useTableSort } from '../../shared/useTableSort';
-const SectionDashboard = lazy(() => import('../Dashboard/SectionDashboard'));
 
 const C = {
   cyan: '#00f5ff', green: '#00ff88', yellow: '#ffd23f',
@@ -22,7 +21,7 @@ function hexRgb(h: string) {
   return `${parseInt(c.slice(0,2),16)},${parseInt(c.slice(2,4),16)},${parseInt(c.slice(4,6),16)}`;
 }
 const card = (a: string) => ({
-  background: 'rgba(15,15,15,0.7)',
+  background: 'rgba(15,23,42,0.7)',
   border: `1px solid rgba(${hexRgb(a)},0.2)`,
   borderRadius: 12, padding: '18px 20px',
 });
@@ -63,7 +62,6 @@ const DEFAULT_REGION_DATA = [
 
 
 const TABS = [
-  { id: 'dashboard' as const, label: 'Dashboard', icon: <LayoutDashboard size={13}/> },
   { id: 'gap',      label: 'Budget Gap Analysis' },
   { id: 'matrix',   label: 'Intervention Matrix' },
   { id: 'region',   label: 'Regional Breakdown' },
@@ -74,7 +72,7 @@ type TabId = typeof TABS[number]['id'];
 const CT = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
   return (
-    <div style={{ background: 'rgba(8,8,8,0.95)', border: '1px solid rgba(255,255,255,0.1)',
+    <div style={{ background: 'rgba(8,14,28,0.95)', border: '1px solid rgba(255,255,255,0.1)',
       padding: '8px 12px', borderRadius: 7, fontSize: 10 }}>
       <div style={{ color: '#94a3b8', marginBottom: 4 }}>{label}</div>
       {payload.map((p: any) => (
@@ -86,7 +84,7 @@ const CT = ({ active, payload, label }: any) => {
   );
 };
 
-export default function BudgetSection({ embedded = false }: { embedded?: boolean } = {}) {
+export default function BudgetSection() {
   const [tab, setTab] = useState<TabId>('gap');
   const imx = useTableSort(INTERVENTION_MATRIX, 'type');
   const { budgetAlignment, networkSummary } = useSectionData();
@@ -136,14 +134,13 @@ export default function BudgetSection({ embedded = false }: { embedded?: boolean
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
       <CrossLinkChipBar sectionId="budget" />
     <div style={{ padding: '8px 14px', flex: 1 }}>
-      {!embedded && <ModuleNavBar module="Budget" />}
+      <ModuleNavBar module="Budget" />
       {/* Header — compact single strip: title + KPI chips on one row */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap',
         padding: '8px 12px', marginBottom: 8, borderRadius: 10,
-        background: 'rgba(8,8,8,0.7)', border: `1px solid rgba(${hexRgb(C.pink)},0.2)`,
+        background: 'rgba(8,14,28,0.7)', border: `1px solid rgba(${hexRgb(C.pink)},0.2)`,
       }}>
-        {!embedded && (<>
         <div style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0,
           background: `linear-gradient(135deg, rgba(${hexRgb(C.pink)},0.25), rgba(${hexRgb(C.red)},0.1))`,
           border: `1px solid rgba(${hexRgb(C.pink)},0.4)`,
@@ -154,7 +151,6 @@ export default function BudgetSection({ embedded = false }: { embedded?: boolean
           <div style={{ fontSize: 14, fontWeight: 900, color: '#e2eaf4', lineHeight: 1.15 }}>Budget &amp; Maintenance</div>
           <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.6)' }}>M&amp;R budgets · funding gaps · cost matrix</div>
         </div>
-        </>)}
         <div style={{ flex: 1 }} />
         {[
           { label: 'Required FY25/26', value: `UGX ${totalRequired}B`, color: C.red },
@@ -175,7 +171,7 @@ export default function BudgetSection({ embedded = false }: { embedded?: boolean
       <div style={{
         display: 'flex', gap: 2, padding: '0 0 0 0', marginBottom: 10, flexShrink: 0,
         borderBottom: '1px solid rgba(77,159,255,0.15)',
-        background: 'rgba(8,8,8,0.85)', marginLeft: -14, marginRight: -14, paddingLeft: 14,
+        background: 'rgba(4,9,18,0.85)', marginLeft: -14, marginRight: -14, paddingLeft: 14,
       }}>
         {TABS.map(t => {
           const isA = tab === t.id;
@@ -193,18 +189,7 @@ export default function BudgetSection({ embedded = false }: { embedded?: boolean
       </div>
 
       {/* Gap Analysis */}
-        {tab === 'dashboard' && (
-          <Suspense fallback={<div style={{padding:'1.5rem',color:'#ffd700',textAlign:'center',opacity:0.7,fontSize:'12px'}}>Loading dashboard…</div>}>
-            <SectionDashboard sectionId="budget" accent="#ffd700" />
-          </Suspense>
-        )}
-     
-        {tab === 'dashboard' && (
-          <Suspense fallback={<div style={{padding:'1.5rem',color:'#ff6b35',textAlign:'center',opacity:0.7,fontSize:'12px'}}>Loading dashboard…</div>}>
-            <SectionDashboard sectionId="budget" accent="#ff6b35" />
-          </Suspense>
-        )}
- {tab === 'gap' && (
+      {tab === 'gap' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div style={card(C.pink)}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
@@ -259,7 +244,7 @@ export default function BudgetSection({ embedded = false }: { embedded?: boolean
           <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.6)', marginBottom: 14 }}>
             Source: MoWT Schedule of Rates + Department of National Roads Contract Management. Costs per km unless noted. Excludes VAT.
           </div>
-          <div style={{ overflowX: 'auto' }}>
+          <div className="mowt-table-wrap" style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
               <thead>
                 <tr>
