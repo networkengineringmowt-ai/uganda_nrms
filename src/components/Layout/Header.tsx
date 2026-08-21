@@ -3,60 +3,60 @@ import { useState, useEffect } from 'react';
 import { useBMS } from '../../store/BMSContext';
 import { UserBadge } from '../../modules/Auth/UserBadge';
 
-const CURR = new Date().getFullYear();   // dynamic current year — never hardcode
+const CURR = new Date().getFullYear();   // dynamic current year â never hardcode
 
 const VIEW_TITLES: Record<string, { title: string; sub: string; color?: string }> = {
-  rms:           { title: 'RMS — Road Management System', sub: 'Overview · Road network map · Road inventory · Network story', color: '#00f5ff' },
-  bms:           { title: 'Bridge Management System',     sub: 'Dashboard · Structure map · Inventory & condition · Bridge works', color: '#4d9fff' },
-  lifecycle:     { title: 'Life Cycle Management',        sub: 'Per-link timeline · IRI trajectory · Intervention history · Projected maintenance', color: '#00d4aa' },
-  budget:        { title: 'Budget & Maintenance',         sub: 'Maintenance financing · Unit-cost matrix · MTEF planning', color: '#ff2d78' },
-  pim:           { title: 'Public Investment',            sub: 'PIM funding · PPP projects · Donor vs GoU financing', color: '#ffd23f' },
-  projecttracker:{ title: 'Projects & Works',             sub: 'Execution tracking · Physical vs financial progress', color: '#00ff88' },
-  oprc:          { title: 'OPRC Contracts',               sub: 'Output & performance-based road contracts · 9 lots', color: '#00ff88' },
+  rms:           { title: 'RMS â Road Management System', sub: 'Overview Â· Road network map Â· Road inventory Â· Network story', color: '#00f5ff' },
+  bms:           { title: 'Bridge Management System',     sub: 'Dashboard Â· Structure map Â· Inventory & condition Â· Bridge works', color: '#4d9fff' },
+  lifecycle:     { title: 'Life Cycle Management',        sub: 'Per-link timeline Â· IRI trajectory Â· Intervention history Â· Projected maintenance', color: '#00d4aa' },
+  budget:        { title: 'Budget & Maintenance',         sub: 'Maintenance financing Â· Unit-cost matrix Â· MTEF planning', color: '#ff2d78' },
+  pim:           { title: 'Public Investment',            sub: 'PIM funding Â· PPP projects Â· Donor vs GoU financing', color: '#ffd23f' },
+  projecttracker:{ title: 'Projects & Works',             sub: 'Execution tracking Â· Physical vs financial progress', color: '#00ff88' },
+  oprc:          { title: 'OPRC Contracts',               sub: 'Output & performance-based road contracts Â· 9 lots', color: '#00ff88' },
   ndpiv:         { title: 'NDP IV Investment',            sub: 'National Development Plan IV road projects & funding', color: '#b967ff' },
-  overloading:   { title: 'Overloading & ESAL',           sub: 'Axle-load risk index · Weighbridge analytics · Hotspot map', color: '#ff3366' },
-  growthfactors: { title: 'Traffic Growth Factors',       sub: 'Monthly / seasonal expansion factors · Annual growth', color: '#00d4aa' },
-  trafficanalytics: { title: 'Traffic Analytics',         sub: 'AADT trends · Vehicle composition · Regional distribution', color: '#00f5ff' },
-  trafficsummary:{ title: 'Traffic Summary Tables',       sub: 'Road links & stations · TIS counts', color: '#00f5ff' },
-  maintenanceprogramme: { title: 'Maintenance Programme', sub: 'Priority-ranked interventions · PMS programme', color: '#ff6b35' },
-  mlarchitecture:{ title: 'ML System Architecture',       sub: 'Model pipeline · Deep learning components', color: '#b967ff' },
-  tabularsummaries: { title: 'Tabular Summaries',         sub: '100 cited tables · Platform data hub', color: '#00f5ff' },
-  dataaudit:     { title: 'Data Audit',                   sub: 'Cross-section KPI validation · Coverage & freshness', color: '#ffd23f' },
-  datacapture:   { title: 'Data Capture',                 sub: 'Field data entry · Writes to the live Supabase database', color: '#00d4aa' },
+  overloading:   { title: 'Overloading & ESAL',           sub: 'Axle-load risk index Â· Weighbridge analytics Â· Hotspot map', color: '#ff3366' },
+  growthfactors: { title: 'Traffic Growth Factors',       sub: 'Monthly / seasonal expansion factors Â· Annual growth', color: '#00d4aa' },
+  trafficanalytics: { title: 'Traffic Analytics',         sub: 'AADT trends Â· Vehicle composition Â· Regional distribution', color: '#00f5ff' },
+  trafficsummary:{ title: 'Traffic Summary Tables',       sub: 'Road links & stations Â· TIS counts', color: '#00f5ff' },
+  maintenanceprogramme: { title: 'Maintenance Programme', sub: 'Priority-ranked interventions Â· PMS programme', color: '#ff6b35' },
+  mlarchitecture:{ title: 'ML System Architecture',       sub: 'Model pipeline Â· Deep learning components', color: '#b967ff' },
+  tabularsummaries: { title: 'Tabular Summaries',         sub: '100 cited tables Â· Platform data hub', color: '#00f5ff' },
+  dataaudit:     { title: 'Data Audit',                   sub: 'Cross-section KPI validation Â· Coverage & freshness', color: '#ffd23f' },
+  datacapture:   { title: 'Data Capture',                 sub: 'Field data entry Â· Writes to the live Supabase database', color: '#00d4aa' },
   pendingsurveys:{ title: 'Pending Submissions',          sub: 'Queued condition surveys awaiting export', color: '#ffd23f' },
   // Platform
-  network:       { title: 'Network Overview',              sub: 'Dashboard · Road Network Map · Network Story · Architecture', color: '#6366f1' },
-  admin:         { title: 'Admin Tools',                   sub: 'Platform Mind Map · Data Audit · System Architecture',        color: '#00f5ff' },
-  sources:       { title: 'Sources & Evidence',            sub: 'Evidence Catalogue · Tabular Summaries · Documents · Downloads', color: '#94a3b8' },
+  network:       { title: 'Network Overview',              sub: 'Dashboard Â· Road Network Map Â· Network Story Â· Architecture', color: '#6366f1' },
+  admin:         { title: 'Admin Tools',                   sub: 'Platform Mind Map Â· Data Audit Â· System Architecture',        color: '#00f5ff' },
+  sources:       { title: 'Sources & Evidence',            sub: 'Evidence Catalogue Â· Tabular Summaries Â· Documents Â· Downloads', color: '#94a3b8' },
   platform:      { title: 'Platform Overview',            sub: 'Uganda National Roads Management Platform',             color: '#00f5ff' },
-  networkstory:  { title: 'Network Story 1986–',          sub: 'Road network development since liberation · 40-year arc', color: '#b967ff' },
-  roadnetwork:   { title: 'Road Network Map',             sub: '1,013 national road links · 21,302 km official (FY25-26) · Data: DNR GIS / NDPIV FY25-26', color: '#00ff88' },
-  casestudies:   { title: 'Global Case Studies',          sub: 'World map · Comparative analytics · Literature Review Matrix (195 countries) · Lessons for DNR', color: '#00d4aa' },
-  roadreserve:   { title: 'Road Reserve Management',      sub: 'Gazette status · Reserve corridor map · Encroachment register · Legal enforcement', color: '#00d4aa' },
-  roadvideoview: { title: 'Road Survey Video',             sub: 'Road surface video archive · 2021–2026',               color: '#ff6b35' },
-  traffic:       { title: 'Traffic & Demand',             sub: `Network traffic counts · base year 2016 · projected to ${CURR} · 298 TCS stations`,   color: '#ffd23f' },
-  roadcondition: { title: 'Pavement Management',          sub: `Road condition · IRI · HDM-4 · maintenance programme · as of ${CURR}`,    color: '#fb923c' },
-  atc:           { title: 'ATC Live Dashboard',           sub: 'Automatic Traffic Counters · 10 permanent mother stations · Jul 2025–present', color: '#ffd23f' },
-  projects:      { title: 'Projects & Road Development',  sub: 'Ongoing upgrading & construction contracts · FY 2025/26', color: '#ff2d78' },
+  networkstory:  { title: 'Network Story 1986â',          sub: 'Road network development since liberation Â· 40-year arc', color: '#b967ff' },
+  roadnetwork:   { title: 'Road Network Map',             sub: '1,017 national road links Â· 21,302 km official (FY25-26) Â· Data: DNR GIS / NDPIV FY25-26', color: '#00ff88' },
+  casestudies:   { title: 'Global Case Studies',          sub: 'World map Â· Comparative analytics Â· Literature Review Matrix (195 countries) Â· Lessons for DNR', color: '#00d4aa' },
+  roadreserve:   { title: 'Road Reserve Management',      sub: 'Gazette status Â· Reserve corridor map Â· Encroachment register Â· Legal enforcement', color: '#00d4aa' },
+  roadvideoview: { title: 'Road Survey Video',             sub: 'Road surface video archive Â· 2021â2026',               color: '#ff6b35' },
+  traffic:       { title: 'Traffic & Demand',             sub: `Network traffic counts Â· base year 2016 Â· projected to ${CURR} Â· 298 TCS stations`,   color: '#ffd23f' },
+  roadcondition: { title: 'Pavement Management',          sub: `Road condition Â· IRI Â· HDM-4 Â· maintenance programme Â· as of ${CURR}`,    color: '#fb923c' },
+  atc:           { title: 'ATC Live Dashboard',           sub: 'Automatic Traffic Counters Â· 10 permanent mother stations Â· Jul 2025âpresent', color: '#ffd23f' },
+  projects:      { title: 'Projects & Road Development',  sub: 'Ongoing upgrading & construction contracts Â· FY 2025/26', color: '#ff2d78' },
   // BMS
-  gismap:        { title: 'Structure Map',                   sub: 'GIS structure map · All bridges & major culverts · 2018–2024 time series', color: '#00ff88' },
-  dashboard:     { title: 'BMS Dashboard',                sub: 'Bridge Management System · DNR',                        color: '#00f5ff' },
-  registry:      { title: 'Structure Registry',           sub: '546 bridges · 485 major culverts · 1,031 total',        color: '#4d9fff' },
+  gismap:        { title: 'Structure Map',                   sub: 'GIS structure map Â· All bridges & major culverts Â· 2018â2024 time series', color: '#00ff88' },
+  dashboard:     { title: 'BMS Dashboard',                sub: 'Bridge Management System Â· DNR',                        color: '#00f5ff' },
+  registry:      { title: 'Structure Registry',           sub: '546 bridges Â· 485 major culverts Â· 1,031 total',        color: '#4d9fff' },
   inspections:   { title: 'Inspection Management',        sub: 'Schedule, record and track field inspections',          color: '#ffd23f' },
   condition:     { title: 'Condition Assessment',         sub: 'Component ratings and defect analysis',                 color: '#ff6b35' },
   maintenance:   { title: 'Maintenance & Works',          sub: 'Work orders, contracts and maintenance records',        color: '#b967ff' },
   analytics:     { title: 'Analytics & Reports',          sub: 'Condition trends, cost analysis and network insights',  color: '#00f5ff' },
   priority:      { title: 'Priority Ranking',             sub: 'Risk-based intervention priority scores',               color: '#ff2d78' },
   documents:     { title: 'Document Store',               sub: 'Drawings, reports, contracts and records',             color: '#4d9fff' },
-  media:         { title: 'Media and Document Gallery',   sub: 'Photography, video surveys, field reports & documents · Uganda national roads', color: '#b967ff' },
+  media:         { title: 'Media and Document Gallery',   sub: 'Photography, video surveys, field reports & documents Â· Uganda national roads', color: '#b967ff' },
   phototwin:     { title: 'Photo Gallery & Digital Twin', sub: 'Inspection photos and structural schematics',          color: '#00ff88' },
-  // Newly-wired sections — keep banner chrome consistent with the rest of the platform
-  roadatlas:     { title: 'Road Atlas',                   sub: 'Visual intelligence atlas · 21,160 km mapped national network · DNR GIS', color: '#00d4aa' },
-  roadvideo:     { title: 'Road Video Survey',            sub: 'Georeferenced pavement survey video · frame-by-frame · 2021–2026', color: '#ff6b35' },
-  bridgeworks:   { title: 'Bridge Works Programme',       sub: 'Bridge & major-culvert development projects · MoWT status report', color: '#4d9fff' },
-  downloads:     { title: 'Downloads & Exports',          sub: 'Network, bridge & culvert inventory · WGS84 shapefiles · CSV · GeoJSON', color: '#94a3b8' },
-  gisenterprise: { title: 'GIS Enterprise',               sub: 'Enterprise GIS architecture · client / service / data layers · WMS & tile services', color: '#b967ff' },
-  hdm4:          { title: 'HDM-4 Analysis',               sub: 'Highway Development & Management · works cost matrix · economic appraisal', color: '#00f5ff' },
+  // Newly-wired sections â keep banner chrome consistent with the rest of the platform
+  roadatlas:     { title: 'Road Atlas',                   sub: 'Visual intelligence atlas Â· 21,160 km mapped national network Â· DNR GIS', color: '#00d4aa' },
+  roadvideo:     { title: 'Road Video Survey',            sub: 'Georeferenced pavement survey video Â· frame-by-frame Â· 2021â2026', color: '#ff6b35' },
+  bridgeworks:   { title: 'Bridge Works Programme',       sub: 'Bridge & major-culvert development projects Â· MoWT status report', color: '#4d9fff' },
+  downloads:     { title: 'Downloads & Exports',          sub: 'Network, bridge & culvert inventory Â· WGS84 shapefiles Â· CSV Â· GeoJSON', color: '#94a3b8' },
+  gisenterprise: { title: 'GIS Enterprise',               sub: 'Enterprise GIS architecture Â· client / service / data layers Â· WMS & tile services', color: '#b967ff' },
+  hdm4:          { title: 'HDM-4 Analysis',               sub: 'Highway Development & Management Â· works cost matrix Â· economic appraisal', color: '#00f5ff' },
 };
 
 export default function Header({ showSearch, onMenuClick }: { showSearch?: boolean; onMenuClick?: () => void }) {
@@ -69,7 +69,7 @@ export default function Header({ showSearch, onMenuClick }: { showSearch?: boole
     return () => clearInterval(t);
   }, []);
 
-  const meta        = VIEW_TITLES[state.activeView] ?? { title: state.activeView, sub: 'DNR · Ministry of Works & Transport', color: '#00f5ff' };
+  const meta        = VIEW_TITLES[state.activeView] ?? { title: state.activeView, sub: 'DNR Â· Ministry of Works & Transport', color: '#00f5ff' };
   const accent      = meta.color ?? '#00f5ff';
   const accentRgb   = hexToRgb(accent);
 
@@ -98,7 +98,7 @@ export default function Header({ showSearch, onMenuClick }: { showSearch?: boole
         opacity: 0.7,
       }}/>
 
-      {/* Mobile hamburger — opens the sidebar drawer, hidden on desktop */}
+      {/* Mobile hamburger â opens the sidebar drawer, hidden on desktop */}
       <button
         className="mobile-menu-btn"
         onClick={onMenuClick}
@@ -181,7 +181,7 @@ export default function Header({ showSearch, onMenuClick }: { showSearch?: boole
         }}
       />
 
-      {/* Muted breadcrumb + live clock only — the section's own header is the title
+      {/* Muted breadcrumb + live clock only â the section's own header is the title
           (this removes the duplicate "double" header). */}
       <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'baseline', gap: 10 }}>
         <span style={{
@@ -209,7 +209,7 @@ export default function Header({ showSearch, onMenuClick }: { showSearch?: boole
           <input
             className="bms-input"
             style={{ paddingLeft: 28, paddingTop: 6, paddingBottom: 6, fontSize: 12 }}
-            placeholder="Search structures, roads, IDs…"
+            placeholder="Search structures, roads, IDsâ¦"
             value={query}
             onChange={e => setQuery(e.target.value)}
           />
