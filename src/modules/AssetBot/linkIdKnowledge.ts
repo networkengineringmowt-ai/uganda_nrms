@@ -1,5 +1,5 @@
 /**
- * Uganda Department of National Roads Road Network — Link ID & Location Referencing Knowledge Base
+ * Uganda Department of National Roads Road Network â Link ID & Location Referencing Knowledge Base
  *
  * Sources:
  *  - DNR GIS Section: National Road Network Shapefile network2026.geojson
@@ -7,43 +7,43 @@
  *  - Department of National Roads Road Infrastructure Asset Management Policy 2017 v1.4
  *  - MoWT Road Classification and Numbering System
  *
- * DATA VERIFIED: Link IDs confirmed from live GeoJSON (1,013 features, 18 Jun 2025)
+ * DATA VERIFIED: Link IDs confirmed from live GeoJSON (1,017 features, 18 Jun 2025)
  */
 
-// ── Functional Classification (from real GeoJSON data) ────────────────────────
+// ââ Functional Classification (from real GeoJSON data) ââââââââââââââââââââââââ
 export const ROAD_CLASSIFICATION = {
   A: {
     code: 'A',
-    name: 'Class A — National Trunk Roads',
+    name: 'Class A â National Trunk Roads',
     description: 'International and inter-regional trunk roads connecting Uganda to neighbouring countries and major regional centres',
     minCarriagewayWidth: 7.0,
     designSpeed: 100,
     lanes: 2,
-    standard: 'Paved (bituminous) — all weather',
+    standard: 'Paved (bituminous) â all weather',
     totalKm: 2615,
-    examples: ['A001 Kampala–Gulu–Nimule', 'A002 Kampala–Jinja–Malaba', 'A004 Kampala–Masaka–Mutukula'],
+    examples: ['A001 KampalaâGuluâNimule', 'A002 KampalaâJinjaâMalaba', 'A004 KampalaâMasakaâMutukula'],
   },
   B: {
     code: 'B',
-    name: 'Class B — National Secondary Roads',
+    name: 'Class B â National Secondary Roads',
     description: 'Secondary national roads linking regional towns and districts to Class A roads',
     minCarriagewayWidth: 6.5,
     designSpeed: 80,
     lanes: 2,
-    standard: 'Paved or gravel — all weather',
+    standard: 'Paved or gravel â all weather',
     totalKm: 2863,
-    examples: ['B100 Kampala–Hoima', 'B101 Kampala–Masaka bypass', 'B150 Jinja–Iganga'],
+    examples: ['B100 KampalaâHoima', 'B101 KampalaâMasaka bypass', 'B150 JinjaâIganga'],
   },
   C: {
     code: 'C',
-    name: 'Class C — Regional Roads',
+    name: 'Class C â Regional Roads',
     description: 'Regional roads connecting district headquarters to national roads',
     minCarriagewayWidth: 6.0,
     designSpeed: 60,
     lanes: 2,
-    standard: 'Gravel — all weather',
+    standard: 'Gravel â all weather',
     totalKm: 15537,
-    examples: ['C003 Fort Portal–Bundibugyo', 'C150 Mbale–Moroto', 'C261 Matte–Sekanyonyi'],
+    examples: ['C003 Fort PortalâBundibugyo', 'C150 MbaleâMoroto', 'C261 MatteâSekanyonyi'],
   },
   M: {
     code: 'M',
@@ -58,7 +58,7 @@ export const ROAD_CLASSIFICATION = {
   },
 } as const;
 
-// ── Link ID Format & Structure (VERIFIED from network2026.geojson) ──────
+// ââ Link ID Format & Structure (VERIFIED from network2026.geojson) ââââââ
 export const LINK_ID_STRUCTURE = {
   description: `
     Department of National Roads uses a Linear Reference System (LRS) based on chainage (distance from a defined datum).
@@ -89,11 +89,11 @@ export const LINK_ID_STRUCTURE = {
     notation: 'Decimal km stored in chainage_f/chainage_t fields, e.g. 32.23 km from datum',
     datum: 'Defined at each road origin (typically at major town or border)',
   },
-  totalLinks: 1013,
+  totalLinks: 1017,
   totalLength: 21160,
 };
 
-// ── Maintenance Regions ────────────────────────────────────────────────────────
+// ââ Maintenance Regions ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 export const MAINTENANCE_REGIONS = [
   { id: 'Central',       label: 'Central Region',       headquarters: 'Kampala',     roadKm: 4760 },
   { id: 'Northern',      label: 'Northern Region',      headquarters: 'Gulu',        roadKm: 4595 },
@@ -103,7 +103,7 @@ export const MAINTENANCE_REGIONS = [
   { id: 'North Eastern', label: 'North Eastern Region', headquarters: 'Moroto',      roadKm: 2716 },
 ] as const;
 
-// ── SQL Join Logic for Full Link History ───────────────────────────────────────
+// ââ SQL Join Logic for Full Link History âââââââââââââââââââââââââââââââââââââââ
 export const LINK_HISTORY_JOINS = {
   description: 'Query to retrieve all data for a single link_id across all platform tables',
   primaryTable: 'pavement_condition',
@@ -146,7 +146,7 @@ export const LINK_HISTORY_JOINS = {
   `,
 };
 
-// ── Condition Classes (IRI-based) ──────────────────────────────────────────────
+// ââ Condition Classes (IRI-based) ââââââââââââââââââââââââââââââââââââââââââââââ
 export const CONDITION_CLASSES = {
   1: { label: 'Good',     iriRange: [0, 4],    color: '#22c55e', treatmentType: 'Routine maintenance' },
   2: { label: 'Fair',     iriRange: [4, 6],    color: '#84cc16', treatmentType: 'Preventive maintenance' },
@@ -155,7 +155,7 @@ export const CONDITION_CLASSES = {
   5: { label: 'Very Bad', iriRange: [10, 999], color: '#ef4444', treatmentType: 'Reconstruction' },
 } as const;
 
-// ── Intent matching expansions for the bot ────────────────────────────────────
+// ââ Intent matching expansions for the bot ââââââââââââââââââââââââââââââââââââ
 export const LINK_QUERY_INTENTS = [
   {
     patterns: ['what is link', 'tell me about link', 'show link', 'link id', 'road link', 'section'],
@@ -191,44 +191,44 @@ export const LINK_QUERY_INTENTS = [
   },
 ];
 
-// ── Key road corridors (real Department of National Roads road numbers) ───────────────────────────────
+// ââ Key road corridors (real Department of National Roads road numbers) âââââââââââââââââââââââââââââââ
 export const KEY_CORRIDORS = [
-  { name: 'Northern Corridor',   roads: ['A002'], description: 'Kampala–Jinja–Malaba–Kenya border',   length: 247 },
-  { name: 'Central Corridor',    roads: ['A004'], description: 'Kampala–Masaka–Mutukula–Tanzania',     length: 220 },
-  { name: 'Western Corridor',    roads: ['A003'], description: 'Kampala–Mbarara–Kabale–Rwanda/DRC',    length: 510 },
-  { name: 'Northern Road',       roads: ['A001'], description: 'Kampala–Gulu–Nimule–South Sudan',      length: 515 },
-  { name: 'Eastern Corridor',    roads: ['A005'], description: 'Kampala–Jinja–Tororo–Kenya',           length: 247 },
-  { name: 'Hoima Road',          roads: ['B100'], description: 'Kampala–Hoima–Kafu',                   length: 237 },
+  { name: 'Northern Corridor',   roads: ['A002'], description: 'KampalaâJinjaâMalabaâKenya border',   length: 247 },
+  { name: 'Central Corridor',    roads: ['A004'], description: 'KampalaâMasakaâMutukulaâTanzania',     length: 220 },
+  { name: 'Western Corridor',    roads: ['A003'], description: 'KampalaâMbararaâKabaleâRwanda/DRC',    length: 510 },
+  { name: 'Northern Road',       roads: ['A001'], description: 'KampalaâGuluâNimuleâSouth Sudan',      length: 515 },
+  { name: 'Eastern Corridor',    roads: ['A005'], description: 'KampalaâJinjaâTororoâKenya',           length: 247 },
+  { name: 'Hoima Road',          roads: ['B100'], description: 'KampalaâHoimaâKafu',                   length: 237 },
 ] as const;
 
-// ── Help text the bot can use when asked about road/link numbering ─────────────
+// ââ Help text the bot can use when asked about road/link numbering âââââââââââââ
 export const LINK_ID_EXPLAINER = `
 Uganda Department of National Roads uses a LINEAR REFERENCING SYSTEM (LRS) where each road is divided into
-LINKS — management sections defined by nodes (intersections, towns, boundaries).
+LINKS â management sections defined by nodes (intersections, towns, boundaries).
 
 LINK ID FORMAT: [Road Number]_Link[Sequence Number]
-  • A001_Link01 = First link on the A001 Kampala-Gulu highway
-  • B101_Link02 = Second link on road B101
-  • C261_Link01 = First link on road C261 (Matte-Sekanyonyi)
-  • M3_Link01   = First link on M3 (Kampala Northern Bypass)
+  â¢ A001_Link01 = First link on the A001 Kampala-Gulu highway
+  â¢ B101_Link02 = Second link on road B101
+  â¢ C261_Link01 = First link on road C261 (Matte-Sekanyonyi)
+  â¢ M3_Link01   = First link on M3 (Kampala Northern Bypass)
 
 ROAD NUMBER FORMAT: Class letter + 3-digit zero-padded number
-  • A001, A002, A003 ... (NOT the old "A1", "A2" shorthand)
-  • B100, B101, B102 ...
-  • C003, C150, C261 ...
-  • M3, M20 (grade-separated highways/motorways use shorter codes — NOT municipal/urban roads)
+  â¢ A001, A002, A003 ... (NOT the old "A1", "A2" shorthand)
+  â¢ B100, B101, B102 ...
+  â¢ C003, C150, C261 ...
+  â¢ M3, M20 (grade-separated highways/motorways use shorter codes â NOT municipal/urban roads)
 
 ROAD CLASSIFICATION:
-  • Class A: International/trunk roads — 2,615 km (e.g. A001, A002, A004)
-  • Class B: Secondary national roads — 2,863 km (e.g. B100, B101, B150)
-  • Class C: Regional roads — 15,537 km (e.g. C003, C150, C261)
-  • Class M: Grade-Separated Highways / Motorways — 145 km (NOT urban roads; these are controlled-access expressways)
+  â¢ Class A: International/trunk roads â 2,615 km (e.g. A001, A002, A004)
+  â¢ Class B: Secondary national roads â 2,863 km (e.g. B100, B101, B150)
+  â¢ Class C: Regional roads â 15,537 km (e.g. C003, C150, C261)
+  â¢ Class M: Grade-Separated Highways / Motorways â 145 km (NOT urban roads; these are controlled-access expressways)
 
 CHAINAGE: Distance measured in km from the road datum (start of road).
-  • Stored as decimal km in fields chainage_f and chainage_t
-  • Example: chainage_f = 0.0, chainage_t = 32.27 means link spans 0 to 32.27 km
+  â¢ Stored as decimal km in fields chainage_f and chainage_t
+  â¢ Example: chainage_f = 0.0, chainage_t = 32.27 means link spans 0 to 32.27 km
 
-Total network: 21,160 km (mapped) across 1,013 links — Data: DNR GIS Jun 2025
+Total network: 21,160 km (mapped) across 1,017 links â Data: DNR GIS Jun 2025
 
 To look up a specific road or link, say:
   "Show me link A001_Link01"
