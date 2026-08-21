@@ -713,6 +713,16 @@ function RoadSafetyTab() {
     </div>
   );
 }
+function TrafficKpi({ label, value, unit, color }: { label: string; value: string; unit: string; color: string }) {
+  return (
+    <div style={{ background: `${color}12`, border: `1px solid ${color}44`, borderRadius: 8, padding: '8px 12px' }}>
+      <div style={{ fontSize: 18, fontWeight: 900, color, lineHeight: 1 }}>
+        {value}<span style={{ fontSize: 10, fontWeight: 500, marginLeft: 3, color: 'rgba(148,163,184,0.7)' }}>{unit}</span>
+      </div>
+      <div style={{ fontSize: 8, fontWeight: 700, color: 'rgba(148,163,184,0.5)', marginTop: 3, textTransform: 'uppercase', letterSpacing: '0.09em' }}>{label}</div>
+    </div>
+  );
+}
 export default function TrafficSection() {
   const [features,     setFeatures]     = useState<PredFeature[]>([]);
   const [surfMap,      setSurfMap]      = useState<Record<string, string>>({});
@@ -1001,7 +1011,18 @@ export default function TrafficSection() {
 
       {/* ══ Map tab content — sidebar + map ═══════════════════════════════════ */}
       {activeTab === 'dashboard' && <SectionDashboard sectionId="traffic" accent="#00f5ff" />}
-              {activeTab === 'map' &&
+                    {/* Traffic KPI tiles — map overview */}
+      {activeTab === 'map' && !loading && kpis && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6,1fr)', gap: 8, padding: '10px 14px', flexShrink: 0, background: 'rgba(4,9,18,0.75)', borderBottom: '1px solid rgba(0,245,255,0.08)' }}>
+          <TrafficKpi label="Avg ADT" value={Math.round(kpis.avgAadt).toLocaleString()} unit="veh/day" color="#00f5ff" />
+          <TrafficKpi label="Monitored Links" value={String(features.length)} unit="links" color="#4d9fff" />
+          <TrafficKpi label="ATC Stations" value={String(stations.length || 10)} unit="active" color="#b967ff" />
+          <TrafficKpi label="Proj Growth 2040" value={`+${kpis.growthRatio.toFixed(0)}`} unit="%" color="#00ff88" />
+          <TrafficKpi label="Daily Volume" value={Math.round(kpis.totalAdt/1000).toLocaleString()} unit="K veh/day" color="#ffd23f" />
+          <TrafficKpi label="Paved Monitored" value={kpis.pavingIndex.toFixed(0)} unit="%" color="#00d4aa" />
+        </div>
+      )}
+{activeTab === 'map' &&
       <div style={{ flex: 1, minHeight: 0, display: 'flex', overflow: 'hidden' }}>
 
       {/* ══ RIGHT — CONTROLS + MAP + TIMELINE ════════════════════════════════ */}
