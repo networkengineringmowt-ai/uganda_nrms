@@ -105,6 +105,23 @@ export default function StructureRegistry() {
 
   return (
     <div className="flex flex-col h-full animate-fade-in">
+
+        {/* ── Definition Card ── */}
+        <div style={{background:'rgba(6,182,212,0.04)',border:'1px solid rgba(6,182,212,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'flex-start',gap:16}}>
+          <div style={{fontSize:36,lineHeight:1,flexShrink:0}}>🌉</div>
+          <div style={{flex:1}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
+              <span style={{fontSize:18,fontWeight:800,color:'rgba(6,182,212,1)',letterSpacing:-0.5}}>Structure Registry</span>
+              <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>UNRA · MoWT · Bridge Inventory · NBI · Culverts</span>
+            </div>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Authoritative registry of Uganda's road infrastructure structures — bridges, culverts, and drainage works across the national road network, with NBI condition ratings, load capacity, and maintenance history managed by UNRA and MoWT.</p>
+            <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+              {["Bridge Inventory","NBI Ratings","Culverts","Load Capacity","UNRA Registry","MoWT Standards"].map(b=>(
+                <span key={b} style={{background:'rgba(6,182,212,0.12)',color:'rgba(6,182,212,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
+              ))}
+            </div>
+          </div>
+        </div>
       {/* Toolbar */}
       <div className="flex-shrink-0 px-6 py-4 border-b border-slate-700/60 bg-slate-900/50">
         <div className="flex flex-wrap items-center gap-3">
