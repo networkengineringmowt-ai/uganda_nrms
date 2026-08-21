@@ -12,7 +12,7 @@ const VIEW_TITLES: Record<string, { title: string; sub: string; color?: string }
   budget:        { title: 'Budget & Maintenance',         sub: 'Maintenance financing Â· Unit-cost matrix Â· MTEF planning', color: '#ff2d78' },
   pim:           { title: 'Public Investment',            sub: 'PIM funding Â· PPP projects Â· Donor vs GoU financing', color: '#ffd23f' },
   projecttracker:{ title: 'Projects & Works',             sub: 'Execution tracking Â· Physical vs financial progress', color: '#00ff88' },
-  oprc:          { title: 'OPRC Contracts',               sub: 'Output & performance-based road contracts Â· 6 lots', color: '#00ff88' },
+  oprc:          { title: 'OPRC Contracts',               sub: 'Output & performance-based road contracts · 2,235 km · 90 links', color: '#00ff88' },
   ndpiv:         { title: 'NDP IV Investment',            sub: 'National Development Plan IV road projects & funding', color: '#b967ff' },
   overloading:   { title: 'Overloading & ESAL',           sub: 'Axle-load risk index Â· Weighbridge analytics Â· Hotspot map', color: '#ff3366' },
   growthfactors: { title: 'Traffic Growth Factors',       sub: 'Monthly / seasonal expansion factors Â· Annual growth', color: '#00d4aa' },
