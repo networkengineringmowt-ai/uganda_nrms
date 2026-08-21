@@ -510,8 +510,8 @@ function RMSDashboard({ navigate }: { navigate: (v: ActiveView) => void }) {
         <KpiCard label="Structures" value={String(net.totalBridges)} unit="" color={C.blue}
           tooltip={`${net.totalBridges} bridges and culverts registered in BMS Â· Source: bridges2026.geojson`}
           navChips={[{ label: 'BMS', view: 'bms' }]} />
-        <KpiCard label="ATC Stations" value="25" unit="active" color={C.purple}
-          tooltip="25 ATC stations total: 15 legacy (2016â2022) + 10 new (2025+) Â· Plus 298 manual TIS stations"
+        <KpiCard label="ATC Stations" value="10" unit="active" color={C.purple}
+          tooltip="10 ATC stations (2025+) -- 15 legacy (2016â2022) + 10 new (2025+) Â· Plus 298 manual TIS stations"
           navChips={[{ label: 'Traffic TIS', view: 'traffic' }]} />
         <KpiCard label="Data Sources" value="150" unit="+" color={C.yellow}
           tooltip="150+ catalogued data sources across 4 categories: surveys, studies, policy, GIS"
@@ -887,7 +887,7 @@ const UNRA_LAYERS = [
     tools: [
       'Road Inventory Surveys (visual + GPS)',
       'ROMDAS Pavement Condition Surveys (IRI, rutting, cracking)',
-      'Traffic Counts: ATC (25 stations) + TIS (298 manual stations)',
+      'Traffic Counts: ATC (10 stations, 2025+) + TIS (298 manual stations)',
       'Bridge Visual & Structural Inspections',
       'Weighbridge WIM data (axle load, overloading)',
       'FWD Deflection Testing (structural capacity)',
@@ -906,7 +906,7 @@ const UNRA_LAYERS = [
       'Road Inventory: class, surface, width, drainage',
       'Pavement Condition Records (IRI, distress by link)',
       'Traffic Data: AADT by vehicle class, seasonal factors',
-      'Bridge & Culvert Registry (1,019 structures)',
+      'Bridge & Culvert Registry (998 structures)',
       'Maintenance History & Works Records',
       'Location Referencing System (LRS / chainage)',
     ],
@@ -939,7 +939,7 @@ const UNRA_LAYERS = [
       'Annual Work Programme (AWP) generation',
       'Medium Term Expenditure Framework (MTEF) 3-year rolling',
       'NDP IV Investment Pipeline (priority corridors)',
-      'OPRC Contract Management (9 active lots)',
+      'OPRC Contract Management (6 active lots)',
       'Maintenance Station Programme (23 stations)',
       'Emergency Works Identification & Response',
       'Road Reserve Management',
