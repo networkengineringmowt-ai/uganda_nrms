@@ -44,6 +44,25 @@ export default function InspectionManagement() {
 
   return (
     <div className="flex flex-col h-full animate-fade-in">
+
+      {/* ─── Definition card ─── */}
+      <div style={{ background:'rgba(185,103,255,0.04)', border:'1px solid rgba(185,103,255,0.14)', borderRadius:12, padding:'14px 18px', marginBottom:14 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:8 }}>
+          <span style={{ fontSize:26 }}>🔍</span>
+          <div>
+            <div style={{ fontSize:15, fontWeight:900, color:'#e2e8f0', letterSpacing:'-0.02em' }}>Inspection Management</div>
+            <div style={{ fontSize:10, color:'rgba(148,163,184,0.55)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.08em' }}>MoWT Bridge & Road Inspections · NBI Protocol</div>
+          </div>
+        </div>
+        <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>
+          Structured field inspection records for Uganda's road and bridge network — managing visual condition surveys, NBI bridge inspections, structural assessments, defect recording, inspector assignments, and compliance tracking against MoWT annual inspection schedules.
+        </p>
+        <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
+          {['MoWT Standards','NBI Protocol','UNRA Bridges','Visual Survey','Annual Schedule','Field Data'].map((b: string)=>(
+            <span key={b} style={{ fontSize:9, fontWeight:700, color:'#b967ff', background:'rgba(185,103,255,0.07)', border:'1px solid rgba(185,103,255,0.18)', borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
+          ))}
+        </div>
+      </div>
       {/* Toolbar */}
       <div className="flex-shrink-0 px-6 py-4 border-b border-slate-700/60 bg-slate-900/50">
         <div className="flex flex-wrap items-center gap-3">
