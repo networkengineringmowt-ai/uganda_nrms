@@ -222,7 +222,7 @@ ROAD CLASSIFICATION:
   • Class A: International/trunk roads — 2,615 km (e.g. A001, A002, A004)
   • Class B: Secondary national roads — 2,863 km (e.g. B100, B101, B150)
   • Class C: Regional roads — 15,537 km (e.g. C003, C150, C261)
-  • Class M: Municipal/urban classified roads — 145 km
+  • Class M: Grade-Separated Highways / Motorways — 145 km (NOT urban roads; these are controlled-access expressways)
 
 CHAINAGE: Distance measured in km from the road datum (start of road).
   • Stored as decimal km in fields chainage_f and chainage_t
