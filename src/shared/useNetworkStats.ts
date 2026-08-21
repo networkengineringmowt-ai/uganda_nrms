@@ -1,7 +1,7 @@
 /**
  * useNetworkStats — single source of truth for all network KPIs.
  *
- * Loads network2026.geojson (1,013 links) and bridges2026.geojson once,
+ * Loads network2026.geojson (1,017 links) and bridges2026.geojson once,
  * computes every statistic used across the platform, and caches the result.
  * All tabs MUST import this hook instead of hardcoding numbers.
  *
