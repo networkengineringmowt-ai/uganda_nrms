@@ -102,6 +102,23 @@ export default function BMSSection() {
       background: 'rgba(2,5,8,0.97)',
       fontFamily: "'Inter','Segoe UI',sans-serif",
     }}>
+
+        {/* ── Definition Card ── */}
+        <div style={{background:'rgba(14,165,233,0.04)',border:'1px solid rgba(14,165,233,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'flex-start',gap:16}}>
+          <div style={{fontSize:36,lineHeight:1,flexShrink:0}}>🌉</div>
+          <div style={{flex:1}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
+              <span style={{fontSize:18,fontWeight:800,color:'rgba(14,165,233,1)',letterSpacing:-0.5}}>Bridge Management System</span>
+              <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>UNRA · MoWT · NBI Protocol · Load Capacity · Inspection</span>
+            </div>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Comprehensive bridge management system for Uganda's national road bridges — tracking NBI condition ratings, structural load capacity, inspection schedules, and maintenance prioritisation across UNRA and MoWT managed structures.</p>
+            <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+              {["NBI Protocol","Condition Rating","Load Capacity","UNRA / MoWT","AfDB Funded","Inspection Plan"].map(b=>(
+                <span key={b} style={{background:'rgba(14,165,233,0.12)',color:'rgba(14,165,233,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
+              ))}
+            </div>
+          </div>
+        </div>
       <style>{`
         @keyframes bms-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>
