@@ -12,7 +12,7 @@
  */
 import { lazy, Suspense, useState } from 'react';
 import { LayoutDashboard, Map, BookOpen } from 'lucide-react';
-import type { ActiveView } from '../../types';
+import type { ActiveView } from '../../index';
 
 const NET_PlatformDashboard   = lazy(() => import('../PlatformDashboard/PlatformDashboard'));
 const NET_RoadNetworkView     = lazy(() => import('../RoadNetwork/RoadNetworkView'));
