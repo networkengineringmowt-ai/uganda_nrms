@@ -61,6 +61,23 @@ export default function PhotoTwin() {
 
   return (
     <div className="flex h-full overflow-hidden animate-fade-in">
+
+      {/* ─── Definition card ─── */}
+      <div style={{ background:`rgba(${color},0.04)`, border:`1px solid rgba(${color},0.14)`, borderRadius:12, padding:'14px 18px', marginBottom:14 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:8 }}>
+          <span style={{ fontSize:26 }}>📸</span>
+          <div>
+            <div style={{ fontSize:15, fontWeight:900, color:'#e2e8f0', letterSpacing:'-0.02em' }}>Road Photo Intelligence & Digital Twin</div>
+            <div style={{ fontSize:10, color:'rgba(148,163,184,0.55)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.08em' }}>360° Photos · ML Detection · Timeline Analysis</div>
+          </div>
+        </div>
+        <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>Street-level photo capture and digital twin analysis for Uganda's road and bridge assets — AI-powered defect detection, pavement distress classification, temporal condition change tracking, and immersive road condition monitoring for field teams.</p>
+        <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
+          {["360° Capture","AI Detection","Defect Class.","Timeline Track","Digital Twin","ML-Powered"].map((b: string)=>(
+            <span key={b} style={{ fontSize:9, fontWeight:700, color:`rgb(${color})`, background:`rgba(${color},0.07)`, border:`1px solid rgba(${color},0.18)`, borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
+          ))}
+        </div>
+      </div>
       {/* ─── Left: Structure List ─── */}
       <div className="w-72 flex-shrink-0 flex flex-col border-r border-slate-700/60 bg-slate-900/50">
         {/* Search */}
