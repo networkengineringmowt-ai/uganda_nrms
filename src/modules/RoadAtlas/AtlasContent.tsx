@@ -1,5 +1,5 @@
 /**
- * AtlasContent — Uganda National Road Network Visual Intelligence Atlas
+ * AtlasContent â Uganda National Road Network Visual Intelligence Atlas
  *
  * Renders the full national road network dashboard using the live dashboard
  * bundle from /api/dashboard-bundle (or /data/bundle.json fallback).
@@ -11,7 +11,7 @@ import {
 } from 'recharts';
 import { useDashboardBundle } from '../../hooks/useDashboardBundle';
 
-// ─── Shared chart tooltip style ───────────────────────────────────────────────
+// âââ Shared chart tooltip style âââââââââââââââââââââââââââââââââââââââââââââââ
 const TT = {
   contentStyle: {
     background: 'rgba(6,13,24,0.97)',
@@ -20,7 +20,7 @@ const TT = {
   },
 };
 
-// ─── Section heading ──────────────────────────────────────────────────────────
+// âââ Section heading ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function SectionHeading({ title, sub }: { title: string; sub?: string }) {
   return (
     <div style={{ marginBottom: 24 }}>
@@ -35,7 +35,7 @@ function SectionHeading({ title, sub }: { title: string; sub?: string }) {
   );
 }
 
-// ─── Stat card ────────────────────────────────────────────────────────────────
+// âââ Stat card ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function StatCard({
   label, value, unit, sub, color = '#00f5ff',
 }: {
@@ -58,7 +58,7 @@ function StatCard({
   );
 }
 
-// ─── Chart card wrapper ───────────────────────────────────────────────────────
+// âââ Chart card wrapper âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function ChartCard({ title, sub, children }: { title: string; sub?: string; children: React.ReactNode }) {
   return (
     <div style={{
@@ -75,23 +75,23 @@ function ChartCard({ title, sub, children }: { title: string; sub?: string; chil
   );
 }
 
-// ─── Loading / Error placeholders ─────────────────────────────────────────────
+// âââ Loading / Error placeholders âââââââââââââââââââââââââââââââââââââââââââââ
 function LoadingPanel() {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 200, color: 'rgba(148,163,184,0.4)' }}>
       <div>
         <div style={{ width: 32, height: 32, border: '2px solid #1e3a5f', borderTopColor: '#f97316', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
-        <div style={{ fontSize: 11 }}>Loading intelligence data…</div>
+        <div style={{ fontSize: 11 }}>Loading intelligence dataâ¦</div>
       </div>
     </div>
   );
 }
 
-// ─── Main atlas content ───────────────────────────────────────────────────────
+// âââ Main atlas content âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 export default function AtlasContent() {
   const { bundle, isLoading, error, lastUpdated } = useDashboardBundle();
 
-  // ── Extract data from bundle ──────────────────────────────────────────────
+  // ââ Extract data from bundle ââââââââââââââââââââââââââââââââââââââââââââââ
   const pavedTimeline = useMemo(() => {
     const rows = bundle?.roadPublicReferences?.paved_stock_timeline ?? [];
     return rows
@@ -169,7 +169,7 @@ export default function AtlasContent() {
       padding: '40px 32px 80px',
       fontFamily: '"Aptos Display","Segoe UI Variable Display",Bahnschrift,sans-serif',
     }}>
-      {/* ── Header banner ── */}
+      {/* ââ Header banner ââ */}
       <div style={{
         marginBottom: 48, padding: '28px 32px',
         background: 'linear-gradient(135deg, rgba(249,115,22,0.12) 0%, rgba(59,130,246,0.08) 100%)',
@@ -183,7 +183,7 @@ export default function AtlasContent() {
           Uganda National Road Network
         </h1>
         <p style={{ margin: 0, fontSize: 14, color: 'rgba(148,163,184,0.7)' }}>
-          Visual intelligence platform · 21,160 km (mapped) national network · Data: DNR GIS Jun 2025 · DNR / MoWT
+          Visual intelligence platform Â· 21,160 km (mapped) national network Â· Data: DNR GIS Jun 2025 Â· DNR / MoWT
         </p>
         {lastUpdated && (
           <div style={{ marginTop: 12, fontSize: 10, color: 'rgba(148,163,184,0.4)' }}>
@@ -197,37 +197,37 @@ export default function AtlasContent() {
         )}
       </div>
 
-      {/* ── Network summary KPIs ── */}
+      {/* ââ Network summary KPIs ââ */}
       <SectionHeading title="Network Overview" sub="Current state of Uganda's national road network" />
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 48 }}>
-        <StatCard label="Total Network" value="21,160" unit="km" sub="1,013 road links · Jun 2025" color="#00f5ff" />
+        <StatCard label="Total Network" value="21,160" unit="km" sub="1,017 road links Â· Jun 2025" color="#00f5ff" />
         <StatCard
           label="Paved Stock"
           value={latestPaved ? latestPaved.km.toLocaleString(undefined, { maximumFractionDigits: 0 }) : '6,312'}
           unit="km"
-          sub={latestPaved ? `${latestPaved.pct.toFixed(1)}% of network · FY${latestPaved.fy}` : '30.1% of network'}
+          sub={latestPaved ? `${latestPaved.pct.toFixed(1)}% of network Â· FY${latestPaved.fy}` : '30.1% of network'}
           color="#00ff88"
         />
         <StatCard
           label="Network Traffic"
           value={latestTraffic ? Math.round(latestTraffic.network_weighted_motorised_aadt ?? 0).toLocaleString() : '2,562'}
           unit="AADT"
-          sub={latestTraffic ? `Motorised · ${latestTraffic.year}` : 'Motorised · 2025'}
+          sub={latestTraffic ? `Motorised Â· ${latestTraffic.year}` : 'Motorised Â· 2025'}
           color="#ffd23f"
         />
         <StatCard
           label="Growth Since 1986"
           value={`+${growthPct.toFixed(0)}`}
           unit="%"
-          sub={latestPaved && earliest ? `${earliest.km.toLocaleString()} → ${latestPaved.km.toLocaleString()} km` : 'Liberation to present'}
+          sub={latestPaved && earliest ? `${earliest.km.toLocaleString()} â ${latestPaved.km.toLocaleString()} km` : 'Liberation to present'}
           color="#f97316"
         />
       </div>
 
-      {/* ── Paved stock growth chart ── */}
+      {/* ââ Paved stock growth chart ââ */}
       <SectionHeading title="Paved Road Stock Growth" sub="Historical expansion of paved network since 1986" />
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 20, marginBottom: 48 }}>
-        <ChartCard title="Cumulative Paved Stock (km)" sub="FY 1986/87 – present">
+        <ChartCard title="Cumulative Paved Stock (km)" sub="FY 1986/87 â present">
           <ResponsiveContainer width="100%" height={220}>
             <AreaChart data={pavedTimeline} margin={{ top: 4, right: 12, left: 0, bottom: 0 }}>
               <defs>
@@ -260,7 +260,7 @@ export default function AtlasContent() {
         </ChartCard>
       </div>
 
-      {/* ── Traffic growth ── */}
+      {/* ââ Traffic growth ââ */}
       {trafficRows.length > 0 && (
         <>
           <SectionHeading title="Network Traffic" sub="Length-weighted motorised AADT at traffic count stations" />
@@ -284,7 +284,7 @@ export default function AtlasContent() {
         </>
       )}
 
-      {/* ── Asset values ── */}
+      {/* ââ Asset values ââ */}
       {assetValues.length > 0 && (
         <>
           <SectionHeading title="Asset Value" sub="Road network replacement cost and current depreciated value" />
@@ -301,7 +301,7 @@ export default function AtlasContent() {
             )}
           </div>
           <div style={{ marginBottom: 48 }}>
-            <ChartCard title="Asset Value Trend" sub="CRC vs CDRC — UGX billion">
+            <ChartCard title="Asset Value Trend" sub="CRC vs CDRC â UGX billion">
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={assetValues} margin={{ top: 4, right: 12, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
@@ -335,7 +335,7 @@ export default function AtlasContent() {
         </>
       )}
 
-      {/* ── Pavement condition ── */}
+      {/* ââ Pavement condition ââ */}
       {conditionCycles.length > 0 && (
         <>
           <SectionHeading title="Pavement Condition" sub="VCI and IRI from road condition survey cycles" />
@@ -356,8 +356,8 @@ export default function AtlasContent() {
               </ResponsiveContainer>
               {latestCondition && (
                 <div style={{ marginTop: 10, fontSize: 10, color: 'rgba(148,163,184,0.5)' }}>
-                  Latest cycle: {latestCondition.cycle} · VCI {latestCondition.vci.toFixed(1)} ·
-                  IRI {latestCondition.iri.toFixed(2)} m/km · {latestCondition.coverage.toFixed(0)}% coverage
+                  Latest cycle: {latestCondition.cycle} Â· VCI {latestCondition.vci.toFixed(1)} Â·
+                  IRI {latestCondition.iri.toFixed(2)} m/km Â· {latestCondition.coverage.toFixed(0)}% coverage
                 </div>
               )}
             </ChartCard>
@@ -365,7 +365,7 @@ export default function AtlasContent() {
         </>
       )}
 
-      {/* ── Regional intelligence ── */}
+      {/* ââ Regional intelligence ââ */}
       {regions.length > 0 && (
         <>
           <SectionHeading title="Regional Intelligence" sub="Traffic, condition and stress scores by maintenance region" />
@@ -425,15 +425,15 @@ export default function AtlasContent() {
         </>
       )}
 
-      {/* ── Footer ── */}
+      {/* ââ Footer ââ */}
       <div style={{
         marginTop: 24, paddingTop: 24,
         borderTop: '1px solid rgba(255,255,255,0.06)',
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         fontSize: 10, color: 'rgba(148,163,184,0.35)',
       }}>
-        <span>Uganda National Roads Management Platform · Dept. of National Roads · MoWT</span>
-        <span>Data: {lastUpdated ? new Date(lastUpdated).toLocaleDateString('en-UG') : '—'}</span>
+        <span>Uganda National Roads Management Platform Â· Dept. of National Roads Â· MoWT</span>
+        <span>Data: {lastUpdated ? new Date(lastUpdated).toLocaleDateString('en-UG') : 'â'}</span>
       </div>
     </div>
   );
