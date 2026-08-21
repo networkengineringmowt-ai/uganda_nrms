@@ -5,7 +5,7 @@
  */
 
 import { useState } from 'react';
-import type { Structure } from '../../types';
+import type { Structure } from '../../index';
 import { conditionColor, conditionLabel, CONDITION_COLORS } from '../../utils/helpers';
 
 interface Props { structure: Structure }

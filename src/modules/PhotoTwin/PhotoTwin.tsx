@@ -10,7 +10,7 @@ import {
   Maximize2, X, ZoomIn, Download, Info, RotateCcw, MapPin,
 } from 'lucide-react';
 import { useBMS } from '../../store/BMSContext';
-import type { Structure } from '../../types';
+import type { Structure } from '../../index';
 import { conditionColor, conditionLabel, conditionBadge, formatDate } from '../../utils/helpers';
 import { usePhotoLoader } from './usePhotoLoader';
 import BridgeSchematic from './BridgeSchematic';
