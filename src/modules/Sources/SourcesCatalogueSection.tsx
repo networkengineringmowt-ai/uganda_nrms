@@ -81,7 +81,7 @@ const SOURCES: Source[] = [
   // ââ GIS ââ
   { name: 'Uganda National Road Network GIS',
     type: 'GIS', owner: 'Department of National Roads/DNR GIS Section', yearRange: '2010âpresent',
-    coverage: '21,160 km (mapped), 1,013 links, 6 maintenance regions',
+    coverage: '21,160 km (mapped), 1,017 links, 6 maintenance regions',
     variables: 'Geometry, road_no, link_id, surface_type, road_class, length_km, chainage',
     format: 'Shapefile + GeoJSON (bundle.json, atc_stations.geojson)',
     status: 'Active', module: ['Network', 'PMS', 'TIS', 'BMS', 'Projects'],
@@ -110,7 +110,7 @@ const SOURCES: Source[] = [
     variables: '12+ tables: road_links, traffic_counts, atc_stations, atc_readings, overloading_summary',
     format: 'SQLite (traffic_platform.db)',
     status: 'Active', module: ['TIS', 'Network', 'PMS'],
-    notes: 'Platform database: 267k+ traffic records, 1,013 links, 305 ATC records' },
+    notes: 'Platform database: 267k+ traffic records, 1,017 links, 305 ATC records' },
 
   { name: 'Department of National Roads Contract Management System',
     type: 'Database', owner: 'Department of National Roads PDU / Contracts Dept', yearRange: '2010âpresent',
