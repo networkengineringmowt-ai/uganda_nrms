@@ -1,11 +1,11 @@
 /**
- * Unified data store — single source of truth for all shared platform data.
+ * Unified data store â single source of truth for all shared platform data.
  * All modules should import analytics, projects, and constants from here.
  *
  * Data hierarchy:
- *   analytics.json  → loadPlatformAnalytics()  (network, traffic, condition, bridges)
- *   projects.json   → loadEnhancedProjects()   (projects with lat/lng + photos)
- *   bridges.geojson → loadAllStructures()       (re-exported from generateData)
+ *   analytics.json  â loadPlatformAnalytics()  (network, traffic, condition, bridges)
+ *   projects.json   â loadEnhancedProjects()   (projects with lat/lng + photos)
+ *   bridges.geojson â loadAllStructures()       (re-exported from generateData)
  */
 
 export {
@@ -20,7 +20,7 @@ export { loadAllStructures } from './generateData';
 import { loadProjects as _loadProjects } from './platformData';
 import type { OngoingProject } from '../index';
 
-// ─── Project type (extends OngoingProject with map + photo fields) ─────────────
+// âââ Project type (extends OngoingProject with map + photo fields) âââââââââââââ
 
 export interface Project extends OngoingProject {
   id:             string;
@@ -31,7 +31,7 @@ export interface Project extends OngoingProject {
   description:    string;
 }
 
-// ─── Geocoder ─────────────────────────────────────────────────────────────────
+// âââ Geocoder âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // Approximate midpoint coordinates for known Ugandan cities / corridors.
 const CITY_COORDS: Record<string, [number, number]> = {
   kampala:    [0.3476,  32.5825],
@@ -89,7 +89,7 @@ function geocodeProject(location: string, regions: string): [number, number] {
   return [1.37, 32.3];
 }
 
-// ─── Placeholder photo paths (served from internal network /s-photos/) ────────
+// âââ Placeholder photo paths (served from internal network /s-photos/) ââââââââ
 // These are used as starter progressPhotos entries; they show a camera
 // placeholder when the internal photo server is not reachable.
 const PHOTO_POOL = [
@@ -102,7 +102,7 @@ const PHOTO_POOL = [
 ];
 
 function starterPhotos(idx: number): string[] {
-  // Assign 2–3 photos per project, cycling through pool
+  // Assign 2â3 photos per project, cycling through pool
   const start = (idx * 2) % PHOTO_POOL.length;
   return [
     PHOTO_POOL[start % PHOTO_POOL.length],
@@ -117,7 +117,7 @@ function deriveStatus(p: OngoingProject): 'planned' | 'ongoing' | 'complete' {
   return 'planned';
 }
 
-// ─── Cache ─────────────────────────────────────────────────────────────────────
+// âââ Cache âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 let enhancedCache: Project[] | null = null;
 
 export async function loadEnhancedProjects(): Promise<Project[]> {
@@ -133,7 +133,7 @@ export async function loadEnhancedProjects(): Promise<Project[]> {
       lng,
       status:         deriveStatus(p),
       progressPhotos: starterPhotos(i),
-      description:    `${p.project_name} — ${p.location}. Funded by ${p.funding_agency}. ` +
+      description:    `${p.project_name} â ${p.location}. Funded by ${p.funding_agency}. ` +
                       `Target completion: ${p.target_completion_date || 'TBD'}.`,
     };
   });
@@ -141,12 +141,12 @@ export async function loadEnhancedProjects(): Promise<Project[]> {
   return enhancedCache;
 }
 
-// ─── Canonical fallback constants ─────────────────────────────────────────────
+// âââ Canonical fallback constants âââââââââââââââââââââââââââââââââââââââââââââ
 // Used in loading states before analytics.json resolves.
-// Single definition — import from here, never re-define in component files.
+// Single definition â import from here, never re-define in component files.
 export const NETWORK_KM        = 21_291.541;
 export const PAVED_KM          = 6_312.098;
 export const PERCENT_PAVED     = 29.6;
-export const TOTAL_LINKS       = 1_014;
+export const TOTAL_LINKS       = 1_017;
 export const PAVED_GOOD_PCT    = 94.2;
 export const UNPAVED_GOOD_PCT  = 62.0;
