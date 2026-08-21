@@ -9,6 +9,7 @@ import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
 import { CaptureButton } from '../../shared/CaptureButton';
 import type { ActiveView } from '../../index';
 import {
+import SectionDashboard from '../modules/Dashboard/SectionDashboard';
   LayoutDashboard, Map, BookOpen, Network,
   CheckCircle, AlertCircle, XCircle,
   ArrowRight, TrendingUp, Shield, Layers, Database, BarChart3, Activity,
@@ -1476,6 +1477,7 @@ export function DTIMSArchitecture({ navigate }: { navigate: (v: ActiveView) => v
 
 const TABS = [
   { id: 'overview'      as const, label: 'Overview',          icon: <LayoutDashboard size={13}/> },
+  { id: 'dashboard' as TabId, label: 'Dashboard' },
   { id: 'roadmap'       as const, label: 'Road Network Map',  icon: <Map size={13}/> },
   { id: 'inventory'     as const, label: 'Road Inventory',    icon: <Database size={13}/> },
   { id: 'networkstory'  as const, label: 'Network Story',     icon: <BookOpen size={13}/> },
@@ -1494,7 +1496,7 @@ function Spinner() {
 
 export default function RMSSection() {
   const { navigate } = useBMS();
-  const [tab, setTab] = useState<TabId>('overview');
+  const [tab, setTab] = useState<TabId>('dashboard');
 
   const isFullHeight = tab === 'roadmap' || tab === 'networkstory';
   const contentStyle: React.CSSProperties = isFullHeight
@@ -1548,7 +1550,8 @@ export default function RMSSection() {
           <RMSDashboard navigate={navigate} />
         )}
 
-        {tab === 'roadmap' && (
+        {tab === 'dashboard' && <SectionDashboard sectionId="rms" accent="#00f5ff" />}
+              {tab === 'roadmap' && (
           <Suspense fallback={<Spinner />}>
             <div style={{ position: 'absolute', inset: 0 }}>
               <NET_RoadNetworkView />
