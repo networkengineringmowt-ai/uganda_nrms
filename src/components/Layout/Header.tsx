@@ -12,7 +12,7 @@ const VIEW_TITLES: Record<string, { title: string; sub: string; color?: string }
   budget:        { title: 'Budget & Maintenance',         sub: 'Maintenance financing Â· Unit-cost matrix Â· MTEF planning', color: '#ff2d78' },
   pim:           { title: 'Public Investment',            sub: 'PIM funding Â· PPP projects Â· Donor vs GoU financing', color: '#ffd23f' },
   projecttracker:{ title: 'Projects & Works',             sub: 'Execution tracking Â· Physical vs financial progress', color: '#00ff88' },
-  oprc:          { title: 'OPRC Contracts',               sub: 'Output & performance-based road contracts Â· 9 lots', color: '#00ff88' },
+  oprc:          { title: 'OPRC Contracts',               sub: 'Output & performance-based road contracts Â· 6 lots', color: '#00ff88' },
   ndpiv:         { title: 'NDP IV Investment',            sub: 'National Development Plan IV road projects & funding', color: '#b967ff' },
   overloading:   { title: 'Overloading & ESAL',           sub: 'Axle-load risk index Â· Weighbridge analytics Â· Hotspot map', color: '#ff3366' },
   growthfactors: { title: 'Traffic Growth Factors',       sub: 'Monthly / seasonal expansion factors Â· Annual growth', color: '#00d4aa' },
@@ -41,7 +41,7 @@ const VIEW_TITLES: Record<string, { title: string; sub: string; color?: string }
   // BMS
   gismap:        { title: 'Structure Map',                   sub: 'GIS structure map Â· All bridges & major culverts Â· 2018â2024 time series', color: '#00ff88' },
   dashboard:     { title: 'BMS Dashboard',                sub: 'Bridge Management System Â· DNR',                        color: '#00f5ff' },
-  registry:      { title: 'Structure Registry',           sub: '546 bridges Â· 485 major culverts Â· 1,031 total',        color: '#4d9fff' },
+  registry:      { title: 'Structure Registry',           sub: '546 bridges Â· 452 culverts Â· 998 total',        color: '#4d9fff' },
   inspections:   { title: 'Inspection Management',        sub: 'Schedule, record and track field inspections',          color: '#ffd23f' },
   condition:     { title: 'Condition Assessment',         sub: 'Component ratings and defect analysis',                 color: '#ff6b35' },
   maintenance:   { title: 'Maintenance & Works',          sub: 'Work orders, contracts and maintenance records',        color: '#b967ff' },
