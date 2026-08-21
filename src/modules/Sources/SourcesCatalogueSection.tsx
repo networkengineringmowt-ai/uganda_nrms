@@ -237,7 +237,7 @@ const SOURCES: Source[] = [
 
   { name: 'OPRC Lot Boundaries & Performance Data',
     type: 'Project', owner: 'Department of National Roads/OPRC PMU', yearRange: '2018âpresent',
-    coverage: '6 OPRC lots covering ~1,977 km national roads',
+    coverage: '90 OPRC road links (2,235 km) covering ~1,977 km national roads',
     variables: 'Lot boundary, contractor, contract value, performance score, condition targets',
     format: 'GeoJSON + Excel',
     status: 'Active', module: ['Projects', 'Budget'],
