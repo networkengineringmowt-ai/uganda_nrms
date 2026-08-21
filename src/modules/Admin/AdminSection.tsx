@@ -77,6 +77,23 @@ export default function AdminSection({
 
       {/* ── Content area ──────────────────────────────────────────────────── */}
       <div style={{ flex: 1, minHeight: 0, position: 'relative', overflow: 'hidden' }}>
+
+        {/* ── Definition Card ── */}
+        <div style={{background:'rgba(100,116,139,0.04)',border:'1px solid rgba(100,116,139,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'flex-start',gap:16}}>
+          <div style={{fontSize:36,lineHeight:1,flexShrink:0}}>⚙️</div>
+          <div style={{flex:1}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
+              <span style={{fontSize:18,fontWeight:800,color:'rgba(100,116,139,1)',letterSpacing:-0.5}}>System Administration</span>
+              <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>MoWT IT · Role-Based Access · ISO 27001</span>
+            </div>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Secure administration console for Uganda NRMS — managing user roles, system configuration, audit logs, and compliance monitoring in alignment with MoWT IT governance and ISO 27001 information security standards.</p>
+            <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+              {["Role-Based Access","Audit Logs","User Mgmt","System Config","MoWT IT","ISO 27001"].map(b=>(
+                <span key={b} style={{background:'rgba(100,116,139,0.12)',color:'rgba(100,116,139,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
+              ))}
+            </div>
+          </div>
+        </div>
         <Suspense fallback={<Spinner />}>
           {tab === 'identity' && (
             <div style={{ position:'absolute', inset:0, overflowY:'auto' }}>
