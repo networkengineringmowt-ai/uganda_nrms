@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { AlertTriangle, TrendingUp, Filter } from 'lucide-react';
 import { useBMS } from '../../store/BMSContext';
 import { conditionColor, conditionLabel, conditionBadge, formatUGX, CONDITION_COLORS } from '../../utils/helpers';
-import type { Structure } from '../../types';
+import type { Structure } from '../../index';
 import {
   ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Cell,
 } from 'recharts';
