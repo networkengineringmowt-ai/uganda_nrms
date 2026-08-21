@@ -175,6 +175,23 @@ export default function CrossSectionAnalytics() {
   const modelVersion = data.model?.version ?? data.model?.model_version ?? '';
   return (
     <div style={{ minHeight: '100%', padding: '16px 18px 30px', background: '#070b16', color: '#e7ebf2', overflowY: 'auto' }}>
+
+        {/* ── Definition Card ── */}
+        <div style={{background:'rgba(14,165,233,0.04)',border:'1px solid rgba(14,165,233,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'flex-start',gap:16}}>
+          <div style={{fontSize:36,lineHeight:1,flexShrink:0}}>📐</div>
+          <div style={{flex:1}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
+              <span style={{fontSize:18,fontWeight:800,color:'rgba(14,165,233,1)',letterSpacing:-0.5}}>Cross-Section Analytics</span>
+              <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>Pavement Layers · ROMDAS GPR · FWD · Structural Model</span>
+            </div>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Cross-section analytics for Uganda road pavement — visualising layer composition, pavement depths from ROMDAS GPR surveys, FWD deflection basins, and structural capacity modelling for targeted rehabilitation design.</p>
+            <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+              {["Cross-Section","Layer Analysis","Pavement Depth","ROMDAS GPR","FWD Deflection","Structural Model"].map(b=>(
+                <span key={b} style={{background:'rgba(14,165,233,0.12)',color:'rgba(14,165,233,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
+              ))}
+            </div>
+          </div>
+        </div>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 15, marginBottom: 14, flexWrap: 'wrap' }}>
         <div>
           <div style={{ color: '#5da7ff', fontSize: 10, fontWeight: 900, letterSpacing: '.14em', textTransform: 'uppercase' }}>National Pavement Management System</div>
