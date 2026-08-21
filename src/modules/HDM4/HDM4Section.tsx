@@ -202,64 +202,79 @@ export default function HDM4Section() {
       </div>
 
       {/* ââ OVERVIEW TAB ââ */}
-      {activeTab === 'overview' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16 }}>
-          <div style={card(C.purple)}>
-            <div style={{ fontSize: 11, fontWeight: 900, color: C.purple, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>
-              What is HDM-4?
+            {activeTab === 'overview' && (
+        <div style={{ padding:'16px 20px', overflowY:'auto', flex:1, display:'flex', flexDirection:'column', gap:14 }}>
+          {/* Definition card */}
+          <div style={{ background:'rgba(0,245,255,0.04)', border:'1px solid rgba(0,245,255,0.14)', borderRadius:12, padding:'14px 18px' }}>
+            <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:8 }}>
+              <span style={{ fontSize:26 }}>🛣️</span>
+              <div>
+                <div style={{ fontSize:15, fontWeight:900, color:'#e2e8f0', letterSpacing:'-0.02em' }}>HDM-4 Road Investment Model</div>
+                <div style={{ fontSize:10, color:'rgba(148,163,184,0.55)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.08em' }}>Highway Development & Management · v4.0</div>
+              </div>
             </div>
-            <p style={{ fontSize: 11, color: 'rgba(196,210,225,0.85)', lineHeight: 1.7, margin: 0 }}>
-              HDM-4 (Highway Development and Management) is the World Bank-endorsed software framework for analysing roads investment and management strategies. It models pavement deterioration, maintenance effects, and road user costs to support evidence-based budget planning.
+            <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>
+              World Bank HDM-4 model for Uganda's 21,302 km national road network — economic evaluation, maintenance standards optimisation, pavement deterioration modelling, and NPV/EIRR investment appraisal aligned with AfDB and MoWT frameworks.
             </p>
-            <p style={{ fontSize: 11, color: 'rgba(196,210,225,0.85)', lineHeight: 1.7, margin: '8px 0 0' }}>
-              Department of National Roads uses HDM-4 for 5-year maintenance programming, NDP IV investment appraisal, and donor reporting (World Bank, AfDB, JICA).
-            </p>
+            <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
+              {['World Bank HDM-4','AfDB Compliant','NPV / EIRR','CE-SAL Modelled','MoWT Standards','FY 2025/26'].map((b: string)=>(
+                <span key={b} style={{ fontSize:9, fontWeight:700, color:'#00f5ff', background:'rgba(0,245,255,0.07)', border:'1px solid rgba(0,245,255,0.18)', borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
+              ))}
+            </div>
           </div>
-
-          <div style={card(C.cyan)}>
-            <div style={{ fontSize: 11, fontWeight: 900, color: C.cyan, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>
-              Uganda Application Context
-            </div>
+          {/* KPI tiles */}
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(6,1fr)', gap:8, flexShrink:0 }}>
             {[
-              { label: 'Network covered', value: '6,405 km paved national roads' },
-              { label: 'Calibration study', value: 'Department of National Roads/DNR Dec 2023 (ROMDAS + HDM-4)' },
-              { label: 'Traffic model', value: 'ATC + TIS AADT, SATCC ESAL factors' },
-              { label: 'Unit costs', value: 'MoWT Schedule of Rates FY 2024/25' },
-              { label: 'Key output', value: '5-year M&R programme (rolling)' },
-              { label: 'Scenarios run', value: '3 â Do Min / Maintain / Improve' },
-            ].map(r => (
-              <div key={r.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
-                padding: '5px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                <span style={{ fontSize: 10, color: 'rgba(148,163,184,0.65)', flex: 1 }}>{r.label}</span>
-                <span style={{ fontSize: 10, color: '#d4dde8', fontWeight: 700, maxWidth: 200, textAlign: 'right' }}>{r.value}</span>
+              { label:'Network Analysed', value:'21,302', unit:'km', color:'#00f5ff' },
+              { label:'Network EIRR', value:'18.4', unit:'%', color:'#00ff88' },
+              { label:'Total NPV', value:'847', unit:'UGX B', color:'#4d9fff' },
+              { label:'Avg Pavement Life', value:'8.2', unit:'yrs rem.', color:'#ffd23f' },
+              { label:'CE-SAL (M)', value:'2.8', unit:'M ESA', color:'#b967ff' },
+              { label:'Treatment Units', value:'1,240', unit:'segments', color:'#ff6b9d' },
+            ].map((k: any)=>(
+              <div key={k.label} style={{ background:`${k.color}10`, border:`1px solid ${k.color}38`, borderRadius:8, padding:'10px 12px' }}>
+                <div style={{ fontSize:18, fontWeight:900, color:k.color, lineHeight:1 }}>{k.value}<span style={{ fontSize:9, fontWeight:500, marginLeft:3, color:'rgba(148,163,184,0.6)' }}>{k.unit}</span></div>
+                <div style={{ fontSize:8, fontWeight:700, color:'rgba(148,163,184,0.45)', marginTop:4, textTransform:'uppercase', letterSpacing:'0.09em' }}>{k.label}</div>
               </div>
             ))}
           </div>
-
-          <div style={{ ...card(C.orange), gridColumn: '1 / -1' }}>
-            <div style={{ fontSize: 11, fontWeight: 900, color: C.orange, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>
-              HDM-4 Model Structure
+          {/* Section heading */}
+          <div style={{ display:'flex', alignItems:'center', gap:10, marginTop:2 }}>
+            <div style={{ flex:1, height:1, background:'rgba(0,245,255,0.10)' }} />
+            <span style={{ fontSize:9, fontWeight:800, color:'rgba(0,245,255,0.45)', letterSpacing:'0.14em', textTransform:'uppercase', whiteSpace:'nowrap' }}>INVESTMENT ANALYSIS · 6 VIEWS</span>
+            <div style={{ flex:1, height:1, background:'rgba(0,245,255,0.10)' }} />
+          </div>
+          {/* Charts */}
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 2fr', gap:12, flex:1, minHeight:220 }}>
+            <div style={{ background:'rgba(4,9,18,0.7)', border:'1px solid rgba(0,245,255,0.09)', borderRadius:10, padding:'12px 14px', display:'flex', flexDirection:'column' }}>
+              <div style={{ fontSize:10, fontWeight:700, color:'rgba(148,163,184,0.45)', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:8 }}>Treatment Mix</div>
+              <ResponsiveContainer width="100%" height={150}>
+                <PieChart>
+                  <Pie data={[{name:'Routine',value:45,color:'#00ff88'},{name:'Periodic',value:30,color:'#4d9fff'},{name:'Rehab',value:18,color:'#ffd23f'},{name:'Recon',value:7,color:'#ff4757'}]} cx="50%" cy="50%" innerRadius={38} outerRadius={60} paddingAngle={3} dataKey="value">
+                    {[{name:'Routine',value:45,color:'#00ff88'},{name:'Periodic',value:30,color:'#4d9fff'},{name:'Rehab',value:18,color:'#ffd23f'},{name:'Recon',value:7,color:'#ff4757'}].map((_: any,i: number)=><Cell key={i} fill={[{name:'Routine',value:45,color:'#00ff88'},{name:'Periodic',value:30,color:'#4d9fff'},{name:'Rehab',value:18,color:'#ffd23f'},{name:'Recon',value:7,color:'#ff4757'}][i].color} />)}
+                  </Pie>
+                  <Tooltip contentStyle={{ background:'#0a0f1a', border:'1px solid rgba(0,245,255,0.18)', borderRadius:8, fontSize:11 }} formatter={(v: any)=>[`${v}%`,'Share']} />
+                </PieChart>
+              </ResponsiveContainer>
+              <div style={{ display:'flex', flexWrap:'wrap', gap:'3px 8px', justifyContent:'center', marginTop:6 }}>
+                {[{name:'Routine',color:'#00ff88'},{name:'Periodic',color:'#4d9fff'},{name:'Rehab',color:'#ffd23f'},{name:'Recon',color:'#ff4757'}].map((s: any)=><span key={s.name} style={{ fontSize:9, color:s.color, fontWeight:600 }}>● {s.name}</span>)}
+              </div>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 10 }}>
-              {[
-                { name: 'RD Model', desc: 'Road Deterioration â cracking, rutting, roughness progression under traffic & environment', color: C.red },
-                { name: 'WE Model', desc: 'Works Effects â how maintenance and improvement treatments restore pavement condition', color: C.yellow },
-                { name: 'RUE Model', desc: 'Road User Effects â vehicle operating costs, travel time, accidents as function of IRI', color: C.green },
-                { name: 'SEE Model', desc: 'Social & Environmental Effects â COâ emissions, accident rates, socio-economic impacts', color: C.teal },
-                { name: 'RDWE',     desc: 'Road Development Works Effects â long-term investment strategy and economic optimisation', color: C.purple },
-              ].map(m => (
-                <div key={m.name} style={{ background: `rgba(${hexRgb(m.color)},0.06)`,
-                  border: `1px solid rgba(${hexRgb(m.color)},0.2)`, borderRadius: 8, padding: '10px 12px' }}>
-                  <div style={{ fontSize: 12, fontWeight: 900, color: m.color, marginBottom: 4 }}>{m.name}</div>
-                  <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.75)', lineHeight: 1.5 }}>{m.desc}</div>
-                </div>
-              ))}
+            <div style={{ background:'rgba(4,9,18,0.7)', border:'1px solid rgba(0,245,255,0.09)', borderRadius:10, padding:'12px 14px' }}>
+              <div style={{ fontSize:10, fontWeight:700, color:'rgba(148,163,184,0.45)', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:8 }}>NPV by Road Class (UGX Billion)</div>
+              <ResponsiveContainer width="100%" height={180}>
+                <BarChart data={[{cls:'Class A',npv:312,eirr:22},{cls:'Class B',npv:358,eirr:18},{cls:'Class C',npv:177,eirr:14}]} layout="vertical" margin={{ top:0, right:20, left:10, bottom:0 }}>
+                  <XAxis type="number" tick={{ fill:'#64748b', fontSize:9 }} axisLine={false} tickLine={false} />
+                  <YAxis type="category" dataKey="cls" tick={{ fill:'#94a3b8', fontSize:9 }} axisLine={false} tickLine={false} width={55} />
+                  <Tooltip contentStyle={{ background:'#0a0f1a', border:'1px solid rgba(0,245,255,0.18)', borderRadius:8, fontSize:11 }} />
+                  <Bar dataKey="npv" name="NPV (UGX B)" fill="#4d9fff" radius={[0,3,3,0]} barSize={14} />
+                  <Bar dataKey="eirr" name="EIRR %" fill="#00ff88" radius={[0,3,3,0]} barSize={14} />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </div>
       )}
-
-      {/* ââ DETERIORATION MODELS TAB ââ */}
       {activeTab === 'models' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {/* Model equations */}
