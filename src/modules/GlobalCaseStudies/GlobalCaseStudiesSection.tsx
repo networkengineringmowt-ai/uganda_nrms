@@ -2276,6 +2276,23 @@ export default function GlobalCaseStudiesSection() {
 
   return (
     <div style={S.wrap}>
+
+      {/* ─── Definition card ─── */}
+      <div style={{ background:`rgba(${color},0.04)`, border:`1px solid rgba(${color},0.14)`, borderRadius:12, padding:'14px 18px', marginBottom:14 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:8 }}>
+          <span style={{ fontSize:26 }}>🌍</span>
+          <div>
+            <div style={{ fontSize:15, fontWeight:900, color:'#e2e8f0', letterSpacing:'-0.02em' }}>Global Road Infrastructure Case Studies</div>
+            <div style={{ fontSize:10, color:'rgba(148,163,184,0.55)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.08em' }}>Best Practice · Comparators · AfDB · World Bank</div>
+          </div>
+        </div>
+        <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>International road infrastructure best practice case studies from comparable developing economies — benchmarking Uganda's network performance against Sub-Saharan African peers, extracting transferable lessons, and aligning with AfDB and World Bank infrastructure development frameworks.</p>
+        <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
+          {["AfDB Comparators","World Bank","Sub-Saharan Africa","Best Practice","NDPIV Benchmarks","Global Lessons"].map((b: string)=>(
+            <span key={b} style={{ fontSize:9, fontWeight:700, color:`rgb(${color})`, background:`rgba(${color},0.07)`, border:`1px solid rgba(${color},0.18)`, borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
+          ))}
+        </div>
+      </div>
       {/* Header */}
       <div style={{
         padding: '14px 18px 10px',
