@@ -16,6 +16,23 @@ export default function GisEnterpriseSection() {
 
   return (
     <div className="flex flex-col h-full bg-slate-950 p-6 overflow-y-auto">
+
+        {/* ── Definition Card ── */}
+        <div style={{background:'rgba(168,85,247,0.04)',border:'1px solid rgba(168,85,247,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'flex-start',gap:16}}>
+          <div style={{fontSize:36,lineHeight:1,flexShrink:0}}>🗺️</div>
+          <div style={{flex:1}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
+              <span style={{fontSize:18,fontWeight:800,color:'rgba(168,85,247,1)',letterSpacing:-0.5}}>GIS Enterprise Architecture</span>
+              <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>ESRI · PostGIS · Cloud GIS · Vector Tiles</span>
+            </div>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Tier-by-tier geospatial infrastructure architecture powering Uganda NRMS — from field sensors and GPS survey through PostGIS, WMS/WFS services, and ESRI ArcGIS to the national roads web platform.</p>
+            <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+              {["ESRI ArcGIS","PostGIS","WMS / WFS","Vector Tiles","QGIS Desktop","Cloud GIS"].map(b=>(
+                <span key={b} style={{background:'rgba(168,85,247,0.12)',color:'rgba(168,85,247,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
+              ))}
+            </div>
+          </div>
+        </div>
       <div className="mb-6 flex items-end justify-between">
         <div>
           <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-3">
