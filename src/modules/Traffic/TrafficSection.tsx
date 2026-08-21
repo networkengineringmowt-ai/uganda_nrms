@@ -12,6 +12,7 @@
  *   • Station counts: 10 ATC active (2025+); 15 legacy decommissioned; 298 TIS
  */
 import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
+import { supabase } from '../../lib/supabase';
 import {
   MapContainer, TileLayer, ZoomControl, GeoJSON,
   Marker, Tooltip as LeafletTooltip,
@@ -19,7 +20,7 @@ import {
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { lazy, Suspense } from 'react';
-import { Clock, Play, Pause, Radio, Wifi, BarChart3, Map as MapIcon, Table2, TrendingUp } from 'lucide-react';
+import { Clock, Play, Pause, Radio, Wifi, BarChart3, Map as MapIcon, Table2, TrendingUp, AlertTriangle } from 'lucide-react';
 import { useTCSStations } from '../../data/networkDB';
 
 // Sub-module lazy loads (previously separate sidebar items)
@@ -607,6 +608,111 @@ function LinkClassTable({ features, surfMap: _surfMap }: { features: PredFeature
 }
 
 // ─── Main export ──────────────────────────────────────────────────────────────
+function RoadSafetyTab() {
+  const [byDistrict, setByDistrict] = useState<{district:string;count:number;fatalities:number}[]>([]);
+  const [bySeverity, setBySeverity] = useState<{label:string;value:number}[]>([]);
+  const [byYear, setByYear] = useState<{label:string;value:number}[]>([]);
+  const [totals, setTotals] = useState({accidents:0,fatalities:0,blackspots:0});
+  const [loading, setLoading] = useState(true);
+  const [noData, setNoData] = useState(false);
+  useEffect(()=>{
+    async function load(){
+      try {
+        const {data:rows,error} = await supabase.from('road_accidents').select('district,severity_class,accident_year,fatalities');
+        if(error||!rows||rows.length===0){setNoData(true);setLoading(false);return;}
+        const dm:Record<string,{count:number;fatalities:number}> = {};
+        const sm:Record<string,number> = {};
+        const ym:Record<string,number> = {};
+        let tf=0;
+        rows.forEach((x:any)=>{
+          const d=x.district??'Unknown';
+          if(!dm[d])dm[d]={count:0,fatalities:0};
+          dm[d].count++; dm[d].fatalities+=(x.fatalities??0); tf+=(x.fatalities??0);
+          const sv=x.severity_class??'Unknown';
+          sm[sv]=(sm[sv]??0)+1;
+          const yr=String(x.accident_year??'N/A');
+          ym[yr]=(ym[yr]??0)+1;
+        });
+        setByDistrict(Object.entries(dm).map(([d,v])=>({district:d,count:v.count,fatalities:v.fatalities})).sort((a,b)=>b.count-a.count));
+        setBySeverity(Object.entries(sm).map(([k,v])=>({label:k,value:v})).sort((a,b)=>b.value-a.value));
+        setByYear(Object.entries(ym).map(([k,v])=>({label:k,value:v})).sort((a,b)=>a.label.localeCompare(b.label)));
+        const {count:bsc}=await supabase.from('road_blackspots').select('id',{count:'exact',head:true});
+        setTotals({accidents:rows.length,fatalities:tf,blackspots:bsc??0});
+      } catch(e){setNoData(true);}
+      finally{setLoading(false);}
+    }
+    load();
+  },[]);
+  const AC='#ff4444';
+  const sx={
+    wrap:{flex:1,overflowY:'auto' as const,background:'#0a0f1e',padding:'14px 18px'},
+    row:{display:'flex',gap:12,marginBottom:16,flexWrap:'wrap' as const},
+    kpi:{flex:'1 1 120px',background:'#111827',border:'1px solid #1e293b',borderRadius:8,padding:'12px 14px'},
+    lbl:{fontSize:10,color:'#64748b',textTransform:'uppercase' as const,letterSpacing:1,marginBottom:4},
+    val:{fontSize:22,fontWeight:900,color:AC},
+    sec:{marginBottom:18},
+    stt:{fontSize:11,color:'#94a3b8',textTransform:'uppercase' as const,letterSpacing:1.5,marginBottom:8,fontWeight:700},
+    bar:{display:'flex',alignItems:'center',gap:8,marginBottom:4},
+    bL:{fontSize:11,color:'#cbd5e1',width:110,whiteSpace:'nowrap' as const,overflow:'hidden',textOverflow:'ellipsis'},
+    bT:{flex:1,background:'#1e293b',borderRadius:4,height:14},
+    bF:(p:number)=>({width:p+'%',background:AC,borderRadius:4,height:'100%',transition:'width 0.4s'}),
+    bN:{fontSize:10,color:'#64748b',width:36,textAlign:'right' as const},
+    tbl:{width:'100%',borderCollapse:'collapse' as const,fontSize:11},
+    th:{color:'#475569',fontWeight:700,padding:'6px 8px',borderBottom:'1px solid #1e293b',textAlign:'left' as const},
+    td:{color:'#cbd5e1',padding:'5px 8px',borderBottom:'1px solid #0f172a'},
+  };
+  if(loading)return <div style={{color:'#64748b',padding:32,textAlign:'center'}}>Loading road safety data…</div>;
+  if(noData)return <div style={{color:'#64748b',padding:32,textAlign:'center'}}>No data available yet</div>;
+  const mxS=Math.max(1,...bySeverity.filter(s=>s.value!=null).map(s=>s.value));
+  const mxY=Math.max(1,...byYear.filter(y=>y.value!=null).map(y=>y.value));
+  return (
+    <div style={sx.wrap}>
+      <div style={sx.row}>
+        <div style={sx.kpi}><div style={sx.lbl}>Total Accidents</div><div style={sx.val}>{totals.accidents??'—'}</div></div>
+        <div style={sx.kpi}><div style={sx.lbl}>Total Fatalities</div><div style={{...sx.val,color:'#ff6b6b'}}>{totals.fatalities??'—'}</div></div>
+        <div style={sx.kpi}><div style={sx.lbl}>Blackspot Locations</div><div style={{...sx.val,color:'#fbbf24'}}>{totals.blackspots??'—'}</div></div>
+        <div style={sx.kpi}><div style={sx.lbl}>Districts Affected</div><div style={sx.val}>{byDistrict.length}</div></div>
+      </div>
+      <div style={sx.sec}>
+        <div style={sx.stt}>Accidents by Severity Class</div>
+        {bySeverity.filter(s=>s.value!=null).map(s=>(
+          <div key={s.label} style={sx.bar}>
+            <div style={sx.bL}>{s.label}</div>
+            <div style={sx.bT}><div style={sx.bF(Math.round(s.value/mxS*100))}/></div>
+            <div style={sx.bN}>{s.value}</div>
+          </div>
+        ))}
+      </div>
+      <div style={sx.sec}>
+        <div style={sx.stt}>Year-on-Year Accident Trend</div>
+        {byYear.filter(y=>y.value!=null).map(y=>(
+          <div key={y.label} style={sx.bar}>
+            <div style={sx.bL}>{y.label}</div>
+            <div style={sx.bT}><div style={sx.bF(Math.round(y.value/mxY*100))}/></div>
+            <div style={sx.bN}>{y.value}</div>
+          </div>
+        ))}
+      </div>
+      <div style={sx.sec}>
+        <div style={sx.stt}>Accidents by District (Aggregated)</div>
+        <table style={sx.tbl}>
+          <thead><tr>
+            <th style={sx.th}>District</th><th style={sx.th}>Accidents</th><th style={sx.th}>Fatalities</th>
+          </tr></thead>
+          <tbody>
+            {byDistrict.slice(0,20).map(d=>(
+              <tr key={d.district}>
+                <td style={sx.td}>{d.district}</td>
+                <td style={sx.td}>{d.count??0}</td>
+                <td style={sx.td}>{d.fatalities??0}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
 export default function TrafficSection() {
   const [features,     setFeatures]     = useState<PredFeature[]>([]);
   const [surfMap,      setSurfMap]      = useState<Record<string, string>>({});
@@ -619,7 +725,7 @@ export default function TrafficSection() {
   const [isPlaying,    setIsPlaying]    = useState(false);
   const [now,          setNow]          = useState(() => new Date());
   const [selFeature,   setSelFeature]   = useState<FeatureData | null>(null);
-  const [activeTab,    setActiveTab]    = useState<'dashboard' | 'map' | 'counts' | 'trends' | 'stations'>('dashboard');
+  const [activeTab,    setActiveTab]    = useState<'dashboard' | 'map' | 'counts' | 'trends' | 'stations' | 'roadsafety'>('dashboard');
   const [countsTab,    setCountsTab]    = useState<'linxclass' | 'trafficanalytics' | 'trafficsummary' | 'proj2040'>('linxclass');
   const [trendsTab,    setTrendsTab]    = useState<'growthfactors' | 'seasonal' | 'overloading' | 'analytics'>('growthfactors');
   const { stations: tcsStations } = useTCSStations();
@@ -745,6 +851,7 @@ export default function TrafficSection() {
     { id: 'counts'   as const, label: 'Counts & Analysis',  icon: <Table2 size={13}/> },
     { id: 'trends'   as const, label: 'Trends & Risk',      icon: <TrendingUp size={13}/> },
     { id: 'stations' as const, label: 'Station Directory',  icon: <BarChart3 size={13}/> },
+    { id: 'roadsafety' as const, label: 'Road Safety',   icon: <AlertTriangle size={13}/> },
   ];
   const COUNTS_TABS = [
     { id: 'linxclass'       as const, label: 'Link × Class Table'       },
@@ -1410,6 +1517,7 @@ export default function TrafficSection() {
             </div>
           </div>
         )}
+      {activeTab === 'roadsafety' && <RoadSafetyTab />}
 
     </div>
   );
