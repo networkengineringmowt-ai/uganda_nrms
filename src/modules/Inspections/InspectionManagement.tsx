@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Plus, Search, ClipboardCheck, Camera, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { useBMS } from '../../store/BMSContext';
-import type { Inspection, InspectionType } from '../../types';
+import type { Inspection, InspectionType } from '../../index';
 import { conditionColor, conditionLabel, conditionBadge, formatDate, INSPECTORS } from '../../utils/helpers';
 import { v4 as uuidv4 } from 'uuid';
 
