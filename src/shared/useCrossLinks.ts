@@ -8,7 +8,7 @@
  * Usage: const links = useCrossLinks('traffic');
  */
 
-import type { ActiveView } from '../types';
+import type { ActiveView } from '../index';
 
 export interface CrossLink {
   targetView: ActiveView;
