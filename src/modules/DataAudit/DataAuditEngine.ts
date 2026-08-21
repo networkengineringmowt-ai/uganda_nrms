@@ -1,5 +1,5 @@
 /**
- * DataAuditEngine — validates all KPIs across all sections against the
+ * DataAuditEngine â validates all KPIs across all sections against the
  * single source of truth from useNetworkStats.
  *
  * Run on app load; results surface in DataAuditPanel (admin-only).
@@ -33,9 +33,9 @@ export async function runDataAudit(
 ): Promise<AuditResult[]> {
   const results: AuditResult[] = [];
 
-  // ── 1. Network totals (official Department of National Roads FY 2025/26) ────
+  // ââ 1. Network totals (official Department of National Roads FY 2025/26) ââââ
   const TOT     = 21302;   // total network; GeoJSON has 21,160 km (mapped) (142 km unmapped)
-  const LINKS   = 1013;
+  const LINKS   = 1017;
   const PAVED   = 6405;
   const UNPAVED = 14897;
   const STATIONS= 23;
@@ -81,7 +81,7 @@ export async function runDataAudit(
     });
   }
 
-  // ── 2. Validate bot_results Q12 ────────────────────────────────────────────
+  // ââ 2. Validate bot_results Q12 ââââââââââââââââââââââââââââââââââââââââââââ
   try {
     const q12Res = await fetch(`${base}data/bot_results.json`);
     const botData: Record<string, BotRow[]> = await q12Res.json();
@@ -92,7 +92,7 @@ export async function runDataAudit(
         tab: 'Bot Results Q12',
         field: 'total_links (surveyed subset)',
         value: String(q12['total_links'] ?? '?'),
-        expected: '≤ 1013 (surveyed subset of network)',
+        expected: 'â¤ 1013 (surveyed subset of network)',
         status: 'info',
         notes: 'Q12 covers surveyed links only, not full 21,160 km (mapped) network',
       });
@@ -106,7 +106,7 @@ export async function runDataAudit(
       });
     }
 
-    // ── 3. Validate link_id format in all Q01/Q03 rows ────────────────────────
+    // ââ 3. Validate link_id format in all Q01/Q03 rows ââââââââââââââââââââââââ
     const testKeys = ['Q01', 'Q03', 'Q10', 'Q11'];
     for (const qKey of testKeys) {
       const rows: BotRow[] = botData[qKey] ?? [];
@@ -143,7 +143,7 @@ export async function runDataAudit(
     results.push({ tab: 'Bot Results', field: 'load', value: 'error', expected: 'loaded', status: 'missing', notes: 'Could not fetch bot_results.json' });
   }
 
-  // ── 4. Validate airport/weighbridge coordinates ────────────────────────────
+  // ââ 4. Validate airport/weighbridge coordinates ââââââââââââââââââââââââââââ
   try {
     const [apRes, wbRes] = await Promise.all([
       fetch(`${base}data/airports.geojson`).then(r => r.json()).catch(() => null),
@@ -162,14 +162,14 @@ export async function runDataAudit(
         value: outCount === 0 ? 'all valid' : `${outCount} out of bbox`,
         expected: 'all within Uganda bbox',
         status: outCount === 0 ? 'ok' : 'mismatch',
-        notes: outCount > 0 ? 'Features outside lon 29.5-35.1, lat -1.55–4.3' : '',
+        notes: outCount > 0 ? 'Features outside lon 29.5-35.1, lat -1.55â4.3' : '',
       });
     }
   } catch {
     results.push({ tab: 'GeoJSON Coordinates', field: 'load', value: 'error', expected: 'loaded', status: 'missing', notes: '' });
   }
 
-  // ── 5. Year reference check ───────────────────────────────────────────────
+  // ââ 5. Year reference check âââââââââââââââââââââââââââââââââââââââââââââââ
   results.push({
     tab: 'Year References',
     field: 'Current year',
