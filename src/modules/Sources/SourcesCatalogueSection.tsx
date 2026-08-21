@@ -89,7 +89,7 @@ const SOURCES: Source[] = [
 
   { name: 'Bridge & Culvert GIS Registry',
     type: 'GIS', owner: 'Department of National Roads BMS Unit', yearRange: '2015âpresent',
-    coverage: '1,019 structures (534 bridges, 485 culverts)',
+    coverage: '998 structures (546 bridges, 452 culverts)',
     variables: 'lat/lng, span, width, material, condition rating, inspection date',
     format: 'GeoJSON + SQLite (traffic_platform.db)',
     status: 'Active', module: ['BMS'],
