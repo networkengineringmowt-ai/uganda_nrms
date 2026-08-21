@@ -688,7 +688,7 @@ const SURVEY_COVERAGE = [
 const DATA_VINTAGE = [
   { dataset:'Road network GeoJSON',   source:'DNR GIS Section',  vintage:'Jun 2026', features:1013 },
   { dataset:'Condition data (NAPR)',  source:'NAPR survey',      vintage:'Jul 2026', features:780  },
-  { dataset:'Bridge BMS',             source:'BMS field survey', vintage:'Jun 2026', features:483  },
+  { dataset:'Bridge BMS',             source:'BMS field survey', vintage:'Jun 2026', features:546  },
   { dataset:'TIS traffic counts',    source:'TIS / ATC',        vintage:'Apr 2026', features:298  },
   { dataset:'Weighbridge records',   source:'EACU weighbridge', vintage:'Jun 2026', features:8    },
   { dataset:'OPRC performance',      source:'DNR contracts',    vintage:'May 2026', features:9    },
@@ -704,10 +704,10 @@ const DATA_GAPS = [
 ];
 const KPI_VALIDATION = [
   { kpi:'Total network km',  value:'21,302', source:'DNR official', geojson:'21,160', delta:'+142',  ok:true },
-  { kpi:'Total links',       value:'1,013',  source:'GeoJSON',      geojson:'1,013',  delta:'0',     ok:true },
+  { kpi:'Total links',       value:'1,017',  source:'GeoJSON',      geojson:'1,017',  delta:'0',     ok:true },
   { kpi:'Paved km',          value:'6,334',  source:'DNR survey',   geojson:'6,193',  delta:'+141',  ok:true },
   { kpi:'Paved pct',         value:'30.1%',  source:'DNR official', geojson:'29.3%',  delta:'+0.4%', ok:true },
-  { kpi:'Total bridges',     value:'483',    source:'BMS',          geojson:'483',    delta:'0',     ok:true },
+  { kpi:'Total bridges',     value:'546',    source:'BMS',          geojson:'546',    delta:'0',     ok:true },
   { kpi:'ATC stations',      value:'25',     source:'TIS database', geojson:'N/A',    delta:'N/A',   ok:true },
 ];
 const DUPLICATE_CHECK = [
@@ -1054,7 +1054,7 @@ function Td({ children, align = 'left', mono = false, style }: { children?: Reac
   );
 }
 
-// ââ ADT Projection table â ALL 1,013 links Ã projection years Ã vehicle classes ââ
+// ââ ADT Projection table â ALL 1,017 links Ã projection years Ã vehicle classes ââ
 // Paginated (50/page) + searchable; base AADT loaded from the full GeoJSON network
 // (network2026.geojson â `aadt` property if present, else derived from road class).
 const ADT_PROJECTION_YEARS = [2016, 2020, 2025, 2026, 2030, 2035, 2040];
