@@ -1,5 +1,5 @@
 /**
- * SystemDocumentation — "System Documentation" tab of the Admin interface.
+ * SystemDocumentation â "System Documentation" tab of the Admin interface.
  * Generated, detailed documentation of the whole platform: architecture,
  * data stores, access control, audit trail, server API, scripts, standards.
  */
@@ -10,25 +10,25 @@ interface DocSection { id: string; title: string; body: Array<{ h?: string; p?: 
 
 const DOCS: DocSection[] = [
   {
-    id: 'overview', title: '1 · Platform Overview',
+    id: 'overview', title: '1 Â· Platform Overview',
     body: [
       { p: 'The Uganda National Roads Management Platform (UGROADS, NRMS v4.0) is a single-page React application for the Department of National Roads, Ministry of Works & Transport. It unifies RMS (road management), PMS (pavement), BMS (bridges), traffic, road reserve, budget, lifecycle and investment views over one canonical dataset.' },
       { bullets: [
         'Frontend: React 18 + TypeScript + Vite, dark glassmorphism design system (src/shared/glass.ts)',
         'Hosting: static build on GitHub Pages (gh-pages branch); no server required to view dashboards',
         'Canonical data store: the Google Drive repository "G:\\My Drive\\MOWT\\Uganda National Road Network Repository"',
-        'Optional mirror: Supabase Postgres (42 tables) — read-only to the public, opt-in for writes',
+        'Optional mirror: Supabase Postgres (42 tables) â read-only to the public, opt-in for writes',
         'Local data-entry server: Express (server/, port 3001) for writes, audit logging and the Fable 5 bot proxy',
       ]},
     ],
   },
   {
-    id: 'architecture', title: '2 · Architecture & Data Flow',
+    id: 'architecture', title: '2 Â· Architecture & Data Flow',
     body: [
       { h: 'Read path (dashboards)', bullets: [
         'Build time: data files in public/data/ are bundled from the G: repository and served statically',
         'Runtime: views load bundled JSON/GeoJSON first; Supabase is only a fallback if a bundle file is missing',
-        'network_stats, TCS stations, bridge works, condition lookups, GIS layers — all Drive-first',
+        'network_stats, TCS stations, bridge works, condition lookups, GIS layers â all Drive-first',
       ]},
       { h: 'Write path (field capture)', bullets: [
         'Capture forms POST to the local data-entry server (http://localhost:3001)',
@@ -43,10 +43,10 @@ const DOCS: DocSection[] = [
     ],
   },
   {
-    id: 'datastores', title: '3 · Data Stores',
+    id: 'datastores', title: '3 Â· Data Stores',
     body: [
       { table: { head: ['Store', 'Location', 'Role'], rows: [
-        ['G: Drive repository', 'G:\\My Drive\\MOWT\\Uganda National Road Network Repository', 'CANONICAL — all data, manuals, schema, scripts'],
+        ['G: Drive repository', 'G:\\My Drive\\MOWT\\Uganda National Road Network Repository', 'CANONICAL â all data, manuals, schema, scripts'],
         ['App data bundle', 'uganda-roads/public/data/ (44+ JSON/GeoJSON files)', 'What the deployed site reads'],
         ['Field captures', 'captures/<table>.jsonl (G: root)', 'Append-only submissions from the data-entry server'],
         ['Audit logs', 'logs/audit_YYYY-MM.jsonl (G: root)', 'Logins, failed logins, page views, changes'],
@@ -57,83 +57,83 @@ const DOCS: DocSection[] = [
     ],
   },
   {
-    id: 'access', title: '4 · Access Control — Three Levels, Three Interfaces',
+    id: 'access', title: '4 Â· Access Control â Three Levels, Three Interfaces',
     body: [
       { table: { head: ['Level', 'Password', 'Interface'], rows: [
-        ['rms', 'rms', 'Mobile-first field capture shell ONLY — capture forms + own submissions, no dashboards, no bot'],
-        ['super', 'super', 'Every dashboard, map and report + CSV/Excel export — strictly read-only, no input/audit/admin'],
+        ['rms', 'rms', 'Mobile-first field capture shell ONLY â capture forms + own submissions, no dashboards, no bot'],
+        ['super', 'super', 'Every dashboard, map and report + CSV/Excel export â strictly read-only, no input/audit/admin'],
         ['admin', 'admin', 'Everything at once: all of super + Admin Tools, Activity Log, Data Audit, Data Capture, Pending Submissions'],
       ]}},
       { bullets: [
-        'Allowed users: src/modules/Auth/allowedUsers.ts — emails as first.lastname@unra.go.ug; the part before @ also works as a username',
+        'Allowed users: src/modules/Auth/allowedUsers.ts â emails as first.lastname@unra.go.ug; the part before @ also works as a username',
         'One hardcoded password per level (the level name); the whole app sits behind the login gate',
         'Enforcement: AppGate routes the interface by role; canAccessView() blocks admin-only views; CaptureButton hides for non-admin',
-        'LIMITATION: credentials ship in the public bundle — this is an access-tier gate for trusted staff, not protection for confidential data',
+        'LIMITATION: credentials ship in the public bundle â this is an access-tier gate for trusted staff, not protection for confidential data',
       ]},
     ],
   },
   {
-    id: 'audit', title: '5 · Audit Trail — Track & Trace',
+    id: 'audit', title: '5 Â· Audit Trail â Track & Trace',
     body: [
       { bullets: [
         'Every login, failed login attempt, logout, page view and data change is logged',
         'Events are written to logs/audit_YYYY-MM.jsonl in the G: repository (one JSON line each, monthly files)',
         'Client: src/modules/Auth/auditLog.ts posts events to the server; offline events queue in localStorage and flush later',
         'Server: every insert/update is auto-audited with the acting user (x-user-email / x-user-role headers)',
-        'Viewer: Admin Tools → Activity Log — summary cards, per-user login summary, filterable event trail, month selector, CSV export',
+        'Viewer: Admin Tools â Activity Log â summary cards, per-user login summary, filterable event trail, month selector, CSV export',
       ]},
     ],
   },
   {
-    id: 'server', title: '6 · Local Data-Entry Server (server/)',
+    id: 'server', title: '6 Â· Local Data-Entry Server (server/)',
     body: [
       { p: 'Express server on port 3001. Runs fully without Supabase credentials ("Drive-only mode"). Start: cd server && npm install && npm run dev.' },
       { table: { head: ['Endpoint', 'Purpose'], rows: [
         ['GET /health', 'Liveness check'],
         ['GET /api/admin/tables', 'List the table allowlist'],
-        ['POST /api/admin/:table[?upsert=cols]', 'Insert/upsert records → captures/<table>.jsonl (+ optional mirror)'],
+        ['POST /api/admin/:table[?upsert=cols]', 'Insert/upsert records â captures/<table>.jsonl (+ optional mirror)'],
         ['PATCH /api/admin/:table/:id', 'Update a record (audited, Drive-first)'],
         ['POST/PATCH /api/admin/road-reserve/records', 'Road reserve convenience endpoints'],
         ['POST /api/audit', 'Ingest audit events from the app'],
         ['GET /api/audit?month=YYYY-MM', 'Serve the audit trail to the Activity Log'],
         ['POST /api/bot/chat', 'Fable 5 proxy (ANTHROPIC_API_KEY stays server-side)'],
       ]}},
-      { h: 'Environment (server/.env — gitignored)', bullets: [
-        'DRIVE_DATA_DIR — capture directory (default: G:/.../captures)',
-        'SUPABASE_MIRROR — on|off (default off)',
-        'SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY — only needed when the mirror is on',
-        'ANTHROPIC_API_KEY — enables the LLM bot proxy',
+      { h: 'Environment (server/.env â gitignored)', bullets: [
+        'DRIVE_DATA_DIR â capture directory (default: G:/.../captures)',
+        'SUPABASE_MIRROR â on|off (default off)',
+        'SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY â only needed when the mirror is on',
+        'ANTHROPIC_API_KEY â enables the LLM bot proxy',
         'Writes are restricted to an explicit 12-table allowlist; there is no write-to-any-table endpoint',
       ]},
     ],
   },
   {
-    id: 'security', title: '7 · Security Model',
+    id: 'security', title: '7 Â· Security Model',
     body: [
       { bullets: [
         'Public anon Supabase key: SELECT-only. supabase_enable_rls.sql enables RLS on all 42 tables with a read-only anon policy and zero write policies',
         'service_role key: lives ONLY in server/.env (gitignored); never in the browser bundle. Rotate after any exposure',
         'supabase_free_space.sql: TRUNCATEs all tables (G: is canonical) to keep the free-tier server empty',
-        'Anthropic API key: server-side env, or operator-pasted browser localStorage — never committed or bundled',
-        'Login gate: access-tiering only (see §4); audit trail provides accountability',
+        'Anthropic API key: server-side env, or operator-pasted browser localStorage â never committed or bundled',
+        'Login gate: access-tiering only (see Â§4); audit trail provides accountability',
         'Login screen shows no credentials or roster hints',
       ]},
     ],
   },
   {
-    id: 'build', title: '8 · Build & Deployment Workflow',
+    id: 'build', title: '8 Â· Build & Deployment Workflow',
     body: [
       { bullets: [
         'Source of truth: the G: Drive clone (git repo, branch main)',
         'Builds run on local disk (C:\\tmp\\uganda-build) because node_modules cannot live on Google Drive',
-        'Steps: copy changed src → tsc -b (typecheck) → vite build → overlay dist/ onto the gh-pages worktree → push',
+        'Steps: copy changed src â tsc -b (typecheck) â vite build â overlay dist/ onto the gh-pages worktree â push',
         'Deploys are overlay-style: old hashed assets remain so cached clients keep working',
         'Live site: https://priscananjehe1996.github.io/uganda-roads/',
       ]},
     ],
   },
   {
-    id: 'scripts', title: '9 · Scripts & Tooling (G: root + uganda-roads/scripts)',
+    id: 'scripts', title: '9 Â· Scripts & Tooling (G: root + uganda-roads/scripts)',
     body: [
       { table: { head: ['Script', 'Purpose'], rows: [
         ['drive_sync.py', 'Fold captures/*.jsonl into app_data/ + public/data/captures_<table>.json'],
@@ -147,13 +147,13 @@ const DOCS: DocSection[] = [
     ],
   },
   {
-    id: 'standards', title: '10 · UNRA Standards & Methodology',
+    id: 'standards', title: '10 Â· UNRA Standards & Methodology',
     body: [
       { h: 'VCI condition bands (platform convention)', table: { head: ['Band', 'VCI'], rows: [
-        ['Very Good', '≥ 85'], ['Good', '75 – 84.9'], ['Fair', '65 – 74.9'], ['Poor', '55 – 64.9'], ['Very Poor', '< 55'],
+        ['Very Good', 'â¥ 85'], ['Good', '75 â 84.9'], ['Fair', '65 â 74.9'], ['Poor', '55 â 64.9'], ['Very Poor', '< 55'],
       ]}},
-      { h: 'Visual Inspections Manual (Feb 2012) — codified in src/shared/unraStandards.ts', bullets: [
-        'Defect grading: 1–5 scale (degree × extent)',
+      { h: 'Visual Inspections Manual (Feb 2012) â codified in src/shared/unraStandards.ts', bullets: [
+        'Defect grading: 1â5 scale (degree Ã extent)',
         '6 paved defect types; 9 unpaved defect types',
         'Inventory: 11 continuous + 9 discrete items, 8-way categorisation',
         '16-document Asset Management Manuals registry (0. Manuals/Asset Management Manuals)',
@@ -162,33 +162,33 @@ const DOCS: DocSection[] = [
     ],
   },
   {
-    id: 'modules', title: '11 · Module Directory',
+    id: 'modules', title: '11 Â· Module Directory',
     body: [
       { table: { head: ['Section', 'Contents'], rows: [
-        ['RMS — Road Mgmt System', 'Network overview, road inventory (manual taxonomy), GIS map, atlas'],
+        ['RMS â Road Mgmt System', 'Network overview, road inventory (manual taxonomy), GIS map, atlas'],
         ['Pavement Management', 'Condition surveys, VCI/IRI/rutting analytics, maintenance programme, ROMDAS'],
         ['Traffic Information', 'TCS stations, AADT, projections, growth factors, overloading, trends & risk'],
-        ['Bridge Management', 'Registry (483), inspections, condition, priority, works, photo twin'],
+        ['Bridge Management', 'Registry (546), inspections, condition, priority, works, photo twin'],
         ['Road Reserve Management', 'Encroachment register, gazette status, usage applications (MOWT Form 2)'],
         ['Projects & Works / Tracker', 'Ongoing projects, progress vs plan, OPRC'],
         ['Public Investment / Budget', 'PIM pipeline, budget & maintenance financing'],
         ['Life Cycle Management', 'Intervention timeline map, deterioration modelling, HDM-4'],
         ['Global Case Studies', '195-country road-agency literature matrix'],
         ['Sources & Evidence', 'Dataset catalogue, tabular summaries, downloads, spec audit'],
-        ['Admin Tools', 'Activity Log (audit) · Platform Mind Map · Data Audit · this documentation'],
+        ['Admin Tools', 'Activity Log (audit) Â· Platform Mind Map Â· Data Audit Â· this documentation'],
         ['Road Asset Bot', 'Fable 5 LLM assistant grounded in platform data (server proxy or local key)'],
       ]}},
     ],
   },
   {
-    id: 'ops', title: '12 · Operations Runbook',
+    id: 'ops', title: '12 Â· Operations Runbook',
     body: [
       { bullets: [
         'Start data-entry server: cd uganda-roads/server && npm run dev (terminal stays open)',
         'After field sessions: python drive_sync.py, then rebuild + deploy to publish captured data',
         'Refresh RoadAtlas bundle: python scripts/export_bundle.py',
         'Manage users: edit src/modules/Auth/allowedUsers.ts, rebuild, deploy',
-        'Review activity: Admin Tools → Activity Log (or open logs/audit_*.jsonl directly in G:)',
+        'Review activity: Admin Tools â Activity Log (or open logs/audit_*.jsonl directly in G:)',
         'Archive logs: monthly files in logs/ can be moved/deleted freely; Google Drive keeps file version history',
         'Bug register & outstanding actions: uganda-roads/BUGS.md',
       ]},
@@ -206,7 +206,7 @@ export default function SystemDocumentation() {
     return DOCS.filter(s => JSON.stringify(s).toLowerCase().includes(needle));
   }, [q]);
 
-  // ── Branded, colored, print-to-PDF document ─────────────────────────────────
+  // ââ Branded, colored, print-to-PDF document âââââââââââââââââââââââââââââââââ
   function downloadPdf() {
     const logo = new URL(`${import.meta.env.BASE_URL}mowt.jpg`, location.href).href;
     const esc = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;');
@@ -217,7 +217,7 @@ export default function SystemDocumentation() {
           ${b.h ? `<h3>${esc(b.h)}</h3>` : ''}
           ${b.p ? `<p>${esc(b.p)}</p>` : ''}
           ${b.bullets ? `<table class="kv">${b.bullets.map(x => {
-            const i = x.indexOf(':') > 0 && x.indexOf(':') < 48 ? x.indexOf(':') : x.indexOf(' — ');
+            const i = x.indexOf(':') > 0 && x.indexOf(':') < 48 ? x.indexOf(':') : x.indexOf(' â ');
             const k = i > 0 ? x.slice(0, i) : ''; const v = i > 0 ? x.slice(i + (x[i] === ':' ? 1 : 3)) : x;
             return `<tr><td class="k">${esc(k)}</td><td>${esc(v)}</td></tr>`;
           }).join('')}</table>` : ''}
@@ -225,7 +225,7 @@ export default function SystemDocumentation() {
             <tbody>${b.table.rows.map(r => `<tr>${r.map((c, i2) => `<td class="${i2 === 0 ? 'first' : ''}">${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>` : ''}
         `).join('')}
       </section>`).join('');
-    const html = `<!doctype html><html><head><meta charset="utf-8"><title>UGROADS — System Documentation</title>
+    const html = `<!doctype html><html><head><meta charset="utf-8"><title>UGROADS â System Documentation</title>
       <style>
         @page { margin: 14mm 12mm; }
         * { box-sizing: border-box; }
@@ -257,12 +257,12 @@ export default function SystemDocumentation() {
         <img src="${logo}" alt="MoWT" />
         <div>
           <div class="t1">Uganda National Roads Management Platform</div>
-          <div class="t2">System Documentation — NRMS v4.0</div>
-          <div class="t3">Department of National Roads · Ministry of Works &amp; Transport · Generated ${new Date().toISOString().slice(0, 10)}</div>
+          <div class="t2">System Documentation â NRMS v4.0</div>
+          <div class="t3">Department of National Roads Â· Ministry of Works &amp; Transport Â· Generated ${new Date().toISOString().slice(0, 10)}</div>
         </div>
       </header>
       ${body}
-      <footer><span>UGROADS · DNR · Ministry of Works &amp; Transport</span><span>Canonical store: G: Drive repository</span></footer>
+      <footer><span>UGROADS Â· DNR Â· Ministry of Works &amp; Transport</span><span>Canonical store: G: Drive repository</span></footer>
       <script>window.onload = () => setTimeout(() => window.print(), 350);</scr` + `ipt></body></html>`;
     const w = window.open('', '_blank');
     if (!w) { alert('Allow pop-ups to export the PDF.'); return; }
@@ -291,10 +291,10 @@ export default function SystemDocumentation() {
             <span style={{ fontSize: 15, fontWeight: 900, color: '#e2eaf4' }}>System Documentation</span>
           </div>
           <div style={{ fontSize: 9.5, color: 'rgba(148,163,184,0.65)' }}>
-            NRMS v4.0 · complete platform reference · mirrored as DOCUMENTATION.md · view here or download the branded PDF
+            NRMS v4.0 Â· complete platform reference Â· mirrored as DOCUMENTATION.md Â· view here or download the branded PDF
           </div>
         </div>
-        <input value={q} onChange={e => setQ(e.target.value)} placeholder="Search…"
+        <input value={q} onChange={e => setQ(e.target.value)} placeholder="Searchâ¦"
           style={{ background: 'rgba(10,16,30,0.9)', border: '1px solid rgba(77,159,255,0.25)', borderRadius: 7,
             color: '#e2e8f0', fontSize: 11, padding: '7px 10px', width: 170 }} />
         <button onClick={downloadPdf} style={{
@@ -306,7 +306,7 @@ export default function SystemDocumentation() {
         </button>
       </div>
 
-      {/* Narrow-margin documentation grid — all sections open by default */}
+      {/* Narrow-margin documentation grid â all sections open by default */}
       {visible.map(sec => {
         const isOpen = q.trim() ? true : !closed[sec.id];
         return (
@@ -329,7 +329,7 @@ export default function SystemDocumentation() {
                       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <tbody>
                           {b.bullets.map((x, j) => {
-                            const ci = x.indexOf(':') > 0 && x.indexOf(':') < 48 ? x.indexOf(':') : x.indexOf(' — ');
+                            const ci = x.indexOf(':') > 0 && x.indexOf(':') < 48 ? x.indexOf(':') : x.indexOf(' â ');
                             const k = ci > 0 ? x.slice(0, ci) : '';
                             const v = ci > 0 ? x.slice(ci + (x[ci] === ':' ? 1 : 3)) : x;
                             return (
@@ -365,7 +365,7 @@ export default function SystemDocumentation() {
         );
       })}
       <div style={{ fontSize: 9, color: 'rgba(100,116,139,0.5)', marginTop: 8 }}>
-        Generated 2026-06-11 · Uganda NRMS v4.0 · DNR · Ministry of Works &amp; Transport
+        Generated 2026-06-11 Â· Uganda NRMS v4.0 Â· DNR Â· Ministry of Works &amp; Transport
       </div>
     </div>
   );
