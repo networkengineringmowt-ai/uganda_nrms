@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 
 // ── Lazy-load all BMS sub-modules ─────────────────────────────────────────────
-const BMS_Dashboard   = lazy(() => import('../Dashboard/Dashboard'));
+const BMS_Dashboard   = lazy(() => import('../Dashboard/SectionDashboard'));
 const BMS_GISMap      = lazy(() => import('../GISMap/GISMapView'));
 const BMS_Registry    = lazy(() => import('../Registry/StructureRegistry'));
 const BMS_Inspections = lazy(() => import('../Inspections/InspectionManagement'));
@@ -160,7 +160,7 @@ export default function BMSSection() {
         <Suspense fallback={<Spinner />}>
 
           {/* Tab 1: Dashboard */}
-          {mainTab === 'overview' && <BMS_Dashboard />}
+          {mainTab === 'overview' && <BMS_Dashboard sectionId='bms' accent='#00f5ff' />}
 
           {/* Tab 2: Structure Map (full-height, position absolute) */}
           {mainTab === 'map' && (
