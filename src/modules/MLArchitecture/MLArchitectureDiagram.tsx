@@ -263,7 +263,7 @@ const NODES: NodeDef[] = [
     x: 74, y: 22,
     detail: {
       algorithm: 'Multi-year treatment optimisation (HDM-4 RDWE)',
-      trainingSize: 'All 1,013 paved links',
+      trainingSize: 'All 1,017 paved links',
       accuracy: 'Budget allocation Â±8% vs expert panel',
       inputs: ['IRI forecast', 'Condition band', 'Unit costs', 'Budget constraint'],
       outputs: ['5-year work programme', 'Treatment schedule by link', 'NPV/BCR per intervention'],
