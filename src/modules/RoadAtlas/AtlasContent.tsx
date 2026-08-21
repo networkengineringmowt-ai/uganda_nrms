@@ -203,7 +203,7 @@ export default function AtlasContent() {
         <StatCard label="Total Network" value="21,160" unit="km" sub="1,017 road links Â· Jun 2025" color="#00f5ff" />
         <StatCard
           label="Paved Stock"
-          value={latestPaved ? latestPaved.km.toLocaleString(undefined, { maximumFractionDigits: 0 }) : '6,312'}
+          value={latestPaved ? latestPaved.km.toLocaleString(undefined, { maximumFractionDigits: 0 }) : '6,405'}
           unit="km"
           sub={latestPaved ? `${latestPaved.pct.toFixed(1)}% of network Â· FY${latestPaved.fy}` : '30.1% of network'}
           color="#00ff88"
