@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { RoadsAPI } from '../lib/roadsAPI';
 import SectionDashboard from '../modules/Dashboard/SectionDashboard';
+import { supabase } from '../lib/supabase';
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
 
@@ -133,6 +134,25 @@ export default function NTISSection() {
   const [safetyLoading, setSafetyLoading]   = useState(false);
   const [safetyLoaded, setSafetyLoaded]     = useState(false);
   const [safetyError, setSafetyError]       = useState<string | null>(null);
+
+  // Fetch safety data
+  useEffect(() => {
+    setSafetyLoading(true);
+    setSafetyError(null);
+    Promise.all([
+      supabase.from('road_accidents').select('district,severity_class,accident_year,fatalities'),
+      supabase.from('road_blackspots').select('id,location_name,district,road_name,severity_level')
+    ]).then(([accRes, bsRes]) => {
+      if (accRes.error) throw accRes.error;
+      setAccidents(accRes.data ?? []);
+      setBlackspots(bsRes.data ?? []);
+      setSafetyLoaded(true);
+    }).catch(e => {
+      setSafetyError(e.message ?? 'Failed to load safety data');
+    }).finally(() => {
+      setSafetyLoading(false);
+    });
+  }, []);
 
   const ovChartRef  = useRef<HTMLCanvasElement>(null);
   const fcChartRef  = useRef<HTMLCanvasElement>(null);
