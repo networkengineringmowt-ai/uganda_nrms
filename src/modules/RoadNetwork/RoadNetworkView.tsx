@@ -386,6 +386,23 @@ export default function RoadNetworkView() {
     });
     layer.bindTooltip(`
       <div style="font:600 11px/1.7 'Inter',system-ui,sans-serif;color:#111827;min-width:150px">
+
+        {/* ── Definition Card ── */}
+        <div style={{background:'rgba(34,197,94,0.04)',border:'1px solid rgba(34,197,94,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'flex-start',gap:16}}>
+          <div style={{fontSize:36,lineHeight:1,flexShrink:0}}>🛣️</div>
+          <div style={{flex:1}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
+              <span style={{fontSize:18,fontWeight:800,color:'rgba(34,197,94,1)',letterSpacing:-0.5}}>Road Network Inventory</span>
+              <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>UNRA · 21,302km · M / H / T Classes · GIS · RAMIS</span>
+            </div>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Authoritative inventory of Uganda's national road network managed by UNRA and MoWT — spanning 4,252km paved and 17,050km unpaved roads across National (M/H/T), District, and Community access classes with GIS linkage and IRI profiling.</p>
+            <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+              {["21,302km Network","M / H / T Class","UNRA Registry","GIS Linked","IRI Profiled","RAMIS Data"].map(b=>(
+                <span key={b} style={{background:'rgba(34,197,94,0.12)',color:'rgba(34,197,94,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
+              ))}
+            </div>
+          </div>
+        </div>
         <div style="font-weight:800;font-family:monospace;font-size:12px;color:#111827;border-bottom:1.5px solid #e5e7eb;padding-bottom:3px;margin-bottom:3px">${p.link_id}</div>
         ${p.link_name ? `<div style="font-size:9px;color:#6b7280;font-weight:500;margin-bottom:4px">${p.link_name}</div>` : ''}
         <table style="font-size:10px;border-collapse:collapse;width:100%">
