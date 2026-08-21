@@ -359,8 +359,8 @@ const PUBLICATIONS: Publication[] = [
 
 const MODULE_HEALTH: { id: string; name: string; status: 'ok' | 'warn' | 'info'; note: string; view: ActiveView }[] = [
   { id: 'PMS',   name: 'Pavement Management (PMS)',   status: 'ok',   note: '100% paved links surveyed 2023; calibration current', view: 'roadcondition' },
-  { id: 'BMS',   name: 'Bridge Management (BMS)',      status: 'ok',   note: '1,019 structures registered; last inspection < 12 months', view: 'bms' },
-  { id: 'TIS',   name: 'Traffic Information (TIS)',    status: 'ok',   note: '25 ATC stations active; 2025 count data loaded', view: 'traffic' },
+  { id: 'BMS',   name: 'Bridge Management (BMS)',      status: 'ok',   note: '998 structures registered; last inspection < 12 months', view: 'bms' },
+  { id: 'TIS',   name: 'Traffic Information (TIS)',    status: 'ok',   note: '10 ATC stations active; 2025 count data loaded', view: 'traffic' },
   { id: 'NDPIV', name: 'NDP IV Investment (NDPIV)',    status: 'warn', note: '8/14 projects behind schedule; financial data Q3 2025', view: 'projects' },
   { id: 'OPRC',  name: 'OPRC Contracts',               status: 'warn', note: 'Lot 9 suspended; Lot 7 completed â update needed', view: 'projects' },
   { id: 'HDM4',  name: 'HDM-4 Analysis Engine',        status: 'ok',   note: 'Calibration coefficients 2023; CESAL calculator active', view: 'hdm4' },
