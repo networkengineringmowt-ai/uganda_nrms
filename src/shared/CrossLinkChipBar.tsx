@@ -8,7 +8,7 @@
  */
 import { useCrossLinks } from './useCrossLinks';
 import { useBMS } from '../store/BMSContext';
-import type { ActiveView } from '../types';
+import type { ActiveView } from '../index';
 import { ArrowRight } from 'lucide-react';
 
 interface Props {
@@ -21,16 +21,12 @@ export default function CrossLinkChipBar({ sectionId, navigate: navProp }: Props
   const links = useCrossLinks(sectionId);
   const navigate = navProp ?? ctxNavigate;
 
-  // Disabled platform-wide (14 Jul 2026): the RELATED DATA chip bar added a
-  // second header layer to every section. Keeping component so call sites work.
-  return null;
-
   if (!links.length) return null;
 
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap',
-      padding: '3px 12px', flexShrink: 0,
+      padding: '6px 14px', flexShrink: 0,
       background: 'rgba(0,245,255,0.025)',
       borderBottom: '1px solid rgba(0,245,255,0.06)',
     }}>
