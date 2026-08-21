@@ -1,4 +1,4 @@
-﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MapContainer, TileLayer, GeoJSON, ZoomControl } from 'react-leaflet';
 import { WaterLayers } from '../../shared/WaterLayers';
 import { InfraLayers } from '../../shared/InfraLayers';
@@ -244,6 +244,23 @@ export default function RoadVideoView() {
     if (serverOnline === null) {
       return (
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, color: '#ffd23f' }}>
+
+        {/* ── Definition Card ── */}
+        <div style={{background:'rgba(244,63,94,0.04)',border:'1px solid rgba(244,63,94,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'flex-start',gap:16}}>
+          <div style={{fontSize:36,lineHeight:1,flexShrink:0}}>🎥</div>
+          <div style={{flex:1}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
+              <span style={{fontSize:18,fontWeight:800,color:'rgba(244,63,94,1)',letterSpacing:-0.5}}>Road Video Intelligence</span>
+              <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>360° Survey · AI Defect Detection · MoWT · UNRA</span>
+            </div>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>AI-powered road video intelligence system capturing continuous 360° pavement surveys — auto-detecting defects, classifying surface conditions, and building a geo-referenced video timeline for Uganda's national road network.</p>
+            <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+              {["360° Capture","AI Defect Detect","Lane Marking","Surface Class","Video Archive","ML-Powered"].map(b=>(
+                <span key={b} style={{background:'rgba(244,63,94,0.12)',color:'rgba(244,63,94,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
+              ))}
+            </div>
+          </div>
+        </div>
           <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ffd23f' }}/>
           Connecting…
         </div>
