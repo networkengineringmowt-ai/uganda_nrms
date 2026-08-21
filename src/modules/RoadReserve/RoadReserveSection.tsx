@@ -14,6 +14,7 @@ import { hexRgb } from '../../lib/chart3d';
 import { ModuleNavBar } from '../../shared/ModuleNavBar';
 import { CaptureButton } from '../../shared/CaptureButton';
 import { useBMS } from '../../store/BMSContext';
+import SectionDashboard from '../modules/Dashboard/SectionDashboard';
 
 // ── Color palette (matches platform convention) ──────────────────────────────
 const C = {
@@ -32,6 +33,8 @@ const card = (accent: string) => ({
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
 const TABS = [
+  { id: 'dashboard' as TabId, label: 'Dashboard' },
+
   { id: 'overview', label: 'Overview',              icon: <Landmark size={13}/> },
   { id: 'map',      label: 'Reserve Map',           icon: <MapPin size={13}/> },
   { id: 'register', label: 'Encroachment Register', icon: <ShieldAlert size={13}/> },
@@ -233,7 +236,7 @@ function useReserveKpis() {
 
 // ─────────────────────────────────────────────────────────────────────────────
 export default function RoadReserveSection() {
-  const [activeTab, setActiveTab] = useState<TabId>('overview');
+  const [activeTab, setActiveTab] = useState<TabId>('dashboard');
   const { dispatch } = useBMS();
   const kpis = useReserveKpis();
 
@@ -289,7 +292,8 @@ export default function RoadReserveSection() {
         })}
       </div>
 
-      {activeTab === 'overview' && (
+      {activeTab === 'dashboard' && <SectionDashboard sectionId="roadreserve" accent="#00f5ff" />}
+              {activeTab === 'overview' && (
         <OverviewTab kpis={kpis} onNavigate={(view) => dispatch({ type: 'SET_ACTIVE_VIEW', payload: view as any })} />
       )}
       {activeTab === 'map'      && <ReserveMapTab />}
