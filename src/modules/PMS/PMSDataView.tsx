@@ -60,6 +60,23 @@ export default function PMSDataView() {
 
   return (
     <div style={{ padding: '14px 16px', color: C.ink }}>
+
+        {/* ── Definition Card ── */}
+        <div style={{background:'rgba(245,158,11,0.04)',border:'1px solid rgba(245,158,11,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'flex-start',gap:16}}>
+          <div style={{fontSize:36,lineHeight:1,flexShrink:0}}>📊</div>
+          <div style={{flex:1}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
+              <span style={{fontSize:18,fontWeight:800,color:'rgba(245,158,11,1)',letterSpacing:-0.5}}>PMS Data View</span>
+              <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>IRI Data · PCI Scores · Historical Survey · Supabase · HDM-4</span>
+            </div>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Pavement Management System data browser for Uganda NRMS — providing structured access to IRI roughness records, PCI condition scores, ROMDAS survey runs, and historical pavement data stored in the Supabase database for HDM-4 model input.</p>
+            <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+              {["IRI Data","PCI Scores","Survey Runs","Historical Data","Supabase DB","HDM-4 Input"].map(b=>(
+                <span key={b} style={{background:'rgba(245,158,11,0.12)',color:'rgba(245,158,11,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
+              ))}
+            </div>
+          </div>
+        </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
         <Database size={18} style={{ color: '#4d9fff' }} />
         <div style={{ fontSize: 16, fontWeight: 900 }}>ROMDAS Data View</div>
