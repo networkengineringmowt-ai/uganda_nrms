@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Plus, Search, Wrench, CheckCircle2, Clock, AlertTriangle, XCircle } from 'lucide-react';
 import { useBMS } from '../../store/BMSContext';
-import type { WorkOrder, WorkOrderStatus, WorkOrderType, WorkOrderPriority } from '../../types';
+import type { WorkOrder, WorkOrderStatus, WorkOrderType, WorkOrderPriority } from '../../index';
 import { formatDate, formatUGX } from '../../utils/helpers';
 import { v4 as uuidv4 } from 'uuid';
 
