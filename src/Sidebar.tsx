@@ -4,9 +4,9 @@ import {
   DollarSign, Clock, Database, ShieldCheck, Route, Globe, Landmark,
   ChevronDown, Gauge, Map, Video, Hammer, FileText, Download,
 } from 'lucide-react';
-import { useBMS } from '../../store/BMSContext';
-import { useAuth } from '../../modules/Auth/AuthContext';
-import type { ActiveView } from '../../types';
+import { useBMS } from './store/BMSContext';
+import { useAuth } from './modules/Auth/AuthContext';
+import type { ActiveView } from './index';
 
 interface Section {
   id:     ActiveView;
