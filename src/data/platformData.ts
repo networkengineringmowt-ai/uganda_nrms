@@ -93,8 +93,8 @@ export async function loadPlatformAnalytics(): Promise<PlatformAnalytics> {
     activeProjects: ds.current_delivery_progress_2024_25?.road_development_projects_active  ?? 26,
     projectsKm:    ds.current_delivery_progress_2024_25?.road_development_projects_total_distance_km ?? 1383.76,
     upgradedKm:    ds.current_delivery_progress_2024_25?.upgraded_to_paved_bituminous_km_equivalent ?? 122.43,
-    bridgeCount:   excel_analytics?.bridges?.total_bridges  ?? 446,
-    culvertCount:  excel_analytics?.bridges?.total_culverts ?? 294,
+    bridgeCount:   excel_analytics?.bridges?.total_bridges  ?? 546,
+    culvertCount:  excel_analytics?.bridges?.total_culverts ?? 452,
   };
 
   return analyticsCache;
