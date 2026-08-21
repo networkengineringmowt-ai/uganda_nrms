@@ -87,7 +87,7 @@ const NODES: NodeDef[] = [
     x: 6, y: 62,
     detail: {
       algorithm: 'Visual inspection + NBI rating protocol',
-      trainingSize: '1,031 structures (546 bridges, 485 culverts)',
+      trainingSize: '998 structures (546 bridges, 452 culverts)',
       accuracy: 'Condition rating Â±0.5 NBI units',
       inputs: ['Inspector field scores', 'Photos', 'Defect codes', 'Load data'],
       outputs: ['NBI component ratings 0â9', 'Structure condition index', 'Priority score'],
