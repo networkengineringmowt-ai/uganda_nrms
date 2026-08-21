@@ -454,36 +454,25 @@ function KpiCard({ label, value, unit, color, tooltip, navChips }: {
 
 function RMSDashboard({ navigate }: { navigate: (v: ActiveView) => void }) {
   const net = useNetworkStats();
-  const [overviewTab, setOverviewTab] = useState<string>('network');
 
   const UNPAVED_KM = OFFICIAL_NETWORK_KM - net.pavedKm;
   const UNMAPPED_KM = Math.max(0, Math.round(OFFICIAL_NETWORK_KM - net.totalKm));
   const PAVED_PCT = Math.round((net.pavedKm / OFFICIAL_NETWORK_KM) * 100);
   const UNPAVED_PCT = 100 - PAVED_PCT;
 
-  const OVERVIEW_TABS = [
-    { id: 'network',  label: 'NETWORK OVERVIEW' },
-    { id: 'pavement', label: 'PAVEMENT MANAGEMENT' },
-    { id: 'traffic',  label: 'TRAFFIC INTELLIGENCE' },
-    { id: 'bridges',  label: 'STRUCTURES & BRIDGES' },
-    { id: 'budget',   label: 'BUDGET & FINANCE' },
-    { id: 'projects', label: 'PROJECTS & WORKS' },
-    { id: 'safety',   label: 'ROAD SAFETY' },
-  ];
-
   const CLASS_DATA = [
-    { name: 'Class A · Intl Trunk',  value: 3000,  color: C.cyan   },
-    { name: 'Class B · Natl Trunk',  value: 4500,  color: C.blue   },
-    { name: 'Class C · District',    value: 13802, color: C.purple },
+    { name: 'Class A · Intl Trunk', value: 3000,  color: C.cyan   },
+    { name: 'Class B · Natl Trunk', value: 4500,  color: C.blue   },
+    { name: 'Class C · District',   value: 13802, color: C.purple },
   ];
 
   const REGION_DATA = [
-    { region: 'Northern',   classA: 680, classB: 820,  classC: 3800 },
-    { region: 'Western',    classA: 520, classB: 900,  classC: 3180 },
-    { region: 'Eastern',    classA: 480, classB: 820,  classC: 2900 },
-    { region: 'Central',    classA: 740, classB: 1060, classC: 2000 },
-    { region: 'NE Karamoja',classA: 360, classB: 540,  classC: 800  },
-    { region: 'S-Western',  classA: 220, classB: 360,  classC: 922  },
+    { region: 'Northern',    classA: 680, classB: 820,  classC: 3800 },
+    { region: 'Western',     classA: 520, classB: 900,  classC: 3180 },
+    { region: 'Eastern',     classA: 480, classB: 820,  classC: 2900 },
+    { region: 'Central',     classA: 740, classB: 1060, classC: 2000 },
+    { region: 'NE Karamoja', classA: 360, classB: 540,  classC: 800  },
+    { region: 'S-Western',   classA: 220, classB: 360,  classC: 922  },
   ];
 
   const REGION_TOTAL = REGION_DATA.map(r => ({ region: r.region, km: r.classA + r.classB + r.classC }));
@@ -495,7 +484,7 @@ function RMSDashboard({ navigate }: { navigate: (v: ActiveView) => void }) {
       {/* Definition card */}
       <div style={{
         background: 'rgba(0,245,255,0.04)', border: '1px solid rgba(0,245,255,0.15)',
-        borderRadius: 14, padding: '16px 22px', marginBottom: 18,
+        borderRadius: 14, padding: '16px 22px', marginBottom: 20,
       }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
           <div style={{
@@ -528,197 +517,160 @@ function RMSDashboard({ navigate }: { navigate: (v: ActiveView) => void }) {
         </div>
       </div>
 
-      {/* 7-tab sub-navigation */}
-      <div style={{
-        display: 'flex', overflowX: 'auto', flexShrink: 0,
-        borderBottom: '1px solid rgba(0,245,255,0.12)', marginBottom: 20,
-      }}>
-        {OVERVIEW_TABS.map(t => {
-          const isAct = t.id === overviewTab;
-          return (
-            <button key={t.id} onClick={() => setOverviewTab(t.id)} style={{
-              padding: '9px 16px 11px', fontSize: 10, fontWeight: isAct ? 800 : 500,
-              background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0,
-              color: isAct ? '#00f5ff' : 'rgba(148,163,184,0.6)',
-              borderBottom: isAct ? '2px solid #00f5ff' : '2px solid transparent',
-              letterSpacing: '0.06em', whiteSpace: 'nowrap', transition: 'color 0.13s',
-            }}>
-              {t.label}
-            </button>
-          );
-        })}
+      {/* 6 KPI tiles */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 10, marginBottom: 20 }}>
+        <KpiCard label="Total Network" value={String(OFFICIAL_NETWORK_KM)} unit="km" color={C.cyan}
+          tooltip="Official NDPIV FY 2025/26 figure · Source: MoWT/DNR" />
+        <KpiCard label={`Paved · ${PAVED_PCT}%`} value={String(net.pavedKm)} unit="km" color={C.green}
+          tooltip={`${net.pavedKm.toLocaleString()} km paved (bituminous) · ${PAVED_PCT}% of national network`}
+          navChips={[{ label: 'Condition Map', view: 'roadcondition' }]} />
+        <KpiCard label={`Unpaved · ${UNPAVED_PCT}%`} value={String(UNPAVED_KM)} unit="km" color={C.orange}
+          tooltip={`${UNPAVED_KM.toLocaleString()} km unpaved · NDP IV paving target 35% by 2030`}
+          navChips={[{ label: 'Lifecycle', view: 'lifecycle' }]} />
+        <KpiCard label="Geographic Coverage" value="6" unit="REGIONS" color={C.blue}
+          tooltip="6 road management regions: Central, Eastern, Northern, Western, NE Karamoja, S-Western" />
+        <KpiCard label="Classification" value="3" unit="CLASSES" color={C.purple}
+          tooltip="3 road classes: A (Intl Trunk), B (Natl Trunk), C (District)" />
+        <KpiCard label="Unmapped Gap" value={String(UNMAPPED_KM)} unit="km" color={C.yellow}
+          tooltip={`${UNMAPPED_KM.toLocaleString()} km in official inventory not yet in GeoJSON · Source: NDPIV`} />
       </div>
 
-      {/* NETWORK OVERVIEW */}
-      {overviewTab === 'network' && (
-        <div>
-          {/* 6 KPI tiles */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 10, marginBottom: 20 }}>
-            <KpiCard label="Total Network" value={String(OFFICIAL_NETWORK_KM)} unit="km" color={C.cyan}
-              tooltip="Official NDPIV FY 2025/26 figure · Source: MoWT/DNR" />
-            <KpiCard label={`Paved · ${PAVED_PCT}%`} value={String(net.pavedKm)} unit="km" color={C.green}
-              tooltip={`${net.pavedKm.toLocaleString()} km paved (bituminous) · ${PAVED_PCT}% of national network`}
-              navChips={[{ label: 'Condition Map', view: 'roadcondition' }]} />
-            <KpiCard label={`Unpaved · ${UNPAVED_PCT}%`} value={String(UNPAVED_KM)} unit="km" color={C.orange}
-              tooltip={`${UNPAVED_KM.toLocaleString()} km unpaved · NDP IV paving target 35% by 2030`}
-              navChips={[{ label: 'Lifecycle', view: 'lifecycle' }]} />
-            <KpiCard label="Geographic Coverage" value="6" unit="REGIONS" color={C.blue}
-              tooltip="6 road management regions: Central, Eastern, Northern, Western, NE Karamoja, S-Western" />
-            <KpiCard label="Classification" value="3" unit="CLASSES" color={C.purple}
-              tooltip="3 road classes: A (Intl Trunk), B (Natl Trunk), C (District)" />
-            <KpiCard label="Unmapped Gap" value={String(UNMAPPED_KM)} unit="km" color={C.yellow}
-              tooltip={`${UNMAPPED_KM.toLocaleString()} km in official inventory not yet in GeoJSON · Source: NDPIV`} />
+      {/* Network consistency strip */}
+      <div style={{
+        display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center',
+        background: 'rgba(0,245,255,0.04)', border: '1px solid rgba(0,245,255,0.1)',
+        borderRadius: 8, padding: '8px 14px', marginBottom: 20, fontSize: 10,
+      }}>
+        <span style={{ color: 'rgba(148,163,184,0.5)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginRight: 6 }}>Network Figures</span>
+        <span style={{ color: '#00f5ff', fontWeight: 800 }}>Official: 21,302 km</span>
+        <span style={{ color: 'rgba(148,163,184,0.35)', margin: '0 6px' }}>|</span>
+        <span style={{ color: 'rgba(148,163,184,0.7)' }}>Source: NDPIV FY25-26 (MoWT)</span>
+        <span style={{ color: 'rgba(148,163,184,0.35)', margin: '0 6px' }}>|</span>
+        <span style={{ color: '#00d4aa', fontWeight: 800 }}>Mapped in GeoJSON: {net.totalKm.toLocaleString()} km ({net.totalLinks} links)</span>
+        <span style={{ color: 'rgba(148,163,184,0.35)', margin: '0 6px' }}>|</span>
+        <span style={{ color: '#ffd23f' }}>Gap: {UNMAPPED_KM.toLocaleString()} km (unmapped/rural)</span>
+        <span style={{ color: 'rgba(148,163,184,0.5)', margin: '0 0 0 6px', fontSize: 9 }}>Condition % based on surveyed links only</span>
+      </div>
+
+      {/* Section heading */}
+      <div style={{ fontSize: 10, fontWeight: 900, color: C.cyan, letterSpacing: '0.12em',
+        textTransform: 'uppercase', marginBottom: 14 }}>
+        NETWORK COMPOSITION · 15 VIEWS
+      </div>
+
+      {/* 3 charts row */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr 1.5fr', gap: 14, marginBottom: 20 }}>
+
+        {/* Donut — Network Hierarchy */}
+        <div style={{ background: 'rgba(0,245,255,0.03)', border: '1px solid rgba(0,245,255,0.1)', borderRadius: 12, padding: 14 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(148,163,184,0.7)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>
+            Network Hierarchy
           </div>
-
-          {/* Network consistency strip */}
-          <div style={{
-            display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center',
-            background: 'rgba(0,245,255,0.04)', border: '1px solid rgba(0,245,255,0.1)',
-            borderRadius: 8, padding: '8px 14px', marginBottom: 20, fontSize: 10,
-          }}>
-            <span style={{ color: 'rgba(148,163,184,0.5)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginRight: 6 }}>Network Figures</span>
-            <span style={{ color: '#00f5ff', fontWeight: 800 }}>Official: 21,302 km</span>
-            <span style={{ color: 'rgba(148,163,184,0.35)', margin: '0 6px' }}>|</span>
-            <span style={{ color: 'rgba(148,163,184,0.7)' }}>Source: NDPIV FY25-26 (MoWT)</span>
-            <span style={{ color: 'rgba(148,163,184,0.35)', margin: '0 6px' }}>|</span>
-            <span style={{ color: '#00d4aa', fontWeight: 800 }}>Mapped in GeoJSON: {net.totalKm.toLocaleString()} km ({net.totalLinks} links)</span>
-            <span style={{ color: 'rgba(148,163,184,0.35)', margin: '0 6px' }}>|</span>
-            <span style={{ color: '#ffd23f' }}>Gap: {UNMAPPED_KM.toLocaleString()} km (unmapped/rural)</span>
-            <span style={{ color: 'rgba(148,163,184,0.5)', margin: '0 0 0 6px', fontSize: 9 }}>Condition % based on surveyed links only</span>
-          </div>
-
-          {/* Section heading */}
-          <div style={{ fontSize: 10, fontWeight: 900, color: C.cyan, letterSpacing: '0.12em',
-            textTransform: 'uppercase', marginBottom: 14 }}>
-            NETWORK COMPOSITION · 15 VIEWS
-          </div>
-
-          {/* 3 charts */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr 1.5fr', gap: 14 }}>
-
-            {/* Donut — Network Hierarchy */}
-            <div style={{ background: 'rgba(0,245,255,0.03)', border: '1px solid rgba(0,245,255,0.1)', borderRadius: 12, padding: 14 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(148,163,184,0.7)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>
-                Network Hierarchy
+          <ResponsiveContainer width="100%" height={160}>
+            <PieChart>
+              <Pie data={CLASS_DATA} cx="50%" cy="50%" innerRadius={42} outerRadius={65}
+                dataKey="value" paddingAngle={2}>
+                {CLASS_DATA.map((d, i) => <Cell key={i} fill={d.color} />)}
+              </Pie>
+              <Tooltip contentStyle={{ background: 'rgba(4,9,18,0.95)', border: '1px solid rgba(0,245,255,0.2)', fontSize: 10 }}
+                formatter={(v: number) => [`${v.toLocaleString()} km`, '']} />
+            </PieChart>
+          </ResponsiveContainer>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 3, marginTop: 4 }}>
+            {CLASS_DATA.map(d => (
+              <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 9 }}>
+                <div style={{ width: 8, height: 8, borderRadius: 2, background: d.color, flexShrink: 0 }} />
+                <span style={{ color: 'rgba(148,163,184,0.7)', flex: 1 }}>{d.name}</span>
+                <span style={{ color: d.color, fontWeight: 700 }}>{d.value.toLocaleString()} km</span>
               </div>
-              <ResponsiveContainer width="100%" height={160}>
-                <PieChart>
-                  <Pie data={CLASS_DATA} cx="50%" cy="50%" innerRadius={42} outerRadius={65}
-                    dataKey="value" paddingAngle={2}>
-                    {CLASS_DATA.map((d, i) => <Cell key={i} fill={d.color} />)}
-                  </Pie>
-                  <Tooltip contentStyle={{ background: 'rgba(4,9,18,0.95)', border: '1px solid rgba(0,245,255,0.2)', fontSize: 10 }}
-                    formatter={(v: number) => [`${v.toLocaleString()} km`, '']} />
-                </PieChart>
-              </ResponsiveContainer>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 3, marginTop: 4 }}>
-                {CLASS_DATA.map(d => (
-                  <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 9 }}>
-                    <div style={{ width: 8, height: 8, borderRadius: 2, background: d.color, flexShrink: 0 }} />
-                    <span style={{ color: 'rgba(148,163,184,0.7)', flex: 1 }}>{d.name}</span>
-                    <span style={{ color: d.color, fontWeight: 700 }}>{d.value.toLocaleString()} km</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Heatmap — Region x Class */}
-            <div style={{ background: 'rgba(0,245,255,0.03)', border: '1px solid rgba(0,245,255,0.1)', borderRadius: 12, padding: 14 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(148,163,184,0.7)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>
-                Network by Region & Class
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '88px repeat(3, 1fr)', gap: 2, fontSize: 8 }}>
-                <div style={{ color: 'rgba(148,163,184,0.4)', fontWeight: 700, padding: '3px 4px' }}>REGION</div>
-                {['Class A', 'Class B', 'Class C'].map(h => (
-                  <div key={h} style={{ color: 'rgba(148,163,184,0.6)', fontWeight: 700, textAlign: 'center', padding: '3px 4px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{h}</div>
-                ))}
-                {REGION_DATA.map(r => {
-                  const rowCols = [C.cyan, C.blue, C.purple];
-                  const vals = [r.classA, r.classB, r.classC];
-                  return [
-                    <div key={r.region+'l'} style={{ color: 'rgba(148,163,184,0.75)', padding: '3px 4px', fontWeight: 600 }}>{r.region}</div>,
-                    ...vals.map((v, ci) => {
-                      const intensity = Math.min(v / 4000, 1);
-                      const col = rowCols[ci];
-                      return (
-                        <div key={r.region+ci} title={`${v.toLocaleString()} km`}
-                          style={{
-                            background: `rgba(${rgb(col)},${0.06 + intensity * 0.32})`,
-                            border: `1px solid rgba(${rgb(col)},${0.08 + intensity * 0.18})`,
-                            borderRadius: 3, padding: '3px 0', textAlign: 'center',
-                            color: col, fontWeight: 700, fontSize: 8,
-                          }}>
-                          {`${v.toLocaleString()}`}
-                        </div>
-                      );
-                    }),
-                  ];
-                })}
-              </div>
-            </div>
-
-            {/* Bar — Road Network by Region km */}
-            <div style={{ background: 'rgba(0,245,255,0.03)', border: '1px solid rgba(0,245,255,0.1)', borderRadius: 12, padding: 14 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(148,163,184,0.7)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>
-                Road Network by Region km
-              </div>
-              <ResponsiveContainer width="100%" height={190}>
-                <BarChart data={REGION_TOTAL} layout="vertical" margin={{ left: 0, right: 10, top: 0, bottom: 0 }}>
-                  <XAxis type="number" tick={{ fontSize: 8, fill: 'rgba(148,163,184,0.45)' }} axisLine={false} tickLine={false} />
-                  <YAxis type="category" dataKey="region" tick={{ fontSize: 8, fill: 'rgba(148,163,184,0.7)' }} axisLine={false} tickLine={false} width={78} />
-                  <Tooltip contentStyle={{ background: 'rgba(4,9,18,0.95)', border: '1px solid rgba(0,245,255,0.2)', fontSize: 10 }}
-                    formatter={(v: number) => [`${v.toLocaleString()} km`, 'Total']} />
-                  <Bar dataKey="km" radius={[0, 4, 4, 0]} fill={C.cyan} opacity={0.8} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-
-          </div>
-
-          {/* Quick-links grid */}
-          <div style={{ marginTop: 20 }}>
-            <div style={{ fontSize: 11, fontWeight: 900, color: C.cyan,
-              marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-              Quick Navigation — All Modules
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-              {([
-                { label: 'Pavement Mgmt (PMS)', icon: <Activity size={14}/>,   view: 'roadcondition' as ActiveView, color: C.orange },
-                { label: 'Bridge Mgmt (BMS)',   icon: <Network size={14}/>,    view: 'bms' as ActiveView,           color: C.blue   },
-                { label: 'Traffic Info (TIS)',  icon: <TrendingUp size={14}/>, view: 'traffic' as ActiveView,       color: C.cyan   },
-                { label: 'HDM-4 Analysis',      icon: <BarChart3 size={14}/>, view: 'hdm4' as ActiveView,          color: C.purple },
-                { label: 'NDPIV / Projects',    icon: <Layers size={14}/>,    view: 'projects' as ActiveView,      color: C.green  },
-                { label: 'Budget & Maint.',     icon: <Database size={14}/>,  view: 'budget' as ActiveView,        color: C.yellow },
-                { label: 'Lifecycle Mgmt',      icon: <Shield size={14}/>,    view: 'lifecycle' as ActiveView,     color: C.teal   },
-                { label: 'Sources & Evidence',  icon: <BookOpen size={14}/>,  view: 'sources' as ActiveView,       color: C.gray   },
-              ]).map(q => (
-                <button key={q.view} onClick={() => navigate(q.view)} style={{
-                  display: 'flex', alignItems: 'center', gap: 8,
-                  padding: '10px 13px', borderRadius: 8,
-                  background: `rgba(${rgb(q.color)},0.06)`,
-                  border: `1px solid rgba(${rgb(q.color)},0.2)`,
-                  cursor: 'pointer', color: '#d4dde8', fontSize: 11, fontWeight: 600,
-                }}>
-                  <span style={{ color: q.color }}>{q.icon}</span>
-                  <span>{q.label}</span>
-                  <ArrowRight size={10} style={{ color: 'rgba(100,116,139,0.4)', marginLeft: 'auto' }} />
-                </button>
-              ))}
-            </div>
+            ))}
           </div>
         </div>
-      )}
 
-      {/* Placeholder for other sub-tabs */}
-      {overviewTab !== 'network' && (
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          height: 200, color: 'rgba(148,163,184,0.4)', fontSize: 13, fontWeight: 600,
-          border: '1px dashed rgba(77,159,255,0.15)', borderRadius: 12,
-        }}>
-          {OVERVIEW_TABS.find(t => t.id === overviewTab)?.label} — use Quick Navigation above to access this module
+        {/* Heatmap — Region x Class */}
+        <div style={{ background: 'rgba(0,245,255,0.03)', border: '1px solid rgba(0,245,255,0.1)', borderRadius: 12, padding: 14 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(148,163,184,0.7)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>
+            Network by Region & Class
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '88px repeat(3, 1fr)', gap: 2, fontSize: 8 }}>
+            <div style={{ color: 'rgba(148,163,184,0.4)', fontWeight: 700, padding: '3px 4px' }}>REGION</div>
+            {['Class A', 'Class B', 'Class C'].map(h => (
+              <div key={h} style={{ color: 'rgba(148,163,184,0.6)', fontWeight: 700, textAlign: 'center', padding: '3px 4px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{h}</div>
+            ))}
+            {REGION_DATA.map(r => {
+              const rowCols = [C.cyan, C.blue, C.purple];
+              const vals = [r.classA, r.classB, r.classC];
+              return [
+                <div key={r.region+'l'} style={{ color: 'rgba(148,163,184,0.75)', padding: '3px 4px', fontWeight: 600 }}>{r.region}</div>,
+                ...vals.map((v, ci) => {
+                  const intensity = Math.min(v / 4000, 1);
+                  const col = rowCols[ci];
+                  return (
+                    <div key={r.region+ci} title={`${v.toLocaleString()} km`}
+                      style={{
+                        background: `rgba(${rgb(col)},${0.06 + intensity * 0.32})`,
+                        border: `1px solid rgba(${rgb(col)},${0.08 + intensity * 0.18})`,
+                        borderRadius: 3, padding: '3px 0', textAlign: 'center',
+                        color: col, fontWeight: 700, fontSize: 8,
+                      }}>
+                      {`${v.toLocaleString()}`}
+                    </div>
+                  );
+                }),
+              ];
+            })}
+          </div>
         </div>
-      )}
+
+        {/* Bar — Road Network by Region km */}
+        <div style={{ background: 'rgba(0,245,255,0.03)', border: '1px solid rgba(0,245,255,0.1)', borderRadius: 12, padding: 14 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(148,163,184,0.7)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>
+            Road Network by Region km
+          </div>
+          <ResponsiveContainer width="100%" height={190}>
+            <BarChart data={REGION_TOTAL} layout="vertical" margin={{ left: 0, right: 10, top: 0, bottom: 0 }}>
+              <XAxis type="number" tick={{ fontSize: 8, fill: 'rgba(148,163,184,0.45)' }} axisLine={false} tickLine={false} />
+              <YAxis type="category" dataKey="region" tick={{ fontSize: 8, fill: 'rgba(148,163,184,0.7)' }} axisLine={false} tickLine={false} width={78} />
+              <Tooltip contentStyle={{ background: 'rgba(4,9,18,0.95)', border: '1px solid rgba(0,245,255,0.2)', fontSize: 10 }}
+                formatter={(v: number) => [`${v.toLocaleString()} km`, 'Total']} />
+              <Bar dataKey="km" radius={[0, 4, 4, 0]} fill={C.cyan} opacity={0.8} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+      </div>
+
+      {/* Quick-links grid */}
+      <div>
+        <div style={{ fontSize: 11, fontWeight: 900, color: C.cyan,
+          marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+          Quick Navigation — All Modules
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+          {[
+            { label: 'Pavement Mgmt (PMS)', icon: <Activity size={14}/>,   view: 'roadcondition' as ActiveView, color: C.orange },
+            { label: 'Bridge Mgmt (BMS)',   icon: <Network size={14}/>,    view: 'bms' as ActiveView,           color: C.blue   },
+            { label: 'Traffic Info (TIS)',  icon: <TrendingUp size={14}/>, view: 'traffic' as ActiveView,       color: C.cyan   },
+            { label: 'HDM-4 Analysis',      icon: <BarChart3 size={14}/>, view: 'hdm4' as ActiveView,          color: C.purple },
+            { label: 'NDPIV / Projects',    icon: <Layers size={14}/>,    view: 'projects' as ActiveView,      color: C.green  },
+            { label: 'Budget & Maint.',     icon: <Database size={14}/>,  view: 'budget' as ActiveView,        color: C.yellow },
+            { label: 'Lifecycle Mgmt',      icon: <Shield size={14}/>,    view: 'lifecycle' as ActiveView,     color: C.teal   },
+            { label: 'Sources & Evidence',  icon: <BookOpen size={14}/>,  view: 'sources' as ActiveView,       color: C.gray   },
+          ].map(q => (
+            <button key={q.view} onClick={() => navigate(q.view)} style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              padding: '10px 13px', borderRadius: 8,
+              background: `rgba(${rgb(q.color)},0.06)`,
+              border: `1px solid rgba(${rgb(q.color)},0.2)`,
+              cursor: 'pointer', color: '#d4dde8', fontSize: 11, fontWeight: 600,
+            }}>
+              <span style={{ color: q.color }}>{q.icon}</span>
+              <span>{q.label}</span>
+              <ArrowRight size={10} style={{ color: 'rgba(100,116,139,0.4)', marginLeft: 'auto' }} />
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
