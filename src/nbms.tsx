@@ -33,6 +33,23 @@ function Header() {
         style={{ width: 32, height: 32, borderRadius: 8, objectFit: 'contain',
           background: '#fff', padding: 2, border: '1px solid rgba(0,245,255,0.3)' }} />
       <div style={{ lineHeight: 1.25 }}>
+
+        {/* ── Definition Card ── */}
+        <div style={{background:'rgba(14,165,233,0.04)',border:'1px solid rgba(14,165,233,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'flex-start',gap:16}}>
+          <div style={{fontSize:36,lineHeight:1,flexShrink:0}}>🌉</div>
+          <div style={{flex:1}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
+              <span style={{fontSize:18,fontWeight:800,color:'rgba(14,165,233,1)',letterSpacing:-0.5}}>National Bridge Management System</span>
+              <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>NBMS · UNRA · MoWT · NBI Protocol · AfDB Standards</span>
+            </div>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>National Bridge Management System for Uganda — providing a comprehensive national-level view of bridge condition, load capacity, inspection schedules, and maintenance investment needs across the UNRA and MoWT managed bridge portfolio.</p>
+            <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+              {["NBI Protocol","National Network","UNRA / MoWT","Condition Rating","AfDB Standards","MoWT Policy"].map(b=>(
+                <span key={b} style={{background:'rgba(14,165,233,0.12)',color:'rgba(14,165,233,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
+              ))}
+            </div>
+          </div>
+        </div>
         <div style={{ fontSize: 14, fontWeight: 900, color: '#00f5ff', letterSpacing: '0.04em' }}>
           Uganda National Bridge Management System
         </div>
