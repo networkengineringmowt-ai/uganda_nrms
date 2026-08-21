@@ -43,6 +43,25 @@ export default function PriorityRanking() {
 
   return (
     <div className="flex flex-col h-full animate-fade-in">
+
+      {/* ─── Definition card ─── */}
+      <div style={{ background:'rgba(255,107,157,0.04)', border:'1px solid rgba(255,107,157,0.14)', borderRadius:12, padding:'14px 18px', marginBottom:14 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:8 }}>
+          <span style={{ fontSize:26 }}>🎯</span>
+          <div>
+            <div style={{ fontSize:15, fontWeight:900, color:'#e2e8f0', letterSpacing:'-0.02em' }}>Road Priority Ranking</div>
+            <div style={{ fontSize:10, color:'rgba(148,163,184,0.55)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.08em' }}>HDM-4 · URF Priority · PCI · Resource Optimisation</div>
+          </div>
+        </div>
+        <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>
+          Evidence-based road intervention priority ranking across Uganda's national network — combining HDM-4 economic modelling, pavement condition index, traffic volumes, and social impact scores to optimise URF maintenance budget allocation.
+        </p>
+        <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
+          {['HDM-4 Ranking','URF Priority','PCI Based','Traffic Weighted','Social Impact','Budget Optimised'].map((b: string)=>(
+            <span key={b} style={{ fontSize:9, fontWeight:700, color:'#ff6b9d', background:'rgba(255,107,157,0.07)', border:'1px solid rgba(255,107,157,0.18)', borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
+          ))}
+        </div>
+      </div>
       {/* Header / filter bar */}
       <div className="flex-shrink-0 px-6 py-4 border-b border-slate-700/60 bg-slate-900/50">
         <div className="flex items-center gap-3 flex-wrap">
