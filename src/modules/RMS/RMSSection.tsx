@@ -7,7 +7,7 @@ import { OFFICIAL_NETWORK_KM, useNetworkStats } from '../../shared/useNetworkSta
 import { useBMS } from '../../store/BMSContext';
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
 import { CaptureButton } from '../../shared/CaptureButton';
-import type { ActiveView } from '../../types';
+import type { ActiveView } from '../../index';
 import {
   LayoutDashboard, Map, BookOpen, Network,
   CheckCircle, AlertCircle, XCircle,
