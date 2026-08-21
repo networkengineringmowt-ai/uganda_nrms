@@ -12,7 +12,7 @@ import {
 import { useBMS } from '../../store/BMSContext';
 import { loadPlatformAnalytics, type PlatformAnalytics } from '../../data/platformData';
 import { useSectionData } from '../../hooks/useSectionData';
-import type { ActiveView } from '../../types';
+import type { ActiveView } from '../../index';
 import { NEON, REGION_NEON, Bar3D, GlowDefs, Chart3DWrap, AreaGradDefs, TT_NEON, TICK, AX_LINE } from '../../lib/chart3d';
 import SourceTableButton from '../../shared/SourceTableButton';
 
