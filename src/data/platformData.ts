@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Platform-level data loaders for the Uganda National Roads Management Platform.
  * Separate from bridge/culvert data (generateData.ts).
  */
@@ -66,10 +66,10 @@ export async function loadPlatformAnalytics(): Promise<PlatformAnalytics> {
     excel_analytics?.traffic?.growth_summary ?? [];
 
   analyticsCache = {
-    totalNetworkKm:     inv.total_network_length_km   ?? 21291.541,
-    pavedKm:            inv.paved_inventory_length_km  ?? 6312.098,
-    unsealedKm:         (inv.total_network_length_km ?? 21291.541) - (inv.paved_inventory_length_km ?? 6312.098),
-    percentPaved:       ((inv.paved_inventory_length_km ?? 6312.098) / (inv.total_network_length_km ?? 21291.541)) * 100,
+    totalNetworkKm:     inv.total_network_length_km   ?? 21302,
+    pavedKm:            inv.paved_inventory_length_km  ?? 6405,
+    unsealedKm:         (inv.total_network_length_km ?? 21302) - (inv.paved_inventory_length_km ?? 6405),
+    percentPaved:       ((inv.paved_inventory_length_km ?? 6405) / (inv.total_network_length_km ?? 21302)) * 100,
     regionPavedKm:      inv.paved_inventory_region_length_km ?? {},
     trafficYears:       tys.map((t: Record<string, unknown>) => ({
       year:                               Number(t.year),
