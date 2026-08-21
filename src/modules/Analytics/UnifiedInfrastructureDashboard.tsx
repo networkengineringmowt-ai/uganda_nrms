@@ -64,16 +64,24 @@ export default function UnifiedInfrastructureDashboard() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: '20px', background: 'rgba(8,14,28,0.5)' }}>
-      {/* Header */}
-      <div>
-        <h2 style={{ color: '#00f5ff', marginBottom: 16, fontSize: 18, fontWeight: 900 }}>
-          🧬 UNIFIED INFRASTRUCTURE & ML PERFORMANCE DASHBOARD
-        </h2>
-        <p style={{ color: 'rgba(148,163,184,0.7)', fontSize: 12, marginBottom: 20 }}>
-          Integrated analytics: ML predictions × PMS alignment × Budget effectiveness × Infrastructure connectivity
+      {/* ─── Definition card ─── */}
+      <div style={{ background:'rgba(0,245,255,0.04)', border:'1px solid rgba(0,245,255,0.14)', borderRadius:12, padding:'14px 18px', marginBottom:14 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:8 }}>
+          <span style={{ fontSize:26 }}>🏗️</span>
+          <div>
+            <div style={{ fontSize:15, fontWeight:900, color:'#e2e8f0', letterSpacing:'-0.02em' }}>Unified Infrastructure Dashboard</div>
+            <div style={{ fontSize:10, color:'rgba(148,163,184,0.55)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.08em' }}>ML · Geospatial · Investment · Climate · Connectivity</div>
+          </div>
+        </div>
+        <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>
+          Integrated cross-module analytics combining ML predictions, climate vulnerability modelling, NDPIV investment tracking, geospatial risk overlays, and connectivity gap analysis for Uganda's national infrastructure.
         </p>
+        <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
+          {['NDPIV Aligned','ML-Enhanced','GIS Integrated','Climate Modelled','AfDB Supported','Cross-Module'].map((b: string)=>(
+            <span key={b} style={{ fontSize:9, fontWeight:700, color:'#00f5ff', background:'rgba(0,245,255,0.07)', border:'1px solid rgba(0,245,255,0.18)', borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
+          ))}
+        </div>
       </div>
-
       {/* 1. ML Model Performance Summary */}
       <div style={{ background: 'rgba(30,50,80,0.6)', borderRadius: 8, padding: 16, border: '1px solid rgba(0,245,255,0.1)' }}>
         <h3 style={{ color: '#00f5ff', fontSize: 13, fontWeight: 700, marginBottom: 12 }}>
