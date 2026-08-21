@@ -92,7 +92,7 @@ function classifyInt(type: string): IntType {
 // ââ Road Link Data â synthesised at runtime from network2026.geojson ââââ
 //
 // Empty placeholder. The actual array is populated by useEffect in the
-// component, which reads ALL 1,013 link features from the GeoJSON and
+// component, which reads ALL 1,017 link features from the GeoJSON and
 // synthesises a comprehensive LinkDef for each (intervention history is
 // derived from real completion_year + rehabilitation_year).
 const LINKS: LinkDef[] = [];
@@ -385,7 +385,7 @@ function TimelineCard({
 
 // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 export default function LifecycleSection() {
-  // ââ Load ALL 1,013 road links from network2026.geojson ââââââââââââââ
+  // ââ Load ALL 1,017 road links from network2026.geojson ââââââââââââââ
   const [allLinks,     setAllLinks]     = useState<LinkDef[]>([]);
   const [loading,      setLoading]      = useState(true);
   const [selectedId,   setSelectedId]   = useState<string>('');
@@ -435,7 +435,7 @@ export default function LifecycleSection() {
   const nextRehabYr = Math.round(2026 + Math.max(1, (8.0 - link.currentIRI) / 0.38));
   const nextRehabCostBn = +(link.lengthKm * 2200 / 1_000_000).toFixed(1);
 
-  // ââ Summary stats â across all 1,013 loaded links âââââââââââââââââââââââââââ
+  // ââ Summary stats â across all 1,017 loaded links âââââââââââââââââââââââââââ
   const statsAll = useMemo(() => {
     if (allLinks.length === 0) return { totalKm: 0, totalInts: 0, avgIri: 0, projCost2035: 0 };
     return {
