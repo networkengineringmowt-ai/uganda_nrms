@@ -144,9 +144,9 @@ export async function loadEnhancedProjects(): Promise<Project[]> {
 // âââ Canonical fallback constants âââââââââââââââââââââââââââââââââââââââââââââ
 // Used in loading states before analytics.json resolves.
 // Single definition â import from here, never re-define in component files.
-export const NETWORK_KM        = 21_291.541;
-export const PAVED_KM          = 6_312.098;
-export const PERCENT_PAVED     = 29.6;
+export const NETWORK_KM        = 21_302;
+export const PAVED_KM          = 6_405;
+export const PERCENT_PAVED     = 30.1;
 export const TOTAL_LINKS       = 1_017;
 export const PAVED_GOOD_PCT    = 94.2;
 export const UNPAVED_GOOD_PCT  = 62.0;
