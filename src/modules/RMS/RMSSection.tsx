@@ -940,7 +940,7 @@ const UNRA_LAYERS = [
       'Annual Work Programme (AWP) generation',
       'Medium Term Expenditure Framework (MTEF) 3-year rolling',
       'NDP IV Investment Pipeline (priority corridors)',
-      'OPRC Contract Management (6 active lots)',
+      'OPRC Contract Management (2,235 km · 90 links)',
       'Maintenance Station Programme (23 stations)',
       'Emergency Works Identification & Response',
       'Road Reserve Management',
