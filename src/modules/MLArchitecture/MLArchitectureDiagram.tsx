@@ -67,7 +67,7 @@ const NODES: NodeDef[] = [
       accuracy: 'Volume Â±3%, classification Â±8%',
       inputs: ['Axle signatures', 'Speed pulses', 'Video frames', 'Timestamp'],
       outputs: ['Hourly AADT by class', 'Speed distribution', 'Headway', 'Heavy vehicle %'],
-      description: '25 ATC stations (15 legacy 2016â2022, 10 new 2025+) on strategic corridors. Classify 12 vehicle classes. Feed real-time traffic models and seasonal factor computation.',
+      description: '10 ATC stations (2025+) on strategic corridors. Classify 12 vehicle classes. Feed real-time traffic models and seasonal factor computation.',
     },
   },
   {
