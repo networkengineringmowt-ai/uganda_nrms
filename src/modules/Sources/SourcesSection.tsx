@@ -38,6 +38,23 @@ export default function SourcesSection() {
       background: 'rgba(2,5,8,0.97)',
       fontFamily: "'Inter','Segoe UI',sans-serif",
     }}>
+
+        {/* ── Definition Card ── */}
+        <div style={{background:'rgba(99,102,241,0.04)',border:'1px solid rgba(99,102,241,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'flex-start',gap:16}}>
+          <div style={{fontSize:36,lineHeight:1,flexShrink:0}}>📚</div>
+          <div style={{flex:1}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
+              <span style={{fontSize:18,fontWeight:800,color:'rgba(99,102,241,1)',letterSpacing:-0.5}}>Data Sources & Catalogue</span>
+              <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>UBOS · URF · World Bank · AfDB · OpenStreetMap</span>
+            </div>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Comprehensive catalogue of data feeds, spatial layers, and statistical sources underpinning Uganda NRMS — including UBOS census, URF work plans, World Bank indicators, AfDB project data, and OpenStreetMap base layers.</p>
+            <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+              {["Supabase DB","UBOS Data","URF Records","World Bank","AfDB Stats","OpenStreetMap"].map(b=>(
+                <span key={b} style={{background:'rgba(99,102,241,0.12)',color:'rgba(99,102,241,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
+              ))}
+            </div>
+          </div>
+        </div>
       <style>{`
         @keyframes src-spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
       `}</style>
