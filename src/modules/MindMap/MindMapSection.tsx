@@ -330,6 +330,23 @@ export default function MindMapSection() {
       background: '#0a1628', overflow: 'hidden',
       fontFamily: "'Inter','Segoe UI',sans-serif",
     }}>
+
+        {/* ── Definition Card ── */}
+        <div style={{background:'rgba(139,92,246,0.04)',border:'1px solid rgba(139,92,246,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'flex-start',gap:16}}>
+          <div style={{fontSize:36,lineHeight:1,flexShrink:0}}>🧠</div>
+          <div style={{flex:1}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
+              <span style={{fontSize:18,fontWeight:800,color:'rgba(139,92,246,1)',letterSpacing:-0.5}}>NRMS Knowledge Graph</span>
+              <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>System Overview · Module Links · Data Flow · NDPIV</span>
+            </div>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Interactive knowledge graph and mind-map visualisation of Uganda NRMS module relationships — tracing data flows between condition assessment, HDM-4 modelling, budget planning, GIS layers, and NDPIV strategic goals.</p>
+            <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+              {["System Overview","Module Links","Data Flow","Cross-Module","NDPIV Map","Interactive"].map(b=>(
+                <span key={b} style={{background:'rgba(139,92,246,0.12)',color:'rgba(139,92,246,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
+              ))}
+            </div>
+          </div>
+        </div>
       {/* Toolbar */}
       <div style={{
         flexShrink: 0, display: 'flex', alignItems: 'center', gap: 10,
