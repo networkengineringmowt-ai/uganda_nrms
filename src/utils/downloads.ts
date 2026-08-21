@@ -3,7 +3,7 @@
  * All geospatial exports are built client-side from app state, matching
  * the server-generated files in /public/downloads/.
  */
-import type { Structure } from '../types';
+import type { Structure } from '../index';
 
 // ── Trigger a browser download ────────────────────────────────────────────────
 

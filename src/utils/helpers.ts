@@ -1,4 +1,4 @@
-import type { ConditionRating, TrafficLevel } from '../types';
+import type { ConditionRating, TrafficLevel } from '../index';
 
 // ─── Seeded pseudo-random (deterministic, no external deps) ──────────────────
 export function seededRandom(seed: number): number {
