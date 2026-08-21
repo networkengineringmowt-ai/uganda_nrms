@@ -23,7 +23,7 @@ import {
   ResponsiveContainer, Cell,
 } from 'recharts';
 import { useBMS } from '../../store/BMSContext';
-import type { Structure } from '../../types';
+import type { Structure } from '../../index';
 import { ROAD_STYLES, surfaceCategory } from '../../shared/mapSymbols';
 import FeatureAnalyticsPanel from '../../shared/FeatureAnalyticsPanel';
 import type { FeatureData } from '../../shared/FeatureAnalyticsPanel';
