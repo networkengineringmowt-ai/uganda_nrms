@@ -10,6 +10,7 @@ import SourceTableButton from '../../shared/SourceTableButton';
 import { useSectionData } from '../../hooks/useSectionData';
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
 import { useTableSort } from '../../shared/useTableSort';
+import SectionDashboard from '../modules/Dashboard/SectionDashboard';
 
 const C = {
   cyan: '#00f5ff', green: '#00ff88', yellow: '#ffd23f',
@@ -62,6 +63,8 @@ const DEFAULT_REGION_DATA = [
 
 
 const TABS = [
+  { id: 'dashboard', label: 'Dashboard' },
+
   { id: 'gap',      label: 'Budget Gap Analysis' },
   { id: 'matrix',   label: 'Intervention Matrix' },
   { id: 'region',   label: 'Regional Breakdown' },
@@ -85,7 +88,7 @@ const CT = ({ active, payload, label }: any) => {
 };
 
 export default function BudgetSection() {
-  const [tab, setTab] = useState<TabId>('gap');
+  const [tab, setTab] = useState<TabId>('dashboard');
   const imx = useTableSort(INTERVENTION_MATRIX, 'type');
   const { budgetAlignment, networkSummary } = useSectionData();
   const [regionData, setRegionData] = useState(DEFAULT_REGION_DATA);
@@ -189,7 +192,8 @@ export default function BudgetSection() {
       </div>
 
       {/* Gap Analysis */}
-      {tab === 'gap' && (
+      {tab === 'dashboard' && <SectionDashboard sectionId="budget" accent="#00f5ff" />}
+              {tab === 'gap' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div style={card(C.pink)}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
