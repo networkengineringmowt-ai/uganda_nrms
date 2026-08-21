@@ -92,7 +92,7 @@ export async function runDataAudit(
         tab: 'Bot Results Q12',
         field: 'total_links (surveyed subset)',
         value: String(q12['total_links'] ?? '?'),
-        expected: 'â¤ 1013 (surveyed subset of network)',
+        expected: 'â¤ 1017 (surveyed subset of network)',
         status: 'info',
         notes: 'Q12 covers surveyed links only, not full 21,160 km (mapped) network',
       });
