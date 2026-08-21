@@ -79,6 +79,23 @@ export default function GISMapView() {
 
   return (
     <div className="relative flex h-full w-full overflow-hidden">
+
+        {/* ── Definition Card ── */}
+        <div style={{background:'rgba(6,182,212,0.04)',border:'1px solid rgba(6,182,212,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'flex-start',gap:16}}>
+          <div style={{fontSize:36,lineHeight:1,flexShrink:0}}>🗺️</div>
+          <div style={{flex:1}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
+              <span style={{fontSize:18,fontWeight:800,color:'rgba(6,182,212,1)',letterSpacing:-0.5}}>GIS Map · MoWT DNR-001</span>
+              <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>District Network Roads · National Coverage · Field Survey</span>
+            </div>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>MoWT DNR-001 compliant GIS map for Uganda district and national road network coverage — supporting field survey georeferencing, road classification, encroachment mapping, and district-level network administration.</p>
+            <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+              {["MoWT DNR-001","District Roads","National Coverage","PostGIS","Leaflet JS","Field Survey"].map(b=>(
+                <span key={b} style={{background:'rgba(6,182,212,0.12)',color:'rgba(6,182,212,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
+              ))}
+            </div>
+          </div>
+        </div>
       {/* Map */}
       <MapContainer
         center={CENTER}
