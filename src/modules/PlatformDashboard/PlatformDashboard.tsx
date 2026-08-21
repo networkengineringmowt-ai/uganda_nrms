@@ -21,7 +21,7 @@ const NETWORK_MODULE_HEALTH: { id: string; name: string; status: 'ok' | 'warn' |
   { id: 'NETMAP',  name: 'Road Network Map',         status: 'ok',   note: '21,302 km ÃÂ· GeoJSON live ÃÂ· NDPIV FY25/26 mapping current', view: 'roadnetwork' },
   { id: 'STORY',   name: 'Network Story',            status: 'ok',   note: 'Scrollytelling narrative 1986 Ã¢ÂÂ present loaded',            view: 'networkstory' },
   { id: 'PMS',     name: 'Pavement Management (PMS)', status: 'ok',  note: 'Condition survey 2023/24; calibration current',             view: 'roadcondition' },
-  { id: 'BMS',     name: 'Bridge Management (BMS)',  status: 'ok',   note: '1,031 structures registered; inspections tracked',          view: 'bms' },
+  { id: 'BMS',     name: 'Bridge Management (BMS)',  status: 'ok',   note: '998 structures registered; inspections tracked',          view: 'bms' },
   { id: 'TIS',     name: 'Traffic Information (TIS)', status: 'ok',  note: '10 ATC stations active; 2025 count data loaded',            view: 'traffic' },
   { id: 'NDPIV',   name: 'Projects & NDP IV',        status: 'warn', note: '8/14 projects behind schedule; financial data Q3 2025',     view: 'projects' },
   { id: 'ARCH',    name: 'Platform Architecture',    status: 'ok',   note: 'System architecture diagram v2.0 Ã¢ÂÂ current build',          view: 'mlarchitecture' },
