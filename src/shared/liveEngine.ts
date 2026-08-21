@@ -1,7 +1,7 @@
 /**
  * liveEngine — the platform's background predictive engine.
  *
- * Loads the 1,013-link national road network ONCE, then on every clock tick
+ * Loads the 1,017-link national road network ONCE, then on every clock tick
  * projects each link's traffic and pavement condition forward to the current
  * fractional instant (yearNow) and aggregates network-wide "current values".
  *
