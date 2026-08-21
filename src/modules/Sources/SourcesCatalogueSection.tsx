@@ -56,7 +56,7 @@ const SOURCES: Source[] = [
 
   { name: 'Automatic Traffic Counter (ATC) Data',
     type: 'Survey', owner: 'Department of National Roads/DNR', yearRange: '2016âpresent',
-    coverage: '25 ATC stations (15 legacy + 10 new 2025)',
+    coverage: '10 ATC stations (2025+)',
     variables: 'Hourly AADT, speed, classification, axle signature',
     format: 'SQLite DB (traffic_platform.db), 607k+ readings',
     status: 'Active', module: ['TIS', 'Network'],
