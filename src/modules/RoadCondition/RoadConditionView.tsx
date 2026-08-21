@@ -1325,6 +1325,25 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
   return (
     <div style={{ display:'flex', flexDirection:'column', height:'100%', overflow:'hidden', background:'#0a0f1e' }}>
 
+        {/* ─── Definition card ─── */}
+        <div style={{ background:'rgba(255,71,87,0.04)', border:'1px solid rgba(255,71,87,0.14)', borderRadius:12, padding:'14px 18px', marginBottom:14 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:8 }}>
+            <span style={{ fontSize:26 }}>🛣️</span>
+            <div>
+              <div style={{ fontSize:15, fontWeight:900, color:'#e2e8f0', letterSpacing:'-0.02em' }}>Road Condition Assessment</div>
+              <div style={{ fontSize:10, color:'rgba(148,163,184,0.55)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.08em' }}>PCI · IRI · FWD · HDM-4 Deterioration Modelling</div>
+            </div>
+          </div>
+          <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>
+            Comprehensive pavement condition monitoring for Uganda's 21,302 km road network — PCI surveys, IRI roughness measurement, FWD structural assessment, pavement age analysis, deterioration modelling, and evidence-based intervention prioritisation aligned with MoWT quality thresholds.
+          </p>
+          <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
+            {['AASHTO PASER','IRI Roughness','FWD Structural','HDM-4 Modelled','PCI Survey','URF Priority'].map((b: string)=>(
+              <span key={b} style={{ fontSize:9, fontWeight:700, color:'#ff4757', background:'rgba(255,71,87,0.07)', border:'1px solid rgba(255,71,87,0.18)', borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
+            ))}
+          </div>
+        </div>
+
       {!embedded && <CrossLinkChipBar sectionId="roadcondition" />}
 
       {/* ââ BMS-style main tab bar ââââââââââââââââââââââââââââââââââââââââââââââ */}
