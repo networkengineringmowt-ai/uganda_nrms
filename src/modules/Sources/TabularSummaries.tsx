@@ -1136,7 +1136,7 @@ function AdtProjectionTable() {
     <TablePanel id="tbl-adt-projection"
       title="Annual Daily Traffic (ADT) Projections 2016â2040 by Road Link and Vehicle Class"
       accent={C.yellow}
-      source="network2026.geojson (aadt property, else derived from road class) projected via projectAADTByClass / per-class growth rates in trafficProjection.ts â all 1,013 links, paginated">
+      source="network2026.geojson (aadt property, else derived from road class) projected via projectAADTByClass / per-class growth rates in trafficProjection.ts â all 1,017 links, paginated">
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8,
         padding: '8px 14px 4px',
@@ -1259,7 +1259,7 @@ function AdtProjectionTable() {
       </div>
 
       <div style={{ padding: '4px 14px 12px', fontSize: 9, color: 'rgba(148,163,184,0.45)', fontStyle: 'italic' }}>
-        Full dataset (all 1,013 links Ã {ADT_PROJECTION_YEARS.length} years Ã {VC_CLASSES.length} vehicle classes) available via Supabase query: SELECT * FROM traffic_projections
+        Full dataset (all 1,017 links Ã {ADT_PROJECTION_YEARS.length} years Ã {VC_CLASSES.length} vehicle classes) available via Supabase query: SELECT * FROM traffic_projections
       </div>
     </TablePanel>
   );
@@ -1343,7 +1343,7 @@ export default function TabularSummaries() {
       }}>
         <div style={{ fontWeight: 800, color: C.cyan, marginBottom: 3, fontSize: 9.5, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Network Coverage (single source of truth)</div>
         <div>Official NDPIV FY25-26: <b style={{ color: '#fff' }}>21,302 km total</b> Â· <b style={{ color: '#22c55e' }}>6,405 km paved (30.1%)</b> Â· <b style={{ color: '#f59e0b' }}>14,897 km unpaved (69.9%)</b></div>
-        <div style={{ marginTop: 2 }}>Mapped in GeoJSON: <b style={{ color: '#fff' }}>21,160 km (mapped) (1,013 links)</b> Â· <b style={{ color: '#fb923c' }}>Unmapped: 142 km</b> â recently gazetted or under survey</div>
+        <div style={{ marginTop: 2 }}>Mapped in GeoJSON: <b style={{ color: '#fff' }}>21,160 km (mapped) (1,017 links)</b> Â· <b style={{ color: '#fb923c' }}>Unmapped: 142 km</b> â recently gazetted or under survey</div>
       </div>
 
       {/* ââ BMS-style tab bar ââ */}
@@ -1395,7 +1395,7 @@ export default function TabularSummaries() {
                   ['Unmapped gap',                        '142',    'km',           'GeoJSON vs official'],
                   ['Paved (Bituminous + Concrete)',        '6,334',  'km (30.1%)',  'DNR GIS Jun 2025'],
                   ['Unpaved (Gravel / Earth)',             '14,826', 'km (69.9%)',  'DNR GIS Jun 2025'],
-                  ['Road links (LRS segments)',            '1,013',  'links',       'DNR GIS Jun 2025'],
+                  ['Road links (LRS segments)',            '1,017',  'links',       'DNR GIS Jun 2025'],
                   ['Unique link IDs in GeoJSON',          '1,011',  'link IDs',    'GeoJSON analysis'],
                   ['Maintenance regions',                  '6',      'regions',     'Department of National Roads'],
                   ['Annual traffic count stations (TIS)',  '298',    'stations',    'TIS 2025'],
@@ -2232,7 +2232,7 @@ export default function TabularSummaries() {
           <SectionHeader icon={<Database size={15} style={{ color: C.pink }}/>} accent={C.pink}
             title="Data Quality & Audit" sub="GeoJSON completeness Â· survey coverage Â· KPI cross-validation Â· known gaps register"/>
           {/* tbl-076 */}
-          <TablePanel id="tbl-076" title="GeoJSON Field Completeness â network2026.geojson (1,013 features)" accent={C.pink} source="DNR GIS Section audit Jun 2025" chartTab="dataaudit" chartLabel="ð Data Audit â" onNavigate={navigate}>
+          <TablePanel id="tbl-076" title="GeoJSON Field Completeness â network2026.geojson (1,017 features)" accent={C.pink} source="DNR GIS Section audit Jun 2025" chartTab="dataaudit" chartLabel="ð Data Audit â" onNavigate={navigate}>
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Field</Th><Th>Total Features</Th><Th>Filled</Th><Th>Completeness %</Th></tr></thead>
             <tbody>{GEOJSON_COMPLETENESS.map(r=><tr key={r.field}><Td mono style={{ color:C.cyan }}>{r.field}</Td><Td align="right" mono>{r.features}</Td><Td align="right" mono>{r.filled}</Td><Td align="right" mono style={{ color:r.pct===100?C.green:r.pct>90?C.yellow:'#ef4444', fontWeight:700 }}>{r.pct.toFixed(1)}%</Td></tr>)}</tbody></table>
           </TablePanel>
@@ -2457,11 +2457,11 @@ export default function TabularSummaries() {
           <div style={{ fontSize: 10, fontWeight: 900, color: C.teal, textTransform: 'uppercase',
             letterSpacing: '0.12em', marginBottom: 10, marginTop: 20,
             borderBottom: '1px solid rgba(0,212,170,0.1)', paddingBottom: 6 }}>
-            Â§24 â GeoJSON Road Links (network2026.geojson â Full 1,013 rows)
+            Â§24 â GeoJSON Road Links (network2026.geojson â Full 1,017 rows)
           </div>
           {/* tbl-links-full */}
           <TablePanel id="tbl-links-full" title="All Road Links from network2026.geojson â All Properties" accent={C.teal}
-            source="network2026.geojson Â· DNR GIS Section 18 Jun 2025 Â· 1,013 links Â· 21,160 km mapped | Official network: 21,302 km | Gap: 142 km">
+            source="network2026.geojson Â· DNR GIS Section 18 Jun 2025 Â· 1,017 links Â· 21,160 km mapped | Official network: 21,302 km | Gap: 142 km">
             <div style={{ padding:'8px 14px 4px', display:'flex', alignItems:'center', gap:10, flexWrap:'wrap' }}>
               <input
                 value={linkSearch}
