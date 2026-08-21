@@ -147,6 +147,25 @@ export default function PublicInvestmentSection() {
 
   return (
     <div style={{ padding: '20px 18px', minHeight: '100%' }}>
+
+      {/* ─── Definition card ─── */}
+      <div style={{ background:'rgba(77,159,255,0.04)', border:'1px solid rgba(77,159,255,0.14)', borderRadius:12, padding:'14px 18px', marginBottom:14 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:8 }}>
+          <span style={{ fontSize:26 }}>💰</span>
+          <div>
+            <div style={{ fontSize:15, fontWeight:900, color:'#e2e8f0', letterSpacing:'-0.02em' }}>Public Investment Management</div>
+            <div style={{ fontSize:10, color:'rgba(148,163,184,0.55)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.08em' }}>Uganda · NDPIV · MoFPED · AfDB / World Bank</div>
+          </div>
+        </div>
+        <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>
+          Strategic investment portfolio management for Uganda's road network — tracking NDPIV capital allocations, PPP frameworks, donor-funded programmes, and budget utilisation across public, private, and ODA-financed road investments.
+        </p>
+        <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
+          {['NDPIV Aligned','PPP Framework','AfDB Funded','ODA Tracked','MoFPED Approved','PPDA Compliant'].map((b: string)=>(
+            <span key={b} style={{ fontSize:9, fontWeight:700, color:'#4d9fff', background:'rgba(77,159,255,0.07)', border:'1px solid rgba(77,159,255,0.18)', borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
+          ))}
+        </div>
+      </div>
       <ModuleNavBar module="PIM" />
       {/* Header */}
       <div style={{ marginBottom: 20 }}>
