@@ -1,4 +1,4 @@
-﻿/**
+/**
  * TrafficSummary â€” Summary Tables view.
  * Sub-tabs: Road Links Data | Traffic Counting Stations
  * Year pills 2016-2035 with interpolated AADT values.
@@ -445,7 +445,7 @@ export default function TrafficSummary() {
           Traffic Summary Tables
         </div>
         <div style={{ fontSize:11, color:'rgba(148,163,184,0.5)', marginTop:4 }}>
-          {features.length.toLocaleString()} road links · 25 ATC + {stations.length} manual TIS stations ·
+          {features.length.toLocaleString()} road links · 10 ATC + {stations.length} manual TIS stations ·
           Year-interpolated AADT values using ML growth factors
         </div>
       </div>
