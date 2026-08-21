@@ -242,6 +242,23 @@ export default function RoadReserveSection() {
 
   return (
     <div style={{ padding: '20px 18px', minHeight: '100%',
+
+      {/* ─── Definition card ─── */}
+      <div style={{ background:`rgba(${color},0.04)`, border:`1px solid rgba(${color},0.14)`, borderRadius:12, padding:'14px 18px', marginBottom:14 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:8 }}>
+          <span style={{ fontSize:26 }}>🏛️</span>
+          <div>
+            <div style={{ fontSize:15, fontWeight:900, color:'#e2e8f0', letterSpacing:'-0.02em' }}>Road Reserve Management</div>
+            <div style={{ fontSize:10, color:'rgba(148,163,184,0.55)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.08em' }}>Land Rights · Encroachments · Gazettement · Permits</div>
+          </div>
+        </div>
+        <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>Legal road reserve boundary management across Uganda's national road network — tracking land rights, encroachment enforcement, gazettement status, permit approvals, and boundary demarcation aligned with MoWT land acquisition frameworks and UNRA reserve standards.</p>
+        <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
+          {["MoWT Land Rights","UNRA Standards","Gazettement","Permits","Encroachment","Boundary Survey"].map((b: string)=>(
+            <span key={b} style={{ fontSize:9, fontWeight:700, color:`rgb(${color})`, background:`rgba(${color},0.07)`, border:`1px solid rgba(${color},0.18)`, borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
+          ))}
+        </div>
+      </div>
       background: 'linear-gradient(180deg, rgba(8,14,28,0.4) 0%, transparent 100%)' }}>
 
       <ModuleNavBar module="Road Reserve" />
