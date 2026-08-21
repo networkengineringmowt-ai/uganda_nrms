@@ -492,6 +492,25 @@ export default function LifecycleSection() {
   return (
     <div style={{ display:'flex', flexDirection:'column', minHeight:'100%', fontFamily: "'Inter','Segoe UI',sans-serif" }}>
 
+      {/* ─── Definition card ─── */}
+      <div style={{ background:'rgba(0,212,170,0.04)', border:'1px solid rgba(0,212,170,0.14)', borderRadius:12, padding:'14px 18px', marginBottom:14 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:8 }}>
+          <span style={{ fontSize:26 }}>♻️</span>
+          <div>
+            <div style={{ fontSize:15, fontWeight:900, color:'#e2e8f0', letterSpacing:'-0.02em' }}>Asset Lifecycle Management</div>
+            <div style={{ fontSize:10, color:'rgba(148,163,184,0.55)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.08em' }}>ISO 55001 · WLC Analysis · MoWT Standards</div>
+          </div>
+        </div>
+        <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>
+          Whole-life cost analysis and asset lifecycle planning for Uganda's road and bridge network — modelling deterioration curves, optimal intervention timing, residual life estimates, and long-term maintenance cost projections aligned with ISO 55001 asset management principles.
+        </p>
+        <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
+          {['ISO 55001','WLC Analysis','HDM-4 Modelled','MoWT Standards','AfDB Aligned','NDPIV Goals'].map((b: string)=>(
+            <span key={b} style={{ fontSize:9, fontWeight:700, color:'#00d4aa', background:'rgba(0,212,170,0.07)', border:'1px solid rgba(0,212,170,0.18)', borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
+          ))}
+        </div>
+      </div>
+
       <CrossLinkChipBar sectionId="lifecycle" />
 
       {/* ââ BMS-style tab bar âââââââââââââââââââââââââââââââââââââââââââââââ */}
