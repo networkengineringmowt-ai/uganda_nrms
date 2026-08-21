@@ -138,39 +138,43 @@ export default function BudgetSection() {
       <CrossLinkChipBar sectionId="budget" />
     <div style={{ padding: '8px 14px', flex: 1 }}>
       <ModuleNavBar module="Budget" />
-      {/* Header — compact single strip: title + KPI chips on one row */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap',
-        padding: '8px 12px', marginBottom: 8, borderRadius: 10,
-        background: 'rgba(8,14,28,0.7)', border: `1px solid rgba(${hexRgb(C.pink)},0.2)`,
-      }}>
-        <div style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0,
-          background: `linear-gradient(135deg, rgba(${hexRgb(C.pink)},0.25), rgba(${hexRgb(C.red)},0.1))`,
-          border: `1px solid rgba(${hexRgb(C.pink)},0.4)`,
-          display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <DollarSign size={14} style={{ color: C.pink }}/>
+            {/* Definition card */}
+      <div style={{ background: 'rgba(255,45,120,0.04)', border: '1px solid rgba(255,45,120,0.15)', borderRadius: 14, padding: '14px 20px', marginBottom: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+          <div style={{ width: 44, height: 44, borderRadius: 12, flexShrink: 0, background: 'linear-gradient(135deg, rgba(255,45,120,0.2), rgba(255,51,102,0.1))', border: '1px solid rgba(255,45,120,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <DollarSign size={20} style={{ color: C.pink }} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 15, fontWeight: 900, color: '#e2eaf4', marginBottom: 5 }}>Budget &amp; Maintenance Finance</div>
+            <div style={{ fontSize: 11, color: 'rgba(203,213,225,0.8)', lineHeight: 1.6 }}>
+              M&amp;R funding gaps, cost intervention matrix, and regional budget allocation for Uganda's{' '}
+              <strong>{(networkSummary?.total_length_km || 21302).toLocaleString()} km</strong> national road network.
+              Based on MoWT Schedule of Rates · URF Annual Work Plans · NDPIV FY 2025/26.
+            </div>
+            <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+              {['URF Work Plan', 'NDPIV Aligned', 'MoWT Rates', 'HDM-4 Cost Models', 'FY 2025/26'].map(tag => (
+                <span key={tag} style={{ fontSize: 8, padding: '2px 8px', borderRadius: 4, fontWeight: 700, background: 'rgba(255,45,120,0.1)', border: '1px solid rgba(255,45,120,0.25)', color: C.pink }}>{tag}</span>
+              ))}
+            </div>
+          </div>
         </div>
-        <div style={{ minWidth: 170 }}>
-          <div style={{ fontSize: 14, fontWeight: 900, color: '#e2eaf4', lineHeight: 1.15 }}>Budget &amp; Maintenance</div>
-          <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.6)' }}>M&amp;R budgets · funding gaps · cost matrix</div>
-        </div>
-        <div style={{ flex: 1 }} />
+      </div>
+
+      {/* KPI tiles */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 16 }}>
         {[
-          { label: 'Required FY25/26', value: `UGX ${totalRequired}B`, color: C.red },
-          { label: 'Allocated FY25/26 (URF WP)', value: allocated2526 != null ? `UGX ${allocated2526.toFixed(1)}B` : `UGX ${currentAlloc}B`, color: C.yellow },
-          { label: 'Funding gap', value: `UGX ${(totalRequired - (allocated2526 ?? currentAlloc)).toFixed(0)}B`, color: C.pink },
-          { label: 'Network', value: `${networkSummary?.total_length_km || 21160} km`, color: C.green },
+          { label: 'Required FY25/26', value: `UGX ${totalRequired}B`, color: C.red,    tip: 'Total maintenance budget required across all 6 regions' },
+          { label: 'Allocated (URF WP)', value: allocated2526 != null ? `UGX ${allocated2526.toFixed(1)}B` : `UGX ${currentAlloc}B`, color: C.yellow, tip: 'URF Annual Work Plan allocation FY 2025/26' },
+          { label: 'Funding Gap', value: `UGX ${(totalRequired - (allocated2526 ?? currentAlloc)).toFixed(0)}B`, color: C.pink,  tip: 'Chronic underfunding gap — ~40% of required budget unmet since 2018' },
+          { label: 'Network Coverage', value: `${networkSummary?.total_length_km || 21302}`, color: C.green,  tip: 'National road network km under DNR management' },
         ].map(k => (
-          <div key={k.label} style={{ display: 'flex', alignItems: 'baseline', gap: 6,
-            padding: '5px 11px', borderRadius: 8,
-            background: `rgba(${hexRgb(k.color)},0.07)`, border: `1px solid rgba(${hexRgb(k.color)},0.25)` }}>
-            <span style={{ fontSize: 13.5, fontWeight: 900, color: k.color }}>{k.value}</span>
-            <span style={{ fontSize: 8, fontWeight: 700, color: 'rgba(148,163,184,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{k.label}</span>
+          <div key={k.label} title={k.tip} style={{ background: `rgba(${hexRgb(k.color)},0.06)`, border: `1px solid rgba(${hexRgb(k.color)},0.2)`, borderRadius: 10, padding: '12px 16px' }}>
+            <div style={{ fontSize: 20, fontWeight: 900, color: k.color, lineHeight: 1 }}>{k.value}<span style={{ fontSize: 9, fontWeight: 500, marginLeft: 3, color: 'rgba(148,163,184,0.6)' }}>{k.label === 'Network Coverage' ? ' km' : ''}</span></div>
+            <div style={{ fontSize: 8, fontWeight: 700, color: 'rgba(148,163,184,0.5)', marginTop: 3, textTransform: 'uppercase', letterSpacing: '0.09em' }}>{k.label}</div>
           </div>
         ))}
       </div>
-
-      {/* ── BMS-style tab bar ── */}
+{/* ── BMS-style tab bar ── */}
       <div style={{
         display: 'flex', gap: 2, padding: '0 0 0 0', marginBottom: 10, flexShrink: 0,
         borderBottom: '1px solid rgba(77,159,255,0.15)',
