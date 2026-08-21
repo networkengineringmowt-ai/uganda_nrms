@@ -159,41 +159,24 @@ export default function PlatformDashboard() {
   return (
     <div className="flex-1 overflow-y-auto p-3 space-y-3 animate-fade-in">
 
-      {/* Ã¢ÂÂÃ¢ÂÂ Definition card (RMS-style) Ã¢ÂÂÃ¢ÂÂ */}
-      <div style={{
-        background: 'rgba(77,159,255,0.04)',
-        border: '1px solid rgba(77,159,255,0.15)',
-        borderRadius: 14, padding: '14px 18px',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
-          <div style={{
-            width: 44, height: 44, borderRadius: 12, flexShrink: 0,
-            background: 'linear-gradient(135deg, rgba(77,159,255,0.2), rgba(0,245,255,0.1))',
-            border: '1px solid rgba(77,159,255,0.3)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <Map size={20} style={{ color: '#4d9fff' }} />
-          </div>
+      {/* ─── Definition card ─── */}
+      <div style={{ background:'rgba(77,159,255,0.04)', border:'1px solid rgba(77,159,255,0.14)', borderRadius:12, padding:'14px 18px', marginBottom:2 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:8 }}>
+          <span style={{ fontSize:26 }}>🗺️</span>
           <div>
-            <div style={{ fontSize: 16, fontWeight: 900, color: '#e2eaf4', marginBottom: 6 }}>
-              Uganda National Roads Management Platform Ã¢ÂÂ Network Overview
-            </div>
-            <div style={{ fontSize: 12, color: 'rgba(203,213,225,0.8)', lineHeight: 1.7 }}>
-              The <strong style={{ color: '#4d9fff' }}>DNR Road Network Repository</strong> consolidates Uganda's
-              full <strong>21,302 km</strong> national road network Ã¢ÂÂ paved and unsealed links, bridges, traffic
-              count stations, and project pipelines Ã¢ÂÂ into a single GIS-integrated platform for the Department of
-              National Roads (DNR), Ministry of Works and Transport. Use the tabs above to explore the live road
-              network map, the network's historical story (1986 Ã¢ÂÂ present), and the platform's system architecture.
-            </div>
-            <div style={{ marginTop: 10, display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-              {['GIS Integrated', 'NDPIV FY25/26', 'GeoJSON Live', 'ML-Enhanced', '6 Regions ÃÂ· 23 Stations'].map(t => (
-                <Chip key={t} label={t} color="#4d9fff" />
-              ))}
-            </div>
+            <div style={{ fontSize:15, fontWeight:900, color:'#e2e8f0', letterSpacing:'-0.02em' }}>Uganda National Roads Management System</div>
+            <div style={{ fontSize:10, color:'rgba(148,163,184,0.55)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.08em' }}>MoWT · UNRA · URF · AfDB / World Bank</div>
           </div>
         </div>
+        <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>
+          Integrated platform for Uganda's 21,302 km national road network — pavement management, bridge asset management, traffic intelligence, geo-spatial mapping, budget analytics, and socio-economic impact assessment aligned with NDPIV and transport sector goals.
+        </p>
+        <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
+          {['NDPIV Aligned','ISO 55001','HDM-4 Powered','GIS Integrated','AfDB / World Bank','ML-Enhanced'].map((b: string)=>(
+            <span key={b} style={{ fontSize:9, fontWeight:700, color:'#4d9fff', background:'rgba(77,159,255,0.07)', border:'1px solid rgba(77,159,255,0.18)', borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
+          ))}
+        </div>
       </div>
-
       {/* Ã¢ÂÂÃ¢ÂÂ Stat tiles (RMS-style animated KPI banner) Ã¢ÂÂÃ¢ÂÂ */}
       <div className="grid grid-cols-2 lg:grid-cols-6 gap-2.5">
         <StatTile label="Total Network" value="21302" unit="km" color="#4d9fff" onNav={nav}
