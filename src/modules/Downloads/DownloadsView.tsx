@@ -131,6 +131,23 @@ export default function DownloadsView() {
 
   return (
     <div className="min-h-full bg-slate-950 text-slate-100 p-6 animate-fade-in">
+
+        {/* ── Definition Card ── */}
+        <div style={{background:'rgba(100,116,139,0.04)',border:'1px solid rgba(100,116,139,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'flex-start',gap:16}}>
+          <div style={{fontSize:36,lineHeight:1,flexShrink:0}}>📥</div>
+          <div style={{flex:1}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
+              <span style={{fontSize:18,fontWeight:800,color:'rgba(100,116,139,1)',letterSpacing:-0.5}}>Downloads & Reports Centre</span>
+              <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>PDF · Excel · CSV · GIS Shapefiles · MoWT Reports</span>
+            </div>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Centralised download and export hub for Uganda NRMS — providing authoritative PDF reports, Excel workbooks, CSV data extracts, and GIS shapefiles for road condition, traffic, budget, and project data approved by MoWT and UNRA.</p>
+            <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+              {["PDF Reports","Excel Exports","CSV Data","GIS Shapefiles","MoWT Reports","UNRA Data"].map(b=>(
+                <span key={b} style={{background:'rgba(100,116,139,0.12)',color:'rgba(100,116,139,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
+              ))}
+            </div>
+          </div>
+        </div>
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
