@@ -98,6 +98,7 @@ import {
   CURRENT_YEAR,
 } from '../../shared/trafficProjection';
 import { useNowTick } from '../../shared/nowcast';
+import SectionDashboard from '../modules/Dashboard/SectionDashboard';
 
 // Legacy shape kept for existing UI code (label + pct)
 const VC_CLASSES = SHARED_VC_CLASSES.map(c => ({ label: c.label, short: c.short, pct: c.share }));
@@ -618,7 +619,7 @@ export default function TrafficSection() {
   const [isPlaying,    setIsPlaying]    = useState(false);
   const [now,          setNow]          = useState(() => new Date());
   const [selFeature,   setSelFeature]   = useState<FeatureData | null>(null);
-  const [activeTab,    setActiveTab]    = useState<'map' | 'counts' | 'trends' | 'stations'>('map');
+  const [activeTab,    setActiveTab]    = useState<'dashboard' | 'map' | 'counts' | 'trends' | 'stations'>('dashboard');
   const [countsTab,    setCountsTab]    = useState<'linxclass' | 'trafficanalytics' | 'trafficsummary' | 'proj2040'>('linxclass');
   const [trendsTab,    setTrendsTab]    = useState<'growthfactors' | 'seasonal' | 'overloading' | 'analytics'>('growthfactors');
   const { stations: tcsStations } = useTCSStations();
@@ -892,7 +893,8 @@ export default function TrafficSection() {
       )}
 
       {/* ══ Map tab content — sidebar + map ═══════════════════════════════════ */}
-      {activeTab === 'map' &&
+      {activeTab === 'dashboard' && <SectionDashboard sectionId="traffic" accent="#00f5ff" />}
+              {activeTab === 'map' &&
       <div style={{ flex: 1, minHeight: 0, display: 'flex', overflow: 'hidden' }}>
 
       {/* ══ RIGHT — CONTROLS + MAP + TIMELINE ════════════════════════════════ */}
