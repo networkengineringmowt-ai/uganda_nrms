@@ -5,7 +5,7 @@
  */
 import { lazy, Suspense, useState } from 'react';
 import { Activity, BookOpen, Cpu, ShieldCheck, Users } from 'lucide-react';
-import type { ActiveView } from '../../types';
+import type { ActiveView } from '../../index';
 
 const ADMIN_Identity  = lazy(() => import('./IdentityManager'));
 const ADMIN_Activity  = lazy(() => import('./ActivityLog'));
