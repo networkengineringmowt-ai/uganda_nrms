@@ -216,7 +216,7 @@ ROAD NUMBER FORMAT: Class letter + 3-digit zero-padded number
   • A001, A002, A003 ... (NOT the old "A1", "A2" shorthand)
   • B100, B101, B102 ...
   • C003, C150, C261 ...
-  • M3, M20 (municipal roads may use shorter codes)
+  • M3, M20 (grade-separated highways/motorways use shorter codes — NOT municipal/urban roads)
 
 ROAD CLASSIFICATION:
   • Class A: International/trunk roads — 2,615 km (e.g. A001, A002, A004)
