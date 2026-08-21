@@ -187,7 +187,7 @@ const NODES: NodeDef[] = [
     x: 39, y: 78,
     detail: {
       algorithm: 'NBI component rating aggregation',
-      trainingSize: '1,031 structures',
+      trainingSize: '998 structures',
       accuracy: 'Component rating 0â9 scale',
       inputs: ['Deck/superstructure/substructure ratings', 'ADT', 'Year built', 'Span length'],
       outputs: ['Structure Health Index (SHI)', 'Load capacity ratio', 'Remaining service life'],
@@ -237,7 +237,7 @@ const NODES: NodeDef[] = [
     x: 56, y: 62,
     detail: {
       algorithm: 'Random Forest classifier (500 trees)',
-      trainingSize: '1,031 structures, 22 features',
+      trainingSize: '998 structures, 22 features',
       accuracy: 'Priority rank correlation Ï = 0.91',
       inputs: ['SHI', 'ADT', 'Age', 'Span', 'Flood risk', 'Strategic importance'],
       outputs: ['Priority score 0â100', 'Intervention urgency', 'Budget year allocation'],
@@ -287,7 +287,7 @@ const NODES: NodeDef[] = [
     x: 74, y: 62,
     detail: {
       algorithm: 'Multi-criteria scoring + budget optimisation',
-      trainingSize: '1,031 structures',
+      trainingSize: '998 structures',
       accuracy: 'Programme delivery rate 91% (FY2023/24)',
       inputs: ['RF priority scores', 'Inspection dates', 'Cost estimates'],
       outputs: ['Annual inspection programme', 'Maintenance work orders', 'Capital works priority list'],
