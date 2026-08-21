@@ -93,7 +93,7 @@ const RAW_DICTIONARY: DictEntry[] = [
       { value: 'A', meaning: 'Class A — international trunk / primary corridor', color: '#00f5ff' },
       { value: 'B', meaning: 'Class B — national link road', color: '#00ff88' },
       { value: 'C', meaning: 'Class C — district/feeder collector', color: '#ffd23f' },
-      { value: 'M', meaning: 'Class M — urban/municipal road', color: '#b967ff' },
+      { value: 'M', meaning: 'Class M — grade-separated highway / motorway (controlled access)', color: '#b967ff' },
     ],
   },
   {

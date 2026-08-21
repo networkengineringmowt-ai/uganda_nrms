@@ -27,7 +27,7 @@ function LegendContent({ title, items }: { title?: string; items: LegendItem[] }
 
   return (
     <div style={{
-      background: 'rgba(8,8,8,0.9)',
+      background: 'rgba(8,14,28,0.9)',
       border: '1px solid rgba(255,255,255,0.1)',
       borderRadius: 8,
       padding: collapsible ? '7px 10px' : '10px 12px',
@@ -120,7 +120,7 @@ export const LEGEND_ROAD_NETWORK: LegendItem[] = [
   { color: '#00f5ff', label: 'Class A — National Road' },
   { color: '#00ff88', label: 'Class B — National Road' },
   { color: '#f59e0b', label: 'Class C — District Road' },
-  { color: '#94a3b8', label: 'Class M — Municipal', dash: true },
+  { color: '#94a3b8', label: 'Class M — Grade-Separated Highway', dash: true },
   { color: '#C8A84B', label: 'Unpaved / Gravel', dash: true },
 ];
 
@@ -132,11 +132,11 @@ export const LEGEND_STRUCTURES: LegendItem[] = [
 
 // STRUCTURE CONDITION LEGEND — Color-coded by rating (1=worst, 5=best)
 export const LEGEND_STRUCTURE_CONDITION: LegendItem[] = [
-  { color: '#ef4444', label: 'Critical' },
-  { color: '#f97316', label: 'Poor' },
-  { color: '#eab308', label: 'Marginal' },
-  { color: '#84cc16', label: 'Satisfactory' },
-  { color: '#22c55e', label: 'Good' },
+  { color: '#ef4444', label: '1 – Poor (Critical)' },
+  { color: '#f97316', label: '2 – Bad' },
+  { color: '#eab308', label: '3 – Fair' },
+  { color: '#84cc16', label: '4 – Good' },
+  { color: '#22c55e', label: '5 – Excellent' },
 ];
 
 // PAVEMENT CONDITION LEGEND — HDM-4 / SATCC TRH17 IRI thresholds
@@ -167,38 +167,21 @@ export const LEGEND_INFRA: LegendItem[] = [
   { color: '#eab308', label: 'Maintenance Station', circle: true },
 ];
 
-// PROJECT STATUS LEGEND — matches MARKER_COLOR in ProjectsView
+// PROJECT STATUS LEGEND — Road project phases
 export const LEGEND_PROJECTS: LegendItem[] = [
   { color: '#22c55e', label: 'Completed', circle: true },
-  { color: '#f59e0b', label: 'Ongoing', circle: true },
-  { color: '#3b82f6', label: 'Planned', circle: true },
+  { color: '#3b82f6', label: 'Ongoing', circle: true },
+  { color: '#fbbf24', label: 'Planned', circle: true },
+  { color: '#f97316', label: 'Stalled', circle: true },
+  { color: '#64748b', label: 'Not Started', circle: true },
 ];
 
-// CONGESTION LEGEND — matches the CONG palette used by the prediction layers
+// CONGESTION LEGEND — Traffic congestion levels
 export const LEGEND_CONGESTION: LegendItem[] = [
-  { color: '#00ff88', label: 'Low', circle: true },
-  { color: '#ffd23f', label: 'Medium', circle: true },
-  { color: '#ff6b35', label: 'High', circle: true },
-  { color: '#ff2d78', label: 'Critical', circle: true },
-];
-
-// ATC STATION LEGEND — stations coloured by region (matches REGION_CLR in ATCView)
-export const LEGEND_ATC_REGIONS: LegendItem[] = [
-  { color: '#00f5ff', label: 'Central', circle: true },
-  { color: '#ff6b35', label: 'Eastern', circle: true },
-  { color: '#b967ff', label: 'Northern', circle: true },
-  { color: '#ff2d78', label: 'North East', circle: true },
-  { color: '#00ff88', label: 'Western', circle: true },
-  { color: '#ffd23f', label: 'South', circle: true },
-];
-
-// OVERLOADING LEGEND — link risk lines + weighbridge points (matches RISK_COLOR)
-export const LEGEND_OVERLOADING: LegendItem[] = [
-  { color: '#ef4444', label: 'Critical Risk' },
-  { color: '#f97316', label: 'High Risk' },
-  { color: '#eab308', label: 'Medium Risk' },
-  { color: '#22c55e', label: 'Low Risk' },
-  { color: '#f97316', label: 'Weighbridge Station', circle: true },
+  { color: '#22c55e', label: 'Free Flow', circle: true },
+  { color: '#84cc16', label: 'Moderate', circle: true },
+  { color: '#fbbf24', label: 'Heavy', circle: true },
+  { color: '#ef4444', label: 'Severe', circle: true },
 ];
 
 // ── ESRI-convention component sets ────────────────────────────────────────────
@@ -208,7 +191,7 @@ export const LEGEND_ROAD_CLASSES: LegendItem[] = [
   { color: '#00f5ff', label: 'Class A — National Road' },
   { color: '#00ff88', label: 'Class B — National Road' },
   { color: '#f59e0b', label: 'Class C — District Road' },
-  { color: '#94a3b8', label: 'Class M — Municipal', dash: true },
+  { color: '#94a3b8', label: 'Class M — Grade-Separated Highway', dash: true },
   { color: '#C8A84B', label: 'Unpaved / Gravel', dash: true },
 ];
 
@@ -243,18 +226,17 @@ export const LEGEND_WATER: LegendItem[] = [
   { color: '#1d4ed8', label: 'River / Stream', dash: true },
 ];
 
-// LEGEND_INFRA_POINTS — infrastructure reference layers only (points + lines).
-// Road symbology is covered by each map's own dedicated legend, and water /
-// vegetation now come from the basemap itself, so neither appears here.
-export const LEGEND_INFRA_POINTS: LegendItem[] = [
-  ...LEGEND_POINTS_FULL,
-  ...LEGEND_LINES,
-];
-
-// LEGEND_FULL — kept as an alias for maps that still want the combined key.
-// Water and protected-area entries removed: those layers were dropped in
-// favour of the basemap's own rendering.
+// LEGEND_FULL — all feature types in ESRI cartographic order for maps with
+// roads + InfraLayers + WaterLayers:
+//   1. Roads (by class/condition — most important)
+//   2. Points of interest (stations, airports, ferries)
+//   3. Area features (regions, districts, reserves)
+//   4. Linear features (rivers, railways, ferry routes)
+//   5. Base reference (scale bar / north arrow rendered separately on the map)
 export const LEGEND_FULL: LegendItem[] = [
+  ...LEGEND_ROAD_CLASSES,
   ...LEGEND_POINTS_FULL,
+  ...LEGEND_AREAS,
   ...LEGEND_LINES,
+  ...LEGEND_WATER,
 ];
