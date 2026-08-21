@@ -1,5 +1,5 @@
 import { X, MapPin, Calendar, Wrench, AlertTriangle, Camera } from 'lucide-react';
-import type { Structure } from '../../types';
+import type { Structure } from '../../index';
 import { conditionLabel, conditionColor, conditionBadge, formatDate, formatUGX } from '../../utils/helpers';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ReferenceLine } from 'recharts';
 

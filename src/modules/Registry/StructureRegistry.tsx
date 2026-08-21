@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Search, Filter, Download, ChevronUp, ChevronDown, Eye } from 'lucide-react';
 import { useBMS } from '../../store/BMSContext';
-import type { Structure } from '../../types';
+import type { Structure } from '../../index';
 import { conditionLabel, conditionColor, conditionBadge, formatDate, formatUGX } from '../../utils/helpers';
 import { downloadGeoJSON, downloadKML } from '../../utils/downloads';
 import StructureDetailModal from './StructureDetailModal';
