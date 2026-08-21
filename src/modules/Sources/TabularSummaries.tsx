@@ -3,7 +3,7 @@ import { useBMS } from '../../store/BMSContext';
 import { Table2, Download, ArrowUpRight, FileText, FolderOpen, BarChart3, ExternalLink,
   Truck, Shield, Wrench, Clock, Leaf, Globe, Users, Network, DollarSign, Database,
   HardHat, Route, Activity } from 'lucide-react';
-import type { ActiveView } from '../../types';
+import type { ActiveView } from '../../index';
 import { projectAllClasses, projectAADTByClass, VC_CLASSES, NETWORK_BLENDED_GROWTH } from '../../shared/trafficProjection';
 
 const DocumentStore = lazy(() => import('../Documents/DocumentStore'));
