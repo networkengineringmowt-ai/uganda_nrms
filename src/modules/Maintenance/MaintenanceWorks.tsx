@@ -70,6 +70,25 @@ export default function MaintenanceWorks() {
 
   return (
     <div className="flex flex-col h-full animate-fade-in">
+
+      {/* ─── Definition card ─── */}
+      <div style={{ background:'rgba(255,215,63,0.04)', border:'1px solid rgba(255,215,63,0.14)', borderRadius:12, padding:'14px 18px', marginBottom:14 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:8 }}>
+          <span style={{ fontSize:26 }}>🔧</span>
+          <div>
+            <div style={{ fontSize:15, fontWeight:900, color:'#e2e8f0', letterSpacing:'-0.02em' }}>Maintenance Works Programme</div>
+            <div style={{ fontSize:10, color:'rgba(148,163,184,0.55)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.08em' }}>MoWT · URF · Force Account · Community Works</div>
+          </div>
+        </div>
+        <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>
+          Active routine and periodic maintenance contracts across Uganda's road network — tracking contractor progress, payment disbursements, physical completion rates, and quality assurance against URF Work Plan targets for FY 2025/26.
+        </p>
+        <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
+          {['URF Work Plan','PPDA Compliant','HDM-4 Standards','Force Account','Community Works','FY 2025/26'].map((b: string)=>(
+            <span key={b} style={{ fontSize:9, fontWeight:700, color:'#ffd23f', background:'rgba(255,215,63,0.07)', border:'1px solid rgba(255,215,63,0.18)', borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
+          ))}
+        </div>
+      </div>
       {/* KPI strip */}
       <div className="flex-shrink-0 grid grid-cols-5 gap-px bg-slate-700/40 border-b border-slate-700/60">
         <KPIStrip label="Planned"    value={kpis.planned}   color="text-blue-400" />
