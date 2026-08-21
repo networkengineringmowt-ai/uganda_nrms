@@ -781,7 +781,7 @@ const SOURCES: Source[] = [
     variables: 'Culvert inspection ratings, hydraulic performance, maintenance triggers, replacement criteria',
     format: 'PDF',
     status: 'Archived', module: ['BMS'],
-    notes: 'Culvert condition ratings methodology used in DNR BMS culvert inventory (485 structures).' },
+    notes: 'Culvert condition ratings methodology used in DNR BMS culvert inventory (452 structures).' },
 
   { name: 'Rural Road Access and Poverty in Uganda (World Bank 2016)',
     category: 'C', type: 'Research', owner: 'World Bank / Uganda Bureau of Statistics', yearRange: '2016',
