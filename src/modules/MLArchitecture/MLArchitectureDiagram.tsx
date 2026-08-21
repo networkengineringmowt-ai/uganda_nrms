@@ -707,6 +707,23 @@ export default function MLArchitectureDiagram() {
           boxShadow: `-8px 0 40px rgba(0,0,0,0.6), inset 1px 0 0 rgba(${hexToRgb(LAYER_COLORS[selected.layer])},0.1)`,
           animation: 'slideInRight 0.2s ease-out',
         }}>
+
+        {/* ── Definition Card ── */}
+        <div style={{background:'rgba(168,85,247,0.04)',border:'1px solid rgba(168,85,247,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'flex-start',gap:16}}>
+          <div style={{fontSize:36,lineHeight:1,flexShrink:0}}>🤖</div>
+          <div style={{flex:1}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
+              <span style={{fontSize:18,fontWeight:800,color:'rgba(168,85,247,1)',letterSpacing:-0.5}}>ML Architecture & AI Pipeline</span>
+              <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>TensorFlow · Random Forest · Prophet · Feature Engineering</span>
+            </div>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>End-to-end machine learning architecture powering Uganda NRMS — from raw pavement sensor data through feature engineering and model training to real-time deterioration prediction, budget optimisation, and network intelligence dashboards.</p>
+            <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+              {["TensorFlow","Random Forest","Prophet Forecast","Feature Eng.","HDM-4 ML","Real-Time Inference"].map(b=>(
+                <span key={b} style={{background:'rgba(168,85,247,0.12)',color:'rgba(168,85,247,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
+              ))}
+            </div>
+          </div>
+        </div>
           <style>{`@keyframes slideInRight { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }`}</style>
 
           {/* Panel header */}
