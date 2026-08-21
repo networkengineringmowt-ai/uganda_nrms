@@ -10,7 +10,7 @@ import { ESRI_TILE_URLS, ESRI_ATTRIBUTIONS } from '../../shared/mapSymbols';
 import 'leaflet/dist/leaflet.css';
 import { Play, Pause, SkipBack, Layers, Info, Camera, ExternalLink } from 'lucide-react';
 import { useBMS } from '../../store/BMSContext';
-import type { Structure, ActiveView } from '../../types';
+import type { Structure, ActiveView } from '../../index';
 import { conditionColor, conditionLabel, conditionBadge, formatDate } from '../../utils/helpers';
 import { CONDITION_COLORS } from '../../utils/helpers';
 

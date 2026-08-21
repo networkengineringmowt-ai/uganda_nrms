@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { downloadGeoJSON, downloadKML, downloadShapefileZip } from '../../utils/downloads';
 import { useBMS } from '../../store/BMSContext';
-import type { Structure, ActiveView } from '../../types';
+import type { Structure, ActiveView } from '../../index';
 import {
   conditionColor, conditionLabel, conditionBadge,
   formatDate, formatUGX, CONDITION_COLORS,
