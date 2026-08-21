@@ -86,6 +86,23 @@ export default function TrafficDashboard() {
     return () => { d = true; };
   }, []);
   if (links === null) return <div style={{ padding: 20, color: '#64748b', fontSize: 12 }}>Loading traffic intelligence…</div>;
+
+        {/* ── Definition Card ── */}
+        <div style={{background:'rgba(249,115,22,0.04)',border:'1px solid rgba(249,115,22,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'flex-start',gap:16}}>
+          <div style={{fontSize:36,lineHeight:1,flexShrink:0}}>🚦</div>
+          <div style={{flex:1}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
+              <span style={{fontSize:18,fontWeight:800,color:'rgba(249,115,22,1)',letterSpacing:-0.5}}>Traffic Performance Dashboard</span>
+              <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>AADT · Vehicle Class · Axle Loads · Growth Rate · ATC</span>
+            </div>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Traffic performance dashboard for Uganda road sections — displaying AADT volumes, vehicle classification, axle load distributions, annual growth rates, and peak-hour factors sourced from the UNRA ATC monitoring network.</p>
+            <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+              {["AADT Volumes","Vehicle Class","Axle Loads","Growth Rate","Peak Hour","ATC Network"].map(b=>(
+                <span key={b} style={{background:'rgba(249,115,22,0.12)',color:'rgba(249,115,22,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
+              ))}
+            </div>
+          </div>
+        </div>
   if (!links.length && !stations.length) return <Empty what='traffic' />;
   const kAadt = nkey(links, /aadt/i); const kHeavy = nkey(links, /heavy|hgv|truck/i);
   const kClass = key(links, /class/i); const kLen = nkey(links, /length|_km|km$/i);
