@@ -106,7 +106,7 @@ const RAW_DICTIONARY: DictEntry[] = [
   },
   {
     key: 'oprc', term: 'OPRC', label: 'Output & Performance-based Road Contract', group: 'Network',
-    description: 'A multi-year contract paying the contractor for ROAD CONDITION OUTPUTS (e.g. maintaining IRI/VCI above a threshold) rather than for inputs/quantities — transferring performance risk to the contractor. 6 active lots cover the network.',
+    description: 'A multi-year contract paying the contractor for ROAD CONDITION OUTPUTS (e.g. maintaining IRI/VCI above a threshold) rather than for inputs/quantities — transferring performance risk to the contractor. 2,235 km across 90 road links are scoped under OPRC.',
   },
   {
     key: 'ndpiv', term: 'NDP IV', label: 'National Development Plan IV', group: 'Network',
