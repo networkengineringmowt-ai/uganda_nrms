@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo, useRef, memo, useCallback, useContext } from 'react';
+import React, { useState, useEffect, useMemo, useRef, memo, useCallback, useContext } from 'react';
 import {
   MapContainer, TileLayer, CircleMarker, Tooltip,
   ZoomControl, GeoJSON, useMap,
@@ -125,6 +125,23 @@ export default function GISMapView() {
 
   return (
     <div className="relative flex h-full w-full overflow-hidden">
+
+        {/* ── Definition Card ── */}
+        <div style={{background:'rgba(16,185,129,0.04)',border:'1px solid rgba(16,185,129,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'flex-start',gap:16}}>
+          <div style={{fontSize:36,lineHeight:1,flexShrink:0}}>🗺️</div>
+          <div style={{flex:1}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
+              <span style={{fontSize:18,fontWeight:800,color:'rgba(16,185,129,1)',letterSpacing:-0.5}}>National Roads GIS Map</span>
+              <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>UNRA · MoWT · PostGIS · Vector Tiles · Leaflet</span>
+            </div>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Interactive national roads GIS map for Uganda — overlaying UNRA road network, condition heat-maps, project sites, ATC stations, and bridge locations on PostGIS-backed vector tile layers with real-time Supabase queries.</p>
+            <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+              {["National Network","PostGIS Layers","Vector Tiles","WMS / WFS","Leaflet JS","UNRA GIS"].map(b=>(
+                <span key={b} style={{background:'rgba(16,185,129,0.12)',color:'rgba(16,185,129,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
+              ))}
+            </div>
+          </div>
+        </div>
 
       {/* ── Map canvas ── */}
       <MapContainer
