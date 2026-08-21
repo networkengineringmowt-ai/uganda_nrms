@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ATCView – Automatic Traffic Counter Live Dashboard
  * Uganda National Roads Management Platform · DNR
  *
@@ -334,6 +334,25 @@ export default function ATCView() {
 
   return (
     <div style={{
+
+        {/* ─── Definition card ─── */}
+        <div style={{ background:'rgba(0,245,255,0.04)', border:'1px solid rgba(0,245,255,0.14)', borderRadius:12, padding:'14px 18px', marginBottom:14 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:8 }}>
+            <span style={{ fontSize:26 }}>🚦</span>
+            <div>
+              <div style={{ fontSize:15, fontWeight:900, color:'#e2e8f0', letterSpacing:'-0.02em' }}>Automatic Traffic Count Intelligence</div>
+              <div style={{ fontSize:10, color:'rgba(148,163,184,0.55)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.08em' }}>UNRA ATC · MoWT Traffic Unit · ML Predictions</div>
+            </div>
+          </div>
+          <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>
+            Real-time and historical traffic volume intelligence from Uganda's ATC station network — AADT computation, vehicle classification, axle load monitoring, 10-year growth trends, and ML-powered traffic forecasts aligned with HDM-4 pavement design inputs.
+          </p>
+          <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
+            {['UNRA ATC Network','MoWT Traffic Unit','AADT · Vehicle Class','Axle Load Monitoring','10-Year Trends','ML-Enhanced'].map((b: string)=>(
+              <span key={b} style={{ fontSize:9, fontWeight:700, color:'#00f5ff', background:'rgba(0,245,255,0.07)', border:'1px solid rgba(0,245,255,0.18)', borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
+            ))}
+          </div>
+        </div>
       minHeight:'100%', background:'transparent',
       padding:'20px', display:'flex', flexDirection:'column', gap:18,
       fontFamily:`'Inter','Segoe UI',sans-serif`,
