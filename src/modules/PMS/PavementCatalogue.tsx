@@ -49,6 +49,23 @@ export default function PavementCatalogue() {
   if (loading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 40 }}>
+
+        {/* ── Definition Card ── */}
+        <div style={{background:'rgba(16,185,129,0.04)',border:'1px solid rgba(16,185,129,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'flex-start',gap:16}}>
+          <div style={{fontSize:36,lineHeight:1,flexShrink:0}}>📚</div>
+          <div style={{flex:1}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
+              <span style={{fontSize:18,fontWeight:800,color:'rgba(16,185,129,1)',letterSpacing:-0.5}}>Pavement Catalogue</span>
+              <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>Pavement Types · Layer Design · ROMDAS · MoWT Standards · Design Life</span>
+            </div>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Comprehensive pavement catalogue for Uganda's national road network — documenting pavement layer compositions, material specifications, ROMDAS survey data, structural design standards, and expected design life by road class and climate zone.</p>
+            <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+              {["Pavement Types","Layer Design","Material Specs","ROMDAS Data","MoWT Standards","Design Life"].map(b=>(
+                <span key={b} style={{background:'rgba(16,185,129,0.12)',color:'rgba(16,185,129,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
+              ))}
+            </div>
+          </div>
+        </div>
         <div style={{ color: '#f59e0b', fontSize: 14 }}>Loading design catalogue...</div>
       </div>
     );
