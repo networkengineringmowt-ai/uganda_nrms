@@ -1729,7 +1729,7 @@ export default function NetworkStory() {
         <Section title="Bridge &amp; Structure Inventory" accent={C.teal}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
             {[
-              { label: 'Total Structures', value: '1,031', color: C.teal, sub: '546 bridges Â· 485 culverts' },
+              { label: 'Total Structures', value: '998',   color: C.teal, sub: '546 bridges · 452 culverts' },
               { label: 'Total Length', value: '8,517 m', color: C.cyan, sub: 'Combined bridge deck' },
               { label: 'Avg Length', value: '19.6 m', color: C.blue, sub: 'Per bridge average' },
               { label: 'Road C-Class', value: '284 (65%)', color: C.green, sub: 'Community road bridges' },
