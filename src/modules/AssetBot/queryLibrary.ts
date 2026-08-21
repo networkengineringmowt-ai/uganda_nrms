@@ -150,7 +150,7 @@ export const QUERY_LIBRARY: Record<string, string> = {
   SELECT 'Road Management System' AS module,
     21302 AS total_network_km, 6405 AS paved_km, 14897 AS unpaved_km,
     30.1 AS paved_pct, 1017 AS mapped_links, 998 AS total_structures,
-    6 AS oprc_lots, 10 AS atc_stations, 6 AS maintenance_regions, 23 AS maintenance_stations`,
+    90 AS oprc_links, 2235 AS oprc_km, 10 AS atc_stations, 6 AS maintenance_regions, 23 AS maintenance_stations`,
 
   Q22: `-- Global case studies reference (non-DB query â platform knowledge)
   SELECT 'Global RMS Case Studies' AS source,
