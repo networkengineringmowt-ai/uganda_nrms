@@ -298,86 +298,82 @@ function SQLPanel({ title, sql }: { title:string; sql:string }) {
 
 // ─── OVERVIEW TAB ─────────────────────────────────────────────────────────────
 function OverviewTab() {
-  const { data: adm1 } = useGeoJSON(ADM1_URL);
-  const gdpTrend = [
-    {yr:'2018',v:27.6},{yr:'2019',v:29.1},{yr:'2020',v:29.7},{yr:'2021',v:31.0},
-    {yr:'2022',v:33.8},{yr:'2023',v:35.9},{yr:'2024',v:38.1},
+  const C = { cyan:'#00f5ff', blue:'#4d9fff', purple:'#b967ff', green:'#00ff88', yellow:'#ffd23f', pink:'#ff6b9d', red:'#ff4757' };
+  const kpis = [
+    { label:'Population', value:'48.5M', sub:'Proj 2024 · UBOS', color:C.cyan, icon:'👥' },
+    { label:'GDP Growth', value:'5.8%', sub:'FY 2023/24 · MoFPED', color:C.green, icon:'📈' },
+    { label:'Poverty Rate', value:'21.4%', sub:'Below $2.15/day · WB', color:C.red, icon:'🏘️' },
+    { label:'Rural Population', value:'76%', sub:'Majority rural · UNHS', color:C.yellow, icon:'🌾' },
+    { label:'Admin Districts', value:'146', sub:'Admin units · UBOS', color:C.blue, icon:'📍' },
+    { label:'Electrification', value:'26%', sub:'National access · MoE', color:C.purple, icon:'⚡' },
   ];
-  const popByReg = [
-    {name:'Central',v:12.8},{name:'Eastern',v:11.5},{name:'Western',v:10.8},
-    {name:'Northern',v:8.9},{name:'West Nile',v:3.8},{name:'Karamoja',v:2.1},
+  const sectors = [
+    { name:'Services', value:46, color:C.blue },
+    { name:'Agriculture', value:24, color:C.green },
+    { name:'Industry', value:19, color:C.purple },
+    { name:'Other', value:11, color:C.yellow },
   ];
-  const gdpBySec = [
-    {name:'Services',v:46},{name:'Industry',v:27},{name:'Agriculture',v:24},{name:'Taxes',v:3},
+  const regions = [
+    { region:'Central', poverty:14, elec:42 },
+    { region:'Eastern', poverty:26, elec:18 },
+    { region:'Northern', poverty:32, elec:14 },
+    { region:'Western', poverty:19, elec:22 },
   ];
   return (
-    <div>
-      <div style={S.kpiWrap}>
-        <KPICard label="Total Population" value="49.9M" sub="Census projection 2024; growth 3.0%/yr" color="#3b82f6" icon=""/>
-        <KPICard label="GDP (2024)" value="USD 38.1B" sub="Growth 6.3%; GDP/capita USD 963" color="#22c55e" icon=""/>
-        <KPICard label="Districts" value="146" sub="135 districts + 11 cities (2024)" color="#a855f7" icon=""/>
-        <KPICard label="Total Area" value="241,551 km²" sub="Land 197,100 km² + water 44,451 km²" color="#eab308" icon=""/>
-        <KPICard label="Capital" value="Kampala" sub="Pop 3.6M metro; 0.3476°N 32.5825°E" color="#f97316" icon=""/>
-        <KPICard label="Literacy Rate" value="79.0%" sub="Adult (15+); Male 83% / Female 75%" color="#06b6d4" icon=""/>
-        <KPICard label="Poverty Rate" value="21.4%" sub="Below USD 2.15/day (World Bank 2024)" color="#ef4444" icon=""/>
-        <KPICard label="HDI Score" value="0.544" sub="Low Human Dev. — rank 159/193 (2023)" color="#84cc16" icon=""/>
-      </div>
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:16, marginBottom:20 }}>
-        <div style={S.card}>
-          <SectionHdr>GDP Growth Trend (USD B)</SectionHdr>
-          <ResponsiveContainer width="100%" height={160}>
-            <AreaChart data={gdpTrend}><XAxis dataKey="yr" tick={{fill:'#64748b',fontSize:10}}/><YAxis tick={{fill:'#64748b',fontSize:10}}/><Tooltip contentStyle={{background:'#1e293b',border:'none',borderRadius:6}}/><Area type="monotone" dataKey="v" stroke="#22c55e" fill="rgba(34,197,94,0.1)"/></AreaChart>
-          </ResponsiveContainer>
+    <div style={{ padding:'16px 20px', overflowY:'auto', height:'100%', display:'flex', flexDirection:'column', gap:14 }}>
+      <div style={{ background:'rgba(0,245,255,0.04)', border:'1px solid rgba(0,245,255,0.14)', borderRadius:12, padding:'14px 18px' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:8 }}>
+          <span style={{ fontSize:26 }}>🏘️</span>
+          <div>
+            <div style={{ fontSize:15, fontWeight:900, color:'#e2e8f0', letterSpacing:'-0.02em' }}>Socio-Economic Analysis</div>
+            <div style={{ fontSize:10, color:'rgba(148,163,184,0.55)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.08em' }}>Uganda · NDPIV · 146 Districts</div>
+          </div>
         </div>
-        <div style={S.card}>
-          <SectionHdr>Population by Region (M)</SectionHdr>
-          <ResponsiveContainer width="100%" height={160}>
-            <PieChart><Pie data={popByReg} dataKey="v" nameKey="name" cx="50%" cy="50%" innerRadius={28} outerRadius={60} label={({name})=>name}>{popByReg.map((_,i)=><Cell key={i} fill={PIE_C[i]}/>)}</Pie><Tooltip/></PieChart>
-          </ResponsiveContainer>
-        </div>
-        <div style={S.card}>
-          <SectionHdr>GDP by Sector (%)</SectionHdr>
-          <ResponsiveContainer width="100%" height={160}>
-            <PieChart><Pie data={gdpBySec} dataKey="v" nameKey="name" cx="50%" cy="50%" innerRadius={28} outerRadius={60} label={({name,v})=>name+' '+v+'%'}>{gdpBySec.map((_,i)=><Cell key={i} fill={PIE_C[i]}/>)}</Pie><Tooltip/></PieChart>
-          </ResponsiveContainer>
+        <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>
+          Uganda's socio-economic development indicators across 146 districts — natural resources, energy access, agriculture productivity, environment, education &amp; health, and demographic trends aligned with NDPIV goals and World Bank frameworks.
+        </p>
+        <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
+          {['UBOS 2024','NDPIV Aligned','146 Districts','World Bank Data','UNHS Sourced'].map(b=>(
+            <span key={b} style={{ fontSize:9, fontWeight:700, color:'#00f5ff', background:'rgba(0,245,255,0.07)', border:'1px solid rgba(0,245,255,0.18)', borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
+          ))}
         </div>
       </div>
-      <div style={S.card}>
-        <SectionHdr> Uganda Administrative Boundaries + Major Cities</SectionHdr>
-        <div style={{ ...S.mapWrap, position:'relative', height:480 }}>
-          <MapContainer center={UGA} zoom={ZOOM} style={{ height:'100%', width:'100%', background:'#0d1117' }} scrollWheelZoom>
-            <TileLayer url={TILES} attribution={ATTRIBUTION}/>
-            {adm1 && (
-              <GeoJSON data={adm1} style={() => ({ color:'#334155', weight:1, fillColor:'#1e3a5f', fillOpacity:0.25 })}
-                onEachFeature={(f,l) => l.bindPopup('<b>'+f.properties?.shapeName+'</b>')}/>
-            )}
-            {CITIES.map((c,i) => (
-              <CircleMarker key={'ct'+i} center={[c.lat,c.lng]} radius={Math.max(4, Math.sqrt(c.pop/250000)*6)}
-                pathOptions={{ color: c.type==='Capital'?'#fbbf24':c.type==='City'?'#60a5fa':'#94a3b8', fillColor: c.type==='Capital'?'#92400e':'#1e3a5f', fillOpacity:0.85, weight:1.5 }}>
-                <Popup>
-                  <b style={{color:'#fcd34d'}}>{c.n}</b><br/>
-                  <span style={{fontSize:11}}>Population: {c.pop.toLocaleString()}<br/>Type: {c.type}<br/>Region: {c.reg}</span>
-                </Popup>
-              </CircleMarker>
-            ))}
-          </MapContainer>
-        </div>
-        <div style={{fontSize:11,color:'#64748b',marginTop:8}}> Capital &nbsp; Cities &nbsp; Towns &nbsp;(size proportional to population) &nbsp;| ADM1 boundaries from geoBoundaries</div>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(6,1fr)', gap:8, flexShrink:0 }}>
+        {kpis.map(k=><KPICard key={k.label} label={k.label} value={k.value} sub={k.sub} color={k.color} icon={k.icon} />)}
       </div>
-      <DataTable title="District-Level Socioeconomic Statistics"
-        cols={['District','Region','Population','Area (km²)','GDP (USD M)','Poverty %','Literacy %']}
-        rows={DISTRICTS.map(d=>[d.n,d.reg,d.pop.toLocaleString(),d.area_km2.toLocaleString(),String(d.gdp_m),String(d.poverty)+'%',String(d.literacy)+'%'])}/>
-      <AnalysisTable title="Regional Development Index — Tier Classification"
-        cols={['Region','Tier','GDP Share','Poverty Rate','Literacy','Key Assets','Development Constraints','Priority Investment']}
-        rows={[
-          ['Central','Tier 1 — Advanced','34%','14%','88%','Kampala; industry; services; transport hub','Urban congestion; inequality; informal settlements','Urban mobility; industrial upskilling; affordable housing'],
-          ['Eastern','Tier 2 — Emerging','18%','33%','74%','Jinja industry; Mbale trade; Mt Elgon agri','Road connectivity; power reliability; flood risk','SEZ expansion; road corridor; irrigation schemes'],
-          ['Western','Tier 2 — Emerging','22%','27%','76%','Oil (Hoima); tourism; highlands agri; Kasese minerals','Oil revenue management; land conflicts; deforestation','Oil value chain; tourism infrastructure; forest management'],
-          ['Northern','Tier 3 — Developing','14%','44%','65%','Post-conflict recovery; large land; Nile access','Lingering conflict legacy; poor infrastructure; youth unemployment','Roads; schools; health; agro-processing; peace dividends'],
-          ['West Nile','Tier 4 — Lagging','8%','50%','61%','Border trade; refugee resources; arable land','Refugee pressure; weak markets; isolation; power gap','Border trade infrastructure; refugee economic integration'],
-          ['Karamoja','Tier 4 — Lagging','4%','77%','38%','Mineral potential; wildlife; pastoral land','Chronic poverty; climate shocks; conflict; minimal services','Emergency services; climate adaptation; mineral formalisation'],
-        ]}/>
-      <SQLPanel title="Overview & Districts" sql={"CREATE TABLE uga_districts (\n  id            SERIAL PRIMARY KEY,\n  district_name VARCHAR(200) NOT NULL,\n  region        VARCHAR(100),\n  population    BIGINT,\n  area_km2      NUMERIC(10,2),\n  gdp_usd_m     NUMERIC(10,2),\n  poverty_pct   NUMERIC(5,2),\n  literacy_pct  NUMERIC(5,2),\n  lat           NUMERIC(9,6),\n  lng           NUMERIC(9,6),\n  updated_at    TIMESTAMP DEFAULT NOW()\n);\n\nCREATE TABLE uga_cities (\n  id          SERIAL PRIMARY KEY,\n  city_name   VARCHAR(200),\n  city_type   VARCHAR(50),\n  region      VARCHAR(100),\n  population  BIGINT,\n  lat         NUMERIC(9,6),\n  lng         NUMERIC(9,6)\n);\n\n-- Poverty-literacy correlation by district\nSELECT district_name, region, poverty_pct, literacy_pct,\n       ROUND(poverty_pct + (100 - literacy_pct), 1) AS deprivation_index\nFROM uga_districts\nORDER BY deprivation_index DESC\nLIMIT 20;"}/>
+      <div style={{ display:'flex', alignItems:'center', gap:10, marginTop:2 }}>
+        <div style={{ flex:1, height:1, background:'rgba(0,245,255,0.10)' }} />
+        <span style={{ fontSize:9, fontWeight:800, color:'rgba(0,245,255,0.45)', letterSpacing:'0.14em', textTransform:'uppercase', whiteSpace:'nowrap' }}>ECONOMIC COMPOSITION · 9 VIEWS</span>
+        <div style={{ flex:1, height:1, background:'rgba(0,245,255,0.10)' }} />
+      </div>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 2fr', gap:12, flex:1, minHeight:220 }}>
+        <div style={{ background:'rgba(4,9,18,0.7)', border:'1px solid rgba(0,245,255,0.09)', borderRadius:10, padding:'12px 14px', display:'flex', flexDirection:'column' }}>
+          <div style={{ fontSize:10, fontWeight:700, color:'rgba(148,163,184,0.45)', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:8 }}>GDP Sector Share</div>
+          <ResponsiveContainer width="100%" height={150}>
+            <PieChart>
+              <Pie data={sectors} cx="50%" cy="50%" innerRadius={38} outerRadius={60} paddingAngle={3} dataKey="value">
+                {sectors.map((_,i)=><Cell key={i} fill={sectors[i].color} />)}
+              </Pie>
+              <Tooltip contentStyle={{ background:'#0a0f1a', border:'1px solid rgba(0,245,255,0.18)', borderRadius:8, fontSize:11 }} formatter={(v:any)=>[`${v}%`,'Share']} />
+            </PieChart>
+          </ResponsiveContainer>
+          <div style={{ display:'flex', flexWrap:'wrap', gap:'3px 8px', justifyContent:'center', marginTop:6 }}>
+            {sectors.map(s=><span key={s.name} style={{ fontSize:9, color:s.color, fontWeight:600 }}>● {s.name} {s.value}%</span>)}
+          </div>
+        </div>
+        <div style={{ background:'rgba(4,9,18,0.7)', border:'1px solid rgba(0,245,255,0.09)', borderRadius:10, padding:'12px 14px' }}>
+          <div style={{ fontSize:10, fontWeight:700, color:'rgba(148,163,184,0.45)', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:8 }}>Regional Development Indicators (%)</div>
+          <ResponsiveContainer width="100%" height={180}>
+            <BarChart data={regions} layout="vertical" margin={{ top:0, right:20, left:10, bottom:0 }}>
+              <XAxis type="number" domain={[0,100]} tick={{ fill:'#64748b', fontSize:9 }} axisLine={false} tickLine={false} />
+              <YAxis type="category" dataKey="region" tick={{ fill:'#94a3b8', fontSize:9 }} axisLine={false} tickLine={false} width={55} />
+              <Tooltip contentStyle={{ background:'#0a0f1a', border:'1px solid rgba(0,245,255,0.18)', borderRadius:8, fontSize:11 }} />
+              <Bar dataKey="poverty" name="Poverty %" fill="#ff4757" radius={[0,3,3,0]} barSize={9} />
+              <Bar dataKey="elec" name="Electrification %" fill="#b967ff" radius={[0,3,3,0]} barSize={9} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
     </div>
   );
 }
