@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { RoadsAPI } from '../lib/roadsAPI';
+import SectionDashboard from '../modules/Dashboard/SectionDashboard';
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
 
@@ -298,7 +299,8 @@ export default function NTISSection() {
     <div style={s.wrap}>
       <div style={s.stabs}>
         {([['dashboard','Dashboard'],['counts','Traffic Counts'],['forecast','Forecasting'],['axle','Axle Load'],['safety','Road Safety'],['corridors','Corridors'],['reports','Reports']] as [Subtab,string][]).map(([id,lbl])=>(
-          <button key={id} style={ST(id)} onClick={()=>setTab(id)}>{lbl}</button>
+          <button onClick={() => setTab('dashboard')} className={tab==='dashboard'?'active':''}>Dashboard</button>
+              <button key={id} style={ST(id)} onClick={()=>setTab(id)}>{lbl}</button>
         ))}
       </div>
 
@@ -328,7 +330,8 @@ export default function NTISSection() {
       </>}
 
       {/* COUNTS */}
-      {tab==='counts' && <>
+      {tab === 'dashboard' && <SectionDashboard sectionId="ntis" accent="#00f5ff" />}
+              {tab==='counts' && <>
         <div style={{display:'flex',gap:8,marginBottom:14,flexWrap:'wrap'}}>
           <span style={{color:'#666',fontSize:12,alignSelf:'center'}}>Region:</span>
           {['all','Central','Eastern','Northern','Western'].map(r=>(
