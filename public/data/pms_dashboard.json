@@ -54,7 +54,7 @@
       "unit": "km",
       "payload": {
         "value": 21102.7,
-        "links": 1149,
+        "links": 1017,
         "paved_km": 6405.1
       }
     },
@@ -123,8 +123,9 @@
         },
         {
           "year": 2023,
-          "value": -47965.51,
-          "samples": 202801
+          "value": 2.99,
+          "samples": 202801,
+          "note": "imputed — raw aggregation error in source data"
         },
         {
           "year": 2024,
@@ -178,7 +179,7 @@
         },
         {
           "label": "Southern",
-          "value": 45.0,
+          "value": 45,
           "links": 175
         },
         {
