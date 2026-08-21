@@ -33,6 +33,23 @@ function Header() {
         style={{ width: 34, height: 34, borderRadius: 7, objectFit: 'contain',
           background: '#fff', padding: 2, border: '1px solid #273244' }} />
       <div style={{ lineHeight: 1.25 }}>
+
+        {/* ── Definition Card ── */}
+        <div style={{background:'rgba(245,158,11,0.04)',border:'1px solid rgba(245,158,11,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'flex-start',gap:16}}>
+          <div style={{fontSize:36,lineHeight:1,flexShrink:0}}>🛣️</div>
+          <div style={{flex:1}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
+              <span style={{fontSize:18,fontWeight:800,color:'rgba(245,158,11,1)',letterSpacing:-0.5}}>National Pavement Management System</span>
+              <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>NPMS · HDM-4 · IRI Survey · PCI Rating · URF · AfDB</span>
+            </div>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>National Pavement Management System for Uganda — delivering national-level pavement performance analytics, HDM-4 deterioration modelling, IRI roughness profiles, and PCI condition ratings to support strategic URF budget allocation.</p>
+            <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+              {["National PMS","HDM-4 Powered","IRI Survey","PCI Rating","URF Priority","AfDB Standards"].map(b=>(
+                <span key={b} style={{background:'rgba(245,158,11,0.12)',color:'rgba(245,158,11,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
+              ))}
+            </div>
+          </div>
+        </div>
         <div style={{ fontSize: 14, fontWeight: 900, color: '#f4f7fb', letterSpacing: '0.02em' }}>
           Uganda <span style={{ color: '#5da7ff' }}>NPMS</span>
         </div>
