@@ -18,7 +18,7 @@ export {
 export { loadAllStructures } from './generateData';
 
 import { loadProjects as _loadProjects } from './platformData';
-import type { OngoingProject } from '../types';
+import type { OngoingProject } from '../index';
 
 // ─── Project type (extends OngoingProject with map + photo fields) ─────────────
 

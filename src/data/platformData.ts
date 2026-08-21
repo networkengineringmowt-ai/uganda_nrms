@@ -3,7 +3,7 @@
  * Separate from bridge/culvert data (generateData.ts).
  */
 
-import type { OngoingProject, TrafficYearSummary, WtssRecord } from '../types';
+import type { OngoingProject, TrafficYearSummary, WtssRecord } from '../index';
 
 // ─── Analytics cache ──────────────────────────────────────────────────────────
 let analyticsCache: PlatformAnalytics | null = null;

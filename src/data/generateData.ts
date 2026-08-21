@@ -8,7 +8,7 @@
 import type {
   Structure, ConditionRating, TrafficLevel,
   Inspection, WorkOrder, BridgeDocument,
-} from '../types';
+} from '../index';
 import {
   seededRandom, seededInt, generateConditionHistory,
   generateDefects, calcPriorityScore, getInspector,
