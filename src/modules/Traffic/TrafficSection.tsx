@@ -9,7 +9,7 @@
  *   • CSS drop-shadow glow on GeoJSON road paths
  *   • Animated "LIVE" badge
  *   • Vehicle-class breakdown + AADT trend fed into FeatureAnalyticsPanel
- *   • Corrected station counts: 25 ATC (15 legacy + 10 new) + 298 TIS
+ *   • Station counts: 10 ATC active (2025+); 15 legacy decommissioned; 298 TIS
  */
 import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import {
@@ -72,7 +72,7 @@ const C = {
 // ─── Station network constants (corrected figures) ────────────────────────────
 const ATC_LEGACY_COUNT = 15;   // 2016–2022 sites
 const ATC_NEW_COUNT    = 10;   // post-2025 new sites
-const ATC_TOTAL        = ATC_LEGACY_COUNT + ATC_NEW_COUNT;  // 25
+const ATC_TOTAL        = ATC_NEW_COUNT;                     // 10 active (2025+)
 // TIS manual stations come from atc_stations.geojson (298 features)
 
 // ─── Uganda road growth index — BASE YEAR 2016 = 1.00 (all traffic statistics
