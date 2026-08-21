@@ -100,6 +100,23 @@ export default function PavementDashboard() {
   const worst = kIri ? [...rows].sort((a, b) => (num(b[kIri]) ?? 0) - (num(a[kIri]) ?? 0)).slice(0, 15) : [];
   return (
     <div style={{ width: '100%' }}>
+
+        {/* ── Definition Card ── */}
+        <div style={{background:'rgba(16,185,129,0.04)',border:'1px solid rgba(16,185,129,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'flex-start',gap:16}}>
+          <div style={{fontSize:36,lineHeight:1,flexShrink:0}}>🛣️</div>
+          <div style={{flex:1}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
+              <span style={{fontSize:18,fontWeight:800,color:'rgba(16,185,129,1)',letterSpacing:-0.5}}>Pavement Performance Dashboard</span>
+              <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>IRI Roughness · PCI Rating · Rutting · HDM-4 Model</span>
+            </div>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Pavement performance dashboard for Uganda road sections — consolidating IRI roughness profiles, PCI condition ratings, rutting depths, cracking indices, and HDM-4 deterioration forecasts for evidence-based treatment planning.</p>
+            <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+              {["IRI Roughness","PCI Rating","Rutting","Cracking Index","Structural Cap.","HDM-4 Model"].map(b=>(
+                <span key={b} style={{background:'rgba(16,185,129,0.12)',color:'rgba(16,185,129,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
+              ))}
+            </div>
+          </div>
+        </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 8, marginBottom: 12 }}>
         <Kpi label='Network length surveyed' value={totKm} decimals={1} suffix=' km' sev='info' sub={rows.length.toLocaleString() + ' assessment records'} />
         <Kpi label='Average IRI' value={avgIri} decimals={2} suffix=' m/km' sev={avgIri > 7 ? 'bad' : avgIri > 4 ? 'warn' : 'good'} />
