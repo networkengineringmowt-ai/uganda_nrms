@@ -22,23 +22,25 @@ const C = {
   orange: '#f97316', red: '#ef4444', purple: '#a855f7', blue: '#4d9fff',
   gray: '#6b7280', pink: '#ff2d78', dark: '#0a0f1e',
 };
+// Ordered by intervention severity — canonical risk/condition scale
 const INT_COLORS: Record<IntType, string> = {
-  Routine: '#6b7280',
-  Reseal: '#eab308',
-  Overlay: '#f97316',
-  Rehabilitation: '#ef4444',
-  Reconstruction: '#a855f7',
+  Routine: '#22c55e',
+  Reseal: '#84cc16',
+  Overlay: '#eab308',
+  Rehabilitation: '#f97316',
+  Reconstruction: '#ef4444',
 };
 
 function hexRgb(h: string): string {
   const c = h.replace('#', '');
   return `${parseInt(c.slice(0,2),16)},${parseInt(c.slice(2,4),16)},${parseInt(c.slice(4,6),16)}`;
 }
+// Canonical risk/condition scale (matches src/utils/helpers.ts RISK_SCALE_STOPS)
 function conditionColor(iri: number): string {
-  if (iri < 4) return C.green;
-  if (iri < 6) return C.yellow;
-  if (iri < 9) return C.orange;
-  return C.red;
+  if (iri < 4) return '#22c55e';
+  if (iri < 6) return '#84cc16';
+  if (iri < 9) return '#f97316';
+  return '#ef4444';
 }
 function conditionLabel(iri: number): string {
   if (iri < 4) return 'Good';
