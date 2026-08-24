@@ -9,7 +9,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Tooltip as LeafletTooltip, ZoomControl } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { WaterLayers } from '../../shared/WaterLayers';
 import { InfraLayers } from '../../shared/InfraLayers';
 import { MapLegend, LEGEND_CONGESTION } from '../../shared/MapLegend';
 import {
@@ -165,7 +164,6 @@ function StationMapPanel({ allStations, aadtRows, monthlyRows }: {
               style={{ height:'100%', width:'100%' }}>
               <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery}/>
               <TileLayer url={ESRI_TILE_URLS.labels}  attribution={ESRI_ATTRIBUTIONS.labels} opacity={0.7}/>
-              <WaterLayers />
               <InfraLayers />
               <MapLegend title="Congestion" items={LEGEND_CONGESTION} />
               <ZoomControl position="bottomright"/>
@@ -443,7 +441,6 @@ export default function ATCView() {
             >
               <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery}/>
               <TileLayer url={ESRI_TILE_URLS.labels}  attribution={ESRI_ATTRIBUTIONS.labels} opacity={0.7}/>
-              <WaterLayers />
               <InfraLayers />
               <MapLegend title="Congestion" items={LEGEND_CONGESTION} />
               <ZoomControl position="bottomright"/>

@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { CURRENT_YEAR } from '../../shared/year';
 import { MapContainer, TileLayer, ZoomControl, GeoJSON } from 'react-leaflet';
-import { WaterLayers } from '../../shared/WaterLayers';
 import { InfraLayers } from '../../shared/InfraLayers';
 import { MapLegend, LEGEND_CONGESTION } from '../../shared/MapLegend';
 import L from 'leaflet';
@@ -649,7 +648,6 @@ export default function PredictionsPanel() {
                 style={{ height:'100%', width:'100%', background:'#020508' }}>
                 <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery}/>
                 <TileLayer url={ESRI_TILE_URLS.labels}  attribution={ESRI_ATTRIBUTIONS.labels} opacity={0.7}/>
-                <WaterLayers />
                 <InfraLayers />
                 <MapLegend title="Congestion" items={LEGEND_CONGESTION} />
                 <ZoomControl position="bottomright"/>
