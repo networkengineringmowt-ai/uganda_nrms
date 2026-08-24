@@ -18,7 +18,6 @@ import {
   NEON, REGION_NEON, Bar3D, Chart3DWrap, AreaGradDefs, TT_NEON, TICK,
 } from '../../lib/chart3d';
 
-import { WaterLayers } from '../../shared/WaterLayers';
 import { InfraLayers } from '../../shared/InfraLayers';
 import { MapLegend, LEGEND_CONDITION } from '../../shared/MapLegend';
 import { ModuleNavBar } from '../../shared/ModuleNavBar';
@@ -549,7 +548,6 @@ function ConditionMap({
               zoomControl={false}>
               <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery}/>
               <TileLayer url={ESRI_TILE_URLS.labels}  attribution={ESRI_ATTRIBUTIONS.labels} opacity={0.7}/>
-              <WaterLayers />
               <InfraLayers />
               <GeoJSON
                 key={`${mapLayer}-${filterClass}-${filterSurface}-${filterCondBand}-${filterYearMin}-${filterYearMax}-${showWorst ? 1 : 0}`}
