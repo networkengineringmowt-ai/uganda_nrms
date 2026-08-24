@@ -27,7 +27,6 @@ import type { Structure } from '../../index';
 import { ROAD_STYLES, surfaceCategory } from '../../shared/mapSymbols';
 import FeatureAnalyticsPanel from '../../shared/FeatureAnalyticsPanel';
 import type { FeatureData } from '../../shared/FeatureAnalyticsPanel';
-import { WaterLayers } from '../../shared/WaterLayers';
 import { InfraLayers } from '../../shared/InfraLayers';
 import { MapLegend, LEGEND_FULL } from "../../shared/MapLegend";
 import SourceTableButton from '../../shared/SourceTableButton';
@@ -459,7 +458,6 @@ export default function RoadNetworkView() {
             opacity={0.85}
             attribution='Esri'
           />
-          <WaterLayers />
           <InfraLayers />
           <MapLegend title="Road Network" items={LEGEND_FULL} position="bottomleft" />
           <ZoomControl position="bottomright"/>
