@@ -220,14 +220,8 @@ export const LEGEND_POINTS_FULL: LegendItem[] = [
   { color: '#92400e', label: 'Maintenance Depot', circle: true },
 ];
 
-// 5. Water features (at bottom — ESRI convention)
-export const LEGEND_WATER: LegendItem[] = [
-  { color: '#1e3a5f', label: 'Lake / Water Body', hollow: true },
-  { color: '#1d4ed8', label: 'River / Stream', dash: true },
-];
-
 // LEGEND_FULL — all feature types in ESRI cartographic order for maps with
-// roads + InfraLayers + WaterLayers:
+// roads + InfraLayers:
 //   1. Roads (by class/condition — most important)
 //   2. Points of interest (stations, airports, ferries)
 //   3. Area features (regions, districts, reserves)
@@ -238,5 +232,4 @@ export const LEGEND_FULL: LegendItem[] = [
   ...LEGEND_POINTS_FULL,
   ...LEGEND_AREAS,
   ...LEGEND_LINES,
-  ...LEGEND_WATER,
 ];
