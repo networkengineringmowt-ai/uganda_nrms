@@ -22,10 +22,52 @@ export const CONDITION_LABELS: Record<number, string> = {
 export const CONDITION_COLORS: Record<number, string> = {
   5: '#22c55e',
   4: '#84cc16',
-  3: '#f59e0b',
+  3: '#eab308',
   2: '#f97316',
   1: '#ef4444',
 };
+
+// ─── Canonical risk/condition colour scale ────────────────────────────────
+// The single source of truth for any condition- or risk-based colour coding
+// across the platform (heatmaps, gauges, map themes, chart cells). 0.00 = low
+// risk / good condition / low traffic, 1.00 = critical / very bad / severe.
+export const RISK_SCALE_STOPS: [number, string][] = [
+  [0.00, '#22c55e'], // Low risk / Good condition / Low traffic
+  [0.25, '#84cc16'], // Lime / Yellow-Green
+  [0.50, '#eab308'], // Amber / Yellow
+  [0.75, '#f97316'], // Orange / High
+  [1.00, '#ef4444'], // Critical / Very Bad / Severe
+];
+
+function hexToRgbTuple(hex: string): [number, number, number] {
+  const c = hex.replace('#', '');
+  return [parseInt(c.slice(0, 2), 16), parseInt(c.slice(2, 4), 16), parseInt(c.slice(4, 6), 16)];
+}
+
+/** Interpolates a colour along RISK_SCALE_STOPS for any t in [0,1]. */
+export function riskScaleColor(t: number): string {
+  const v = Math.max(0, Math.min(1, t));
+  for (let i = 0; i < RISK_SCALE_STOPS.length - 1; i++) {
+    const [t0, c0] = RISK_SCALE_STOPS[i];
+    const [t1, c1] = RISK_SCALE_STOPS[i + 1];
+    if (v >= t0 && v <= t1) {
+      const f = t1 === t0 ? 0 : (v - t0) / (t1 - t0);
+      const [r0, g0, b0] = hexToRgbTuple(c0);
+      const [r1, g1, b1] = hexToRgbTuple(c1);
+      const r = Math.round(r0 + (r1 - r0) * f);
+      const g = Math.round(g0 + (g1 - g0) * f);
+      const b = Math.round(b0 + (b1 - b0) * f);
+      return `#${[r, g, b].map(n => n.toString(16).padStart(2, '0')).join('')}`;
+    }
+  }
+  return RISK_SCALE_STOPS[RISK_SCALE_STOPS.length - 1][1];
+}
+
+/** Evenly samples n colours off the canonical risk scale (n>=2), low risk first. */
+export function riskScaleSamples(n: number): string[] {
+  if (n <= 1) return [RISK_SCALE_STOPS[0][1]];
+  return Array.from({ length: n }, (_, i) => riskScaleColor(i / (n - 1)));
+}
 
 export const CONDITION_BADGE: Record<number, string> = {
   5: 'badge-excellent',
