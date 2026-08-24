@@ -314,24 +314,28 @@ function NTISDashboard({ accent }: { accent: string }) {
 /* ── Signature block — the rich, chart-heavy per-section dashboards that     */
 /* ── already live under ./sections (Recharts, definition cards, no tables)   */
 /* ─────────────────────────────────────────────────────────────────────────── */
-const LazyTraffic     = lazy(() => import('./sections/TrafficDashboard'));
-const LazyPavement    = lazy(() => import('./sections/PavementDashboard'));
-const LazyStructures  = lazy(() => import('./sections/StructuresDashboard'));
 const LazyMaintenance = lazy(() => import('./sections/MaintenanceDashboard'));
-const LazyInventory   = lazy(() => import('./sections/InventoryDashboard'));
 const LazyPriority    = lazy(() => import('./sections/PriorityDashboard'));
 const LazyDrainage    = lazy(() => import('./sections/DrainageDashboard'));
+const LazyNetworkOverview    = lazy(() => import('./sections/NetworkOverviewDashboard'));
+const LazyPavementOverview   = lazy(() => import('./sections/PavementOverviewDashboard'));
+const LazyTrafficOverview    = lazy(() => import('./sections/TrafficOverviewDashboard'));
+const LazyStructuresOverview = lazy(() => import('./sections/StructuresOverviewDashboard'));
+const LazyBudgetOverview     = lazy(() => import('./sections/BudgetOverviewDashboard'));
+const LazyProjectsOverview   = lazy(() => import('./sections/ProjectsOverviewDashboard'));
+const LazyRoadSafetyOverview = lazy(() => import('./sections/RoadSafetyOverviewDashboard'));
 
 function SectionSignatureBlock({ sectionId, accent }: { sectionId: string; accent: string }) {
-  const C = sectionId === 'tis' ? LazyTraffic
-    : sectionId === 'pms' ? LazyPavement
-    : sectionId === 'bms' ? LazyStructures
-    : (sectionId === 'ducar' || sectionId === 'projects') ? LazyMaintenance
-    : sectionId === 'rms' ? LazyInventory
+  const C = sectionId === 'tis' ? LazyTrafficOverview
+    : sectionId === 'pms' ? LazyPavementOverview
+    : sectionId === 'bms' ? LazyStructuresOverview
+    : sectionId === 'ducar' ? LazyMaintenance
+    : sectionId === 'projects' ? LazyProjectsOverview
+    : sectionId === 'rms' ? LazyNetworkOverview
     : sectionId === 'pim' ? LazyPriority
     : null;
 
-  if (sectionId === 'budget') return <div style={{ marginBottom: 14 }}><BudgetDashboard accent={accent} /></div>;
+  if (sectionId === 'budget') return <div style={{ marginBottom: 14 }}><Suspense fallback={<div style={{ padding: 16, color: '#64748b', fontSize: 12 }}>Loading section dashboard…</div>}><LazyBudgetOverview /></Suspense></div>;
   if (sectionId === 'reserve') return <div style={{ marginBottom: 14 }}><RoadReserveDashboard accent={accent} /></div>;
   if (sectionId === 'ntis') return <div style={{ marginBottom: 14 }}><NTISDashboard accent={accent} /></div>;
   if (!C) return null;
@@ -411,7 +415,7 @@ function SectionSubTabs({ sectionId, accent }: { sectionId: string; accent: stri
       {tab === 'dashboard' && (<><SectionSignatureBlock sectionId={sid} accent={accent} /><InsightGrid sectionId={sid} accent={accent} /><SectionExtra sectionId={sid} slot="dashboard" /></>)}
       {tab === 'safety' && sid === 'tis' && (
         <Suspense fallback={<div style={{ padding: 20, color: '#64748b', fontSize: 12 }}>Loading road safety data...</div>}>
-          <TrafficRoadSafetyLegacy />
+          <LazyRoadSafetyOverview />
         </Suspense>
       )}
       {tab === 'map' && (<><SectionExtra sectionId={sid} slot="map" />
