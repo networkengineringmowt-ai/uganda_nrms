@@ -22,7 +22,9 @@ export const DASH_C = {
   pink: '#ff2d78', red: '#ff2d78', purple: '#b967ff', teal: '#00d4aa', blue: '#4d9fff',
   gray: 'rgba(148,163,184,0.7)',
 };
-export const CONDITION_COLORS = [DASH_C.green, DASH_C.yellow, DASH_C.orange, DASH_C.pink];
+// Canonical risk/condition scale (matches src/utils/helpers.ts RISK_SCALE_STOPS):
+// 0.00 Good/Low #22c55e · 0.25 Fair #84cc16 · 0.50 Amber #eab308 · 0.75 Poor/High #f97316 · 1.00 Critical #ef4444
+export const CONDITION_COLORS = ['#22c55e', '#84cc16', '#f97316', '#ef4444'];
 export const REGION_COLORS = [DASH_C.cyan, DASH_C.green, DASH_C.yellow, DASH_C.purple, DASH_C.pink, DASH_C.orange];
 
 export function rgbOf(hex: string): string {

@@ -16,10 +16,11 @@ export function vciRating(vci: number | null | undefined): VciRating | null {
 }
 
 // Convention: condition is ALWAYS reported green → red (Very Good → Very Poor)
+// Canonical risk/condition scale (matches src/utils/helpers.ts RISK_SCALE_STOPS)
 export const VCI_RATING_COLOR: Record<VciRating, string> = {
-  'Very Good': '#00ff88',
-  'Good':      '#a3e635',
-  'Fair':      '#ffee00',
-  'Poor':      '#ff6600',
-  'Very Poor': '#ff0040',
+  'Very Good': '#22c55e',
+  'Good':      '#84cc16',
+  'Fair':      '#eab308',
+  'Poor':      '#f97316',
+  'Very Poor': '#ef4444',
 };
