@@ -3,7 +3,6 @@ import {
   MapContainer, TileLayer, CircleMarker, Popup,
   ZoomControl,
 } from 'react-leaflet';
-import { WaterLayers } from '../../shared/WaterLayers';
 import { InfraLayers } from '../../shared/InfraLayers';
 import { MapLegend, LEGEND_ROAD_NETWORK, LEGEND_INFRA } from '../../shared/MapLegend';
 import { ESRI_TILE_URLS, ESRI_ATTRIBUTIONS } from '../../shared/mapSymbols';
@@ -107,7 +106,6 @@ export default function GISMapView() {
 
         <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery}/>
         <TileLayer url={ESRI_TILE_URLS.labels}  attribution={ESRI_ATTRIBUTIONS.labels} opacity={0.7}/>
-        <WaterLayers />
         <InfraLayers />
         <MapLegend title="Map Legend" items={[...LEGEND_ROAD_NETWORK, ...LEGEND_INFRA]} />
 
