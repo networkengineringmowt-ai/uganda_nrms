@@ -1,7 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
-import { RefreshCw } from 'lucide-react';
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Cell } from 'recharts';
-import { supabase } from '../../lib/supabase';
+import { useState, lazy, Suspense } from 'react';
 
 /* ── Section metadata ─────────────────────────────────────────────────────── */
 const DEFS: Record<string, { title: string; body: string; icon: string }> = {
@@ -32,284 +29,6 @@ const DEFS: Record<string, { title: string; body: string; icon: string }> = {
   downloads:    { icon: '⬇',  title: 'Downloads',                            body: 'Bulk exports of structures, road network, and survey data in CSV, KML, and GeoJSON formats.' },
 };
 
-/* ── Shared styles ────────────────────────────────────────────────────────── */
-const SX = {
-  wrap:   { padding: '18px 20px', maxWidth: 1300, margin: '0 auto' } as React.CSSProperties,
-  defCard:{ background: 'rgba(15,15,18,0.9)', border: '1px solid rgba(77,159,255,0.10)',
-            borderLeft: '3px solid', borderRadius: 8, padding: '14px 18px',
-            marginBottom: 20, display: 'flex', gap: 12, alignItems: 'flex-start' } as React.CSSProperties,
-  kpiRow: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(160px,1fr))',
-            gap: 10, marginBottom: 18 } as React.CSSProperties,
-  kpi:    { background: 'rgba(10,10,14,0.92)', border: '1px solid rgba(255,255,255,0.06)',
-            borderLeft: '3px solid', borderRadius: 7, padding: '12px 15px' } as React.CSSProperties,
-  card:   { background: 'rgba(10,10,14,0.92)', border: '1px solid rgba(255,255,255,0.06)',
-            borderRadius: 8, padding: 16, marginBottom: 16 } as React.CSSProperties,
-  grid2:  { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 } as React.CSSProperties,
-  h3:     { fontSize: 11, fontWeight: 700, letterSpacing: '.5px',
-            textTransform: 'uppercase' as const, marginBottom: 12,
-            color: 'rgba(200,210,255,0.7)' } as React.CSSProperties,
-  empty:  { textAlign: 'center' as const, padding: 40,
-            color: 'rgba(148,163,184,0.4)', fontSize: 13 } as React.CSSProperties,
-};
-
-/* ── KPI Card ─────────────────────────────────────────────────────────────── */
-function KpiCard({ label, value, unit, accent, sub }: {
-  label: string; value: string | number | null | undefined;
-  unit?: string; accent: string; sub?: string;
-}) {
-  const display = value != null ? value : '—';
-  return (
-    <div style={{ ...SX.kpi, borderLeftColor: accent }}>
-      <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '.5px',
-                    textTransform: 'uppercase', color: 'rgba(148,163,184,0.55)', marginBottom: 4 }}>
-        {label}
-      </div>
-      <div style={{ fontSize: 22, fontWeight: 700, fontFamily: 'monospace', color: accent, margin: '3px 0' }}>
-        {display}
-        {unit && <span style={{ fontSize: 13, fontWeight: 400, marginLeft: 3 }}>{unit}</span>}
-      </div>
-      {sub && <div style={{ fontSize: 11, color: 'rgba(148,163,184,0.4)' }}>{sub}</div>}
-    </div>
-  );
-}
-
-/* ── Real Recharts bar chart — ticks, axes, legend, tooltip ─────────────────── */
-const CHART_TIP = { contentStyle: { background: '#0f1923', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, fontSize: 11 }, labelStyle: { color: '#e2e8f0' } };
-const CHART_AX = { tick: { fontSize: 10, fill: '#94a3b8' }, axisLine: { stroke: 'rgba(255,255,255,0.15)' }, tickLine: false as const };
-const CHART_GRID = { stroke: 'rgba(255,255,255,0.06)' };
-const PAL = ['#00f5ff', '#00ff88', '#ffd23f', '#ff6b35', '#b967ff', '#4d9fff', '#00d4aa', '#ff2d78'];
-
-function BarChartCard({ data, title, accent, seriesName = 'Value' }: {
-  data: Array<{ label: string; value: number }>;
-  title: string;
-  accent: string;
-  seriesName?: string;
-}) {
-  const clean = (data ?? []).filter(d => d != null && d.value != null && !isNaN(d.value));
-  if (clean.length === 0) return (
-    <div style={SX.card}>
-      <div style={SX.h3}>{title}</div>
-      <div style={SX.empty}>No chart data available</div>
-    </div>
-  );
-  return (
-    <div style={SX.card}>
-      <div style={SX.h3}>{title}</div>
-      <ResponsiveContainer width="100%" height={230}>
-        <BarChart data={clean} margin={{ top: 4, right: 8, left: -12, bottom: clean.length > 5 ? 34 : 4 }}>
-          <CartesianGrid {...CHART_GRID} vertical={false} />
-          <XAxis dataKey="label" {...CHART_AX} angle={clean.length > 5 ? -30 : 0} textAnchor={clean.length > 5 ? 'end' : 'middle'} interval={0} height={clean.length > 5 ? 46 : 22} />
-          <YAxis {...CHART_AX} />
-          <Tooltip {...CHART_TIP} />
-          <Legend wrapperStyle={{ fontSize: 10 }} />
-          <Bar dataKey="value" name={seriesName} radius={[4, 4, 0, 0]}>
-            {clean.map((_, i) => <Cell key={i} fill={i === 0 ? accent : PAL[i % PAL.length]} />)}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
-  );
-}
-
-/* ── No-data placeholder ──────────────────────────────────────────────────── */
-function NoData({ label = 'No data available yet' }: { label?: string }) {
-  return (
-    <div style={SX.card}>
-      <div style={{ ...SX.empty, padding: 30 }}>
-        <div style={{ fontSize: 28, marginBottom: 8 }}>📭</div>
-        <div>{label}</div>
-        <div style={{ fontSize: 11, color: 'rgba(148,163,184,0.3)', marginTop: 4 }}>
-          Data will appear here once records are loaded into Supabase.
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ── Spinner ──────────────────────────────────────────────────────────────── */
-function Spinner({ label }: { label: string }) {
-  return (
-    <div style={{ ...SX.empty, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-      <RefreshCw size={13} style={{ animation: 'sd-spin 1s linear infinite' }} />
-      {label}
-    </div>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────────────────── */
-/* ── Budget Dashboard (KPIs + chart only — table lives in Exhaustive Tables) ── */
-/* ─────────────────────────────────────────────────────────────────────────── */
-function BudgetDashboard({ accent }: { accent: string }) {
-  const [kpis, setKpis] = useState<{ allocated: number; spent: number; gap: number; lines: number } | null>(null);
-  const [byProg, setByProg] = useState<Array<{ label: string; value: number }>>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const [allocR, spentR, progR] = await Promise.all([
-          supabase.from('budget_allocations').select('amount_ugx').limit(2000),
-          supabase.from('budget_expenditures').select('amount_ugx').limit(2000),
-          supabase.from('budget_allocations').select('programme,amount_ugx').limit(2000),
-        ]);
-        const toB = (v: number) => Math.round(v / 1e9 * 10) / 10;
-        const totalAlloc = (allocR.data ?? []).reduce((s: number, r: any) => s + (r.amount_ugx ?? 0), 0);
-        const totalSpent = (spentR.data ?? []).reduce((s: number, r: any) => s + (r.amount_ugx ?? 0), 0);
-        const progMap: Record<string, number> = {};
-        (progR.data ?? []).forEach((r: any) => {
-          const k = r.programme ?? 'Other';
-          progMap[k] = (progMap[k] ?? 0) + (r.amount_ugx ?? 0);
-        });
-        setKpis({
-          allocated: toB(totalAlloc),
-          spent: toB(totalSpent),
-          gap: toB(Math.max(0, totalAlloc - totalSpent)),
-          lines: (allocR.data ?? []).length,
-        });
-        setByProg(
-          Object.entries(progMap)
-            .map(([label, value]) => ({ label, value: toB(value) }))
-            .sort((a, b) => b.value - a.value)
-            .slice(0, 8),
-        );
-      } catch {
-        setKpis(null);
-      }
-      setLoading(false);
-    })();
-  }, []);
-
-  if (loading) return <Spinner label="Loading budget data…" />;
-  if (!kpis || kpis.lines === 0) return <NoData label="No budget allocation records found in Supabase" />;
-
-  return (
-    <>
-      <div style={SX.kpiRow}>
-        <KpiCard label="Total Allocated" value={kpis.allocated} unit="Bn UGX" accent={accent}   />
-        <KpiCard label="Total Spent"     value={kpis.spent}     unit="Bn UGX" accent="#00ff88" />
-        <KpiCard label="Funding Gap"     value={kpis.gap}       unit="Bn UGX" accent="#ff0040" />
-        <KpiCard label="Budget Lines"    value={kpis.lines.toLocaleString()}  accent="#ffee00" />
-      </div>
-      <BarChartCard data={byProg} title="Allocation by Programme (Bn UGX)" accent={accent} seriesName="Bn UGX" />
-    </>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────────────────── */
-/* ── Road Reserve Dashboard ───────────────────────────────────────────────── */
-/* ─────────────────────────────────────────────────────────────────────────── */
-function RoadReserveDashboard({ accent }: { accent: string }) {
-  const [kpis, setKpis] = useState<{ total: number; gazetted: number; encroached: number; surveyed: number } | null>(null);
-  const [byDist, setByDist] = useState<Array<{ label: string; value: number }>>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const [totR, gazR, encR, survR, distR] = await Promise.all([
-          supabase.from('road_reserves').select('*', { count: 'exact', head: true }),
-          supabase.from('road_reserves').select('*', { count: 'exact', head: true }).eq('gazette_status', 'Gazetted'),
-          supabase.from('road_reserves').select('*', { count: 'exact', head: true }).gt('encroachment_count', 0),
-          supabase.from('road_reserves').select('*', { count: 'exact', head: true }).eq('survey_status', 'Surveyed'),
-          supabase.from('road_reserves').select('district').limit(1000),
-        ]);
-        const distMap: Record<string, number> = {};
-        (distR.data ?? []).forEach((r: any) => {
-          const k = r.district ?? 'Unknown';
-          distMap[k] = (distMap[k] ?? 0) + 1;
-        });
-        setKpis({
-          total: totR.count ?? 0,
-          gazetted: gazR.count ?? 0,
-          encroached: encR.count ?? 0,
-          surveyed: survR.count ?? 0,
-        });
-        setByDist(
-          Object.entries(distMap)
-            .map(([label, value]) => ({ label, value }))
-            .sort((a, b) => b.value - a.value)
-            .slice(0, 8),
-        );
-      } catch {
-        setKpis(null);
-      }
-      setLoading(false);
-    })();
-  }, []);
-
-  if (loading) return <Spinner label="Loading road reserve data…" />;
-  if (!kpis || kpis.total === 0) return <NoData label="No road reserve records found in Supabase" />;
-
-  return (
-    <>
-      <div style={SX.kpiRow}>
-        <KpiCard label="Total Reserves" value={kpis.total.toLocaleString()}     accent={accent}   />
-        <KpiCard label="Gazetted"       value={kpis.gazetted.toLocaleString()}  accent="#00ff88"  />
-        <KpiCard label="Encroached"     value={kpis.encroached.toLocaleString()} accent="#ff0040" />
-        <KpiCard label="Surveyed"       value={kpis.surveyed.toLocaleString()}  accent="#ffee00"  />
-      </div>
-      <BarChartCard data={byDist} title="Reserves by District (Top 8)" accent={accent} seriesName="Reserves" />
-    </>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────────────────── */
-/* ── NTIS Dashboard ───────────────────────────────────────────────────────── */
-/* ─────────────────────────────────────────────────────────────────────────── */
-function NTISDashboard({ accent }: { accent: string }) {
-  const [kpis, setKpis] = useState<{ stations: number; avgAadt: number; fatalities: number; blackspots: number } | null>(null);
-  const [byRegion, setByRegion] = useState<Array<{ label: string; value: number }>>([]);
-  const [loading, setLoading]   = useState(true);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const [stR, fatR, bsR] = await Promise.all([
-          supabase.from('atc_stations').select('station_id,aadt,region').limit(500),
-          supabase.from('road_accidents').select('fatalities').limit(2000),
-          supabase.from('road_blackspots').select('*', { count: 'exact', head: true }),
-        ]);
-        const stations = stR.data ?? [];
-        const avg = stations.length
-          ? Math.round(stations.reduce((s: number, r: any) => s + (r.aadt ?? 0), 0) / stations.length)
-          : 0;
-        const totalFat = (fatR.data ?? []).reduce((s: number, r: any) => s + (r.fatalities ?? 0), 0);
-        const regMap: Record<string, { sum: number; count: number }> = {};
-        stations.forEach((r: any) => {
-          const k = r.region ?? 'Unknown';
-          if (!regMap[k]) regMap[k] = { sum: 0, count: 0 };
-          regMap[k].sum += r.aadt ?? 0;
-          regMap[k].count += 1;
-        });
-        setKpis({ stations: stations.length, avgAadt: avg, fatalities: totalFat, blackspots: bsR.count ?? 0 });
-        setByRegion(
-          Object.entries(regMap)
-            .map(([label, { sum, count }]) => ({ label, value: Math.round(sum / count) }))
-            .sort((a, b) => b.value - a.value),
-        );
-      } catch {
-        setKpis(null);
-      }
-      setLoading(false);
-    })();
-  }, []);
-
-  if (loading) return <Spinner label="Loading NTIS data…" />;
-  if (!kpis || kpis.stations === 0) return <NoData label="No ATC station records found in Supabase" />;
-
-  return (
-    <>
-      <div style={SX.kpiRow}>
-        <KpiCard label="ATC Stations"    value={kpis.stations}                 accent={accent}   />
-        <KpiCard label="Avg AADT"        value={kpis.avgAadt.toLocaleString()} accent="#00ff88"  unit="veh/day" />
-        <KpiCard label="Road Fatalities" value={kpis.fatalities.toLocaleString()} accent="#ff0040" />
-        <KpiCard label="Blackspots"      value={kpis.blackspots}               accent="#ff9900"  />
-      </div>
-      <BarChartCard data={byRegion} title="Avg AADT by Region" accent={accent} seriesName="Avg AADT" />
-    </>
-  );
-}
-
 /* ─────────────────────────────────────────────────────────────────────────── */
 /* ── Signature block — the rich, chart-heavy per-section dashboards that     */
 /* ── already live under ./sections (Recharts, definition cards, no tables)   */
@@ -324,6 +43,16 @@ const LazyStructuresOverview = lazy(() => import('./sections/StructuresOverviewD
 const LazyBudgetOverview     = lazy(() => import('./sections/BudgetOverviewDashboard'));
 const LazyProjectsOverview   = lazy(() => import('./sections/ProjectsOverviewDashboard'));
 const LazyRoadSafetyOverview = lazy(() => import('./sections/RoadSafetyOverviewDashboard'));
+const LazyRoadReserveOverview  = lazy(() => import('./sections/RoadReserveOverviewDashboard'));
+const LazyNTISOverview         = lazy(() => import('./sections/NTISOverviewDashboard'));
+const LazyGisEnterpriseOverview = lazy(() => import('./sections/GisEnterpriseOverviewDashboard'));
+const LazyLifecycleOverview    = lazy(() => import('./sections/LifecycleOverviewDashboard'));
+const LazyRoadAtlasOverview    = lazy(() => import('./sections/RoadAtlasOverviewDashboard'));
+const LazyRoadVideoOverview    = lazy(() => import('./sections/RoadVideoOverviewDashboard'));
+const LazyCaseStudiesOverview  = lazy(() => import('./sections/CaseStudiesOverviewDashboard'));
+const LazyAdminOverview        = lazy(() => import('./sections/AdminOverviewDashboard'));
+const LazySourcesOverview      = lazy(() => import('./sections/SourcesOverviewDashboard'));
+const LazyDownloadsOverview    = lazy(() => import('./sections/DownloadsOverviewDashboard'));
 
 function SectionSignatureBlock({ sectionId, accent }: { sectionId: string; accent: string }) {
   const C = sectionId === 'tis' ? LazyTrafficOverview
@@ -333,11 +62,19 @@ function SectionSignatureBlock({ sectionId, accent }: { sectionId: string; accen
     : sectionId === 'projects' ? LazyProjectsOverview
     : sectionId === 'rms' ? LazyNetworkOverview
     : sectionId === 'pim' ? LazyPriority
+    : sectionId === 'budget' ? LazyBudgetOverview
+    : sectionId === 'reserve' ? LazyRoadReserveOverview
+    : sectionId === 'ntis' ? LazyNTISOverview
+    : sectionId === 'gis' ? LazyGisEnterpriseOverview
+    : sectionId === 'lifecycle' ? LazyLifecycleOverview
+    : sectionId === 'roadatlas' ? LazyRoadAtlasOverview
+    : sectionId === 'roadvideo' ? LazyRoadVideoOverview
+    : sectionId === 'casestudies' ? LazyCaseStudiesOverview
+    : sectionId === 'admin' ? LazyAdminOverview
+    : sectionId === 'sources' ? LazySourcesOverview
+    : sectionId === 'downloads' ? LazyDownloadsOverview
     : null;
 
-  if (sectionId === 'budget') return <div style={{ marginBottom: 14 }}><Suspense fallback={<div style={{ padding: 16, color: '#64748b', fontSize: 12 }}>Loading section dashboard…</div>}><LazyBudgetOverview /></Suspense></div>;
-  if (sectionId === 'reserve') return <div style={{ marginBottom: 14 }}><RoadReserveDashboard accent={accent} /></div>;
-  if (sectionId === 'ntis') return <div style={{ marginBottom: 14 }}><NTISDashboard accent={accent} /></div>;
   if (!C) return null;
 
   return (
