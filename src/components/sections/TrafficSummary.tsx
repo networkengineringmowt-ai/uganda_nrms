@@ -23,7 +23,7 @@ const C = {
   cyan:'#00f5ff', green:'#00ff88', orange:'#ff6b35', yellow:'#ffd23f',
   pink:'#ff2d78', teal:'#00d4aa', blue:'#4d9fff', amber:'#f59e0b',
 };
-const CONG_CLR: Record<string,string> = { Critical:'#ff2d78', High:'#ff6b35', Medium:'#ffd23f', Low:'#00ff88' };
+const CONG_CLR: Record<string,string> = { Critical:'#ef4444', High:'#f97316', Medium:'#eab308', Low:'#22c55e' };
 const CLASS_CLR: Record<string,string> = { A:C.cyan, B:C.green, C:C.amber, M:'#94a3b8' };
 const REGION_CLR: Record<string,string> = {
   Central:C.cyan, Eastern:C.orange, Southern:C.yellow, Western:C.green,

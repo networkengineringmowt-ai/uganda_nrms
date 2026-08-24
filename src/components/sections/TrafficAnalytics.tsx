@@ -27,7 +27,7 @@ const C = {
   cyan:'#00f5ff', green:'#00ff88', orange:'#ff6b35', purple:'#b967ff',
   yellow:'#ffd23f', pink:'#ff2d78', blue:'#4d9fff', teal:'#00d4aa', amber:'#f59e0b',
 };
-const CONG_CLR: Record<string,string> = { Critical:'#ff2d78', High:'#ff6b35', Medium:'#ffd23f', Low:'#00ff88' };
+const CONG_CLR: Record<string,string> = { Critical:'#ef4444', High:'#f97316', Medium:'#eab308', Low:'#22c55e' };
 
 // Growth factors REBASED to the 2016 base year (source: growth_factors_summary
 // year_range 2016-2024; ATC observed through 2024, projected beyond).
