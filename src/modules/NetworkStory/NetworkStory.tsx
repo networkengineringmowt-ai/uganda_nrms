@@ -96,12 +96,13 @@ const VCI_REGIONS = [
   { region: 'North Eastern', vci_2425: 72.904, vci_2526: 72.904, paved_km:  418.3, roughness: 3.342, rutting: 9.295 },
 ];
 
+// Canonical risk/condition scale (matches src/utils/helpers.ts RISK_SCALE_STOPS)
 const VCI_BANDS = [
-  { band: 'Very Good', pct: 57.25, km: 3454.4, color: C.green  },
-  { band: 'Good',      pct: 23.37, km: 1410.3, color: C.cyan   },
-  { band: 'Fair',      pct: 15.80, km:  953.5, color: C.yellow },
-  { band: 'Poor',      pct:  2.16, km:  130.4, color: C.orange },
-  { band: 'Very Poor', pct:  0.93, km:   56.1, color: C.pink   },
+  { band: 'Very Good', pct: 57.25, km: 3454.4, color: '#22c55e' },
+  { band: 'Good',      pct: 23.37, km: 1410.3, color: '#84cc16' },
+  { band: 'Fair',      pct: 15.80, km:  953.5, color: '#eab308' },
+  { band: 'Poor',      pct:  2.16, km:  130.4, color: '#f97316' },
+  { band: 'Very Poor', pct:  0.93, km:   56.1, color: '#ef4444' },
 ];
 
 // Real WTSS from analytics.json wtss_2015_2023 + NDP IV extensions
