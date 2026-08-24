@@ -13,7 +13,7 @@
  */
 import { useEffect, useState } from 'react';
 import { yearNow, useNowTick, factorAt } from './nowcast';
-import { NETWORK_BLENDED_GROWTH } from './trafficProjection';
+import { BLENDED_GROWTH_RATE } from './trafficProjection';
 
 // ── Per-link model extracted from network2026.geojson ───────────────────────
 export interface LinkModel {
@@ -122,7 +122,7 @@ export const linkVCI  = (l: LinkModel, t: number) =>
   Math.max(0, 100 - (l.paved ? VCI_RATE.paved : VCI_RATE.unpaved) * Math.max(0, t - l.condYear));
 /** AADT projected from the class 2016 base to t. */
 export const linkAADT = (l: LinkModel, t: number) =>
-  baseAadtFor(l.cls) * Math.pow(1 + NETWORK_BLENDED_GROWTH, t - 2016);
+  baseAadtFor(l.cls) * Math.pow(1 + BLENDED_GROWTH_RATE, t - 2016);
 /** Daily equivalent standard axle loads contributed by this link. */
 export const linkESAL = (l: LinkModel, t: number) =>
   linkAADT(l, t) * heavyShareFor(l.cls) * TRUCK_ESAL_FACTOR;

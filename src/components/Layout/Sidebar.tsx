@@ -49,7 +49,6 @@ const SECTIONS: Record<string, Section> = {
   roadatlas:     { id: 'roadatlas',     label: 'Road Atlas',                icon: <Map size={14}/>,          color: N.cyan   },
   roadvideo:     { id: 'roadvideo',     label: 'Road Video Survey',         icon: <Video size={14}/>,        color: N.cyan   },
   bridgeworks:   { id: 'bridgeworks',   label: 'Bridge Works Programme',    icon: <Hammer size={14}/>,       color: N.blue   },
-  documents:     { id: 'documents',     label: 'Document Store',            icon: <FileText size={14}/>,     color: N.gray   },
   downloads:     { id: 'downloads',     label: 'Downloads',                 icon: <Download size={14}/>,     color: N.gray   },
 };
 
@@ -59,7 +58,7 @@ const GROUPS: Group[] = [
   { id: 'assets',    label: 'Network & Assets',      icon: <Network size={15}/>,      color: N.cyan,   items: ['rms', 'roadcondition', 'bms', 'bridgeworks', 'roadreserve', 'roadatlas', 'roadvideo'] },
   { id: 'traffic',   label: 'Traffic & Performance', icon: <Activity size={15}/>,     color: N.orange, items: ['traffic', 'atc'] },
   { id: 'planning',  label: 'Planning & Investment', icon: <Building2 size={15}/>,    color: N.green,  items: ['projects', 'pim', 'budget', 'lifecycle'] },
-  { id: 'knowledge', label: 'Knowledge & Admin',     icon: <Shield size={15}/>,       color: N.purple, items: ['casestudies', 'sources', 'documents', 'downloads', 'gisenterprise', 'admin'] },
+  { id: 'knowledge', label: 'Knowledge & Admin',     icon: <Shield size={15}/>,       color: N.purple, items: ['casestudies', 'sources', 'downloads', 'gisenterprise', 'admin'] },
 ];
 
 export default function Sidebar() {

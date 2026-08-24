@@ -171,7 +171,6 @@ export type ActiveView =
   | 'gisenterprise'     // GIS Enterprise Dashboard
   | 'atc'               // ATC automatic traffic counters
   | 'bridgeworks'       // Bridge works programme
-  | 'documents'         // Document store
   | 'downloads'         // Downloads centre
   | 'roadatlas'         // Road atlas
   | 'roadvideo';        // Road video survey viewer

@@ -81,23 +81,6 @@ export default function PriorityDashboard() {
     return () => { d = true; };
   }, []);
   if (rows === null) return <div style={{ padding: 20, color: '#64748b', fontSize: 12 }}>Computing priority ranking…</div>;
-
-        {/* ── Definition Card ── */}
-        <div style={{background:'rgba(239,68,68,0.04)',border:'1px solid rgba(239,68,68,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'flex-start',gap:16}}>
-          <div style={{fontSize:36,lineHeight:1,flexShrink:0}}>🎯</div>
-          <div style={{flex:1}}>
-            <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
-              <span style={{fontSize:18,fontWeight:800,color:'rgba(239,68,68,1)',letterSpacing:-0.5}}>Priority Works Dashboard</span>
-              <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>HDM-4 Ranking · URF · PCI · Traffic Score · Budget Optimised</span>
-            </div>
-            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Priority works ranking dashboard for Uganda national road sections — combining HDM-4 economic analysis, PCI condition scores, AADT traffic weighting, social impact factors, and URF budget constraints to optimise maintenance priorities.</p>
-            <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
-              {["HDM-4 Priority","URF Ranking","PCI Weighted","Traffic Score","Social Impact","Budget Optimised"].map(b=>(
-                <span key={b} style={{background:'rgba(239,68,68,0.12)',color:'rgba(239,68,68,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
-              ))}
-            </div>
-          </div>
-        </div>
   if (!rows.length) return <Empty what='priority ranking' />;
   const kAadt = nkey(rows, /aadt|traffic/i); const kIri = nkey(rows, /iri|condition_score|score/i);
   const kLen = nkey(rows, /length|_km|km$/i); const kName = key(rows, /link_name|road_name|name|road_no|project/i);
@@ -123,6 +106,23 @@ export default function PriorityDashboard() {
   const top = scored.slice(0, 15);
   return (
     <div style={{ width: '100%' }}>
+      {/* ── Definition Card ── */}
+      <div style={{background:'rgba(239,68,68,0.04)',border:'1px solid rgba(239,68,68,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'flex-start',gap:16}}>
+        <div style={{fontSize:36,lineHeight:1,flexShrink:0}}>🎯</div>
+        <div style={{flex:1}}>
+          <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
+            <span style={{fontSize:18,fontWeight:800,color:'rgba(239,68,68,1)',letterSpacing:-0.5}}>Priority Works Dashboard</span>
+            <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>HDM-4 Ranking · URF · PCI · Traffic Score · Budget Optimised</span>
+          </div>
+          <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Priority works ranking dashboard for Uganda national road sections — combining HDM-4 economic analysis, PCI condition scores, AADT traffic weighting, social impact factors, and URF budget constraints to optimise maintenance priorities.</p>
+          <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+            {["HDM-4 Priority","URF Ranking","PCI Weighted","Traffic Score","Social Impact","Budget Optimised"].map(b=>(
+              <span key={b} style={{background:'rgba(239,68,68,0.12)',color:'rgba(239,68,68,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 8, marginBottom: 12 }}>
         <Kpi label='Links ranked' value={scored.length} sev='info' />
         <Kpi label='Critical priority tier' value={byTier[0].value} sev='bad' sub={(byTier[0].value / scored.length * 100).toFixed(1) + '% of ranked links'} />
@@ -153,23 +153,6 @@ export default function PriorityDashboard() {
           </ResponsiveContainer>
         </Card>
       </div>
-      <Card title='TOP PRIORITY LINKS'>
-        <div style={{ overflow: 'auto', maxHeight: 360 }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead><tr>{['Rank', 'Road link', 'Score', 'Tier', 'Primary driver', 'Length km', 'Est. cost bn UGX'].map(h => <th key={h} style={TBL_TH}>{h}</th>)}</tr></thead>
-            <tbody>{top.map((s, i) => (
-              <tr key={i}><td style={TBL_TD}>{i + 1}</td>
-                <td style={{ ...TBL_TD, color: '#f1f5f9', fontWeight: 700 }}>{String(kName ? s.r[kName] : '-')}</td>
-                <td style={{ ...TBL_TD, color: TCLR[s.tier], fontWeight: 800 }}>{s.score}</td>
-                <td style={{ ...TBL_TD, color: TCLR[s.tier], fontWeight: 700 }}>{s.tier}</td>
-                <td style={TBL_TD}>{s.reason}</td>
-                <td style={TBL_TD}>{fmtN(s.km, 1)}</td>
-                <td style={{ ...TBL_TD, color: HL, fontWeight: 700 }}>{fmtN(s.cost, 2)}</td></tr>))}
-            </tbody>
-          </table>
-        </div>
-        <div style={{ fontSize: 10, color: '#64748b', marginTop: 6 }}>Score = 0.55 x normalised traffic demand + 0.45 x normalised condition index. Cost estimate = recorded cost, or {UNIT_COST_UGX_BN_PER_KM} bn UGX per km where unrecorded.</div>
-      </Card>
     </div>
   );
 }

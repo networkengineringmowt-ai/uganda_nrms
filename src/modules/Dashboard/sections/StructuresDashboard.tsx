@@ -142,23 +142,6 @@ export default function StructuresDashboard() {
           </Card>
         )}
       </div>
-      <Card title='BRIDGES REQUIRING URGENT ATTENTION'>
-        {crit.length ? (
-          <div style={{ overflow: 'auto', maxHeight: 340 }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead><tr>{['Structure', 'Route', 'Span m', 'Condition', 'Last inspection'].map(h => <th key={h} style={TBL_TH}>{h}</th>)}</tr></thead>
-              <tbody>{crit.map((r, i) => { const c = rateOf(r);
-                return (<tr key={i}>
-                  <td style={{ ...TBL_TD, color: '#f1f5f9', fontWeight: 700 }}>{String(kId ? r[kId] : i + 1)}</td>
-                  <td style={TBL_TD}>{String(kRoute ? r[kRoute] : '-')}</td>
-                  <td style={TBL_TD}>{kSpan ? fmtN(num(r[kSpan]) ?? 0, 1) : '-'}</td>
-                  <td style={{ ...TBL_TD, color: RCLR[c], fontWeight: 700 }}>{c}</td>
-                  <td style={TBL_TD}>{String(kInsp ? r[kInsp] ?? 'Not recorded' : 'Not recorded')}</td></tr>); })}
-              </tbody>
-            </table>
-          </div>
-        ) : <Empty what='urgent-attention bridge' />}
-      </Card>
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { ClipboardList, Camera, LogOut } from 'lucide-react';
 import { useAuth } from '../Auth/AuthContext';
 import { logEvent } from '../Auth/auditLog';
 
-const MobiCapCapture = lazy(() => import('../PMS/MobiCapCapture'));
+const MobiCapCapture = lazy(() => import('../DataEntry/DataCaptureHub'));
 const PendingSubmissions = lazy(() =>
   import('../DataEntry/PendingSubmissions').then(m => ({ default: m.PendingSubmissions })));
 

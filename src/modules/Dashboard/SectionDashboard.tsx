@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
+import { RefreshCw } from 'lucide-react';
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Cell } from 'recharts';
 import { supabase } from '../../lib/supabase';
 
 /* ── Section metadata ─────────────────────────────────────────────────────── */
@@ -23,9 +25,11 @@ const DEFS: Record<string, { title: string; body: string; icon: string }> = {
   roadvideo:    { icon: '🎥', title: 'Road Video Survey',                    body: 'Continuous video log survey footage referenced to road chainage, used for remote visual condition assessment.' },
   projects:     { icon: '🏛',  title: 'Projects & Programmes',                body: 'Capital, maintenance, and safety programmes funded by GOU, World Bank, AfDB, JICA, and other development partners.' },
   casestudies:  { icon: '📝', title: 'Case Studies',                         body: 'Documented project outcomes, best-practice engineering interventions, and value-for-money analyses.' },
-  admin:        { icon: '⚙',  title: 'Administration',                       body: 'User management, access control, audit logs, system configuration, and reference data maintenance.' },
+  admin:        { icon: '⚙',  title: 'Administration',                       body: 'User management, access control, audit logs, system configuration, and the platform architecture mind map.' },
   hdm4:         { icon: '🔬', title: 'HDM-4 Analysis',                       body: 'Highway Development and Management model runs for road investment planning and budget optimisation.' },
   ducar:        { icon: '🌿', title: 'DUCAR Roads',                          body: 'District, Urban, Community Access Road network data — condition, coverage, and maintenance funding by local government.' },
+  sources:      { icon: '📚', title: 'Sources & Evidence',                   body: 'Evidence catalogue, tabular summaries, and the platform data dictionary underpinning every figure shown across the site.' },
+  downloads:    { icon: '⬇',  title: 'Downloads',                            body: 'Bulk exports of structures, road network, and survey data in CSV, KML, and GeoJSON formats.' },
 };
 
 /* ── Shared styles ────────────────────────────────────────────────────────── */
@@ -44,13 +48,6 @@ const SX = {
   h3:     { fontSize: 11, fontWeight: 700, letterSpacing: '.5px',
             textTransform: 'uppercase' as const, marginBottom: 12,
             color: 'rgba(200,210,255,0.7)' } as React.CSSProperties,
-  table:  { width: '100%', borderCollapse: 'collapse' as const, fontSize: 12 } as React.CSSProperties,
-  th:     { padding: '7px 10px', textAlign: 'left' as const, fontSize: 10,
-            letterSpacing: '.4px', textTransform: 'uppercase' as const, fontWeight: 700,
-            borderBottom: '1px solid rgba(255,255,255,0.07)',
-            color: 'rgba(148,163,184,0.6)' } as React.CSSProperties,
-  td:     { padding: '8px 10px', borderBottom: '1px solid rgba(255,255,255,0.04)',
-            color: 'rgba(200,210,225,0.8)', verticalAlign: 'middle' as const } as React.CSSProperties,
   empty:  { textAlign: 'center' as const, padding: 40,
             color: 'rgba(148,163,184,0.4)', fontSize: 13 } as React.CSSProperties,
 };
@@ -76,11 +73,17 @@ function KpiCard({ label, value, unit, accent, sub }: {
   );
 }
 
-/* ── CSS Bar Chart ────────────────────────────────────────────────────────── */
-function BarChart({ data, title, accent }: {
+/* ── Real Recharts bar chart — ticks, axes, legend, tooltip ─────────────────── */
+const CHART_TIP = { contentStyle: { background: '#0f1923', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, fontSize: 11 }, labelStyle: { color: '#e2e8f0' } };
+const CHART_AX = { tick: { fontSize: 10, fill: '#94a3b8' }, axisLine: { stroke: 'rgba(255,255,255,0.15)' }, tickLine: false as const };
+const CHART_GRID = { stroke: 'rgba(255,255,255,0.06)' };
+const PAL = ['#00f5ff', '#00ff88', '#ffd23f', '#ff6b35', '#b967ff', '#4d9fff', '#00d4aa', '#ff2d78'];
+
+function BarChartCard({ data, title, accent, seriesName = 'Value' }: {
   data: Array<{ label: string; value: number }>;
   title: string;
   accent: string;
+  seriesName?: string;
 }) {
   const clean = (data ?? []).filter(d => d != null && d.value != null && !isNaN(d.value));
   if (clean.length === 0) return (
@@ -89,31 +92,21 @@ function BarChart({ data, title, accent }: {
       <div style={SX.empty}>No chart data available</div>
     </div>
   );
-  const max = Math.max(...clean.map(d => d.value), 1);
   return (
     <div style={SX.card}>
       <div style={SX.h3}>{title}</div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-        {clean.map(d => (
-          <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 110, fontSize: 11, color: 'rgba(148,163,184,0.75)',
-                          textAlign: 'right', flexShrink: 0,
-                          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {d.label}
-            </div>
-            <div style={{ flex: 1, background: 'rgba(255,255,255,0.04)', borderRadius: 3, height: 16 }}>
-              <div style={{
-                width: `${Math.round((d.value / max) * 100)}%`,
-                height: '100%', borderRadius: 3, background: accent, opacity: 0.8,
-              }} />
-            </div>
-            <div style={{ width: 54, fontSize: 11, fontFamily: 'monospace',
-                          color: accent, textAlign: 'right', flexShrink: 0 }}>
-              {d.value.toLocaleString()}
-            </div>
-          </div>
-        ))}
-      </div>
+      <ResponsiveContainer width="100%" height={230}>
+        <BarChart data={clean} margin={{ top: 4, right: 8, left: -12, bottom: clean.length > 5 ? 34 : 4 }}>
+          <CartesianGrid {...CHART_GRID} vertical={false} />
+          <XAxis dataKey="label" {...CHART_AX} angle={clean.length > 5 ? -30 : 0} textAnchor={clean.length > 5 ? 'end' : 'middle'} interval={0} height={clean.length > 5 ? 46 : 22} />
+          <YAxis {...CHART_AX} />
+          <Tooltip {...CHART_TIP} />
+          <Legend wrapperStyle={{ fontSize: 10 }} />
+          <Bar dataKey="value" name={seriesName} radius={[4, 4, 0, 0]}>
+            {clean.map((_, i) => <Cell key={i} fill={i === 0 ? accent : PAL[i % PAL.length]} />)}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
     </div>
   );
 }
@@ -135,286 +128,29 @@ function NoData({ label = 'No data available yet' }: { label?: string }) {
 
 /* ── Spinner ──────────────────────────────────────────────────────────────── */
 function Spinner({ label }: { label: string }) {
-  return <div style={SX.empty}>{label}</div>;
-}
-
-/* ─────────────────────────────────────────────────────────────────────────── */
-/* ── BMS Dashboard ────────────────────────────────────────────────────────── */
-/* ─────────────────────────────────────────────────────────────────────────── */
-function BMSDashboard({ accent }: { accent: string }) {
-  const [kpis, setKpis] = useState<{ total: number; inspected: number; critical: number; maintenance: number } | null>(null);
-  const [byType, setByType] = useState<Array<{ label: string; value: number }>>([]);
-  const [rows, setRows]   = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const [totR, insR, critR, maintR, typeR, rowsR] = await Promise.all([
-          supabase.from('bridges').select('*', { count: 'exact', head: true }),
-          supabase.from('bridges').select('*', { count: 'exact', head: true }).eq('inspected', true),
-          supabase.from('bridges').select('*', { count: 'exact', head: true }).eq('condition', 'Critical'),
-          supabase.from('bridges').select('*', { count: 'exact', head: true }).eq('maintenance_required', true),
-          supabase.from('bridges').select('structure_type').limit(500),
-          supabase.from('bridges').select('bridge_name,road_link,structure_type,span_m,condition').order('condition').limit(10),
-        ]);
-        const typeCounts: Record<string, number> = {};
-        (typeR.data ?? []).forEach((r: any) => {
-          const t = r.structure_type ?? 'Unknown';
-          typeCounts[t] = (typeCounts[t] ?? 0) + 1;
-        });
-        setKpis({
-          total: totR.count ?? 0,
-          inspected: insR.count ?? 0,
-          critical: critR.count ?? 0,
-          maintenance: maintR.count ?? 0,
-        });
-        setByType(
-          Object.entries(typeCounts)
-            .map(([label, value]) => ({ label, value }))
-            .sort((a, b) => b.value - a.value)
-            .slice(0, 8),
-        );
-        setRows(rowsR.data ?? []);
-      } catch {
-        setKpis(null);
-      }
-      setLoading(false);
-    })();
-  }, []);
-
-  if (loading) return <Spinner label="Loading bridge data…" />;
-  if (!kpis || kpis.total === 0) return <NoData label="No bridge records found in Supabase" />;
-
   return (
-    <>
-      <div style={SX.kpiRow}>
-        <KpiCard label="Total Structures"    value={kpis.total.toLocaleString()}       accent={accent}    sub="bridges & culverts" />
-        <KpiCard label="Inspected"           value={kpis.inspected.toLocaleString()}   accent="#00ff88"   sub="with inspection records" />
-        <KpiCard label="Critical Condition"  value={kpis.critical.toLocaleString()}    accent="#ff0040"   sub="urgent works required" />
-        <KpiCard label="Maintenance Required" value={kpis.maintenance.toLocaleString()} accent="#ff9900" />
-      </div>
-      <div style={SX.grid2}>
-        <BarChart data={byType} title="Bridges by Structure Type" accent={accent} />
-        <div style={SX.card}>
-          <div style={SX.h3}>Bridge Inventory — Sample Records</div>
-          {rows.length === 0 ? <NoData /> : (
-            <table style={SX.table}>
-              <thead><tr>
-                {['Name', 'Road', 'Type', 'Span (m)', 'Condition'].map(h => <th key={h} style={SX.th}>{h}</th>)}
-              </tr></thead>
-              <tbody>
-                {rows.map((r, i) => (
-                  <tr key={i}>
-                    <td style={SX.td}>{r.bridge_name ?? '—'}</td>
-                    <td style={SX.td}>{r.road_link ?? '—'}</td>
-                    <td style={SX.td}>{r.structure_type ?? '—'}</td>
-                    <td style={SX.td}>{r.span_m ?? '—'}</td>
-                    <td style={SX.td}>
-                      <span style={{
-                        padding: '2px 7px', borderRadius: 4, fontSize: 11, fontWeight: 600,
-                        background: r.condition === 'Critical' ? '#ff004022'
-                          : r.condition === 'Poor' ? '#ff660022' : '#00ff8822',
-                        color: r.condition === 'Critical' ? '#ff0040'
-                          : r.condition === 'Poor' ? '#ff6600' : '#00ff88',
-                      }}>
-                        {r.condition ?? '—'}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </div>
-    </>
+    <div style={{ ...SX.empty, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+      <RefreshCw size={13} style={{ animation: 'sd-spin 1s linear infinite' }} />
+      {label}
+    </div>
   );
 }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
-/* ── Traffic Dashboard ────────────────────────────────────────────────────── */
-/* ─────────────────────────────────────────────────────────────────────────── */
-function TrafficDashboard({ accent }: { accent: string }) {
-  const [kpis, setKpis] = useState<{ stations: number; avgAadt: number; surveys: number; heavyPct: number } | null>(null);
-  const [byRoad, setByRoad]   = useState<Array<{ label: string; value: number }>>([]);
-  const [rows, setRows]       = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const [stR, survR, roadR, rowsR] = await Promise.all([
-          supabase.from('atc_stations').select('station_id,aadt,heavy_pct').limit(500),
-          supabase.from('traffic_surveys').select('*', { count: 'exact', head: true }),
-          supabase.from('traffic_surveys').select('road_link,aadt').order('aadt', { ascending: false }).limit(10),
-          supabase.from('traffic_surveys').select('road_link,station,survey_date,aadt,heavy_pct').order('survey_date', { ascending: false }).limit(10),
-        ]);
-        const stations = stR.data ?? [];
-        const avg = stations.length
-          ? Math.round(stations.reduce((s: number, r: any) => s + (r.aadt ?? 0), 0) / stations.length)
-          : 0;
-        const hvg = stations.length
-          ? Math.round(stations.reduce((s: number, r: any) => s + (r.heavy_pct ?? 0), 0) / stations.length)
-          : 0;
-        const roadMap: Record<string, number> = {};
-        (roadR.data ?? []).forEach((r: any) => {
-          const k = r.road_link ?? 'Unknown';
-          if (!roadMap[k] || (r.aadt ?? 0) > roadMap[k]) roadMap[k] = r.aadt ?? 0;
-        });
-        setKpis({ stations: stations.length, avgAadt: avg, surveys: survR.count ?? 0, heavyPct: hvg });
-        setByRoad(
-          Object.entries(roadMap)
-            .map(([label, value]) => ({ label, value }))
-            .sort((a, b) => b.value - a.value)
-            .slice(0, 8),
-        );
-        setRows(rowsR.data ?? []);
-      } catch {
-        setKpis(null);
-      }
-      setLoading(false);
-    })();
-  }, []);
-
-  if (loading) return <Spinner label="Loading traffic data…" />;
-  if (!kpis || (kpis.stations === 0 && kpis.surveys === 0)) return <NoData label="No traffic records found in Supabase" />;
-
-  return (
-    <>
-      <div style={SX.kpiRow}>
-        <KpiCard label="ATC Stations"    value={kpis.stations}                accent={accent}   sub="active counters" />
-        <KpiCard label="Avg AADT"        value={kpis.avgAadt.toLocaleString()} accent="#00ff88" unit="veh/day" />
-        <KpiCard label="Survey Records"  value={kpis.surveys.toLocaleString()} accent="#ffee00" />
-        <KpiCard label="Heavy Vehicle %" value={`${kpis.heavyPct}%`}          accent="#ff9900"  sub="HGV + buses" />
-      </div>
-      <div style={SX.grid2}>
-        <BarChart data={byRoad} title="AADT by Road Link (Top 8)" accent={accent} />
-        <div style={SX.card}>
-          <div style={SX.h3}>Recent Traffic Surveys</div>
-          {rows.length === 0 ? <NoData /> : (
-            <table style={SX.table}>
-              <thead><tr>
-                {['Road', 'Station', 'Date', 'AADT', 'Heavy %'].map(h => <th key={h} style={SX.th}>{h}</th>)}
-              </tr></thead>
-              <tbody>
-                {rows.map((r, i) => (
-                  <tr key={i}>
-                    <td style={SX.td}>{r.road_link ?? '—'}</td>
-                    <td style={SX.td}>{r.station ?? '—'}</td>
-                    <td style={SX.td}>{r.survey_date ?? '—'}</td>
-                    <td style={SX.td}><b style={{ color: accent }}>{r.aadt?.toLocaleString() ?? '—'}</b></td>
-                    <td style={SX.td}>{r.heavy_pct != null ? `${r.heavy_pct}%` : '—'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </div>
-    </>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────────────────── */
-/* ── PMS Dashboard ────────────────────────────────────────────────────────── */
-/* ─────────────────────────────────────────────────────────────────────────── */
-function PMSDashboard({ accent }: { accent: string }) {
-  const [kpis, setKpis] = useState<{ total: number; poor: number; avgIri: number; surveyed: number } | null>(null);
-  const [byClass, setByClass] = useState<Array<{ label: string; value: number }>>([]);
-  const [rows, setRows]       = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const [totR, poorR, iriR, survR, classR, rowsR] = await Promise.all([
-          supabase.from('pavement_conditions').select('*', { count: 'exact', head: true }),
-          supabase.from('pavement_conditions').select('*', { count: 'exact', head: true }).gte('iri', 8),
-          supabase.from('pavement_conditions').select('iri').limit(1000),
-          supabase.from('pavement_conditions').select('*', { count: 'exact', head: true }).not('survey_date', 'is', null),
-          supabase.from('pavement_conditions').select('road_class').limit(1000),
-          supabase.from('pavement_conditions').select('road_link,road_class,length_km,iri,condition').order('iri', { ascending: false }).limit(10),
-        ]);
-        const allIri = (iriR.data ?? []).map((r: any) => r.iri).filter((v: any) => v != null && !isNaN(v));
-        const avg = allIri.length
-          ? Math.round(allIri.reduce((a: number, b: number) => a + b, 0) / allIri.length * 10) / 10
-          : 0;
-        const classCounts: Record<string, number> = {};
-        (classR.data ?? []).forEach((r: any) => {
-          const k = r.road_class ?? 'Unknown';
-          classCounts[k] = (classCounts[k] ?? 0) + 1;
-        });
-        setKpis({ total: totR.count ?? 0, poor: poorR.count ?? 0, avgIri: avg, surveyed: survR.count ?? 0 });
-        setByClass(Object.entries(classCounts).map(([label, value]) => ({ label, value })));
-        setRows(rowsR.data ?? []);
-      } catch {
-        setKpis(null);
-      }
-      setLoading(false);
-    })();
-  }, []);
-
-  if (loading) return <Spinner label="Loading pavement data…" />;
-  if (!kpis || kpis.total === 0) return <NoData label="No pavement condition records found in Supabase" />;
-
-  return (
-    <>
-      <div style={SX.kpiRow}>
-        <KpiCard label="Total Segments"      value={kpis.total.toLocaleString()}    accent={accent}   />
-        <KpiCard label="Poor Condition (IRI≥8)" value={kpis.poor.toLocaleString()} accent="#ff0040"  />
-        <KpiCard label="Avg IRI"             value={kpis.avgIri}                   accent="#ffee00" unit="m/km" />
-        <KpiCard label="Surveyed Segments"   value={kpis.surveyed.toLocaleString()} accent="#00ff88" />
-      </div>
-      <div style={SX.grid2}>
-        <BarChart data={byClass} title="Segments by Road Class" accent={accent} />
-        <div style={SX.card}>
-          <div style={SX.h3}>Worst Pavement Segments (Highest IRI)</div>
-          {rows.length === 0 ? <NoData /> : (
-            <table style={SX.table}>
-              <thead><tr>
-                {['Road Link', 'Class', 'Length (km)', 'IRI', 'Condition'].map(h => <th key={h} style={SX.th}>{h}</th>)}
-              </tr></thead>
-              <tbody>
-                {rows.map((r, i) => (
-                  <tr key={i}>
-                    <td style={SX.td}>{r.road_link ?? '—'}</td>
-                    <td style={SX.td}>{r.road_class ?? '—'}</td>
-                    <td style={SX.td}>{r.length_km ?? '—'}</td>
-                    <td style={SX.td}>
-                      <b style={{ color: (r.iri ?? 0) >= 8 ? '#ff0040' : (r.iri ?? 0) >= 5 ? '#ff9900' : '#00ff88' }}>
-                        {r.iri ?? '—'}
-                      </b>
-                    </td>
-                    <td style={SX.td}>{r.condition ?? '—'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </div>
-    </>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────────────────── */
-/* ── Budget Dashboard ─────────────────────────────────────────────────────── */
+/* ── Budget Dashboard (KPIs + chart only — table lives in Exhaustive Tables) ── */
 /* ─────────────────────────────────────────────────────────────────────────── */
 function BudgetDashboard({ accent }: { accent: string }) {
   const [kpis, setKpis] = useState<{ allocated: number; spent: number; gap: number; lines: number } | null>(null);
-  const [byProg, setByProg]   = useState<Array<{ label: string; value: number }>>([]);
-  const [rows, setRows]       = useState<any[]>([]);
+  const [byProg, setByProg] = useState<Array<{ label: string; value: number }>>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
       try {
-        const [allocR, spentR, progR, rowsR] = await Promise.all([
+        const [allocR, spentR, progR] = await Promise.all([
           supabase.from('budget_allocations').select('amount_ugx').limit(2000),
           supabase.from('budget_expenditures').select('amount_ugx').limit(2000),
           supabase.from('budget_allocations').select('programme,amount_ugx').limit(2000),
-          supabase.from('budget_allocations').select('programme,sub_programme,amount_ugx,financial_year').order('amount_ugx', { ascending: false }).limit(10),
         ]);
         const toB = (v: number) => Math.round(v / 1e9 * 10) / 10;
         const totalAlloc = (allocR.data ?? []).reduce((s: number, r: any) => s + (r.amount_ugx ?? 0), 0);
@@ -436,7 +172,6 @@ function BudgetDashboard({ accent }: { accent: string }) {
             .sort((a, b) => b.value - a.value)
             .slice(0, 8),
         );
-        setRows(rowsR.data ?? []);
       } catch {
         setKpis(null);
       }
@@ -455,33 +190,7 @@ function BudgetDashboard({ accent }: { accent: string }) {
         <KpiCard label="Funding Gap"     value={kpis.gap}       unit="Bn UGX" accent="#ff0040" />
         <KpiCard label="Budget Lines"    value={kpis.lines.toLocaleString()}  accent="#ffee00" />
       </div>
-      <div style={SX.grid2}>
-        <BarChart data={byProg} title="Allocation by Programme (Bn UGX)" accent={accent} />
-        <div style={SX.card}>
-          <div style={SX.h3}>Top Budget Lines</div>
-          {rows.length === 0 ? <NoData /> : (
-            <table style={SX.table}>
-              <thead><tr>
-                {['Programme', 'Sub-Programme', 'FY', 'Allocated (Bn)'].map(h => <th key={h} style={SX.th}>{h}</th>)}
-              </tr></thead>
-              <tbody>
-                {rows.map((r, i) => (
-                  <tr key={i}>
-                    <td style={SX.td}>{r.programme ?? '—'}</td>
-                    <td style={SX.td}>{r.sub_programme ?? '—'}</td>
-                    <td style={SX.td}>{r.financial_year ?? '—'}</td>
-                    <td style={SX.td}>
-                      <b style={{ color: accent }}>
-                        {r.amount_ugx != null ? (r.amount_ugx / 1e9).toFixed(1) : '—'}
-                      </b>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </div>
+      <BarChartCard data={byProg} title="Allocation by Programme (Bn UGX)" accent={accent} seriesName="Bn UGX" />
     </>
   );
 }
@@ -491,20 +200,18 @@ function BudgetDashboard({ accent }: { accent: string }) {
 /* ─────────────────────────────────────────────────────────────────────────── */
 function RoadReserveDashboard({ accent }: { accent: string }) {
   const [kpis, setKpis] = useState<{ total: number; gazetted: number; encroached: number; surveyed: number } | null>(null);
-  const [byDist, setByDist]   = useState<Array<{ label: string; value: number }>>([]);
-  const [rows, setRows]       = useState<any[]>([]);
+  const [byDist, setByDist] = useState<Array<{ label: string; value: number }>>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
       try {
-        const [totR, gazR, encR, survR, distR, rowsR] = await Promise.all([
+        const [totR, gazR, encR, survR, distR] = await Promise.all([
           supabase.from('road_reserves').select('*', { count: 'exact', head: true }),
           supabase.from('road_reserves').select('*', { count: 'exact', head: true }).eq('gazette_status', 'Gazetted'),
           supabase.from('road_reserves').select('*', { count: 'exact', head: true }).gt('encroachment_count', 0),
           supabase.from('road_reserves').select('*', { count: 'exact', head: true }).eq('survey_status', 'Surveyed'),
           supabase.from('road_reserves').select('district').limit(1000),
-          supabase.from('road_reserves').select('road_link,district,width_m,gazette_status,encroachment_count').order('encroachment_count', { ascending: false }).limit(10),
         ]);
         const distMap: Record<string, number> = {};
         (distR.data ?? []).forEach((r: any) => {
@@ -523,7 +230,6 @@ function RoadReserveDashboard({ accent }: { accent: string }) {
             .sort((a, b) => b.value - a.value)
             .slice(0, 8),
         );
-        setRows(rowsR.data ?? []);
       } catch {
         setKpis(null);
       }
@@ -542,129 +248,7 @@ function RoadReserveDashboard({ accent }: { accent: string }) {
         <KpiCard label="Encroached"     value={kpis.encroached.toLocaleString()} accent="#ff0040" />
         <KpiCard label="Surveyed"       value={kpis.surveyed.toLocaleString()}  accent="#ffee00"  />
       </div>
-      <div style={SX.grid2}>
-        <BarChart data={byDist} title="Reserves by District (Top 8)" accent={accent} />
-        <div style={SX.card}>
-          <div style={SX.h3}>Most Encroached Reserves</div>
-          {rows.length === 0 ? <NoData /> : (
-            <table style={SX.table}>
-              <thead><tr>
-                {['Road Link', 'District', 'Width (m)', 'Gazette Status', 'Encroachments'].map(h => <th key={h} style={SX.th}>{h}</th>)}
-              </tr></thead>
-              <tbody>
-                {rows.map((r, i) => (
-                  <tr key={i}>
-                    <td style={SX.td}>{r.road_link ?? '—'}</td>
-                    <td style={SX.td}>{r.district ?? '—'}</td>
-                    <td style={SX.td}>{r.width_m ?? '—'}</td>
-                    <td style={SX.td}>{r.gazette_status ?? '—'}</td>
-                    <td style={SX.td}>
-                      <b style={{ color: (r.encroachment_count ?? 0) > 0 ? '#ff0040' : '#00ff88' }}>
-                        {r.encroachment_count ?? 0}
-                      </b>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </div>
-    </>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────────────────── */
-/* ── RMS Dashboard ────────────────────────────────────────────────────────── */
-/* ─────────────────────────────────────────────────────────────────────────── */
-function RMSDashboard({ accent }: { accent: string }) {
-  const [kpis, setKpis] = useState<{ total: number; active: number; completed: number; lengthKm: number } | null>(null);
-  const [byActivity, setByActivity] = useState<Array<{ label: string; value: number }>>([]);
-  const [rows, setRows]             = useState<any[]>([]);
-  const [loading, setLoading]       = useState(true);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const [totR, actR, compR, lenR, typeR, rowsR] = await Promise.all([
-          supabase.from('road_maintenance').select('*', { count: 'exact', head: true }),
-          supabase.from('road_maintenance').select('*', { count: 'exact', head: true }).eq('status', 'Active'),
-          supabase.from('road_maintenance').select('*', { count: 'exact', head: true }).eq('status', 'Completed'),
-          supabase.from('road_maintenance').select('length_km').limit(2000),
-          supabase.from('road_maintenance').select('activity_type').limit(2000),
-          supabase.from('road_maintenance').select('road_link,activity_type,length_km,status,contractor').limit(10),
-        ]);
-        const totalLen = (lenR.data ?? []).reduce((s: number, r: any) => s + (r.length_km ?? 0), 0);
-        const typeCounts: Record<string, number> = {};
-        (typeR.data ?? []).forEach((r: any) => {
-          const k = r.activity_type ?? 'Unknown';
-          typeCounts[k] = (typeCounts[k] ?? 0) + 1;
-        });
-        setKpis({
-          total: totR.count ?? 0,
-          active: actR.count ?? 0,
-          completed: compR.count ?? 0,
-          lengthKm: Math.round(totalLen),
-        });
-        setByActivity(
-          Object.entries(typeCounts)
-            .map(([label, value]) => ({ label, value }))
-            .sort((a, b) => b.value - a.value)
-            .slice(0, 8),
-        );
-        setRows(rowsR.data ?? []);
-      } catch {
-        setKpis(null);
-      }
-      setLoading(false);
-    })();
-  }, []);
-
-  if (loading) return <Spinner label="Loading maintenance data…" />;
-  if (!kpis || kpis.total === 0) return <NoData label="No maintenance records found in Supabase" />;
-
-  return (
-    <>
-      <div style={SX.kpiRow}>
-        <KpiCard label="Total Works"   value={kpis.total.toLocaleString()}     accent={accent}   />
-        <KpiCard label="Active"        value={kpis.active.toLocaleString()}    accent="#ffee00"  />
-        <KpiCard label="Completed"     value={kpis.completed.toLocaleString()} accent="#00ff88"  />
-        <KpiCard label="Total Length"  value={kpis.lengthKm.toLocaleString()}  accent="#00f5ff"  unit="km" />
-      </div>
-      <div style={SX.grid2}>
-        <BarChart data={byActivity} title="Works by Activity Type" accent={accent} />
-        <div style={SX.card}>
-          <div style={SX.h3}>Recent Maintenance Works</div>
-          {rows.length === 0 ? <NoData /> : (
-            <table style={SX.table}>
-              <thead><tr>
-                {['Road Link', 'Activity', 'Length (km)', 'Status', 'Contractor'].map(h => <th key={h} style={SX.th}>{h}</th>)}
-              </tr></thead>
-              <tbody>
-                {rows.map((r, i) => (
-                  <tr key={i}>
-                    <td style={SX.td}>{r.road_link ?? '—'}</td>
-                    <td style={SX.td}>{r.activity_type ?? '—'}</td>
-                    <td style={SX.td}>{r.length_km ?? '—'}</td>
-                    <td style={SX.td}>
-                      <span style={{
-                        padding: '2px 7px', borderRadius: 4, fontSize: 11, fontWeight: 600,
-                        background: r.status === 'Active' ? '#ffee0022'
-                          : r.status === 'Completed' ? '#00ff8822' : '#ffffff11',
-                        color: r.status === 'Active' ? '#ffee00'
-                          : r.status === 'Completed' ? '#00ff88' : '#aaa',
-                      }}>
-                        {r.status ?? '—'}
-                      </span>
-                    </td>
-                    <td style={SX.td}>{r.contractor ?? '—'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </div>
+      <BarChartCard data={byDist} title="Reserves by District (Top 8)" accent={accent} seriesName="Reserves" />
     </>
   );
 }
@@ -675,17 +259,15 @@ function RMSDashboard({ accent }: { accent: string }) {
 function NTISDashboard({ accent }: { accent: string }) {
   const [kpis, setKpis] = useState<{ stations: number; avgAadt: number; fatalities: number; blackspots: number } | null>(null);
   const [byRegion, setByRegion] = useState<Array<{ label: string; value: number }>>([]);
-  const [rows, setRows]         = useState<any[]>([]);
   const [loading, setLoading]   = useState(true);
 
   useEffect(() => {
     (async () => {
       try {
-        const [stR, fatR, bsR, rowsR] = await Promise.all([
+        const [stR, fatR, bsR] = await Promise.all([
           supabase.from('atc_stations').select('station_id,aadt,region').limit(500),
           supabase.from('road_accidents').select('fatalities').limit(2000),
           supabase.from('road_blackspots').select('*', { count: 'exact', head: true }),
-          supabase.from('atc_stations').select('station_id,road,location,region,aadt').order('aadt', { ascending: false }).limit(10),
         ]);
         const stations = stR.data ?? [];
         const avg = stations.length
@@ -705,7 +287,6 @@ function NTISDashboard({ accent }: { accent: string }) {
             .map(([label, { sum, count }]) => ({ label, value: Math.round(sum / count) }))
             .sort((a, b) => b.value - a.value),
         );
-        setRows(rowsR.data ?? []);
       } catch {
         setKpis(null);
       }
@@ -724,62 +305,319 @@ function NTISDashboard({ accent }: { accent: string }) {
         <KpiCard label="Road Fatalities" value={kpis.fatalities.toLocaleString()} accent="#ff0040" />
         <KpiCard label="Blackspots"      value={kpis.blackspots}               accent="#ff9900"  />
       </div>
-      <div style={SX.grid2}>
-        <BarChart data={byRegion} title="Avg AADT by Region" accent={accent} />
-        <div style={SX.card}>
-          <div style={SX.h3}>Top Stations by AADT</div>
-          {rows.length === 0 ? <NoData /> : (
-            <table style={SX.table}>
-              <thead><tr>
-                {['Station', 'Road', 'Location', 'Region', 'AADT'].map(h => <th key={h} style={SX.th}>{h}</th>)}
-              </tr></thead>
-              <tbody>
-                {rows.map((r, i) => (
-                  <tr key={i}>
-                    <td style={SX.td}><b style={{ color: accent }}>{r.station_id ?? '—'}</b></td>
-                    <td style={SX.td}>{r.road ?? '—'}</td>
-                    <td style={SX.td}>{r.location ?? '—'}</td>
-                    <td style={SX.td}>{r.region ?? '—'}</td>
-                    <td style={SX.td}><b style={{ color: '#ffee00' }}>{r.aadt?.toLocaleString() ?? '—'}</b></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </div>
+      <BarChartCard data={byRegion} title="Avg AADT by Region" accent={accent} seriesName="Avg AADT" />
     </>
   );
 }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
-/* ── Default / Fallback Dashboard ────────────────────────────────────────── */
+/* ── Signature block — the rich, chart-heavy per-section dashboards that     */
+/* ── already live under ./sections (Recharts, definition cards, no tables)   */
 /* ─────────────────────────────────────────────────────────────────────────── */
-function DefaultDashboard({ sectionId, accent }: { sectionId: string; accent: string }) {
-  const [count, setCount] = useState<number | null>(null);
-  const [loading, setLoading] = useState(true);
+const LazyTraffic     = lazy(() => import('./sections/TrafficDashboard'));
+const LazyPavement    = lazy(() => import('./sections/PavementDashboard'));
+const LazyStructures  = lazy(() => import('./sections/StructuresDashboard'));
+const LazyMaintenance = lazy(() => import('./sections/MaintenanceDashboard'));
+const LazyInventory   = lazy(() => import('./sections/InventoryDashboard'));
+const LazyPriority    = lazy(() => import('./sections/PriorityDashboard'));
+const LazyDrainage    = lazy(() => import('./sections/DrainageDashboard'));
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const { count: c } = await supabase
-          .from(sectionId)
-          .select('*', { count: 'exact', head: true });
-        setCount(c ?? 0);
-      } catch {
-        setCount(null);
-      }
-      setLoading(false);
-    })();
-  }, [sectionId]);
+function SectionSignatureBlock({ sectionId, accent }: { sectionId: string; accent: string }) {
+  const C = sectionId === 'tis' ? LazyTraffic
+    : sectionId === 'pms' ? LazyPavement
+    : sectionId === 'bms' ? LazyStructures
+    : (sectionId === 'ducar' || sectionId === 'projects') ? LazyMaintenance
+    : sectionId === 'rms' ? LazyInventory
+    : sectionId === 'pim' ? LazyPriority
+    : null;
 
-  if (loading) return <Spinner label="Loading…" />;
-  if (count == null) return <NoData label="Section data not yet configured in Supabase" />;
+  if (sectionId === 'budget') return <div style={{ marginBottom: 14 }}><BudgetDashboard accent={accent} /></div>;
+  if (sectionId === 'reserve') return <div style={{ marginBottom: 14 }}><RoadReserveDashboard accent={accent} /></div>;
+  if (sectionId === 'ntis') return <div style={{ marginBottom: 14 }}><NTISDashboard accent={accent} /></div>;
+  if (!C) return null;
 
   return (
-    <div style={SX.kpiRow}>
-      <KpiCard label="Records" value={count.toLocaleString()} accent={accent} />
+    <div style={{ marginBottom: 14 }}>
+      <Suspense fallback={<div style={{ padding: 16, color: '#64748b', fontSize: 12 }}>Loading section dashboard…</div>}>
+        <C />
+        {sectionId === 'bms' && (
+          <>
+            <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.08em', color: '#38bdf8', margin: '10px 0 8px' }}>DRAINAGE STRUCTURES</div>
+            <LazyDrainage />
+          </>
+        )}
+      </Suspense>
     </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* ── Section sub-tabs: Dashboard | Interactive Map | Exhaustive Tables |      */
+/* ── Deep Analytics | SQL Database & Schema | Data Capture                   */
+/* ─────────────────────────────────────────────────────────────────────────── */
+import { InsightGrid } from './InsightGrid';
+import { SchemaExplorer } from './SchemaExplorer';
+import { SectionMap } from './SectionMap';
+import { ExhaustiveTables } from './ExhaustiveTables';
+import { DeepAnalysisTables } from './DeepAnalysisTables';
+
+// Normalises a sidebar sectionId to the id used by ExhaustiveTables / DeepAnalysisTables
+// / SchemaExplorer's underlying table specs, where the two differ.
+const SECTION_ALIAS: Record<string, string> = {
+  traffic: 'tis', atc: 'tis', condition: 'pms', roadcondition: 'pms', npms: 'pms',
+  registry: 'bms', inspections: 'bms', bridgeworks: 'bms', nbms: 'bms',
+  maintenance: 'ducar',
+  roadreserve: 'reserve',
+  gisenterprise: 'gis',
+};
+
+const SUBTABS = [
+  { id: 'dashboard', label: 'Dashboard' },
+  { id: 'map', label: 'Interactive Map' },
+  { id: 'tables', label: 'Exhaustive Tables' },
+  { id: 'analytics', label: 'Deep Analytics' },
+  { id: 'sql', label: 'SQL Database & Schema' },
+  { id: 'capture', label: 'Data Capture' },
+];
+// TIS (Traffic Information System) gets its own Road Safety sub-tab, inserted
+// right after Dashboard — kept out of the Dashboard tab so that one stays
+// traffic-only (AADT/station data), not mixed with accident/blackspot stats.
+function subtabsFor(sid: string) {
+  if (sid !== 'tis') return SUBTABS;
+  const out = [...SUBTABS];
+  out.splice(1, 0, { id: 'safety', label: 'Road Safety' });
+  return out;
+}
+
+function SectionSubTabs({ sectionId, accent }: { sectionId: string; accent: string }) {
+  const [tab, setTab] = useState('dashboard');
+  const sid = SECTION_ALIAS[sectionId] ?? sectionId;
+  const tabs = subtabsFor(sid);
+  return (
+    <div style={{ width: '100%' }}>
+      <style>{`@keyframes sd-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+      <div style={{ display: 'flex', gap: 2, flexWrap: 'wrap', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: 10, position: 'sticky', top: 0, zIndex: 20, background: 'rgba(2,6,23,0.92)', backdropFilter: 'blur(8px)' }}>
+        {tabs.map(t => (
+          <button key={t.id} onClick={() => setTab(t.id)}
+            style={{ padding: '9px 16px', fontSize: 11, fontWeight: 800, letterSpacing: '0.07em',
+              background: tab === t.id ? 'rgba(0,245,255,0.06)' : 'transparent',
+              border: 'none', borderBottom: tab === t.id ? '2px solid ' + accent : '2px solid transparent',
+              cursor: 'pointer', fontFamily: 'inherit',
+              color: tab === t.id ? accent : 'rgba(148,163,184,0.7)', borderRadius: '8px 8px 0 0' }}>
+            {t.label.toUpperCase()}
+          </button>
+        ))}
+      </div>
+      {tab === 'dashboard' && (<><SectionSignatureBlock sectionId={sid} accent={accent} /><InsightGrid sectionId={sid} accent={accent} /><SectionExtra sectionId={sid} slot="dashboard" /></>)}
+      {tab === 'safety' && sid === 'tis' && (
+        <Suspense fallback={<div style={{ padding: 20, color: '#64748b', fontSize: 12 }}>Loading road safety data...</div>}>
+          <TrafficRoadSafetyLegacy />
+        </Suspense>
+      )}
+      {tab === 'map' && (<><SectionExtra sectionId={sid} slot="map" />
+        <div style={{ marginTop: 18 }}><SectionMap sectionId={sid} accent={accent} /></div></>)}
+      {tab === 'tables' && (<><ExhaustiveTables sectionId={sid} accent={accent} /><SectionExtra sectionId={sid} slot="tables" /></>)}
+      {tab === 'analytics' && (<><DeepAnalysisTables sectionId={sid} accent={accent} /><SectionExtra sectionId={sid} slot="analytics" /></>)}
+      {tab === 'sql' && <SchemaExplorer sectionId={sid} accent={accent} />}
+      {tab === 'capture' && (
+        <>
+          <SectionExtra sectionId={sid} slot="capture" />
+          <Suspense fallback={<div style={{ padding: 20, color: '#64748b', fontSize: 12 }}>Loading data capture module…</div>}>
+            <LazyDataCaptureHub />
+          </Suspense>
+        </>
+      )}
+    </div>
+  );
+}
+
+const LazyDataCaptureHub = lazy(() => import('../DataEntry/DataCaptureHub'));
+
+// — Traffic legacy content ————————————————————
+const LazyTrafficLegacy = lazy(() => import('../Traffic/TrafficLegacyContent'));
+function TrafficMapLegacy() { return <LazyTrafficLegacy initialTab="map" hideTabBar />; }
+function TrafficCountsLegacy() { return <LazyTrafficLegacy initialTab="counts" hideTabBar />; }
+function TrafficStationsLegacy() { return <LazyTrafficLegacy initialTab="stations" hideTabBar />; }
+function TrafficTrendsLegacy() { return <LazyTrafficLegacy initialTab="trends" hideTabBar />; }
+function TrafficRoadSafetyLegacy() { return <LazyTrafficLegacy initialTab="roadsafety" hideTabBar />; }
+const LazyGrowthFactors = lazy(() => import('../Traffic/GrowthFactorsPanel'));
+const LazyOverloading = lazy(() => import('../Traffic/OverloadingSection'));
+const LazyOprc = lazy(() => import('../../components/sections/OprcSection'));
+const LazyNdpiv = lazy(() => import('../../components/sections/NdpivSection'));
+
+// — RMS legacy content ————————————————————
+const LazyRoadNetworkMap = lazy(() => import('../RoadNetwork/RoadNetworkView'));
+const LazyNetworkStory = lazy(() => import('../NetworkStory/NetworkStory'));
+const LazyRoadInventoryTbl = lazy(() => import('../RMS/RoadInventory'));
+
+// — PMS legacy content ————————————————————
+const PMS_CrossSectionAnalytics = lazy(() => import('../PMS/CrossSectionAnalytics'));
+const PMS_RoadConditionView = lazy(() => import('../RoadCondition/RoadConditionView'));
+const PMS_PavementCatalogue = lazy(() => import('../PMS/PavementCatalogue'));
+const PMS_AIVisionDashboard = lazy(() => import('../PMS/AIVisionDashboard'));
+const PMS_DigitalTwin = lazy(() => import('../PMS/DigitalTwin'));
+const PMS_LifecycleView = lazy(() => import('../Lifecycle/LifecycleView'));
+const PMS_RoadVideoView = lazy(() => import('../RoadVideoView/RoadVideoView'));
+function PmsConditionMapLegacy() { return <PMS_RoadConditionView activeTab={'conditionmap' as any} embedded />; }
+function PmsInventoryLegacy() { return <PMS_RoadConditionView activeTab={'inventory' as any} embedded />; }
+function PmsAnalyticsViewLegacy() { return <PMS_RoadConditionView activeTab={'analytics' as any} embedded />; }
+function PmsAgeLegacy() { return <PMS_RoadConditionView activeTab={'age' as any} embedded />; }
+function PmsFwdLegacy() { return <PMS_RoadConditionView activeTab={'fwd' as any} embedded />; }
+
+// — BMS legacy content ————————————————————
+const BMS_GISMap = lazy(() => import('../GISMap/GISMapView'));
+const BMS_Registry = lazy(() => import('../Registry/StructureRegistry'));
+const BMS_Inspections = lazy(() => import('../Inspections/InspectionManagement'));
+const BMS_Condition = lazy(() => import('../Condition/ConditionAssessment'));
+const BMS_Maintenance = lazy(() => import('../Maintenance/MaintenanceWorks'));
+const BMS_Analytics = lazy(() => import('../Analytics/Analytics'));
+const BMS_PhotoTwin = lazy(() => import('../PhotoTwin/PhotoTwin'));
+const BMS_BridgeWorks = lazy(() => import('../BridgeWorks/BridgeWorksSection'));
+const BMS_Critical = lazy(() => import('../Condition/CriticalStructures'));
+
+// — DUCAR legacy content ————————————————————
+const LazyDucarOverview = lazy(() => import('../DUCAR/DucarOverviewPanel'));
+
+// — PIM legacy content ————————————————————
+const LazyPimLegacy = lazy(() => import('../PIM/PimLegacyContent'));
+function PimBudgetLegacy() { return <LazyPimLegacy initialTab="budget" hideTabBar />; }
+function PimFrameworkLegacy() { return <LazyPimLegacy initialTab="pim" hideTabBar />; }
+function PimPppLegacy() { return <LazyPimLegacy initialTab="ppp" hideTabBar />; }
+function PimDonorLegacy() { return <LazyPimLegacy initialTab="donor" hideTabBar />; }
+function PimNdpivLegacy() { return <LazyPimLegacy initialTab="ndpiv" hideTabBar />; }
+
+// — GIS Enterprise legacy content ————————————————————
+const LazyGisLegacy = lazy(() => import('../GisEnterprise/GisEnterpriseLegacyContent'));
+function GisMapLegacy() { return <LazyGisLegacy hideTabBar />; }
+
+// — Road Reserve legacy content ————————————————————
+const LazyReserveLegacy = lazy(() => import('../RoadReserve/RoadReserveLegacyContent'));
+function ReserveOverviewLegacy() { return <LazyReserveLegacy initialTab="overview" hideTabBar />; }
+function ReserveMapLegacy() { return <LazyReserveLegacy initialTab="map" hideTabBar />; }
+function ReserveRegisterLegacy() { return <LazyReserveLegacy initialTab="register" hideTabBar />; }
+function ReserveGazetteLegacy() { return <LazyReserveLegacy initialTab="gazette" hideTabBar />; }
+function ReservePermitsLegacy() { return <LazyReserveLegacy initialTab="permits" hideTabBar />; }
+
+// — Global Case Studies legacy content ————————————————————
+const LazyCaseStudiesLegacy = lazy(() => import('../GlobalCaseStudies/GlobalCaseStudiesLegacyContent'));
+function CaseStudiesWorldMapLegacy() { return <LazyCaseStudiesLegacy initialTab="worldmap" hideTabBar />; }
+function CaseStudiesComparisonLegacy() { return <LazyCaseStudiesLegacy initialTab="analytics" hideTabBar />; }
+function CaseStudiesMatrixLegacy() { return <LazyCaseStudiesLegacy initialTab="matrix" hideTabBar />; }
+function CaseStudiesNarrativeLegacy() { return <LazyCaseStudiesLegacy initialTab="casestudies" hideTabBar />; }
+function CaseStudiesLessonsLegacy() { return <LazyCaseStudiesLegacy initialTab="lessons" hideTabBar />; }
+
+// — Admin: Interactive Map = the Platform Mind Map ————————————————————
+const ADMIN_MindMap = lazy(() => import('../MindMap/MindMapSection'));
+const ADMIN_Identity = lazy(() => import('../Admin/IdentityManager'));
+const ADMIN_Activity = lazy(() => import('../Admin/ActivityLog'));
+const ADMIN_DataAudit = lazy(() => import('../DataAudit/DataAuditPanel'));
+const ADMIN_PendingSubmissions = lazy(() => import('../DataEntry/PendingSubmissions').then(m => ({ default: m.PendingSubmissions })));
+
+// — Sources & Evidence ————————————————————
+const SRC_Catalogue = lazy(() => import('../Sources/SourcesCatalogueSection'));
+const SRC_Tabular = lazy(() => import('../Sources/TabularSummaries'));
+const SRC_Dictionary = lazy(() => import('../Sources/DataDictionary'));
+
+// — Downloads / Road Atlas / Road Video / Bridge Works / Budget / Lifecycle —
+const DL_View = lazy(() => import('../Downloads/DownloadsView'));
+const RA_View = lazy(() => import('../RoadAtlas/RoadAtlasView'));
+const RV_View = lazy(() => import('../RoadVideoView/RoadVideoView'));
+const BUD_Section = lazy(() => import('../Budget/BudgetSection'));
+const LC_Section = lazy(() => import('../Lifecycle/LifecycleSection'));
+const PROJ_View = lazy(() => import('../Projects/ProjectsView'));
+
+type ExtraSlot = 'dashboard' | 'map' | 'tables' | 'analytics' | 'capture';
+const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentType<any>[]>>> = {
+  rms: {
+    dashboard: [LazyNetworkStory],
+    map: [LazyRoadNetworkMap],
+    tables: [LazyRoadInventoryTbl],
+  },
+  tis: {
+    map: [TrafficMapLegacy],
+    tables: [TrafficCountsLegacy, TrafficStationsLegacy],
+    analytics: [TrafficTrendsLegacy, LazyGrowthFactors, LazyOverloading],
+  },
+  pms: {
+    map: [PmsConditionMapLegacy],
+    tables: [PmsInventoryLegacy, PMS_RoadVideoView],
+    analytics: [PMS_CrossSectionAnalytics, PmsAnalyticsViewLegacy, PmsAgeLegacy, PmsFwdLegacy, PMS_LifecycleView, PMS_PavementCatalogue, PMS_AIVisionDashboard, PMS_DigitalTwin],
+  },
+  bms: {
+    map: [BMS_GISMap],
+    tables: [BMS_Registry, BMS_Inspections, BMS_BridgeWorks, BMS_Maintenance],
+    analytics: [BMS_Condition, BMS_Critical, BMS_Analytics, BMS_PhotoTwin],
+  },
+  ducar: {
+    dashboard: [LazyDucarOverview],
+  },
+  pim: {
+    dashboard: [PimFrameworkLegacy],
+    tables: [PimPppLegacy, PimDonorLegacy],
+    analytics: [PimBudgetLegacy, PimNdpivLegacy],
+  },
+  gis: {
+    map: [GisMapLegacy],
+  },
+  reserve: {
+    dashboard: [ReserveOverviewLegacy],
+    map: [ReserveMapLegacy],
+    tables: [ReserveRegisterLegacy, ReserveGazetteLegacy, ReservePermitsLegacy],
+  },
+  casestudies: {
+    dashboard: [CaseStudiesNarrativeLegacy],
+    map: [CaseStudiesWorldMapLegacy],
+    tables: [CaseStudiesComparisonLegacy],
+    analytics: [CaseStudiesMatrixLegacy, CaseStudiesLessonsLegacy],
+  },
+  admin: {
+    map: [ADMIN_MindMap],
+    tables: [ADMIN_Identity, ADMIN_Activity],
+    analytics: [ADMIN_DataAudit],
+    capture: [ADMIN_PendingSubmissions],
+  },
+  sources: {
+    tables: [SRC_Catalogue, SRC_Dictionary],
+    analytics: [SRC_Tabular],
+  },
+  downloads: {
+    dashboard: [DL_View],
+  },
+  roadatlas: {
+    map: [RA_View],
+  },
+  roadvideo: {
+    tables: [RV_View],
+  },
+  bridgeworks: {
+    tables: [BMS_BridgeWorks],
+  },
+  budget: {
+    analytics: [BUD_Section],
+  },
+  lifecycle: {
+    analytics: [LC_Section],
+  },
+  projects: {
+    tables: [PROJ_View],
+  },
+};
+
+function SectionExtra({ sectionId, slot }: { sectionId: string; slot: ExtraSlot }) {
+  const list = SECTION_EXTRAS[sectionId]?.[slot];
+  if (!list || !list.length) return null;
+  return (
+    <>
+      {list.map((Comp, i) => (
+        <Suspense key={i} fallback={null}>
+          <div style={{
+            marginTop: 18, position: 'relative', isolation: 'isolate',
+            contain: 'layout paint style', overflow: 'hidden auto', maxHeight: '90vh',
+            border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10,
+          }}><Comp /></div>
+        </Suspense>
+      ))}
+    </>
   );
 }
 
@@ -789,53 +627,29 @@ function DefaultDashboard({ sectionId, accent }: { sectionId: string; accent: st
 export default function SectionDashboard({ sectionId, accent }: { sectionId: string; accent: string }) {
   const def = DEFS[sectionId] ?? DEFS.rms;
 
-  let content: React.ReactNode;
-  switch (sectionId) {
-    case 'bms':
-    case 'nbms':
-      content = <BMSDashboard accent={accent} />;
-      break;
-    case 'traffic':
-    case 'atc':
-      content = <TrafficDashboard accent={accent} />;
-      break;
-    case 'pms':
-    case 'roadcondition':
-    case 'npms':
-      content = <PMSDashboard accent={accent} />;
-      break;
-    case 'budget':
-      content = <BudgetDashboard accent={accent} />;
-      break;
-    case 'roadreserve':
-      content = <RoadReserveDashboard accent={accent} />;
-      break;
-    case 'rms':
-      content = <RMSDashboard accent={accent} />;
-      break;
-    case 'ntis':
-      content = <NTISDashboard accent={accent} />;
-      break;
-    default:
-      content = <DefaultDashboard sectionId={sectionId} accent={accent} />;
-  }
-
   return (
-    <div style={{ ...SX.wrap, fontFamily: "'Inter','Segoe UI',sans-serif" }}>
-      {/* ── Section definition card ── */}
-      <div style={{ ...SX.defCard, borderLeftColor: accent }}>
-        <div style={{ fontSize: 28, lineHeight: 1, flexShrink: 0 }}>{def.icon}</div>
-        <div>
-          <div style={{ fontWeight: 700, fontSize: 14, color: 'rgba(220,230,255,0.9)', marginBottom: 4 }}>
-            {def.title}
-          </div>
-          <div style={{ fontSize: 12, color: 'rgba(148,163,184,0.65)', lineHeight: 1.55 }}>
-            {def.body}
+    <div style={{ padding: '6px 8px', width: '100%' }}>
+      {/* Compact definition strip — always visible above the 6-tab bar */}
+      <div style={{
+        background: `rgba(255,255,255,0.02)`, border: `1px solid ${accent}26`,
+        borderRadius: 10, padding: '10px 14px', marginBottom: 10,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+          <div style={{
+            width: 26, height: 26, borderRadius: 7, flexShrink: 0, fontSize: 13,
+            background: `linear-gradient(135deg,${accent}33,rgba(0,0,0,0))`,
+            border: `1px solid ${accent}55`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', color: accent,
+          }}>{def.icon}</div>
+          <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, minWidth: 0, rowGap: 4 }}>
+            <span style={{ fontSize: 13, fontWeight: 900, color: '#e2eaf4', flexShrink: 0 }}>{def.title}</span>
+            <span style={{ fontSize: 11.5, color: 'rgba(203,213,225,0.85)', lineHeight: 1.5, flex: '1 1 320px', minWidth: 260 }}>{def.body}</span>
           </div>
         </div>
       </div>
-      {/* ── Section-specific KPIs, chart, table ── */}
-      {content}
+
+      {/* Section Sub-Tabs: Dashboard | Interactive Map | Exhaustive Tables | Deep Analytics | SQL Database & Schema | Data Capture */}
+      <SectionSubTabs sectionId={sectionId} accent={accent} />
     </div>
   );
 }

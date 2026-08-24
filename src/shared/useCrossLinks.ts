@@ -104,13 +104,7 @@ const CROSS_LINK_MAP: Record<string, CrossLink[]> = {
     { targetView: 'roadnetwork',   label: 'Road Network', description: 'Survey route on the network',        dataField: 'link_id / geometry' },
     { targetView: 'phototwin',     label: 'Photo Twin',   description: 'Inspection photo archive',           dataField: 'link_id / image_set' },
   ],
-  documents: [
-    { targetView: 'sources',   label: 'Sources',   description: 'Evidence catalogue & citations', dataField: 'document_id' },
-    { targetView: 'downloads', label: 'Downloads', description: 'Export inventory & datasets',     dataField: 'export_set' },
-    { targetView: 'bms',       label: 'BMS',       description: 'Structure drawings & reports',    dataField: 'bridge_id / document_type' },
-  ],
   downloads: [
-    { targetView: 'documents',   label: 'Documents',    description: 'Source documents & records', dataField: 'document_id' },
     { targetView: 'sources',     label: 'Sources',      description: 'Data provenance & evidence',  dataField: 'dataset_id' },
     { targetView: 'roadnetwork', label: 'Road Network', description: 'Network geometry exports',    dataField: 'geojson / shapefile' },
   ],
@@ -130,14 +124,13 @@ const CROSS_LINK_MAP: Record<string, CrossLink[]> = {
     { targetView: 'hdm4',      label: 'HDM-4',     description: 'Modelling approaches compared',       dataField: 'model' },
   ],
   sources: [
-    { targetView: 'documents',        label: 'Documents', description: 'Underlying source documents', dataField: 'document_id' },
     { targetView: 'downloads',        label: 'Downloads', description: 'Downloadable datasets',        dataField: 'dataset_id' },
     { targetView: 'tabularsummaries', label: 'Tables',    description: 'Cited summary tables',         dataField: 'table_id' },
   ],
   roadreserve: [
     { targetView: 'roadnetwork', label: 'Road Network', description: 'Reserve corridor on the network', dataField: 'link_id / reserve_width' },
     { targetView: 'projects',    label: 'Projects',     description: 'Acquisition for development projects', dataField: 'project_id / rap' },
-    { targetView: 'documents',   label: 'Documents',    description: 'Gazette & legal records',         dataField: 'document_id' },
+    { targetView: 'sources',     label: 'Sources',      description: 'Gazette & legal records',         dataField: 'document_id' },
   ],
   trafficanalytics: [
     { targetView: 'traffic',     label: 'Traffic',     description: 'Underlying counts & stations',   dataField: 'aadt / station_id' },

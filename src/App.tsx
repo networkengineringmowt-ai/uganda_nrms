@@ -8,7 +8,7 @@ import { AccessPending } from './modules/Auth/AccessPending';
 import { canAccessView, isFieldRole } from './modules/Auth/permissions';
 import { roleLabel } from './modules/Auth/authTypes';
 import CrossLinkChipBar from './shared/CrossLinkChipBar';
-import { AmbientParticles, useEchoRipple, useMetallizeObserver } from './shared/EchoFX';
+import PageToolbar from './shared/PageToolbar';
 
 const RMSFieldShell = lazy(() => import('./modules/RMS/RMSFieldShell'));
 import Sidebar from './components/Layout/Sidebar';
@@ -21,10 +21,7 @@ const NetworkSection    = lazy(() => import('./modules/Network/NetworkSection'))
 const PlatformDashboard = lazy(() => import('./modules/PlatformDashboard/PlatformDashboard'));
 const NetworkStory      = lazy(() => import('./modules/NetworkStory/NetworkStory'));
 const RoadNetworkView   = lazy(() => import('./modules/RoadNetwork/RoadNetworkView'));
-const TrafficSection    = lazy(() => import('./modules/Traffic/TrafficSection'));
-const RoadConditionView       = lazy(() => import('./modules/RoadCondition/RoadConditionView'));
 const MaintenanceProgrammeView = lazy(() => import('./modules/RoadCondition/MaintenanceProgrammeView'));
-const ProjectsView            = lazy(() => import('./modules/Projects/ProjectsView'));
 
 // ── BMS sub-modules ───────────────────────────────────────────────────────────
 const Dashboard            = lazy(() => import('./modules/Dashboard/Dashboard'));
@@ -47,39 +44,29 @@ const OverloadingSection   = lazy(() => import('./modules/Traffic/OverloadingSec
 const MLArchitectureDiagram   = lazy(() => import('./modules/MLArchitecture/MLArchitectureDiagram'));
 const HDM4Section             = lazy(() => import('./modules/HDM4/HDM4Section'));
 const ProjectTracker          = lazy(() => import('./modules/Projects/ProjectTracker'));
-const PublicInvestmentSection = lazy(() => import('./modules/PIM/PublicInvestmentSection'));
-const BudgetSection           = lazy(() => import('./modules/Budget/BudgetSection'));
-const LifecycleSection        = lazy(() => import('./modules/Lifecycle/LifecycleSection'));
-const SourcesCatalogueSection = lazy(() => import('./modules/Sources/SourcesCatalogueSection'));
 const TabularSummaries        = lazy(() => import('./modules/Sources/TabularSummaries'));
-const SourcesSection          = lazy(() => import('./modules/Sources/SourcesSection'));
 
 // ── Data entry ────────────────────────────────────────────────────────────────
 const PendingSubmissions = lazy(() => import('./modules/DataEntry/PendingSubmissions').then(m => ({ default: m.PendingSubmissions })));
 const DataCaptureHub     = lazy(() => import('./modules/DataEntry/DataCaptureHub'));
 
-// ── BMS unified view ──────────────────────────────────────────────────────────
-const BMSSection = lazy(() => import('./modules/BMS/BMSSection'));
-
-// ── PMS unified view ──────────────────────────────────────────────────────────
-const PMSSection = lazy(() => import('./modules/PMS/PMSSection'));
-
-// ── RMS top-level hub ─────────────────────────────────────────────────────────
-const RMSSection            = lazy(() => import('./modules/RMS/RMSSection'));
-const GlobalCaseStudiesSection = lazy(() => import('./modules/GlobalCaseStudies/GlobalCaseStudiesSection'));
-const RoadReserveSection    = lazy(() => import('./modules/RoadReserve/RoadReserveSection'));
-
 // ── Admin + unified wrappers ──────────────────────────────────────────────────
-const AdminSection    = lazy(() => import('./modules/Admin/AdminSection'));
 const DataAuditPanel  = lazy(() => import('./modules/DataAudit/DataAuditPanel'));
-const MindMapSection  = lazy(() => import('./modules/MindMap/MindMapSection'));
-const GisEnterpriseSection = lazy(() => import('./modules/GisEnterprise/GisEnterpriseSection'));
-const ATCView          = lazy(() => import('./modules/ATC/ATCView'));
-const BridgeWorksSection = lazy(() => import('./modules/BridgeWorks/BridgeWorksSection'));
-const DocumentStore    = lazy(() => import('./modules/Documents/DocumentStore'));
-const DownloadsView    = lazy(() => import('./modules/Downloads/DownloadsView'));
-const RoadAtlasView    = lazy(() => import('./modules/RoadAtlas/RoadAtlasView'));
-const RoadVideoView    = lazy(() => import('./modules/RoadVideoView/RoadVideoView'));
+
+// ── Unified 6-tab section hub (Dashboard | Interactive Map | Exhaustive Tables |
+// Deep Analytics | SQL Database & Schema | Data Capture) — every sidebar section
+// routes through this single component so there is only ever one nav layer.
+const SectionDashboard = lazy(() => import('./modules/Dashboard/SectionDashboard'));
+const SECTION_ACCENT: Record<string, string> = {
+  rms: '#00f5ff', roadcondition: '#ff6b35', bms: '#4d9fff', roadreserve: '#00d4aa',
+  traffic: '#00f5ff', projects: '#00ff88', pim: '#ffd23f', budget: '#ff2d78',
+  lifecycle: '#00d4aa', casestudies: '#00d4aa', sources: '#94a3b8', admin: '#00f5ff',
+  gisenterprise: '#b967ff', atc: '#ff6b35', roadatlas: '#00f5ff', roadvideo: '#00f5ff',
+  bridgeworks: '#4d9fff', downloads: '#94a3b8',
+};
+function SectionHub({ sectionId }: { sectionId: string }) {
+  return <SectionDashboard sectionId={sectionId} accent={SECTION_ACCENT[sectionId] ?? '#00f5ff'} />;
+}
 
 const FULL_VIEWS      = new Set(['gismap', 'roadnetwork']);
 const SELF_SCROLL_VIEWS = new Set(['networkstory']);
@@ -126,16 +113,13 @@ function AppShell() {
   const { state, navigate } = useBMS();
   const { activeView, isLoading } = state;
   const { user } = useAuth();
-  useEchoRipple();           // global click-ripple (Echo design language)
-  useMetallizeObserver();    // platform-wide liquid-metal shimmer on numbers & headings
-
   // Track & trace: every page view goes to the G: Drive audit trail.
   useEffect(() => {
     if (user) logEvent('view', { view: activeView });
   }, [user, activeView]);
 
   const showHeaderSearch = useMemo(() =>
-    ['registry', 'inspections', 'documents', 'priority', 'sources'].includes(activeView),
+    ['registry', 'inspections', 'priority', 'sources'].includes(activeView),
     [activeView],
   );
 
@@ -147,32 +131,32 @@ function AppShell() {
 
   return (
     <div className="flex h-full w-full overflow-hidden">
-      <AmbientParticles />
       <Sidebar />
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         {!isFullView && <Header showSearch={showHeaderSearch} />}
         <main className="flex-1 min-h-0 relative overflow-hidden">
+          <PageToolbar />
           <Suspense fallback={<ModuleSpinner />}>
 
             {activeView === 'gismap'      && <GISMapView />}
             {activeView === 'roadnetwork' && <RoadNetworkView />}
 
             {SELF_SCROLL_VIEWS.has(activeView) && (
-              <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
+              <div id="nrms-content-pane" style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
                 {activeView === 'networkstory' && <NetworkStory />}
               </div>
             )}
 
             {!isFullView && !SELF_SCROLL_VIEWS.has(activeView) && (
-              <div style={{ position: 'absolute', inset: 0, overflowY: 'auto', overflowX: 'hidden', paddingBottom: 12 }}>
+              <div id="nrms-content-pane" style={{ position: 'absolute', inset: 0, overflowY: 'auto', overflowX: 'hidden', paddingBottom: 12 }}>
                 {/* Unified Related-Data chip bar — shown on every section that doesn't render its own */}
                 {!import.meta.env.VITE_STANDALONE && !SELF_CHIP_VIEWS.has(activeView) && <CrossLinkChipBar sectionId={activeView} />}
                 {activeView === 'network'               && <NetworkSection />}
                 {activeView === 'platform'              && <PlatformDashboard />}
-                {activeView === 'traffic'               && <TrafficSection />}
-                {activeView === 'roadcondition'         && <RoadConditionView />}
+                {activeView === 'traffic'               && <SectionHub sectionId="traffic" />}
+                {activeView === 'roadcondition'         && <SectionHub sectionId="roadcondition" />}
                 {activeView === 'maintenanceprogramme'  && <MaintenanceProgrammeView />}
-                {activeView === 'projects'              && <ProjectsView />}
+                {activeView === 'projects'              && <SectionHub sectionId="projects" />}
                 {activeView === 'dashboard'        && <Dashboard />}
                 {activeView === 'registry'         && <StructureRegistry />}
                 {activeView === 'inspections'      && <InspectionManagement />}
@@ -205,28 +189,27 @@ function AppShell() {
                 )}
 
                 {activeView === 'projecttracker' && <ProjectTracker />}
-                {activeView === 'pim'            && <PublicInvestmentSection />}
+                {activeView === 'pim'            && <SectionHub sectionId="pim" />}
 
-                {activeView === 'budget' && <BudgetSection />}
+                {activeView === 'budget' && <SectionHub sectionId="budget" />}
 
-                {activeView === 'rms'             && <RMSSection />}
-                {activeView === 'roadreserve'    && <RoadReserveSection />}
-                {activeView === 'casestudies'    && <GlobalCaseStudiesSection />}
-                {activeView === 'lifecycle'       && <LifecycleSection />}
-                {activeView === 'sources'         && <SourcesSection />}
+                {activeView === 'rms'             && <SectionHub sectionId="rms" />}
+                {activeView === 'roadreserve'    && <SectionHub sectionId="roadreserve" />}
+                {activeView === 'casestudies'    && <SectionHub sectionId="casestudies" />}
+                {activeView === 'lifecycle'       && <SectionHub sectionId="lifecycle" />}
+                {activeView === 'sources'         && <SectionHub sectionId="sources" />}
                 {activeView === 'tabularsummaries' && <TabularSummaries />}
-                {activeView === 'gisenterprise'    && <GisEnterpriseSection />}
-                {activeView === 'atc'              && <ATCView />}
-                {activeView === 'bridgeworks'      && <BridgeWorksSection />}
-                {activeView === 'documents'        && <DocumentStore />}
-                {activeView === 'downloads'        && <DownloadsView />}
-                {activeView === 'roadatlas'        && <RoadAtlasView />}
-                {activeView === 'roadvideo'        && <RoadVideoView />}
+                {activeView === 'gisenterprise'    && <SectionHub sectionId="gisenterprise" />}
+                {activeView === 'atc'              && <SectionHub sectionId="atc" />}
+                {activeView === 'bridgeworks'      && <SectionHub sectionId="bridgeworks" />}
+                {activeView === 'downloads'        && <SectionHub sectionId="downloads" />}
+                {activeView === 'roadatlas'        && <SectionHub sectionId="roadatlas" />}
+                {activeView === 'roadvideo'        && <SectionHub sectionId="roadvideo" />}
 
                 {activeView === 'admin' && (
                   <Suspense fallback={<ModuleSpinner />}>
                     <RequireAdmin label="Admin Tools">
-                      <AdminSection onNavigate={navigate} />
+                      <SectionHub sectionId="admin" />
                     </RequireAdmin>
                   </Suspense>
                 )}
@@ -255,8 +238,8 @@ function AppShell() {
                   </Suspense>
                 )}
 
-                {activeView === 'bms' && <BMSSection />}
-                {activeView === 'pms' && <PMSSection />}
+                {activeView === 'bms' && <SectionHub sectionId="bms" />}
+                {activeView === 'pms' && <SectionHub sectionId="pms" />}
               </div>
             )}
 

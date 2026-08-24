@@ -38,3 +38,55 @@ export const ROAD_CLASS_LABELS: Record<string, string> = {
   A: 'National Highway (A)', B: 'National Road (B)', C: 'Regional Road (C)',
   D: 'District Road (D)', M: 'Grade-Separated Highway (M)', U: 'Urban Road (U)',
 };
+
+// ─── Backward-compatible aliases for legacy consumers ──────────────────────
+// A handful of older components (TabularSummaries, TrafficProjectionTable,
+// TrafficLegacyContent, TrafficSection) were written against an earlier,
+// richer surface of this module. Rather than rewrite each consumer, this
+// re-exposes the same primitives above under those names.
+
+export const NETWORK_BLENDED_GROWTH = BLENDED_GROWTH_RATE;
+export const CURRENT_YEAR = 2026;
+
+const VC_KEY: Record<string, string> = {
+  MC: 'motorcycles', CAR: 'cars_taxis', MB: 'minibus', BUS: 'bus',
+  LT: 'light_truck', MT: 'medium_truck', HT: 'heavy_truck', AT: 'trailer',
+  NMT: 'other_nmt',
+};
+
+export interface VcClass {
+  key: string; label: string; short: string; share: number; growth: number;
+}
+
+export const VC_CLASSES: VcClass[] = UGANDA_FLEET.map(v => ({
+  key: VC_KEY[v.id] ?? v.id.toLowerCase(),
+  label: v.label,
+  short: v.id,
+  share: v.sharePct / 100,
+  growth: v.growthRate,
+}));
+
+export const VC_GROWTH: Record<string, number> = Object.fromEntries(
+  VC_CLASSES.map(c => [c.key, c.growth])
+);
+
+/** Project a single class's base count forward at a fixed growth rate. */
+export function projectClass(classBase: number, baseYear: number, growth: number, toYear: number = CURRENT_YEAR): number {
+  return classBase * Math.pow(1 + growth, toYear - baseYear);
+}
+
+/** Project every vehicle class from a total AADT for a given base/target year. */
+export function projectAllClasses(totalAadt: number, baseYear: number, toYear: number = CURRENT_YEAR) {
+  return VC_CLASSES.map(c => {
+    const baseCount = totalAadt * c.share;
+    const projCount = projectClass(baseCount, baseYear, c.growth, toYear);
+    return { key: c.key, label: c.label, short: c.short, baseCount, projCount, growth: c.growth };
+  });
+}
+
+/** Total AADT (summed across all classes) projected to a target year. */
+export function projectAADTByClass(totalAadt: number, baseYear: number, toYear: number = CURRENT_YEAR): number {
+  return projectAllClasses(totalAadt, baseYear, toYear).reduce((s, c) => s + c.projCount, 0);
+}
+
+export { projectAadt as projectAADT };

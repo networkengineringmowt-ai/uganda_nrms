@@ -99,7 +99,7 @@ import {
   CURRENT_YEAR,
 } from '../../shared/trafficProjection';
 import { useNowTick } from '../../shared/nowcast';
-import SectionDashboard from '../modules/Dashboard/SectionDashboard';
+import SectionDashboard from '../Dashboard/SectionDashboard';
 
 // Legacy shape kept for existing UI code (label + pct)
 const VC_CLASSES = SHARED_VC_CLASSES.map(c => ({ label: c.label, short: c.short, pct: c.share }));

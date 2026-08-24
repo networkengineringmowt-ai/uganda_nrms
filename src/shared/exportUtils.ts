@@ -66,6 +66,25 @@ export async function exportChartToPNG(
 
 export const exportMapToPNG = exportChartToPNG;
 
+// Same as exportChartToPNG, but targets a DOM element by id — used by the
+// platform-wide PageToolbar so any page/section can be exported without
+// needing its own ref.
+export async function exportElementToPNG(elementId: string, filename: string) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  try {
+    const dataUrl = await toPng(el, { cacheBust: true, backgroundColor: '#02050a' });
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = filename.endsWith('.png') ? filename : `${filename}-${isoDate()}.png`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  } catch (e) {
+    console.error('PNG export failed', e);
+  }
+}
+
 // ── GeoJSON ───────────────────────────────────────────────────────────────────
 
 export function exportGeoJSON(

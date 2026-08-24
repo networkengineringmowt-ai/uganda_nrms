@@ -150,23 +150,6 @@ export default function PavementDashboard() {
           </Card>
         )}
       </div>
-      <Card title='WORST LINKS BY IRI - TREATMENT RECOMMENDATIONS'>
-        {worst.length ? (
-          <div style={{ overflow: 'auto', maxHeight: 360 }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead><tr>{['Rank', 'Road', 'Length km', 'IRI m/km', 'Condition', 'Recommended treatment'].map(h => <th key={h} style={TBL_TH}>{h}</th>)}</tr></thead>
-              <tbody>{worst.map((r, i) => { const iri = num(r[kIri!]) ?? 0; const c = condClass(iri);
-                return (<tr key={i}><td style={TBL_TD}>{i + 1}</td>
-                  <td style={{ ...TBL_TD, color: '#f1f5f9', fontWeight: 700 }}>{String(kName ? r[kName] : '-')}</td>
-                  <td style={TBL_TD}>{kLen ? fmtN(num(r[kLen]) ?? 0, 1) : '-'}</td>
-                  <td style={{ ...TBL_TD, color: CCLR[c], fontWeight: 700 }}>{fmtN(iri, 2)}</td>
-                  <td style={{ ...TBL_TD, color: CCLR[c], fontWeight: 700 }}>{c}</td>
-                  <td style={TBL_TD}>{treatment(iri)}</td></tr>); })}
-              </tbody>
-            </table>
-          </div>
-        ) : <Empty what='IRI ranking' />}
-      </Card>
     </div>
   );
 }

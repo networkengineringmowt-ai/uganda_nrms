@@ -1,4 +1,4 @@
-ï»¿/**
+/**
  * RoadNetworkView â Uganda National Road Network
  * Features:
  *  - Animated timeline 1960â2026 showing road paving progression

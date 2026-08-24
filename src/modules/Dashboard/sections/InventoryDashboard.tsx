@@ -78,23 +78,6 @@ export default function InventoryDashboard() {
     return () => { d = true; };
   }, []);
   if (rows === null) return <div style={{ padding: 20, color: '#64748b', fontSize: 12 }}>Loading road register…</div>;
-
-        {/* ── Definition Card ── */}
-        <div style={{background:'rgba(139,92,246,0.04)',border:'1px solid rgba(139,92,246,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'flex-start',gap:16}}>
-          <div style={{fontSize:36,lineHeight:1,flexShrink:0}}>📋</div>
-          <div style={{flex:1}}>
-            <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
-              <span style={{fontSize:18,fontWeight:800,color:'rgba(139,92,246,1)',letterSpacing:-0.5}}>Road Inventory Dashboard</span>
-              <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>Pavement Type · Width · Shoulders · Signs · Structures · UNRA</span>
-            </div>
-            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Detailed road inventory dashboard for Uganda's national road sections — capturing pavement type, carriageway width, shoulder condition, road markings, signs, and structures in alignment with the UNRA inventory classification system.</p>
-            <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
-              {["Pavement Type","Road Width","Shoulders","Signs & Markings","Structures","UNRA Inventory"].map(b=>(
-                <span key={b} style={{background:'rgba(139,92,246,0.12)',color:'rgba(139,92,246,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
-              ))}
-            </div>
-          </div>
-        </div>
   if (!rows.length) return <Empty what='road register' />;
   const kLen = nkey(rows, /length|_km|km$/i); const kClass = key(rows, /road_class|class|func/i);
   const kSurf = key(rows, /surface|pav/i); const kName = key(rows, /link_name|road_name|name/i);
@@ -111,6 +94,23 @@ export default function InventoryDashboard() {
   const reg = [...rows].sort((a, b) => lenOf(b) - lenOf(a)).slice(0, 20);
   return (
     <div style={{ width: '100%' }}>
+      {/* ── Definition Card ── */}
+      <div style={{background:'rgba(139,92,246,0.04)',border:'1px solid rgba(139,92,246,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'flex-start',gap:16}}>
+        <div style={{fontSize:36,lineHeight:1,flexShrink:0}}>📋</div>
+        <div style={{flex:1}}>
+          <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
+            <span style={{fontSize:18,fontWeight:800,color:'rgba(139,92,246,1)',letterSpacing:-0.5}}>Road Inventory Dashboard</span>
+            <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>Pavement Type · Width · Shoulders · Signs · Structures · UNRA</span>
+          </div>
+          <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Detailed road inventory dashboard for Uganda's national road sections — capturing pavement type, carriageway width, shoulder condition, road markings, signs, and structures in alignment with the UNRA inventory classification system.</p>
+          <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+            {["Pavement Type","Road Width","Shoulders","Signs & Markings","Structures","UNRA Inventory"].map(b=>(
+              <span key={b} style={{background:'rgba(139,92,246,0.12)',color:'rgba(139,92,246,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 8, marginBottom: 12 }}>
         <Kpi label='Total network' value={totKm} decimals={1} suffix=' km' sev='info' sub={rows.length.toLocaleString() + ' road links'} />
         <Kpi label='Paved' value={pavedKm} decimals={1} suffix=' km' sev='good' sub={totKm ? (pavedKm / totKm * 100).toFixed(1) + '% of network' : ''} />
@@ -139,22 +139,6 @@ export default function InventoryDashboard() {
           </Card>
         )}
       </div>
-      <Card title='ROAD REGISTER (LONGEST LINKS FIRST - FULL REGISTER IN EXHAUSTIVE TABLES TAB)'>
-        <div style={{ overflow: 'auto', maxHeight: 380 }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead><tr>{['Link ID', 'Name', 'Class', 'Surface', 'Length km', 'District/Region'].map(h => <th key={h} style={TBL_TH}>{h}</th>)}</tr></thead>
-            <tbody>{reg.map((r, i) => (
-              <tr key={i}>
-                <td style={{ ...TBL_TD, fontWeight: 700 }}>{String(kId ? r[kId] : i + 1)}</td>
-                <td style={{ ...TBL_TD, color: '#f1f5f9', fontWeight: 700 }}>{String(kName ? r[kName] : '-')}</td>
-                <td style={TBL_TD}>{String(kClass ? r[kClass] : '-')}</td>
-                <td style={TBL_TD}>{kSurf ? String(r[kSurf]) : isPaved(r) ? 'Paved' : 'Unpaved'}</td>
-                <td style={{ ...TBL_TD, color: HL, fontWeight: 700 }}>{fmtN(lenOf(r), 1)}</td>
-                <td style={TBL_TD}>{String(kDist ? r[kDist] ?? '-' : '-')}</td></tr>))}
-            </tbody>
-          </table>
-        </div>
-      </Card>
     </div>
   );
 }

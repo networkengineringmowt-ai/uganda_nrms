@@ -86,23 +86,6 @@ export default function TrafficDashboard() {
     return () => { d = true; };
   }, []);
   if (links === null) return <div style={{ padding: 20, color: '#64748b', fontSize: 12 }}>Loading traffic intelligence…</div>;
-
-        {/* ── Definition Card ── */}
-        <div style={{background:'rgba(249,115,22,0.04)',border:'1px solid rgba(249,115,22,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'flex-start',gap:16}}>
-          <div style={{fontSize:36,lineHeight:1,flexShrink:0}}>🚦</div>
-          <div style={{flex:1}}>
-            <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
-              <span style={{fontSize:18,fontWeight:800,color:'rgba(249,115,22,1)',letterSpacing:-0.5}}>Traffic Performance Dashboard</span>
-              <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>AADT · Vehicle Class · Axle Loads · Growth Rate · ATC</span>
-            </div>
-            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Traffic performance dashboard for Uganda road sections — displaying AADT volumes, vehicle classification, axle load distributions, annual growth rates, and peak-hour factors sourced from the UNRA ATC monitoring network.</p>
-            <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
-              {["AADT Volumes","Vehicle Class","Axle Loads","Growth Rate","Peak Hour","ATC Network"].map(b=>(
-                <span key={b} style={{background:'rgba(249,115,22,0.12)',color:'rgba(249,115,22,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
-              ))}
-            </div>
-          </div>
-        </div>
   if (!links.length && !stations.length) return <Empty what='traffic' />;
   const kAadt = nkey(links, /aadt/i); const kHeavy = nkey(links, /heavy|hgv|truck/i);
   const kClass = key(links, /class/i); const kLen = nkey(links, /length|_km|km$/i);
@@ -130,6 +113,23 @@ export default function TrafficDashboard() {
     { name: 'Fatal', value: 0 }, { name: 'Serious', value: 0 }, { name: 'Minor', value: 0 }];
   return (
     <div style={{ width: '100%' }}>
+      {/* ── Definition Card ── */}
+      <div style={{background:'rgba(249,115,22,0.04)',border:'1px solid rgba(249,115,22,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'flex-start',gap:16}}>
+        <div style={{fontSize:36,lineHeight:1,flexShrink:0}}>🚦</div>
+        <div style={{flex:1}}>
+          <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
+            <span style={{fontSize:18,fontWeight:800,color:'rgba(249,115,22,1)',letterSpacing:-0.5}}>Traffic Performance Dashboard</span>
+            <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>AADT · Vehicle Class · Axle Loads · Growth Rate · ATC</span>
+          </div>
+          <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Traffic performance dashboard for Uganda road sections — displaying AADT volumes, vehicle classification, axle load distributions, annual growth rates, and peak-hour factors sourced from the UNRA ATC monitoring network.</p>
+          <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+            {["AADT Volumes","Vehicle Class","Axle Loads","Growth Rate","Peak Hour","ATC Network"].map(b=>(
+              <span key={b} style={{background:'rgba(249,115,22,0.12)',color:'rgba(249,115,22,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 8, marginBottom: 12 }}>
         <Kpi label='Total AADT (all links)' value={totAadt} sev='info' sub={links.length.toLocaleString() + ' links analysed'} />
         <Kpi label='Estimated peak hour volume' value={peakHour} sev='warn' sub='9% of mean AADT (network mean)' />
@@ -157,22 +157,6 @@ export default function TrafficDashboard() {
           </ResponsiveContainer>
         </Card>
       </div>
-      <Card title='TOP STATIONS / LINKS BY AADT'>
-        <div style={{ overflow: 'auto', maxHeight: 340 }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead><tr>{['Rank', 'Road link', 'Class', 'Direction', 'AADT', 'Heavy %', 'Length km'].map(h => <th key={h} style={TBL_TH}>{h}</th>)}</tr></thead>
-            <tbody>{top.map((r, i) => (
-              <tr key={i}><td style={TBL_TD}>{i + 1}</td>
-                <td style={{ ...TBL_TD, color: '#f1f5f9', fontWeight: 700 }}>{String(kName ? r[kName] : '-')}</td>
-                <td style={TBL_TD}>{String(kClass ? r[kClass] : '-')}</td>
-                <td style={TBL_TD}>{String(kDir ? r[kDir] ?? 'Both' : 'Both')}</td>
-                <td style={{ ...TBL_TD, color: HL, fontWeight: 700 }}>{fmtN(num(r[kAadt!]) ?? 0)}</td>
-                <td style={TBL_TD}>{kHeavy ? fmtN(num(r[kHeavy]) ?? 0, 1) + '%' : '-'}</td>
-                <td style={TBL_TD}>{kLen ? fmtN(num(r[kLen]) ?? 0, 1) : '-'}</td></tr>))}
-            </tbody>
-          </table>
-        </div>
-      </Card>
       <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.08em', color: '#f43f5e', margin: '4px 0 8px' }}>ROAD SAFETY</div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 12 }}>
         <Card title='ACCIDENT SEVERITY'>
@@ -182,20 +166,6 @@ export default function TrafficDashboard() {
                 <Bar dataKey='value' name='Accidents' radius={[4, 4, 0, 0]}><Cell fill='#f43f5e' /><Cell fill='#f59e0b' /><Cell fill='#22c55e' /></Bar></BarChart>
             </ResponsiveContainer>
           ) : <Empty what='accident record' />}
-        </Card>
-        <Card title='BLACKSPOT RISK - TOP LINKS BY TRAFFIC DENSITY (AADT PER KM)'>
-          {dens.length ? (
-            <div style={{ overflow: 'auto', maxHeight: 200 }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead><tr>{['Road link', 'AADT/km density', 'Risk band'].map(h => <th key={h} style={TBL_TH}>{h}</th>)}</tr></thead>
-                <tbody>{dens.map((x, i) => (
-                  <tr key={i}><td style={{ ...TBL_TD, fontWeight: 700, color: '#f1f5f9' }}>{String(kName ? x.r[kName] : '-')}</td>
-                    <td style={TBL_TD}>{fmtN(x.d)}</td>
-                    <td style={{ ...TBL_TD, color: i < 3 ? '#f43f5e' : i < 6 ? '#f59e0b' : '#22c55e', fontWeight: 700 }}>{i < 3 ? 'Critical' : i < 6 ? 'Elevated' : 'Moderate'}</td></tr>))}
-                </tbody>
-              </table>
-            </div>
-          ) : <Empty what='density' />}
         </Card>
       </div>
     </div>

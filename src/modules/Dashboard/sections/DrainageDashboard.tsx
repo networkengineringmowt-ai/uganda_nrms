@@ -130,22 +130,6 @@ export default function DrainageDashboard() {
           </Card>
         )}
       </div>
-      <Card title='CRITICAL DRAINAGE FAILURES BY ROAD LINK'>
-        {crit.length ? (
-          <div style={{ overflow: 'auto', maxHeight: 340 }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead><tr>{['Road link', 'Type', 'Size', 'Condition'].map(h => <th key={h} style={TBL_TH}>{h}</th>)}</tr></thead>
-              <tbody>{crit.map((r, i) => { const c = condOf(r);
-                return (<tr key={i}>
-                  <td style={{ ...TBL_TD, color: '#f1f5f9', fontWeight: 700 }}>{String(kRoad ? r[kRoad] : '-')}</td>
-                  <td style={TBL_TD}>{String(kType ? r[kType] ?? '-' : '-')}</td>
-                  <td style={TBL_TD}>{kDia ? fmtN(num(r[kDia]) ?? 0, 1) : '-'}</td>
-                  <td style={{ ...TBL_TD, color: DCLR[c], fontWeight: 800 }}>{c}</td></tr>); })}
-              </tbody>
-            </table>
-          </div>
-        ) : <Empty what='critical drainage failure' />}
-      </Card>
     </div>
   );
 }

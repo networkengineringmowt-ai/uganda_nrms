@@ -145,24 +145,6 @@ export default function MaintenanceDashboard() {
           </Card>
         )}
       </div>
-      <Card title='ACTIVE WORKS'>
-        {active.length ? (
-          <div style={{ overflow: 'auto', maxHeight: 340 }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead><tr>{['Road link', 'Contractor', 'Type', 'Start', 'Status', 'Completion %'].map(h => <th key={h} style={TBL_TH}>{h}</th>)}</tr></thead>
-              <tbody>{active.map((r, i) => { const p = kPct ? num(r[kPct]) ?? 0 : 0;
-                return (<tr key={i}>
-                  <td style={{ ...TBL_TD, color: '#f1f5f9', fontWeight: 700 }}>{String(kLink ? r[kLink] : '-')}</td>
-                  <td style={TBL_TD}>{String(kContr ? r[kContr] ?? '-' : '-')}</td>
-                  <td style={{ ...TBL_TD, color: WCLR[typeOf(r)], fontWeight: 700 }}>{typeOf(r)}</td>
-                  <td style={TBL_TD}>{String(kStart ? r[kStart] ?? '-' : '-')}</td>
-                  <td style={TBL_TD}>{String(kStat ? r[kStat] ?? '-' : '-')}</td>
-                  <td style={{ ...TBL_TD, color: p >= 75 ? '#22c55e' : p >= 40 ? '#f59e0b' : '#f43f5e', fontWeight: 700 }}>{fmtN(p)}%</td></tr>); })}
-              </tbody>
-            </table>
-          </div>
-        ) : <Empty what='active works' />}
-      </Card>
     </div>
   );
 }
