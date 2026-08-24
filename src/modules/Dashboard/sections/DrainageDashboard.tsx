@@ -70,7 +70,7 @@ const TBL_TH: React.CSSProperties = { padding: '6px 10px', background: '#0f1923'
 const TBL_TD: React.CSSProperties = { padding: '5px 10px', color: '#cbd5e1', fontSize: 10.5, whiteSpace: 'nowrap', borderBottom: '1px solid rgba(255,255,255,0.04)' };
 
 const DCOND = ['Good', 'Fair', 'Poor', 'Failed'];
-const DCLR: Record<string, string> = { Good: '#22c55e', Fair: '#f59e0b', Poor: '#fb923c', Failed: '#f43f5e' };
+const DCLR: Record<string, string> = { Good: '#22c55e', Fair: '#eab308', Poor: '#f97316', Failed: '#ef4444' };
 export default function DrainageDashboard() {
   const [rows, setRows] = useState<Row[] | null>(null);
   useEffect(() => { let d = false; q('culvert_inventory').then(r => { if (!d) setRows(r); }); return () => { d = true; }; }, []);

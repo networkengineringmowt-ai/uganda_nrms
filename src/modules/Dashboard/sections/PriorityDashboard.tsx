@@ -70,7 +70,7 @@ const TBL_TH: React.CSSProperties = { padding: '6px 10px', background: '#0f1923'
 const TBL_TD: React.CSSProperties = { padding: '5px 10px', color: '#cbd5e1', fontSize: 10.5, whiteSpace: 'nowrap', borderBottom: '1px solid rgba(255,255,255,0.04)' };
 
 const TIERS = ['Critical', 'High', 'Medium', 'Low'];
-const TCLR: Record<string, string> = { Critical: '#f43f5e', High: '#fb923c', Medium: '#f59e0b', Low: '#22c55e' };
+const TCLR: Record<string, string> = { Critical: '#ef4444', High: '#f97316', Medium: '#eab308', Low: '#22c55e' };
 const UNIT_COST_UGX_BN_PER_KM = 0.9;
 export default function PriorityDashboard() {
   const [rows, setRows] = useState<Row[] | null>(null);

@@ -99,7 +99,7 @@ export default function StructuresOverviewDashboard() {
       <KpiStrip>
         <StatMini value={`${TOTAL_STRUCT}`} label="Structures (Nat. Roads)" color={DASH_C.purple} />
         <StatMini value={`${Math.round((STR_COND[0] / TOTAL_STRUCT) * 100)}%`} label="Good Condition" color={DASH_C.green} />
-        <StatMini value={`${STR_COND[3]}`} label="Critical Structures" color={DASH_C.pink} />
+        <StatMini value={`${STR_COND[3]}`} label="Critical Structures" color="#ef4444" />
         <StatMini value="312" label="Bridges" color={DASH_C.cyan} />
         <StatMini value="142" label="Box Culverts" color={DASH_C.yellow} />
         <StatMini value="36 m" label="Avg Bridge Span" color={DASH_C.orange} />
@@ -172,7 +172,7 @@ export default function StructuresOverviewDashboard() {
         </ChartBox>
         <ChartBox title="Inspection Currency 2021–2025" accent={DASH_C.green} height={210}>
           <LineMulti data={TREND_YRS.map((y, i) => ({ year: y, Inspected: INSPECTED_PCT[i], Overdue: OVERDUE_PCT[i] }))} xKey="year"
-            series={[{ key: 'Inspected', name: 'Inspected <12mth %', color: DASH_C.green }, { key: 'Overdue', name: 'Overdue %', color: DASH_C.pink }]} area unit="%" />
+            series={[{ key: 'Inspected', name: 'Inspected <12mth %', color: '#22c55e' }, { key: 'Overdue', name: 'Overdue %', color: '#ef4444' }]} area unit="%" />
         </ChartBox>
       </ChartGrid>
 
@@ -181,7 +181,7 @@ export default function StructuresOverviewDashboard() {
           <TreemapC data={STR_TYPE_LBL.map((n, i) => ({ name: n, size: STR_TYPE[i] }))} colors={REGION_COLORS} />
         </ChartBox>
         <ChartBox title="Condition Mix by Region" subtitle="good % vs critical %" accent={DASH_C.teal} height={200}>
-          <RadarTile data={REGION_COND_MIX} series={[{ key: 'goodPct', name: 'Good %', color: DASH_C.green }, { key: 'criticalPct', name: 'Critical %', color: DASH_C.pink }]} maxValue={100} />
+          <RadarTile data={REGION_COND_MIX} series={[{ key: 'goodPct', name: 'Good %', color: '#22c55e' }, { key: 'criticalPct', name: 'Critical %', color: '#ef4444' }]} maxValue={100} />
         </ChartBox>
         <ChartBox title="Structure Portfolio Breakdown" subtitle="waterfall, count" accent={DASH_C.blue} height={200}>
           <WaterfallC steps={[
@@ -202,8 +202,8 @@ export default function StructuresOverviewDashboard() {
             { name: 'Not Yet Inspected', value: TOTAL_STRUCT - 420, color: DASH_C.pink },
           ]} />
         </ChartBox>
-        <ChartBox title="Critical Structures by Region" accent={DASH_C.pink} height={190}>
-          <BarH data={CRITICAL_BY_REGION} yKey="region" series={[{ key: 'count', name: 'Critical', color: DASH_C.pink }]} />
+        <ChartBox title="Critical Structures by Region" accent="#ef4444" height={190}>
+          <BarH data={CRITICAL_BY_REGION} yKey="region" series={[{ key: 'count', name: 'Critical', color: '#ef4444' }]} />
         </ChartBox>
       </ChartGrid>
     </div>

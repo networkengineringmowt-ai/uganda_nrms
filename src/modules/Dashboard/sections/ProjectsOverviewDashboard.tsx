@@ -46,10 +46,11 @@ const COMPLETION_KM = [180, 240, 320, 420, 520, 428];
 // Derived stats (straightforward roll-ups of the arrays above)
 const AVG_COMPLETION = Math.round(PROJ_PCT.reduce((a, b) => a + b, 0) / PROJ_PCT.length); // 58
 const AVG_OPRC_SCORE = Math.round(OPRC_SCORE.reduce((a, b) => a + b, 0) / OPRC_SCORE.length); // 76
+// Ordered by score band — canonical risk/condition scale
 const OPRC_BAND_COUNTS = [
-  { name: 'Excellent (≥80)', value: OPRC_SCORE.filter(v => v >= 80).length, color: DASH_C.green },
-  { name: 'Good (65–79)', value: OPRC_SCORE.filter(v => v >= 65 && v < 80).length, color: DASH_C.yellow },
-  { name: 'Needs Improvement (<65)', value: OPRC_SCORE.filter(v => v < 65).length, color: DASH_C.orange },
+  { name: 'Excellent (≥80)', value: OPRC_SCORE.filter(v => v >= 80).length, color: '#22c55e' },
+  { name: 'Good (65–79)', value: OPRC_SCORE.filter(v => v >= 65 && v < 80).length, color: '#eab308' },
+  { name: 'Needs Improvement (<65)', value: OPRC_SCORE.filter(v => v < 65).length, color: '#ef4444' },
 ];
 
 // Completion % grouped by status — quartiles approximated for small samples
@@ -73,9 +74,9 @@ export default function ProjectsOverviewDashboard() {
     <div>
       <KpiStrip>
         <StatMini value="14" label="Active Projects" color={DASH_C.cyan} />
-        <StatMini value="6" label="On Schedule" color={DASH_C.green} />
-        <StatMini value="5" label="Minor Delay" color={DASH_C.yellow} />
-        <StatMini value="3" label="Behind Schedule" color={DASH_C.pink} />
+        <StatMini value="6" label="On Schedule" color="#22c55e" />
+        <StatMini value="5" label="Minor Delay" color="#eab308" />
+        <StatMini value="3" label="Behind Schedule" color="#ef4444" />
         <StatMini value="1,240 km" label="km Under Contract" color={DASH_C.orange} />
         <StatMini value="7" label="OPRC Lots Active" color={DASH_C.purple} />
       </KpiStrip>
@@ -93,9 +94,9 @@ export default function ProjectsOverviewDashboard() {
         </ChartBox>
         <ChartBox title="Project Status Distribution" subtitle="14 projects" accent={DASH_C.green} height={220}>
           <DonutChart data={[
-            { name: 'On Schedule (6)', value: 6, color: DASH_C.green },
-            { name: 'Minor Delay (5)', value: 5, color: DASH_C.yellow },
-            { name: 'Behind (3)', value: 3, color: DASH_C.pink },
+            { name: 'On Schedule (6)', value: 6, color: '#22c55e' },
+            { name: 'Minor Delay (5)', value: 5, color: '#eab308' },
+            { name: 'Behind (3)', value: 3, color: '#ef4444' },
           ]} />
         </ChartBox>
       </ChartGrid>
@@ -119,8 +120,8 @@ export default function ProjectsOverviewDashboard() {
         <ChartBox title="Active Contracts by Type" accent={DASH_C.cyan} height={190}>
           <DonutChart data={[
             { name: 'OPRC (7)', value: 7, color: DASH_C.cyan },
-            { name: 'Periodic Maint (4)', value: 4, color: DASH_C.yellow },
-            { name: 'Emergency Works (3)', value: 3, color: DASH_C.orange },
+            { name: 'Periodic Maint (4)', value: 4, color: '#84cc16' },
+            { name: 'Emergency Works (3)', value: 3, color: '#ef4444' },
           ]} innerRadius={36} />
         </ChartBox>
         <ChartBox title="km Under Contract by Year" accent={DASH_C.purple} height={190}>
@@ -157,8 +158,8 @@ export default function ProjectsOverviewDashboard() {
           <BarV data={OPRC_LOT.map((n, i) => ({
             name: n.split(' (')[0], Good: OPRC_GOOD[i], Fair: OPRC_FAIR[i], 'Poor+Crit': OPRC_POOR[i],
           }))} xKey="name" series={[
-            { key: 'Good', name: 'Good %', color: DASH_C.green }, { key: 'Fair', name: 'Fair %', color: DASH_C.yellow },
-            { key: 'Poor+Crit', name: 'Poor+Crit %', color: DASH_C.pink },
+            { key: 'Good', name: 'Good %', color: '#22c55e' }, { key: 'Fair', name: 'Fair %', color: '#eab308' },
+            { key: 'Poor+Crit', name: 'Poor+Crit %', color: '#ef4444' },
           ]} stacked unit="%" />
         </ChartBox>
         <ChartBox title="OPRC Lots" subtitle="performance score vs good-condition %" accent={DASH_C.purple} height={210}>
@@ -191,9 +192,9 @@ export default function ProjectsOverviewDashboard() {
         </ChartBox>
         <ChartBox title="Completion % by Status" subtitle="on track / minor delay / behind" accent={DASH_C.orange} height={190}>
           <BoxPlotApprox data={[
-            groupBoxStats(ON_TRACK_IDX, 'On Track', DASH_C.green),
-            groupBoxStats(MINOR_DELAY_IDX, 'Minor Delay', DASH_C.yellow),
-            groupBoxStats(BEHIND_IDX, 'Behind', DASH_C.pink),
+            groupBoxStats(ON_TRACK_IDX, 'On Track', '#22c55e'),
+            groupBoxStats(MINOR_DELAY_IDX, 'Minor Delay', '#eab308'),
+            groupBoxStats(BEHIND_IDX, 'Behind', '#ef4444'),
           ]} unit="%" />
         </ChartBox>
         <ChartBox title="km Under Contract Growth" subtitle="waterfall, FY22/23 → FY25/26" accent={DASH_C.purple} height={190}>

@@ -70,7 +70,7 @@ const TBL_TH: React.CSSProperties = { padding: '6px 10px', background: '#0f1923'
 const TBL_TD: React.CSSProperties = { padding: '5px 10px', color: '#cbd5e1', fontSize: 10.5, whiteSpace: 'nowrap', borderBottom: '1px solid rgba(255,255,255,0.04)' };
 
 const RATINGS = ['Very Good', 'Good', 'Fair', 'Poor', 'Critical'];
-const RCLR: Record<string, string> = { 'Very Good': '#22c55e', Good: '#84cc16', Fair: '#f59e0b', Poor: '#fb923c', Critical: '#f43f5e' };
+const RCLR: Record<string, string> = { 'Very Good': '#22c55e', Good: '#84cc16', Fair: '#eab308', Poor: '#f97316', Critical: '#ef4444' };
 export default function StructuresDashboard() {
   const [rows, setRows] = useState<Row[] | null>(null);
   useEffect(() => { let d = false; q('bridge_inventory').then(r => { if (!d) setRows(r); }); return () => { d = true; }; }, []);

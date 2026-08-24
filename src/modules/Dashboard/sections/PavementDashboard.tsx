@@ -70,7 +70,7 @@ const TBL_TH: React.CSSProperties = { padding: '6px 10px', background: '#0f1923'
 const TBL_TD: React.CSSProperties = { padding: '5px 10px', color: '#cbd5e1', fontSize: 10.5, whiteSpace: 'nowrap', borderBottom: '1px solid rgba(255,255,255,0.04)' };
 
 const CLASSES = ['Good', 'Fair', 'Poor', 'Bad'];
-const CCLR: Record<string, string> = { Good: '#22c55e', Fair: '#f59e0b', Poor: '#fb923c', Bad: '#f43f5e' };
+const CCLR: Record<string, string> = { Good: '#22c55e', Fair: '#eab308', Poor: '#f97316', Bad: '#ef4444' };
 function condClass(iri: number): string { return iri <= 4 ? 'Good' : iri <= 7 ? 'Fair' : iri <= 10 ? 'Poor' : 'Bad'; }
 function treatment(iri: number): string { return iri <= 4 ? 'Routine maintenance' : iri <= 7 ? 'Resealing / regravelling' : iri <= 10 ? 'Overlay / heavy grading' : 'Reconstruction'; }
 export default function PavementDashboard() {
