@@ -64,7 +64,7 @@ const CORRIDORS = [
   { name:'Kampala–Entebbe', road:'A104 E', km:42,  aadt:18400,cond:'Good',   iri:2.8, fatalities:32, trucks:12 },
 ];
 
-const COND_COLOR: Record<string,string> = { Good:'#00ff88', Fair:'#ffee00', Poor:'#ff6600', Critical:'#ff0040' };
+const COND_COLOR: Record<string,string> = { Good:'#22c55e', Fair:'#eab308', Poor:'#f97316', Critical:'#ef4444' };
 
 // ─── Road safety: flexible field access ────────────────────────────────────
 // road_accidents / road_blackspots column names aren't fixed in this codebase
