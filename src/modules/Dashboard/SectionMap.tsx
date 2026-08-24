@@ -17,10 +17,12 @@ const THEME_FOR: Record<string, ThemeId> = {
   rms: 'class', pms: 'risk', tis: 'aadt', bms: 'class',
   ducar: 'region', projects: 'region', reserve: 'risk', pim: 'aadt',
 };
-const RISK_CLR: Record<string, string> = { Critical: '#ff2d78', High: '#ff6b35', Medium: '#ffd23f', Low: '#00ff88' };
+// Canonical risk/condition scale (matches src/utils/helpers.ts RISK_SCALE_STOPS)
+const RISK_CLR: Record<string, string> = { Critical: '#ef4444', High: '#f97316', Medium: '#84cc16', Low: '#22c55e' };
 const CLASS_CLR: Record<string, string> = { A: '#00f5ff', B: '#00ff88', C: '#ffd23f', M: '#94a3b8' };
 const REGION_CLR: Record<string, string> = { Central: '#00f5ff', Eastern: '#ff6b35', Southern: '#ffd23f', Western: '#00ff88', Northern: '#b967ff', 'North Eastern': '#ff2d78' };
-const aadtClr = (v: number) => v >= 15000 ? '#ff2d78' : v >= 5000 ? '#ff6b35' : v >= 1000 ? '#ffd23f' : '#00ff88';
+// Canonical risk/condition scale (matches src/utils/helpers.ts RISK_SCALE_STOPS)
+const aadtClr = (v: number) => v >= 15000 ? '#ef4444' : v >= 5000 ? '#f97316' : v >= 1000 ? '#84cc16' : '#22c55e';
 
 function colorFor(theme: ThemeId, p: Record<string, unknown>): string {
   if (theme === 'class') return CLASS_CLR[String(p.road_class ?? 'M')] ?? '#94a3b8';
@@ -30,8 +32,8 @@ function colorFor(theme: ThemeId, p: Record<string, unknown>): string {
 }
 const LEGEND_ITEMS: Record<ThemeId, [string, string][]> = {
   class: [['Class A', '#00f5ff'], ['Class B', '#00ff88'], ['Class C', '#ffd23f'], ['Unclassified', '#94a3b8']],
-  risk: [['Critical', '#ff2d78'], ['High', '#ff6b35'], ['Medium', '#ffd23f'], ['Low', '#00ff88']],
-  aadt: [['15k+ AADT', '#ff2d78'], ['5k-15k', '#ff6b35'], ['1k-5k', '#ffd23f'], ['under 1k', '#00ff88']],
+  risk: [['Critical', '#ef4444'], ['High', '#f97316'], ['Medium', '#84cc16'], ['Low', '#22c55e']],
+  aadt: [['15k+ AADT', '#ef4444'], ['5k-15k', '#f97316'], ['1k-5k', '#84cc16'], ['under 1k', '#22c55e']],
   region: [['Central', '#00f5ff'], ['Eastern', '#ff6b35'], ['Southern', '#ffd23f'], ['Western', '#00ff88'], ['Northern', '#b967ff'], ['North Eastern', '#ff2d78']],
 };
 const TITLE_FOR: Record<string, string> = {
