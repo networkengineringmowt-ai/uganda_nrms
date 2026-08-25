@@ -181,7 +181,7 @@ export default function Dashboard() {
               <span style={{fontSize:18,fontWeight:800,color:'rgba(77,153,255,1)',letterSpacing:-0.5}}>Section Roads Dashboard</span>
               <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>UNRA · MoWT · Condition · Traffic · Budget · HDM-4</span>
             </div>
-            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Integrated section roads dashboard for Uganda NRMS — consolidating road section condition profiles, traffic volumes, budget allocations, and HDM-4 treatment recommendations across UNRA-classified road sections.</p>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Integrated section roads dashboard for Uganda NRMS - consolidating road section condition profiles, traffic volumes, budget allocations, and HDM-4 treatment recommendations across UNRA-classified road sections.</p>
             <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
               {["Road Sections","Condition Data","Traffic Analytics","Budget Tracking","UNRA Sections","HDM-4 Analysis"].map(b=>(
                 <span key={b} style={{background:'rgba(77,153,255,0.12)',color:'rgba(77,153,255,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
@@ -226,7 +226,7 @@ export default function Dashboard() {
       {/* ── CHART ROW 1: Condition distribution + Work Order status pie ── */}
       <div style={{display:'grid',gridTemplateColumns:'3fr 2fr',gap:14}}>
 
-        {/* Chart 1 — Condition distribution */}
+        {/* Chart 1 - Condition distribution */}
         <div style={gl(N.pink)}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <SHead label="Condition Distribution" icon={<BarChart3 size={14}/>} color={N.pink}/>
@@ -248,7 +248,7 @@ export default function Dashboard() {
           </Chart3DWrap>
         </div>
 
-        {/* Chart 2 — Work order status pie */}
+        {/* Chart 2 - Work order status pie */}
         <div style={gl(N.purple)}>
           <SHead label="Work Order Status" icon={<Wrench size={14}/>} color={N.purple}/>
           <ResponsiveContainer width="100%" height={200}>
@@ -278,7 +278,7 @@ export default function Dashboard() {
       {/* ── CHART ROW 2: Region breakdown + Inspection trend ───────────── */}
       <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
 
-        {/* Chart 3 — Structures by region */}
+        {/* Chart 3 - Structures by region */}
         <div style={gl(N.green)}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <SHead label="Structures by Region" icon={<MapPin size={14}/>} color={N.green}/>
@@ -300,7 +300,7 @@ export default function Dashboard() {
           </Chart3DWrap>
         </div>
 
-        {/* Chart 4 — Inspection history */}
+        {/* Chart 4 - Inspection history */}
         <div style={gl(N.blue)}>
           <SHead label="Inspection Activity (Monthly)" icon={<CheckCircle2 size={14}/>} color={N.blue}/>
           <Chart3DWrap tilt={1.2}>
@@ -323,7 +323,7 @@ export default function Dashboard() {
       {/* ── CHART ROW 3: Maintenance budget + Priority score dist ──────── */}
       <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
 
-        {/* Chart 5 — Maintenance cost by type */}
+        {/* Chart 5 - Maintenance cost by type */}
         <div style={gl(N.orange)}>
           <SHead label="Maintenance Budget by Work Type" icon={<Wrench size={14}/>} color={N.orange}/>
           <Chart3DWrap tilt={1.6}>
@@ -349,7 +349,7 @@ export default function Dashboard() {
           </Chart3DWrap>
         </div>
 
-        {/* Chart 6 — Priority score distribution */}
+        {/* Chart 6 - Priority score distribution */}
         <div style={gl(N.yellow)}>
           <SHead label="Priority Score Distribution" icon={<Activity size={14}/>} color={N.yellow}/>
           <Chart3DWrap tilt={1.6}>
@@ -405,7 +405,7 @@ export default function Dashboard() {
             ))}
             {topCritical.length===0 && (
               <div style={{textAlign:'center',padding:'20px 0',fontSize:10,color:N.green,fontWeight:700}}>
-                ✓ Network in good health — no critical structures
+                ✓ Network in good health - no critical structures
               </div>
             )}
           </div>

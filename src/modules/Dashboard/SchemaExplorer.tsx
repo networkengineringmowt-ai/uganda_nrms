@@ -1,5 +1,5 @@
 /**
- * SchemaExplorer — the platform relational model.
+ * SchemaExplorer - the platform relational model.
  * One SQL table per section / tab, primary and foreign keys, and EVERY
  * linking query shown in full. Rendered per section: the section's own table
  * is highlighted, its direct relations listed, and all join queries printed.
@@ -11,7 +11,7 @@ const CARD: React.CSSProperties = { background: 'rgba(15,23,42,0.55)', border: '
 
 interface TableDef { section: string; name: string; pk: string; ddl: string; fks: { col: string; ref: string }[] }
 
-// One table per section / tab — the platform database.
+// One table per section / tab - the platform database.
 const TABLES: TableDef[] = [
   { section: 'rms', name: 'rms_road_links', pk: 'link_id', fks: [], ddl:
 `CREATE TABLE rms_road_links (
@@ -175,10 +175,10 @@ CREATE TABLE reserve_permits (
 ];
 const ALL_TABLES = [...TABLES, ...TABLES2];
 
-// Every linking query — the joins that tie the sections together.
+// Every linking query - the joins that tie the sections together.
 interface LinkQuery { id: string; title: string; sections: string[]; sql: string }
 const QUERIES: LinkQuery[] = [
-  { id: 'q1', title: 'RMS ⋈ PMS — latest condition per link with km affected', sections: ['rms','pms'], sql:
+  { id: 'q1', title: 'RMS ⋈ PMS - latest condition per link with km affected', sections: ['rms','pms'], sql:
 `SELECT l.link_id, l.road_no, l.link_name, l.region, l.length_km,
        c.survey_year, c.condition, c.iri_m_km, c.affected_km
 FROM rms_road_links l
@@ -188,7 +188,7 @@ JOIN LATERAL (
   ORDER BY c.survey_year DESC LIMIT 1
 ) c ON TRUE
 ORDER BY c.iri_m_km DESC;` },
-  { id: 'q2', title: 'RMS ⋈ TIS — AADT and ESAL joined to link inventory', sections: ['rms','tis'], sql:
+  { id: 'q2', title: 'RMS ⋈ TIS - AADT and ESAL joined to link inventory', sections: ['rms','tis'], sql:
 `SELECT l.link_id, l.road_no, l.road_class, l.length_km,
        s.station_name, t.count_year, t.aadt, t.heavy_pct, t.esal_daily,
        t.aadt * l.length_km AS vkm_daily
@@ -196,7 +196,7 @@ FROM rms_road_links l
 JOIN tis_traffic_counts t ON t.link_id = l.link_id
 JOIN tis_stations s       ON s.station_id = t.station_id
 WHERE t.count_year = (SELECT MAX(count_year) FROM tis_traffic_counts);` },
-  { id: 'q3', title: 'RMS ⋈ BMS — structures per link with condition counts and km served', sections: ['rms','bms'], sql:
+  { id: 'q3', title: 'RMS ⋈ BMS - structures per link with condition counts and km served', sections: ['rms','bms'], sql:
 `SELECT l.link_id, l.road_no,
        COUNT(*) FILTER (WHERE b.structure_type='Bridge')  AS bridges,
        COUNT(*) FILTER (WHERE b.structure_type='Culvert') AS culverts,
@@ -206,7 +206,7 @@ FROM rms_road_links l
 LEFT JOIN bms_structures b ON b.link_id = l.link_id
 GROUP BY l.link_id, l.road_no
 ORDER BY poor_structures DESC NULLS LAST;` },
-  { id: 'q4', title: 'PMS ⋈ TIS ⋈ Lifecycle — treatment triggers from condition and loading', sections: ['pms','tis','lifecycle'], sql:
+  { id: 'q4', title: 'PMS ⋈ TIS ⋈ Lifecycle - treatment triggers from condition and loading', sections: ['pms','tis','lifecycle'], sql:
 `SELECT l.link_id, l.road_no, c.condition, c.iri_m_km,
        t.aadt, t.esal_daily, lc.treatment, lc.scheduled_year,
        365 * t.esal_daily * lc.design_life_yr AS design_window_esal
@@ -216,7 +216,7 @@ JOIN tis_traffic_counts t        ON t.link_id = l.link_id
 JOIN lifecycle_costs lc          ON lc.link_id = l.link_id
 WHERE c.condition IN ('Poor','Bad') AND t.aadt > 1000
 ORDER BY t.esal_daily DESC;` },
-  { id: 'q5', title: 'DUCAR ⋈ Socio — works coverage against district need', sections: ['ducar','socio'], sql:
+  { id: 'q5', title: 'DUCAR ⋈ Socio - works coverage against district need', sections: ['ducar','socio'], sql:
 `SELECT d.district_name, d.region, d.population, d.poverty_pct,
        COUNT(w.work_id)                                   AS works,
        SUM(w.length_km)                                   AS km_worked,
@@ -226,7 +226,7 @@ FROM socio_districts d
 LEFT JOIN ducar_works w ON w.district = d.district_name
 GROUP BY d.district_name, d.region, d.population, d.poverty_pct
 ORDER BY d.poverty_pct DESC;` },
-  { id: 'q6', title: 'Reserve ⋈ RMS — encroachment burden per corridor', sections: ['reserve','rms'], sql:
+  { id: 'q6', title: 'Reserve ⋈ RMS - encroachment burden per corridor', sections: ['reserve','rms'], sql:
 `SELECT l.road_no, l.region,
        COUNT(e.case_id)                          AS cases,
        COUNT(*) FILTER (WHERE e.status='Pending') AS pending,
@@ -236,7 +236,7 @@ FROM rms_road_links l
 JOIN reserve_encroachments e ON e.link_id = l.link_id
 GROUP BY l.road_no, l.region
 ORDER BY km_affected DESC;` },
-  { id: 'q7', title: 'PIM ⋈ Budget ⋈ RMS — project spend traced to corridors and lines', sections: ['pim','budget','rms'], sql:
+  { id: 'q7', title: 'PIM ⋈ Budget ⋈ RMS - project spend traced to corridors and lines', sections: ['pim','budget','rms'], sql:
 `SELECT p.project_name, p.status, p.length_km, p.cost_ugx_bn,
        b.fy, b.category, b.allocation_ugx_bn,
        ROUND(100.0 * b.absorbed_ugx_bn / NULLIF(b.allocation_ugx_bn,0), 1) AS absorption_pct,
@@ -245,7 +245,7 @@ FROM pim_projects p
 JOIN budget_lines b   ON b.budget_line_id = p.budget_line_id
 LEFT JOIN rms_road_links l ON l.link_id = p.link_id
 ORDER BY p.cost_ugx_bn DESC;` },
-  { id: 'q8', title: 'Safety ⋈ TIS ⋈ PMS — blackspot exposure and surface condition', sections: ['safety','tis','pms'], sql:
+  { id: 'q8', title: 'Safety ⋈ TIS ⋈ PMS - blackspot exposure and surface condition', sections: ['safety','tis','pms'], sql:
 `SELECT s.spot_id, l.road_no, s.severity_band, s.crashes_5yr, s.affected_km,
        t.aadt, c.condition,
        ROUND(s.crashes_5yr * 1e6 / NULLIF(t.aadt * 365 * 5 * s.affected_km, 0), 3)
@@ -255,7 +255,7 @@ JOIN rms_road_links l            ON l.link_id = s.link_id
 JOIN tis_traffic_counts t        ON t.link_id = s.link_id
 JOIN pms_condition_assessments c ON c.link_id = s.link_id
 ORDER BY crash_rate_per_mvkm DESC;` },
-  { id: 'q9', title: 'Cross-platform master view — one row per link, all sections joined', sections: ['rms','pms','tis','bms','reserve','safety','lifecycle'], sql:
+  { id: 'q9', title: 'Cross-platform master view - one row per link, all sections joined', sections: ['rms','pms','tis','bms','reserve','safety','lifecycle'], sql:
 `CREATE VIEW v_link_master AS
 SELECT l.*, c.condition, c.iri_m_km, t.aadt, t.heavy_pct,
        bs.bridges, bs.poor_structures,
@@ -275,7 +275,7 @@ LEFT JOIN LATERAL (SELECT SUM(crashes_5yr) crashes_5yr
                    FROM safety_blackspots WHERE link_id=l.link_id) sb ON TRUE
 LEFT JOIN LATERAL (SELECT treatment, scheduled_year FROM lifecycle_costs
                    WHERE link_id=l.link_id ORDER BY scheduled_year LIMIT 1) lc ON TRUE;` },
-  { id: 'q10', title: 'Case Studies ⋈ RMS — Uganda benchmarked against 209 agencies', sections: ['casestudies','rms'], sql:
+  { id: 'q10', title: 'Case Studies ⋈ RMS - Uganda benchmarked against 209 agencies', sections: ['casestudies','rms'], sql:
 `SELECT a.agency_name, a.country, a.region_global, a.network_km, a.paved_pct,
        a.budget_usd_km,
        (SELECT ROUND(100.0 * SUM(length_km) FILTER (WHERE surface_type='Paved')
@@ -327,7 +327,7 @@ export function SchemaExplorer({ sectionId, accent = '#00f5ff' }: { sectionId: s
 
       <div style={CARD}>
         <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.08em', color: 'rgba(148,163,184,0.9)', marginBottom: 8 }}>
-          RELATIONAL MAP — EVERY SECTION IS ONE TABLE, LINKED BY KEYS
+          RELATIONAL MAP - EVERY SECTION IS ONE TABLE, LINKED BY KEYS
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
           {ALL_TABLES.map(t => (
@@ -345,7 +345,7 @@ export function SchemaExplorer({ sectionId, accent = '#00f5ff' }: { sectionId: s
       {shown.map(t => (
         <div key={t.name} style={{ ...CARD, borderLeft: '3px solid ' + accent }}>
           <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.08em', color: accent, marginBottom: 6 }}>
-            SECTION TABLE — {t.name.toUpperCase()}
+            SECTION TABLE - {t.name.toUpperCase()}
           </div>
           <CodeBlock sql={t.ddl} accent={accent}/>
         </div>
@@ -353,14 +353,14 @@ export function SchemaExplorer({ sectionId, accent = '#00f5ff' }: { sectionId: s
       {related.map(t => (
         <div key={t.name} style={CARD}>
           <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.08em', color: 'rgba(148,163,184,0.9)', marginBottom: 6 }}>
-            LINKED TABLE — {t.name.toUpperCase()} ({t.section.toUpperCase()})
+            LINKED TABLE - {t.name.toUpperCase()} ({t.section.toUpperCase()})
           </div>
           <CodeBlock sql={t.ddl} accent={accent}/>
         </div>
       ))}
 
       <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.08em', color: 'rgba(148,163,184,0.9)', margin: '12px 0 6px' }}>
-        LINKING QUERIES — ALL JOINS SHOWN IN FULL
+        LINKING QUERIES - ALL JOINS SHOWN IN FULL
       </div>
       {queries.map(q => (
         <div key={q.id} style={{ ...CARD, borderLeft: '3px solid #b967ff' }}>

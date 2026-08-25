@@ -10,7 +10,7 @@ const DEFS: Record<string, { title: string; body: string; icon: string }> = {
   atc:          { icon: '📡', title: 'ATC Station Network',                  body: '25 Automatic Traffic Counters (15 legacy + 10 new) providing real-time classified volume data across the national road network.' },
   ntis:         { icon: '📈', title: 'National Traffic Information System',  body: 'AADT trends, growth forecasting, axle-load monitoring, and road safety analysis for Uganda\'s national corridors.' },
   npms:         { icon: '🗺',  title: 'National PMS',                         body: 'Strategic-level pavement performance indicators and network-wide condition distribution across all road classes.' },
-  nbms:         { icon: '🗂',  title: 'National BMS',                         body: 'Consolidated bridge and structure data across all road agencies — UNRA, URF, district, and urban authorities.' },
+  nbms:         { icon: '🗂',  title: 'National BMS',                         body: 'Consolidated bridge and structure data across all road agencies - UNRA, URF, district, and urban authorities.' },
   network:      { icon: '🌐', title: 'Road Network Overview',                body: 'The classified road network: national, district, urban, and community access roads, total extent and agency responsibilities.' },
   roadreserve:  { icon: '📏', title: 'Road Reserve Management',              body: 'Surveyed road reserve boundaries, encroachment detection, gazette status, and reserve width compliance monitoring.' },
   gisenterprise:{ icon: '🗺',  title: 'GIS Enterprise Platform',             body: 'Spatial data infrastructure, GIS layers, aerial imagery, and geospatial analysis tools for road asset management.' },
@@ -24,13 +24,15 @@ const DEFS: Record<string, { title: string; body: string; icon: string }> = {
   casestudies:  { icon: '📝', title: 'Case Studies',                         body: 'Documented project outcomes, best-practice engineering interventions, and value-for-money analyses.' },
   admin:        { icon: '⚙',  title: 'Administration',                       body: 'User management, access control, audit logs, system configuration, and the platform architecture mind map.' },
   hdm4:         { icon: '🔬', title: 'HDM-4 Analysis',                       body: 'Highway Development and Management model runs for road investment planning and budget optimisation.' },
-  ducar:        { icon: '🌿', title: 'DUCAR Roads',                          body: 'District, Urban, Community Access Road network data — condition, coverage, and maintenance funding by local government.' },
+  ducar:        { icon: '🌿', title: 'DUCAR Roads',                          body: 'District, Urban, Community Access Road network data - condition, coverage, and maintenance funding by local government.' },
   sources:      { icon: '📚', title: 'Sources & Evidence',                   body: 'Evidence catalogue, tabular summaries, and the platform data dictionary underpinning every figure shown across the site.' },
   downloads:    { icon: '⬇',  title: 'Downloads',                            body: 'Bulk exports of structures, road network, and survey data in CSV, KML, and GeoJSON formats.' },
+  documents:    { icon: '📁', title: 'Document Store',                       body: 'Central repository of engineering drawings, survey reports, contracts, and reference documents across all road agencies.' },
+  socioeconomic:{ icon: '🌍', title: 'Socio-Economic Analysis',              body: 'Population, land use, agriculture, and economic indicators mapped against the road network to inform investment prioritisation.' },
 };
 
 /* ─────────────────────────────────────────────────────────────────────────── */
-/* ── Signature block — the rich, chart-heavy per-section dashboards that     */
+/* ── Signature block - the rich, chart-heavy per-section dashboards that     */
 /* ── already live under ./sections (Recharts, definition cards, no tables)   */
 /* ─────────────────────────────────────────────────────────────────────────── */
 const LazyMaintenance = lazy(() => import('./sections/MaintenanceDashboard'));
@@ -120,20 +122,13 @@ const SUBTABS = [
   { id: 'sql', label: 'SQL Database & Schema' },
   { id: 'capture', label: 'Data Capture' },
 ];
-// TIS (Traffic Information System) gets its own Road Safety sub-tab, inserted
-// right after Dashboard — kept out of the Dashboard tab so that one stays
-// traffic-only (AADT/station data), not mixed with accident/blackspot stats.
-function subtabsFor(sid: string) {
-  if (sid !== 'tis') return SUBTABS;
-  const out = [...SUBTABS];
-  out.splice(1, 0, { id: 'safety', label: 'Road Safety' });
-  return out;
-}
-
 function SectionSubTabs({ sectionId, accent }: { sectionId: string; accent: string }) {
   const [tab, setTab] = useState('dashboard');
   const sid = SECTION_ALIAS[sectionId] ?? sectionId;
-  const tabs = subtabsFor(sid);
+  // Every section uses the exact same six-tab bar, same order, no exceptions -
+  // section-specific content (e.g. TIS Road Safety) lives inside one of these
+  // fixed slots via SECTION_EXTRAS instead of adding its own tab.
+  const tabs = SUBTABS;
   return (
     <div style={{ width: '100%' }}>
       <style>{`@keyframes sd-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
@@ -150,13 +145,14 @@ function SectionSubTabs({ sectionId, accent }: { sectionId: string; accent: stri
         ))}
       </div>
       {tab === 'dashboard' && (<><SectionSignatureBlock sectionId={sid} accent={accent} /><InsightGrid sectionId={sid} accent={accent} /><SectionExtra sectionId={sid} slot="dashboard" /></>)}
-      {tab === 'safety' && sid === 'tis' && (
-        <Suspense fallback={<div style={{ padding: 20, color: '#64748b', fontSize: 12 }}>Loading road safety data...</div>}>
-          <LazyRoadSafetyOverview />
-        </Suspense>
+      {tab === 'map' && (
+        hasMapExtra(sid)
+          ? <SectionExtra sectionId={sid} slot="map" />
+          : <div style={{
+              marginTop: 12, height: MAP_TAB_HEIGHT, minHeight: MAP_TAB_MIN_HEIGHT,
+              borderRadius: 10, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.07)',
+            }}><SectionMap sectionId={sid} accent={accent} fill /></div>
       )}
-      {tab === 'map' && (<><SectionExtra sectionId={sid} slot="map" />
-        <div style={{ marginTop: 18 }}><SectionMap sectionId={sid} accent={accent} /></div></>)}
       {tab === 'tables' && (<><ExhaustiveTables sectionId={sid} accent={accent} /><SectionExtra sectionId={sid} slot="tables" /></>)}
       {tab === 'analytics' && (<><DeepAnalysisTables sectionId={sid} accent={accent} /><SectionExtra sectionId={sid} slot="analytics" /></>)}
       {tab === 'sql' && <SchemaExplorer sectionId={sid} accent={accent} />}
@@ -174,7 +170,7 @@ function SectionSubTabs({ sectionId, accent }: { sectionId: string; accent: stri
 
 const LazyDataCaptureHub = lazy(() => import('../DataEntry/DataCaptureHub'));
 
-// — Traffic legacy content ————————————————————
+// - Traffic legacy content --------------------
 const LazyTrafficLegacy = lazy(() => import('../Traffic/TrafficLegacyContent'));
 function TrafficMapLegacy() { return <LazyTrafficLegacy initialTab="map" hideTabBar />; }
 function TrafficCountsLegacy() { return <LazyTrafficLegacy initialTab="counts" hideTabBar />; }
@@ -186,12 +182,12 @@ const LazyOverloading = lazy(() => import('../Traffic/OverloadingSection'));
 const LazyOprc = lazy(() => import('../../components/sections/OprcSection'));
 const LazyNdpiv = lazy(() => import('../../components/sections/NdpivSection'));
 
-// — RMS legacy content ————————————————————
+// - RMS legacy content --------------------
 const LazyRoadNetworkMap = lazy(() => import('../RoadNetwork/RoadNetworkView'));
 const LazyNetworkStory = lazy(() => import('../NetworkStory/NetworkStory'));
 const LazyRoadInventoryTbl = lazy(() => import('../RMS/RoadInventory'));
 
-// — PMS legacy content ————————————————————
+// - PMS legacy content --------------------
 const PMS_CrossSectionAnalytics = lazy(() => import('../PMS/CrossSectionAnalytics'));
 const PMS_RoadConditionView = lazy(() => import('../RoadCondition/RoadConditionView'));
 const PMS_PavementCatalogue = lazy(() => import('../PMS/PavementCatalogue'));
@@ -205,7 +201,7 @@ function PmsAnalyticsViewLegacy() { return <PMS_RoadConditionView activeTab={'an
 function PmsAgeLegacy() { return <PMS_RoadConditionView activeTab={'age' as any} embedded />; }
 function PmsFwdLegacy() { return <PMS_RoadConditionView activeTab={'fwd' as any} embedded />; }
 
-// — BMS legacy content ————————————————————
+// - BMS legacy content --------------------
 const BMS_GISMap = lazy(() => import('../GISMap/GISMapView'));
 const BMS_Registry = lazy(() => import('../Registry/StructureRegistry'));
 const BMS_Inspections = lazy(() => import('../Inspections/InspectionManagement'));
@@ -216,10 +212,10 @@ const BMS_PhotoTwin = lazy(() => import('../PhotoTwin/PhotoTwin'));
 const BMS_BridgeWorks = lazy(() => import('../BridgeWorks/BridgeWorksSection'));
 const BMS_Critical = lazy(() => import('../Condition/CriticalStructures'));
 
-// — DUCAR legacy content ————————————————————
+// - DUCAR legacy content --------------------
 const LazyDucarOverview = lazy(() => import('../DUCAR/DucarOverviewPanel'));
 
-// — PIM legacy content ————————————————————
+// - PIM legacy content --------------------
 const LazyPimLegacy = lazy(() => import('../PIM/PimLegacyContent'));
 function PimBudgetLegacy() { return <LazyPimLegacy initialTab="budget" hideTabBar />; }
 function PimFrameworkLegacy() { return <LazyPimLegacy initialTab="pim" hideTabBar />; }
@@ -227,11 +223,11 @@ function PimPppLegacy() { return <LazyPimLegacy initialTab="ppp" hideTabBar />; 
 function PimDonorLegacy() { return <LazyPimLegacy initialTab="donor" hideTabBar />; }
 function PimNdpivLegacy() { return <LazyPimLegacy initialTab="ndpiv" hideTabBar />; }
 
-// — GIS Enterprise legacy content ————————————————————
+// - GIS Enterprise legacy content --------------------
 const LazyGisLegacy = lazy(() => import('../GisEnterprise/GisEnterpriseLegacyContent'));
 function GisMapLegacy() { return <LazyGisLegacy hideTabBar />; }
 
-// — Road Reserve legacy content ————————————————————
+// - Road Reserve legacy content --------------------
 const LazyReserveLegacy = lazy(() => import('../RoadReserve/RoadReserveLegacyContent'));
 function ReserveOverviewLegacy() { return <LazyReserveLegacy initialTab="overview" hideTabBar />; }
 function ReserveMapLegacy() { return <LazyReserveLegacy initialTab="map" hideTabBar />; }
@@ -239,7 +235,7 @@ function ReserveRegisterLegacy() { return <LazyReserveLegacy initialTab="registe
 function ReserveGazetteLegacy() { return <LazyReserveLegacy initialTab="gazette" hideTabBar />; }
 function ReservePermitsLegacy() { return <LazyReserveLegacy initialTab="permits" hideTabBar />; }
 
-// — Global Case Studies legacy content ————————————————————
+// - Global Case Studies legacy content --------------------
 const LazyCaseStudiesLegacy = lazy(() => import('../GlobalCaseStudies/GlobalCaseStudiesLegacyContent'));
 function CaseStudiesWorldMapLegacy() { return <LazyCaseStudiesLegacy initialTab="worldmap" hideTabBar />; }
 function CaseStudiesComparisonLegacy() { return <LazyCaseStudiesLegacy initialTab="analytics" hideTabBar />; }
@@ -247,20 +243,27 @@ function CaseStudiesMatrixLegacy() { return <LazyCaseStudiesLegacy initialTab="m
 function CaseStudiesNarrativeLegacy() { return <LazyCaseStudiesLegacy initialTab="casestudies" hideTabBar />; }
 function CaseStudiesLessonsLegacy() { return <LazyCaseStudiesLegacy initialTab="lessons" hideTabBar />; }
 
-// — Admin: Interactive Map = the Platform Mind Map ————————————————————
+// - Admin: Interactive Map = the Platform Mind Map --------------------
 const ADMIN_MindMap = lazy(() => import('../MindMap/MindMapSection'));
 const ADMIN_Identity = lazy(() => import('../Admin/IdentityManager'));
 const ADMIN_Activity = lazy(() => import('../Admin/ActivityLog'));
 const ADMIN_DataAudit = lazy(() => import('../DataAudit/DataAuditPanel'));
 const ADMIN_PendingSubmissions = lazy(() => import('../DataEntry/PendingSubmissions').then(m => ({ default: m.PendingSubmissions })));
 
-// — Sources & Evidence ————————————————————
+// - Sources & Evidence --------------------
 const SRC_Catalogue = lazy(() => import('../Sources/SourcesCatalogueSection'));
 const SRC_Tabular = lazy(() => import('../Sources/TabularSummaries'));
 const SRC_Dictionary = lazy(() => import('../Sources/DataDictionary'));
 
-// — Downloads / Road Atlas / Road Video / Bridge Works / Budget / Lifecycle —
+// - Downloads / Road Atlas / Road Video / Bridge Works / Budget / Lifecycle -
 const DL_View = lazy(() => import('../Downloads/DownloadsView'));
+const DOC_Store = lazy(() => import('../Documents/DocumentStore'));
+
+// - Socio-Economic Analysis --------------------
+const SE_Dashboard = lazy(() => import('../SocioEconomic/SocioEconomicDashboard'));
+const SE_Tables = lazy(() => import('../SocioEconomic/SocioEconomicTables'));
+const SE_Analytics = lazy(() => import('../SocioEconomic/SocioEconomicAnalytics'));
+const SE_Map = lazy(() => import('../SocioEconomic/SocioEconomicMap'));
 const RA_View = lazy(() => import('../RoadAtlas/RoadAtlasView'));
 const RV_View = lazy(() => import('../RoadVideoView/RoadVideoView'));
 const BUD_Section = lazy(() => import('../Budget/BudgetSection'));
@@ -277,7 +280,7 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
   tis: {
     map: [TrafficMapLegacy],
     tables: [TrafficCountsLegacy, TrafficStationsLegacy],
-    analytics: [TrafficTrendsLegacy, LazyGrowthFactors, LazyOverloading],
+    analytics: [TrafficTrendsLegacy, LazyGrowthFactors, LazyOverloading, LazyRoadSafetyOverview],
   },
   pms: {
     map: [PmsConditionMapLegacy],
@@ -324,6 +327,15 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
   downloads: {
     dashboard: [DL_View],
   },
+  documents: {
+    tables: [DOC_Store],
+  },
+  socioeconomic: {
+    dashboard: [SE_Dashboard],
+    map: [SE_Map],
+    tables: [SE_Tables],
+    analytics: [SE_Analytics],
+  },
   roadatlas: {
     map: [RA_View],
   },
@@ -344,14 +356,30 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
   },
 };
 
+// Full-page treatment for the Interactive Map tab - the map should dominate
+// the viewport, not sit cramped in a small embedded box.
+const MAP_TAB_HEIGHT = 'calc(100vh - 230px)';
+const MAP_TAB_MIN_HEIGHT = 620;
+
+function hasMapExtra(sectionId: string): boolean {
+  const list = SECTION_EXTRAS[sectionId]?.map;
+  return !!list && list.length > 0;
+}
+
 function SectionExtra({ sectionId, slot }: { sectionId: string; slot: ExtraSlot }) {
   const list = SECTION_EXTRAS[sectionId]?.[slot];
   if (!list || !list.length) return null;
+  const isMap = slot === 'map';
   return (
     <>
       {list.map((Comp, i) => (
         <Suspense key={i} fallback={null}>
-          <div style={{
+          <div style={isMap ? {
+            marginTop: 12, position: 'relative', isolation: 'isolate',
+            contain: 'layout paint style', overflow: 'hidden',
+            height: MAP_TAB_HEIGHT, minHeight: MAP_TAB_MIN_HEIGHT,
+            border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10,
+          } : {
             marginTop: 18, position: 'relative', isolation: 'isolate',
             contain: 'layout paint style', overflow: 'hidden auto', maxHeight: '90vh',
             border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10,
@@ -370,7 +398,7 @@ export default function SectionDashboard({ sectionId, accent }: { sectionId: str
 
   return (
     <div style={{ padding: '6px 8px', width: '100%' }}>
-      {/* Compact definition strip — always visible above the 6-tab bar */}
+      {/* Compact definition strip - always visible above the 6-tab bar */}
       <div style={{
         background: `rgba(255,255,255,0.02)`, border: `1px solid ${accent}26`,
         borderRadius: 10, padding: '10px 14px', marginBottom: 10,

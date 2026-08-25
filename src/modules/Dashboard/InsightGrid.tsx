@@ -1,10 +1,10 @@
 /**
- * InsightGrid — 50+ auto-derived insight tiles for every section dashboard.
+ * InsightGrid - 50+ auto-derived insight tiles for every section dashboard.
  * Pure-SVG primitives (sparklines, gauges, radar, treemap, scatter, stacked &
  * composed bars, heat matrices, Pareto, waterfall, boxplots, ranked lists) with
  * conditional formatting, a shared legend, per-tile PNG export and automatic
  * cross-analysis (cat×cat, cat×num, num×num) over live Supabase rows.
- * Aggregates only — spatial and identifier columns are excluded from all tiles.
+ * Aggregates only - spatial and identifier columns are excluded from all tiles.
  */
 import { useEffect, useMemo, useState, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
@@ -46,12 +46,12 @@ function pearson(a: number[], b: number[]): number {
 }
 function groupCount(rows: Row[], key: string): [string, number][] {
   const m = new Map<string, number>();
-  rows.forEach(r => { const k = String(r[key] ?? '—'); m.set(k, (m.get(k) ?? 0) + 1); });
+  rows.forEach(r => { const k = String(r[key] ?? '-'); m.set(k, (m.get(k) ?? 0) + 1); });
   return [...m.entries()].sort((x, y) => y[1] - x[1]);
 }
 function groupSum(rows: Row[], key: string, val: string): [string, number][] {
   const m = new Map<string, number>();
-  rows.forEach(r => { const k = String(r[key] ?? '—'); const v = num(r[val]) ?? 0; m.set(k, (m.get(k) ?? 0) + v); });
+  rows.forEach(r => { const k = String(r[key] ?? '-'); const v = num(r[val]) ?? 0; m.set(k, (m.get(k) ?? 0) + v); });
   return [...m.entries()].sort((x, y) => y[1] - x[1]);
 }
 
@@ -371,7 +371,7 @@ function BoxplotSVG({ vals, label }: { vals: number[]; label: string }) {
   );
 }
 
-// ── Tile Engine — auto-derivation & cross-analysis, guaranteed 50+ tiles ─────
+// ── Tile Engine - auto-derivation & cross-analysis, guaranteed 50+ tiles ─────
 interface TileDef { key: string; title: string; sub?: string; el: React.ReactNode }
 function deriveTiles(rows: Row[], P: Profile): TileDef[] {
   const T: TileDef[] = [];
@@ -410,7 +410,7 @@ function deriveTiles(rows: Row[], P: Profile): TileDef[] {
     if (P.cats.length > 1) {
       const c2 = P.cats.find(x => x !== c) as string;
       const groups: [string, [string, number][]][] = groupCount(rows, c).slice(0, 6)
-        .map(([k]) => [k, groupSum(rows.filter(r => String(r[c] ?? '—') === k), c2, m).slice(0, 6)]);
+        .map(([k]) => [k, groupSum(rows.filter(r => String(r[c] ?? '-') === k), c2, m).slice(0, 6)]);
       push('stk-'+c+m, m.replace(/_/g,' ')+' · '+c.replace(/_/g,' ')+' × '+c2.replace(/_/g,' '), 'stacked composition', <StackedSVG groups={groups}/>);
     }
   }
@@ -419,7 +419,7 @@ function deriveTiles(rows: Row[], P: Profile): TileDef[] {
     const a = P.cats[i], b = P.cats[i + 1];
     const ra = groupCount(rows, a).map(([k]) => k), rb = groupCount(rows, b).map(([k]) => k);
     push('heat-'+a+b, a.replace(/_/g,' ')+' × '+b.replace(/_/g,' '), 'record counts, heat by density',
-      <HeatMatrixSVG rowsK={ra} colsK={rb} cell={(r0, c0) => rows.filter(r => String(r[a] ?? '—') === r0 && String(r[b] ?? '—') === c0).length}/>);
+      <HeatMatrixSVG rowsK={ra} colsK={rb} cell={(r0, c0) => rows.filter(r => String(r[a] ?? '-') === r0 && String(r[b] ?? '-') === c0).length}/>);
   }
   // 5 · Cross num × num: scatters with Pearson r
   for (let i = 0; i < P.nums.length; i++) for (let j = i + 1; j < P.nums.length && T.length < 90; j++) {
@@ -456,7 +456,7 @@ function deriveTiles(rows: Row[], P: Profile): TileDef[] {
   return T;
 }
 
-// ── Per-Section Data Specs (Supabase '*' pulls — every attribute) ─────────────
+// ── Per-Section Data Specs (Supabase '*' pulls - every attribute) ─────────────
 const SPECS: Record<string, { table: string; extra?: string }> = {
   rms:      { table: 'road_links' },
   pms:      { table: 'road_condition_assessments', extra: 'road_links' },
@@ -516,8 +516,8 @@ function LegendStrip({ P }: { P: Profile }) {
       <span style={{ color: GOOD }}>■ good / leader</span>
       <span style={{ color: MID }}>■ watch / cumulative</span>
       <span style={{ color: BAD }}>■ critical / target line</span>
-      <span>· Dimensions: {P.cats.join(', ') || '—'}</span>
-      <span>· Measures: {P.nums.join(', ') || '—'}</span>
+      <span>· Dimensions: {P.cats.join(', ') || '-'}</span>
+      <span>· Measures: {P.nums.join(', ') || '-'}</span>
       <span>· PNG button on any tile exports it</span>
     </div>
   );
@@ -542,10 +542,10 @@ export function InsightGrid({ sectionId, accent }: { sectionId: string; accent?:
   const P = useMemo(() => profile(rows ?? []), [rows]);
   const tiles = useMemo(() => deriveTiles(rows ?? [], P), [rows, P]);
 
-  if (rows === null) return null; // no loading placeholder — render nothing until real content is ready, avoids flash/wasted space
+  if (rows === null) return null; // no loading placeholder - render nothing until real content is ready, avoids flash/wasted space
   if (!rows.length) return (
     <div style={{ padding: 18, background: GRID_BG, borderRadius: 10, color: '#64748b', fontSize: 11 }}>
-      No data available yet — the live database is asleep or this section's tables are empty. The grid retries automatically on the next visit.
+      No data available yet - the live database is asleep or this section's tables are empty. The grid retries automatically on the next visit.
     </div>
   );
   return (
