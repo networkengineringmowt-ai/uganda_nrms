@@ -34,7 +34,7 @@ export default function DownloadsView() {
   const GEOSPATIAL: ExportCard[] = [
     {
       icon: <Archive size={18} />,
-      title: 'Shapefile — All Structures',
+      title: 'Shapefile - All Structures',
       description: 'Point shapefile with full attribute table. Compatible with ArcGIS, QGIS, MapInfo.',
       badge: 'SHP',
       badgeColor: '#b967ff',
@@ -43,7 +43,7 @@ export default function DownloadsView() {
     },
     {
       icon: <Archive size={18} />,
-      title: 'Shapefile — Bridges only',
+      title: 'Shapefile - Bridges only',
       description: `${bridges.length} bridge point features with span, material, condition attributes.`,
       badge: 'SHP',
       badgeColor: '#b967ff',
@@ -52,7 +52,7 @@ export default function DownloadsView() {
     },
     {
       icon: <Archive size={18} />,
-      title: 'Shapefile — Culverts only',
+      title: 'Shapefile - Culverts only',
       description: `${culverts.length} major culvert point features.`,
       badge: 'SHP',
       badgeColor: '#b967ff',
@@ -61,7 +61,7 @@ export default function DownloadsView() {
     },
     {
       icon: <FileJson size={18} />,
-      title: 'GeoJSON — All Structures',
+      title: 'GeoJSON - All Structures',
       description: 'Current app data as GeoJSON FeatureCollection. Live snapshot matching displayed structures.',
       badge: 'GeoJSON',
       badgeColor: '#00f5ff',
@@ -70,7 +70,7 @@ export default function DownloadsView() {
     },
     {
       icon: <FileJson size={18} />,
-      title: 'GeoJSON — Static (pre-built)',
+      title: 'GeoJSON - Static (pre-built)',
       description: 'Server-generated GeoJSON with all 546 structures. Use for full dataset including offline.',
       badge: 'GeoJSON',
       badgeColor: '#00f5ff',
@@ -80,7 +80,7 @@ export default function DownloadsView() {
     },
     {
       icon: <Globe size={18} />,
-      title: 'KML — Google Earth',
+      title: 'KML - Google Earth',
       description: 'Open in Google Earth Pro or Maps. Placemarks colour-coded by condition rating (1–5).',
       badge: 'KML',
       badgeColor: '#00ff88',
@@ -92,7 +92,7 @@ export default function DownloadsView() {
   const TABULAR: ExportCard[] = [
     {
       icon: <Table size={18} />,
-      title: 'Full Structure Registry — CSV',
+      title: 'Full Structure Registry - CSV',
       description: `All ${structures.length} structures with 21 attribute columns. Opens in Excel.`,
       badge: 'CSV',
       badgeColor: '#ffd23f',
@@ -119,7 +119,7 @@ export default function DownloadsView() {
     },
     {
       icon: <Table size={18} />,
-      title: 'Full CSV — Static (pre-built)',
+      title: 'Full CSV - Static (pre-built)',
       description: 'Server-generated CSV matching the master dataset.',
       badge: 'CSV',
       badgeColor: '#ffd23f',
@@ -140,7 +140,7 @@ export default function DownloadsView() {
               <span style={{fontSize:18,fontWeight:800,color:'rgba(100,116,139,1)',letterSpacing:-0.5}}>Downloads & Reports Centre</span>
               <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>PDF · Excel · CSV · GIS Shapefiles · MoWT Reports</span>
             </div>
-            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Centralised download and export hub for Uganda NRMS — providing authoritative PDF reports, Excel workbooks, CSV data extracts, and GIS shapefiles for road condition, traffic, budget, and project data approved by MoWT and UNRA.</p>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Centralised download and export hub for Uganda NRMS - providing authoritative PDF reports, Excel workbooks, CSV data extracts, and GIS shapefiles for road condition, traffic, budget, and project data approved by MoWT and UNRA.</p>
             <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
               {["PDF Reports","Excel Exports","CSV Data","GIS Shapefiles","MoWT Reports","UNRA Data"].map(b=>(
                 <span key={b} style={{background:'rgba(100,116,139,0.12)',color:'rgba(100,116,139,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
@@ -191,7 +191,7 @@ export default function DownloadsView() {
       <div className="mt-8 flex items-start gap-3 bg-slate-900 border border-slate-700 rounded-xl p-4 text-sm text-slate-400">
         <Info size={16} className="text-slate-500 mt-0.5 flex-shrink-0" />
         <div>
-          <strong className="text-slate-300">Data source:</strong> Department of National Roads Bridge Management System —
+          <strong className="text-slate-300">Data source:</strong> Department of National Roads Bridge Management System -
           <em> Bridges and Culverts 2026.xlsx</em> (tblB-Bridge2 + MC Condition sheets) merged with
           <em> Bridges 18062025.xlsx</em> and <em>Major Culverts 18062025.xlsx</em>.
           Condition ratings are modelled from year-built using a 15-year degradation schedule
