@@ -1,5 +1,5 @@
 /**
- * PhotoTwin — Photo gallery + Digital Twin module.
+ * PhotoTwin - Photo gallery + Digital Twin module.
  * Street-view style photo browser linked to the GIS map.
  * Tabs: Photos (street-view) | Digital Twin (SVG schematic) | Timeline (by year)
  */
@@ -71,7 +71,7 @@ export default function PhotoTwin() {
             <div style={{ fontSize:10, color:'rgba(148,163,184,0.55)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.08em' }}>360° Photos · ML Detection · Timeline Analysis</div>
           </div>
         </div>
-        <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>Street-level photo capture and digital twin analysis for Uganda's road and bridge assets — AI-powered defect detection, pavement distress classification, temporal condition change tracking, and immersive road condition monitoring for field teams.</p>
+        <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>Street-level photo capture and digital twin analysis for Uganda's road and bridge assets - AI-powered defect detection, pavement distress classification, temporal condition change tracking, and immersive road condition monitoring for field teams.</p>
         <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
           {["360° Capture","AI Detection","Defect Class.","Timeline Track","Digital Twin","ML-Powered"].map((b: string)=>(
             <span key={b} style={{ fontSize:9, fontWeight:700, color:`rgb(${color})`, background:`rgba(${color},0.07)`, border:`1px solid rgba(${color},0.18)`, borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
@@ -211,7 +211,7 @@ function StructureListItem({
   );
 }
 
-// ─── Photos View — Street View style ─────────────────────────────────────────
+// ─── Photos View - Street View style ─────────────────────────────────────────
 function PhotosView({ structure: s }: { structure: Structure }) {
   const { photos, loading, byYear } = usePhotoLoader(s.id);
   const [current,   setCurrent]   = useState(0);
@@ -292,7 +292,7 @@ function PhotosView({ structure: s }: { structure: Structure }) {
             <img
               key={currentPhoto.url}
               src={currentPhoto.url}
-              alt={`${s.name} — ${currentPhoto.year} photo ${currentPhoto.index}`}
+              alt={`${s.name} - ${currentPhoto.year} photo ${currentPhoto.index}`}
               className="w-full h-full object-contain transition-opacity duration-300"
               onError={e => { (e.target as HTMLImageElement).style.opacity = '0.2'; }}
             />
@@ -398,7 +398,7 @@ function PhotosView({ structure: s }: { structure: Structure }) {
         </div>
       </div>
 
-      {/* ─── Lightbox (fullscreen) — rendered inline so the ⛶ button works ─── */}
+      {/* ─── Lightbox (fullscreen) - rendered inline so the ⛶ button works ─── */}
       {lightbox && currentPhoto && (
         <div
           className="fixed inset-0 z-[9999] bg-black/95 flex flex-col items-center justify-center"
@@ -499,7 +499,7 @@ function TwinView({ structure: s }: { structure: Structure }) {
         <div className="flex items-center gap-2 text-[10px] text-slate-500">
           <Info size={10} /> Current condition:
           <span className="font-bold" style={{ color: conditionColor(s.conditionRating) }}>
-            {s.conditionRating}/5 — {conditionLabel(s.conditionRating)}
+            {s.conditionRating}/5 - {conditionLabel(s.conditionRating)}
           </span>
           · Last inspected {formatDate(s.lastInspection)}
         </div>

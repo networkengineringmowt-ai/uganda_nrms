@@ -69,7 +69,7 @@ const photoCache = new Map<string, BridgePhoto[]>();
 // ─── Photo manifest (deployed site) ──────────────────────────────────────────
 // public/data/photo_manifest.json lists the thumbnails shipped under
 // public/s-photos/ (built by scripts/build_photo_album.py from S:\PHOTOS).
-// Manifest-first means exact files everywhere — including GitHub Pages,
+// Manifest-first means exact files everywhere - including GitHub Pages,
 // where the old S:-drive probing always 404ed.
 // ─── Google Drive manifest (photos hosted on the user's Drive, not GitHub) ───
 // public/data/drive_photos.json holds { manifestUrl } → an Apps Script web app
@@ -133,7 +133,7 @@ export function usePhotoLoader(structureId: string | null): {
   useEffect(() => {
     if (!folder) { setPhotos([]); return; }
 
-    // Return from cache immediately — no loading state needed
+    // Return from cache immediately - no loading state needed
     if (photoCache.has(folder)) {
       setPhotos(photoCache.get(folder)!);
       return;

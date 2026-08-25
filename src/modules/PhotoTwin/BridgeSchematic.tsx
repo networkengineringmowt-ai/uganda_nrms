@@ -1,5 +1,5 @@
 /**
- * BridgeSchematic — SVG side-elevation "digital twin" of a bridge or culvert.
+ * BridgeSchematic - SVG side-elevation "digital twin" of a bridge or culvert.
  * Drawn from structure properties: spans, piers, material, crossing type, condition.
  * Defects shown as animated hotspots. Hover for defect tooltip.
  */
@@ -140,13 +140,13 @@ export default function BridgeSchematic({ structure: s }: Props) {
     <div className="relative w-full bg-slate-900 rounded-xl border border-slate-700 overflow-hidden select-none">
       {/* Title bar */}
       <div className="flex items-center justify-between px-4 py-2 bg-slate-800 border-b border-slate-700">
-        <span className="text-xs font-bold text-white">Digital Twin — Side Elevation</span>
+        <span className="text-xs font-bold text-white">Digital Twin - Side Elevation</span>
         <div className="flex items-center gap-3 text-[10px] text-slate-400">
           <span>{nSpans} span{nSpans > 1 ? 's' : ''}</span>
           <span>{nPiers} pier{nPiers !== 1 ? 's' : ''}</span>
           <span>~{totalLen} m total</span>
           <span style={{ color: condCol }} className="font-bold">
-            Condition {s.conditionRating}/5 — {conditionLabel(s.conditionRating)}
+            Condition {s.conditionRating}/5 - {conditionLabel(s.conditionRating)}
           </span>
         </div>
       </div>
