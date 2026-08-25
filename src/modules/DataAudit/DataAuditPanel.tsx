@@ -1,5 +1,5 @@
 /**
- * DataAuditPanel — cross-section data audit results.
+ * DataAuditPanel - cross-section data audit results.
  * Accessible from the Admin Tools nav by all users.
  * Runs audit on mount and shows a badge on issues.
  */
@@ -61,7 +61,7 @@ export default function DataAuditPanel() {
               <span style={{fontSize:18,fontWeight:800,color:'rgba(244,63,94,1)',letterSpacing:-0.5}}>Data Audit & Quality Engine</span>
               <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>Data Quality · Completeness · Validation · Supabase</span>
             </div>
-            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Automated data audit and quality assurance engine for Uganda NRMS — detecting missing values, inconsistent records, spatial anomalies, and temporal gaps across road condition, traffic, and project data in the Supabase warehouse.</p>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Automated data audit and quality assurance engine for Uganda NRMS - detecting missing values, inconsistent records, spatial anomalies, and temporal gaps across road condition, traffic, and project data in the Supabase warehouse.</p>
             <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
               {["Completeness Check","Null Detection","Spatial Audit","Temporal QC","Supabase DB","Auto Validation"].map(b=>(
                 <span key={b} style={{background:'rgba(244,63,94,0.12)',color:'rgba(244,63,94,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
@@ -122,7 +122,7 @@ export default function DataAuditPanel() {
         borderRadius: 12, padding: '14px 16px', marginBottom: 20,
       }}>
         <div style={{ fontSize: 10, fontWeight: 900, color: 'rgba(0,245,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>
-          Network Stats — Single Source of Truth (network2026.geojson)
+          Network Stats - Single Source of Truth (network2026.geojson)
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 10 }}>
           {[
@@ -190,7 +190,7 @@ export default function DataAuditPanel() {
   );
 }
 
-/** Badge count for nav — returns number of issues found */
+/** Badge count for nav - returns number of issues found */
 export function getAuditIssueCount(results: AuditResult[]): number {
   return results.filter(r => r.status === 'mismatch' || r.status === 'missing').length;
 }
