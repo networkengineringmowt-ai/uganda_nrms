@@ -56,7 +56,7 @@ const PPP_PROJECTS = [
     length_km: 95,
     value_usd_m: 1200,
     model: 'DBFOT (30-year concession)',
-    funder: 'PPP — GoU + Private consortium',
+    funder: 'PPP - GoU + Private consortium',
     notes: 'First major PPP expressway; toll-based; linking Kampala to Jinja SEZ',
     color: C.cyan,
   },
@@ -215,7 +215,7 @@ export default function PimLegacyContent({ initialTab, hideTabBar }: { initialTa
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <div style={card(C.yellow)}>
             <div style={{ fontSize: 11, fontWeight: 900, color: C.yellow, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14 }}>
-              Uganda Public Investment Management Cycle — Roads Sector
+              Uganda Public Investment Management Cycle - Roads Sector
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {PIM_FRAMEWORK.map((s, i) => (
@@ -239,13 +239,13 @@ export default function PimLegacyContent({ initialTab, hideTabBar }: { initialTa
               <div style={{ fontSize: 10, fontWeight: 900, color: C.blue, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>Key Legal Framework</div>
               {[
                 'Public Finance Management Act, 2015 (as amended)',
-                'PPDA Act, 2003 (amended 2014) — Procurement',
-                'National Roads Act, 2017 — Department of National Roads mandate',
-                'Roads Act, Cap 358 — road classification',
-                'PPP Act, 2015 — private finance framework',
-                'National Environment Act, 2019 — ESIA requirements',
+                'PPDA Act, 2003 (amended 2014) - Procurement',
+                'National Roads Act, 2017 - Department of National Roads mandate',
+                'Roads Act, Cap 358 - road classification',
+                'PPP Act, 2015 - private finance framework',
+                'National Environment Act, 2019 - ESIA requirements',
                 'National Development Plan IV (2020/21–2025/26)',
-                'Uganda Vision 2040 — long-term strategic goals',
+                'Uganda Vision 2040 - long-term strategic goals',
               ].map(l => (
                 <div key={l} style={{ fontSize: 10, color: 'rgba(196,210,225,0.75)', padding: '4px 0',
                   borderBottom: '1px solid rgba(255,255,255,0.04)' }}>• {l}</div>
@@ -254,7 +254,7 @@ export default function PimLegacyContent({ initialTab, hideTabBar }: { initialTa
             <div style={card(C.green)}>
               <div style={{ fontSize: 10, fontWeight: 900, color: C.green, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>Key Institutions</div>
               {[
-                { name: 'Department of National Roads', role: 'Implementing agency — national roads' },
+                { name: 'Department of National Roads', role: 'Implementing agency - national roads' },
                 { name: 'MoWT', role: 'Policy, standards, district roads oversight' },
                 { name: 'MFPED', role: 'Budget allocation, MTEF, donor coordination' },
                 { name: 'NPA', role: 'National development plan formulation' },
@@ -361,7 +361,7 @@ export default function PimLegacyContent({ initialTab, hideTabBar }: { initialTa
           </div>
           <div style={card(C.green)}>
             <div style={{ fontSize: 11, fontWeight: 900, color: C.green, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14 }}>
-              Donor Profiles — National Roads
+              Donor Profiles - National Roads
             </div>
             {[
               { donor: 'World Bank / IDA', share: '28%', focus: 'Rehabilitation, connectivity, OPRC maintenance', active: '4 operations' },
@@ -408,7 +408,7 @@ export default function PimLegacyContent({ initialTab, hideTabBar }: { initialTa
               ))}
             </div>
             <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.5)', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 10 }}>
-              Source: Uganda NDP IV (2020/21–2025/26) Chapter 5 — Infrastructure. Department of National Roads Performance Contract 2024/25.
+              Source: Uganda NDP IV (2020/21–2025/26) Chapter 5 - Infrastructure. Department of National Roads Performance Contract 2024/25.
               Vision 2040 long-term target: 17,000 km paved national road network.
             </div>
           </div>
