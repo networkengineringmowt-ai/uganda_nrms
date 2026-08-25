@@ -6,28 +6,28 @@ import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
 function MLChartSourceButton() {
   return (
     <div style={{ display: 'flex', gap: 6 }}>
-      <SourceTableButton anchor="tbl-041" label="ð Predictions table" />
-      <SourceTableButton anchor="tbl-042" label="ð Rehab/urgency table" />
+      <SourceTableButton anchor="tbl-041" label="📋 Predictions table" />
+      <SourceTableButton anchor="tbl-042" label="📋 Rehab/urgency table" />
     </div>
   );
 }
 
 const BASE = import.meta.env.BASE_URL;
 
-// ââ Color palette âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Color palette ─────────────────────────────────────────────────────────────
 const C = {
-  data:     '#00f5ff',   // cyan  â Data Sources
-  etl:      '#b967ff',   // purple â ETL / Processing
-  feature:  '#ffd23f',   // yellow â Feature Engineering
-  model:    '#ff6b35',   // orange â ML Models
-  output:   '#00ff88',   // green  â Outputs
-  decision: '#4d9fff',   // blue   â Decision Support
+  data:     '#00f5ff',   // cyan  — Data Sources
+  etl:      '#b967ff',   // purple — ETL / Processing
+  feature:  '#ffd23f',   // yellow — Feature Engineering
+  model:    '#ff6b35',   // orange — ML Models
+  output:   '#00ff88',   // green  — Outputs
+  decision: '#4d9fff',   // blue   — Decision Support
   bg:       'rgba(8,14,28,0.72)',
   card:     'rgba(15,23,42,0.80)',
   border:   'rgba(255,255,255,0.07)',
 };
 
-// ââ Node definitions ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Node definitions ──────────────────────────────────────────────────────────
 interface NodeDef {
   id:       string;
   layer:    'data' | 'etl' | 'feature' | 'model' | 'output' | 'decision';
@@ -45,14 +45,14 @@ interface NodeDef {
 }
 
 const NODES: NodeDef[] = [
-  // ââ Data Sources (column 0) ââ
+  // ── Data Sources (column 0) ──
   {
     id: 'romdas', layer: 'data', label: 'ROMDAS Survey', sublabel: 'Pavement IRI & texture',
     x: 6, y: 14,
     detail: {
       algorithm: 'Laser profilometry + video frame capture',
       trainingSize: '21,160 km (mapped) national network surveys',
-      accuracy: 'IRI Â±0.1 m/km, GPS Â±2 m',
+      accuracy: 'IRI ±0.1 m/km, GPS ±2 m',
       inputs: ['Raw IMU data', 'GPS coordinates', 'Video frames', 'Laser distance'],
       outputs: ['IRI per 100m segment', 'Rutting depth', 'Cracking index', 'Defect photo grid'],
       description: 'ROMDAS vehicle-mounted survey system captures road surface roughness (IRI), rutting, cracking, and defect imagery at network speed. Surveys conducted annually on ~6,000 km paved national roads.',
@@ -63,8 +63,8 @@ const NODES: NodeDef[] = [
     x: 6, y: 30,
     detail: {
       algorithm: 'Inductive loop + video AI classification',
-      trainingSize: '607k+ hourly readings (2016â2025)',
-      accuracy: 'Volume Â±3%, classification Â±8%',
+      trainingSize: '607k+ hourly readings (2016–2025)',
+      accuracy: 'Volume ±3%, classification ±8%',
       inputs: ['Axle signatures', 'Speed pulses', 'Video frames', 'Timestamp'],
       outputs: ['Hourly AADT by class', 'Speed distribution', 'Headway', 'Heavy vehicle %'],
       description: '10 ATC stations (2025+) on strategic corridors. Classify 12 vehicle classes. Feed real-time traffic models and seasonal factor computation.',
@@ -88,9 +88,9 @@ const NODES: NodeDef[] = [
     detail: {
       algorithm: 'Visual inspection + NBI rating protocol',
       trainingSize: '546 structures (312 bridges, 142 box culverts, 68 culverts, 24 drifts)',
-      accuracy: 'Condition rating Â±0.5 NBI units',
+      accuracy: 'Condition rating ±0.5 NBI units',
       inputs: ['Inspector field scores', 'Photos', 'Defect codes', 'Load data'],
-      outputs: ['NBI component ratings 0â9', 'Structure condition index', 'Priority score'],
+      outputs: ['NBI component ratings 0–9', 'Structure condition index', 'Priority score'],
       description: 'National bridge inventory covering deck, superstructure, substructure, and channel ratings. Annual inspection cycle for critical structures, biennial for others.',
     },
   },
@@ -100,14 +100,14 @@ const NODES: NodeDef[] = [
     detail: {
       algorithm: 'ArcGIS + PostGIS spatial database',
       trainingSize: '21,160 km (mapped), 1,017 links, 6 regions',
-      accuracy: 'GPS-aligned Â±5 m horizontal',
+      accuracy: 'GPS-aligned ±5 m horizontal',
       inputs: ['Shapefile geometry', 'Attribute tables', 'Chainage data', 'Region boundaries'],
       outputs: ['Spatial join keys', 'Route lengths', 'Network topology', 'Maintenance zones'],
-      description: 'National road network GIS database maintained by Department of National Roads/DNR. Used as spatial backbone for all asset management layers â joins traffic, condition, projects, and budget data.',
+      description: 'National road network GIS database maintained by Department of National Roads/DNR. Used as spatial backbone for all asset management layers — joins traffic, condition, projects, and budget data.',
     },
   },
 
-  // ââ ETL / Processing (column 1) ââ
+  // ── ETL / Processing (column 1) ──
   {
     id: 'etl_clean', layer: 'etl', label: 'Data Cleaning', sublabel: 'Outlier removal, imputation',
     x: 22, y: 22,
@@ -136,23 +136,23 @@ const NODES: NodeDef[] = [
     id: 'etl_temporal', layer: 'etl', label: 'Temporal Alignment', sublabel: 'Year-harmonised panels',
     x: 22, y: 70,
     detail: {
-      algorithm: 'Panel data construction (2016â2025)',
-      trainingSize: '10 annual snapshots Ã 1,017 links',
-      accuracy: 'Calendar-year alignment Â±6 months',
+      algorithm: 'Panel data construction (2016–2025)',
+      trainingSize: '10 annual snapshots × 1,017 links',
+      accuracy: 'Calendar-year alignment ±6 months',
       inputs: ['Survey timestamps', 'Count year', 'Financial year mapping'],
       outputs: ['Balanced panel DataFrame', 'Change deltas', 'Trend features'],
       description: 'Harmonises surveys from different years and data collection cycles into a balanced panel. Computes year-on-year IRI deterioration rates, traffic growth rates per link.',
     },
   },
 
-  // ââ Feature Engineering (column 2) ââ
+  // ── Feature Engineering (column 2) ──
   {
     id: 'feat_env', layer: 'feature', label: 'Environment Features', sublabel: 'Climate & terrain',
     x: 39, y: 18,
     detail: {
       algorithm: 'CHIRPS rainfall + SRTM DEM + soil classification',
-      trainingSize: 'Gridded 5km Ã 5km Uganda coverage',
-      accuracy: 'Rainfall Â±12mm/yr, elevation Â±10m',
+      trainingSize: 'Gridded 5km × 5km Uganda coverage',
+      accuracy: 'Rainfall ±12mm/yr, elevation ±10m',
       inputs: ['Monthly rainfall (CHIRPS)', 'DEM elevation', 'Soil type GIS', 'Drainage catchment'],
       outputs: ['Annual rainfall (mm)', 'Slope (%)', 'Subgrade CBR proxy', 'Flood risk score'],
       description: 'Environmental covariates joined to each road link: mean annual rainfall, terrain slope, estimated subgrade strength (CBR) from soil maps, and flood inundation risk index.',
@@ -164,7 +164,7 @@ const NODES: NodeDef[] = [
     detail: {
       algorithm: 'SATCC/TRH4 ESAL factors + CAGR regression',
       trainingSize: '267k+ count records',
-      accuracy: 'ESAL Â±15% (overload uncertainty)',
+      accuracy: 'ESAL ±15% (overload uncertainty)',
       inputs: ['AADT by class', 'Axle load factors', 'Growth rates', 'Overloading multiplier'],
       outputs: ['Cumulative ESAL (million)', 'HV %', 'Traffic growth rate', 'Overloading risk'],
       description: 'Converts classified traffic counts to Equivalent Standard Axle Loads using SATCC factors. Applies +25% overload uplift for HGVs. Computes cumulative structural damage loading per link.',
@@ -176,9 +176,9 @@ const NODES: NodeDef[] = [
     detail: {
       algorithm: 'HDM-4 structural number + age computation',
       trainingSize: '1,017 links with construction records',
-      accuracy: 'SN Â±0.3 from layer thickness uncertainty',
+      accuracy: 'SN ±0.3 from layer thickness uncertainty',
       inputs: ['Pavement layer thicknesses', 'Construction year', 'Last rehab year', 'Surface type'],
-      outputs: ['Structural Number (SN)', 'Pavement age (years)', 'Remaining life fraction', 'ÎIRI/year'],
+      outputs: ['Structural Number (SN)', 'Pavement age (years)', 'Remaining life fraction', 'ΔIRI/year'],
       description: 'Computes AASHTO structural numbers from pavement design records. Pavement age and rehabilitation history used as deterioration state variables in HDM-4 calibrated models.',
     },
   },
@@ -188,23 +188,23 @@ const NODES: NodeDef[] = [
     detail: {
       algorithm: 'NBI component rating aggregation',
       trainingSize: '546 structures',
-      accuracy: 'Component rating 0â9 scale',
+      accuracy: 'Component rating 0–9 scale',
       inputs: ['Deck/superstructure/substructure ratings', 'ADT', 'Year built', 'Span length'],
       outputs: ['Structure Health Index (SHI)', 'Load capacity ratio', 'Remaining service life'],
       description: 'Aggregates NBI component ratings into a Structure Health Index. Combines with load capacity, age, and strategic importance for priority ranking and maintenance trigger models.',
     },
   },
 
-  // ââ ML Models (column 3) ââ
+  // ── ML Models (column 3) ──
   {
     id: 'model_hdm4', layer: 'model', label: 'HDM-4 Deterioration', sublabel: 'IRI progression model',
     x: 56, y: 14,
     detail: {
       algorithm: 'HDM-4 calibrated CRCP/AMGB models',
       trainingSize: 'ROMDAS 2018, 2021, 2023 time series',
-      accuracy: 'RMSE 0.72 m/km IRI, RÂ² = 0.81',
-      inputs: ['IRIâ', 'SN', 'MESAL', 'Rainfall', 'Age'],
-      outputs: ['IRI forecast 1â7 years', 'Maintenance trigger year', 'Treatment need'],
+      accuracy: 'RMSE 0.72 m/km IRI, R² = 0.81',
+      inputs: ['IRI₀', 'SN', 'MESAL', 'Rainfall', 'Age'],
+      outputs: ['IRI forecast 1–7 years', 'Maintenance trigger year', 'Treatment need'],
       description: 'HDM-4 road deterioration model calibrated to Uganda conditions using three survey snapshots. Predicts annual IRI progression. Uganda calibration coefficients Kcit=0.9, Kcia=1.05, Kcp=1.1.',
     },
   },
@@ -213,15 +213,15 @@ const NODES: NodeDef[] = [
     x: 56, y: 30,
     detail: {
       algorithm: 'Multi-layer perceptron (3 hidden layers, ReLU)',
-      trainingSize: '267k records, 2016â2025',
-      accuracy: 'MAE 142 veh/day, RÂ² = 0.89',
+      trainingSize: '267k records, 2016–2025',
+      accuracy: 'MAE 142 veh/day, R² = 0.89',
       inputs: ['Historical AADT', 'GDP proxy', 'Population', 'Road class', 'Season'],
-      outputs: ['AADT forecast 2025â2035', 'Peak-hour volume', 'Growth rate'],
+      outputs: ['AADT forecast 2025–2035', 'Peak-hour volume', 'Growth rate'],
       description: 'Neural network trained on decade of traffic count data. Captures non-linear GDP-traffic relationships and COVID disruption recovery pattern. 80/20 train/test split, Adam optimiser.',
     },
   },
   {
-    id: 'model_gbr', layer: 'model', label: 'GBR â ROMDAS', sublabel: 'Condition classification',
+    id: 'model_gbr', layer: 'model', label: 'GBR — ROMDAS', sublabel: 'Condition classification',
     x: 56, y: 46,
     detail: {
       algorithm: 'Gradient Boosted Regression (XGBoost)',
@@ -238,9 +238,9 @@ const NODES: NodeDef[] = [
     detail: {
       algorithm: 'Random Forest classifier (500 trees)',
       trainingSize: '546 structures, 22 features',
-      accuracy: 'Priority rank correlation Ï = 0.91',
+      accuracy: 'Priority rank correlation ρ = 0.91',
       inputs: ['SHI', 'ADT', 'Age', 'Span', 'Flood risk', 'Strategic importance'],
-      outputs: ['Priority score 0â100', 'Intervention urgency', 'Budget year allocation'],
+      outputs: ['Priority score 0–100', 'Intervention urgency', 'Budget year allocation'],
       description: 'Ensemble model combining structural condition, traffic exposure, strategic route importance, and flood risk to generate a defensible bridge priority ranking for budget allocation.',
     },
   },
@@ -251,20 +251,20 @@ const NODES: NodeDef[] = [
       algorithm: 'ResNet-50 transfer learning + custom head',
       trainingSize: '14,000 ROMDAS defect images (Uganda)',
       accuracy: 'Defect detection mAP 0.82 (IoU 0.5)',
-      inputs: ['ROMDAS forward-facing images (1920Ã1080)', 'GPS timestamp'],
+      inputs: ['ROMDAS forward-facing images (1920×1080)', 'GPS timestamp'],
       outputs: ['Defect type (cracking/pothole/rutting)', 'Severity', 'GPS bounding box'],
       description: 'Computer vision model fine-tuned on Uganda road images. Detects potholes, longitudinal cracking, transverse cracking, rutting, and edge breaks. Feeds automated defect inventory.',
     },
   },
 
-  // ââ Outputs (column 4) ââ
+  // ── Outputs (column 4) ──
   {
     id: 'out_pms', layer: 'output', label: 'PMS Outputs', sublabel: 'Condition maps & budgets',
     x: 74, y: 22,
     detail: {
       algorithm: 'Multi-year treatment optimisation (HDM-4 RDWE)',
       trainingSize: 'All 1,017 paved links',
-      accuracy: 'Budget allocation Â±8% vs expert panel',
+      accuracy: 'Budget allocation ±8% vs expert panel',
       inputs: ['IRI forecast', 'Condition band', 'Unit costs', 'Budget constraint'],
       outputs: ['5-year work programme', 'Treatment schedule by link', 'NPV/BCR per intervention'],
       description: 'Pavement Management System output: annual treatment lists, budget allocation by maintenance type (routine/periodic/rehab/emergency), network-level IRI projection under different funding scenarios.',
@@ -276,7 +276,7 @@ const NODES: NodeDef[] = [
     detail: {
       algorithm: 'Network assignment + growth factoring',
       trainingSize: 'Full 21,160 km (mapped) network',
-      accuracy: 'Link AADT Â±18% at 90% confidence',
+      accuracy: 'Link AADT ±18% at 90% confidence',
       inputs: ['MLP forecast', 'Growth factors', 'Origin-destination matrix'],
       outputs: ['2035 AADT by link', 'Cumulative ESAL map', 'Overloading risk index'],
       description: 'Traffic Information System outputs: network-wide AADT forecasts to 2035 supporting pavement design, bridge load rating, and road classification reviews.',
@@ -295,7 +295,7 @@ const NODES: NodeDef[] = [
     },
   },
 
-  // ââ Decision Support (column 5) ââ
+  // ── Decision Support (column 5) ──
   {
     id: 'dec_budget', layer: 'decision', label: 'Budget Optimisation', sublabel: 'HDM-4 RDWE scenarios',
     x: 90, y: 26,
@@ -334,7 +334,7 @@ const NODES: NodeDef[] = [
   },
 ];
 
-// ââ Edge definitions ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Edge definitions ──────────────────────────────────────────────────────────
 const EDGES = [
   ['romdas','etl_clean'], ['atc','etl_clean'], ['tis','etl_clean'],
   ['bms_data','etl_spatial'], ['gis','etl_spatial'],
@@ -370,7 +370,7 @@ const SVG_H = 520;
 
 function px(pct: number, dim: number) { return (pct / 100) * dim; }
 
-// ââ Feature importance types ââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Feature importance types ──────────────────────────────────────────────────
 interface FeatEntry { feature: string; label: string; importance_mean: number; importance_std: number }
 interface FeatModel  { model: string; metric: string; features: FeatEntry[] }
 interface FeatData   { generated_at: string; models: Record<string, FeatModel> }
@@ -417,7 +417,7 @@ function FeatureImportancePanel({ data }: { data: FeatData }) {
       <div style={{ fontSize: 10, color: '#64748b', marginBottom: 14 }}>
         Metric: <span style={{ color: '#94a3b8' }}>{modelData.metric}</span>
         <span style={{ marginLeft: 12 }}>
-          Higher bar = larger RÂ² / accuracy drop when feature is shuffled = more important
+          Higher bar = larger R² / accuracy drop when feature is shuffled = more important
         </span>
       </div>
 
@@ -452,13 +452,13 @@ function FeatureImportancePanel({ data }: { data: FeatData }) {
       </div>
 
       <div style={{ marginTop: 14, fontSize: 9, color: '#475569' }}>
-        Permutation importance Â· 10 repeats Â· 20% validation split Â· Generated {data.generated_at}
+        Permutation importance · 10 repeats · 20% validation split · Generated {data.generated_at}
       </div>
     </div>
   );
 }
 
-// ââ Main component ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Main component ────────────────────────────────────────────────────────────
 export default function MLArchitectureDiagram() {
   const [selected, setSelected] = useState<NodeDef | null>(null);
   const [view, setView] = useState<'arch' | 'flow' | 'importance'>('arch');
@@ -490,7 +490,7 @@ export default function MLArchitectureDiagram() {
 
       <CrossLinkChipBar sectionId="hdm4" />
 
-      {/* ââ Header ââ */}
+      {/* ── Header ── */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '14px 18px', borderBottom: `1px solid ${C.border}`,
         background: 'rgba(0,0,0,0.25)' }}>
@@ -506,7 +506,7 @@ export default function MLArchitectureDiagram() {
               Asset Management ML Engine
             </div>
             <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.6)' }}>
-              Uganda National Road Network Â· Department of National Roads DNR
+              Uganda National Road Network · Department of National Roads DNR
             </div>
           </div>
         </div>
@@ -528,7 +528,7 @@ export default function MLArchitectureDiagram() {
         </div>
       </div>
 
-      {/* ââ Legend ââ */}
+      {/* ── Legend ── */}
       {view !== 'importance' && (
         <div style={{ display: 'flex', gap: 16, padding: '8px 18px',
           borderBottom: `1px solid ${C.border}`, flexWrap: 'wrap' }}>
@@ -546,7 +546,7 @@ export default function MLArchitectureDiagram() {
         </div>
       )}
 
-      {/* ââ Feature Importance view ââ */}
+      {/* ── Feature Importance view ── */}
       {view === 'importance' && (
         featData
           ? <div>
@@ -556,11 +556,11 @@ export default function MLArchitectureDiagram() {
               <FeatureImportancePanel data={featData} />
             </div>
           : <div style={{ padding: 40, textAlign: 'center', color: '#475569', fontSize: 12 }}>
-              Loading feature importance dataâ¦
+              Loading feature importance data…
             </div>
       )}
 
-      {/* ââ SVG diagram ââ */}
+      {/* ── SVG diagram ── */}
       <div style={{ position: 'relative', overflowX: 'auto',
         display: view === 'importance' ? 'none' : 'block' }}>
         <svg width={SVG_W} height={SVG_H} viewBox={`0 0 ${SVG_W} ${SVG_H}`}
@@ -592,7 +592,7 @@ export default function MLArchitectureDiagram() {
             `}</style>
           </defs>
 
-          {/* ââ Edges ââ */}
+          {/* ── Edges ── */}
           {EDGES.map(([a, b]) => {
             const na = nodeMap[a], nb = nodeMap[b];
             if (!na || !nb) return null;
@@ -627,7 +627,7 @@ export default function MLArchitectureDiagram() {
             );
           })}
 
-          {/* ââ Nodes ââ */}
+          {/* ── Nodes ── */}
           {NODES.map(n => {
             const nx = px(n.x, SVG_W);
             const ny = px(n.y, SVG_H);
@@ -697,7 +697,7 @@ export default function MLArchitectureDiagram() {
         </svg>
       </div>
 
-      {/* ââ Detail panel (slide-in) ââ */}
+      {/* ── Detail panel (slide-in) ── */}
       {selected && (
         <div style={{
           position: 'absolute', top: 0, right: 0, bottom: 0, width: 340,
