@@ -6,27 +6,18 @@
  *   - Bus at legal weight: 1.6 ESALs → overloaded +10%: 2.34 ESALs
  *   - Risk index = min(100, heavy_veh_per_day / 1000 × 100) × surface/class multipliers
  */
-import { useEffect, useState, useCallback, useMemo } from 'react';
-import {
-  MapContainer, TileLayer, ZoomControl, GeoJSON,
-} from 'react-leaflet';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import { useEffect, useState, useMemo } from 'react';
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis,
   CartesianGrid, Tooltip, Cell,
-  PieChart, Pie, Legend,
+  PieChart, Pie,
 } from 'recharts';
 import { Truck, AlertTriangle, Info, Activity } from 'lucide-react';
 import {
   REGION_NEON, Bar3D, Chart3DWrap, TT_NEON, TICK,
 } from '../../lib/chart3d';
-import { ESRI_TILE_URLS, ESRI_ATTRIBUTIONS } from '../../shared/mapSymbols';
-import { InfraLayers } from '../../shared/InfraLayers';
 import { ModuleNavBar } from '../../shared/ModuleNavBar';
-import MapDetailPane, { StatCard, AttributeRow, SectionHeader } from '../../shared/MapDetailPane';
 import SourceTableButton from '../../shared/SourceTableButton';
-import SectionDashboard from '../Dashboard/SectionDashboard';
 
 // ── Risk colour palette ───────────────────────────────────────────────────────
 const RISK_COLOR: Record<string, string> = {
@@ -78,37 +69,6 @@ interface OverloadingSummary {
   overloading_by_region:   RegionRow[];
   top_overloaded_links:    LinkRow[];
   link_risk_map:           Record<string, LinkRisk>;
-}
-
-// ── Leaflet risk map layer ────────────────────────────────────────────────────
-function RiskLayer({
-  features, linkRiskMap, onSelect,
-}: {
-  features: any[];
-  linkRiskMap: Record<string, LinkRisk>;
-  onSelect: (feat: any) => void;
-}) {
-  const styleF = useCallback((feat?: any) => {
-    if (!feat?.properties) return {};
-    const lid   = feat.properties.link_id ?? '';
-    const lr    = linkRiskMap[lid];
-    const color = lr ? (RISK_COLOR[lr.rc] ?? '#94a3b8') : '#475569';
-    const rc    = feat.properties.road_class ?? '';
-    const weight = rc === 'A' ? 3.5 : rc === 'B' ? 2.5 : rc === 'M' ? 4 : 2;
-    return { color, weight, opacity: 0.88, fillOpacity: 0 };
-  }, [linkRiskMap]);
-
-  const onEach = useCallback((feat: any, layer: L.Layer) => {
-    const path = layer as L.Path;
-    path.on({
-      click:     () => onSelect(feat.properties),
-      mouseover: (e: L.LeafletMouseEvent) => (e.target as L.Path).setStyle({ weight: 5, opacity: 1 }),
-      mouseout:  (e: L.LeafletMouseEvent) => (e.target as L.Path).setStyle(styleF(feat) as L.PathOptions),
-    });
-  }, [onSelect, styleF]);
-
-  const geo = useMemo(() => ({ type: 'FeatureCollection' as const, features }), [features]);
-  return <GeoJSON data={geo as any} style={styleF as any} onEachFeature={onEach as any} />;
 }
 
 // ── KPI neon card (ATC-style) ─────────────────────────────────────────────────
@@ -487,112 +447,5 @@ export default function OverloadingSection() {
       </div>
 
     </div>
-  );
-}
-
-// ─── Reusable detail pane for Overloading ────────────────────────────────────
-function OverloadingDetailPane({
-  riskDist, top20, kpis, selected, onClose,
-}: {
-  riskDist: Record<string, number>;
-  top20: any[];
-  kpis?: { total_links: number; total_links_with_risk?: number; total_overloaded_links?: number; total_esals_daily?: number };
-  selected: any | null;
-  onClose: () => void;
-}) {
-  const accent = '#ef4444';
-  const totalRisk = (riskDist.Critical ?? 0) + (riskDist.High ?? 0) + (riskDist.Medium ?? 0) + (riskDist.Low ?? 0);
-
-  const renderDefault = (
-    <div>
-      <StatCard label="Total Risk Links" value={totalRisk.toLocaleString()} unit="links" color={accent}
-        sub={`across ${kpis?.total_links?.toLocaleString() ?? 'N'} surveyed`} />
-      {kpis?.total_esals_daily && (
-        <StatCard label="Daily ESALs" value={Math.round(kpis.total_esals_daily).toLocaleString()} unit="standard axles/day"
-          color="#f97316" sub="Network-wide overloaded ESALs" />
-      )}
-
-      <SectionHeader title="Risk Distribution" accent={accent} />
-      {(['Critical','High','Medium','Low'] as const).map(cat => {
-        const c = RISK_COLOR[cat] ?? '#94a3b8';
-        const n = riskDist[cat] ?? 0;
-        const pct = totalRisk ? (n/totalRisk)*100 : 0;
-        return (
-          <div key={cat} style={{ marginBottom:5, fontSize:9.5 }}>
-            <div style={{ display:'flex', justifyContent:'space-between' }}>
-              <span style={{ color: c, fontWeight:700 }}>{cat}</span>
-              <span style={{ color: c, fontWeight:800 }}>{n}</span>
-            </div>
-            <div style={{ height:3, background:'rgba(255,255,255,0.06)', borderRadius:2, marginTop:2 }}>
-              <div style={{ width:`${pct}%`, height:'100%', background: c, borderRadius:2 }}/>
-            </div>
-          </div>
-        );
-      })}
-
-      <SectionHeader title="Top 5 Worst Links" accent={accent} />
-      {top20.slice(0,5).map((l, i) => (
-        <div key={l.link_id ?? i} style={{
-          padding:'6px 8px', marginBottom:3, fontSize:9.5,
-          background:'rgba(239,68,68,0.05)', border:'1px solid rgba(239,68,68,0.15)',
-          borderLeft:'3px solid #ef4444', borderRadius:6,
-        }}>
-          <div style={{ display:'flex', justifyContent:'space-between' }}>
-            <span style={{ color:'#e2eaf4', fontWeight:700, fontFamily:'monospace', fontSize:9 }}>
-              #{i+1} {l.link_id ?? '-'}
-            </span>
-            <span style={{ color:'#fb923c', fontWeight:800 }}>{l.idx?.toFixed(0) ?? '-'}</span>
-          </div>
-          {l.link_name && (
-            <div style={{ color:'#94a3b8', fontSize:8.5, marginTop:1 }}>{l.link_name}</div>
-          )}
-        </div>
-      ))}
-    </div>
-  );
-
-  return (
-    <MapDetailPane
-      defaultContent={renderDefault}
-      selectedFeature={selected}
-      onClose={onClose}
-      defaultTitle="Overloading Risk"
-      defaultSubtitle="Click a road link to inspect"
-      selectedTitle="Link Detail"
-      width={300}
-      accent={accent}
-      renderFeature={(p: any) => {
-        const rc = p?.rc ?? 'Low';
-        const c = RISK_COLOR[rc] ?? '#94a3b8';
-        return (
-          <div>
-            <div style={{ fontSize:12.5, fontWeight:800, color:'#e2eaf4', marginBottom:4 }}>
-              {p?.link_name ?? p?.link_id ?? '-'}
-            </div>
-            <div style={{ fontSize:9, color:'rgba(148,163,184,0.7)', marginBottom:10, fontFamily:'monospace' }}>
-              {p?.link_id ?? ''}
-            </div>
-
-            <StatCard label="Risk Category" value={rc} color={c} />
-            <StatCard label="Risk Index" value={p?.idx?.toFixed(1) ?? '-'} unit="/ 100" color={c}
-              sub={p?.idx > 60 ? 'Severe road damage risk' : p?.idx > 30 ? 'Elevated damage' : 'Low–moderate'} />
-
-            <SectionHeader title="Loading Metrics" accent={accent} />
-            <AttributeRow label="Heavy Vehicle %" value={`${p?.hpct?.toFixed(1) ?? '-'}%`} color="#f59e0b" mono />
-            <AttributeRow label="Daily ESALs" value={p?.esal?.toLocaleString(undefined,{maximumFractionDigits:0}) ?? '-'} color="#fb923c" mono />
-            <AttributeRow label="Risk Category" value={rc} color={c} />
-
-            <div style={{
-              marginTop:12, padding:'8px 10px', borderRadius:6,
-              background: `${c}11`, border: `1px solid ${c}44`,
-              fontSize:9.5, color:'#94a3b8', lineHeight:1.5,
-            }}>
-              ESAL methodology - SATCC/TRH4 (4th-power damage law).
-              Overloaded HGVs at +25% impose 5.86 ESALs vs 2.4 ESALs legal.
-            </div>
-          </div>
-        );
-      }}
-    />
   );
 }
