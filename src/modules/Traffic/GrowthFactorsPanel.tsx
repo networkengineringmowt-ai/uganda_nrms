@@ -653,7 +653,7 @@ export default function GrowthFactorsPanel() {
         </div>
         <SeasonalBars
           data={data.seasonal_factors}
-          regions={visibleRegions.slice(0, 5)}
+          regions={visibleRegions}
           selectedYear={effectiveYear}
           selectedVC={selectedVC}
         />
