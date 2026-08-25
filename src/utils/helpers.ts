@@ -182,7 +182,7 @@ export function addMonths(dateStr: string, months: number): string {
 }
 
 export function formatDate(dateStr: string): string {
-  if (!dateStr) return '—';
+  if (!dateStr) return '-';
   try {
     return new Date(dateStr).toLocaleDateString('en-UG', {
       day: '2-digit', month: 'short', year: 'numeric',

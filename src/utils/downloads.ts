@@ -1,5 +1,5 @@
 /**
- * Download helpers — CSV, GeoJSON, KML, and pre-built shapefile ZIPs.
+ * Download helpers - CSV, GeoJSON, KML, and pre-built shapefile ZIPs.
  * All geospatial exports are built client-side from app state, matching
  * the server-generated files in /public/downloads/.
  */
@@ -101,7 +101,7 @@ export function downloadKML(structures: Structure[], filename = 'structures.kml'
 <kml xmlns="http://www.opengis.net/kml/2.2">
 <Document>
   <name>Uganda National Road Structures</name>
-  <description>Department of National Roads Bridge and Major Culvert Inventory — ${structures.length} structures</description>
+  <description>Department of National Roads Bridge and Major Culvert Inventory - ${structures.length} structures</description>
 ${placemarks}
 </Document>
 </kml>`;
