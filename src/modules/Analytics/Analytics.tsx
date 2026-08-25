@@ -56,14 +56,14 @@ export default function Analytics() {
       const w = window.open('', '_blank');
       if (!w) return;
       const tabLabel = TABS.find(t => t.id === tab)?.label ?? tab;
-      w.document.write(`<!DOCTYPE html><html><head><title>Department of National Roads Analytics — ${tabLabel}</title>
+      w.document.write(`<!DOCTYPE html><html><head><title>Department of National Roads Analytics - ${tabLabel}</title>
         <style>
           body { margin:0; background:#0f172a; display:flex; flex-direction:column; align-items:center; padding:32px; font-family:sans-serif; color:#e2e8f0; }
           h1 { font-size:18px; margin-bottom:8px; }
           p  { font-size:12px; color:#64748b; margin-bottom:24px; }
           img{ max-width:100%; border-radius:12px; }
         </style></head><body>
-        <h1>Department of National Roads Bridge Management System — ${tabLabel}</h1>
+        <h1>Department of National Roads Bridge Management System - ${tabLabel}</h1>
         <p>Generated ${new Date().toLocaleString()} · ${structures.length.toLocaleString()} structures</p>
         <img src="${dataUrl}" />
         <script>window.onload=()=>window.print();</script>
@@ -191,7 +191,7 @@ export default function Analytics() {
             <div style={{ fontSize:10, color:'rgba(148,163,184,0.55)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.08em' }}>IRI · PCI · HDM-4 · Cost · Radar Analysis</div>
           </div>
         </div>
-        <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>Multi-dimensional pavement analytics for Uganda's road network — condition distribution analysis, pavement age profiling, maintenance cost modelling, regional performance comparison, and multi-indicator radar assessment supporting evidence-based investment decisions.</p>
+        <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>Multi-dimensional pavement analytics for Uganda's road network - condition distribution analysis, pavement age profiling, maintenance cost modelling, regional performance comparison, and multi-indicator radar assessment supporting evidence-based investment decisions.</p>
         <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
           {["IRI Analysis","PCI Scoring","Age Profiling","Cost Modelling","Regional Radar","HDM-4 Based"].map((b: string)=>(
             <span key={b} style={{ fontSize:9, fontWeight:700, color:`rgb(${color})`, background:`rgba(${color},0.07)`, border:`1px solid rgba(${color},0.18)`, borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
@@ -452,9 +452,9 @@ function RegionTab(_props: { roadData: any[] }) {
       const bridges = sts.filter(st => st.type === 'bridge');
       const culverts = sts.filter(st => st.type !== 'bridge');
       return {
-        link_id: l.link_id, link_name: l.link_name ?? '—',
-        road_class: l.road_class ?? '—', length_km: l.length_km,
-        region: l.maintenance_region ?? '—',
+        link_id: l.link_id, link_name: l.link_name ?? '-',
+        road_class: l.road_class ?? '-', length_km: l.length_km,
+        region: l.maintenance_region ?? '-',
         nBridges: bridges.length, nCulverts: culverts.length,
         critical: sts.filter(st => st.conditionRating === 1).length,
         poor: sts.filter(st => st.conditionRating === 2).length,
@@ -479,7 +479,7 @@ function RegionTab(_props: { roadData: any[] }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
         <div style={{ flex: 1, minWidth: 200 }}>
           <div style={{ fontWeight: 800, color: '#e2eaf4', fontSize: 13 }}>
-            Structures by Road Link — all {links.length.toLocaleString()} links
+            Structures by Road Link - all {links.length.toLocaleString()} links
           </div>
           <div style={{ fontSize: 9.5, color: 'rgba(148,163,184,0.55)' }}>
             Bridges &amp; major culverts on each FY25-26 network link · {state.structures.length.toLocaleString()} structures matched by link name
@@ -503,13 +503,13 @@ function RegionTab(_props: { roadData: any[] }) {
                 <td style={{ ...TD, color: '#00f5ff', fontFamily: 'monospace', fontSize: 9.5 }}>{r.link_id}</td>
                 <td style={{ ...TD, whiteSpace: 'normal', maxWidth: 240 }}>{r.link_name}</td>
                 <td style={{ ...TD, color: '#ffd23f', fontWeight: 700 }}>{r.road_class}</td>
-                <td style={TD}>{r.length_km != null ? Number(r.length_km).toFixed(1) : '—'}</td>
+                <td style={TD}>{r.length_km != null ? Number(r.length_km).toFixed(1) : '-'}</td>
                 <td style={TD}>{r.region}</td>
-                <td style={{ ...TD, color: '#4d9fff', fontWeight: 800 }}>{r.nBridges || '—'}</td>
-                <td style={{ ...TD, color: '#00d4aa', fontWeight: 800 }}>{r.nCulverts || '—'}</td>
-                <td style={{ ...TD, color: r.critical ? '#ff2d78' : TD.color as string, fontWeight: 700 }}>{r.critical || '—'}</td>
-                <td style={{ ...TD, color: r.poor ? '#f97316' : TD.color as string, fontWeight: 700 }}>{r.poor || '—'}</td>
-                <td style={{ ...TD, whiteSpace: 'normal', maxWidth: 340, fontSize: 9.5, color: 'rgba(148,163,184,0.75)' }}>{r.names || '—'}</td>
+                <td style={{ ...TD, color: '#4d9fff', fontWeight: 800 }}>{r.nBridges || '-'}</td>
+                <td style={{ ...TD, color: '#00d4aa', fontWeight: 800 }}>{r.nCulverts || '-'}</td>
+                <td style={{ ...TD, color: r.critical ? '#ff2d78' : TD.color as string, fontWeight: 700 }}>{r.critical || '-'}</td>
+                <td style={{ ...TD, color: r.poor ? '#f97316' : TD.color as string, fontWeight: 700 }}>{r.poor || '-'}</td>
+                <td style={{ ...TD, whiteSpace: 'normal', maxWidth: 340, fontSize: 9.5, color: 'rgba(148,163,184,0.75)' }}>{r.names || '-'}</td>
               </tr>
             ))}
           </tbody>
