@@ -525,19 +525,19 @@ export default function PredictionsPanel() {
             },
             {
               label: 'Est. peak corridor',
-              value: liveKpis?.maxVph ? `${liveKpis.maxVph.toLocaleString()}` : '—',
+              value: liveKpis?.maxVph ? `${liveKpis.maxVph.toLocaleString()}` : '-',
               sub:   liveKpis?.peakFeature?.properties.link_name ?? 'Loading…',
               color: C.orange, icon: <TrendingUp size={16}/>,
             },
             {
               label: 'Links congested now',
-              value: liveKpis ? String(liveKpis.congestedCount) : '—',
+              value: liveKpis ? String(liveKpis.congestedCount) : '-',
               sub:   `High + Critical · ${features.length} links total`,
               color: C.pink, icon: <AlertTriangle size={16}/>,
             },
             {
               label: 'Network load now',
-              value: liveKpis ? `${((liveKpis.totalVph) / 1000).toFixed(0)}k` : '—',
+              value: liveKpis ? `${((liveKpis.totalVph) / 1000).toFixed(0)}k` : '-',
               sub:   'Total veh/hr across all links',
               color: C.cyan, icon: <Activity size={16}/>,
             },
@@ -564,19 +564,19 @@ export default function PredictionsPanel() {
           {[
             {
               label: 'Vehicle-km/day',
-              value: forecastKpis ? `${((forecastKpis.totalVkm)/1e6).toFixed(0)}M` : '—',
+              value: forecastKpis ? `${((forecastKpis.totalVkm)/1e6).toFixed(0)}M` : '-',
               sub:   `Network total · ${forecastYr}`,
               color: C.cyan, icon: <Activity size={16}/>,
             },
             {
               label: 'Links at Capacity Risk',
-              value: forecastKpis ? `${forecastKpis.pctRisk}%` : '—',
+              value: forecastKpis ? `${forecastKpis.pctRisk}%` : '-',
               sub:   `High + Critical (${forecastKpis?.atRisk ?? 0} links)`,
               color: C.pink, icon: <AlertTriangle size={16}/>,
             },
             {
               label: 'Highest Growth Corridor',
-              value: topCorridor ? `+${Math.round((topCorridor.aadt_2040 / topCorridor.aadt_2025 - 1)*100)}%` : '—',
+              value: topCorridor ? `+${Math.round((topCorridor.aadt_2040 / topCorridor.aadt_2025 - 1)*100)}%` : '-',
               sub:   topCorridor?.link_name ?? 'Loading…',
               color: C.green, icon: <TrendingUp size={16}/>,
             },
@@ -729,7 +729,7 @@ export default function PredictionsPanel() {
                       <td style={{ padding:'6px 10px', fontWeight:700, color:'#fff' }}>{linksAtLevel}</td>
                       <td style={{ padding:'6px 10px', color:'rgba(148,163,184,0.7)' }}>{pct}%</td>
                       <td style={{ padding:'6px 10px', color:'rgba(148,163,184,0.5)', fontSize:9 }}>
-                        {level === 'Critical' ? 'A/M class priority' : level === 'High' ? 'B class review' : '—'}
+                        {level === 'Critical' ? 'A/M class priority' : level === 'High' ? 'B class review' : '-'}
                       </td>
                       <td style={{ padding:'6px 10px', fontSize:9, color:'rgba(148,163,184,0.6)' }}>{action}</td>
                     </tr>
