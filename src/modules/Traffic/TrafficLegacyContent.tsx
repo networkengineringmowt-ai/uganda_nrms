@@ -1,7 +1,7 @@
 /**
- * TrafficSection — Traffic Map view.
- *   Left sidebar  (280 px) — KPIs, sparkline, class-spread chart, station counts
- *   Right main    — controls bar + Leaflet map + timeline bar
+ * TrafficSection - Traffic Map view.
+ *   Left sidebar  (280 px) - KPIs, sparkline, class-spread chart, station counts
+ *   Right main    - controls bar + Leaflet map + timeline bar
  *
  * ATC enhancements (May 2026):
  *   • Custom pulsing divIcon markers for ATC stations (cyan glow rings)
@@ -13,7 +13,7 @@
  */
 import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import {
-  MapContainer, TileLayer, ZoomControl, GeoJSON,
+  MapContainer, TileLayer, GeoJSON,
   Marker, Tooltip as LeafletTooltip,
 } from 'react-leaflet';
 import L from 'leaflet';
@@ -45,9 +45,10 @@ import FeatureAnalyticsPanel from '../../shared/FeatureAnalyticsPanel';
 import type { FeatureData, RoadLinkFeature, AtcStationFeature } from '../../shared/FeatureAnalyticsPanel';
 import { ROAD_STYLES, ESRI_TILE_URLS, ESRI_ATTRIBUTIONS } from '../../shared/mapSymbols';
 import { MapLegend as MapOverlayLegend, LEGEND_TRAFFIC } from '../../shared/MapLegend';
+import MapGISControls, { UGANDA_BOUNDS } from '../../shared/MapGISControls';
 import SourceTableButton from '../../shared/SourceTableButton';
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
-// ModuleNavBar removed — global Header handles section title
+// ModuleNavBar removed - global Header handles section title
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type MapMode    = 'adt' | 'surface' | 'class';
@@ -75,7 +76,7 @@ const ATC_NEW_COUNT    = 10;   // post-2025 new sites
 const ATC_TOTAL        = ATC_LEGACY_COUNT + ATC_NEW_COUNT;  // 25
 // TIS manual stations come from atc_stations.geojson (298 features)
 
-// ─── Uganda road growth index — BASE YEAR 2016 = 1.00 (all traffic statistics
+// ─── Uganda road growth index - BASE YEAR 2016 = 1.00 (all traffic statistics
 // are anchored to the 2016 base year; source growth_factors_summary 2016-2024,
 // projected beyond). Forward projection uses per-class compound growth.
 const GROWTH_FACTORS: Record<number, number> = {
@@ -84,7 +85,7 @@ const GROWTH_FACTORS: Record<number, number> = {
   2028: 1.87, 2029: 1.97, 2030: 2.06, 2031: 2.15, 2032: 2.24, 2033: 2.32,
   2034: 2.40, 2035: 2.50,
 };
-// aadt_predicted is anchored at the current year — scale a year's 2016-base
+// aadt_predicted is anchored at the current year - scale a year's 2016-base
 // factor relative to the current year's factor when projecting it.
 const gfTo = (y: number) =>
   (GROWTH_FACTORS[y] ?? 1) / (GROWTH_FACTORS[CURRENT_YEAR] ?? 1);
@@ -320,7 +321,7 @@ const KPI_GLASS: React.CSSProperties = {
 
 // ─── Link × Class table ────────────────────────────────────────────────────────
 function LinkClassTable({ features, surfMap: _surfMap }: { features: PredFeature[]; surfMap: Record<string, string> }) {
-  // BASE YEAR 2016 — all traffic statistics are anchored to 2016. The TIS
+  // BASE YEAR 2016 - all traffic statistics are anchored to 2016. The TIS
   // readings (2025 survey) are back-cast to 2016 per vehicle class, then
   // projected to the CURRENT INSTANT (fractional year, ticking every second).
   const BASE_YEAR = 2016;
@@ -346,14 +347,14 @@ function LinkClassTable({ features, surfMap: _surfMap }: { features: PredFeature
       <div style={{ marginBottom: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
           <div style={{ fontSize: 15, fontWeight: 900, color: '#e2eaf4' }}>
-            Traffic by Road Link × Vehicle Class — Now-cast to the Current Instant
+            Traffic by Road Link × Vehicle Class - Now-cast to the Current Instant
           </div>
           <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.55)', marginTop: 3 }}>
             Base year {BASE_YEAR} · TIS {TIS_YEAR} readings back-cast to {BASE_YEAR} per class · compound growth applied · {features.length} links · sorted by total ↓
           </div>
           <div style={{ fontSize: 9.5, fontWeight: 700, color: '#00ff88', marginTop: 3 }}>
             <span className="animate-pulse" style={{ display:'inline-block', width:6, height:6, borderRadius:'50%', background:'#00ff88', marginRight:5 }} />
-            LIVE — projected to {new Date().toLocaleString('en-GB')} (reporting instant {nowT.toFixed(7)})
+            LIVE - projected to {new Date().toLocaleString('en-GB')} (reporting instant {nowT.toFixed(7)})
           </div>
         </div>
         <SourceTableButton anchor="tbl-010" />
@@ -371,7 +372,7 @@ function LinkClassTable({ features, surfMap: _surfMap }: { features: PredFeature
               <th style={{ textAlign: 'right', padding: '6px 8px', color: '#94a3b8', fontWeight: 700, whiteSpace: 'nowrap' }} title="AADT at the 2016 base year (TIS reading back-cast per class)">AADT 2016</th>
               <th style={{ textAlign: 'right', padding: '6px 8px', color: '#94a3b8', fontWeight: 700, whiteSpace: 'nowrap' }} title="Blended class-weighted growth p.a.">Growth %</th>
               {VCOLS.map(vc => (
-                <th key={vc.label} style={{ textAlign: 'right', padding: '6px 5px', color: vc.color, fontWeight: 700, minWidth: 50, whiteSpace: 'nowrap' }} title={`${vc.label} — now-cast to the current instant`}>{vc.short}</th>
+                <th key={vc.label} style={{ textAlign: 'right', padding: '6px 5px', color: vc.color, fontWeight: 700, minWidth: 50, whiteSpace: 'nowrap' }} title={`${vc.label} - now-cast to the current instant`}>{vc.short}</th>
               ))}
               <th style={{ textAlign: 'right', padding: '6px 10px', color: C.teal, fontWeight: 800, whiteSpace: 'nowrap' }} title="AADT now-cast to the current instant">ADT now</th>
             </tr>
@@ -395,10 +396,10 @@ function LinkClassTable({ features, surfMap: _surfMap }: { features: PredFeature
               return (
                 <tr key={p.link_id} style={{ background: rowBg, borderBottom: '1px solid rgba(148,163,184,0.04)' }}>
                   <td style={{ padding: '5px 10px', color: C.teal, fontFamily: 'monospace', fontWeight: 700, fontSize: 9, background: rowBg, position: 'sticky', left: 0, whiteSpace: 'nowrap' }}>{p.link_id}</td>
-                  <td style={{ padding: '5px 8px', color: '#94a3b8', maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.link_name ?? '—'}</td>
+                  <td style={{ padding: '5px 8px', color: '#94a3b8', maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.link_name ?? '-'}</td>
                   <td style={{ padding: '5px 6px', textAlign: 'center', color: clsColor, fontWeight: 800 }}>{p.road_class}</td>
-                  <td style={{ padding: '5px 8px', color: '#64748b', whiteSpace: 'nowrap' }}>{p.region ?? '—'}</td>
-                  <td style={{ padding: '5px 8px', textAlign: 'right', color: '#475569', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{p.length_km?.toFixed(1) ?? '—'}</td>
+                  <td style={{ padding: '5px 8px', color: '#64748b', whiteSpace: 'nowrap' }}>{p.region ?? '-'}</td>
+                  <td style={{ padding: '5px 8px', textAlign: 'right', color: '#475569', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{p.length_km?.toFixed(1) ?? '-'}</td>
                   <td style={{ padding: '5px 6px', textAlign: 'center', color: '#94a3b8', fontVariantNumeric: 'tabular-nums' }}>{BASE_YEAR}</td>
                   <td style={{ padding: '5px 8px', textAlign: 'right', color: '#94a3b8', fontVariantNumeric: 'tabular-nums' }}>{aadt2016.toLocaleString()}</td>
                   <td style={{ padding: '5px 8px', textAlign: 'right', color: '#fbbf24', fontVariantNumeric: 'tabular-nums', fontWeight: 700 }}>+{blendedGrowthPct.toFixed(1)}%</td>
@@ -435,7 +436,7 @@ function LinkClassTable({ features, surfMap: _surfMap }: { features: PredFeature
         </table>
       </div>
       <div style={{ marginTop: 8, fontSize: 9, color: 'rgba(148,163,184,0.4)', lineHeight: 1.6 }}>
-        <b style={{ color: '#94a3b8' }}>Method:</b> per-class compound growth — projected = base × (1+g)^(years).
+        <b style={{ color: '#94a3b8' }}>Method:</b> per-class compound growth - projected = base × (1+g)^(years).
         Class growth (p.a.): Motorcycles 6.0% · Cars/Taxis 5.0% · LGV 4.0% · Small Bus 4.0% · Medium Bus 3.0% · Large Bus 3.0% · Light Trucks 4.0% · Heavy Trucks 3.5% · Trailers 2.5% · NMT 1.0%.
       </div>
     </div>
@@ -684,7 +685,7 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
       </div>
       )}
 
-      {/* ══ Sub-tab bar — Counts & Analysis ══════════════════════════════════ */}
+      {/* ══ Sub-tab bar - Counts & Analysis ══════════════════════════════════ */}
         {activeTab === 'dashboard' && (
           <Suspense fallback={<div style={{padding:'1.5rem',color:'#00f5ff',textAlign:'center',opacity:0.7,fontSize:'12px'}}>Loading dashboard…</div>}>
             <SectionDashboard sectionId="traffic" accent="#00f5ff" />
@@ -713,7 +714,7 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
         </div>
       )}
 
-      {/* ══ Sub-tab bar — Trends & Risk ══════════════════════════════════════ */}
+      {/* ══ Sub-tab bar - Trends & Risk ══════════════════════════════════════ */}
       {activeTab === 'trends' && (
         <div style={{
           display:'flex', gap:4, padding:'6px 14px 0', flexShrink:0,
@@ -737,11 +738,11 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
         </div>
       )}
 
-      {/* ══ Map tab content — sidebar + map ═══════════════════════════════════ */}
+      {/* ══ Map tab content - sidebar + map ═══════════════════════════════════ */}
       {activeTab === 'map' &&
       <div style={{ flex: 1, minHeight: 0, display: 'flex', overflow: 'hidden' }}>
 
-      {/* ══ RIGHT — CONTROLS + MAP + TIMELINE ════════════════════════════════ */}
+      {/* ══ RIGHT - CONTROLS + MAP + TIMELINE ════════════════════════════════ */}
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
         {/* Controls bar */}
@@ -820,15 +821,15 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
         </div>
 
         {activeTab === 'map' && <>
-        {/* Map + detail pane — definitive flex-row layout: map fills space, pane is fixed-right sibling */}
+        {/* Map + detail pane - definitive flex-row layout: map fills space, pane is fixed-right sibling */}
         <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'row', overflow: 'hidden', alignItems: 'stretch' }}>
         <div style={{ flex: 1, minWidth: 0, position: 'relative', overflow: 'hidden' }}>
           <MapContainer center={[1.37, 32.3]} zoom={7} zoomControl={false}
             style={{ height: '100%', width: '100%', background: '#0a0f1e' }}>
             <TileLayer url={ESRI_TILE_URLS.imagery}   attribution={ESRI_ATTRIBUTIONS.imagery} />
             <TileLayer url={ESRI_TILE_URLS.labels}    attribution={ESRI_ATTRIBUTIONS.labels} opacity={0.7} />
-            <MapOverlayLegend title="Traffic Volume" items={LEGEND_TRAFFIC} />
-            <ZoomControl position="bottomright" />
+            <MapOverlayLegend title="Traffic Volume" items={LEGEND_TRAFFIC} position="bottomleft" />
+            <MapGISControls bounds={UGANDA_BOUNDS} accent={C.atcCyan} position="bottomright" />
 
             {filteredFeatures.length > 0 && (
               <TrafficLayer features={filteredFeatures} mode={mode}
@@ -884,7 +885,7 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
 
         </div>
 
-        {/* Feature analytics pane — flex:0 sibling to the RIGHT of the map */}
+        {/* Feature analytics pane - flex:0 sibling to the RIGHT of the map */}
         {selFeature && (
           <FeatureAnalyticsPanel feature={selFeature}
             onClose={() => setSelFeature(null)} width={340} />
@@ -1000,7 +1001,7 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
       {/* ══ Trends & Risk tab ════════════════════════════════════════════════ */}
       {activeTab === 'trends' && (
         <div style={{ flex:1, minHeight:0, display:'flex', overflow:'hidden' }}>
-      {/* ══ LEFT SIDEBAR — KPIs ════════════════════════════════════════════════ */}
+      {/* ══ LEFT SIDEBAR - KPIs ════════════════════════════════════════════════ */}
       <div style={{
         width: 280, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 8,
         padding: '10px 10px 14px',
@@ -1038,7 +1039,7 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
             fontSize: 26, fontWeight: 900, color: C.cyan, lineHeight: 1,
             textShadow: `0 0 22px rgba(0,245,255,0.4)`,
           }}>
-            {kpis ? `${Math.round(kpis.totalAdt / 1000)}k` : '—'}
+            {kpis ? `${Math.round(kpis.totalAdt / 1000)}k` : '-'}
           </div>
           <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.42)', marginTop: 3 }}>
             vehicles / day · {features.length} survey nodes
@@ -1055,7 +1056,7 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
             fontSize: 26, fontWeight: 900, color: C.green, lineHeight: 1,
             textShadow: `0 0 22px rgba(0,255,136,0.4)`,
           }}>
-            {kpis ? `+${kpis.growthRatio.toFixed(0)}%` : '—'}
+            {kpis ? `+${kpis.growthRatio.toFixed(0)}%` : '-'}
           </div>
           <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.42)', marginTop: 3 }}>
             ML-modelled forecast to 2040
@@ -1131,7 +1132,7 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
           }}>Surface Paving Index</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{ fontSize: 22, fontWeight: 900, color: C.purple, lineHeight: 1 }}>
-              {kpis ? `${kpis.pavingIndex.toFixed(0)}%` : '—'}
+              {kpis ? `${kpis.pavingIndex.toFixed(0)}%` : '-'}
             </div>
             <div style={{
               flex: 1, height: 7, background: 'rgba(185,103,255,0.1)',
@@ -1167,17 +1168,17 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
             {trendsTab === 'analytics'     && (
               <div style={{ flex: 1, overflowY: 'auto', background: '#0a0f1e', padding: '14px 18px' }}>
                 <div style={{ marginBottom: 14 }}>
-                  <div style={{ fontSize: 15, fontWeight: 900, color: '#e2eaf4' }}>Traffic Analytics — National Network</div>
+                  <div style={{ fontSize: 15, fontWeight: 900, color: '#e2eaf4' }}>Traffic Analytics - National Network</div>
                   <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.55)', marginTop: 2 }}>
                     AADT trends 2016–2025 · vehicle class composition · regional distribution · TIS / ATC data
                   </div>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 16 }}>
                   {[
-                    { label: 'Network AADT (avg)', value: kpis ? `${Math.round(kpis.avgAadt).toLocaleString()}` : '—', color: '#00f5ff', sub: 'vehicles / day / link' },
+                    { label: 'Network AADT (avg)', value: kpis ? `${Math.round(kpis.avgAadt).toLocaleString()}` : '-', color: '#00f5ff', sub: 'vehicles / day / link' },
                     { label: 'Survey Nodes', value: features.length.toLocaleString(), color: '#00d4aa', sub: 'links with TIS count' },
                     { label: 'TIS Stations', value: tcsStations.length.toString(), color: '#ffd23f', sub: 'manual + ATC' },
-                    { label: 'Growth 2025→2040', value: kpis ? `+${kpis.growthRatio.toFixed(0)}%` : '—', color: '#00ff88', sub: 'ML forecast' },
+                    { label: 'Growth 2025→2040', value: kpis ? `+${kpis.growthRatio.toFixed(0)}%` : '-', color: '#00ff88', sub: 'ML forecast' },
                   ].map(k => (
                     <div key={k.label} style={{ background:'rgba(8,8,8,0.55)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:10, padding:'12px 14px' }}>
                       <div style={{ fontSize:8, fontWeight:700, color:'rgba(148,163,184,0.45)', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:4 }}>{k.label}</div>
@@ -1188,7 +1189,7 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
                 </div>
                 <div style={{ background:'rgba(8,8,8,0.55)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:10, padding:'12px 14px', marginBottom:12 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
-                    <div style={{ fontSize:11, fontWeight:800, color:'#e2eaf4' }}>Vehicle Class Composition — Uganda National Average (TIS 2025)</div>
+                    <div style={{ fontSize:11, fontWeight:800, color:'#e2eaf4' }}>Vehicle Class Composition - Uganda National Average (TIS 2025)</div>
                     <SourceTableButton anchor="tbl-009" />
                   </div>
                   <div style={{ display:'flex', flexDirection:'column', gap:5 }}>
@@ -1245,17 +1246,17 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
                       background: i % 2 === 0 ? 'rgba(15,15,15,0.3)' : 'transparent',
                     }}>
                       <td style={{ padding: '5px 10px', color: C.yellow, fontFamily: 'monospace', fontSize: 8, whiteSpace: 'nowrap' }}>{s.tcs_no}</td>
-                      <td style={{ padding: '5px 10px', color: '#e2eaf4', fontWeight: 600 }}>{s.tcs_name ?? '—'}</td>
-                      <td style={{ padding: '5px 10px', color: '#94a3b8', fontFamily: 'monospace' }}>{s.road_no ?? '—'}</td>
-                      <td style={{ padding: '5px 10px', color: C.teal, fontFamily: 'monospace', fontSize: 8 }}>{s.link_id ?? '—'}</td>
-                      <td style={{ padding: '5px 10px', color: '#64748b', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.link_name ?? '—'}</td>
-                      <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{s.station ?? '—'}</td>
+                      <td style={{ padding: '5px 10px', color: '#e2eaf4', fontWeight: 600 }}>{s.tcs_name ?? '-'}</td>
+                      <td style={{ padding: '5px 10px', color: '#94a3b8', fontFamily: 'monospace' }}>{s.road_no ?? '-'}</td>
+                      <td style={{ padding: '5px 10px', color: C.teal, fontFamily: 'monospace', fontSize: 8 }}>{s.link_id ?? '-'}</td>
+                      <td style={{ padding: '5px 10px', color: '#64748b', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.link_name ?? '-'}</td>
+                      <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{s.station ?? '-'}</td>
                       <td style={{ padding: '5px 10px' }}>
-                        <span style={{ color: REGION_CLR[s.region ?? ''] ?? '#94a3b8' }}>{s.region ?? '—'}</span>
+                        <span style={{ color: REGION_CLR[s.region ?? ''] ?? '#94a3b8' }}>{s.region ?? '-'}</span>
                       </td>
                       <td style={{ padding: '5px 10px' }}>
                         <span style={{ color: s.surface === 'Bituminous' ? C.cyan : C.amber, fontWeight: 600 }}>
-                          {s.surface === 'Bituminous' ? 'Paved' : s.surface ?? '—'}
+                          {s.surface === 'Bituminous' ? 'Paved' : s.surface ?? '-'}
                         </span>
                       </td>
                     </tr>
@@ -1422,8 +1423,8 @@ function RoadSafetyPanel() {
               <tbody>
                 {blackspots.map((bs, i) => (
                   <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                    <td style={{ padding: '5px 8px', color: 'rgba(226,232,240,0.85)' }}>{(bs['road_name'] as string) || '—'}</td>
-                    <td style={{ padding: '5px 8px', color: 'rgba(148,163,184,0.65)' }}>{(bs['road_number'] as string) || '—'}</td>
+                    <td style={{ padding: '5px 8px', color: 'rgba(226,232,240,0.85)' }}>{(bs['road_name'] as string) || '-'}</td>
+                    <td style={{ padding: '5px 8px', color: 'rgba(148,163,184,0.65)' }}>{(bs['road_number'] as string) || '-'}</td>
                     <td style={{ padding: '5px 8px', color: '#ef4444', fontWeight: 600 }}>{(bs['accident_count'] as number) || 0}</td>
                     <td style={{ padding: '5px 8px', color: '#dc2626', fontWeight: 600 }}>{(bs['fatality_count'] as number) || 0}</td>
                   </tr>
@@ -1435,7 +1436,7 @@ function RoadSafetyPanel() {
       </div>
 
       <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.28)', marginTop: 2 }}>
-        Source: road_accidents · road_blackspots — Supabase · Uganda NTIS Road Safety Module
+        Source: road_accidents · road_blackspots - Supabase · Uganda NTIS Road Safety Module
       </div>
     </div>
   );

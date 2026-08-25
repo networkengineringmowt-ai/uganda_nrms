@@ -1,5 +1,5 @@
 /**
- * TrafficProjectionTable — ADT by vehicle class per link, 2016 to 2040.
+ * TrafficProjectionTable - ADT by vehicle class per link, 2016 to 2040.
  * Uses trafficProjection.ts per-class growth rates.
  * Base AADT is 2019 survey year (or 2026 estimate). Columns: per-5-year snapshot + full range CSV.
  */
@@ -69,7 +69,7 @@ export default function TrafficProjectionTable() {
             road_class: rc,
             region:     String(p.region ?? 'Central'),
             length_km:  Number(p.length_km ?? 10),
-            // base year 2016 for all traffic statistics — class synthetic base
+            // base year 2016 for all traffic statistics - class synthetic base
             // deflated from the 2019 calibration by blended growth (1.042^3)
             base_aadt:  Math.round(classBaseAadt(rc, i) / 1.131),
             base_year:  2016,
@@ -161,7 +161,7 @@ export default function TrafficProjectionTable() {
         <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', gap:10, flexWrap:'wrap', marginBottom:10 }}>
           <div>
             <div style={{ fontSize:15, fontWeight:800, color:'#e2eaf4', marginBottom:3 }}>
-              ADT by Vehicle Class — 2016 to 2040
+              ADT by Vehicle Class - 2016 to 2040
             </div>
             <div style={{ fontSize:10, color:'rgba(148,163,184,0.55)' }}>
               {links.length.toLocaleString()} road links · base year 2016 · per-class compound growth (TIS annual rates) ·
@@ -198,7 +198,7 @@ export default function TrafficProjectionTable() {
         </div>
       </div>
 
-      {/* Table — fixed-height virtualized scroll container, sticky header */}
+      {/* Table - fixed-height virtualized scroll container, sticky header */}
       <div ref={containerRef} className="dt-scroll">
         <table style={{ fontSize:10, borderCollapse:'collapse', minWidth:1200 }}>
           <thead style={{ position:'sticky', top:0, background:'rgba(15,15,15,0.97)', zIndex:2 }}>

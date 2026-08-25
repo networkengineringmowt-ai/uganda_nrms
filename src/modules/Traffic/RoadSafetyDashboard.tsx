@@ -1,8 +1,8 @@
 /**
- * RoadSafetyDashboard — Road Safety sub-tab for the TIS/Traffic section.
+ * RoadSafetyDashboard - Road Safety sub-tab for the TIS/Traffic section.
  * Queries: road_accidents, road_blackspots
  * Shows: KPI row, severity breakdown chart, top-5 blackspots table, YoY trend.
- * Security: aggregate stats only — no individual records, no lat/lng as KPI/chart axes.
+ * Security: aggregate stats only - no individual records, no lat/lng as KPI/chart axes.
  * Graceful degradation: shows "No data available yet" if tables are absent or empty.
  */
 import { useEffect, useState, useCallback } from 'react';
@@ -111,10 +111,10 @@ async function fetchSafetyData(): Promise<SafetyData | null> {
   // Top-5 blackspots
   const blackspots = bsRows
     .map(b => ({
-      name:      b.road_name ?? b.road_link_id ?? '—',
-      district:  b.district ?? '—',
+      name:      b.road_name ?? b.road_link_id ?? '-',
+      district:  b.district ?? '-',
       accidents: Number(b.accident_count ?? 0),
-      severity:  b.severity_score != null ? String(Number(b.severity_score).toFixed(1)) : '—',
+      severity:  b.severity_score != null ? String(Number(b.severity_score).toFixed(1)) : '-',
     }))
     .sort((a, b) => b.accidents - a.accidents)
     .slice(0, 5);
@@ -223,10 +223,10 @@ function BlackspotTable({ spots }: { spots: { name: string; district: string; ac
         <tbody>
           {spots.map((s, i) => (
             <tr key={i} style={{ background: i % 2 ? 'rgba(255,255,255,0.02)' : 'transparent' }}>
-              <td style={{ padding: '7px 12px', color: '#d1d5db', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name ?? '—'}</td>
-              <td style={{ padding: '7px 12px', color: 'rgba(148,163,184,0.65)' }}>{s.district ?? '—'}</td>
-              <td style={{ padding: '7px 12px', color: C.red, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{s.accidents ?? '—'}</td>
-              <td style={{ padding: '7px 12px', color: 'rgba(148,163,184,0.65)' }}>{s.severity ?? '—'}</td>
+              <td style={{ padding: '7px 12px', color: '#d1d5db', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name ?? '-'}</td>
+              <td style={{ padding: '7px 12px', color: 'rgba(148,163,184,0.65)' }}>{s.district ?? '-'}</td>
+              <td style={{ padding: '7px 12px', color: C.red, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{s.accidents ?? '-'}</td>
+              <td style={{ padding: '7px 12px', color: 'rgba(148,163,184,0.65)' }}>{s.severity ?? '-'}</td>
             </tr>
           ))}
         </tbody>

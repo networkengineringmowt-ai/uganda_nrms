@@ -1,5 +1,5 @@
 /**
- * SeasonalFactorsTable — Monthly expansion factors (MEF) per region and road class.
+ * SeasonalFactorsTable - Monthly expansion factors (MEF) per region and road class.
  * Uganda has two rainy seasons (MAM + OND) producing distinct seasonal traffic patterns.
  * MEF < 1.0 = below-average month; MEF > 1.0 = above-average month.
  */
@@ -25,7 +25,7 @@ interface MEFRow {
 }
 
 const MEF_DATA: MEFRow[] = [
-  // National average — All vehicles
+  // National average - All vehicles
   { region:'National', class:'All',        annualGrowthRate:4.2, baseYear:2016,
     factors:[0.91,0.93,0.97,1.03,1.05,1.04,1.06,1.08,1.04,1.01,0.97,0.91] },
   // By region
@@ -112,7 +112,7 @@ export default function SeasonalFactorsTable() {
         <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', flexWrap:'wrap', gap:10, marginBottom:12 }}>
           <div>
             <div style={{ fontSize:15, fontWeight:800, color:'#e2eaf4', marginBottom:3 }}>
-              Seasonal & Monthly Expansion Factors (MEF) — Uganda National Roads
+              Seasonal & Monthly Expansion Factors (MEF) - Uganda National Roads
             </div>
             <div style={{ fontSize:10, color:'rgba(148,163,184,0.55)' }}>
               Monthly expansion factors relative to annual average (1.00 = annual average).
