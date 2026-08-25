@@ -1,8 +1,8 @@
 /* ─── EchoFX Theme Styles ──────────────────────────────────────────────────
- * Used by src/shared/EchoFX.tsx — AmbientParticles, useEchoRipple, useMetallizeObserver
+ * Used by src/shared/EchoFX.tsx - AmbientParticles, useEchoRipple, useMetallizeObserver
  * ──────────────────────────────────────────────────────────────────────────── */
 
-/* Ambient particle canvas — full-bleed behind all content */
+/* Ambient particle canvas - full-bleed behind all content */
 .echo-particles {
   position: fixed;
   inset: 0;
@@ -13,7 +13,7 @@
   opacity: 0.35;
 }
 
-/* Ripple host — clipping container */
+/* Ripple host - clipping container */
 .echo-ripple {
   position: relative;
   overflow: hidden;
