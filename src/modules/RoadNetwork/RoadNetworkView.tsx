@@ -1,7 +1,7 @@
 /**
- * RoadNetworkView â Uganda National Road Network
+ * RoadNetworkView — Uganda National Road Network
  * Features:
- *  - Animated timeline 1960â2026 showing road paving progression
+ *  - Animated timeline 1960–2026 showing road paving progression
  *  - Paved (cyan) vs Unsealed (amber) clear symbology
  *  - Play/pause with adjustable speed
  *  - Road Network Dashboard with accurate statistics
@@ -33,7 +33,7 @@ import SourceTableButton from '../../shared/SourceTableButton';
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
 import { BotHighlightContext } from '../AssetBot/types';
 
-// ââ Types ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Types ──────────────────────────────────────────────────────────────────────
 interface LinkProps {
   link_id:   string;
   link_name: string;
@@ -64,7 +64,7 @@ interface NdpivData {
   by_region: Record<string, { paved: number; unsealed: number; links: number }>;
 }
 
-// ââ Colour palette ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Colour palette ────────────────────────────────────────────────────────────
 const C = {
   paved:   '#00f5ff',   // neon cyan  (charts/stats only)
   unsealed:'#ff8c00',  // amber-orange (charts/stats only)
@@ -72,7 +72,7 @@ const C = {
   glass:   'rgba(6,13,24,0.88)',
 };
 
-// ââ Road line symbology â sourced from shared/mapSymbols.ts ââââââââââââââââââ
+// ── Road line symbology — sourced from shared/mapSymbols.ts ──────────────────
 // ROAD_STYLES and surfaceCategory are imported above; use them directly.
 // Local alias for brevity within this module.
 const ROAD_SYM    = ROAD_STYLES;                         // { paved, unpaved, unknown, shimmer }
@@ -89,17 +89,17 @@ const REGION_COLORS: Record<string,string> = {
 const CLASS_COLORS: Record<string,string> = { A:'#ff3366', B:'#ff6b35', C:'#ffd23f', M:'#b967ff' };
 const CLASS_WEIGHT: Record<string,number> = { A:4, B:3, C:2, M:2.5 };
 
-// ââ Infrastructure overlay data âââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Infrastructure overlay data ───────────────────────────────────────────────
 interface InfraPoint { id: string; name: string; lat: number; lng: number; [k: string]: unknown }
 
 const FERRIES: InfraPoint[] = [
-  { id:'F01', name:'Bukakata Ferry',    lat: 0.1494, lng:31.9039, route:'Bukakata â Bussi Island',  capacity:'2 trucks', lake:'L. Victoria' },
-  { id:'F02', name:'Nakiwogo Ferry',    lat: 0.0875, lng:32.4789, route:'Nakiwogo â Lutoboka',       capacity:'2 trucks', lake:'L. Victoria' },
-  { id:'F03', name:'Wanseko Ferry',     lat: 2.1892, lng:31.3922, route:'Wanseko â Panyimur',        capacity:'1 truck',  lake:'L. Albert'   },
+  { id:'F01', name:'Bukakata Ferry',    lat: 0.1494, lng:31.9039, route:'Bukakata – Bussi Island',  capacity:'2 trucks', lake:'L. Victoria' },
+  { id:'F02', name:'Nakiwogo Ferry',    lat: 0.0875, lng:32.4789, route:'Nakiwogo – Lutoboka',       capacity:'2 trucks', lake:'L. Victoria' },
+  { id:'F03', name:'Wanseko Ferry',     lat: 2.1892, lng:31.3922, route:'Wanseko – Panyimur',        capacity:'1 truck',  lake:'L. Albert'   },
   { id:'F04', name:'Laropi Ferry',      lat: 3.5228, lng:31.8736, route:'Laropi (Nile crossing)',    capacity:'2 trucks', lake:'Nile'         },
-  { id:'F05', name:'Obongi Ferry',      lat: 3.5128, lng:31.5736, route:'Obongi â Wadelai',          capacity:'1 truck',  lake:'Nile'         },
+  { id:'F05', name:'Obongi Ferry',      lat: 3.5128, lng:31.5736, route:'Obongi – Wadelai',          capacity:'1 truck',  lake:'Nile'         },
   { id:'F06', name:'Pakwach Ferry',     lat: 2.4589, lng:31.4939, route:'Pakwach (Nile)',            capacity:'2 trucks', lake:'Nile'         },
-  { id:'F07', name:'Kaiso-Tonya Ferry', lat: 1.5003, lng:30.7428, route:'Kaiso â Tonya (L.Albert)',  capacity:'1 truck',  lake:'L. Albert'   },
+  { id:'F07', name:'Kaiso-Tonya Ferry', lat: 1.5003, lng:30.7428, route:'Kaiso – Tonya (L.Albert)',  capacity:'1 truck',  lake:'L. Albert'   },
 ];
 const WEIGHBRIDGES: InfraPoint[] = [
   { id:'WB01', name:'Malaba WB',      lat: 0.6425, lng:34.2108, road:'A109', capacity:'80 t', status:'Operational' },
@@ -136,17 +136,17 @@ const PORTS: InfraPoint[] = [
   { id:'PT05', name:'Kaiso-Tonya Port', lat: 1.4903, lng:30.7428, lake:'L. Albert',   type:'Ferry Terminal',              operator:'Marine Department' },
 ];
 
-// ââ Icon helpers (infra) ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Icon helpers (infra) ──────────────────────────────────────────────────────
 const infraIconCache = new Map<string, L.DivIcon>();
 function getInfraIconSize(zoom: number): number { return Math.max(14, Math.min(30, Math.round(6 + zoom * 1.5))); }
 function makeInfraIcon(type: 'ferry'|'weighbridge'|'airport'|'port', sz: number): L.DivIcon {
   const key = `${type}|${sz}`;
   if (infraIconCache.has(key)) return infraIconCache.get(key)!;
   const cfgs: Record<string,{g:[string,string];s:string;l:string}> = {
-    ferry:       { g:['#60a5fa','#1e3a8a'], s:'#bfdbfe', l:'â' },
-    weighbridge: { g:['#fcd34d','#92400e'], s:'#fef3c7', l:'â' },
-    airport:     { g:['#c084fc','#4c1d95'], s:'#ede9fe', l:'â' },
-    port:        { g:['#34d399','#064e3b'], s:'#d1fae5', l:'âµ' },
+    ferry:       { g:['#60a5fa','#1e3a8a'], s:'#bfdbfe', l:'⚓' },
+    weighbridge: { g:['#fcd34d','#92400e'], s:'#fef3c7', l:'⚖' },
+    airport:     { g:['#c084fc','#4c1d95'], s:'#ede9fe', l:'✈' },
+    port:        { g:['#34d399','#064e3b'], s:'#d1fae5', l:'⛵' },
   };
   const c = cfgs[type]; const id = `rni${type}${sz}`;
   const html = `<svg viewBox="0 0 24 24" width="${sz}" height="${sz}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;display:block">
@@ -164,7 +164,7 @@ function makeInfraIcon(type: 'ferry'|'weighbridge'|'airport'|'port', sz: number)
   return icon;
 }
 
-// ââ Structure icon helpers (bridges & culverts) âââââââââââââââââââââââââââââââ
+// ── Structure icon helpers (bridges & culverts) ───────────────────────────────
 const structIconCache = new Map<string, L.DivIcon>();
 
 function makeRNBridgeIcon(critical: boolean, _sz: number): L.DivIcon {
@@ -191,7 +191,7 @@ function makeRNCulvertIcon(critical: boolean, _sz: number): L.DivIcon {
   return icon;
 }
 
-// ââ Zoom tracker (inside MapContainer) âââââââââââââââââââââââââââââââââââââââ
+// ── Zoom tracker (inside MapContainer) ───────────────────────────────────────
 function ZoomWatcher({ onZoom }: { onZoom: (z: number) => void }) {
   const map = useMap();
   useEffect(() => {
@@ -202,12 +202,12 @@ function ZoomWatcher({ onZoom }: { onZoom: (z: number) => void }) {
   return null;
 }
 
-// ââ Timeline config ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Timeline config ────────────────────────────────────────────────────────────
 const ANIM_MIN = 1960;
 const ANIM_MAX = 2026;
 const ANIM_STEP = 1;
 
-// ââ Main component âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Main component ─────────────────────────────────────────────────────────────
 export default function RoadNetworkView() {
   // Data
   const [geoData,    setGeoData]    = useState<GeoJSON.FeatureCollection | null>(null);
@@ -253,7 +253,7 @@ export default function RoadNetworkView() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const geoRef   = useRef<L.GeoJSON | null>(null);
 
-  // ââ Load data ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Load data ────────────────────────────────────────────────────────────────
   useEffect(() => {
     Promise.all([
       fetch(`${import.meta.env.BASE_URL}road_network.geojson`).then(r => r.json()),
@@ -273,7 +273,7 @@ export default function RoadNetworkView() {
     }).catch(() => setLoading(false));
   }, []);
 
-  // ââ Playback âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Playback ─────────────────────────────────────────────────────────────────
   useEffect(() => {
     if (timerRef.current) clearInterval(timerRef.current);
     if (playing && animMode) {
@@ -287,7 +287,7 @@ export default function RoadNetworkView() {
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [playing, speed, animMode]);
 
-  // ââ Network stats at current anim year ââââââââââââââââââââââââââââââââââââââââ
+  // ── Network stats at current anim year ────────────────────────────────────────
   const yearStats = useMemo(() => {
     if (!geoData || !storyData) return null;
     const cp = storyData.cumulative_paved;
@@ -303,7 +303,7 @@ export default function RoadNetworkView() {
     return { pavKm: Math.min(pavKm, totalKm), unsKm: Math.max(unsKm, 0), totalKm, pavPct: (pavKm / totalKm * 100) };
   }, [animYear, geoData, storyData]);
 
-  // ââ Current-mode stats ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Current-mode stats ────────────────────────────────────────────────────────
   const currentStats = useMemo(() => {
     if (!geoData) return null;
     let totalKm = 0, pavKm = 0, unsKm = 0;
@@ -320,7 +320,7 @@ export default function RoadNetworkView() {
     return { totalKm, pavKm, unsKm, byClass, byRegion };
   }, [geoData]);
 
-  // ââ Style each feature âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Style each feature ─────────────────────────────────────────────────────────
   const styleFeature = useCallback((feature?: GeoJSON.Feature): L.PathOptions => {
     if (!feature) return {};
     const p = feature.properties as LinkProps;
@@ -353,7 +353,7 @@ export default function RoadNetworkView() {
     return { color, weight: CLASS_WEIGHT[p.road_class] ?? 2, opacity: 0.88 };
   }, [animMode, animYear, paveYears, colorBy, surfFilter, clsFilter, regFilter, highlightedLinks]);
 
-  // ââ Shimmer layer â only renders on paved roads in surface/history modes ââââââ
+  // ── Shimmer layer — only renders on paved roads in surface/history modes ──────
   const styleFeatureShimmer = useCallback((feature?: GeoJSON.Feature): L.PathOptions => {
     if (!feature) return {};
     const p = feature.properties as LinkProps;
@@ -405,9 +405,9 @@ export default function RoadNetworkView() {
         <div style="font-weight:800;font-family:monospace;font-size:12px;color:#111827;border-bottom:1.5px solid #e5e7eb;padding-bottom:3px;margin-bottom:3px">${p.link_id}</div>
         ${p.link_name ? `<div style="font-size:9px;color:#6b7280;font-weight:500;margin-bottom:4px">${p.link_name}</div>` : ''}
         <table style="font-size:10px;border-collapse:collapse;width:100%">
-          <tr><td style="color:#6b7280;padding-right:10px;font-weight:500">Class</td><td style="color:#1d4ed8;font-weight:800">${p.road_class ?? 'â'}</td></tr>
-          <tr><td style="color:#6b7280;font-weight:500">Surface</td><td style="color:${p.surface==='Bituminous'?'#1d4ed8':'#b45309'};font-weight:700">${p.surface ?? 'â'}</td></tr>
-          <tr><td style="color:#6b7280;font-weight:500">Region</td><td style="color:#111827;font-weight:700">${p.region ?? 'â'}</td></tr>
+          <tr><td style="color:#6b7280;padding-right:10px;font-weight:500">Class</td><td style="color:#1d4ed8;font-weight:800">${p.road_class ?? '—'}</td></tr>
+          <tr><td style="color:#6b7280;font-weight:500">Surface</td><td style="color:${p.surface==='Bituminous'?'#1d4ed8':'#b45309'};font-weight:700">${p.surface ?? '—'}</td></tr>
+          <tr><td style="color:#6b7280;font-weight:500">Region</td><td style="color:#111827;font-weight:700">${p.region ?? '—'}</td></tr>
           <tr><td style="color:#6b7280;font-weight:500">Length</td><td style="color:#111827;font-weight:700">${Number(p.length_km).toFixed(1)} km</td></tr>
         </table>
       </div>
@@ -423,13 +423,13 @@ export default function RoadNetworkView() {
     return [...s].sort();
   }, [geoData]);
 
-  // ââ Render ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Render ────────────────────────────────────────────────────────────────────
   return (
     <div style={{ display:'flex', flexDirection:'column', height:'100%', background: C.bgVoid, overflow:'hidden' }}>
       <CrossLinkChipBar sectionId="roadnetwork" />
     <div style={{ flex:1, display:'flex', overflow:'hidden', position:'relative' }}>
 
-      {/* ââ MAP âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ */}
+      {/* ══ MAP ═══════════════════════════════════════════════════════════════ */}
       <div style={{ flex:1, position:'relative', minWidth:0 }}>
         {loading && (
           <div style={{ position:'absolute', inset:0, zIndex:2000, display:'flex',
@@ -439,8 +439,8 @@ export default function RoadNetworkView() {
               <div style={{ width:32, height:32, border:'2px solid rgba(0,245,255,0.2)',
                 borderTopColor:'#00f5ff', borderRadius:'50%',
                 animation:'spin-slow 1s linear infinite', margin:'0 auto 12px' }}/>
-              <div style={{ fontSize:13, fontWeight:700 }}>Loading road networkâ¦</div>
-              <div style={{ fontSize:10, color:'rgba(0,245,255,0.5)', marginTop:4 }}>1,017 links mapped Â· {networkSummary?.official_total_km?.toLocaleString() || '21,302'} km official</div>
+              <div style={{ fontSize:13, fontWeight:700 }}>Loading road network…</div>
+              <div style={{ fontSize:10, color:'rgba(0,245,255,0.5)', marginTop:4 }}>1,017 links mapped · {networkSummary?.official_total_km?.toLocaleString() || '21,302'} km official</div>
             </div>
           </div>
         )}
@@ -472,7 +472,7 @@ export default function RoadNetworkView() {
                 onEachFeature={(f: unknown, l: L.Layer) => onEachFeature(f as GeoJSON.Feature, l)}
                 ref={geoRef as React.RefObject<L.GeoJSON>}
               />
-              {/* Shimmer highlight â paved roads only, rendered above base */}
+              {/* Shimmer highlight — paved roads only, rendered above base */}
               <GeoJSON
                 key={`${geojsonKey}-shimmer`}
                 data={geoData as GeoJSON.GeoJsonObject}
@@ -480,55 +480,55 @@ export default function RoadNetworkView() {
               />
             </>
           )}
-          {/* ââ Ferries ââ */}
+          {/* ── Ferries ── */}
           {showFerries && FERRIES.map(f => (
             <Marker key={f.id} position={[f.lat, f.lng]} icon={makeInfraIcon('ferry', getInfraIconSize(mapZoom))}>
               <LeafletTooltip direction="top" offset={[0,-10]} opacity={1}>
                 <div style={{fontSize:12,fontWeight:900,color:'#111827',marginBottom:2}}>{f.name}</div>
-                <div style={{fontSize:10,fontWeight:700,color:'#1d4ed8'}}>â Ferry Crossing</div>
+                <div style={{fontSize:10,fontWeight:700,color:'#1d4ed8'}}>⚓ Ferry Crossing</div>
                 <div style={{fontSize:10,fontWeight:600,color:'#374151',marginTop:2}}>
-                  Route: {f.route as string}<br/>Capacity: {f.capacity as string} Â· {f.lake as string}
+                  Route: {f.route as string}<br/>Capacity: {f.capacity as string} · {f.lake as string}
                 </div>
               </LeafletTooltip>
             </Marker>
           ))}
-          {/* ââ Weighbridges ââ */}
+          {/* ── Weighbridges ── */}
           {showWeighbridges && WEIGHBRIDGES.map(w => (
             <Marker key={w.id} position={[w.lat, w.lng]} icon={makeInfraIcon('weighbridge', getInfraIconSize(mapZoom))}>
               <LeafletTooltip direction="top" offset={[0,-10]} opacity={1}>
                 <div style={{fontSize:12,fontWeight:900,color:'#111827',marginBottom:2}}>{w.name}</div>
-                <div style={{fontSize:10,fontWeight:700,color:'#d97706'}}>â Weighbridge Station</div>
+                <div style={{fontSize:10,fontWeight:700,color:'#d97706'}}>⚖ Weighbridge Station</div>
                 <div style={{fontSize:10,fontWeight:600,color:'#374151',marginTop:2}}>
-                  Road: {w.road as string} Â· Cap: {w.capacity as string} Â· {w.status as string}
+                  Road: {w.road as string} · Cap: {w.capacity as string} · {w.status as string}
                 </div>
               </LeafletTooltip>
             </Marker>
           ))}
-          {/* ââ Airports ââ */}
+          {/* ── Airports ── */}
           {showAirports && AIRPORTS.map(a => (
             <Marker key={a.id} position={[a.lat, a.lng]} icon={makeInfraIcon('airport', getInfraIconSize(mapZoom))}>
               <LeafletTooltip direction="top" offset={[0,-10]} opacity={1}>
                 <div style={{fontSize:12,fontWeight:900,color:'#111827',marginBottom:2}}>{a.name}</div>
-                <div style={{fontSize:10,fontWeight:700,color:'#7c3aed'}}>â {a.type as string} Airport</div>
+                <div style={{fontSize:10,fontWeight:700,color:'#7c3aed'}}>✈ {a.type as string} Airport</div>
                 <div style={{fontSize:10,fontWeight:600,color:'#374151',marginTop:2}}>
-                  IATA: {(a.iata as string)||'â'} Â· Runway: {a.runway as string}
+                  IATA: {(a.iata as string)||'—'} · Runway: {a.runway as string}
                 </div>
               </LeafletTooltip>
             </Marker>
           ))}
-          {/* ââ Ports ââ */}
+          {/* ── Ports ── */}
           {showPorts && PORTS.map(p => (
             <Marker key={p.id} position={[p.lat, p.lng]} icon={makeInfraIcon('port', getInfraIconSize(mapZoom))}>
               <LeafletTooltip direction="top" offset={[0,-10]} opacity={1}>
                 <div style={{fontSize:12,fontWeight:900,color:'#111827',marginBottom:2}}>{p.name}</div>
-                <div style={{fontSize:10,fontWeight:700,color:'#0891b2'}}>âµ {p.type as string}</div>
+                <div style={{fontSize:10,fontWeight:700,color:'#0891b2'}}>⛵ {p.type as string}</div>
                 <div style={{fontSize:10,fontWeight:600,color:'#374151',marginTop:2}}>
-                  {p.lake as string} Â· {p.operator as string}
+                  {p.lake as string} · {p.operator as string}
                 </div>
               </LeafletTooltip>
             </Marker>
           ))}
-          {/* ââ Bridges & Culverts ââ */}
+          {/* ── Bridges & Culverts ── */}
           {showStructures && mapZoom >= 10 && structures.map(s => {
             const isCritical = s.conditionRating === 1;
             const isBridge   = s.type === 'bridge';
@@ -541,10 +541,10 @@ export default function RoadNetworkView() {
                 <LeafletTooltip direction="top" offset={[0, -8]} opacity={1}>
                   <div style={{fontSize:12,fontWeight:900,color:'#111827',marginBottom:2}}>{s.name}</div>
                   <div style={{fontSize:10,fontWeight:700,color: isBridge ? '#0891b2' : '#b45309'}}>
-                    {isBridge ? 'ð Bridge' : 'ðµ Major Culvert'} Â· {s.road}
+                    {isBridge ? '🌉 Bridge' : '🔵 Major Culvert'} · {s.road}
                   </div>
                   <div style={{fontSize:10,fontWeight:600,color:'#374151',marginTop:2}}>
-                    {s.spanLength} m span Â· {s.noOfSpans} span{s.noOfSpans !== 1 ? 's' : ''} Â·{' '}
+                    {s.spanLength} m span · {s.noOfSpans} span{s.noOfSpans !== 1 ? 's' : ''} ·{' '}
                     Cond: <span style={{color: isCritical ? '#dc2626' : '#166534', fontWeight:800}}>
                       {['','Critical','Poor','Fair','Good','Excellent'][s.conditionRating]}
                     </span>
@@ -555,7 +555,7 @@ export default function RoadNetworkView() {
           })}
         </MapContainer>
 
-        {/* ââ Map top-left legend/controls ââ */}
+        {/* ── Map top-left legend/controls ── */}
         <div style={{ position:'absolute', top:12, left:12, zIndex:999, display:'flex', flexDirection:'column', gap:8 }}>
 
           {/* Mode toggle */}
@@ -654,10 +654,10 @@ export default function RoadNetworkView() {
             <div style={sectionHead}>Infrastructure Layers</div>
             {(
               [
-                { key:'ferry',       label:'Ferry Crossings', show:showFerries,      toggle:()=>setShowFerries(v=>!v),      color:'#60a5fa', rgb:'96,165,250',  icon:<span style={{fontSize:13}}>â</span> },
-                { key:'weighbridge', label:'Weighbridges',    show:showWeighbridges, toggle:()=>setShowWeighbridges(v=>!v), color:'#fcd34d', rgb:'252,211,77',  icon:<span style={{fontSize:13}}>â</span> },
-                { key:'airport',     label:'Airports',        show:showAirports,     toggle:()=>setShowAirports(v=>!v),     color:'#c084fc', rgb:'192,132,252', icon:<span style={{fontSize:13}}>â</span> },
-                { key:'port',        label:'Ports',           show:showPorts,        toggle:()=>setShowPorts(v=>!v),        color:'#34d399', rgb:'52,211,153',  icon:<span style={{fontSize:13}}>âµ</span> },
+                { key:'ferry',       label:'Ferry Crossings', show:showFerries,      toggle:()=>setShowFerries(v=>!v),      color:'#60a5fa', rgb:'96,165,250',  icon:<span style={{fontSize:13}}>⚓</span> },
+                { key:'weighbridge', label:'Weighbridges',    show:showWeighbridges, toggle:()=>setShowWeighbridges(v=>!v), color:'#fcd34d', rgb:'252,211,77',  icon:<span style={{fontSize:13}}>⚖</span> },
+                { key:'airport',     label:'Airports',        show:showAirports,     toggle:()=>setShowAirports(v=>!v),     color:'#c084fc', rgb:'192,132,252', icon:<span style={{fontSize:13}}>✈</span> },
+                { key:'port',        label:'Ports',           show:showPorts,        toggle:()=>setShowPorts(v=>!v),        color:'#34d399', rgb:'52,211,153',  icon:<span style={{fontSize:13}}>⛵</span> },
                 { key:'bridge',      label:'Bridge',          show:showStructures,   toggle:()=>setShowStructures(v=>!v),   color:'#3B82F6', rgb:'59,130,246',  icon:<svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="#3B82F6" stroke="white" strokeWidth="1.5"/></svg> },
                 { key:'culvert',     label:'Culvert',         show:showStructures,   toggle:()=>setShowStructures(v=>!v),   color:'#F59E0B', rgb:'245,158,11',  icon:<svg width="12" height="12" viewBox="0 0 12 12"><rect x="1" y="1" width="10" height="10" rx="2" fill="#F59E0B" stroke="white" strokeWidth="1.5"/></svg> },
               ]
@@ -677,7 +677,7 @@ export default function RoadNetworkView() {
           </div>
         </div>
 
-        {/* ââ Animation timeline bar (bottom) ââ */}
+        {/* ── Animation timeline bar (bottom) ── */}
         {animMode && (
           <div style={{
             position:'absolute', bottom:0, left:0, right:0, zIndex:999,
@@ -721,7 +721,7 @@ export default function RoadNetworkView() {
 
                 {/* Speed */}
                 <div style={{ display:'flex', gap:3, marginLeft:8 }}>
-                  {[{l:'1Ã',v:800},{l:'2Ã',v:400},{l:'5Ã',v:160}].map(s => (
+                  {[{l:'1×',v:800},{l:'2×',v:400},{l:'5×',v:160}].map(s => (
                     <button key={s.v} onClick={() => setSpeed(s.v)} style={filterBtn(speed===s.v, '#b967ff')}>
                       {s.l}
                     </button>
@@ -735,7 +735,7 @@ export default function RoadNetworkView() {
                   <div style={{ fontSize:18, fontWeight:900, color:'#00f5ff' }}>
                     {yearStats.pavKm.toFixed(0)} km
                   </div>
-                  <div style={{ fontSize:9, color:'rgba(100,116,139,0.6)' }}>paved Â· {yearStats.pavPct.toFixed(1)}%</div>
+                  <div style={{ fontSize:9, color:'rgba(100,116,139,0.6)' }}>paved · {yearStats.pavPct.toFixed(1)}%</div>
                 </div>
               )}
             </div>
@@ -762,7 +762,7 @@ export default function RoadNetworkView() {
           </div>
         )}
 
-        {/* ââ Selected feature panel (road-link or structure) ââ */}
+        {/* ── Selected feature panel (road-link or structure) ── */}
         {(selected || selectedStructure) && (() => {
           const featureData: FeatureData | null = selected
             ? {
@@ -802,7 +802,7 @@ export default function RoadNetworkView() {
                 }}>
                   <div style={{ fontSize:9, fontWeight:800, color:'rgba(0,245,255,0.5)',
                     textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:8 }}>
-                    GeoJSON Attributes Â· {selected.link_id}
+                    GeoJSON Attributes · {selected.link_id}
                   </div>
                   <div style={{ display:'flex', flexDirection:'column', gap:2 }}>
                     {Object.entries(selectedRaw)
@@ -826,7 +826,7 @@ export default function RoadNetworkView() {
         })()}
       </div>
 
-      {/* ââ COLLAPSE TOGGLE ââââââââââââââââââââââââââââââââââââââââââââââââââ */}
+      {/* ══ COLLAPSE TOGGLE ══════════════════════════════════════════════════ */}
       <button onClick={() => setSideOpen(o => !o)} style={{
         position:'absolute', right: sideOpen ? 420 : 0, top:'50%',
         transform:'translateY(-50%)', zIndex:1001,
@@ -840,7 +840,7 @@ export default function RoadNetworkView() {
         {sideOpen ? <ChevronRight size={14}/> : <ChevronLeft size={14}/>}
       </button>
 
-      {/* ââ RIGHT PANEL â Dashboard ââââââââââââââââââââââââââââââââââââââââââ */}
+      {/* ══ RIGHT PANEL — Dashboard ══════════════════════════════════════════ */}
       {sideOpen && (
         <div style={{ width:420, flexShrink:0,
           background:'rgba(2,5,8,0.95)', backdropFilter:'blur(24px)',
@@ -864,14 +864,14 @@ export default function RoadNetworkView() {
             ))}
           </div>
 
-          {/* ââ Network stats panel ââ */}
+          {/* ── Network stats panel ── */}
           {panel === 'map' && (
             <div style={{ flex:1, overflowY:'auto', padding:16 }}>
               <NetworkStatsPanel stats={currentStats} ndpiv={ndpiv} storyData={storyData} animYear={animYear} animMode={animMode} networkSummary={networkSummary}/>
             </div>
           )}
 
-          {/* ââ Dashboard panel ââ */}
+          {/* ── Dashboard panel ── */}
           {panel === 'dashboard' && (
             <div style={{ flex:1, overflowY:'auto', padding:16 }}>
               <DashboardPanel stats={currentStats} storyData={storyData} networkSummary={networkSummary}/>
@@ -884,9 +884,9 @@ export default function RoadNetworkView() {
   );
 }
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 // Network Stats Panel
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 function NetworkStatsPanel({ stats, ndpiv, storyData, animYear, animMode, networkSummary }: {
   stats: { totalKm:number; pavKm:number; unsKm:number; byClass:Record<string,number>; byRegion:Record<string,number> } | null;
   ndpiv: NdpivData | null;
@@ -895,7 +895,7 @@ function NetworkStatsPanel({ stats, ndpiv, storyData, animYear, animMode, networ
   animMode: boolean;
   networkSummary?: { official_total_km?: number } | null;
 }) {
-  // Derive KPIs â reactive to animYear in history mode, static (inventory) in current mode
+  // Derive KPIs — reactive to animYear in history mode, static (inventory) in current mode
   const { totalKm, pavKm, unsKm, pavPct } = useMemo(() => {
     const netTotal = ndpiv?.summary.total_km ?? stats?.totalKm ?? networkSummary?.official_total_km ?? 21302;
     if (animMode && storyData) {
@@ -906,20 +906,20 @@ function NetworkStatsPanel({ stats, ndpiv, storyData, animYear, animMode, networ
       const uns   = Math.max(netTotal - pav, 0);
       return { totalKm: netTotal, pavKm: pav, unsKm: uns, pavPct: (pav / netTotal) * 100 };
     }
-    // Current mode â use authoritative inventory figures when available
+    // Current mode — use authoritative inventory figures when available
     const pav  = ndpiv?.summary.paved_km    ?? stats?.pavKm   ?? 0;
     const uns  = ndpiv?.summary.unsealed_km ?? stats?.unsKm   ?? 0;
     const pct  = ndpiv?.summary.paved_pct   ?? (stats ? stats.pavKm / stats.totalKm * 100 : 0);
     return { totalKm: netTotal, pavKm: pav, unsKm: uns, pavPct: pct };
   }, [animMode, animYear, storyData, ndpiv, stats]);
 
-  if (!stats && !ndpiv) return <div style={{ color:'rgba(100,116,139,0.5)', fontSize:12, textAlign:'center', marginTop:40 }}>Loadingâ¦</div>;
+  if (!stats && !ndpiv) return <div style={{ color:'rgba(100,116,139,0.5)', fontSize:12, textAlign:'center', marginTop:40 }}>Loading…</div>;
 
   return (
     <>
       <div style={sectionHead}>Uganda National Road Network</div>
       <div style={{ fontSize:9, color:'rgba(100,116,139,0.5)', marginBottom:14 }}>
-        {animMode ? `Historical snapshot: ${animYear}` : 'Current state Â· FY2025-26'}
+        {animMode ? `Historical snapshot: ${animYear}` : 'Current state · FY2025-26'}
       </div>
 
       {/* Summary stats */}
@@ -937,7 +937,7 @@ function NetworkStatsPanel({ stats, ndpiv, storyData, animYear, animMode, networ
       }}>
         <div style={{ fontWeight: 800, color: '#93c5fd', marginBottom: 4 }}>Coverage Note</div>
         <div style={{ display: 'flex', justifyContent: 'space-between', color: 'rgba(148,163,184,0.7)', marginBottom: 2 }}>
-          <span>GeoJSON mapped:</span><span style={{ color: '#60a5fa', fontWeight: 700 }}>21,160 km (mapped) Â· 1,017 links</span>
+          <span>GeoJSON mapped:</span><span style={{ color: '#60a5fa', fontWeight: 700 }}>21,160 km (mapped) · 1,017 links</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', color: 'rgba(148,163,184,0.7)', marginBottom: 2 }}>
           <span>Official Department of National Roads 2026:</span><span style={{ color: '#00f5ff', fontWeight: 700 }}>{networkSummary?.official_total_km?.toLocaleString() || '21,302'} km</span>
@@ -946,7 +946,7 @@ function NetworkStatsPanel({ stats, ndpiv, storyData, animYear, animMode, networ
           <span>Unmapped gap:</span><span style={{ color: '#fb923c', fontWeight: 700 }}>142 km</span>
         </div>
       </div>
-      {ndpiv && <div style={{ fontSize:8, color:'rgba(0,245,255,0.35)', marginBottom:8 }}>Network inventory Â· FY 2025/26</div>}
+      {ndpiv && <div style={{ fontSize:8, color:'rgba(0,245,255,0.35)', marginBottom:8 }}>Network inventory · FY 2025/26</div>}
 
       {/* Paved proportion bar */}
       <div style={{ marginBottom:16 }}>
@@ -964,10 +964,10 @@ function NetworkStatsPanel({ stats, ndpiv, storyData, animYear, animMode, networ
         </div>
       </div>
 
-      {/* By class â use authoritative inventory when available */}
+      {/* By class — use authoritative inventory when available */}
       <div style={{ marginBottom:16 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={sectionHead}>By Road Class Â· km Paved / Unsealed</div>
+          <div style={sectionHead}>By Road Class · km Paved / Unsealed</div>
           <SourceTableButton anchor="tbl-002" />
         </div>
         {(ndpiv
@@ -996,10 +996,10 @@ function NetworkStatsPanel({ stats, ndpiv, storyData, animYear, animMode, networ
         })}
       </div>
 
-      {/* By region â authoritative inventory figures */}
+      {/* By region — authoritative inventory figures */}
       <div style={{ marginBottom:16 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={sectionHead}>By Maintenance Region Â· Paved / Total</div>
+          <div style={sectionHead}>By Maintenance Region · Paved / Total</div>
           <SourceTableButton anchor="tbl-001" />
         </div>
         {(ndpiv
@@ -1014,7 +1014,7 @@ function NetworkStatsPanel({ stats, ndpiv, storyData, animYear, animMode, networ
               <div style={{ textAlign:'right' }}>
                 <span style={{ color:C.paved, fontSize:9, fontWeight:700 }}>{r.paved_km.toFixed(0)}</span>
                 <span style={{ color:'rgba(100,116,139,0.4)', fontSize:8 }}> / {tot.toFixed(0)} km</span>
-                <span style={{ color:'rgba(0,245,255,0.5)', fontSize:8 }}> Â· {(r.paved_km/tot*100).toFixed(0)}%</span>
+                <span style={{ color:'rgba(0,245,255,0.5)', fontSize:8 }}> · {(r.paved_km/tot*100).toFixed(0)}%</span>
               </div>
             </div>
             <div style={{ height:5, background:'rgba(255,255,255,0.05)', borderRadius:3, overflow:'hidden' }}>
@@ -1029,9 +1029,9 @@ function NetworkStatsPanel({ stats, ndpiv, storyData, animYear, animMode, networ
   );
 }
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-// Dashboard Panel â detailed stats + charts
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
+// Dashboard Panel — detailed stats + charts
+// ─────────────────────────────────────────────────────────────────────────────
 function DashboardPanel({ stats, storyData, networkSummary }: {
   stats: { totalKm:number; pavKm:number; unsKm:number; byClass:Record<string,number>; byRegion:Record<string,number> } | null;
   storyData: { cumulative_paved: CumulativeEntry[]; by_region: RegionEntry[] } | null;
@@ -1048,11 +1048,11 @@ function DashboardPanel({ stats, storyData, networkSummary }: {
       {/* KPIs */}
       <div style={sectionHead}>Road Network Dashboard</div>
       <div style={{ fontSize:9, color:'rgba(100,116,139,0.5)', marginBottom:12 }}>
-        FY2025-26 Â· Uganda National Roads Â· DNR/MoWT
+        FY2025-26 · Uganda National Roads · DNR/MoWT
       </div>
 
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginBottom:16 }}>
-        <KpiCard val={(networkSummary?.official_total_km || 21302).toLocaleString()} unit="km" label="Total Network" sub="1,018 links Â· National inventory FY25-26" color="#00f5ff"/>
+        <KpiCard val={(networkSummary?.official_total_km || 21302).toLocaleString()} unit="km" label="Total Network" sub="1,018 links · National inventory FY25-26" color="#00f5ff"/>
         <KpiCard val="6,405" unit="km" label="Paved Roads" sub="30.1% of network" color="#00ff88"/>
         <KpiCard val="14,897" unit="km" label="Unsealed Roads" sub="69.9% of network" color="#ff8c00"/>
         <KpiCard val={`+${growth.toFixed(0)}%`} unit="" label="Growth Since 1986" sub={`+${(cp2025-cp1986).toFixed(0)} km paved`} color="#ffd23f"/>
@@ -1061,7 +1061,7 @@ function DashboardPanel({ stats, storyData, networkSummary }: {
       {/* Cumulative paved chart */}
       <div style={{ marginBottom:16 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={sectionHead}>Paved Road Growth 1960â2026</div>
+          <div style={sectionHead}>Paved Road Growth 1960–2026</div>
           <SourceTableButton anchor="tbl-005" />
         </div>
         <div style={{ height:140 }}>
@@ -1178,10 +1178,10 @@ function DashboardPanel({ stats, storyData, networkSummary }: {
         <div style={sectionHead}>Vision 2040 & NDP Programs</div>
         {[
           { prog:'Vision 2040',   target:'100% paved', year:'2040', color:'#ffd23f', desc:'All national roads bituminous, expressways to key cities' },
-          { prog:'NDP IV',        target:'+2,000 km',  year:'2026', color:'#00f5ff', desc:'21 major road projects Â· dual carriageways to Gulu, Mbale' },
-          { prog:'NDP III',       target:'+1,700 km',  year:'2025', color:'#00ff88', desc:'Completed Â· 5,360â6,405 km paved Â· OPRC contracts' },
-          { prog:'NDP II',        target:'+1,100 km',  year:'2020', color:'#b967ff', desc:'Completed Â· Kampala-Jinja, Northern Bypass, Kabale-Katuna' },
-          { prog:'RSDP',          target:'+900 km',    year:'2013', color:'#ff6b35', desc:'Road Sector Dev. Programme Â· World Bank co-financed' },
+          { prog:'NDP IV',        target:'+2,000 km',  year:'2026', color:'#00f5ff', desc:'21 major road projects · dual carriageways to Gulu, Mbale' },
+          { prog:'NDP III',       target:'+1,700 km',  year:'2025', color:'#00ff88', desc:'Completed · 5,360→6,405 km paved · OPRC contracts' },
+          { prog:'NDP II',        target:'+1,100 km',  year:'2020', color:'#b967ff', desc:'Completed · Kampala-Jinja, Northern Bypass, Kabale-Katuna' },
+          { prog:'RSDP',          target:'+900 km',    year:'2013', color:'#ff6b35', desc:'Road Sector Dev. Programme · World Bank co-financed' },
         ].map(p => (
           <div key={p.prog} style={{ marginBottom:8, padding:'8px 10px',
             background:`rgba(${hexRgb(p.color)},0.04)`,
@@ -1198,14 +1198,14 @@ function DashboardPanel({ stats, storyData, networkSummary }: {
 
       {/* Key milestones */}
       <div>
-        <div style={sectionHead}>Paving Milestones Â· National Road Network FY25-26</div>
+        <div style={sectionHead}>Paving Milestones · National Road Network FY25-26</div>
         {[
-          { year:1986, km:1282, label:'Liberation â 1,282 km paved' },
-          { year:1996, km:1871, label:'NRM growth â 1,871 km (+46%)' },
-          { year:2006, km:2476, label:'Department of National Roads established â 2,476 km' },
-          { year:2015, km:3927, label:'NDP II target â 3,927 km' },
-          { year:2020, km:5360, label:'NDP III â 5,360 km paved' },
-          { year:2025, km:6405, label:'Current â 6,405 km (30.1%)' },
+          { year:1986, km:1282, label:'Liberation — 1,282 km paved' },
+          { year:1996, km:1871, label:'NRM growth — 1,871 km (+46%)' },
+          { year:2006, km:2476, label:'Department of National Roads established — 2,476 km' },
+          { year:2015, km:3927, label:'NDP II target — 3,927 km' },
+          { year:2020, km:5360, label:'NDP III — 5,360 km paved' },
+          { year:2025, km:6405, label:'Current — 6,405 km (30.1%)' },
         ].map(m => (
           <div key={m.year} style={{ display:'flex', gap:10, marginBottom:8, alignItems:'flex-start' }}>
             <div style={{ fontSize:10, fontWeight:900, color:'rgba(0,245,255,0.6)',
@@ -1227,9 +1227,9 @@ function DashboardPanel({ stats, storyData, networkSummary }: {
   );
 }
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 // Small presentational components
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 const glassStyle: React.CSSProperties = {
   background: C.glass,
   backdropFilter: 'blur(20px) saturate(160%)',
@@ -1296,7 +1296,7 @@ function PField({ l, v, c, span }: { l:string; v:string; c?:string; span?:boolea
   return (
     <div style={{ gridColumn: span ? 'span 2' : undefined }}>
       <div style={{ fontSize:8, color:'rgba(100,116,139,0.6)', textTransform:'uppercase', letterSpacing:'0.06em' }}>{l}</div>
-      <div style={{ fontSize:10, fontWeight:700, marginTop:2, color: c ?? '#e2eaf4' }}>{v || 'â'}</div>
+      <div style={{ fontSize:10, fontWeight:700, marginTop:2, color: c ?? '#e2eaf4' }}>{v || '—'}</div>
     </div>
   );
 }
