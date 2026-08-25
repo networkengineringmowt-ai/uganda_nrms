@@ -1,5 +1,5 @@
 /**
- * BMSSection — Bridge Management System unified view.
+ * BMSSection - Bridge Management System unified view.
  * Main tabs: Dashboard · Structure Map · Inventory & Condition · Bridge Works.
  * Analytics, Priority Ranking and the Digital Twin live as sub-tabs under
  * Inventory & Condition (merged from the former Analytics & Digital Twin tab).
@@ -111,7 +111,7 @@ export default function BMSSection() {
               <span style={{fontSize:18,fontWeight:800,color:'rgba(14,165,233,1)',letterSpacing:-0.5}}>Bridge Management System</span>
               <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>UNRA · MoWT · NBI Protocol · Load Capacity · Inspection</span>
             </div>
-            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Comprehensive bridge management system for Uganda's national road bridges — tracking NBI condition ratings, structural load capacity, inspection schedules, and maintenance prioritisation across UNRA and MoWT managed structures.</p>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Comprehensive bridge management system for Uganda's national road bridges - tracking NBI condition ratings, structural load capacity, inspection schedules, and maintenance prioritisation across UNRA and MoWT managed structures.</p>
             <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
               {["NBI Protocol","Condition Rating","Load Capacity","UNRA / MoWT","AfDB Funded","Inspection Plan"].map(b=>(
                 <span key={b} style={{background:'rgba(14,165,233,0.12)',color:'rgba(14,165,233,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
