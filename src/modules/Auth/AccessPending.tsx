@@ -1,5 +1,5 @@
 /**
- * AccessPending — shown to an authenticated user whose Identity-Manager access
+ * AccessPending - shown to an authenticated user whose Identity-Manager access
  * is not yet `active`. `pending` = awaiting admin approval; `revoked` = blocked.
  * Polls directory status every 15s and offers a manual re-check + sign-out.
  */
@@ -47,7 +47,7 @@ export function AccessPending() {
           ) : (
             <>Your details have been submitted to the administrator for approval and
             added to the directory as <b style={{ color: accent }}>pending</b>. You'll
-            get in automatically once an admin accepts your account — this page checks
+            get in automatically once an admin accepts your account - this page checks
             every few seconds.</>
           )}
         </div>

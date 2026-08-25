@@ -1,4 +1,4 @@
-// Five access levels — per-app field capture + shared dashboard/admin tiers:
+// Five access levels - per-app field capture + shared dashboard/admin tiers:
 //  rms   → NRMS platform field data-entry ONLY (mobile-friendly capture shell)
 //  bms   → NBMS standalone field data-entry ONLY (mobile-friendly capture shell)
 //  tis   → NTIS standalone field data-entry ONLY (mobile-friendly capture shell)
@@ -21,7 +21,7 @@ export const ROLE_LABELS: Record<UserRole, string> = {
 
 /** Safe lookup: returns the label for a known role, else the raw value. */
 export function roleLabel(role?: string | null): string {
-  return (role && (ROLE_LABELS as Record<string, string>)[role]) || (role ?? '—');
+  return (role && (ROLE_LABELS as Record<string, string>)[role]) || (role ?? '-');
 }
 
 export interface User {

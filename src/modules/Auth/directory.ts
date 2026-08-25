@@ -1,5 +1,5 @@
 /**
- * directory — the "active directory" of platform users + the access-approval
+ * directory - the "active directory" of platform users + the access-approval
  * workflow. New @unra.go.ug users land as `pending` and must be approved by an
  * admin before they can use the app; admins can revoke access. Legacy roster
  * users (allowedUsers.ts) are auto-accepted and never gated.
@@ -31,7 +31,7 @@ export interface DirEntry {
   department?: string;
 }
 
-// Bootstrap admins — the ONLY accounts auto-accepted right now. Everyone else
+// Bootstrap admins - the ONLY accounts auto-accepted right now. Everyone else
 // (including other roster names) must request access and be approved by an
 // admin. To pre-approve more staff, add their @unra.go.ug emails here.
 const AUTO_ACCEPT = new Set<string>([
@@ -47,7 +47,7 @@ function readLocal(): Record<string, DirEntry> {
   try { return JSON.parse(localStorage.getItem(LOCAL_KEY) ?? '{}'); } catch { return {}; }
 }
 function writeLocal(map: Record<string, DirEntry>) {
-  try { localStorage.setItem(LOCAL_KEY, JSON.stringify(map)); } catch { /* full — ignore */ }
+  try { localStorage.setItem(LOCAL_KEY, JSON.stringify(map)); } catch { /* full - ignore */ }
 }
 function upsertLocal(e: DirEntry) {
   const m = readLocal(); m[e.email.toLowerCase()] = e; writeLocal(m);

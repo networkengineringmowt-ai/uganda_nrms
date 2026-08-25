@@ -1,11 +1,11 @@
 /**
- * auditLog — login + change trail persisted to the G: Drive repository.
+ * auditLog - login + change trail persisted to the G: Drive repository.
  *
  * Events are POSTed to the local data-entry server, which appends them to
  * logs/audit_YYYY-MM.jsonl inside the Google Drive repo (the canonical
  * store). When the server is unreachable (e.g. browsing the public GitHub
  * Pages site away from the office network), events queue in localStorage
- * and flush automatically with the next event that does reach the server —
+ * and flush automatically with the next event that does reach the server -
  * nothing is lost, delivery is just deferred.
  */
 
@@ -52,9 +52,9 @@ export function logEvent(type: AuditEvent['type'], detail?: Record<string, unkno
       if (!r.ok) throw new Error(String(r.status));
       localStorage.setItem(QUEUE_KEY, '[]');
     } catch {
-      // Server unreachable — keep the most recent events queued for later.
+      // Server unreachable - keep the most recent events queued for later.
       try { localStorage.setItem(QUEUE_KEY, JSON.stringify(pending.slice(-QUEUE_CAP))); }
-      catch { /* storage full — drop silently */ }
+      catch { /* storage full - drop silently */ }
     }
   })();
 }
