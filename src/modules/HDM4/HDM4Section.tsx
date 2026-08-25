@@ -39,10 +39,10 @@ const CALIB_DATA = [
   { param: 'Kcia',  value: 1.05, desc: 'Cracking initiation area factor',       ref: 'Department of National Roads/DNR HDM-4 Study 2023', road: 'Class A & B' },
   { param: 'Kcp',   value: 1.10, desc: 'Cracking progression factor',           ref: 'Department of National Roads/DNR HDM-4 Study 2023', road: 'Class A & B' },
   { param: 'Krt',   value: 0.95, desc: 'Rutting progression factor',            ref: 'AFCAP Uganda 2018',          road: 'High-traffic corridors' },
-  { param: 'Kgm',   value: 0.85, desc: 'Gravel loss — maintenance (unpaved)',   ref: 'Department of National Roads Gravel Study 2019',    road: 'Class C & D (unpaved)' },
-  { param: 'Kge',   value: 1.20, desc: 'Gravel loss — environmental (unpaved)', ref: 'Department of National Roads Gravel Study 2019',    road: 'Class C & D (unpaved)' },
+  { param: 'Kgm',   value: 0.85, desc: 'Gravel loss - maintenance (unpaved)',   ref: 'Department of National Roads Gravel Study 2019',    road: 'Class C & D (unpaved)' },
+  { param: 'Kge',   value: 1.20, desc: 'Gravel loss - environmental (unpaved)', ref: 'Department of National Roads Gravel Study 2019',    road: 'Class C & D (unpaved)' },
   { param: 'Kstm',  value: 1.00, desc: 'Structural rutting in top mix',        ref: 'Default (unverified)',       road: 'Bituminous' },
-  { param: 'Kvi',   value: 1.15, desc: 'Vehicle damage factor — HGV',          ref: 'SATCC/TRH4 2020',           road: 'All classes' },
+  { param: 'Kvi',   value: 1.15, desc: 'Vehicle damage factor - HGV',          ref: 'SATCC/TRH4 2020',           road: 'All classes' },
 ];
 
 // ── IRI threshold table ───────────────────────────────────────────────────────
@@ -57,13 +57,13 @@ const IRI_THRESHOLDS = [
 
 // ── Works cost matrix (Uganda FY 2024/25 MoWT unit costs) ────────────────────
 const COST_MATRIX = [
-  { type: 'Routine Maintenance', works: 'Pothole patching',          unit: 'UGX/m²', bituminous: '180,000', unpaved: '—',       note: 'Day labour, MoWT standard rates' },
+  { type: 'Routine Maintenance', works: 'Pothole patching',          unit: 'UGX/m²', bituminous: '180,000', unpaved: '-',       note: 'Day labour, MoWT standard rates' },
   { type: 'Routine Maintenance', works: 'Vegetation clearance',     unit: 'UGX/km', bituminous: '4,200,000', unpaved: '3,800,000', note: 'Per km, both shoulders' },
   { type: 'Routine Maintenance', works: 'Drainage clearing',        unit: 'UGX/km', bituminous: '6,500,000', unpaved: '5,200,000', note: 'Side drains + culverts' },
-  { type: 'Periodic Maintenance', works: 'Surface dressing (1-coat)', unit: 'UGX/m²', bituminous: '28,000', unpaved: '—',        note: 'Material + equipment + labour' },
-  { type: 'Periodic Maintenance', works: 'Thin overlay (30mm AC)',   unit: 'UGX/m²', bituminous: '85,000', unpaved: '—',         note: 'Asphalt concrete 30mm' },
-  { type: 'Periodic Maintenance', works: 'Gravel resheet (150mm)',   unit: 'UGX/m²', bituminous: '—',       unpaved: '38,000',   note: 'Gravel source within 15km' },
-  { type: 'Rehabilitation',       works: 'Structural overlay (60mm)', unit: 'UGX/m²', bituminous: '145,000', unpaved: '—',       note: 'AC 60mm + tack coat' },
+  { type: 'Periodic Maintenance', works: 'Surface dressing (1-coat)', unit: 'UGX/m²', bituminous: '28,000', unpaved: '-',        note: 'Material + equipment + labour' },
+  { type: 'Periodic Maintenance', works: 'Thin overlay (30mm AC)',   unit: 'UGX/m²', bituminous: '85,000', unpaved: '-',         note: 'Asphalt concrete 30mm' },
+  { type: 'Periodic Maintenance', works: 'Gravel resheet (150mm)',   unit: 'UGX/m²', bituminous: '-',       unpaved: '38,000',   note: 'Gravel source within 15km' },
+  { type: 'Rehabilitation',       works: 'Structural overlay (60mm)', unit: 'UGX/m²', bituminous: '145,000', unpaved: '-',       note: 'AC 60mm + tack coat' },
   { type: 'Rehabilitation',       works: 'Full reconstruction',      unit: 'UGX/m²', bituminous: '520,000', unpaved: '280,000',  note: 'Full pavement, 200mm base' },
   { type: 'Emergency',            works: 'Washout repair',           unit: 'UGX/site', bituminous: '48M', unpaved: '32M',         note: 'Average culvert/embankment washout' },
   { type: 'Emergency',            works: 'Landslip reinstatement',   unit: 'UGX/site', bituminous: '180M', unpaved: '95M',        note: 'Major slope failure, includes drainage' },
@@ -169,7 +169,7 @@ export default function HDM4Section() {
           </div>
           <div>
             <div style={{ fontSize: 18, fontWeight: 900, color: '#e2eaf4', letterSpacing: '-0.01em' }}>
-              HDM-4 — Highway Development & Management
+              HDM-4 - Highway Development & Management
             </div>
             <div style={{ fontSize: 11, color: 'rgba(148,163,184,0.65)', marginTop: 1 }}>
               Deterioration models · Uganda calibration · CESAL calculator · Economic analysis
@@ -214,7 +214,7 @@ export default function HDM4Section() {
               </div>
             </div>
             <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>
-              World Bank HDM-4 model for Uganda's 21,302 km national road network — economic evaluation, maintenance standards optimisation, pavement deterioration modelling, and NPV/EIRR investment appraisal aligned with AfDB and MoWT frameworks.
+              World Bank HDM-4 model for Uganda's 21,302 km national road network - economic evaluation, maintenance standards optimisation, pavement deterioration modelling, and NPV/EIRR investment appraisal aligned with AfDB and MoWT frameworks.
             </p>
             <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
               {['World Bank HDM-4','AfDB Compliant','NPV / EIRR','CE-SAL Modelled','MoWT Standards','FY 2025/26'].map((b: string)=>(
@@ -292,7 +292,7 @@ export default function HDM4Section() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 8 }}>
               {[
                 { sym: 'ΔRI', def: 'Annual IRI increment (m/km/yr)', color: C.cyan },
-                { sym: 'Kgp', def: 'Calibration factor — roughness progression', color: C.purple },
+                { sym: 'Kgp', def: 'Calibration factor - roughness progression', color: C.purple },
                 { sym: 'IRI', def: 'Current roughness (m/km)', color: C.green },
                 { sym: 'MESAL', def: 'Cumulative traffic loading (million ESA)', color: C.orange },
                 { sym: 'Kci', def: 'Cracking area index (calibrated)', color: C.yellow },
@@ -549,7 +549,7 @@ export default function HDM4Section() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div style={card(C.blue)}>
             <div style={{ fontSize: 11, fontWeight: 900, color: C.blue, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14 }}>
-              NPV / BCR Scenario Analysis — Uganda National Network
+              NPV / BCR Scenario Analysis - Uganda National Network
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 20 }}>
               {[
