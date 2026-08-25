@@ -1503,7 +1503,7 @@ export default function NetworkStory() {
               </BarChart>
             </ResponsiveContainer>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, paddingTop: 8 }}>
-              {data.age_distribution.slice(0, 6).map((a, i) => (
+              {data.age_distribution.map((a, i) => (
                 <div key={a.age_bracket} style={{
                   display: 'flex', justifyContent: 'space-between', gap: 8,
                   padding: '4px 8px', borderRadius: 5, fontSize: 9,
