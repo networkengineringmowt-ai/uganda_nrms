@@ -16,12 +16,12 @@ const BASE = import.meta.env.BASE_URL;
 
 // ── Color palette ─────────────────────────────────────────────────────────────
 const C = {
-  data:     '#00f5ff',   // cyan  — Data Sources
-  etl:      '#b967ff',   // purple — ETL / Processing
-  feature:  '#ffd23f',   // yellow — Feature Engineering
-  model:    '#ff6b35',   // orange — ML Models
-  output:   '#00ff88',   // green  — Outputs
-  decision: '#4d9fff',   // blue   — Decision Support
+  data:     '#00f5ff',   // cyan  - Data Sources
+  etl:      '#b967ff',   // purple - ETL / Processing
+  feature:  '#ffd23f',   // yellow - Feature Engineering
+  model:    '#ff6b35',   // orange - ML Models
+  output:   '#00ff88',   // green  - Outputs
+  decision: '#4d9fff',   // blue   - Decision Support
   bg:       'rgba(8,14,28,0.72)',
   card:     'rgba(15,23,42,0.80)',
   border:   'rgba(255,255,255,0.07)',
@@ -103,7 +103,7 @@ const NODES: NodeDef[] = [
       accuracy: 'GPS-aligned ±5 m horizontal',
       inputs: ['Shapefile geometry', 'Attribute tables', 'Chainage data', 'Region boundaries'],
       outputs: ['Spatial join keys', 'Route lengths', 'Network topology', 'Maintenance zones'],
-      description: 'National road network GIS database maintained by Department of National Roads/DNR. Used as spatial backbone for all asset management layers — joins traffic, condition, projects, and budget data.',
+      description: 'National road network GIS database maintained by Department of National Roads/DNR. Used as spatial backbone for all asset management layers - joins traffic, condition, projects, and budget data.',
     },
   },
 
@@ -221,7 +221,7 @@ const NODES: NodeDef[] = [
     },
   },
   {
-    id: 'model_gbr', layer: 'model', label: 'GBR — ROMDAS', sublabel: 'Condition classification',
+    id: 'model_gbr', layer: 'model', label: 'GBR - ROMDAS', sublabel: 'Condition classification',
     x: 56, y: 46,
     detail: {
       algorithm: 'Gradient Boosted Regression (XGBoost)',
@@ -716,7 +716,7 @@ export default function MLArchitectureDiagram() {
               <span style={{fontSize:18,fontWeight:800,color:'rgba(168,85,247,1)',letterSpacing:-0.5}}>ML Architecture & AI Pipeline</span>
               <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>TensorFlow · Random Forest · Prophet · Feature Engineering</span>
             </div>
-            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>End-to-end machine learning architecture powering Uganda NRMS — from raw pavement sensor data through feature engineering and model training to real-time deterioration prediction, budget optimisation, and network intelligence dashboards.</p>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>End-to-end machine learning architecture powering Uganda NRMS - from raw pavement sensor data through feature engineering and model training to real-time deterioration prediction, budget optimisation, and network intelligence dashboards.</p>
             <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
               {["TensorFlow","Random Forest","Prophet Forecast","Feature Eng.","HDM-4 ML","Real-Time Inference"].map(b=>(
                 <span key={b} style={{background:'rgba(168,85,247,0.12)',color:'rgba(168,85,247,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
