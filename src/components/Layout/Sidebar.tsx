@@ -3,7 +3,7 @@ import {
   Activity, Shield, Construction, Layers, Network, Building2,
   DollarSign, Clock, Database, ShieldCheck, Route, Globe, Landmark,
   ChevronDown, Gauge, Map, Video, Hammer, FileText, Download,
-  Leaf, FolderOpen, BarChart3,
+  Leaf, FolderOpen, BarChart3, TrendingUp,
 } from 'lucide-react';
 import { useBMS } from '../../store/BMSContext';
 import { useAuth } from '../../modules/Auth/AuthContext';
@@ -35,9 +35,11 @@ const N = {
 const SECTIONS: Record<string, Section> = {
   rms:           { id: 'rms',           label: 'RMS - Road Mgmt System',   icon: <Route size={14}/>,        color: N.cyan   },
   roadcondition: { id: 'roadcondition', label: 'Pavement Management',      icon: <Activity size={14}/>,     color: N.orange },
+  npms:          { id: 'npms',          label: 'National PMS',              icon: <FileText size={14}/>,     color: N.orange },
   bms:           { id: 'bms',           label: 'Bridge Management',         icon: <Network size={14}/>,      color: N.blue   },
   roadreserve:   { id: 'roadreserve',   label: 'Road Reserve Management',   icon: <Landmark size={14}/>,     color: N.teal   },
   traffic:       { id: 'traffic',       label: 'Traffic Information',       icon: <Layers size={14}/>,       color: N.cyan   },
+  ntis:          { id: 'ntis',          label: 'National Traffic Info (NTIS)', icon: <TrendingUp size={14}/>, color: N.cyan   },
   projects:      { id: 'projects',      label: 'Projects & Works',          icon: <Construction size={14}/>, color: N.green  },
   pim:           { id: 'pim',           label: 'Public Investment',         icon: <Building2 size={14}/>,    color: N.yellow },
   budget:        { id: 'budget',        label: 'Budget & Maintenance',      icon: <DollarSign size={14}/>,   color: N.pink   },
@@ -59,8 +61,8 @@ const SECTIONS: Record<string, Section> = {
 // Four top-level tabs - each groups its child sections. Navigation is unchanged
 // (each child still calls navigate(id)); this is a presentation/IA grouping only.
 const GROUPS: Group[] = [
-  { id: 'assets',    label: 'Network & Assets',      icon: <Network size={15}/>,      color: N.cyan,   items: ['rms', 'roadcondition', 'bms', 'bridgeworks', 'roadreserve', 'roadatlas', 'roadvideo', 'ducar'] },
-  { id: 'traffic',   label: 'Traffic & Performance', icon: <Activity size={15}/>,     color: N.orange, items: ['traffic', 'atc'] },
+  { id: 'assets',    label: 'Network & Assets',      icon: <Network size={15}/>,      color: N.cyan,   items: ['rms', 'roadcondition', 'npms', 'bms', 'bridgeworks', 'roadreserve', 'roadatlas', 'roadvideo', 'ducar'] },
+  { id: 'traffic',   label: 'Traffic & Performance', icon: <Activity size={15}/>,     color: N.orange, items: ['traffic', 'ntis', 'atc'] },
   { id: 'planning',  label: 'Planning & Investment', icon: <Building2 size={15}/>,    color: N.green,  items: ['projects', 'pim', 'budget', 'lifecycle', 'socioeconomic'] },
   { id: 'knowledge', label: 'Knowledge & Admin',     icon: <Shield size={15}/>,       color: N.purple, items: ['casestudies', 'sources', 'documents', 'downloads', 'gisenterprise', 'admin'] },
 ];
