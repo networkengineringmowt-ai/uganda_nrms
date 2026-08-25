@@ -1,5 +1,5 @@
 /**
- * MindMapSection ÃÂ¢ÃÂÃÂ Platform Data Pipeline Workflow
+ * MindMapSection — Platform Data Pipeline Workflow
  * Blueprint / engineering-schematic styled SVG diagram with:
  *  - 7 layers (L1=Triggers, L2=Processing, L3=Agents, L4=Outputs,
  *              L5=Algorithms & Logic, L6=Data Hub, L7=Platform sections)
@@ -9,15 +9,15 @@
  *  - Zoom/pan
  *
  * Architecture (v3.0): everything is written into the Supabase-backed
- * Unified DB (41 tables ÃÂ¢ÃÂÃÂ see supabase_schema.sql). The Algorithms / Queries /
+ * Unified DB (41 tables — see supabase_schema.sql). The Algorithms / Queries /
  * Decision-Tree layer reads the Unified DB and, together with the DB itself,
  * feeds the Tabular Summaries Hub. EVERY platform section (RMS, Road Reserve,
- * PMS, BMS, TIS, ÃÂ¢ÃÂÃÂ¦) consumes the hub via SourceTableButton.
+ * PMS, BMS, TIS, …) consumes the hub via SourceTableButton.
  */
 import { useState, useRef, useCallback, useMemo, useLayoutEffect } from 'react';
 import { ZoomIn, ZoomOut, RotateCcw, X } from 'lucide-react';
 
-// ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ Types ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
+// ── Types ─────────────────────────────────────────────────────────────────────
 
 const LAYERS = [1, 2, 3, 4, 5, 6, 7] as const;
 type Layer = typeof LAYERS[number];
@@ -41,83 +41,83 @@ interface Edge {
   label?: string;
 }
 
-// ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ Node data ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
+// ── Node data ─────────────────────────────────────────────────────────────────
 
 const NODES: Node[] = [
-  // ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ L1 ÃÂ¢ÃÂÃÂ Triggers (x=40) ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
+  // ── L1 — Triggers (x=40) ──────────────────────────────────────────────────
   { id:'trig-daily',   label:'Schedule Trigger',     sub:'Daily 06:00 EAT',           layer:1, x: 40,  y:130,  w:150, h:68, color:'#10b981',
-    detail:'Runs every day at 06:00 EAT via cron. Fires the Python ETL chain in sequence: DB export ÃÂ¢ÃÂÃÂ analytics ÃÂ¢ÃÂÃÂ ML update ÃÂ¢ÃÂÃÂ Supabase upsert ÃÂ¢ÃÂÃÂ deploy.' },
+    detail:'Runs every day at 06:00 EAT via cron. Fires the Python ETL chain in sequence: DB export → analytics → ML update → Supabase upsert → deploy.' },
   { id:'trig-onpush',  label:'Git Push Trigger',      sub:'main branch push',           layer:1, x: 40,  y:235,  w:150, h:68, color:'#06b6d4',
     detail:'Fires on every push to main. Runs Vite build then deploys to GitHub Pages via the /c/tmp/ghdep worktree.' },
   { id:'trig-entry',   label:'Data-Entry Writes',     sub:'service_role server',        layer:1, x: 40,  y:340,  w:150, h:68, color:'#22d3ee',
-    detail:'server/index.js ÃÂ¢ÃÂÃÂ trusted local write-back server. Field staff submit condition surveys, encroachment reports, road-reserve usage permits (MOWT Form 2), bridge inspections, work orders. Uses the Supabase service_role key to write privileged rows into the Unified DB (allowlisted tables only).' },
+    detail:'server/index.js — trusted local write-back server. Field staff submit condition surveys, encroachment reports, road-reserve usage permits (MOWT Form 2), bridge inspections, work orders. Uses the Supabase service_role key to write privileged rows into the Unified DB (allowlisted tables only).' },
 
-  // ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ L2 ÃÂ¢ÃÂÃÂ Processing (x=250) ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
-  { id:'proc-export',  label:'DB Export / ETL',       sub:'Python ÃÂÃÂ· upload_to_supabase',layer:2, x:250,  y:130,  w:155, h:68, color:'#3b82f6',
-    detail:'scripts/etl/ingest_all_sources.py + upload_to_supabase.py ÃÂ¢ÃÂÃÂ reads ROMDAS MDB/CSV/xlsx, FWD xlsx, Maintenance plans, HDM4 network, Committed Projects; upserts into the Supabase Unified DB (41 tables).' },
-  { id:'proc-analytics',label:'Analytics Engine',    sub:'Regional ÃÂÃÂ· Budget ÃÂÃÂ· ESAL',   layer:2, x:250,  y:235,  w:155, h:68, color:'#8b5cf6',
-    detail:'compute_overloading.py, compute_growth_factors.py, build_master.py ÃÂ¢ÃÂÃÂ generate ESAL risk scores, AADT growth factors, condition summaries, and budget alignment KPIs written back to the Unified DB.' },
+  // ── L2 — Processing (x=250) ───────────────────────────────────────────────
+  { id:'proc-export',  label:'DB Export / ETL',       sub:'Python · upload_to_supabase',layer:2, x:250,  y:130,  w:155, h:68, color:'#3b82f6',
+    detail:'scripts/etl/ingest_all_sources.py + upload_to_supabase.py — reads ROMDAS MDB/CSV/xlsx, FWD xlsx, Maintenance plans, HDM4 network, Committed Projects; upserts into the Supabase Unified DB (41 tables).' },
+  { id:'proc-analytics',label:'Analytics Engine',    sub:'Regional · Budget · ESAL',   layer:2, x:250,  y:235,  w:155, h:68, color:'#8b5cf6',
+    detail:'compute_overloading.py, compute_growth_factors.py, build_master.py — generate ESAL risk scores, AADT growth factors, condition summaries, and budget alignment KPIs written back to the Unified DB.' },
   { id:'proc-build',   label:'Vite Build',            sub:'npm run build',              layer:2, x:250,  y:340,  w:155, h:68, color:'#6366f1',
     detail:'npm run build -- --outDir C:/tmp/vite_out. Produces hashed asset bundles. Runs after each commit to main. Output copied to /c/tmp/ghdep for deployment.' },
 
-  // ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ L3 ÃÂ¢ÃÂÃÂ Agents (x=470) ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
-  { id:'ag-ml',        label:'ML Model Agent',        sub:'PyTorch DNN ÃÂÃÂ· GNN',          layer:3, x:470,  y:130,  w:150, h:68, color:'#f59e0b',
-    detail:'deep_ml_engine.py ÃÂ¢ÃÂÃÂ multi-task DNN predicts IRI, rutting, cracking, urgency. GNN smooths predictions across network neighbours. IsolationForest detects anomalies. Results land in ml_model_metrics / link_iri_predictions.' },
-  { id:'ag-qc',        label:'QC Validation',         sub:'Schema ÃÂÃÂ· Range checks',      layer:3, x:470,  y:235,  w:150, h:68, color:'#ec4899',
-    detail:'Validates each ingested record: range checks on IRI (0ÃÂ¢ÃÂÃÂ25), deflections (0ÃÂ¢ÃÂÃÂ5000ÃÂÃÂµm), GPS coordinates within Uganda bbox, date plausibility. Flags bad records to data_quality_flags.' },
-  { id:'ag-audit',     label:'Data Audit Engine',     sub:'Coverage ÃÂÃÂ· Freshness',       layer:3, x:470,  y:340,  w:150, h:68, color:'#06b6d4',
-    detail:'DataAuditEngine.ts ÃÂ¢ÃÂÃÂ admin-only view. Checks which links have ROMDAS data, FWD, traffic counts, bridge inspections. Flags links with >3-year data gap.' },
+  // ── L3 — Agents (x=470) ───────────────────────────────────────────────────
+  { id:'ag-ml',        label:'ML Model Agent',        sub:'PyTorch DNN · GNN',          layer:3, x:470,  y:130,  w:150, h:68, color:'#f59e0b',
+    detail:'deep_ml_engine.py — multi-task DNN predicts IRI, rutting, cracking, urgency. GNN smooths predictions across network neighbours. IsolationForest detects anomalies. Results land in ml_model_metrics / link_iri_predictions.' },
+  { id:'ag-qc',        label:'QC Validation',         sub:'Schema · Range checks',      layer:3, x:470,  y:235,  w:150, h:68, color:'#ec4899',
+    detail:'Validates each ingested record: range checks on IRI (0–25), deflections (0–5000µm), GPS coordinates within Uganda bbox, date plausibility. Flags bad records to data_quality_flags.' },
+  { id:'ag-audit',     label:'Data Audit Engine',     sub:'Coverage · Freshness',       layer:3, x:470,  y:340,  w:150, h:68, color:'#06b6d4',
+    detail:'DataAuditEngine.ts — admin-only view. Checks which links have ROMDAS data, FWD, traffic counts, bridge inspections. Flags links with >3-year data gap.' },
 
-  // ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ L4 ÃÂ¢ÃÂÃÂ Outputs (x=680) ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
+  // ── L4 — Outputs (x=680) ──────────────────────────────────────────────────
   { id:'out-pages',    label:'GitHub Pages Deploy',   sub:'gh-pages branch',            layer:4, x:680,  y:130,  w:160, h:68, color:'#6366f1',
     detail:'git push --force origin HEAD:gh-pages from /c/tmp/ghdep worktree. Cache-safe: old hashed bundles retained. Live URL: https://priscananjehe1996.github.io/uganda-roads/' },
   { id:'out-json',     label:'Public JSON Export',    sub:'central_network_db.json',    layer:4, x:680,  y:235,  w:160, h:68, color:'#14b8a6',
-    detail:'export_unified_data.py writes public/data/*.json ÃÂ¢ÃÂÃÂ per-link IRI summaries, table counts, AADT, ML metrics for fast client-side reads. A cached mirror of the Unified DB.' },
-  { id:'out-db',       label:'Unified DB ÃÂÃÂ· Supabase', sub:'Postgres ÃÂÃÂ· 41 tables',       layer:4, x:680,  y:340,  w:160, h:68, color:'#3ecf8e',
-    detail:'Supabase Postgres (project vbidhkvzjigatfygnyc) ÃÂ¢ÃÂÃÂ the single source of truth. 41 tables across all layers: RMS, BMS, TIS, PMS, Road Reserve (incl. road_reserve_applications/applicants MOWT Form 2), AI/ML analytics, lifecycle, budgeting. Reads via the anon key (src/lib/supabase.ts); privileged writes via the service_role server. Schema: supabase_schema.sql.' },
+    detail:'export_unified_data.py writes public/data/*.json — per-link IRI summaries, table counts, AADT, ML metrics for fast client-side reads. A cached mirror of the Unified DB.' },
+  { id:'out-db',       label:'Unified DB · Supabase', sub:'Postgres · 41 tables',       layer:4, x:680,  y:340,  w:160, h:68, color:'#3ecf8e',
+    detail:'Supabase Postgres (project vbidhkvzjigatfygnyc) — the single source of truth. 41 tables across all layers: RMS, BMS, TIS, PMS, Road Reserve (incl. road_reserve_applications/applicants MOWT Form 2), AI/ML analytics, lifecycle, budgeting. Reads via the anon key (src/lib/supabase.ts); privileged writes via the service_role server. Schema: supabase_schema.sql.' },
 
-  // ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ L5 ÃÂ¢ÃÂÃÂ Algorithms ÃÂÃÂ· Queries ÃÂÃÂ· Decision Trees (x=900) ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
-  { id:'alg-engine',   label:'Algorithm Library',     sub:'HDM-4 ÃÂÃÂ· ESAL ÃÂÃÂ· LCCA',        layer:5, x:900,  y:165,  w:170, h:66, color:'#a78bfa',
+  // ── L5 — Algorithms · Queries · Decision Trees (x=900) ────────────────────
+  { id:'alg-engine',   label:'Algorithm Library',     sub:'HDM-4 · ESAL · LCCA',        layer:5, x:900,  y:165,  w:170, h:66, color:'#a78bfa',
     detail:'Deterministic models computed over the Unified DB: HDM-4 deterioration curves & calibration, ESAL/axle-load scoring, priority ranking, growth-factor expansion, and life-cycle cost analysis (LCCA). Outputs feed the Tabular Summaries Hub and section KPIs.' },
-  { id:'qry-views',    label:'SQL Views & Queries',   sub:'Supabase RPC ÃÂÃÂ· aggregates',  layer:5, x:900,  y:275,  w:170, h:66, color:'#38bdf8',
+  { id:'qry-views',    label:'SQL Views & Queries',   sub:'Supabase RPC · aggregates',  layer:5, x:900,  y:275,  w:170, h:66, color:'#38bdf8',
     detail:'Parameterised Supabase queries / Postgres views that aggregate the Unified DB into the shapes each section needs (e.g. regional rollups, gazette-by-year, AADT-by-link, condition-by-class). These power SourceTableButton and the live section views.' },
-  { id:'dtree',        label:'Decision Trees',        sub:'rules ÃÂÃÂ· recommendations',    layer:5, x:900,  y:385,  w:170, h:66, color:'#fbbf24',
+  { id:'dtree',        label:'Decision Trees',        sub:'rules · recommendations',    layer:5, x:900,  y:385,  w:170, h:66, color:'#fbbf24',
     detail:'Rule-based decision logic: maintenance treatment selection by IRI band, intervention timing, overloading enforcement triggers, and road-reserve permit suitability (MOWT Form 2 Part E: Suitable / Not Suitable). Drives recommendations surfaced in every downstream section.' },
 
-  // ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ L6 ÃÂ¢ÃÂÃÂ Data Hub (x=1130) ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
-  { id:'tbl-hub',      label:'Tabular Summaries Hub', sub:'100 cited tables ÃÂÃÂ· Data Hub', layer:6, x:1130, y:355,  w:195, h:88, color:'#00f5ff',
-    detail:'src/modules/Sources/TabularSummaries.tsx ÃÂ¢ÃÂÃÂ 100 tables sourced from the Unified DB plus official UNRA/MoWT/World Bank documents. Every table carries a source citation (tbl-001 ÃÂ¢ÃÂÃÂ¦ tbl-100) and is referenced across ALL platform sections via SourceTableButton. Now reads everything from the Supabase Unified DB.' },
+  // ── L6 — Data Hub (x=1130) ────────────────────────────────────────────────
+  { id:'tbl-hub',      label:'Tabular Summaries Hub', sub:'100 cited tables · Data Hub', layer:6, x:1130, y:355,  w:195, h:88, color:'#00f5ff',
+    detail:'src/modules/Sources/TabularSummaries.tsx — 100 tables sourced from the Unified DB plus official UNRA/MoWT/World Bank documents. Every table carries a source citation (tbl-001 … tbl-100) and is referenced across ALL platform sections via SourceTableButton. Now reads everything from the Supabase Unified DB.' },
 
-  // ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ L7 ÃÂ¢ÃÂÃÂ Platform Sections (x=1390) ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
-  { id:'sec-rms',      label:'RMS ÃÂ¢ÃÂÃÂ Road Network',    sub:'tbl 001ÃÂ¢ÃÂÃÂ005 ÃÂÃÂ· road_links',   layer:7, x:1390, y: 30,  w:180, h:50, color:'#00e5ff',
-    detail:'RoadNetworkView.tsx / RMS ÃÂ¢ÃÂÃÂ 1,017 national-road links, classes A/B/C/M. tbl-001-005 (inventory, length by class/region, surface type). Source: road_links + road_link_condition.' },
-  { id:'sec-reserve',  label:'Road Reserve Mgmt',     sub:'road_reserve_* ÃÂÃÂ· tbl 047ÃÂ¢ÃÂÃÂ050',layer:7, x:1390, y: 92,  w:180, h:50, color:'#00d4aa',
-    detail:'RoadReserveSection.tsx ÃÂ¢ÃÂÃÂ gazette & legal status, encroachment register, reserve mapping, and Road Reserve Usage permits (MOWT Form 2). Source: road_reserve_records / _encroachments / _gazette / _applications / _applicants.' },
-  { id:'sec-pms',      label:'PMS ÃÂ¢ÃÂÃÂ Condition',       sub:'tbl 006, 007, 038',          layer:7, x:1390, y:154,  w:180, h:50, color:'#fb923c',
-    detail:'RoadConditionView.tsx ÃÂ¢ÃÂÃÂ IRI/condition/urgency map. tbl-006 (IRI by class), tbl-007 (paved condition 2024), tbl-038 (ML predictions).' },
-  { id:'sec-bms',      label:'BMS ÃÂ¢ÃÂÃÂ Bridges',         sub:'tbl 011, 012, 072',          layer:7, x:1390, y:216,  w:180, h:50, color:'#4d9fff',
-    detail:'BMSSection.tsx ÃÂ¢ÃÂÃÂ 546 bridges. tbl-011 (bridge inventory), tbl-012 (condition ratings 2024), tbl-072 (priority ranking). Source: structures + inspections.' },
-  { id:'sec-tis',      label:'TIS ÃÂ¢ÃÂÃÂ Traffic',         sub:'tbl 008ÃÂ¢ÃÂÃÂ010, 069',           layer:7, x:1390, y:278,  w:180, h:50, color:'#ffd23f',
-    detail:'TrafficSection.tsx ÃÂ¢ÃÂÃÂ AADT map, ATC dashboard, growth projections. tbl-008 (AADT by link), tbl-009 (vehicle composition), tbl-010 (ATC hourly), tbl-069 (TIS stations).' },
+  // ── L7 — Platform Sections (x=1390) ───────────────────────────────────────
+  { id:'sec-rms',      label:'RMS — Road Network',    sub:'tbl 001–005 · road_links',   layer:7, x:1390, y: 30,  w:180, h:50, color:'#00e5ff',
+    detail:'RoadNetworkView.tsx / RMS — 1,017 national-road links, classes A/B/C/M. tbl-001-005 (inventory, length by class/region, surface type). Source: road_links + road_link_condition.' },
+  { id:'sec-reserve',  label:'Road Reserve Mgmt',     sub:'road_reserve_* · tbl 047–050',layer:7, x:1390, y: 92,  w:180, h:50, color:'#00d4aa',
+    detail:'RoadReserveSection.tsx — gazette & legal status, encroachment register, reserve mapping, and Road Reserve Usage permits (MOWT Form 2). Source: road_reserve_records / _encroachments / _gazette / _applications / _applicants.' },
+  { id:'sec-pms',      label:'PMS — Condition',       sub:'tbl 006, 007, 038',          layer:7, x:1390, y:154,  w:180, h:50, color:'#fb923c',
+    detail:'RoadConditionView.tsx — IRI/condition/urgency map. tbl-006 (IRI by class), tbl-007 (paved condition 2024), tbl-038 (ML predictions).' },
+  { id:'sec-bms',      label:'BMS — Bridges',         sub:'tbl 011, 012, 072',          layer:7, x:1390, y:216,  w:180, h:50, color:'#4d9fff',
+    detail:'BMSSection.tsx — 546 bridges. tbl-011 (bridge inventory), tbl-012 (condition ratings 2024), tbl-072 (priority ranking). Source: structures + inspections.' },
+  { id:'sec-tis',      label:'TIS — Traffic',         sub:'tbl 008–010, 069',           layer:7, x:1390, y:278,  w:180, h:50, color:'#ffd23f',
+    detail:'TrafficSection.tsx — AADT map, ATC dashboard, growth projections. tbl-008 (AADT by link), tbl-009 (vehicle composition), tbl-010 (ATC hourly), tbl-069 (TIS stations).' },
   { id:'sec-ndpiv',    label:'NDPIV Projects',        sub:'tbl 014, 086',               layer:7, x:1390, y:340,  w:180, h:50, color:'#b967ff',
-    detail:'NdpivSection.tsx ÃÂ¢ÃÂÃÂ NDP IV project map and table. tbl-014 (NDPIV project list), tbl-086 (funding allocations FY2025/26).' },
+    detail:'NdpivSection.tsx — NDP IV project map and table. tbl-014 (NDPIV project list), tbl-086 (funding allocations FY2025/26).' },
   { id:'sec-oprc',     label:'OPRC Lots',             sub:'tbl 013, 085',               layer:7, x:1390, y:402,  w:180, h:50, color:'#00ff88',
-    detail:'OprcSection.tsx ÃÂ¢ÃÂÃÂ 6 OPRC lots. tbl-013 (contract details), tbl-085 (performance monitoring).' },
-  { id:'sec-overload', label:'Overloading / ESAL',    sub:'tbl 023ÃÂ¢ÃÂÃÂ028',                layer:7, x:1390, y:464,  w:180, h:50, color:'#ef4444',
-    detail:'OverloadingSection.tsx ÃÂ¢ÃÂÃÂ 1,020 links scored. tbl-023-028 (axle load distributions, ESAL factors, overloading frequency, risk index). Source: overloading_by_link.' },
-  { id:'sec-lcm',      label:'Lifecycle Mgmt',        sub:'tbl 041ÃÂ¢ÃÂÃÂ046',                layer:7, x:1390, y:526,  w:180, h:50, color:'#34d399',
-    detail:'LifecycleSection.tsx ÃÂ¢ÃÂÃÂ IRI deterioration curves, intervention history, LCCA. tbl-041-046. Source: lifecycle_links + lifecycle_interventions.' },
+    detail:'OprcSection.tsx — 6 OPRC lots. tbl-013 (contract details), tbl-085 (performance monitoring).' },
+  { id:'sec-overload', label:'Overloading / ESAL',    sub:'tbl 023–028',                layer:7, x:1390, y:464,  w:180, h:50, color:'#ef4444',
+    detail:'OverloadingSection.tsx — 1,020 links scored. tbl-023-028 (axle load distributions, ESAL factors, overloading frequency, risk index). Source: overloading_by_link.' },
+  { id:'sec-lcm',      label:'Lifecycle Mgmt',        sub:'tbl 041–046',                layer:7, x:1390, y:526,  w:180, h:50, color:'#34d399',
+    detail:'LifecycleSection.tsx — IRI deterioration curves, intervention history, LCCA. tbl-041-046. Source: lifecycle_links + lifecycle_interventions.' },
   { id:'sec-budget',   label:'Budget & Maintenance',  sub:'tbl 020, 021, 074',          layer:7, x:1390, y:588,  w:180, h:50, color:'#ff2d78',
-    detail:'BudgetSection.tsx ÃÂ¢ÃÂÃÂ maintenance expenditure, MTEF planning. tbl-020 (maintenance budget by FY), tbl-021 (development budget), tbl-074 (M&R needs). Source: budget_fy_summary + budget_alignment.' },
-  { id:'sec-projects', label:'Projects & Works',      sub:'tbl 015ÃÂ¢ÃÂÃÂ019',                layer:7, x:1390, y:650,  w:180, h:50, color:'#f472b6',
-    detail:'ProjectTracker ÃÂ¢ÃÂÃÂ execution tracking (Gantt/Kanban), physical vs financial progress. tbl-015-019. Source: project_tracker + projects.' },
-  { id:'sec-pim',      label:'Public Investment',     sub:'tbl 080ÃÂ¢ÃÂÃÂ084',                layer:7, x:1390, y:712,  w:180, h:50, color:'#c084fc',
-    detail:'PublicInvestmentSection.tsx ÃÂ¢ÃÂÃÂ PIM funding, PPP projects, donor vs GoU split. tbl-080-084. Source: budget_fy_summary + ppp_projects.' },
-  { id:'sec-global',   label:'Global Case Studies',   sub:'tbl 090ÃÂ¢ÃÂÃÂ100',                layer:7, x:1390, y:774,  w:180, h:50, color:'#7dd3fc',
-    detail:'GlobalCaseStudiesSection.tsx ÃÂ¢ÃÂÃÂ 16-country comparative RMS/BMS benchmarking. tbl-090-100. Source: global_case_studies.' },
+    detail:'BudgetSection.tsx — maintenance expenditure, MTEF planning. tbl-020 (maintenance budget by FY), tbl-021 (development budget), tbl-074 (M&R needs). Source: budget_fy_summary + budget_alignment.' },
+  { id:'sec-projects', label:'Projects & Works',      sub:'tbl 015–019',                layer:7, x:1390, y:650,  w:180, h:50, color:'#f472b6',
+    detail:'ProjectTracker — execution tracking (Gantt/Kanban), physical vs financial progress. tbl-015-019. Source: project_tracker + projects.' },
+  { id:'sec-pim',      label:'Public Investment',     sub:'tbl 080–084',                layer:7, x:1390, y:712,  w:180, h:50, color:'#c084fc',
+    detail:'PublicInvestmentSection.tsx — PIM funding, PPP projects, donor vs GoU split. tbl-080-084. Source: budget_fy_summary + ppp_projects.' },
+  { id:'sec-global',   label:'Global Case Studies',   sub:'tbl 090–100',                layer:7, x:1390, y:774,  w:180, h:50, color:'#7dd3fc',
+    detail:'GlobalCaseStudiesSection.tsx — 16-country comparative RMS/BMS benchmarking. tbl-090-100. Source: global_case_studies.' },
 ];
 
-// Bounding box of all node geometry ÃÂ¢ÃÂÃÂ used to "fit to content" the canvas
+// Bounding box of all node geometry — used to "fit to content" the canvas
 // so there's no wasted blank space below/around the diagram.
 const CONTENT_BBOX = (() => {
   const xs = NODES.flatMap(n => [n.x, n.x + n.w]);
@@ -129,35 +129,35 @@ const CONTENT_BBOX = (() => {
 })();
 
 const EDGES: Edge[] = [
-  // L1 ÃÂ¢ÃÂÃÂ L2 / L4
+  // L1 → L2 / L4
   { from:'trig-daily',   to:'proc-export',    label:'fires' },
   { from:'trig-daily',   to:'proc-analytics', label:'fires' },
   { from:'trig-onpush',  to:'proc-build',     label:'triggers' },
   { from:'trig-entry',   to:'out-db',         label:'writes' },
-  // L2 ÃÂ¢ÃÂÃÂ L3
+  // L2 → L3
   { from:'proc-export',  to:'ag-ml',          label:'feeds' },
   { from:'proc-export',  to:'ag-qc',          label:'validates' },
   { from:'proc-analytics',to:'ag-audit',      label:'reports' },
-  // L2 ÃÂ¢ÃÂÃÂ L4
+  // L2 → L4
   { from:'proc-build',   to:'out-pages',      label:'deploys' },
   { from:'proc-export',  to:'out-db',         label:'upserts' },
   { from:'proc-analytics',to:'out-json',      label:'exports' },
-  // L3 ÃÂ¢ÃÂÃÂ L4
+  // L3 → L4
   { from:'ag-ml',        to:'out-db',         label:'model results' },
   { from:'ag-qc',        to:'out-db',         label:'quality flags' },
   { from:'ag-audit',     to:'out-json',       label:'audit report' },
-  // L4 ÃÂ¢ÃÂÃÂ L5 ÃÂ¢ÃÂÃÂ Unified DB feeds the algorithm / query / decision layer
+  // L4 → L5 — Unified DB feeds the algorithm / query / decision layer
   { from:'out-db',       to:'alg-engine',     label:'reads' },
   { from:'out-db',       to:'qry-views',      label:'queries' },
   { from:'out-db',       to:'dtree',          label:'rules' },
-  // L4 ÃÂ¢ÃÂÃÂ L6 ÃÂ¢ÃÂÃÂ Tabular Summaries Hub sources EVERYTHING from the Unified DB
+  // L4 → L6 — Tabular Summaries Hub sources EVERYTHING from the Unified DB
   { from:'out-db',       to:'tbl-hub',        label:'sources all' },
   { from:'out-json',     to:'tbl-hub',        label:'client cache' },
-  // L5 ÃÂ¢ÃÂÃÂ L6 ÃÂ¢ÃÂÃÂ computed logic feeds the hub
+  // L5 → L6 — computed logic feeds the hub
   { from:'alg-engine',   to:'tbl-hub',        label:'metrics' },
   { from:'qry-views',    to:'tbl-hub',        label:'aggregates' },
   { from:'dtree',        to:'tbl-hub',        label:'recommendations' },
-  // L6 hub ÃÂ¢ÃÂÃÂ every platform section (RMS, Road Reserve, + all others)
+  // L6 hub → every platform section (RMS, Road Reserve, + all others)
   { from:'tbl-hub',      to:'sec-rms',        label:'' },
   { from:'tbl-hub',      to:'sec-reserve',    label:'' },
   { from:'tbl-hub',      to:'sec-pms',        label:'' },
@@ -183,7 +183,7 @@ const LAYER_LABELS: Record<Layer, string> = {
   7: 'L7 PLATFORM SECTIONS',
 };
 
-// ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ Drawing-zone reference (e.g. [A3]) ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
+// ── Drawing-zone reference (e.g. [A3]) ─────────────────────────────────────────
 
 function zoneRef(node: Node): string {
   const col = Math.min(7, Math.floor((node.x) / 200));
@@ -191,7 +191,7 @@ function zoneRef(node: Node): string {
   return `[${String.fromCharCode(65 + col)}${row}]`;
 }
 
-// ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ Orthogonal (right-angle) edge routing ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
+// ── Orthogonal (right-angle) edge routing ────────────────────────────────────
 
 function edgePath(from: Node, to: Node): string {
   const horizontal = to.x > from.x + from.w / 2;
@@ -222,7 +222,7 @@ function arrowHead(from: Node, to: Node): { x: number; y: number; angle: number 
   }
 }
 
-// ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ Component ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
+// ── Component ─────────────────────────────────────────────────────────────────
 
 const TODAY = new Date().toISOString().slice(0, 10);
 
@@ -235,7 +235,7 @@ export default function MindMapSection() {
   const draggingRef                 = useRef<{ x: number; y: number } | null>(null);
   const canvasRef                   = useRef<HTMLDivElement | null>(null);
 
-  // Fit the diagram exactly to the visible canvas ÃÂ¢ÃÂÃÂ eliminates wasted blank
+  // Fit the diagram exactly to the visible canvas — eliminates wasted blank
   // space below/around the nodes (computed from the real node bounding box).
   const fitToContent = useCallback(() => {
     const el = canvasRef.current;
@@ -255,7 +255,7 @@ export default function MindMapSection() {
 
   // Auto-fit on first mount and whenever the canvas is resized.
   // The canvas is rendered inside a lazy-loaded, absolutely-positioned tab
-  // panel ÃÂ¢ÃÂÃÂ its measured size can be 0 (or stale) on the very first layout
+  // panel — its measured size can be 0 (or stale) on the very first layout
   // pass, so we re-run the fit across a few animation frames + a short
   // timeout to catch the size once the flex layout has fully settled.
   useLayoutEffect(() => {
@@ -355,10 +355,10 @@ export default function MindMapSection() {
         borderBottom: '1px solid rgba(0,188,212,0.18)',
       }}>
         <span style={{ fontSize: 10, fontWeight: 800, color: '#00bcd4', letterSpacing: '0.12em', fontFamily: MONO }}>
-          ÃÂ¢ÃÂÃÂ¦ DATA PIPELINE ÃÂ¢ÃÂÃÂ SCHEMATIC
+          ▦ DATA PIPELINE — SCHEMATIC
         </span>
         <div style={{ width: 1, height: 18, background: 'rgba(0,188,212,0.18)' }} />
-        {/* Layer toggles ÃÂ¢ÃÂÃÂ drawn as blueprint switches */}
+        {/* Layer toggles — drawn as blueprint switches */}
         {LAYERS.map(l => {
           const on = visibleLayers.has(l);
           return (
@@ -370,7 +370,7 @@ export default function MindMapSection() {
               color: on ? '#00e5ff' : 'rgba(140,180,200,0.4)',
               transition: 'all 0.15s',
             }}>
-              [{on ? 'ÃÂ¢ÃÂÃÂ ' : 'ÃÂ¢ÃÂÃÂ¡'}] {LAYER_LABELS[l]}
+              [{on ? '■' : '□'}] {LAYER_LABELS[l]}
             </button>
           );
         })}
@@ -386,7 +386,7 @@ export default function MindMapSection() {
           </button>
         </div>
         <span style={{ fontSize: 9, color: 'rgba(125,211,224,0.35)', marginLeft: 4, fontFamily: MONO }}>
-          DRAG ÃÂÃÂ· PAN ÃÂ¢ÃÂÃÂ SCROLL ÃÂÃÂ· ZOOM ÃÂ¢ÃÂÃÂ CLICK ÃÂÃÂ· INSPECT
+          DRAG · PAN — SCROLL · ZOOM — CLICK · INSPECT
         </span>
       </div>
 
@@ -428,7 +428,7 @@ export default function MindMapSection() {
 
             <g transform={`translate(${pan.x}, ${pan.y}) scale(${zoom})`}>
 
-              {/* Edges ÃÂ¢ÃÂÃÂ orthogonal routing */}
+              {/* Edges — orthogonal routing */}
               {visibleEdges.map((edge, i) => {
                 const fn = NODES.find(n => n.id === edge.from)!;
                 const tn = NODES.find(n => n.id === edge.to)!;
@@ -455,7 +455,7 @@ export default function MindMapSection() {
                 );
               })}
 
-              {/* Nodes ÃÂ¢ÃÂÃÂ engineering drawing boxes */}
+              {/* Nodes — engineering drawing boxes */}
               {visibleNodes.map(node => {
                 const isSelected = selected?.id === node.id;
                 const isHovered  = hovered?.id === node.id;
@@ -556,7 +556,7 @@ export default function MindMapSection() {
             })}
           </div>
 
-          {/* ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ Engineering drawing title block (bottom-right) ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ */}
+          {/* ── Engineering drawing title block (bottom-right) ── */}
           <div style={{
             position: 'absolute', bottom: 12, right: 14,
             width: 270, fontFamily: MONO,
@@ -640,7 +640,7 @@ export default function MindMapSection() {
               {/* Parameters & algorithms */}
               <div style={{ marginTop: 14, paddingTop: 12, borderTop: `2px solid ${selected.color}55` }}>
                 <div style={{ fontSize: 9, fontWeight: 900, color: selected.color, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 7 }}>
-                  Parameters &amp; Algorithms
+                  Parameters & Algorithms
                 </div>
                 {(() => {
                   const a = ALGO_DETAILS[selected.id];
@@ -650,7 +650,7 @@ export default function MindMapSection() {
                         <div style={{ fontSize: 10.5, fontWeight: 800, color: '#fff', lineHeight: 1.5, marginBottom: 6 }}>{a.algo}</div>
                         {a.params.map((x, i) => (
                           <div key={i} style={{ display: 'flex', gap: 6, fontSize: 9.5, color: 'rgba(226,232,240,0.85)', lineHeight: 1.6 }}>
-                            <span style={{ color: selected.color, fontWeight: 900 }}>ÃÂ¢ÃÂÃÂ¸</span><span>{x}</span>
+                            <span style={{ color: selected.color, fontWeight: 900 }}>▸</span><span>{x}</span>
                           </div>
                         ))}
                       </>
@@ -658,8 +658,8 @@ export default function MindMapSection() {
                   }
                   return (
                     <div style={{ fontSize: 9.5, color: 'rgba(226,232,240,0.8)', lineHeight: 1.65 }}>
-                      <span style={{ color: selected.color, fontWeight: 900 }}>ÃÂ¢ÃÂÃÂ¸ </span>{selected.sub}
-                      <br /><span style={{ color: selected.color, fontWeight: 900 }}>ÃÂ¢ÃÂÃÂ¸ </span>{selected.detail}
+                      <span style={{ color: selected.color, fontWeight: 900 }}>▸ </span>{selected.sub}
+                      <br /><span style={{ color: selected.color, fontWeight: 900 }}>▸ </span>{selected.detail}
                     </div>
                   );
                 })()}
@@ -680,7 +680,7 @@ export default function MindMapSection() {
                     <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 5,
                       fontSize: 8.5, color: 'rgba(180,220,230,0.6)' }}>
                       <span style={{ color: isOut ? '#00e5ff' : '#ff8a5b', fontSize: 9, fontWeight: 800 }}>
-                        {isOut ? 'ÃÂ¢ÃÂÃÂ' : 'ÃÂ¢ÃÂÃÂ'}
+                        {isOut ? '→' : '←'}
                       </span>
                       <span style={{ color: other.color }}>{other.label}</span>
                       {e.label && <span style={{ color: 'rgba(180,220,230,0.4)' }}>({e.label})</span>}
@@ -696,7 +696,7 @@ export default function MindMapSection() {
   );
 }
 
-// ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ Helpers ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 function hexFromColor(hex: string): string {
   const c = hex.replace('#', '');
@@ -709,31 +709,31 @@ const tbBtn: React.CSSProperties = {
   display: 'flex', alignItems: 'center', justifyContent: 'center',
 };
 
-// ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
+// ══════════════════════════════════════════════════════════════════════════════
 
-// Parameters & algorithms per node ÃÂ¢ÃÂÃÂ shown in the inspector instead of wireframes.
+// Parameters & algorithms per node — shown in the inspector instead of wireframes.
 const ALGO_DETAILS: Record<string, { algo: string; params: string[] }> = {
   'ag-ml': {
     algo: 'PyTorch deep neural network + graph neural network over the link network',
     params: ['Inputs: IRI, rutting, AADT, ESALs, pavement age, rainfall zone',
-             'DNN: 4 hidden layers ÃÂÃÂ· ReLU ÃÂÃÂ· dropout 0.2 ÃÂÃÂ· Adam 1e-3',
+             'DNN: 4 hidden layers · ReLU · dropout 0.2 · Adam 1e-3',
              'GNN: link-adjacency message passing, 2 hops',
              'Target: next-cycle VCI / IRI per link',
-             'Validation: 80/20 split ÃÂÃÂ· early stopping on RMSE'] },
+             'Validation: 80/20 split · early stopping on RMSE'] },
   'alg-engine': {
-    algo: 'HDM-4 deterioration ÃÂÃÂ· ESAL accumulation ÃÂÃÂ· life-cycle cost analysis (LCCA)',
-    params: ['HDM-4 RDWE roughness progression: ÃÂÃÂIRI = f(age, ESAL, MMP, SNC)',
-             'ESAL: ÃÂÃÂ£ (axle load / 8.16 t)^4.5 by vehicle class',
+    algo: 'HDM-4 deterioration · ESAL accumulation · life-cycle cost analysis (LCCA)',
+    params: ['HDM-4 RDWE roughness progression: ΔIRI = f(age, ESAL, MMP, SNC)',
+             'ESAL: Σ (axle load / 8.16 t)^4.5 by vehicle class',
              'LCCA: NPV @ 12% discount, 20-year analysis period',
              'Calibrated with romdas_calibration.json coefficients'] },
   'dtree': {
-    algo: 'Rule-based decision trees ÃÂ¢ÃÂÃÂ maintenance recommendations',
-    params: ['Thresholds: VCI bands (ÃÂ¢ÃÂÃÂ¥85/75/65/55) ÃÂÃÂ· IRI > 4.5 ÃÂ¢ÃÂÃÂ periodic',
-             'Treatment ladder: routine ÃÂ¢ÃÂÃÂ resealing ÃÂ¢ÃÂÃÂ overlay ÃÂ¢ÃÂÃÂ reconstruction',
-             'Bridge rules: element rating ÃÂ¢ÃÂÃÂ¤ 2 ÃÂ¢ÃÂÃÂ inspection work order',
+    algo: 'Rule-based decision trees → maintenance recommendations',
+    params: ['Thresholds: VCI bands (≥85/75/65/55) · IRI > 4.5 → periodic',
+             'Treatment ladder: routine → resealing → overlay → reconstruction',
+             'Bridge rules: element rating ≤ 2 → inspection work order',
              'Budget guardrail: ranked by stress score within envelope'] },
   'proc-analytics': {
-    algo: 'Aggregation engine ÃÂ¢ÃÂÃÂ regional, budget and ESAL summaries',
+    algo: 'Aggregation engine — regional, budget and ESAL summaries',
     params: ['Km-weighted VCI per region & station',
              'Growth-factor projections (compound, per ATC class)',
              'Budget per km by class & treatment',
@@ -741,7 +741,7 @@ const ALGO_DETAILS: Record<string, { algo: string; params: string[] }> = {
   'ag-qc': {
     algo: 'Schema + range validation before publication',
     params: ['JSON-schema checks on every exported file',
-             'Range checks: VCI 0ÃÂ¢ÃÂÃÂ100 ÃÂÃÂ· IRI 1ÃÂ¢ÃÂÃÂ20 ÃÂÃÂ· AADT > 0',
+             'Range checks: VCI 0–100 · IRI 1–20 · AADT > 0',
              'Referential: every link_id must exist in the network master',
              'Failures block the deploy step'] },
   'ag-audit': {
@@ -751,8 +751,8 @@ const ALGO_DETAILS: Record<string, { algo: string; params: string[] }> = {
              'Cross-source mismatch detection (shapefile vs register)'] },
   'proc-export': {
     algo: 'Python ETL chain (pandas + geopandas)',
-    params: ['Sources: NDPIV xlsx ÃÂÃÂ· network2026 shapefile ÃÂÃÂ· BMS CSV ÃÂÃÂ· ATC workbook',
-             'refresh_2026.py ÃÂÃÂ· build_fwd_inventory.py ÃÂÃÂ· export_bundle.py',
+    params: ['Sources: NDPIV xlsx · network2026 shapefile · BMS CSV · ATC workbook',
+             'refresh_2026.py · build_fwd_inventory.py · export_bundle.py',
              'Drive-first: outputs land in public/data (G: canonical)'] },
 };
 
@@ -760,7 +760,7 @@ const ALGO_DETAILS: Record<string, { algo: string; params: string[] }> = {
 // Declarative: every node maps to a small set of placeholder elements drawn with
 // standard wireframe conventions (diagonal=chart, h-lines=table, circle+crosshair
 // =map). Rendered in the inspect panel by <WireframeSketch/>.
-// ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
+// ══════════════════════════════════════════════════════════════════════════════
 
 type WfType = 'chart' | 'table' | 'map' | 'kpi' | 'cards' | 'form' | 'tree'
             | 'db' | 'browser' | 'file' | 'gear' | 'arrow' | 'diagram' | 'panel';
@@ -769,7 +769,7 @@ interface Wireframe { sidebar?: boolean; tabs?: string[]; els: WfEl[] }
 
 const _e = (t: WfType, x: number, y: number, w: number, h: number, label?: string): WfEl => ({ t, x, y, w, h, label });
 
-// ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ Section-screen templates (sidebar + tabs + content) ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
+// ── Section-screen templates (sidebar + tabs + content) ───────────────────────
 const secMapDetail  = (tabs: string[]): Wireframe => ({ sidebar: true, tabs, els: [_e('map', 34, 20, 148, 156, 'MAP'), _e('panel', 188, 20, 88, 156, 'DETAIL')] });
 const secMapTable   = (tabs: string[]): Wireframe => ({ sidebar: true, tabs, els: [_e('map', 34, 20, 242, 84, 'MAP'), _e('table', 34, 112, 242, 64, 'TABLE')] });
 const secKpiCharts  = (tabs: string[]): Wireframe => ({ sidebar: true, tabs, els: [_e('kpi', 34, 20, 242, 22), _e('chart', 34, 50, 118, 126, 'CHART'), _e('chart', 158, 50, 118, 126, 'CHART')] });
@@ -779,35 +779,35 @@ const secChartsTbl  = (tabs: string[]): Wireframe => ({ sidebar: true, tabs, els
 const secBigTable   = (tabs: string[]): Wireframe => ({ sidebar: true, tabs, els: [_e('table', 34, 20, 242, 156, 'TABLE')] });
 const secWorldTable = (tabs: string[]): Wireframe => ({ sidebar: true, tabs, els: [_e('map', 34, 20, 242, 94, 'WORLD MAP'), _e('table', 34, 122, 242, 54, 'TABLE')] });
 
-// ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ Pipeline-node templates (no sidebar ÃÂ¢ÃÂÃÂ a process / IO sketch) ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
+// ── Pipeline-node templates (no sidebar — a process / IO sketch) ──────────────
 const flow3 = (a: string, b: string, c: string): Wireframe => ({ els: [
   _e('panel', 8, 66, 70, 46, a), _e('arrow', 78, 89, 26, 0), _e('gear', 104, 66, 70, 46, b),
   _e('arrow', 174, 89, 26, 0), _e('panel', 200, 66, 72, 46, c) ] });
 
 const WIREFRAMES: Record<string, Wireframe> = {
-  // L1 ÃÂ¢ÃÂÃÂ Triggers
+  // L1 — Triggers
   'trig-daily':  { els: [_e('panel', 24, 50, 96, 80, 'CRON 06:00'), _e('arrow', 120, 90, 36, 0), _e('gear', 156, 50, 100, 80, 'ETL CHAIN')] },
   'trig-onpush': flow3('git push', 'CI', 'DEPLOY'),
   'trig-entry':  flow3('FORM', 'SERVER', 'DB'),
-  // L2 ÃÂ¢ÃÂÃÂ Processing
+  // L2 — Processing
   'proc-export':    flow3('SOURCES', 'ETL', 'SUPABASE'),
   'proc-analytics': flow3('DATA', 'ANALYTICS', 'KPIs'),
   'proc-build':     { els: [_e('panel', 8, 66, 70, 46, 'SRC'), _e('arrow', 78, 89, 26, 0), _e('gear', 104, 66, 70, 46, 'VITE'), _e('arrow', 174, 89, 26, 0), _e('browser', 200, 56, 72, 66, 'BUNDLE')] },
-  // L3 ÃÂ¢ÃÂÃÂ Agents
-  'ag-ml':    flow3('DATA', 'DNN / GNN', 'IRIÃÂÃÂ·VCI'),
+  // L3 — Agents
+  'ag-ml':    flow3('DATA', 'DNN / GNN', 'IRI·VCI'),
   'ag-qc':    flow3('ROWS', 'QC', 'FLAGS'),
   'ag-audit': { sidebar: true, tabs: ['Mind Map', 'Data Audit'], els: [_e('diagram', 34, 20, 168, 156, 'CANVAS'), _e('panel', 208, 20, 68, 156, 'INSPECT')] },
-  // L4 ÃÂ¢ÃÂÃÂ Outputs
+  // L4 — Outputs
   'out-pages': { els: [_e('browser', 28, 26, 224, 128, 'gh-pages')] },
   'out-json':  { els: [_e('file', 88, 24, 104, 132, 'JSON')] },
   'out-db':    { els: [_e('db', 40, 30, 96, 120, 'UNIFIED DB'), _e('table', 156, 30, 116, 120, '41 TABLES')] },
-  // L5 ÃÂ¢ÃÂÃÂ Algorithms & Logic
+  // L5 — Algorithms & Logic
   'alg-engine': { els: [_e('form', 14, 22, 104, 62, 'f(x)'), _e('chart', 14, 94, 104, 72, 'CURVE'), _e('chart', 128, 22, 138, 144, 'METRICS')] },
   'qry-views':  { els: [_e('form', 16, 22, 110, 146, 'QUERY'), _e('table', 138, 22, 126, 146, 'RESULT')] },
   'dtree':      { els: [_e('tree', 14, 16, 252, 154, 'DECISION TREE')] },
-  // L6 ÃÂ¢ÃÂÃÂ Data Hub
+  // L6 — Data Hub
   'tbl-hub': secBigTable(['Tabular Summaries', 'Charts', 'References']),
-  // L7 ÃÂ¢ÃÂÃÂ Platform sections
+  // L7 — Platform sections
   'sec-rms':      secMapDetail(['Overview', 'Network Map', 'Network Story', 'Architecture']),
   'sec-reserve':  secMapTable(['Overview', 'Reserve Map', 'Encroachment', 'Gazette']),
   'sec-pms':      secKpiCharts(['Dashboard', 'Condition Map', 'Inventory', 'Analytics']),
@@ -877,7 +877,7 @@ function drawWfEl(el: WfEl, i: number): React.ReactNode {
                    <rect key={'fr' + r} x={x + 26} y={y + 11 + r * 16} width={w - 32} height={8} fill="none" stroke={WF_F} strokeWidth="0.7" />);
       }
       return <g key={i}>{parts}<text x={x + 6} y={y - 2} fontSize="6.5" fontFamily={WF_MONO} fill={WF_L}>{label}</text></g>;
-    case 'tree': { // decision tree: root ÃÂ¢ÃÂÃÂ 2 ÃÂ¢ÃÂÃÂ 4
+    case 'tree': { // decision tree: root → 2 → 4
       const rootX = cx, rootY = y + 8;
       const l2 = [x + w * 0.28, x + w * 0.72], y2 = y + h * 0.42;
       const l3 = [x + w * 0.12, x + w * 0.40, x + w * 0.60, x + w * 0.88], y3 = y + h * 0.80;
@@ -966,7 +966,7 @@ function WireframeSketch({ nodeId, color }: { nodeId: string; color: string }) {
             <g key={tab}>
               <rect x={tx} y={4} width={tw} height={11} fill={k === 0 ? `rgba(${hexFromColor(color)},0.5)` : 'none'} stroke={k === 0 ? color : WF_F} strokeWidth="0.8" />
               <text x={tx + tw / 2} y={12} textAnchor="middle" fontSize="5.5" fontFamily={WF_MONO} fill={k === 0 ? '#eaffff' : WF_L}>
-                {tab.length > 9 ? tab.slice(0, 8) + 'ÃÂ¢ÃÂÃÂ¦' : tab}
+                {tab.length > 9 ? tab.slice(0, 8) + '…' : tab}
               </text>
             </g>
           );
