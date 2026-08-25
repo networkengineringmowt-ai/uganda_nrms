@@ -1,16 +1,16 @@
 /**
- * romdasReaders — in-browser readers/processors for ROMDAS survey files, the
+ * romdasReaders - in-browser readers/processors for ROMDAS survey files, the
  * client-side counterpart of the Python ingest (uganda-npms-ai-backend).
  *
- *  • PGR (.pgr) — proprietary Ladybug image stream. We carve the embedded JPEG
+ *  • PGR (.pgr) - proprietary Ladybug image stream. We carve the embedded JPEG
  *    frames straight out of the byte stream (SOI ff d8 ff … EOI ff d9), exactly
  *    like data_pipeline/ingest_rbf_pgr.py, and hand back object URLs to preview.
- *  • RBF (.rbf/.csv/.txt) — Roughness Bump File: chainage-indexed roughness /
+ *  • RBF (.rbf/.csv/.txt) - Roughness Bump File: chainage-indexed roughness /
  *    IRI. We parse it tolerantly (auto delimiter + header detection) into
  *    chainage→roughness records and aggregate to fixed survey sections with a
  *    VCI estimate + condition band.
  *
- * Everything runs locally in the browser — no upload — so operators can open a
+ * Everything runs locally in the browser - no upload - so operators can open a
  * raw survey file in the PMS Data View and read it immediately.
  */
 

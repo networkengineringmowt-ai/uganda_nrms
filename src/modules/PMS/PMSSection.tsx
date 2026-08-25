@@ -8,7 +8,7 @@ const RoadConditionView = lazy(() => import('../RoadCondition/RoadConditionView'
 const PavementCatalogue = lazy(() => import('./PavementCatalogue'));
 const AIVisionDashboard = lazy(() => import('./AIVisionDashboard'));
 const DigitalTwin = lazy(() => import('./DigitalTwin'));
-// NPMSSection removed — was imported from '../../sections/NPMSSection' which does not exist
+// NPMSSection removed - was imported from '../../sections/NPMSSection' which does not exist
 const LifecycleView = lazy(() => import('../Lifecycle/LifecycleView'));
 const RoadVideoView = lazy(() => import('../RoadVideoView/RoadVideoView'));
 
@@ -26,7 +26,7 @@ function Spinner() {
 
 type MainTab = 'dashboard' | 'conditionmap' | 'surveys' | 'analytics' | 'lifecycle' | 'design';
 
-// 6 sub-tabs — all PMS content merged, no duplicates:
+// 6 sub-tabs - all PMS content merged, no duplicates:
 // Dashboard  = section KPIs + condition distribution + summary (Supabase live)
 // Condition Map = network condition map
 // Inventory & Surveys = inventory/surveys + road video survey

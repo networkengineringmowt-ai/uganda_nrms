@@ -32,7 +32,7 @@ export default function AIVisionDashboard() {
               <span style={{fontSize:18,fontWeight:800,color:'rgba(168,85,247,1)',letterSpacing:-0.5}}>AI Vision Dashboard</span>
               <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>Computer Vision · Defect Detection · Surface Classification · ML</span>
             </div>
-            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>AI-powered pavement vision dashboard for Uganda NRMS — applying computer vision models to road survey imagery for automated defect detection, surface condition classification, and distress mapping feeding directly into the PMS workflow.</p>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>AI-powered pavement vision dashboard for Uganda NRMS - applying computer vision models to road survey imagery for automated defect detection, surface condition classification, and distress mapping feeding directly into the PMS workflow.</p>
             <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
               {["Computer Vision","Defect Detection","Surface Class","ML Model","Real-Time","PMS Linked"].map(b=>(
                 <span key={b} style={{background:'rgba(168,85,247,0.12)',color:'rgba(168,85,247,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>

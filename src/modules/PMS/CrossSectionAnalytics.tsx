@@ -184,7 +184,7 @@ export default function CrossSectionAnalytics() {
               <span style={{fontSize:18,fontWeight:800,color:'rgba(14,165,233,1)',letterSpacing:-0.5}}>Cross-Section Analytics</span>
               <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>Pavement Layers · ROMDAS GPR · FWD · Structural Model</span>
             </div>
-            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Cross-section analytics for Uganda road pavement — visualising layer composition, pavement depths from ROMDAS GPR surveys, FWD deflection basins, and structural capacity modelling for targeted rehabilitation design.</p>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Cross-section analytics for Uganda road pavement - visualising layer composition, pavement depths from ROMDAS GPR surveys, FWD deflection basins, and structural capacity modelling for targeted rehabilitation design.</p>
             <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
               {["Cross-Section","Layer Analysis","Pavement Depth","ROMDAS GPR","FWD Deflection","Structural Model"].map(b=>(
                 <span key={b} style={{background:'rgba(14,165,233,0.12)',color:'rgba(14,165,233,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
