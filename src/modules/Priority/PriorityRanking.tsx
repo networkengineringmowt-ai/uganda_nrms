@@ -54,7 +54,7 @@ export default function PriorityRanking() {
           </div>
         </div>
         <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>
-          Evidence-based road intervention priority ranking across Uganda's national network — combining HDM-4 economic modelling, pavement condition index, traffic volumes, and social impact scores to optimise URF maintenance budget allocation.
+          Evidence-based road intervention priority ranking across Uganda's national network - combining HDM-4 economic modelling, pavement condition index, traffic volumes, and social impact scores to optimise URF maintenance budget allocation.
         </p>
         <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
           {['HDM-4 Ranking','URF Priority','PCI Based','Traffic Weighted','Social Impact','Budget Optimised'].map((b: string)=>(
