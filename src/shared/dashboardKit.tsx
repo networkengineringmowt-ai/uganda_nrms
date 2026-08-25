@@ -188,12 +188,12 @@ export function BarV({ data, xKey, series, unit, stacked = false }: {
     <ResponsiveContainer width="100%" height="100%">
       <BarChart data={data} margin={{ top: 4, right: 6, left: -14, bottom: 0 }}>
         <CartesianGrid stroke="rgba(148,163,184,0.08)" vertical={false} />
-        <XAxis dataKey={xKey} tick={AXIS_TICK} axisLine={{ stroke: 'rgba(148,163,184,0.15)' }} tickLine={false} />
-        <YAxis tick={AXIS_TICK} axisLine={false} tickLine={false} unit={unit} width={unit ? 44 : 34} />
-        <Tooltip contentStyle={TIP_STYLE} />
-        {series.length > 1 && <Legend wrapperStyle={{ fontSize: 9, color: 'rgba(148,163,184,0.7)' }} iconSize={8} />}
+        <XAxis dataKey={xKey} tick={AXIS_TICK} axisLine={{ stroke: 'rgba(148,163,184,0.22)' }} tickLine={false} />
+        <YAxis tick={AXIS_TICK} axisLine={{ stroke: 'rgba(148,163,184,0.22)' }} tickLine={false} unit={unit} width={unit ? 44 : 34} />
+        <Tooltip contentStyle={TIP_STYLE} cursor={{ fill: 'rgba(0,245,255,0.05)' }} />
+        <Legend wrapperStyle={{ fontSize: 9, color: 'rgba(148,163,184,0.7)' }} iconSize={8} />
         {series.map(s => (
-          <Bar key={s.key} dataKey={s.key} name={s.name} fill={s.color} stackId={stacked ? 'a' : undefined} radius={stacked ? undefined : [3, 3, 0, 0]} />
+          <Bar key={s.key} dataKey={s.key} name={s.name} fill={s.color} stackId={stacked ? 'a' : undefined} radius={stacked ? undefined : [3, 3, 0, 0]} isAnimationActive animationDuration={500} />
         ))}
       </BarChart>
     </ResponsiveContainer>
@@ -207,12 +207,12 @@ export function BarH({ data, yKey, series, unit, stacked = false }: {
     <ResponsiveContainer width="100%" height="100%">
       <BarChart data={data} layout="vertical" margin={{ top: 4, right: 10, left: 4, bottom: 0 }}>
         <CartesianGrid stroke="rgba(148,163,184,0.08)" horizontal={false} />
-        <XAxis type="number" tick={AXIS_TICK} axisLine={false} tickLine={false} unit={unit} />
-        <YAxis type="category" dataKey={yKey} tick={AXIS_TICK} axisLine={false} tickLine={false} width={92} />
-        <Tooltip contentStyle={TIP_STYLE} />
-        {series.length > 1 && <Legend wrapperStyle={{ fontSize: 9, color: 'rgba(148,163,184,0.7)' }} iconSize={8} />}
+        <XAxis type="number" tick={AXIS_TICK} axisLine={{ stroke: 'rgba(148,163,184,0.22)' }} tickLine={false} unit={unit} />
+        <YAxis type="category" dataKey={yKey} tick={AXIS_TICK} axisLine={{ stroke: 'rgba(148,163,184,0.22)' }} tickLine={false} width={92} />
+        <Tooltip contentStyle={TIP_STYLE} cursor={{ fill: 'rgba(0,245,255,0.05)' }} />
+        <Legend wrapperStyle={{ fontSize: 9, color: 'rgba(148,163,184,0.7)' }} iconSize={8} />
         {series.map(s => (
-          <Bar key={s.key} dataKey={s.key} name={s.name} fill={s.color} stackId={stacked ? 'a' : undefined} radius={stacked ? undefined : [0, 3, 3, 0]} />
+          <Bar key={s.key} dataKey={s.key} name={s.name} fill={s.color} stackId={stacked ? 'a' : undefined} radius={stacked ? undefined : [0, 3, 3, 0]} isAnimationActive animationDuration={500} />
         ))}
       </BarChart>
     </ResponsiveContainer>
@@ -227,14 +227,14 @@ export function LineMulti({ data, xKey, series, unit, area = false }: {
     <ResponsiveContainer width="100%" height="100%">
       <Chart data={data} margin={{ top: 4, right: 8, left: -14, bottom: 0 }}>
         <CartesianGrid stroke="rgba(148,163,184,0.08)" vertical={false} />
-        <XAxis dataKey={xKey} tick={AXIS_TICK} axisLine={{ stroke: 'rgba(148,163,184,0.15)' }} tickLine={false} />
-        <YAxis tick={AXIS_TICK} axisLine={false} tickLine={false} unit={unit} width={unit ? 44 : 34} />
-        <Tooltip contentStyle={TIP_STYLE} />
-        {series.length > 1 && <Legend wrapperStyle={{ fontSize: 9, color: 'rgba(148,163,184,0.7)' }} iconSize={8} />}
+        <XAxis dataKey={xKey} tick={AXIS_TICK} axisLine={{ stroke: 'rgba(148,163,184,0.22)' }} tickLine={false} />
+        <YAxis tick={AXIS_TICK} axisLine={{ stroke: 'rgba(148,163,184,0.22)' }} tickLine={false} unit={unit} width={unit ? 44 : 34} />
+        <Tooltip contentStyle={TIP_STYLE} cursor={{ stroke: 'rgba(0,245,255,0.25)', strokeWidth: 1 }} />
+        <Legend wrapperStyle={{ fontSize: 9, color: 'rgba(148,163,184,0.7)' }} iconSize={8} />
         {series.map(s => area ? (
-          <Area key={s.key} type="monotone" dataKey={s.key} name={s.name} stroke={s.color} fill={s.color} fillOpacity={0.12} strokeWidth={2} dot={false} />
+          <Area key={s.key} type="monotone" dataKey={s.key} name={s.name} stroke={s.color} fill={s.color} fillOpacity={0.12} strokeWidth={2} dot={false} isAnimationActive animationDuration={600} activeDot={{ r: 4 }} />
         ) : (
-          <Line key={s.key} type="monotone" dataKey={s.key} name={s.name} stroke={s.color} strokeWidth={2} dot={{ r: 2 }} />
+          <Line key={s.key} type="monotone" dataKey={s.key} name={s.name} stroke={s.color} strokeWidth={2} dot={{ r: 2 }} isAnimationActive animationDuration={600} activeDot={{ r: 5 }} />
         ))}
       </Chart>
     </ResponsiveContainer>
@@ -295,7 +295,7 @@ export function HeatGrid({ matrix, xLabels, yLabels, accent = DASH_C.cyan, unit 
 export function TreemapC({ data, colors = REGION_COLORS }: { data: { name: string; size: number }[]; colors?: string[] }) {
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <Treemap data={data} dataKey="size" nameKey="name" stroke="#020508" fill={DASH_C.cyan} isAnimationActive={false}
+      <Treemap data={data} dataKey="size" nameKey="name" stroke="#020508" fill={DASH_C.cyan} isAnimationActive animationDuration={500}
         content={((props: any) => {
           const { x, y, width, height, index, name, value } = props;
           const c = colors[index % colors.length];
@@ -345,7 +345,7 @@ export function FunnelC({ data, colors = REGION_COLORS }: { data: { name: string
     <ResponsiveContainer width="100%" height="100%">
       <FunnelChart>
         <Tooltip contentStyle={TIP_STYLE} formatter={(v: number) => v.toLocaleString()} />
-        <Funnel dataKey="value" data={data.map((d, i) => ({ ...d, fill: colors[i % colors.length] }))} isAnimationActive={false}>
+        <Funnel dataKey="value" data={data.map((d, i) => ({ ...d, fill: colors[i % colors.length] }))} isAnimationActive animationDuration={500}>
           <LabelList position="right" dataKey="name" fill="rgba(148,163,184,0.8)" stroke="none" fontSize={8.5} />
         </Funnel>
       </FunnelChart>
@@ -363,10 +363,10 @@ export function RadarTile({ data, series, maxValue = 100 }: {
         <PolarAngleAxis dataKey="axis" tick={{ fontSize: 8, fill: 'rgba(148,163,184,0.7)' }} />
         <PolarRadiusAxis domain={[0, maxValue]} tick={{ fontSize: 7, fill: 'rgba(148,163,184,0.4)' }} />
         {series.map(s => (
-          <Radar key={s.key} dataKey={s.key} name={s.name} stroke={s.color} fill={s.color} fillOpacity={0.18} strokeWidth={2} />
+          <Radar key={s.key} dataKey={s.key} name={s.name} stroke={s.color} fill={s.color} fillOpacity={0.18} strokeWidth={2} isAnimationActive animationDuration={600} />
         ))}
         <Tooltip contentStyle={TIP_STYLE} />
-        {series.length > 1 && <Legend wrapperStyle={{ fontSize: 9, color: 'rgba(148,163,184,0.7)' }} iconSize={8} />}
+        <Legend wrapperStyle={{ fontSize: 9, color: 'rgba(148,163,184,0.7)' }} iconSize={8} />
       </RadarChart>
     </ResponsiveContainer>
   );
@@ -400,15 +400,15 @@ export function BoxPlotApprox({ data, unit }: {
     <ResponsiveContainer width="100%" height="100%">
       <BarChart data={chartData} margin={{ top: 4, right: 8, left: -14, bottom: 0 }}>
         <CartesianGrid stroke="rgba(148,163,184,0.08)" vertical={false} />
-        <XAxis dataKey="name" tick={AXIS_TICK} axisLine={{ stroke: 'rgba(148,163,184,0.15)' }} tickLine={false} />
-        <YAxis tick={AXIS_TICK} axisLine={false} tickLine={false} unit={unit} width={unit ? 44 : 34} />
-        <Tooltip contentStyle={TIP_STYLE} />
-        <Bar dataKey="base" stackId="box" fill="transparent" />
-        <Bar dataKey="whiskerLow" stackId="box" fill="rgba(148,163,184,0.25)" />
-        <Bar dataKey="box" stackId="box" radius={[2, 2, 2, 2]}>
+        <XAxis dataKey="name" tick={AXIS_TICK} axisLine={{ stroke: 'rgba(148,163,184,0.22)' }} tickLine={false} />
+        <YAxis tick={AXIS_TICK} axisLine={{ stroke: 'rgba(148,163,184,0.22)' }} tickLine={false} unit={unit} width={unit ? 44 : 34} />
+        <Tooltip contentStyle={TIP_STYLE} cursor={{ fill: 'rgba(0,245,255,0.05)' }} />
+        <Bar dataKey="base" stackId="box" fill="transparent" isAnimationActive animationDuration={500} />
+        <Bar dataKey="whiskerLow" stackId="box" fill="rgba(148,163,184,0.25)" isAnimationActive animationDuration={500} />
+        <Bar dataKey="box" stackId="box" radius={[2, 2, 2, 2]} isAnimationActive animationDuration={500}>
           {chartData.map((d, i) => <Cell key={i} fill={d.color} fillOpacity={0.55} />)}
         </Bar>
-        <Bar dataKey="whiskerHigh" stackId="box" fill="rgba(148,163,184,0.25)" />
+        <Bar dataKey="whiskerHigh" stackId="box" fill="rgba(148,163,184,0.25)" isAnimationActive animationDuration={500} />
       </BarChart>
     </ResponsiveContainer>
   );
@@ -435,11 +435,11 @@ export function WaterfallC({ steps, unit }: {
     <ResponsiveContainer width="100%" height="100%">
       <BarChart data={chartData} margin={{ top: 4, right: 8, left: -14, bottom: 0 }}>
         <CartesianGrid stroke="rgba(148,163,184,0.08)" vertical={false} />
-        <XAxis dataKey="name" tick={{ fontSize: 7.5, fill: 'rgba(148,163,184,0.6)' }} axisLine={{ stroke: 'rgba(148,163,184,0.15)' }} tickLine={false} interval={0} angle={-12} textAnchor="end" height={36} />
-        <YAxis tick={AXIS_TICK} axisLine={false} tickLine={false} unit={unit} width={unit ? 44 : 34} />
-        <Tooltip contentStyle={TIP_STYLE} />
-        <Bar dataKey="base" stackId="w" fill="transparent" />
-        <Bar dataKey="value" stackId="w" radius={[3, 3, 0, 0]}>
+        <XAxis dataKey="name" tick={{ fontSize: 7.5, fill: 'rgba(148,163,184,0.6)' }} axisLine={{ stroke: 'rgba(148,163,184,0.22)' }} tickLine={false} interval={0} angle={-12} textAnchor="end" height={36} />
+        <YAxis tick={AXIS_TICK} axisLine={{ stroke: 'rgba(148,163,184,0.22)' }} tickLine={false} unit={unit} width={unit ? 44 : 34} />
+        <Tooltip contentStyle={TIP_STYLE} cursor={{ fill: 'rgba(0,245,255,0.05)' }} />
+        <Bar dataKey="base" stackId="w" fill="transparent" isAnimationActive animationDuration={500} />
+        <Bar dataKey="value" stackId="w" radius={[3, 3, 0, 0]} isAnimationActive animationDuration={500}>
           {chartData.map((d, i) => <Cell key={i} fill={d.color} />)}
         </Bar>
       </BarChart>
