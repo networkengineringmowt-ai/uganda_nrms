@@ -56,7 +56,7 @@ function OverviewTab() {
           <div>
             <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.12em', color: ACC, textTransform: 'uppercase' }}>DEPARTMENT</div>
             <div style={{ fontSize: 16, fontWeight: 800, color: '#fff', lineHeight: 1.3 }}>
-              DUCAR — District, Urban & Community Access Roads
+              DUCAR - District, Urban & Community Access Roads
             </div>
           </div>
         </div>
@@ -64,7 +64,7 @@ function OverviewTab() {
           The <strong style={{ color: ACC }}>Department of Urban and Community Access Roads</strong> (DUCAR) oversees
           the planning, construction, and maintenance of <em>urban roads, district feeder roads, and community access
           routes</em> across Uganda. Working through 146 Local Government Units, DUCAR bridges the gap between the
-          national road network and last-mile rural connectivity — serving farmers, schools, health facilities, and
+          national road network and last-mile rural connectivity - serving farmers, schools, health facilities, and
           trading centres with all-weather surface access. DUCAR integrates Road Rehabilitation, Routine Maintenance,
           Emergency Works, and the Urban Road Upgrading Programme under a single asset management framework aligned
           with NDP IV strategic outcomes.
