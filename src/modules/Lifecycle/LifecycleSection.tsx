@@ -21,7 +21,7 @@ const C = {
   orange: '#f97316', red: '#ef4444', purple: '#a855f7', blue: '#4d9fff',
   gray: '#6b7280', pink: '#ff2d78', dark: '#0a0f1e',
 };
-// Ordered by intervention severity — canonical risk/condition scale
+// Ordered by intervention severity - canonical risk/condition scale
 const INT_COLORS: Record<IntType, string> = {
   Routine: '#22c55e',
   Reseal: '#84cc16',
@@ -90,7 +90,7 @@ function classifyInt(type: string): IntType {
   return 'Routine';
 }
 
-// ── Road Link Data — synthesised at runtime from network2026.geojson ────
+// ── Road Link Data - synthesised at runtime from network2026.geojson ────
 //
 // Empty placeholder. The actual array is populated by useEffect in the
 // component, which reads ALL 1,017 link features from the GeoJSON and
@@ -119,11 +119,11 @@ function featureToLink(p: Record<string, unknown>, idx: number): LinkDef {
   // Cost rate (UGX million / km) by surface
   const costPerKm = surface === 'Bituminous' ? 220 : 25;
 
-  // Asset replacement value (Bn UGX): heuristic — paved 6.4 M USD/km, unpaved 0.8 M USD/km
+  // Asset replacement value (Bn UGX): heuristic - paved 6.4 M USD/km, unpaved 0.8 M USD/km
   const usdPerKmM = surface === 'Bituminous' ? 6.4 : 0.8;
   const assetValueBn = Math.round(lengthKm * usdPerKmM * 3.7) / 10; // approx in Bn UGX
 
-  // AADT 2026 — class-weighted baseline × length factor
+  // AADT 2026 - class-weighted baseline × length factor
   const baseAadt =
     roadClass === 'A' ? 6800 :
     roadClass === 'B' ? 1900 :
@@ -134,7 +134,7 @@ function featureToLink(p: Record<string, unknown>, idx: number): LinkDef {
   const builtYear = completion > 1900 ? completion : 1985;
   const interventions: Intervention[] = [];
 
-  // Initial construction implied — not an intervention
+  // Initial construction implied - not an intervention
   if (rehabYear > 0 && rehabYear !== builtYear) {
     // Add a rehabilitation event at the rehab year
     interventions.push({
@@ -187,7 +187,7 @@ function featureToLink(p: Record<string, unknown>, idx: number): LinkDef {
     currentIRI > 9 ? (surface === 'Bituminous' ? 'Severe Cracking & Potholes' : 'Gravel Loss & Erosion') :
     currentIRI > 6 ? (surface === 'Bituminous' ? 'Fatigue Cracking & Rutting' : 'Corrugation & Loose Aggregate') :
     currentIRI > 4 ? (surface === 'Bituminous' ? 'Surface Wear & Edge Crack' : 'Minor Erosion') :
-                     (surface === 'Bituminous' ? 'Good — No Distress' : 'Stable');
+                     (surface === 'Bituminous' ? 'Good - No Distress' : 'Stable');
 
   const designStandard = surface === 'Bituminous'
     ? `Class ${roadClass} ${roadClass === 'A' ? 'dual carriageway' : 'single carriageway'}`
@@ -197,7 +197,7 @@ function featureToLink(p: Record<string, unknown>, idx: number): LinkDef {
     : builtYear < 2010 ? 'Multiple (DBST)'
     : 'NDPIV / OPRC contractor';
 
-  // Coords — straight line between start/end (synthesised)
+  // Coords - straight line between start/end (synthesised)
   const coords: [number, number][] = [];
   if (startY && startX && endY && endX) {
     const steps = 4;
@@ -410,15 +410,15 @@ export default function LifecycleSection() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Loading guard — show small spinner until links arrive
+  // Loading guard - show small spinner until links arrive
   const link: LinkDef = useMemo(() => {
     if (allLinks.length === 0) {
       // Stable placeholder so hooks below don't blow up before data arrives
       return {
-        id: '—', name: 'Loading…', road: '?', region: 'Unknown',
+        id: '-', name: 'Loading…', road: '?', region: 'Unknown',
         roadClass: 'C', lengthKm: 0, surface: 'Unsealed',
-        builtYear: 2000, contractor: '—', designStandard: '—',
-        aadt2026: 0, dominantDefect: '—',
+        builtYear: 2000, contractor: '-', designStandard: '-',
+        aadt2026: 0, dominantDefect: '-',
         interventions: [], currentIRI: 6.0, assetValueBn: 0,
         coords: [[1.37, 32.29], [1.38, 32.30]],
       };
@@ -436,7 +436,7 @@ export default function LifecycleSection() {
   const nextRehabYr = Math.round(2026 + Math.max(1, (8.0 - link.currentIRI) / 0.38));
   const nextRehabCostBn = +(link.lengthKm * 2200 / 1_000_000).toFixed(1);
 
-  // ── Summary stats — across all 1,017 loaded links ───────────────────────────
+  // ── Summary stats - across all 1,017 loaded links ───────────────────────────
   const statsAll = useMemo(() => {
     if (allLinks.length === 0) return { totalKm: 0, totalInts: 0, avgIri: 0, projCost2035: 0 };
     return {
@@ -503,7 +503,7 @@ export default function LifecycleSection() {
           </div>
         </div>
         <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>
-          Whole-life cost analysis and asset lifecycle planning for Uganda's road and bridge network — modelling deterioration curves, optimal intervention timing, residual life estimates, and long-term maintenance cost projections aligned with ISO 55001 asset management principles.
+          Whole-life cost analysis and asset lifecycle planning for Uganda's road and bridge network - modelling deterioration curves, optimal intervention timing, residual life estimates, and long-term maintenance cost projections aligned with ISO 55001 asset management principles.
         </p>
         <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
           {['ISO 55001','WLC Analysis','HDM-4 Modelled','MoWT Standards','AfDB Aligned','NDPIV Goals'].map((b: string)=>(
@@ -604,7 +604,7 @@ export default function LifecycleSection() {
 
         {/* ── Right: Intervention Map + MapDetailPane (definitive flex-row, siblings) ── */}
         <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'row', alignItems: 'stretch', overflow: 'hidden', height: '100%' }}>
-        {/* Map + sparkline column — flex:1, fills remaining space to the left of MapDetailPane */}
+        {/* Map + sparkline column - flex:1, fills remaining space to the left of MapDetailPane */}
         <div style={{ ...glass(C.orange), flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           {/* Map header */}
           <div style={{ padding: '8px 12px', borderBottom: `1px solid rgba(${hexRgb(C.orange)},0.12)`, flexShrink: 0 }}>
@@ -636,7 +636,7 @@ export default function LifecycleSection() {
               <ZoomControl position="bottomright"/>
               <MapFlyTo center={center} zoom={mapZoom}/>
 
-              {/* Road link — colored by condition — click opens MapDetailPane */}
+              {/* Road link - colored by condition - click opens MapDetailPane */}
               <Polyline
                 positions={link.coords}
                 pathOptions={{ color: iriColor, weight: 5, opacity: 0.9 }}
@@ -653,7 +653,7 @@ export default function LifecycleSection() {
                 >
                   <Popup>
                     <div style={{ minWidth: 140, fontSize: 11 }}>
-                      <div style={{ fontWeight: 700, color: m.color, marginBottom: 4 }}>{m.year} — {m.label}</div>
+                      <div style={{ fontWeight: 700, color: m.color, marginBottom: 4 }}>{m.year} - {m.label}</div>
                       <div style={{ color: '#333' }}>IRI: {m.iriBefore} → {m.iriAfter} m/km</div>
                       <div style={{ color: '#333' }}>Cost: UGX {m.costMUgx.toLocaleString()}M</div>
                     </div>
@@ -665,7 +665,7 @@ export default function LifecycleSection() {
 
         </div>{/* closes map column */}
 
-        {/* MapDetailPane — right of lifecycle map, 340px */}
+        {/* MapDetailPane - right of lifecycle map, 340px */}
         <MapDetailPane
           width={340}
           accent={C.teal}
@@ -905,7 +905,7 @@ function AllLinksTable({
                   <td style={{ padding: '5px 10px', color: '#94a3b8', fontVariantNumeric: 'tabular-nums' }}>{l.lengthKm.toFixed(1)}</td>
                   <td style={{ padding: '5px 10px', color: l.roadClass === 'A' ? '#00f5ff' : l.roadClass === 'B' ? '#00ff88' : l.roadClass === 'M' ? '#b967ff' : '#ffd23f', fontWeight: 800 }}>{l.roadClass}</td>
                   <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{l.region}</td>
-                  <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{l.station ?? '—'}</td>
+                  <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{l.station ?? '-'}</td>
                   <td style={{ padding: '5px 10px', color: l.surface === 'Bituminous' ? '#00f5ff' : '#ff8c00' }}>{l.surface === 'Bituminous' ? 'Paved' : 'Unsealed'}</td>
                   <td style={{ padding: '5px 10px' }}>
                     <span style={{ color: condC, fontWeight: 700 }}>{l.currentIRI.toFixed(1)}</span>
@@ -929,7 +929,7 @@ function AllLinksTable({
       </div>
       {sorted.length > 1200 && (
         <div style={{ padding: '8px 12px', fontSize: 9.5, color: 'rgba(148,163,184,0.5)', textAlign: 'center' }}>
-          Showing first 1,200 rows of {sorted.length.toLocaleString()} — narrow filters to see more.
+          Showing first 1,200 rows of {sorted.length.toLocaleString()} - narrow filters to see more.
         </div>
       )}
     </div>

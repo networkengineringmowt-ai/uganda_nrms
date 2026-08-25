@@ -1,10 +1,10 @@
 /**
- * LifecycleView — Life Cycle Management shell.
+ * LifecycleView - Life Cycle Management shell.
  *
  * Two tabs:
- *   · History Map — the national network timeline map (RoadNetworkView opened
+ *   · History Map - the national network timeline map (RoadNetworkView opened
  *     in History mode: 1960–2026 paving animation, year slider, playback).
- *   · Lifecycle Analytics — the per-link IRI deterioration timeline and
+ *   · Lifecycle Analytics - the per-link IRI deterioration timeline and
  *     intervention-history analytics (LifecycleSection).
  */
 import { Suspense, lazy, useState } from 'react';
