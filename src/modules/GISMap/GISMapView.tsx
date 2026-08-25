@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useMemo, useRef, memo, useCallback, useContext } from 'react';
 import {
   MapContainer, TileLayer, CircleMarker, Tooltip,
-  ZoomControl, GeoJSON, useMap,
+  GeoJSON, useMap,
 } from 'react-leaflet';
 import {
   ESRI_TILE_URLS, ESRI_ATTRIBUTIONS,
   ROAD_STYLES, STRUCTURE_STYLES, surfaceCategory,
 } from '../../shared/mapSymbols';
-import { ImprovedInfraLayers } from '../../shared/ImprovedInfraLayers';
-import { MapLegend, LEGEND_STRUCTURES, LEGEND_STRUCTURE_CONDITION, LEGEND_FULL } from '../../shared/MapLegend';
+import MapGISControls, { UGANDA_BOUNDS } from '../../shared/MapGISControls';
+import { MapLegend, LEGEND_STRUCTURES, LEGEND_STRUCTURE_CONDITION } from '../../shared/MapLegend';
 import { BotHighlightContext } from '../AssetBot/types';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -32,10 +32,10 @@ type LayerFilter = 'all' | 'bridge' | 'culvert';
 
 type DisplayStructure = Structure & { displayRating: number };
 
-// (Infrastructure layers — ferries, airports, weighbridges, ports — are shown on the Road Network Map)
+// (Infrastructure layers - ferries, airports, weighbridges, ports - are shown on the Road Network Map)
 
 
-// ── Zoom tracker — child component inside MapContainer ────────────────────────
+// ── Zoom tracker - child component inside MapContainer ────────────────────────
 function ZoomTracker({ onZoom }: { onZoom: (z: number) => void }) {
   const map = useMap();
   useEffect(() => {
@@ -123,17 +123,17 @@ export default function GISMapView() {
   }
 
   return (
-    <div className="relative flex h-full w-full overflow-hidden">
+    <div className="relative flex flex-col h-full w-full overflow-hidden">
 
         {/* ── Definition Card ── */}
-        <div style={{background:'rgba(16,185,129,0.04)',border:'1px solid rgba(16,185,129,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'flex-start',gap:16}}>
+        <div style={{background:'rgba(16,185,129,0.04)',border:'1px solid rgba(16,185,129,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:0,display:'flex',alignItems:'flex-start',gap:16,flexShrink:0}}>
           <div style={{fontSize:36,lineHeight:1,flexShrink:0}}>🗺️</div>
           <div style={{flex:1}}>
             <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
               <span style={{fontSize:18,fontWeight:800,color:'rgba(16,185,129,1)',letterSpacing:-0.5}}>National Roads GIS Map</span>
               <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>UNRA · MoWT · PostGIS · Vector Tiles · Leaflet</span>
             </div>
-            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Interactive national roads GIS map for Uganda — overlaying UNRA road network, condition heat-maps, project sites, ATC stations, and bridge locations on PostGIS-backed vector tile layers with real-time Supabase queries.</p>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Interactive national roads GIS map for Uganda - overlaying UNRA road network, condition heat-maps, project sites, ATC stations, and bridge locations on PostGIS-backed vector tile layers with real-time Supabase queries.</p>
             <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
               {["National Network","PostGIS Layers","Vector Tiles","WMS / WFS","Leaflet JS","UNRA GIS"].map(b=>(
                 <span key={b} style={{background:'rgba(16,185,129,0.12)',color:'rgba(16,185,129,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
@@ -142,20 +142,20 @@ export default function GISMapView() {
           </div>
         </div>
 
-      {/* ── Map canvas ── */}
+      {/* ── Map canvas + all floating overlays (own positioning context, starts BELOW the Definition Card so nothing collides with it) ── */}
+      <div className="relative flex-1 min-w-0" style={{ overflow: 'hidden' }}>
       <MapContainer
         center={CENTER} zoom={7}
-        style={{ flex: 1, height: '100%', zIndex: 0 }}
+        style={{ width: '100%', height: '100%', zIndex: 0 }}
         zoomControl={false}
       >
-        <ZoomControl position="bottomright" />
+        <MapGISControls bounds={UGANDA_BOUNDS} accent="#0891b2" position="topright" style={{ top: 166 }} />
         <ZoomTracker onZoom={handleZoom} />
 
         <TileLayer url={ESRI_TILE_URLS.imagery} attribution={ESRI_ATTRIBUTIONS.imagery}/>
         <TileLayer url={ESRI_TILE_URLS.labels}  attribution={ESRI_ATTRIBUTIONS.labels} opacity={0.7}/>
-        <ImprovedInfraLayers />
+        {/* Bridges & culverts only - ferries/airports live on the RMS network map, not here. */}
         <MapLegend title="STRUCTURES" items={[...LEGEND_STRUCTURES, ...LEGEND_STRUCTURE_CONDITION]} position="bottomleft" />
-        <MapLegend title="MAP FEATURES" items={LEGEND_FULL} position="bottomright" />
         {roadGeo && (
           <GeoJSON
             key={`roads-${highlightedLinks.length}`}
@@ -164,7 +164,7 @@ export default function GISMapView() {
           />
         )}
 
-        {/* ── Structures — enhanced circles/squares with rich popups; hidden below zoom 10 ── */}
+        {/* ── Structures - enhanced circles/squares with rich popups; hidden below zoom 10 ── */}
         {zoom >= STRUCTURE_STYLES.bridge.minZoom && displayStructures.map(s => {
           const isBridge = s.type === 'bridge';
           const sym      = isBridge ? STRUCTURE_STYLES.bridge : STRUCTURE_STYLES.culvert;
@@ -246,21 +246,21 @@ export default function GISMapView() {
         <div className="bg-slate-900/92 backdrop-blur border border-slate-700 rounded-xl p-3">
           <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Symbol Key</div>
           <div className="space-y-1.5">
-            {/* Bridge — cyan circle with white outline */}
+            {/* Bridge - cyan circle with white outline */}
             <div className="flex items-center gap-2">
               <svg viewBox="0 0 12 12" width="12" height="12" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="6" cy="6" r="5" fill="#0891b2" stroke="white" strokeWidth="1.5"/>
               </svg>
               <span className="text-[10px] text-slate-300">Bridge</span>
             </div>
-            {/* Culvert — amber square with white outline */}
+            {/* Culvert - amber square with white outline */}
             <div className="flex items-center gap-2">
               <svg viewBox="0 0 10 10" width="10" height="10" xmlns="http://www.w3.org/2000/svg">
                 <rect x="1" y="1" width="8" height="8" rx="1" fill="#F59E0B" stroke="white" strokeWidth="1.5"/>
               </svg>
               <span className="text-[10px] text-slate-300">Major Culvert</span>
             </div>
-            {/* Critical status — red outline */}
+            {/* Critical status - red outline */}
             <div className="flex items-center gap-2">
               <svg viewBox="0 0 12 12" width="12" height="12" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="6" cy="6" r="4.5" fill="#0891b2" stroke="#ef4444" strokeWidth="2"/>
@@ -359,8 +359,8 @@ export default function GISMapView() {
         </div>
       </div>
 
-      {/* ── Top-right download toolbar ── */}
-      <div className="absolute top-4 right-4 z-[1000] flex flex-col gap-1.5">
+      {/* ── Top-right download toolbar ── (offset down to clear the global PageToolbar cluster) */}
+      <div className="absolute z-[900] flex flex-col gap-1.5" style={{ top: 54, right: 16 }}>
         {[
           { label: 'GeoJSON', fn: () => downloadGeoJSON(displayStructures, 'structures_filtered.geojson'), color: '#00f5ff' },
           { label: 'KML',     fn: () => downloadKML(displayStructures, 'structures_filtered.kml'),         color: '#00ff88' },
@@ -387,6 +387,7 @@ export default function GISMapView() {
           onClose={() => setSelected(null)}
         />
       )}
+      </div>
     </div>
   );
 }
@@ -548,10 +549,10 @@ const StructurePanel = memo(function StructurePanel({
               <Section title="Location & Network">
                 <Grid>
                   <Field l="Road" v={s.road} />
-                  <Field l="Road No." v={s.roadNumber || '—'} />
+                  <Field l="Road No." v={s.roadNumber || '-'} />
                   <Field l="Region" v={s.region} />
                   <Field l="Chainage" v={`${s.chainage.toFixed(1)} km`} />
-                  <Field l="Maint. Area" v={s.maintenanceArea || '—'} />
+                  <Field l="Maint. Area" v={s.maintenanceArea || '-'} />
                   <Field l="River / Crossing" v={s.river || s.crossingType} />
                   <Field l="Lat / Lng" v={`${s.lat.toFixed(5)}, ${s.lng.toFixed(5)}`} span />
                 </Grid>
@@ -746,8 +747,8 @@ const StructurePanel = memo(function StructurePanel({
               </Section>
               <Section title="Inspection Schedule">
                 <div className="grid grid-cols-2 gap-2 text-[11px]">
-                  <div><span className="text-slate-500">Last:</span> <span className="text-slate-200">{(s.lastInspection || '—').slice(0, 10)}</span></div>
-                  <div><span className="text-slate-500">Next:</span> <span className="text-slate-200">{(s.nextInspection || '—').slice(0, 10)}</span></div>
+                  <div><span className="text-slate-500">Last:</span> <span className="text-slate-200">{(s.lastInspection || '-').slice(0, 10)}</span></div>
+                  <div><span className="text-slate-500">Next:</span> <span className="text-slate-200">{(s.nextInspection || '-').slice(0, 10)}</span></div>
                 </div>
                 {s.inspectionDue && (
                   <div className="mt-2 text-[10px] font-bold text-amber-400">⚠ Inspection overdue</div>
@@ -792,7 +793,7 @@ const StructurePanel = memo(function StructurePanel({
                         <span className="text-slate-200 font-semibold">{w.title}</span>
                         <span className="text-slate-400">{w.status}</span>
                       </div>
-                      <div className="text-slate-500 text-[10px]">{w.type} · UGX {(w.cost / 1e6).toFixed(1)} M · {w.contractor || '—'}</div>
+                      <div className="text-slate-500 text-[10px]">{w.type} · UGX {(w.cost / 1e6).toFixed(1)} M · {w.contractor || '-'}</div>
                     </div>
                   ))}
                 </Section>
@@ -877,7 +878,7 @@ function Field({
   return (
     <div className={span ? 'col-span-2' : ''}>
       <div className="text-[9px] text-slate-500 font-medium uppercase tracking-wide">{l}</div>
-      <div className={`text-[11px] font-semibold mt-0.5 ${vc}`}>{v || '—'}</div>
+      <div className={`text-[11px] font-semibold mt-0.5 ${vc}`}>{v || '-'}</div>
     </div>
   );
 }
