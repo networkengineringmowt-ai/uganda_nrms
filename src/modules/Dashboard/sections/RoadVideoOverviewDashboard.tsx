@@ -17,7 +17,7 @@
  * No tables here — tabular breakdowns live under Exhaustive Tables / Deep Analytics.
  */
 import {
-  DASH_C, CONDITION_COLORS, KpiStrip, StatMini, SectionHdr, ChartGrid, ChartBox,
+  DASH_C, DASHBOARD_COND_COLORS, KpiStrip, StatMini, SectionHdr, ChartGrid, ChartBox,
   DonutChart, PieChartTile, BarV, BarH, LineMulti, ScatterBubble, HeatGrid, TreemapC, GaugeC,
   FunnelC, RadarTile, BoxPlotApprox, WaterfallC,
 } from '../../../shared/dashboardKit';
@@ -188,7 +188,7 @@ export default function RoadVideoOverviewDashboard() {
         </ChartBox>
         <ChartBox title="Distress Severity Mix" subtitle="by type, stacked" accent={DASH_C.pink} height={210}>
           <BarV data={DIST_LBL.map((n, i) => ({ name: n, Low: SEV_BY_TYPE[i][0], Medium: SEV_BY_TYPE[i][1], High: SEV_BY_TYPE[i][2], Critical: SEV_BY_TYPE[i][3] }))}
-            xKey="name" series={SEV_LBL.map((l, i) => ({ key: l, name: l, color: CONDITION_COLORS[i] }))} stacked />
+            xKey="name" series={SEV_LBL.map((l, i) => ({ key: l, name: l, color: DASHBOARD_COND_COLORS[i] }))} stacked />
         </ChartBox>
         <ChartBox title="Distress Flag Density" subtitle="flags / surveyed km, by class" accent={DASH_C.yellow} height={210}>
           <BarV data={CLASS_LBL.map((n, i) => ({ name: n.split(' ')[1], density: DENSITY_BY_CLASS[i] }))} xKey="name"

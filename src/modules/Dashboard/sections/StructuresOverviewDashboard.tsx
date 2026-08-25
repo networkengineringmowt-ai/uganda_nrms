@@ -9,7 +9,7 @@
  * Exhaustive Tables / Deep Analytics.
  */
 import {
-  DASH_C, REGION_COLORS, CONDITION_COLORS, KpiStrip, StatMini, SectionHdr, ChartGrid, ChartBox,
+  DASH_C, REGION_COLORS, DASHBOARD_COND_COLORS, KpiStrip, StatMini, SectionHdr, ChartGrid, ChartBox,
   DonutChart, PieChartTile, BarV, BarH, LineMulti, ScatterBubble, HeatGrid, TreemapC, GaugeC,
   FunnelC, RadarTile, BoxPlotApprox, WaterfallC,
 } from '../../../shared/dashboardKit';
@@ -112,7 +112,7 @@ export default function StructuresOverviewDashboard() {
           <DonutChart data={STR_TYPE_LBL.map((n, i) => ({ name: n, value: STR_TYPE[i], color: STR_TYPE_COLORS[i] }))} />
         </ChartBox>
         <ChartBox title="Structure Condition Distribution" accent={DASH_C.green} height={210}>
-          <DonutChart data={COND_LBL.map((n, i) => ({ name: n, value: STR_COND[i], color: CONDITION_COLORS[i] }))} />
+          <DonutChart data={COND_LBL.map((n, i) => ({ name: n, value: STR_COND[i], color: DASHBOARD_COND_COLORS[i] }))} />
         </ChartBox>
         <ChartBox title="Structures by Material" accent={DASH_C.blue} height={210}>
           <BarV data={STR_MAT_LBL.map((n, i) => ({ name: n, count: STR_MAT[i] }))} xKey="name" series={[{ key: 'count', name: 'Count', color: DASH_C.blue }]} />
@@ -166,8 +166,8 @@ export default function StructuresOverviewDashboard() {
         <ChartBox title="Structure Condition by Region" subtitle="stacked" accent={DASH_C.green} height={210}>
           <BarV data={REG_LBL.map((r, i) => ({ name: r, Good: STR_REG_COND[i][0], Fair: STR_REG_COND[i][1], Poor: STR_REG_COND[i][2], Critical: STR_REG_COND[i][3] }))}
             xKey="name" series={[
-              { key: 'Good', name: 'Good', color: CONDITION_COLORS[0] }, { key: 'Fair', name: 'Fair', color: CONDITION_COLORS[1] },
-              { key: 'Poor', name: 'Poor', color: CONDITION_COLORS[2] }, { key: 'Critical', name: 'Critical', color: CONDITION_COLORS[3] },
+              { key: 'Good', name: 'Good', color: DASHBOARD_COND_COLORS[0] }, { key: 'Fair', name: 'Fair', color: DASHBOARD_COND_COLORS[1] },
+              { key: 'Poor', name: 'Poor', color: DASHBOARD_COND_COLORS[2] }, { key: 'Critical', name: 'Critical', color: DASHBOARD_COND_COLORS[3] },
             ]} stacked />
         </ChartBox>
         <ChartBox title="Inspection Currency 2021–2025" accent={DASH_C.green} height={210}>

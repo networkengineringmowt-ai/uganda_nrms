@@ -6,7 +6,7 @@
  * tabular breakdowns live under Exhaustive Tables / Deep Analytics.
  */
 import {
-  DASH_C, REGION_COLORS, CONDITION_COLORS, KpiStrip, StatMini, SectionHdr, ChartGrid, ChartBox,
+  DASH_C, REGION_COLORS, DASHBOARD_COND_COLORS, KpiStrip, StatMini, SectionHdr, ChartGrid, ChartBox,
   SunburstApprox, HeatGrid, BarH, ScatterBubble, GaugeC, BarV, LineMulti, DonutChart, PieChartTile,
   BoxPlotApprox, WaterfallC, RadarTile, TreemapC, FunnelC,
 } from '../../../shared/dashboardKit';

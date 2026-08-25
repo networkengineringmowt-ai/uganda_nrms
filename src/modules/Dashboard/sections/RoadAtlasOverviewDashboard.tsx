@@ -12,7 +12,7 @@
  * here — tabular breakdowns live under Exhaustive Tables / Deep Analytics.
  */
 import {
-  DASH_C, REGION_COLORS, CONDITION_COLORS, KpiStrip, StatMini, SectionHdr, ChartGrid, ChartBox,
+  DASH_C, REGION_COLORS, DASHBOARD_COND_COLORS, KpiStrip, StatMini, SectionHdr, ChartGrid, ChartBox,
   DonutChart, PieChartTile, BarV, BarH, LineMulti, ScatterBubble, HeatGrid, TreemapC, GaugeC,
   FunnelC, RadarTile, BoxPlotApprox, WaterfallC,
 } from '../../../shared/dashboardKit';
@@ -45,7 +45,7 @@ const TOTAL_PLATES = REG_PLATES.reduce((a, b) => a + b, 0);
 const REG_PLATE_COVERAGE = [99, 91, 97, 95, 98, 88]; // %
 const PLATE_COVERAGE_PCT = 96;
 
-// Atlas plate publication status (ordered current → draft; 4-band, matches CONDITION_COLORS).
+// Atlas plate publication status (ordered current → draft; 4-band, matches DASHBOARD_COND_COLORS).
 const PLATE_STATUS_LBL = ['Current Edition', 'Needs Revision', 'Superseded', 'In Draft'];
 const PLATE_STATUS_N = [178, 42, 19, 7]; // sum 246
 
@@ -159,7 +159,7 @@ export default function RoadAtlasOverviewDashboard() {
 
       <ChartGrid cols="4">
         <ChartBox title="Atlas Plate Status" accent={DASH_C.teal} height={190}>
-          <PieChartTile data={PLATE_STATUS_LBL.map((n, i) => ({ name: n, value: PLATE_STATUS_N[i] }))} colors={CONDITION_COLORS} />
+          <PieChartTile data={PLATE_STATUS_LBL.map((n, i) => ({ name: n, value: PLATE_STATUS_N[i] }))} colors={DASHBOARD_COND_COLORS} />
         </ChartBox>
         <ChartBox title="Plate Coverage" subtitle="target 100% by FY27" accent={DASH_C.green} height={190}>
           <GaugeC value={PLATE_COVERAGE_PCT} target={100} color={DASH_C.green} />

@@ -6,7 +6,7 @@
  * No tables here — tabular breakdowns live under Exhaustive Tables / Deep Analytics.
  */
 import {
-  DASH_C, REGION_COLORS, CONDITION_COLORS, KpiStrip, StatMini, SectionHdr, ChartGrid, ChartBox,
+  DASH_C, REGION_COLORS, DASHBOARD_COND_COLORS, KpiStrip, StatMini, SectionHdr, ChartGrid, ChartBox,
   DonutChart, PieChartTile, BarV, BarH, LineMulti, ScatterBubble, HeatGrid, TreemapC, GaugeC,
   FunnelC, RadarTile, BoxPlotApprox, WaterfallC,
 } from '../../../shared/dashboardKit';
@@ -118,10 +118,10 @@ export default function PavementOverviewDashboard() {
 
       <ChartGrid cols="4">
         <ChartBox title="Paved Road Condition" accent={DASH_C.green} height={190}>
-          <DonutChart data={COND_LBL.map((n, i) => ({ name: n, value: PAV_COND[i] }))} colors={CONDITION_COLORS} />
+          <DonutChart data={COND_LBL.map((n, i) => ({ name: n, value: PAV_COND[i] }))} colors={DASHBOARD_COND_COLORS} />
         </ChartBox>
         <ChartBox title="Unpaved Road Condition" accent={DASH_C.orange} height={190}>
-          <DonutChart data={COND_LBL.map((n, i) => ({ name: n, value: UNPAV_COND[i] }))} colors={CONDITION_COLORS} />
+          <DonutChart data={COND_LBL.map((n, i) => ({ name: n, value: UNPAV_COND[i] }))} colors={DASHBOARD_COND_COLORS} />
         </ChartBox>
         <ChartBox title="Overall Condition" subtitle="km" accent={DASH_C.pink} height={190}>
           <BarV data={COND_LBL.map((n, i) => ({ name: n, km: TOTAL_COND[i] }))} xKey="name"
