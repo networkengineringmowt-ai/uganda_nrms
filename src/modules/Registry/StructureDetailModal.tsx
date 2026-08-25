@@ -8,7 +8,7 @@ interface Props {
   onClose: () => void;
 }
 
-// S:\PHOTOS\B001\ style paths — derive from bridge ID
+// S:\PHOTOS\B001\ style paths - derive from bridge ID
 function photoUrl(id: string, idx: number): string {
   // Bridge IDs like BRG-B001 → S:\PHOTOS\B001\
   const match = id.match(/B(\d+)/);
@@ -73,12 +73,12 @@ export default function StructureDetailModal({ structure: s, onClose }: Props) {
               {/* Location */}
               <Section title="Location & Administration">
                 <Grid2>
-                  <Field label="Road Number"     value={s.roadNumber || '—'} />
+                  <Field label="Road Number"     value={s.roadNumber || '-'} />
                   <Field label="Road Name"        value={s.road} />
                   <Field label="Chainage"         value={`${s.chainage.toFixed(2)} km`} />
                   <Field label="Region"           value={s.region} />
                   <Field label="Maintenance Area" value={s.maintenanceArea} />
-                  <Field label="River"            value={s.river || '—'} />
+                  <Field label="River"            value={s.river || '-'} />
                   <Field label="Latitude"         value={s.lat.toFixed(6)} mono />
                   <Field label="Longitude"        value={s.lng.toFixed(6)} mono />
                 </Grid2>
@@ -156,7 +156,7 @@ export default function StructureDetailModal({ structure: s, onClose }: Props) {
                 </Section>
               )}
 
-              {/* Photos — real S:\PHOTOS\ links */}
+              {/* Photos - real S:\PHOTOS\ links */}
               {photos.length > 0 && (
                 <Section title="Site Photos">
                   <div className="flex items-center gap-1 mt-1">
