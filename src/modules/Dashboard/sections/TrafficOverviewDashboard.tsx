@@ -182,9 +182,9 @@ export default function TrafficOverviewDashboard() {
         <ChartBox title="AADT Share by Corridor" subtitle="treemap, sized by AADT" accent={DASH_C.teal} height={220}>
           <TreemapC data={CORRIDORS.map((c, i) => ({ name: c, size: CORR_AADT[i] }))} colors={REGION_COLORS} />
         </ChartBox>
-        <ChartBox title="Top 5 Corridors" subtitle="growth vs HGV %" accent={DASH_C.purple} height={220}>
+        <ChartBox title="All 10 Corridors" subtitle="growth vs HGV %" accent={DASH_C.purple} height={220}>
           <RadarTile
-            data={TOP5_IDX.map(i => ({ axis: CORRIDORS[i].replace('Kla-', 'K.'), growthPct: CORR_GROWTH[i], hgvPct: CORR_HGV[i] }))}
+            data={CORRIDORS.map((c, i) => ({ axis: c.replace('Kla-', 'K.'), growthPct: CORR_GROWTH[i], hgvPct: CORR_HGV[i] }))}
             series={[{ key: 'growthPct', name: 'Growth %/yr', color: DASH_C.green }, { key: 'hgvPct', name: 'HGV %', color: DASH_C.orange }]}
             maxValue={30}
           />

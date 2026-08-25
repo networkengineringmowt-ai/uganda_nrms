@@ -85,10 +85,15 @@ const ACCIDENT_TYPE_PCT = [28, 22, 18, 14, 12, 6];
 
 const CORR_SAFETY = [
   { axis: 'Kla-Entebbe', fatalityRate: 3.8, blackspotDensity: 8.2, overloadPct: 6.5 },
+  { axis: 'Kla-Jinja', fatalityRate: 4.1, blackspotDensity: 8.8, overloadPct: 7.4 },
   { axis: 'Kla-Gulu (N. Corr.)', fatalityRate: 5.4, blackspotDensity: 11.5, overloadPct: 9.8 },
-  { axis: 'Jinja-Tororo', fatalityRate: 4.6, blackspotDensity: 9.0, overloadPct: 8.9 },
   { axis: 'Kla-Mbarara', fatalityRate: 3.2, blackspotDensity: 6.4, overloadPct: 5.8 },
+  { axis: 'Jinja-Tororo', fatalityRate: 4.6, blackspotDensity: 9.0, overloadPct: 8.9 },
   { axis: 'Masaka-Mba', fatalityRate: 2.9, blackspotDensity: 5.8, overloadPct: 6.0 },
+  { axis: 'Mba-Kabale', fatalityRate: 3.5, blackspotDensity: 7.1, overloadPct: 5.2 },
+  { axis: 'Gulu-Nimule', fatalityRate: 4.9, blackspotDensity: 10.2, overloadPct: 8.1 },
+  { axis: 'Hoima-Kafu', fatalityRate: 3.0, blackspotDensity: 6.0, overloadPct: 4.9 },
+  { axis: 'FP-Kasese', fatalityRate: 3.6, blackspotDensity: 7.6, overloadPct: 6.2 },
 ];
 
 // ─── ATC station network (25 stations: 15 legacy + 10 new) ──────────────────
@@ -110,6 +115,8 @@ const DQ_MATRIX = [
   [93, 92, 94, 95], // Masaka-Mba
   [85, 87, 84, 88], // Mba-Kabale
   [82, 80, 85, 83], // Gulu-Nimule
+  [90, 88, 91, 92], // Hoima-Kafu
+  [86, 84, 88, 87], // FP-Kasese
 ];
 
 export default function NTISOverviewDashboard() {
@@ -235,7 +242,7 @@ export default function NTISOverviewDashboard() {
           <PieChartTile data={ACCIDENT_TYPE_LBL.map((n, i) => ({ name: n, value: ACCIDENT_TYPE_PCT[i] }))}
             colors={[DASH_C.cyan, DASH_C.green, DASH_C.yellow, DASH_C.purple, DASH_C.pink, DASH_C.gray]} />
         </ChartBox>
-        <ChartBox title="Corridor Safety Profile" subtitle="top 5 corridors" accent={DASH_C.pink} height={190}>
+        <ChartBox title="Corridor Safety Profile" subtitle="all 10 corridors" accent={DASH_C.pink} height={230}>
           <RadarTile data={CORR_SAFETY} maxValue={15}
             series={[
               { key: 'fatalityRate', name: 'Fatality Rate /10k veh', color: RISK_5[4] },
@@ -266,8 +273,8 @@ export default function NTISOverviewDashboard() {
       </ChartGrid>
 
       <ChartGrid cols="3">
-        <ChartBox title="ATC Data Completeness" subtitle="% by quarter, 2025" accent={DASH_C.cyan} height={220}>
-          <HeatGrid matrix={DQ_MATRIX} xLabels={DQ_QUARTERS} yLabels={CORRIDORS.slice(0, 8)} accent={DASH_C.cyan} unit="%" />
+        <ChartBox title="ATC Data Completeness" subtitle="% by quarter, 2025 - all 10 corridors" accent={DASH_C.cyan} height={260}>
+          <HeatGrid matrix={DQ_MATRIX} xLabels={DQ_QUARTERS} yLabels={CORRIDORS} accent={DASH_C.cyan} unit="%" />
         </ChartBox>
         <ChartBox title="NTIS Data Pipeline" accent={DASH_C.blue} height={220}>
           <FunnelC data={[
