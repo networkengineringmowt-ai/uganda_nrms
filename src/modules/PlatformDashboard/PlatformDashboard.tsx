@@ -24,11 +24,11 @@ const NETWORK_MODULE_HEALTH: { id: string; name: string; status: 'ok' | 'warn' |
   { id: 'BMS',     name: 'Bridge Management (BMS)',  status: 'ok',   note: '546 structures registered; inspections tracked',          view: 'bms' },
   { id: 'TIS',     name: 'Traffic Information (TIS)', status: 'ok',  note: '10 ATC stations active; 2025 count data loaded',            view: 'traffic' },
   { id: 'NDPIV',   name: 'Projects & NDP IV',        status: 'warn', note: '8/14 projects behind schedule; financial data Q3 2025',     view: 'projects' },
-  { id: 'ARCH',    name: 'Platform Architecture',    status: 'ok',   note: 'System architecture diagram v2.0 — current build',          view: 'mlarchitecture' },
+  { id: 'ARCH',    name: 'Platform Architecture',    status: 'ok',   note: 'System architecture diagram v2.0 - current build',          view: 'mlarchitecture' },
 ];
 
 const NETWORK_QUICK_NAV: Array<{ label: string; icon: React.ReactNode; view: ActiveView; color: string }> = [
-  { label: 'RMS — Road Mgmt System', icon: <Shield size={14}/>,      view: 'rms' as ActiveView,         color: '#00f5ff' },
+  { label: 'RMS - Road Mgmt System', icon: <Shield size={14}/>,      view: 'rms' as ActiveView,         color: '#00f5ff' },
   { label: 'Pavement Mgmt (PMS)',    icon: <Activity size={14}/>,    view: 'roadcondition',             color: '#ff6b35' },
   { label: 'Bridge Mgmt (BMS)',      icon: <NetworkIcon size={14}/>, view: 'bms',                       color: '#4d9fff' },
   { label: 'Traffic Info (TIS)',     icon: <TrendingUp size={14}/>,  view: 'traffic',                   color: '#00f5ff' },
@@ -169,7 +169,7 @@ export default function PlatformDashboard() {
           </div>
         </div>
         <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>
-          Integrated platform for Uganda's 21,302 km national road network — pavement management, bridge asset management, traffic intelligence, geo-spatial mapping, budget analytics, and socio-economic impact assessment aligned with NDPIV and transport sector goals.
+          Integrated platform for Uganda's 21,302 km national road network - pavement management, bridge asset management, traffic intelligence, geo-spatial mapping, budget analytics, and socio-economic impact assessment aligned with NDPIV and transport sector goals.
         </p>
         <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
           {['NDPIV Aligned','ISO 55001','HDM-4 Powered','GIS Integrated','AfDB / World Bank','ML-Enhanced'].map((b: string)=>(
@@ -189,7 +189,7 @@ export default function PlatformDashboard() {
           tooltip={`${structures.filter(s => s.type === 'bridge').length || 546} bridges · ${networkSummary?.stations_count || 23} stations · GeoJSON-mapped (142 km gap)`}
           navChips={[{ label: 'GIS Map', view: 'roadnetwork' }]} />
         <StatTile label="Avg Condition" value={String(networkSummary?.avg_iri_national || 3.31)} unit="IRI" color="#b967ff" onNav={nav}
-          tooltip="International Roughness Index — network-wide weighted average"
+          tooltip="International Roughness Index - network-wide weighted average"
           navChips={[{ label: 'Traffic', view: 'traffic' }]} />
         <StatTile label="Paved Condition" value={String(a?.pavedFairToGoodPct ?? 94.2)} unit="%" color="#00ff88" onNav={nav}
           tooltip="Paved network rated fair-to-good · National roads assessment FY 2023/24" />
@@ -223,7 +223,7 @@ export default function PlatformDashboard() {
         <div>
           <div style={{ fontSize: 11, fontWeight: 900, color: '#4d9fff',
             marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-            System Health — Module Status
+            System Health - Module Status
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
             {NETWORK_MODULE_HEALTH.map(m => {
@@ -253,7 +253,7 @@ export default function PlatformDashboard() {
         <div>
           <div style={{ fontSize: 11, fontWeight: 900, color: '#4d9fff',
             marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-            Quick Navigation — All Modules
+            Quick Navigation - All Modules
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 7 }}>
             {NETWORK_QUICK_NAV.map(q => (
