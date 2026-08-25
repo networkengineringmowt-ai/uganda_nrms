@@ -1,5 +1,5 @@
 /**
- * DataDictionary — browsable, searchable view of every term, metric and
+ * DataDictionary - browsable, searchable view of every term, metric and
  * categorical value defined on the platform. Backed by shared/dataDictionary.ts
  * (the same source the hover tips read), so it is always in sync.
  */
@@ -71,7 +71,7 @@ export default function DataDictionary() {
                   <div key={v.value} style={{ display: 'flex', alignItems: 'flex-start', gap: 7, fontSize: 10.5 }}>
                     <span style={{ width: 8, height: 8, borderRadius: 2, marginTop: 4, flexShrink: 0, background: v.color ?? '#64748b' }} />
                     <span><b style={{ color: v.color ?? '#cbd5e1' }}>{v.value}</b>
-                      <span style={{ color: 'rgba(148,163,184,0.85)' }}> — {v.meaning}</span></span>
+                      <span style={{ color: 'rgba(148,163,184,0.85)' }}> - {v.meaning}</span></span>
                   </div>
                 ))}
               </div>

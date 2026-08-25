@@ -349,13 +349,13 @@ const ROUTINE_MAINT = [
   { region:'North Eastern', km_graded:1920, km_patched:180, km_drained:980,  cost_bn:2.40 },
 ];
 const EMERGENCY_WORKS = [
-  { incident:'Bridge washout — A001 km 124',    region:'Northern', cost_m:480, duration_d:21, yr:2024 },
-  { incident:'Landslide — A4 km 386',           region:'Western',  cost_m:280, duration_d:14, yr:2024 },
-  { incident:'Road collapse — B68 km 42',       region:'Eastern',  cost_m:140, duration_d:7,  yr:2025 },
-  { incident:'Flood damage — C261 km 18–24',    region:'Northern', cost_m:360, duration_d:18, yr:2024 },
-  { incident:'Bridge deck failure — A3 km 198', region:'Southern', cost_m:620, duration_d:28, yr:2025 },
-  { incident:'Deep pothole cluster — A2 km 80', region:'Eastern',  cost_m:84,  duration_d:5,  yr:2025 },
-  { incident:'Embankment failure — A45 km 62',  region:'Northern', cost_m:520, duration_d:24, yr:2024 },
+  { incident:'Bridge washout - A001 km 124',    region:'Northern', cost_m:480, duration_d:21, yr:2024 },
+  { incident:'Landslide - A4 km 386',           region:'Western',  cost_m:280, duration_d:14, yr:2024 },
+  { incident:'Road collapse - B68 km 42',       region:'Eastern',  cost_m:140, duration_d:7,  yr:2025 },
+  { incident:'Flood damage - C261 km 18–24',    region:'Northern', cost_m:360, duration_d:18, yr:2024 },
+  { incident:'Bridge deck failure - A3 km 198', region:'Southern', cost_m:620, duration_d:28, yr:2025 },
+  { incident:'Deep pothole cluster - A2 km 80', region:'Eastern',  cost_m:84,  duration_d:5,  yr:2025 },
+  { incident:'Embankment failure - A45 km 62',  region:'Northern', cost_m:520, duration_d:24, yr:2024 },
 ];
 const GRAVEL_PROGRAMME = [
   { region:'Central',       km_target:280, km_done:246, pct:87.9, cost_bn:0.84 },
@@ -400,12 +400,12 @@ const TREATMENT_SCHEDULE = [
   { link_id:'B101_Link02', treatment:'DBST resealing',       km:42.3, cost_bn:1.40, yr:2026, iri:4.6  },
 ];
 const REHAB_HISTORY = [
-  { cls:'A — Paved',  km_total:2615,  km_rehabbed_10yr:1840, pct:70.4, avg_cost_m:48 },
-  { cls:'B — Paved',  km_total:2354,  km_rehabbed_10yr:980,  pct:34.2, avg_cost_m:36 },
-  { cls:'B — Gravel', km_total:509,   km_rehabbed_10yr:320,  pct:62.9, avg_cost_m:8  },
-  { cls:'C — Paved',  km_total:1224,  km_rehabbed_10yr:484,  pct:39.5, avg_cost_m:28 },
-  { cls:'C — Gravel', km_total:14313, km_rehabbed_10yr:2240, pct:15.7, avg_cost_m:6  },
-  { cls:'M — Urban',  km_total:145,   km_rehabbed_10yr:112,  pct:77.2, avg_cost_m:62 },
+  { cls:'A - Paved',  km_total:2615,  km_rehabbed_10yr:1840, pct:70.4, avg_cost_m:48 },
+  { cls:'B - Paved',  km_total:2354,  km_rehabbed_10yr:980,  pct:34.2, avg_cost_m:36 },
+  { cls:'B - Gravel', km_total:509,   km_rehabbed_10yr:320,  pct:62.9, avg_cost_m:8  },
+  { cls:'C - Paved',  km_total:1224,  km_rehabbed_10yr:484,  pct:39.5, avg_cost_m:28 },
+  { cls:'C - Gravel', km_total:14313, km_rehabbed_10yr:2240, pct:15.7, avg_cost_m:6  },
+  { cls:'M - Urban',  km_total:145,   km_rehabbed_10yr:112,  pct:77.2, avg_cost_m:62 },
 ];
 const PAVEMENT_AGE = [
   { age:'0–5 years',   km:2840, pct:13.4, cond_index:92 },
@@ -607,9 +607,9 @@ const MAINT_SPEND_COMPARISON = [
   { country:'Ghana',        usd_paved:8840,  usd_unpaved:2640, pct_gdp:1.8 },
 ];
 const IRI_BENCHMARKS = [
-  { standard:'SSATP — Good (IRI < 3.5)',    ugx_pct:22.6, eac_avg_pct:28.4 },
-  { standard:'SSATP — Fair (IRI 3.5–6)',   ugx_pct:26.4, eac_avg_pct:30.2 },
-  { standard:'SSATP — Poor (IRI > 6)',     ugx_pct:51.0, eac_avg_pct:41.4 },
+  { standard:'SSATP - Good (IRI < 3.5)',    ugx_pct:22.6, eac_avg_pct:28.4 },
+  { standard:'SSATP - Fair (IRI 3.5–6)',   ugx_pct:26.4, eac_avg_pct:30.2 },
+  { standard:'SSATP - Poor (IRI > 6)',     ugx_pct:51.0, eac_avg_pct:41.4 },
   { standard:'WB threshold (IRI < 4)',     ugx_pct:38.4, eac_avg_pct:42.8 },
   { standard:'WB threshold (IRI > 8)',     ugx_pct:22.1, eac_avg_pct:16.4 },
 ];
@@ -622,12 +622,12 @@ const TRAFFIC_BENCHMARKS = [
 ];
 // ── §17 Asset Valuation ───────────────────────────────────────────────────────
 const ASSET_REPL_VALUE = [
-  { cls:'A — Paved',  km:2615,  cost_per_km_m:6.4, total_bn:167.4, depreciated_bn:112.8 },
-  { cls:'B — Paved',  km:2354,  cost_per_km_m:5.2, total_bn:122.4, depreciated_bn:84.6  },
-  { cls:'B — Gravel', km:509,   cost_per_km_m:0.84,total_bn:4.3,   depreciated_bn:2.8   },
-  { cls:'C — Paved',  km:1224,  cost_per_km_m:4.8, total_bn:58.8,  depreciated_bn:36.4  },
-  { cls:'C — Gravel', km:14313, cost_per_km_m:0.80,total_bn:114.5, depreciated_bn:62.8  },
-  { cls:'M — Urban',  km:145,   cost_per_km_m:8.4, total_bn:12.2,  depreciated_bn:8.4   },
+  { cls:'A - Paved',  km:2615,  cost_per_km_m:6.4, total_bn:167.4, depreciated_bn:112.8 },
+  { cls:'B - Paved',  km:2354,  cost_per_km_m:5.2, total_bn:122.4, depreciated_bn:84.6  },
+  { cls:'B - Gravel', km:509,   cost_per_km_m:0.84,total_bn:4.3,   depreciated_bn:2.8   },
+  { cls:'C - Paved',  km:1224,  cost_per_km_m:4.8, total_bn:58.8,  depreciated_bn:36.4  },
+  { cls:'C - Gravel', km:14313, cost_per_km_m:0.80,total_bn:114.5, depreciated_bn:62.8  },
+  { cls:'M - Urban',  km:145,   cost_per_km_m:8.4, total_bn:12.2,  depreciated_bn:8.4   },
 ];
 const ANNUAL_DEPRECIATION = [
   { asset:'Paved roads',    total_bn:361.4, dep_rate_pct:4.2, annual_dep_bn:15.2 },
@@ -832,10 +832,10 @@ const OIL_ROADS = [
 const RESILIENCE_INDICATORS = [
   { metric:'Links with no detour route',       value:'184',  pct:'18.2%', risk:'High'     },
   { metric:'Links over flood-prone crossings', value:'94',   pct:'9.3%',  risk:'High'     },
-  { metric:'Single-access districts',          value:'8',    pct:' — ',   risk:'Critical' },
-  { metric:'Mean detour ratio (when available)',value:'1.84x',pct:' — ',  risk:'Medium'   },
+  { metric:'Single-access districts',          value:'8',    pct:' - ',   risk:'Critical' },
+  { metric:'Mean detour ratio (when available)',value:'1.84x',pct:' - ',  risk:'Medium'   },
   { metric:'Bridges critical to connectivity', value:'62',   pct:'12.8%', risk:'High'     },
-  { metric:'Network redundancy index',         value:'0.72', pct:' — ',   risk:'Low'      },
+  { metric:'Network redundancy index',         value:'0.72', pct:' - ',   risk:'Low'      },
 ];
 const DETOUR_AVAILABILITY = [
   { cls:'A', total_links:156, have_detour:148, pct:94.9, avg_detour_km:42 },
@@ -883,7 +883,7 @@ const GLOBAL_CASES_TABLE = [
   { id:4,  agency:'SANRAL',         country:'South Africa',    flag:'🇿🇦', km:21400,  paved_pct:95, system:'iRAMS (Integrated RAMS)',       yrs_active:'2010–now', budget_km_usd:48000, innovation:'Public condition portal builds political budget support',   dnr:'Simple public DNR dashboard strengthens case for maintenance funding' },
   { id:5,  agency:'Highways England',country:'United Kingdom', flag:'🇬🇧', km:7800,   paved_pct:100,system:'HAPMS',                        yrs_active:'2005–now', budget_km_usd:180000,innovation:'50-year planning horizon, ISO 55001 certified',            dnr:'10–15 yr rolling maintenance programme via HDM-4 multi-year analysis' },
   { id:6,  agency:'Austroads/DPTI', country:'Australia',       flag:'🇦🇺', km:33000,  paved_pct:88, system:'DNR RMS Engine (fmr. dTIMS CT)',yrs_active:'2000–now', budget_km_usd:95000, innovation:'AP-R359/556 low-cost sealed/unsealed roads research series',dnr:'AP-R359 directly applicable to Class B DBST; AP-R556 for wet-tropics C roads' },
-  { id:7,  agency:'NZTA Waka Kotahi',country:'New Zealand',    flag:'🇳🇿', km:11000,  paved_pct:90, system:'ONE Network Framework',         yrs_active:'2014–now', budget_km_usd:68000, innovation:'Service-level targets by road class (ONRC)',               dnr:'Differentiated service levels for DNR Class A/B/C — explicit performance targets' },
+  { id:7,  agency:'NZTA Waka Kotahi',country:'New Zealand',    flag:'🇳🇿', km:11000,  paved_pct:90, system:'ONE Network Framework',         yrs_active:'2014–now', budget_km_usd:68000, innovation:'Service-level targets by road class (ONRC)',               dnr:'Differentiated service levels for DNR Class A/B/C - explicit performance targets' },
   { id:8,  agency:'FHWA / DOTs',    country:'USA',             flag:'🇺🇸', km:900000, paved_pct:80, system:'FMIS / TAMP (MAP-21)',          yrs_active:'2012–now', budget_km_usd:280000,innovation:'Mandatory TAMP legislation (MAP-21/FAST Act)',              dnr:'Model for Uganda Transport Infrastructure Act: mandatory 10-yr AMP to Parliament' },
   { id:9,  agency:'NHAI / NRRDA',   country:'India',           flag:'🇮🇳', km:145000, paved_pct:65, system:'RCMS + Gati Shakti GIS',        yrs_active:'2021–now', budget_km_usd:12000, innovation:'RCMS mobile app for rural/gravel roads at scale',          dnr:'Scalable Class C monitoring with community participation in Northern Uganda' },
   { id:10, agency:'Trafikverket',   country:'Sweden',          flag:'🇸🇪', km:98000,  paved_pct:84, system:'PMS + LCC (12-yr plan)',        yrs_active:'2018–now', budget_km_usd:84000, innovation:'Seasonal rainfall cycle integrated in deterioration model',dnr:'Uganda bi-modal rainfall (MAM+OND) creates analogous cyclic damage patterns' },
@@ -897,23 +897,23 @@ const GLOBAL_CASES_TABLE = [
 // ── §22 Category B International Standards ────────────────────────────────────
 const CAT_B_STANDARDS = [
   { name:'HDM-4 Highway Development & Management Tool (v1.3)',          body:'World Bank / PIARC',              yr:'2000',    module:'HDM4, PMS, Budget',      status:'Active',   notes:'Core PMS analytical engine; Uganda-specific calibration 2023' },
-  { name:'ISO 55001:2014 — Asset Management System Requirements',        body:'ISO / BSI',                       yr:'2014',    module:'RMS, BMS, PMS',          status:'Active',   notes:'DNR Asset Mgmt Policy 2017 aligned to ISO 55000 series' },
-  { name:'SATCC TRH4 — Structural Design of Flexible Pavements (2020)', body:'SATCC / CSIR South Africa',       yr:'2020',    module:'PMS, HDM4, TIS',         status:'Active',   notes:'Source of ESAL factors; Truck Trailer 6ax = 5.86 CESAL' },
+  { name:'ISO 55001:2014 - Asset Management System Requirements',        body:'ISO / BSI',                       yr:'2014',    module:'RMS, BMS, PMS',          status:'Active',   notes:'DNR Asset Mgmt Policy 2017 aligned to ISO 55000 series' },
+  { name:'SATCC TRH4 - Structural Design of Flexible Pavements (2020)', body:'SATCC / CSIR South Africa',       yr:'2020',    module:'PMS, HDM4, TIS',         status:'Active',   notes:'Source of ESAL factors; Truck Trailer 6ax = 5.86 CESAL' },
   { name:'World Bank Road Asset Management Guidelines (RAMP)',           body:'World Bank / IBRD',               yr:'2018',    module:'RMS, Budget, PMS',       status:'Active',   notes:'Framework for DNR RAMS procurement; referenced in RSDP I–IV' },
   { name:'AfDB Infrastructure Asset Management Policy Framework',        body:'African Development Bank',        yr:'2021',    module:'RMS, Budget',            status:'Active',   notes:'Applies to all AfDB-funded DNR projects (RSSP I-III, UTRP)' },
-  { name:'AASHTO PP 104-20 — Pavement Preservation Design Guide',       body:'AASHTO',                          yr:'2020',    module:'PMS, HDM4',              status:'Active',   notes:'Supplementary design reference for Class A MEPDG approach' },
-  { name:'FHWA TAMP Guidelines — Transportation Asset Management Plans', body:'FHWA (USA)',                      yr:'2019',    module:'RMS, Budget, BMS',       status:'Active',   notes:'Model for DNR 10-year Asset Management Plan to MoWT/Parliament' },
-  { name:'Austroads AP-R615-20 — Asset Management for Road Networks',   body:'Austroads',                       yr:'2020',    module:'Lifecycle, Budget, RMS', status:'Active',   notes:'LCC methodology applied in DNR Lifecycle Management module' },
-  { name:'Austroads AP-R359-09 — Low-Cost Sealed Roads',                body:'Austroads',                       yr:'2009',    module:'PMS',                    status:'Archived', notes:'Directly applicable to Uganda Class B/C DBST upgrade decisions' },
-  { name:'PIARC Technical Report — Road Asset Management in Devg. Countries',body:'PIARC (World Road Association)',yr:'2019',  module:'RMS, Budget',            status:'Active',   notes:'PIARC TC 4.1 report on RAMS in developing countries; DNR context match' },
-  { name:'IRC SP:19-2001 — Guidelines for Road Maintenance',            body:'Indian Roads Congress (IRC)',      yr:'2001',    module:'Budget, PMS',            status:'Archived', notes:'Maintenance cost norms applicable to DNR Class C maintenance stations' },
+  { name:'AASHTO PP 104-20 - Pavement Preservation Design Guide',       body:'AASHTO',                          yr:'2020',    module:'PMS, HDM4',              status:'Active',   notes:'Supplementary design reference for Class A MEPDG approach' },
+  { name:'FHWA TAMP Guidelines - Transportation Asset Management Plans', body:'FHWA (USA)',                      yr:'2019',    module:'RMS, Budget, BMS',       status:'Active',   notes:'Model for DNR 10-year Asset Management Plan to MoWT/Parliament' },
+  { name:'Austroads AP-R615-20 - Asset Management for Road Networks',   body:'Austroads',                       yr:'2020',    module:'Lifecycle, Budget, RMS', status:'Active',   notes:'LCC methodology applied in DNR Lifecycle Management module' },
+  { name:'Austroads AP-R359-09 - Low-Cost Sealed Roads',                body:'Austroads',                       yr:'2009',    module:'PMS',                    status:'Archived', notes:'Directly applicable to Uganda Class B/C DBST upgrade decisions' },
+  { name:'PIARC Technical Report - Road Asset Management in Devg. Countries',body:'PIARC (World Road Association)',yr:'2019',  module:'RMS, Budget',            status:'Active',   notes:'PIARC TC 4.1 report on RAMS in developing countries; DNR context match' },
+  { name:'IRC SP:19-2001 - Guidelines for Road Maintenance',            body:'Indian Roads Congress (IRC)',      yr:'2001',    module:'Budget, PMS',            status:'Archived', notes:'Maintenance cost norms applicable to DNR Class C maintenance stations' },
   { name:'MoWT Uganda Roads Design Manual (2023 Update)',               body:'Ministry of Works & Transport, UG',yr:'2023',   module:'PMS, BMS, HDM4',         status:'Active',   notes:'Primary Uganda national design standard; climate-resilient 2023 update' },
   { name:'MoWT Schedule of Rates FY 2025/26',                          body:'Ministry of Works & Transport, UG',yr:'2025',   module:'Budget, HDM4, PMS',      status:'Active',   notes:'2,000+ unit costs (UGX); updated annually; WB procurement compliant' },
   { name:'DNR Road Infrastructure Asset Management Policy 2017 (v1.4)',body:'Department of National Roads / DNR',yr:'2017',   module:'RMS, Budget, PMS, BMS',  status:'Active',   notes:'Foundational DNR policy; v1.4 incorporates OPRC performance requirements' },
   { name:'COMESA Road Design Standards',                                body:'COMESA / TTCA',                    yr:'2018',    module:'TIS, HDM4',              status:'Active',   notes:'10-tonne axle load standard; applied at all Uganda weighbridge stations' },
-  { name:'SSATP Working Paper — Road Funds and Road Maintenance in Africa',body:'World Bank SSATP',            yr:'2016',    module:'Budget, RMS',            status:'Archived', notes:'Cross-country benchmarks for Uganda Road Fund adequacy' },
+  { name:'SSATP Working Paper - Road Funds and Road Maintenance in Africa',body:'World Bank SSATP',            yr:'2016',    module:'Budget, RMS',            status:'Archived', notes:'Cross-country benchmarks for Uganda Road Fund adequacy' },
   { name:'EAC Technical Specifications for Road Design',                body:'East African Community',           yr:'2014',    module:'PMS, BMS, HDM4',         status:'Active',   notes:'Regional harmonisation; DNR designs must comply for cross-border links' },
-  { name:'ERA Road Asset Management System Manual — Ethiopia',          body:'Ethiopian Roads Authority',        yr:'2021',    module:'RMS, PMS',               status:'Active',   notes:'AfDB-funded RAMS manual; phased rollout approach applicable to DNR stage 2' },
+  { name:'ERA Road Asset Management System Manual - Ethiopia',          body:'Ethiopian Roads Authority',        yr:'2021',    module:'RMS, PMS',               status:'Active',   notes:'AfDB-funded RAMS manual; phased rollout approach applicable to DNR stage 2' },
   { name:'TANROADS Road Asset Management Manual',                       body:'TANROADS Tanzania',                yr:'2020',    module:'RMS, HDM4',              status:'Active',   notes:'East Africa peer reference; calibration approach directly applicable to DNR' },
   { name:'Kenya KeNHA Asset Management Framework',                      body:'KeNHA Kenya',                      yr:'2022',    module:'RMS, BMS',               status:'Active',   notes:'Northern Corridor partner; AMP format model for DNR 10-year plan' },
 ];
@@ -936,7 +936,7 @@ const CAT_C_RESEARCH = [
   { ref:'P14', author:'Fletcher & Petzold / TRR',              yr:'2019', title:'GIS in Road Network Management',                                         notes:'GIS integration methodology for DNR network and RAMS spatial layer design' },
   { ref:'P15', author:'Shahin / US Army Corps of Engineers',   yr:'1994', title:'Pavement Condition Index (PCI): Development and Validation',             notes:'PCI methodology used in DNR bridge deck and pavement condition scoring' },
   { ref:'P16', author:'Riegelhuth et al. / IRF Geneva',        yr:'2014', title:'Traffic Count Station Optimisation for Developing Country Networks',      notes:'Applied in 2025 ATC station siting decisions for Uganda' },
-  { ref:'P17', author:'Robinson et al. / TRL ORN20',           yr:'1998', title:'Low-Volume Roads Management: Framework for Developing Countries',        notes:'TRL ORN20 — primary reference for Uganda Class C gravel design/maintenance' },
+  { ref:'P17', author:'Robinson et al. / TRL ORN20',           yr:'1998', title:'Low-Volume Roads Management: Framework for Developing Countries',        notes:'TRL ORN20 - primary reference for Uganda Class C gravel design/maintenance' },
   { ref:'P18', author:'AASHTO',                                yr:'2003', title:'Economic Analysis of Road Projects (User Benefit Analysis)',             notes:'NPV/BCR methodology used in HDM-4 project analysis on DNR platform' },
   { ref:'P19', author:'Moges & Bao / Catena',                  yr:'2021', title:'Rainfall Erosivity and Road Degradation in Tropical Climates',          notes:'Uganda-specific RUSLE R-factor; gravel deterioration calibration' },
   { ref:'P20', author:'Arya et al. / Automation in Construction',yr:'2021',title:'AI Applications in Road Infrastructure Management: A Review',           notes:'Comprehensive ML/AI review; informs DNR ML architecture design' },
@@ -1054,9 +1054,9 @@ function Td({ children, align = 'left', mono = false, style }: { children?: Reac
   );
 }
 
-// ── ADT Projection table — ALL 1,017 links × projection years × vehicle classes ──
+// ── ADT Projection table - ALL 1,017 links × projection years × vehicle classes ──
 // Paginated (50/page) + searchable; base AADT loaded from the full GeoJSON network
-// (network2026.geojson — `aadt` property if present, else derived from road class).
+// (network2026.geojson - `aadt` property if present, else derived from road class).
 const ADT_PROJECTION_YEARS = [2016, 2020, 2025, 2026, 2030, 2035, 2040];
 const ADT_CLASS_COLOR: Record<string, string> = { A: C.cyan, B: C.green, C: C.yellow, M: C.purple };
 const ADT_BASE_YEAR = 2016; // base year for ALL traffic statistics
@@ -1136,14 +1136,14 @@ function AdtProjectionTable() {
     <TablePanel id="tbl-adt-projection"
       title="Annual Daily Traffic (ADT) Projections 2016–2040 by Road Link and Vehicle Class"
       accent={C.yellow}
-      source="network2026.geojson (aadt property, else derived from road class) projected via projectAADTByClass / per-class growth rates in trafficProjection.ts — all 1,017 links, paginated">
+      source="network2026.geojson (aadt property, else derived from road class) projected via projectAADTByClass / per-class growth rates in trafficProjection.ts - all 1,017 links, paginated">
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8,
         padding: '8px 14px 4px',
       }}>
         <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.5)' }}>
           {links.length === 0 ? 'Loading…' :
-            `Links ${rangeFrom}–${rangeTo} of ${filtered.length.toLocaleString()}${search.trim() !== '' ? ` (filtered from ${links.length.toLocaleString()})` : ''} · ${ADT_PROJECTION_YEARS.length} years (${ADT_PROJECTION_YEARS[0]}–${ADT_PROJECTION_YEARS[ADT_PROJECTION_YEARS.length - 1]}) · ${VC_CLASSES.length} vehicle classes — click a row to expand class breakdown`}
+            `Links ${rangeFrom}–${rangeTo} of ${filtered.length.toLocaleString()}${search.trim() !== '' ? ` (filtered from ${links.length.toLocaleString()})` : ''} · ${ADT_PROJECTION_YEARS.length} years (${ADT_PROJECTION_YEARS[0]}–${ADT_PROJECTION_YEARS[ADT_PROJECTION_YEARS.length - 1]}) · ${VC_CLASSES.length} vehicle classes - click a row to expand class breakdown`}
         </div>
         <input
           value={search}
@@ -1180,7 +1180,7 @@ function AdtProjectionTable() {
                     <span style={{ display: 'inline-block', width: 12, color: 'rgba(148,163,184,0.6)' }}>{isOpen ? '▾' : '▸'}</span>
                     {link.link_id}
                   </Td>
-                  <Td style={{ color: 'rgba(226,232,240,0.85)', whiteSpace: 'nowrap' }}>{link.link_name ?? '—'}</Td>
+                  <Td style={{ color: 'rgba(226,232,240,0.85)', whiteSpace: 'nowrap' }}>{link.link_name ?? '-'}</Td>
                   <Td align="center" style={{ color: ADT_CLASS_COLOR[link.road_class] ?? '#94a3b8', fontWeight: 800 }}>{link.road_class}</Td>
                   {ADT_PROJECTION_YEARS.map(yr => {
                     const total = projectAADTByClass(link.base_aadt, link.base_year, yr);
@@ -1197,7 +1197,7 @@ function AdtProjectionTable() {
                 <tr key={`${link.link_id}-expand`} style={{ background: 'rgba(0,245,255,0.03)' }}>
                   <td colSpan={3 + ADT_PROJECTION_YEARS.length} style={{ padding: '8px 14px 12px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                     <div style={{ fontSize: 8, color: 'rgba(148,163,184,0.55)', marginBottom: 6 }}>
-                      Vehicle-class breakdown — base AADT {link.base_aadt.toLocaleString()} ({link.base_year}), projected per-class via <code>projectAADTByClass</code>
+                      Vehicle-class breakdown - base AADT {link.base_aadt.toLocaleString()} ({link.base_year}), projected per-class via <code>projectAADTByClass</code>
                     </div>
                     <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 7.5 }}>
                       <thead>
@@ -1270,7 +1270,7 @@ export default function TabularSummaries() {
   const { state, navigate } = useBMS();
   const [tab, setTab] = useState<Tab>('tables');
 
-  // GeoJSON road links — loaded once on mount for tbl-links-full
+  // GeoJSON road links - loaded once on mount for tbl-links-full
   const [geoLinks, setGeoLinks] = useState<Array<Record<string, unknown>>>([]);
   const [linkSearch, setLinkSearch] = useState('');
   useEffect(() => {
@@ -1330,7 +1330,7 @@ export default function TabularSummaries() {
     <div style={{ padding: '20px 24px', color: '#e2e8f0', minHeight: '100%' }}>
       <SectionHeader
         icon={<Table2 size={15} style={{ color: C.cyan }} />}
-        title="Sources & Evidence — Data Hub"
+        title="Sources & Evidence - Data Hub"
         sub="104 tables · all rows visible · §21 Global RMS Case Studies · §22 B-Standards · §23 C-Research · §24 GeoJSON Links"
         accent={C.cyan}
       />
@@ -1343,7 +1343,7 @@ export default function TabularSummaries() {
       }}>
         <div style={{ fontWeight: 800, color: C.cyan, marginBottom: 3, fontSize: 9.5, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Network Coverage (single source of truth)</div>
         <div>Official NDPIV FY25-26: <b style={{ color: '#fff' }}>21,302 km total</b> · <b style={{ color: '#22c55e' }}>6,405 km paved (30.1%)</b> · <b style={{ color: '#f59e0b' }}>14,897 km unpaved (69.9%)</b></div>
-        <div style={{ marginTop: 2 }}>Mapped in GeoJSON: <b style={{ color: '#fff' }}>21,160 km (mapped) (1,017 links)</b> · <b style={{ color: '#fb923c' }}>Unmapped: 142 km</b> — recently gazetted or under survey</div>
+        <div style={{ marginTop: 2 }}>Mapped in GeoJSON: <b style={{ color: '#fff' }}>21,160 km (mapped) (1,017 links)</b> · <b style={{ color: '#fb923c' }}>Unmapped: 142 km</b> - recently gazetted or under survey</div>
       </div>
 
       {/* ── BMS-style tab bar ── */}
@@ -1379,7 +1379,7 @@ export default function TabularSummaries() {
           <div style={{ fontSize: 10, fontWeight: 900, color: C.cyan, textTransform: 'uppercase',
             letterSpacing: '0.12em', marginBottom: 10, marginTop: 4,
             borderBottom: '1px solid rgba(0,245,255,0.1)', paddingBottom: 6 }}>
-            § 1 — Road Network
+            § 1 - Road Network
           </div>
 
           {/* tbl-001 */}
@@ -1440,7 +1440,7 @@ export default function TabularSummaries() {
 
           {/* tbl-003 */}
           <TablePanel id="tbl-003" title="Road Network by Maintenance Region" accent={C.blue}
-            source="network2026.geojson — maintena_1 field" onNavigate={navigate}
+            source="network2026.geojson - maintena_1 field" onNavigate={navigate}
             chartTab="roadnetwork" chartLabel="📊 Regional Map →">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead><tr><Th>Region</Th><Th>Links</Th><Th>Total km</Th><Th>Paved km</Th><Th>Unpaved km</Th><Th>% Paved</Th></tr></thead>
@@ -1497,7 +1497,7 @@ export default function TabularSummaries() {
                         ? <span style={{ color: r.paved_km > HIST_NETWORK[i-1].paved_km ? '#22c55e' : '#f97316' }}>
                             {r.paved_km > HIST_NETWORK[i-1].paved_km ? '+' : ''}{r.paved_km - HIST_NETWORK[i-1].paved_km}
                           </span>
-                        : '—'}
+                        : '-'}
                     </Td>
                   </tr>
                 ))}
@@ -1509,12 +1509,12 @@ export default function TabularSummaries() {
           <div style={{ fontSize: 10, fontWeight: 900, color: C.green, textTransform: 'uppercase',
             letterSpacing: '0.12em', marginBottom: 10, marginTop: 20,
             borderBottom: '1px solid rgba(0,255,136,0.1)', paddingBottom: 6 }}>
-            § 2 — Road Condition
+            § 2 - Road Condition
           </div>
 
           {/* tbl-006 */}
-          <TablePanel id="tbl-006" title="Road Condition Distribution — Paved Network (NAPR July 2025)" accent={C.green}
-            source="NAPR Jul 2025 — IRI-based, paved network only" onNavigate={navigate}
+          <TablePanel id="tbl-006" title="Road Condition Distribution - Paved Network (NAPR July 2025)" accent={C.green}
+            source="NAPR Jul 2025 - IRI-based, paved network only" onNavigate={navigate}
             chartTab="roadcondition" chartLabel="📊 Condition Map →">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead><tr><Th>Condition Class</Th><Th>IRI Range (m/km)</Th><Th>Length (km)</Th><Th>% Surveyed Paved</Th><Th>Color</Th></tr></thead>
@@ -1541,7 +1541,7 @@ export default function TabularSummaries() {
                   <Td><span style={{ color:'#94a3b8' }}>Not Surveyed / Under Works</span></Td>
                   <Td><span style={{ color:'#94a3b8' }}>N/A</span></Td>
                   <Td mono align="right"><span style={{ color:'#94a3b8' }}>~{(21160-21160*0.297-CONDITION_DIST.reduce((s,r)=>s+r.km,0)).toFixed(0)}</span></Td>
-                  <Td mono align="right"><span style={{ color:'#94a3b8' }}>—</span></Td>
+                  <Td mono align="right"><span style={{ color:'#94a3b8' }}>-</span></Td>
                   <Td mono><span style={{ color:'#94a3b8' }}>#94a3b8</span></Td>
                 </tr>
               </tbody>
@@ -1571,12 +1571,12 @@ export default function TabularSummaries() {
           <div style={{ fontSize: 10, fontWeight: 900, color: C.yellow, textTransform: 'uppercase',
             letterSpacing: '0.12em', marginBottom: 10, marginTop: 20,
             borderBottom: '1px solid rgba(255,211,63,0.1)', paddingBottom: 6 }}>
-            § 3 — Traffic & Demand
+            § 3 - Traffic & Demand
           </div>
 
           {/* tbl-008 */}
           <TablePanel id="tbl-008" title="Top 10 Road Links by AADT 2025 (TIS)" accent={C.yellow}
-            source="TIS 2025 — Annual Monitoring Report" onNavigate={navigate}
+            source="TIS 2025 - Annual Monitoring Report" onNavigate={navigate}
             chartTab="traffic" chartLabel="📊 Traffic Map →">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead><tr><Th>#</Th><Th>Link ID</Th><Th>Corridor</Th><Th>Class</Th><Th>AADT (veh/day)</Th><Th>Year</Th></tr></thead>
@@ -1597,7 +1597,7 @@ export default function TabularSummaries() {
           </TablePanel>
 
           {/* tbl-009 */}
-          <TablePanel id="tbl-009" title="Vehicle Class Distribution — National Average (TIS 2025)" accent={C.yellow}
+          <TablePanel id="tbl-009" title="Vehicle Class Distribution - National Average (TIS 2025)" accent={C.yellow}
             source="TIS 2025 Annual Monitoring Report" onNavigate={navigate}
             chartTab="trafficanalytics" chartLabel="📊 Analytics →">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -1615,7 +1615,7 @@ export default function TabularSummaries() {
 
           {/* tbl-010 */}
           <TablePanel id="tbl-010" title="ATC Permanent Count Stations (New 2025 Deployment)" accent={C.yellow}
-            source="ATC 2026 — 10 new stations U0001–U0010" onNavigate={navigate}
+            source="ATC 2026 - 10 new stations U0001–U0010" onNavigate={navigate}
             chartTab="trafficanalytics" chartLabel="📊 Analytics →">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead><tr><Th>Site ID</Th><Th>Station Name</Th><Th>Road Link</Th><Th>Installed</Th><Th>AADT (veh/day)</Th></tr></thead>
@@ -1636,7 +1636,7 @@ export default function TabularSummaries() {
           <div style={{ fontSize: 10, fontWeight: 900, color: C.blue, textTransform: 'uppercase',
             letterSpacing: '0.12em', marginBottom: 10, marginTop: 20,
             borderBottom: '1px solid rgba(77,159,255,0.1)', paddingBottom: 6 }}>
-            § 4 — Bridges & Structures
+            § 4 - Bridges & Structures
           </div>
 
           {/* tbl-011 */}
@@ -1686,7 +1686,7 @@ export default function TabularSummaries() {
           <div style={{ fontSize: 10, fontWeight: 900, color: C.purple, textTransform: 'uppercase',
             letterSpacing: '0.12em', marginBottom: 10, marginTop: 20,
             borderBottom: '1px solid rgba(185,103,255,0.1)', paddingBottom: 6 }}>
-            § 5 — OPRC Contracts & Projects
+            § 5 - OPRC Contracts & Projects
           </div>
 
           {/* tbl-013 */}
@@ -1746,7 +1746,7 @@ export default function TabularSummaries() {
           <div style={{ fontSize: 10, fontWeight: 900, color: C.orange, textTransform: 'uppercase',
             letterSpacing: '0.12em', marginBottom: 10, marginTop: 20,
             borderBottom: '1px solid rgba(255,107,53,0.1)', paddingBottom: 6 }}>
-            § 6 — Infrastructure Overlays
+            § 6 - Infrastructure Overlays
           </div>
 
           {/* tbl-015 */}
@@ -1769,7 +1769,7 @@ export default function TabularSummaries() {
           </TablePanel>
 
           {/* tbl-016 */}
-          <TablePanel id="tbl-016" title="Weighbridges — Location & Operational Status" accent={C.orange}
+          <TablePanel id="tbl-016" title="Weighbridges - Location & Operational Status" accent={C.orange}
             source="new_weigh_bridges.geojson (public/data/)" onNavigate={navigate}
             chartTab="overloading" chartLabel="📊 Overloading →">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -1784,7 +1784,7 @@ export default function TabularSummaries() {
                     <Td><span style={{ fontSize:8, padding:'1px 5px', borderRadius:3, fontWeight:800,
                       background:r.status==='Operational'?'rgba(0,255,136,0.1)':'rgba(239,68,68,0.1)',
                       color:r.status==='Operational'?'#00ff88':'#ef4444' }}>{r.status}</span></Td>
-                    <Td mono align="right">{r.daily_trucks || '—'}</Td>
+                    <Td mono align="right">{r.daily_trucks || '-'}</Td>
                   </tr>
                 ))}
               </tbody>
@@ -1829,7 +1829,7 @@ export default function TabularSummaries() {
           </TablePanel>
 
           {/* tbl-019 */}
-          <TablePanel id="tbl-019" title="Rail Network — Existing & Proposed" accent={C.teal}
+          <TablePanel id="tbl-019" title="Rail Network - Existing & Proposed" accent={C.teal}
             source="rail_existing.geojson / rail_proposed_ea_sg_plan.geojson">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead><tr><Th>Route</Th><Th>Length (km)</Th><Th>Status</Th><Th>Gauge</Th><Th>Operator</Th></tr></thead>
@@ -1851,7 +1851,7 @@ export default function TabularSummaries() {
           <div style={{ fontSize: 10, fontWeight: 900, color: C.pink, textTransform: 'uppercase',
             letterSpacing: '0.12em', marginBottom: 10, marginTop: 20,
             borderBottom: '1px solid rgba(255,45,120,0.1)', paddingBottom: 6 }}>
-            § 7 — Budget & Maintenance Backlog
+            § 7 - Budget & Maintenance Backlog
           </div>
 
           {/* tbl-020 */}
@@ -1904,11 +1904,11 @@ export default function TabularSummaries() {
           <div style={{ fontSize: 10, fontWeight: 900, color: '#a855f7', textTransform: 'uppercase',
             letterSpacing: '0.12em', marginBottom: 10, marginTop: 20,
             borderBottom: '1px solid rgba(168,85,247,0.1)', paddingBottom: 6 }}>
-            § 8 — ML Predictions & Analytics
+            § 8 - ML Predictions & Analytics
           </div>
 
           {/* tbl-022 */}
-          <TablePanel id="tbl-022" title="ML Predicted Pavement Condition — Sample Links" accent="#a855f7"
+          <TablePanel id="tbl-022" title="ML Predicted Pavement Condition - Sample Links" accent="#a855f7"
             source="deep_ml_engine.py output / bot_results.json" onNavigate={navigate}
             chartTab="mlarchitecture" chartLabel="📊 ML System →">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -1936,7 +1936,7 @@ export default function TabularSummaries() {
             <tbody>{OVERLOADING_BY_WB.map(r=><tr key={r.wb}><Td>{r.wb}</Td><Td align="right" mono>{r.screened.toLocaleString()}</Td><Td align="right" mono style={{ color:C.orange }}>{r.overloaded}</Td><Td align="right" mono style={{ color:r.pct>12?'#ef4444':C.yellow }}>{r.pct.toFixed(1)}%</Td><Td>{r.top_veh}</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-024 */}
-          <TablePanel id="tbl-024" title="Overloading by Vehicle Class — % Exceeding 8t Single-Axle Limit" accent={C.orange} source="EACU / WIM sensors">
+          <TablePanel id="tbl-024" title="Overloading by Vehicle Class - % Exceeding 8t Single-Axle Limit" accent={C.orange} source="EACU / WIM sensors">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Vehicle Class</Th><Th>% Overloaded</Th><Th>Avg Excess (t)</Th><Th>Road Dmg Equiv.</Th></tr></thead>
             <tbody>{OVERLOADING_BY_VEH.map(r=><tr key={r.cls}><Td>{r.cls}</Td><Td align="right" mono style={{ color:r.pct_over>20?'#ef4444':C.yellow }}>{r.pct_over}%</Td><Td align="right" mono>{r.avg_excess_t}</Td><Td align="right" mono style={{ color:'#ef4444' }}>{r.rd_dmg_equiv}</Td></tr>)}</tbody></table>
           </TablePanel>
@@ -1990,7 +1990,7 @@ export default function TabularSummaries() {
             <tbody>{SAFETY_TREND.map(r=><tr key={r.yr}><Td mono>{r.yr}</Td><Td align="right" mono style={{ color:'#ef4444', fontWeight:700 }}>{r.fatalities.toLocaleString()}</Td><Td align="right" mono>{r.injuries.toLocaleString()}</Td><Td align="right" mono>{r.accidents.toLocaleString()}</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-034 */}
-          <TablePanel id="tbl-034" title="Speed Management Zones — National Road Network 2025" accent={C.red} source="DNR traffic engineering">
+          <TablePanel id="tbl-034" title="Speed Management Zones - National Road Network 2025" accent={C.red} source="DNR traffic engineering">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Zone Type</Th><Th>Count</Th><Th>Enforced</Th><Th>Compliance %</Th></tr></thead>
             <tbody>{SPEED_ZONES.map(r=><tr key={r.zone}><Td>{r.zone}</Td><Td align="right" mono>{r.count.toLocaleString()}</Td><Td align="right" mono>{r.enforced.toLocaleString()}</Td><Td align="right" mono style={{ color:r.compliance_pct>70?C.green:r.compliance_pct>50?C.yellow:C.orange }}>{r.compliance_pct.toFixed(1)}%</Td></tr>)}</tbody></table>
           </TablePanel>
@@ -2014,12 +2014,12 @@ export default function TabularSummaries() {
             <tbody>{GRAVEL_PROGRAMME.map(r=><tr key={r.region}><Td>{r.region}</Td><Td align="right" mono>{r.km_target}</Td><Td align="right" mono style={{ color:C.green }}>{r.km_done}</Td><Td align="right" mono style={{ color:r.pct>85?C.green:r.pct>70?C.yellow:C.orange }}>{r.pct.toFixed(1)}%</Td><Td align="right" mono>{r.cost_bn}</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-038 */}
-          <TablePanel id="tbl-038" title="Pavement Surface Distress Types — NAPR Survey Sample" accent={C.teal} source="NAPR 2025 survey data">
+          <TablePanel id="tbl-038" title="Pavement Surface Distress Types - NAPR Survey Sample" accent={C.teal} source="NAPR 2025 survey data">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Distress Type</Th><Th>km Affected</Th><Th>% of Paved Network</Th><Th>Severity</Th><Th>Treatment Cost / km (M UGX)</Th></tr></thead>
             <tbody>{DISTRESS_TYPES.map(r=><tr key={r.type}><Td>{r.type}</Td><Td align="right" mono>{r.km_affected.toLocaleString()}</Td><Td align="right" mono>{r.pct}%</Td><Td><span style={{ color:r.severity==='High'?'#ef4444':r.severity==='Medium'?C.orange:C.yellow }}>{r.severity}</span></Td><Td align="right" mono>{r.cost_per_km_m}</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-039 */}
-          <TablePanel id="tbl-039" title="Drainage & Vegetation Maintenance — National Network 2024/25" accent={C.teal} source="DNR maintenance operations">
+          <TablePanel id="tbl-039" title="Drainage & Vegetation Maintenance - National Network 2024/25" accent={C.teal} source="DNR maintenance operations">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Work Type</Th><Th>Units/km (2024)</Th><Th>Units/km (2025)</Th><Th>Unit Cost (K UGX)</Th></tr></thead>
             <tbody>{DRAINAGE_WORKS.map(r=><tr key={r.work}><Td>{r.work}</Td><Td align="right" mono>{('km_24' in r ? r.km_24 : r.units_24).toLocaleString()}</Td><Td align="right" mono style={{ color:C.green }}>{('km_25' in r ? r.km_25 : r.units_25).toLocaleString()}</Td><Td align="right" mono>{r.cost_per_km_k ?? r.cost_per_unit_k}</Td></tr>)}</tbody></table>
           </TablePanel>
@@ -2043,7 +2043,7 @@ export default function TabularSummaries() {
             <tbody>{REHAB_HISTORY.map(r=><tr key={r.cls}><Td>{r.cls}</Td><Td align="right" mono>{r.km_total.toLocaleString()}</Td><Td align="right" mono style={{ color:C.green }}>{r.km_rehabbed_10yr.toLocaleString()}</Td><Td align="right" mono>{r.pct}%</Td><Td align="right" mono>{r.avg_cost_m}</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-043 */}
-          <TablePanel id="tbl-043" title="Pavement Age Distribution — Paved Network 2025" accent={C.purple} source="DNR road inventory / pave year data">
+          <TablePanel id="tbl-043" title="Pavement Age Distribution - Paved Network 2025" accent={C.purple} source="DNR road inventory / pave year data">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Age Band</Th><Th>km</Th><Th>% of Paved</Th><Th>Avg Condition Index (0–100)</Th></tr></thead>
             <tbody>{PAVEMENT_AGE.map(r=><tr key={r.age}><Td>{r.age}</Td><Td align="right" mono>{r.km.toLocaleString()}</Td><Td align="right" mono>{r.pct}%</Td><Td align="right" mono style={{ color:r.cond_index>70?C.green:r.cond_index>45?C.yellow:C.orange }}>{r.cond_index}</Td></tr>)}</tbody></table>
           </TablePanel>
@@ -2067,12 +2067,12 @@ export default function TabularSummaries() {
           <SectionHeader icon={<Leaf size={15} style={{ color: C.green }}/>} accent={C.green}
             title="Environmental & Climate Resilience" sub="Climate hazard mapping · carbon tracking · flood vulnerability · DNR environment unit 2025"/>
           {/* tbl-047 */}
-          <TablePanel id="tbl-047" title="Climate Hazard Exposure — National Road Network 2025" accent={C.green} source="DNR climate risk assessment / NEMA data">
+          <TablePanel id="tbl-047" title="Climate Hazard Exposure - National Road Network 2025" accent={C.green} source="DNR climate risk assessment / NEMA data">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Hazard Type</Th><Th>km Exposed</Th><Th>High Risk km</Th><Th>Medium km</Th><Th>Low km</Th></tr></thead>
             <tbody>{CLIMATE_HAZARDS.map(r=><tr key={r.hazard}><Td>{r.hazard}</Td><Td align="right" mono>{r.km_exposed.toLocaleString()}</Td><Td align="right" mono style={{ color:'#ef4444' }}>{r.high_risk_km.toLocaleString()}</Td><Td align="right" mono style={{ color:C.orange }}>{r.medium_km.toLocaleString()}</Td><Td align="right" mono style={{ color:C.yellow }}>{r.low_km.toLocaleString()}</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-048 */}
-          <TablePanel id="tbl-048" title="Flood-Prone Road Links — Annual Closure Risk" accent={C.green} source="DNR hydrology surveys / district reports">
+          <TablePanel id="tbl-048" title="Flood-Prone Road Links - Annual Closure Risk" accent={C.green} source="DNR hydrology surveys / district reports">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Link ID</Th><Th>Flood Freq. / yr</Th><Th>Max Depth (m)</Th><Th>Closure Days / yr</Th><Th>Region</Th></tr></thead>
             <tbody>{FLOOD_LINKS.map(r=><tr key={r.link_id}><Td mono style={{ color:C.cyan }}>{r.link_id}</Td><Td align="right" mono>{r.flood_freq_yr}</Td><Td align="right" mono style={{ color:r.max_depth_m>1?'#ef4444':C.orange }}>{r.max_depth_m}</Td><Td align="right" mono style={{ color:'#ef4444' }}>{r.closure_days_yr}</Td><Td>{r.region}</Td></tr>)}</tbody></table>
           </TablePanel>
@@ -2087,7 +2087,7 @@ export default function TabularSummaries() {
             <tbody>{CARBON_EMISSIONS.map(r=><tr key={r.activity}><Td>{r.activity}</Td><Td>{r.unit}</Td><Td align="right" mono style={{ color:r.t_co2e>100?'#ef4444':r.t_co2e>20?C.orange:C.green }}>{r.t_co2e}</Td><Td>{r.scope}</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-051 */}
-          <TablePanel id="tbl-051" title="Environmental Mitigation Works — National Roads 2024/25" accent={C.green} source="DNR environment & social unit">
+          <TablePanel id="tbl-051" title="Environmental Mitigation Works - National Roads 2024/25" accent={C.green} source="DNR environment & social unit">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Mitigation Measure</Th><Th>Done FY24</Th><Th>Done FY25</Th><Th>Target FY25</Th></tr></thead>
             <tbody>{ENV_MITIGATION.map(r=><tr key={r.measure}><Td>{r.measure}</Td><Td align="right" mono>{r.done_24.toLocaleString()}</Td><Td align="right" mono style={{ color:C.green }}>{r.done_25.toLocaleString()}</Td><Td align="right" mono style={{ color:'rgba(148,163,184,0.5)' }}>{r.target_25.toLocaleString()}</Td></tr>)}</tbody></table>
           </TablePanel>
@@ -2101,12 +2101,12 @@ export default function TabularSummaries() {
           <SectionHeader icon={<Route size={15} style={{ color: C.blue }}/>} accent={C.blue}
             title="Cross-border Transport Corridors" sub="Northern, Central & Western Corridors · border traffic · transit time · TradeMark East Africa data"/>
           {/* tbl-053 */}
-          <TablePanel id="tbl-053" title="Northern Corridor Road Segments — Mombasa to Kigali" accent={C.blue} source="TradeMark East Africa / corridor authorities">
+          <TablePanel id="tbl-053" title="Northern Corridor Road Segments - Mombasa to Kigali" accent={C.blue} source="TradeMark East Africa / corridor authorities">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Segment</Th><Th>km</Th><Th>Country</Th><Th>Condition</Th><Th>% Paved</Th></tr></thead>
             <tbody>{NORTHERN_CORRIDOR.map(r=><tr key={r.segment}><Td>{r.segment}</Td><Td align="right" mono>{r.km}</Td><Td>{r.country}</Td><Td><span style={{ color:r.cond==='Good'?C.green:r.cond==='Fair'?C.yellow:C.orange }}>{r.cond}</span></Td><Td align="right" mono>{r.paved_pct}%</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-054 */}
-          <TablePanel id="tbl-054" title="Central Corridor Road Segments — Dar es Salaam to Kampala" accent={C.blue} source="Tanzania NRA / Uganda DNR / TradeMark">
+          <TablePanel id="tbl-054" title="Central Corridor Road Segments - Dar es Salaam to Kampala" accent={C.blue} source="Tanzania NRA / Uganda DNR / TradeMark">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Segment</Th><Th>km</Th><Th>Country</Th><Th>Condition</Th><Th>% Paved</Th></tr></thead>
             <tbody>{CENTRAL_CORRIDOR.map(r=><tr key={r.segment}><Td>{r.segment}</Td><Td align="right" mono>{r.km}</Td><Td>{r.country}</Td><Td><span style={{ color:r.cond==='Good'?C.green:r.cond==='Fair'?C.yellow:C.orange }}>{r.cond}</span></Td><Td align="right" mono>{r.paved_pct}%</Td></tr>)}</tbody></table>
           </TablePanel>
@@ -2126,16 +2126,16 @@ export default function TabularSummaries() {
             <tbody>{TRANSIT_TIME.map(r=><tr key={r.route}><Td>{r.route}</Td><Td align="right" mono>{r.km}</Td><Td align="right" mono style={{ color:r.days_avg>5?C.orange:C.yellow, fontWeight:700 }}>{r.days_avg}</Td><Td align="right" mono style={{ color:C.green }}>{r.days_best}</Td><Td>{r.delay}</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-058 */}
-          <TablePanel id="tbl-058" title="Border Post Infrastructure — One-Stop Border Post Status 2025" accent={C.blue} source="East African Community / TradeMark">
+          <TablePanel id="tbl-058" title="Border Post Infrastructure - One-Stop Border Post Status 2025" accent={C.blue} source="East African Community / TradeMark">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Post</Th><Th>OSBP</Th><Th>Scanners</Th><Th>Lanes</Th><Th>Truck Parking</Th><Th>OSBP Year</Th></tr></thead>
-            <tbody>{BORDER_INFRA.map(r=><tr key={r.post}><Td>{r.post}</Td><Td><span style={{ color:r.osbp?C.green:C.red }}>{r.osbp?'Yes':'No'}</span></Td><Td align="right" mono>{r.scanners}</Td><Td align="right" mono>{r.lanes}</Td><Td align="right" mono>{r.parking_trucks}</Td><Td mono>{r.yr ?? '—'}</Td></tr>)}</tbody></table>
+            <tbody>{BORDER_INFRA.map(r=><tr key={r.post}><Td>{r.post}</Td><Td><span style={{ color:r.osbp?C.green:C.red }}>{r.osbp?'Yes':'No'}</span></Td><Td align="right" mono>{r.scanners}</Td><Td align="right" mono>{r.lanes}</Td><Td align="right" mono>{r.parking_trucks}</Td><Td mono>{r.yr ?? '-'}</Td></tr>)}</tbody></table>
           </TablePanel>
 
           {/* ══ §15: Socioeconomic Impact ═════════════════════════════════════════ */}
           <SectionHeader icon={<Users size={15} style={{ color: C.yellow }}/>} accent={C.yellow}
             title="Socioeconomic Impact" sub="Population & agricultural access · rural accessibility · health & education road access · UBOS data 2024"/>
           {/* tbl-059 */}
-          <TablePanel id="tbl-059" title="Population Served by Road Network — Regional Summary (2024)" accent={C.yellow} source="UBOS 2024 projections / DNR GIS">
+          <TablePanel id="tbl-059" title="Population Served by Road Network - Regional Summary (2024)" accent={C.yellow} source="UBOS 2024 projections / DNR GIS">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Region</Th><Th>Population (M)</Th><Th>Road km</Th><Th>Pop / km</Th><Th>Access Index</Th></tr></thead>
             <tbody>{POPULATION_ACCESS2.map(r=><tr key={r.region}><Td>{r.region}</Td><Td align="right" mono>{r.pop_m}</Td><Td align="right" mono>{r.km_road.toLocaleString()}</Td><Td align="right" mono>{r.pop_per_km.toLocaleString()}</Td><Td align="right" mono style={{ color:r.access_idx>70?C.green:r.access_idx>55?C.yellow:C.orange }}>{r.access_idx}</Td></tr>)}</tbody></table>
           </TablePanel>
@@ -2145,7 +2145,7 @@ export default function TabularSummaries() {
             <tbody>{AGRI_ACCESS.map(r=><tr key={r.region}><Td>{r.region}</Td><Td align="right" mono>{r.farmland_km2.toLocaleString()}</Td><Td align="right" mono style={{ color:C.green }}>{r.paved_pct}%</Td><Td align="right" mono>{r.gravel_pct}%</Td><Td align="right" mono style={{ color:r.no_road_pct>20?'#ef4444':C.orange }}>{r.no_road_pct}%</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-061 */}
-          <TablePanel id="tbl-061" title="Rural Access Index by Region (RAI — % rural pop within 2 km all-weather road)" accent={C.yellow} source="World Bank / UBOS Rural Access Index">
+          <TablePanel id="tbl-061" title="Rural Access Index by Region (RAI - % rural pop within 2 km all-weather road)" accent={C.yellow} source="World Bank / UBOS Rural Access Index">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Region</Th><Th>RAI (%)</Th><Th>km / 1,000 pop</Th><Th>Target RAI</Th><Th>Gap</Th></tr></thead>
             <tbody>{RURAL_ACCESS.map(r=><tr key={r.region}><Td>{r.region}</Td><Td align="right" mono style={{ color:r.rai>75?C.green:r.rai>60?C.yellow:C.orange, fontWeight:700 }}>{r.rai}%</Td><Td align="right" mono>{r.km_per_1000}</Td><Td align="right" mono style={{ color:'rgba(148,163,184,0.5)' }}>{r.target_rai}%</Td><Td align="right" mono style={{ color:'#ef4444' }}>{r.target_rai-r.rai}%</Td></tr>)}</tbody></table>
           </TablePanel>
@@ -2164,32 +2164,32 @@ export default function TabularSummaries() {
           <SectionHeader icon={<Globe size={15} style={{ color: C.teal }}/>} accent={C.teal}
             title="International Benchmarking" sub="EAC member states · Sub-Saharan Africa comparison · World Bank SSATP thresholds"/>
           {/* tbl-064 */}
-          <TablePanel id="tbl-064" title="East African Community — Road Network Comparison 2024" accent={C.teal} source="World Bank / national road authorities 2024">
+          <TablePanel id="tbl-064" title="East African Community - Road Network Comparison 2024" accent={C.teal} source="World Bank / national road authorities 2024">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Country</Th><Th>Road km</Th><Th>Paved km</Th><Th>Paved %</Th><Th>Population (M)</Th><Th>Density / km²</Th></tr></thead>
             <tbody>{EAC_NETWORK.map(r=><tr key={r.country}><Td style={{ color:r.country==='Uganda'?C.cyan:'inherit' }}>{r.country}</Td><Td align="right" mono>{r.road_km.toLocaleString()}</Td><Td align="right" mono>{r.paved_km.toLocaleString()}</Td><Td align="right" mono style={{ color:r.paved_pct>20?C.green:r.paved_pct>10?C.yellow:C.orange }}>{r.paved_pct}%</Td><Td align="right" mono>{r.pop_m}</Td><Td align="right" mono>{r.density}</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-065 */}
-          <TablePanel id="tbl-065" title="Sub-Saharan Africa — Paved Share & Condition Comparison" accent={C.teal} source="SSATP / World Bank Africa Infrastructure Diagnostic 2024">
+          <TablePanel id="tbl-065" title="Sub-Saharan Africa - Paved Share & Condition Comparison" accent={C.teal} source="SSATP / World Bank Africa Infrastructure Diagnostic 2024">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Country</Th><Th>Paved %</Th><Th>Condition Good %</Th><Th>Maint. Spend USD / km</Th></tr></thead>
             <tbody>{SSA_COMPARISON.map(r=><tr key={r.country}><Td style={{ color:r.country==='Uganda'?C.cyan:'inherit' }}>{r.country}</Td><Td align="right" mono>{r.paved_pct}%</Td><Td align="right" mono style={{ color:r.cond_good_pct>60?C.green:C.yellow }}>{r.cond_good_pct}%</Td><Td align="right" mono>{r.spend_usd_km.toLocaleString()}</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-066 */}
-          <TablePanel id="tbl-066" title="Road Density Comparison — km per 1,000 km² of territory" accent={C.teal} source="World Bank / national road agencies 2024">
+          <TablePanel id="tbl-066" title="Road Density Comparison - km per 1,000 km² of territory" accent={C.teal} source="World Bank / national road agencies 2024">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Country</Th><Th>Area (km²)</Th><Th>Road km</Th><Th>Density / 1,000 km²</Th></tr></thead>
             <tbody>{ROAD_DENSITY.map(r=><tr key={r.country}><Td style={{ color:r.country==='Uganda'?C.cyan:'inherit' }}>{r.country}</Td><Td align="right" mono>{r.area_km2.toLocaleString()}</Td><Td align="right" mono>{r.road_km.toLocaleString()}</Td><Td align="right" mono style={{ fontWeight:700 }}>{r.density_per_km2}</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-067 */}
-          <TablePanel id="tbl-067" title="Road Maintenance Expenditure Comparison — USD per km 2023" accent={C.teal} source="Sub-Saharan Africa Transport Policy Programme 2023">
+          <TablePanel id="tbl-067" title="Road Maintenance Expenditure Comparison - USD per km 2023" accent={C.teal} source="Sub-Saharan Africa Transport Policy Programme 2023">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Country</Th><Th>USD / km Paved</Th><Th>USD / km Unpaved</Th><Th>% of GDP</Th></tr></thead>
             <tbody>{MAINT_SPEND_COMPARISON.map(r=><tr key={r.country}><Td style={{ color:r.country==='Uganda'?C.cyan:'inherit' }}>{r.country}</Td><Td align="right" mono>{r.usd_paved.toLocaleString()}</Td><Td align="right" mono>{r.usd_unpaved.toLocaleString()}</Td><Td align="right" mono style={{ color:r.pct_gdp>2?C.green:r.pct_gdp>1.5?C.yellow:C.orange }}>{r.pct_gdp}%</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-068 */}
-          <TablePanel id="tbl-068" title="Road Condition Benchmarks — SSATP IRI Standards vs Uganda" accent={C.teal} source="SSATP / World Bank IRI thresholds">
+          <TablePanel id="tbl-068" title="Road Condition Benchmarks - SSATP IRI Standards vs Uganda" accent={C.teal} source="SSATP / World Bank IRI thresholds">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Standard</Th><Th>Uganda %</Th><Th>EAC Average %</Th></tr></thead>
             <tbody>{IRI_BENCHMARKS.map(r=><tr key={r.standard}><Td>{r.standard}</Td><Td align="right" mono style={{ color:C.cyan, fontWeight:700 }}>{r.ugx_pct}%</Td><Td align="right" mono style={{ color:'rgba(148,163,184,0.6)' }}>{r.eac_avg_pct}%</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-069 */}
-          <TablePanel id="tbl-069" title="Traffic Volume Benchmarks by Route Type — EAC / SSA Comparison" accent={C.teal} source="World Bank EAC transport study 2024">
+          <TablePanel id="tbl-069" title="Traffic Volume Benchmarks by Route Type - EAC / SSA Comparison" accent={C.teal} source="World Bank EAC transport study 2024">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Route Type</Th><Th>Uganda AADT</Th><Th>EAC Avg AADT</Th><Th>SSA Avg AADT</Th></tr></thead>
             <tbody>{TRAFFIC_BENCHMARKS.map(r=><tr key={r.route_type}><Td>{r.route_type}</Td><Td align="right" mono style={{ color:C.cyan }}>{r.ugx_aadt.toLocaleString()}</Td><Td align="right" mono>{r.eac_avg_aadt.toLocaleString()}</Td><Td align="right" mono style={{ color:'rgba(148,163,184,0.5)' }}>{r.ssa_avg_aadt.toLocaleString()}</Td></tr>)}</tbody></table>
           </TablePanel>
@@ -2213,7 +2213,7 @@ export default function TabularSummaries() {
             <tbody>{BRIDGE_ASSET_VALUE.map(r=><tr key={r.type}><Td>{r.type}</Td><Td align="right" mono>{r.count}</Td><Td align="right" mono>{r.avg_span_m}</Td><Td align="right" mono>{r.unit_cost_m}</Td><Td align="right" mono style={{ color:C.green }}>{r.total_bn}</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-073 */}
-          <TablePanel id="tbl-073" title="Capital Stock Accumulation — Uganda National Road Network 2000–2025" accent={C.green} source="DNR / MoWT infrastructure accounts">
+          <TablePanel id="tbl-073" title="Capital Stock Accumulation - Uganda National Road Network 2000–2025" accent={C.green} source="DNR / MoWT infrastructure accounts">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Year</Th><Th>Paved (Bn UGX)</Th><Th>Gravel (Bn UGX)</Th><Th>Bridges (Bn UGX)</Th><Th>Total (Bn UGX)</Th></tr></thead>
             <tbody>{CAPITAL_STOCK.map(r=><tr key={r.yr}><Td mono>{r.yr}</Td><Td align="right" mono>{r.paved_bn}</Td><Td align="right" mono>{r.unpaved_bn}</Td><Td align="right" mono>{r.bridges_bn}</Td><Td align="right" mono style={{ color:C.green, fontWeight:700 }}>{r.total_bn}</Td></tr>)}</tbody></table>
           </TablePanel>
@@ -2232,7 +2232,7 @@ export default function TabularSummaries() {
           <SectionHeader icon={<Database size={15} style={{ color: C.pink }}/>} accent={C.pink}
             title="Data Quality & Audit" sub="GeoJSON completeness · survey coverage · KPI cross-validation · known gaps register"/>
           {/* tbl-076 */}
-          <TablePanel id="tbl-076" title="GeoJSON Field Completeness — network2026.geojson (1,017 features)" accent={C.pink} source="DNR GIS Section audit Jun 2025" chartTab="dataaudit" chartLabel="🔍 Data Audit →" onNavigate={navigate}>
+          <TablePanel id="tbl-076" title="GeoJSON Field Completeness - network2026.geojson (1,017 features)" accent={C.pink} source="DNR GIS Section audit Jun 2025" chartTab="dataaudit" chartLabel="🔍 Data Audit →" onNavigate={navigate}>
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Field</Th><Th>Total Features</Th><Th>Filled</Th><Th>Completeness %</Th></tr></thead>
             <tbody>{GEOJSON_COMPLETENESS.map(r=><tr key={r.field}><Td mono style={{ color:C.cyan }}>{r.field}</Td><Td align="right" mono>{r.features}</Td><Td align="right" mono>{r.filled}</Td><Td align="right" mono style={{ color:r.pct===100?C.green:r.pct>90?C.yellow:'#ef4444', fontWeight:700 }}>{r.pct.toFixed(1)}%</Td></tr>)}</tbody></table>
           </TablePanel>
@@ -2242,22 +2242,22 @@ export default function TabularSummaries() {
             <tbody>{SURVEY_COVERAGE.map(r=><tr key={r.region}><Td>{r.region}</Td><Td align="right" mono>{r.total_links}</Td><Td align="right" mono style={{ color:C.green }}>{r.surveyed}</Td><Td align="right" mono style={{ color:r.pct>80?C.green:r.pct>70?C.yellow:C.orange }}>{r.pct.toFixed(1)}%</Td><Td mono style={{ color:'rgba(148,163,184,0.5)' }}>{r.last_survey}</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-078 */}
-          <TablePanel id="tbl-078" title="Data Vintage by Dataset — Uganda National Roads Platform" accent={C.pink} source="DNR data management unit 2025">
+          <TablePanel id="tbl-078" title="Data Vintage by Dataset - Uganda National Roads Platform" accent={C.pink} source="DNR data management unit 2025">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Dataset</Th><Th>Source</Th><Th>Vintage</Th><Th>Features</Th></tr></thead>
             <tbody>{DATA_VINTAGE.map(r=><tr key={r.dataset}><Td>{r.dataset}</Td><Td style={{ color:'rgba(148,163,184,0.5)' }}>{r.source}</Td><Td mono style={{ color:C.yellow }}>{r.vintage}</Td><Td align="right" mono>{r.features.toLocaleString()}</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-079 */}
-          <TablePanel id="tbl-079" title="Known Data Gaps — National Roads Platform 2025" accent={C.pink} source="DNR data audit / platform QA">
+          <TablePanel id="tbl-079" title="Known Data Gaps - National Roads Platform 2025" accent={C.pink} source="DNR data audit / platform QA">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Data Gap</Th><Th>Severity</Th><Th>Priority</Th></tr></thead>
             <tbody>{DATA_GAPS.map(r=><tr key={r.gap}><Td>{r.gap}</Td><Td><span style={{ color:r.severity==='High'?'#ef4444':r.severity==='Medium'?C.orange:C.yellow }}>{r.severity}</span></Td><Td align="right" mono style={{ fontWeight:700, color:r.priority===1?'#ef4444':r.priority===2?C.orange:C.yellow }}>P{r.priority}</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-080 */}
-          <TablePanel id="tbl-080" title="KPI Cross-Validation — Platform vs Official Statistics" accent={C.pink} source="DNR / DataAuditEngine automated check" chartTab="dataaudit" chartLabel="🔍 Data Audit →" onNavigate={navigate}>
+          <TablePanel id="tbl-080" title="KPI Cross-Validation - Platform vs Official Statistics" accent={C.pink} source="DNR / DataAuditEngine automated check" chartTab="dataaudit" chartLabel="🔍 Data Audit →" onNavigate={navigate}>
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>KPI</Th><Th>Official Value</Th><Th>Source</Th><Th>GeoJSON Value</Th><Th>Delta</Th><Th>Status</Th></tr></thead>
             <tbody>{KPI_VALIDATION.map(r=><tr key={r.kpi}><Td>{r.kpi}</Td><Td mono style={{ color:C.cyan, fontWeight:700 }}>{r.value}</Td><Td style={{ color:'rgba(148,163,184,0.5)' }}>{r.source}</Td><Td mono>{r.geojson}</Td><Td mono>{r.delta}</Td><Td><span style={{ color:r.ok?C.green:'#ef4444' }}>{r.ok?'✓ OK':'✗ FAIL'}</span></Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-081 */}
-          <TablePanel id="tbl-081" title="Duplicate Link & Geometry Check Results — DNR GIS QA" accent={C.pink} source="DNR GIS QA automated audit">
+          <TablePanel id="tbl-081" title="Duplicate Link & Geometry Check Results - DNR GIS QA" accent={C.pink} source="DNR GIS QA automated audit">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>QA Check</Th><Th>Issues Found</Th><Th>Action</Th><Th>Status</Th></tr></thead>
             <tbody>{DUPLICATE_CHECK.map(r=><tr key={r.check}><Td>{r.check}</Td><Td align="right" mono style={{ color:r.found>0?C.orange:C.green }}>{r.found}</Td><Td>{r.action}</Td><Td><span style={{ color:r.status==='PASS'?C.green:C.yellow }}>{r.status}</span></Td></tr>)}</tbody></table>
           </TablePanel>
@@ -2286,12 +2286,12 @@ export default function TabularSummaries() {
             <tbody>{CONTRACT_PERFORMANCE.map(r=><tr key={r.contractor}><Td>{r.contractor}</Td><Td align="right" mono>{r.lots}</Td><Td align="right" mono style={{ color:r.quality_score>85?C.green:r.quality_score>78?C.yellow:C.orange }}>{r.quality_score}</Td><Td align="right" mono style={{ color:r.time_overrun_pct>25?'#ef4444':C.orange }}>{r.time_overrun_pct}%</Td><Td align="right" mono>{r.claims_m}</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-086 */}
-          <TablePanel id="tbl-086" title="Procurement Timeline Statistics — DNR Road Works Contracts 2024/25" accent={C.orange} source="DNR procurement department">
+          <TablePanel id="tbl-086" title="Procurement Timeline Statistics - DNR Road Works Contracts 2024/25" accent={C.orange} source="DNR procurement department">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Procurement Stage</Th><Th>Avg (weeks)</Th><Th>Best (weeks)</Th><Th>Legal Minimum</Th></tr></thead>
-            <tbody>{PROCUREMENT_TIMELINE.map(r=><tr key={r.stage}><Td>{r.stage}</Td><Td align="right" mono style={{ color:C.orange }}>{r.avg_wks}</Td><Td align="right" mono style={{ color:C.green }}>{r.best_wks}</Td><Td align="right" mono style={{ color:'rgba(148,163,184,0.4)' }}>{r.legal_min ?? '—'}</Td></tr>)}</tbody></table>
+            <tbody>{PROCUREMENT_TIMELINE.map(r=><tr key={r.stage}><Td>{r.stage}</Td><Td align="right" mono style={{ color:C.orange }}>{r.avg_wks}</Td><Td align="right" mono style={{ color:C.green }}>{r.best_wks}</Td><Td align="right" mono style={{ color:'rgba(148,163,184,0.4)' }}>{r.legal_min ?? '-'}</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-087 */}
-          <TablePanel id="tbl-087" title="Design Standards Compliance — National Road Projects 2024" accent={C.orange} source="DNR quality assurance unit 2024">
+          <TablePanel id="tbl-087" title="Design Standards Compliance - National Road Projects 2024" accent={C.orange} source="DNR quality assurance unit 2024">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Standard</Th><Th>Compliant %</Th><Th>Non-Compliant %</Th><Th>Year Checked</Th></tr></thead>
             <tbody>{DESIGN_COMPLIANCE.map(r=><tr key={r.standard}><Td>{r.standard}</Td><Td align="right" mono style={{ color:r.compliant_pct>80?C.green:C.yellow }}>{r.compliant_pct}%</Td><Td align="right" mono style={{ color:r.non_compliant_pct>25?'#ef4444':C.orange }}>{r.non_compliant_pct}%</Td><Td mono>{r.yr}</Td></tr>)}</tbody></table>
           </TablePanel>
@@ -2310,17 +2310,17 @@ export default function TabularSummaries() {
             <tbody>{ALL_WEATHER_ACCESS.map(r=><tr key={r.sub_region}><Td>{r.sub_region}</Td><Td align="right" mono>{r.total_km.toLocaleString()}</Td><Td align="right" mono style={{ color:C.green }}>{r.all_weather_km.toLocaleString()}</Td><Td align="right" mono style={{ color:r.pct>80?C.green:r.pct>65?C.yellow:C.orange }}>{r.pct.toFixed(1)}%</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-090 */}
-          <TablePanel id="tbl-090" title="Inter-Regional Travel Time Matrix — Kampala to Major Cities (2025)" accent={C.cyan} source="DNR travel time survey 2025">
+          <TablePanel id="tbl-090" title="Inter-Regional Travel Time Matrix - Kampala to Major Cities (2025)" accent={C.cyan} source="DNR travel time survey 2025">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Destination</Th><Th>km</Th><Th>Best Case (hr)</Th><Th>Typical (hr)</Th><Th>Road</Th></tr></thead>
             <tbody>{TRAVEL_TIME_MATRIX.map(r=><tr key={r.to}><Td>{r.to}</Td><Td align="right" mono>{r.km}</Td><Td align="right" mono style={{ color:C.green }}>{r.best_hr}</Td><Td align="right" mono style={{ color:C.yellow }}>{r.typical_hr}</Td><Td mono style={{ color:'rgba(148,163,184,0.5)' }}>{r.road}</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-091 */}
-          <TablePanel id="tbl-091" title="Connectivity Gaps — Poor-Access Corridors Affecting Communities" accent={C.cyan} source="DNR accessibility assessment 2025">
+          <TablePanel id="tbl-091" title="Connectivity Gaps - Poor-Access Corridors Affecting Communities" accent={C.cyan} source="DNR accessibility assessment 2025">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Gap Description</Th><Th>km</Th><Th>Pop Affected (k)</Th><Th>Priority</Th></tr></thead>
             <tbody>{CONN_GAPS.map(r=><tr key={r.gap}><Td>{r.gap}</Td><Td align="right" mono>{r.km}</Td><Td align="right" mono>{r.pop_k}</Td><Td><span style={{ color:r.priority==='High'?'#ef4444':C.orange }}>{r.priority}</span></Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-092 */}
-          <TablePanel id="tbl-092" title="Urban Road Network Statistics — Major Urban Centres 2025" accent={C.cyan} source="DNR / KCCA / urban authorities">
+          <TablePanel id="tbl-092" title="Urban Road Network Statistics - Major Urban Centres 2025" accent={C.cyan} source="DNR / KCCA / urban authorities">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>City</Th><Th>Urban Road km</Th><Th>% Paved</Th><Th>Signalised Junctions</Th><Th>Bus Routes</Th></tr></thead>
             <tbody>{URBAN_ROADS.map(r=><tr key={r.city}><Td>{r.city}</Td><Td align="right" mono>{r.urban_km.toLocaleString()}</Td><Td align="right" mono style={{ color:r.paved_pct>60?C.green:C.yellow }}>{r.paved_pct}%</Td><Td align="right" mono>{r.signals}</Td><Td align="right" mono>{r.bus_routes}</Td></tr>)}</tbody></table>
           </TablePanel>
@@ -2330,12 +2330,12 @@ export default function TabularSummaries() {
             <tbody>{NATIONAL_PARKS_ACCESS.map(r=><tr key={r.park}><Td>{r.park}</Td><Td mono style={{ color:CLASS_COLORS_TS[r.cls] }}>{r.cls}</Td><Td align="right" mono>{r.km_gate}</Td><Td>{r.surface}</Td><Td align="right" mono>{r.visitors.toLocaleString()}</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-094 */}
-          <TablePanel id="tbl-094" title="Oil Sector Road Connectivity — Albertine Graben Network" accent={C.cyan} source="Ministry of Energy / DNR / TotalEnergies access roads">
+          <TablePanel id="tbl-094" title="Oil Sector Road Connectivity - Albertine Graben Network" accent={C.cyan} source="Ministry of Energy / DNR / TotalEnergies access roads">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Road</Th><Th>km</Th><Th>Surface</Th><Th>% Oil Traffic</Th><Th>Upgrade Year</Th></tr></thead>
             <tbody>{OIL_ROADS.map(r=><tr key={r.road}><Td>{r.road}</Td><Td align="right" mono>{r.km}</Td><Td><span style={{ color:r.surface==='Paved'?C.cyan:C.orange }}>{r.surface}</span></Td><Td align="right" mono style={{ color:r.oil_pct>50?C.orange:C.yellow }}>{r.oil_pct}%</Td><Td mono>{r.upgrade_yr ?? 'Planned'}</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-095 */}
-          <TablePanel id="tbl-095" title="Network Resilience Indicators — DNR Risk Assessment 2025" accent={C.cyan} source="DNR network resilience analysis 2025">
+          <TablePanel id="tbl-095" title="Network Resilience Indicators - DNR Risk Assessment 2025" accent={C.cyan} source="DNR network resilience analysis 2025">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Resilience Metric</Th><Th>Value</Th><Th>% / Index</Th><Th>Risk Level</Th></tr></thead>
             <tbody>{RESILIENCE_INDICATORS.map(r=><tr key={r.metric}><Td>{r.metric}</Td><Td align="right" mono>{r.value}</Td><Td align="right" mono>{r.pct}</Td><Td><span style={{ color:r.risk==='Critical'?'#ef4444':r.risk==='High'?C.orange:r.risk==='Medium'?C.yellow:C.green }}>{r.risk}</span></Td></tr>)}</tbody></table>
           </TablePanel>
@@ -2355,7 +2355,7 @@ export default function TabularSummaries() {
             <tbody>{MARKET_CONNECTIVITY.map(r=><tr key={r.market_type}><Td>{r.market_type}</Td><Td align="right" mono>{r.count.toLocaleString()}</Td><Td align="right" mono style={{ color:r.all_paved_pct>70?C.green:r.all_paved_pct>40?C.yellow:C.orange }}>{r.all_paved_pct}%</Td><Td align="right" mono>{r.avg_aadt.toLocaleString()}</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-099 */}
-          <TablePanel id="tbl-099" title="Service Centre Road Access — Key Public Services 2025" accent={C.cyan} source="DNR / UBOS service centre proximity study 2025">
+          <TablePanel id="tbl-099" title="Service Centre Road Access - Key Public Services 2025" accent={C.cyan} source="DNR / UBOS service centre proximity study 2025">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Service Type</Th><Th>Total Sites</Th><Th>All-Weather Access %</Th><Th>Poor Road %</Th><Th>No Road %</Th></tr></thead>
             <tbody>{SERVICE_CENTERS.map(r=><tr key={r.service}><Td>{r.service}</Td><Td align="right" mono>{r.total.toLocaleString()}</Td><Td align="right" mono style={{ color:r.paved_access_pct>75?C.green:C.yellow }}>{r.paved_access_pct}%</Td><Td align="right" mono>{r.gravel_pct}%</Td><Td align="right" mono style={{ color:r.no_road_pct>10?'#ef4444':C.orange }}>{r.no_road_pct}%</Td></tr>)}</tbody></table>
           </TablePanel>
@@ -2369,11 +2369,11 @@ export default function TabularSummaries() {
           <div style={{ fontSize: 10, fontWeight: 900, color: C.green, textTransform: 'uppercase',
             letterSpacing: '0.12em', marginBottom: 10, marginTop: 20,
             borderBottom: '1px solid rgba(0,255,136,0.1)', paddingBottom: 6 }}>
-            §21 — Global RMS Case Studies (15 Countries)
+            §21 - Global RMS Case Studies (15 Countries)
           </div>
           {/* tbl-101 */}
-          <TablePanel id="tbl-101" title="Global RMS Case Studies — All 15 Countries Analysed" accent={C.green}
-            source="DNR RMS research synthesis (Jun 2026) — RMS section case studies" chartTab="rms" chartLabel="🌍 View in RMS →" onNavigate={navigate}>
+          <TablePanel id="tbl-101" title="Global RMS Case Studies - All 15 Countries Analysed" accent={C.green}
+            source="DNR RMS research synthesis (Jun 2026) - RMS section case studies" chartTab="rms" chartLabel="🌍 View in RMS →" onNavigate={navigate}>
             <table style={{ width:'100%', borderCollapse:'collapse', fontSize:9 }}>
               <thead><tr>
                 <Th>#</Th><Th>Agency</Th><Th>Country</Th><Th>Network km</Th>
@@ -2401,10 +2401,10 @@ export default function TabularSummaries() {
           <div style={{ fontSize: 10, fontWeight: 900, color: C.blue, textTransform: 'uppercase',
             letterSpacing: '0.12em', marginBottom: 10, marginTop: 20,
             borderBottom: '1px solid rgba(77,159,255,0.1)', paddingBottom: 6 }}>
-            §22 — International Standards & Frameworks (Category B — {CAT_B_STANDARDS.length} standards)
+            §22 - International Standards & Frameworks (Category B - {CAT_B_STANDARDS.length} standards)
           </div>
           {/* tbl-102 */}
-          <TablePanel id="tbl-102" title="Category B — International Standards, Guidelines & Manuals (All 20)" accent={C.blue}
+          <TablePanel id="tbl-102" title="Category B - International Standards, Guidelines & Manuals (All 20)" accent={C.blue}
             source="Sources Catalogue Category B · DNR platform evidence base" chartTab="sources" chartLabel="📚 Sources →" onNavigate={navigate}>
             <table style={{ width:'100%', borderCollapse:'collapse', fontSize:9 }}>
               <thead><tr>
@@ -2431,10 +2431,10 @@ export default function TabularSummaries() {
           <div style={{ fontSize: 10, fontWeight: 900, color: C.purple, textTransform: 'uppercase',
             letterSpacing: '0.12em', marginBottom: 10, marginTop: 20,
             borderBottom: '1px solid rgba(185,103,255,0.1)', paddingBottom: 6 }}>
-            §23 — Research Literature (Category C — {CAT_C_RESEARCH.length} papers)
+            §23 - Research Literature (Category C - {CAT_C_RESEARCH.length} papers)
           </div>
           {/* tbl-103 */}
-          <TablePanel id="tbl-103" title="Category C — Global Research Papers & Studies (All 53)" accent={C.purple}
+          <TablePanel id="tbl-103" title="Category C - Global Research Papers & Studies (All 53)" accent={C.purple}
             source="Sources Catalogue Category C · DNR evidence base for ML, PMS, BMS, HDM4, Traffic modules" chartTab="sources" chartLabel="📚 Sources →" onNavigate={navigate}>
             <table style={{ width:'100%', borderCollapse:'collapse', fontSize:9 }}>
               <thead><tr>
@@ -2457,10 +2457,10 @@ export default function TabularSummaries() {
           <div style={{ fontSize: 10, fontWeight: 900, color: C.teal, textTransform: 'uppercase',
             letterSpacing: '0.12em', marginBottom: 10, marginTop: 20,
             borderBottom: '1px solid rgba(0,212,170,0.1)', paddingBottom: 6 }}>
-            §24 — GeoJSON Road Links (network2026.geojson — Full 1,017 rows)
+            §24 - GeoJSON Road Links (network2026.geojson - Full 1,017 rows)
           </div>
           {/* tbl-links-full */}
-          <TablePanel id="tbl-links-full" title="All Road Links from network2026.geojson — All Properties" accent={C.teal}
+          <TablePanel id="tbl-links-full" title="All Road Links from network2026.geojson - All Properties" accent={C.teal}
             source="network2026.geojson · DNR GIS Section 18 Jun 2025 · 1,017 links · 21,160 km mapped | Official network: 21,302 km | Gap: 142 km">
             <div style={{ padding:'8px 14px 4px', display:'flex', alignItems:'center', gap:10, flexWrap:'wrap' }}>
               <input
@@ -2499,15 +2499,15 @@ export default function TabularSummaries() {
                       return (
                         <tr key={String(p.link_id)} style={{ background: i%2===0?'rgba(15,23,42,0.35)':'transparent', borderBottom:'1px solid rgba(255,255,255,0.02)' }}>
                           <Td mono style={{ color:C.teal, fontWeight:700, whiteSpace:'nowrap' }}>{String(p.link_id)}</Td>
-                          <Td style={{ maxWidth:200, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{String(p.link_nam_1 ?? '—')}</Td>
-                          <Td mono style={{ color:'rgba(148,163,184,0.6)', whiteSpace:'nowrap' }}>{String(p.road_no ?? '—')}</Td>
+                          <Td style={{ maxWidth:200, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{String(p.link_nam_1 ?? '-')}</Td>
+                          <Td mono style={{ color:'rgba(148,163,184,0.6)', whiteSpace:'nowrap' }}>{String(p.road_no ?? '-')}</Td>
                           <Td align="center" style={{ color:clsColor[cls]??'#94a3b8', fontWeight:800 }}>{cls}</Td>
                           <Td align="right" mono>{km.toFixed(2)}</Td>
-                          <Td style={{ color: String(p.surface_ty) === 'Bituminous' ? C.cyan : C.orange, fontSize:8 }}>{String(p.surface_ty ?? '—')}</Td>
-                          <Td style={{ color:'rgba(148,163,184,0.7)', whiteSpace:'nowrap', fontSize:8 }}>{String(p.maintena_1 ?? '—')}</Td>
-                          <Td style={{ color:'rgba(148,163,184,0.5)', fontSize:8 }}>{String(p.maintenanc ?? '—')}</Td>
-                          <Td align="center" mono style={{ color:'rgba(148,163,184,0.5)' }}>{p.completion ? String(p.completion) : '—'}</Td>
-                          <Td align="center" mono style={{ color:'rgba(148,163,184,0.4)' }}>{p.rehabilita ? String(p.rehabilita) : '—'}</Td>
+                          <Td style={{ color: String(p.surface_ty) === 'Bituminous' ? C.cyan : C.orange, fontSize:8 }}>{String(p.surface_ty ?? '-')}</Td>
+                          <Td style={{ color:'rgba(148,163,184,0.7)', whiteSpace:'nowrap', fontSize:8 }}>{String(p.maintena_1 ?? '-')}</Td>
+                          <Td style={{ color:'rgba(148,163,184,0.5)', fontSize:8 }}>{String(p.maintenanc ?? '-')}</Td>
+                          <Td align="center" mono style={{ color:'rgba(148,163,184,0.5)' }}>{p.completion ? String(p.completion) : '-'}</Td>
+                          <Td align="center" mono style={{ color:'rgba(148,163,184,0.4)' }}>{p.rehabilita ? String(p.rehabilita) : '-'}</Td>
                         </tr>
                       );
                     })}
