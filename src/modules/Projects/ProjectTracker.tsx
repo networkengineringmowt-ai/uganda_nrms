@@ -76,14 +76,14 @@ const PROJECTS: Project[] = [
     startDate: '2023-09', endDate: '2026-03', behind: true, category: 'NDPIV',
   },
   {
-    id: 'P006', name: 'OPRC Lot 1 — Central (Kampala environs)',
+    id: 'P006', name: 'OPRC Lot 1 - Central (Kampala environs)',
     road: 'Various A/B', region: 'Central', funder: 'World Bank RSSP',
     contractor: 'M/s CICO Roads', lengthKm: 1240, budgetBn: 380, spentBn: 215,
     phase: 'Construction', physical: 55, financial: 57, planned: 55,
     startDate: '2021-07', endDate: '2027-06', behind: false, category: 'OPRC',
   },
   {
-    id: 'P007', name: 'OPRC Lot 3 — Eastern Region',
+    id: 'P007', name: 'OPRC Lot 3 - Eastern Region',
     road: 'Various A/B/C', region: 'Eastern', funder: 'World Bank RSSP',
     contractor: 'M/s Sietco', lengthKm: 1680, budgetBn: 420, spentBn: 168,
     phase: 'Construction', physical: 38, financial: 40, planned: 45,
@@ -97,14 +97,14 @@ const PROJECTS: Project[] = [
     startDate: '2025-01', endDate: '2028-06', behind: false, category: 'Vision2040',
   },
   {
-    id: 'P009', name: 'Kampala–Entebbe Expressway — Phase 2 Widening',
+    id: 'P009', name: 'Kampala–Entebbe Expressway - Phase 2 Widening',
     road: 'Expressway', region: 'Central', funder: 'China EXIM',
     contractor: 'TBA', lengthKm: 28, budgetBn: 580, spentBn: 0,
     phase: 'Planning', physical: 0, financial: 0, planned: 0,
     startDate: '2026-01', endDate: '2030-06', behind: false, category: 'Vision2040',
   },
   {
-    id: 'P010', name: 'Storm Damage Repairs — Eastern FY24/25',
+    id: 'P010', name: 'Storm Damage Repairs - Eastern FY24/25',
     road: 'Various', region: 'Eastern', funder: 'GoU Emergency',
     contractor: 'Multiple day-labour', lengthKm: 22, budgetBn: 28, spentBn: 19,
     phase: 'Construction', physical: 70, financial: 68, planned: 65,

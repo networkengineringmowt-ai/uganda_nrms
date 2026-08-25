@@ -143,7 +143,7 @@ function ProgressBar({ planned, actual, financial }: {
         <div key={b.label}>
           <div className="flex justify-between text-[8px] text-slate-500 mb-0.5">
             <span>{b.label}</span>
-            <span>{b.val !== null ? `${b.val.toFixed(0)}%` : '—'}</span>
+            <span>{b.val !== null ? `${b.val.toFixed(0)}%` : '-'}</span>
           </div>
           <div className="bg-slate-700 rounded-full h-1.5">
             {b.val !== null && (
@@ -353,7 +353,7 @@ export default function ProjectsView() {
             </div>
           </div>
           <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>
-            Active and planned road construction and rehabilitation projects across Uganda — tracking UNRA capital works, AfDB-funded corridors, NERAMP rehabilitation lots, northern bypass, and expressway programmes with real-time progress and disbursement monitoring.
+            Active and planned road construction and rehabilitation projects across Uganda - tracking UNRA capital works, AfDB-funded corridors, NERAMP rehabilitation lots, northern bypass, and expressway programmes with real-time progress and disbursement monitoring.
           </p>
           <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
             {['UNRA Capital Works','AfDB Funded','NERAMP Lots','World Bank IDA','PPDA Compliant','NDPIV Aligned'].map((b: string)=>(
@@ -374,7 +374,7 @@ export default function ProjectsView() {
 
       <CrossLinkChipBar sectionId="projects" />
 
-      {/* ── BMS-style tab bar — FIRST (matches BMS pattern) ── */}
+      {/* ── BMS-style tab bar - FIRST (matches BMS pattern) ── */}
       <div style={{
         display: 'flex', gap: 2, padding: '0 14px', flexShrink: 0,
         borderBottom: '1px solid rgba(77,159,255,0.15)',
@@ -403,12 +403,12 @@ export default function ProjectsView() {
         })}
       </div>
 
-      {/* ── Map + MapDetailPane (Map tab) — flex row, map fills space ── */}
+      {/* ── Map + MapDetailPane (Map tab) - flex row, map fills space ── */}
       {activeTab === 'map' && <div className="flex flex-1 min-h-0 overflow-hidden border-t border-slate-800">
 
         {/* Map fills remaining space */}
         <div style={{ flex: 1, minWidth: 0, position: 'relative' }}>
-          {/* Floating filter bar — keeps the whole pane for the map */}
+          {/* Floating filter bar - keeps the whole pane for the map */}
           <div style={{
             position: 'absolute', top: 10, left: 54, zIndex: 1000,
             display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center',
@@ -588,7 +588,7 @@ export default function ProjectsView() {
           </div>
         </div>
 
-        {/* Right: MapDetailPane — default=stats, selected=project detail */}
+        {/* Right: MapDetailPane - default=stats, selected=project detail */}
         <MapDetailPane
           width={340}
           accent="#f59e0b"
@@ -659,7 +659,7 @@ export default function ProjectsView() {
       {/* ── Works Register tab ── */}
       {activeTab === 'register' && (
         <div style={{ flex: 1, overflowY: 'auto', padding: '14px 18px', minHeight: 0 }}>
-          {/* Programme overview — moved here from the map tab so the map fills its pane */}
+          {/* Programme overview - moved here from the map tab so the map fills its pane */}
           <div className="space-y-3" style={{ marginBottom: 14 }}>
         {/* KPI strip */}
         <div className="grid grid-cols-4 gap-2">
@@ -687,7 +687,7 @@ export default function ProjectsView() {
             borderRadius: 8, padding: '8px 12px',
           }}>
             <div style={{ fontSize: 9, fontWeight: 900, color: '#fcd34d', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 5 }}>
-              🚧 NERAMP OPRC — Output-Performance Road Contracts
+              🚧 NERAMP OPRC - Output-Performance Road Contracts
             </div>
             <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.8)', lineHeight: 1.5 }}>
               <span style={{ color: '#fcd34d', fontWeight: 700 }}>Lot 1 (216 km)</span>
@@ -745,7 +745,7 @@ export default function ProjectsView() {
               borderRadius: 10, padding: '10px 12px',
             }}>
               <div style={{ fontSize: 9, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>
-                Projects by Works Type — Count &amp; Length (km)
+                Projects by Works Type - Count &amp; Length (km)
               </div>
               <Chart3DWrap>
                 <ResponsiveContainer width="100%" height={110}>
@@ -784,7 +784,7 @@ export default function ProjectsView() {
 
           </div>
 
-          <div style={{ fontSize: 14, fontWeight: 900, color: '#e2eaf4', marginBottom: 4 }}>Works Register — All Projects</div>
+          <div style={{ fontSize: 14, fontWeight: 900, color: '#e2eaf4', marginBottom: 4 }}>Works Register - All Projects</div>
           <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.55)', marginBottom: 12 }}>
             {projects.length} projects · source: appStore / NDPIV Excel
           </div>
@@ -801,16 +801,16 @@ export default function ProjectsView() {
                 {filtered.map((p, i) => (
                   <tr key={p.id} style={{ borderBottom: '1px solid rgba(148,163,184,0.04)', background: i % 2 === 0 ? 'rgba(15,23,42,0.3)' : 'transparent' }}>
                     <td style={{ padding: '5px 10px', color: '#e2eaf4', maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.project_name}</td>
-                    <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{p.regions ?? '—'}</td>
-                    <td style={{ padding: '5px 10px', color: '#f59e0b', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{p.parsed_length_km ? p.parsed_length_km.toFixed(1) : '—'}</td>
+                    <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{p.regions ?? '-'}</td>
+                    <td style={{ padding: '5px 10px', color: '#f59e0b', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{p.parsed_length_km ? p.parsed_length_km.toFixed(1) : '-'}</td>
                     <td style={{ padding: '5px 10px' }}>
                       <span style={{ color: p.status === 'ongoing' ? '#00ff88' : p.status === 'complete' ? '#00f5ff' : '#94a3b8', fontWeight: 600 }}>
-                        {p.status ?? '—'}
+                        {p.status ?? '-'}
                       </span>
                     </td>
                     <td style={{ padding: '5px 10px', color: '#64748b', maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.funding_agency}</td>
                     <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{inferWorksType(p.project_name)}</td>
-                    <td style={{ padding: '5px 10px', color: '#64748b' }}>{p.target_completion_date ?? '—'}</td>
+                    <td style={{ padding: '5px 10px', color: '#64748b' }}>{p.target_completion_date ?? '-'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -840,16 +840,16 @@ export default function ProjectsView() {
                   .filter(p => p.project_name.toLowerCase().includes('ndp') || p.funding_agency.toLowerCase().includes('gou'))
                   .map((p, i) => (
                   <tr key={p.id} style={{ borderBottom: '1px solid rgba(148,163,184,0.04)', background: i % 2 === 0 ? 'rgba(15,23,42,0.3)' : 'transparent' }}>
-                    <td style={{ padding: '5px 8px', color: '#00f5ff', fontFamily: 'monospace', fontSize: 8 }}>—</td>
-                    <td style={{ padding: '5px 8px', color: '#94a3b8' }}>—</td>
+                    <td style={{ padding: '5px 8px', color: '#00f5ff', fontFamily: 'monospace', fontSize: 8 }}>-</td>
+                    <td style={{ padding: '5px 8px', color: '#94a3b8' }}>-</td>
                     <td style={{ padding: '5px 8px', color: '#e2eaf4', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.project_name}</td>
-                    <td style={{ padding: '5px 8px', color: '#f59e0b', fontWeight: 700 }}>—</td>
-                    <td style={{ padding: '5px 8px', color: '#f59e0b', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{p.parsed_length_km?.toFixed(1) ?? '—'}</td>
-                    <td style={{ padding: '5px 8px', color: '#94a3b8' }}>—</td>
-                    <td style={{ padding: '5px 8px', color: '#64748b' }}>{p.regions ?? '—'}</td>
+                    <td style={{ padding: '5px 8px', color: '#f59e0b', fontWeight: 700 }}>-</td>
+                    <td style={{ padding: '5px 8px', color: '#f59e0b', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{p.parsed_length_km?.toFixed(1) ?? '-'}</td>
+                    <td style={{ padding: '5px 8px', color: '#94a3b8' }}>-</td>
+                    <td style={{ padding: '5px 8px', color: '#64748b' }}>{p.regions ?? '-'}</td>
                     <td style={{ padding: '5px 8px', color: '#94a3b8' }}>{inferWorksType(p.project_name)}</td>
                     <td style={{ padding: '5px 8px', color: '#64748b' }}>{p.funding_agency}</td>
-                    <td style={{ padding: '5px 8px', color: '#94a3b8' }}>—</td>
+                    <td style={{ padding: '5px 8px', color: '#94a3b8' }}>-</td>
                   </tr>
                 ))}
               </tbody>
@@ -861,7 +861,7 @@ export default function ProjectsView() {
       {/* ── OPRC tab ── */}
       {activeTab === 'oprc' && (
         <div style={{ flex: 1, overflowY: 'auto', padding: '14px 18px', minHeight: 0 }}>
-          <div style={{ fontSize: 14, fontWeight: 900, color: '#e2eaf4', marginBottom: 4 }}>OPRC — Output & Performance Road Contracts</div>
+          <div style={{ fontSize: 14, fontWeight: 900, color: '#e2eaf4', marginBottom: 4 }}>OPRC - Output & Performance Road Contracts</div>
           <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.55)', marginBottom: 12 }}>
             Long-term performance-based road maintenance contracts · NERAMP & other OPRC programs
           </div>
