@@ -1,5 +1,5 @@
 /**
- * AtlasContent — Uganda National Road Network Visual Intelligence Atlas
+ * AtlasContent - Uganda National Road Network Visual Intelligence Atlas
  *
  * Renders the full national road network dashboard using the live dashboard
  * bundle from /api/dashboard-bundle (or /data/bundle.json fallback).
@@ -301,7 +301,7 @@ export default function AtlasContent() {
             )}
           </div>
           <div style={{ marginBottom: 48 }}>
-            <ChartCard title="Asset Value Trend" sub="CRC vs CDRC — UGX billion">
+            <ChartCard title="Asset Value Trend" sub="CRC vs CDRC - UGX billion">
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={assetValues} margin={{ top: 4, right: 12, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
@@ -433,7 +433,7 @@ export default function AtlasContent() {
         fontSize: 10, color: 'rgba(148,163,184,0.35)',
       }}>
         <span>Uganda National Roads Management Platform · Dept. of National Roads · MoWT</span>
-        <span>Data: {lastUpdated ? new Date(lastUpdated).toLocaleDateString('en-UG') : '—'}</span>
+        <span>Data: {lastUpdated ? new Date(lastUpdated).toLocaleDateString('en-UG') : '-'}</span>
       </div>
     </div>
   );

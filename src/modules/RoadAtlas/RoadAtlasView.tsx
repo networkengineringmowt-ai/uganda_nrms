@@ -47,7 +47,7 @@ export default function RoadAtlasView() {
               <span style={{fontSize:18,fontWeight:800,color:'rgba(139,92,246,1)',letterSpacing:-0.5}}>Uganda Road Atlas</span>
               <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>Visual Atlas · Network Maps · Classification · MoWT · UNRA</span>
             </div>
-            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Visual road atlas for Uganda's classified road network — providing printable maps, network schematics, road classification layouts, and spatial reference material aligned with UNRA and MoWT national road design standards.</p>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Visual road atlas for Uganda's classified road network - providing printable maps, network schematics, road classification layouts, and spatial reference material aligned with UNRA and MoWT national road design standards.</p>
             <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
               {["Visual Atlas","Road Maps","Classification","Print Ready","UNRA / MoWT","Spatial Ref"].map(b=>(
                 <span key={b} style={{background:'rgba(139,92,246,0.12)',color:'rgba(139,92,246,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
