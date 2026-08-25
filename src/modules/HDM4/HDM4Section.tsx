@@ -33,43 +33,43 @@ const TABS = [
 
 type TabId = typeof TABS[number]['id'];
 
-// ââ Uganda HDM-4 calibration data ââââââââââââââââââââââââââââââââââââââââââââ
+// ── Uganda HDM-4 calibration data ────────────────────────────────────────────
 const CALIB_DATA = [
   { param: 'Kcit',  value: 0.90, desc: 'Cracking initiation time factor',      ref: 'Department of National Roads/DNR HDM-4 Study 2023', road: 'Paved, all classes' },
   { param: 'Kcia',  value: 1.05, desc: 'Cracking initiation area factor',       ref: 'Department of National Roads/DNR HDM-4 Study 2023', road: 'Class A & B' },
   { param: 'Kcp',   value: 1.10, desc: 'Cracking progression factor',           ref: 'Department of National Roads/DNR HDM-4 Study 2023', road: 'Class A & B' },
   { param: 'Krt',   value: 0.95, desc: 'Rutting progression factor',            ref: 'AFCAP Uganda 2018',          road: 'High-traffic corridors' },
-  { param: 'Kgm',   value: 0.85, desc: 'Gravel loss â maintenance (unpaved)',   ref: 'Department of National Roads Gravel Study 2019',    road: 'Class C & D (unpaved)' },
-  { param: 'Kge',   value: 1.20, desc: 'Gravel loss â environmental (unpaved)', ref: 'Department of National Roads Gravel Study 2019',    road: 'Class C & D (unpaved)' },
+  { param: 'Kgm',   value: 0.85, desc: 'Gravel loss — maintenance (unpaved)',   ref: 'Department of National Roads Gravel Study 2019',    road: 'Class C & D (unpaved)' },
+  { param: 'Kge',   value: 1.20, desc: 'Gravel loss — environmental (unpaved)', ref: 'Department of National Roads Gravel Study 2019',    road: 'Class C & D (unpaved)' },
   { param: 'Kstm',  value: 1.00, desc: 'Structural rutting in top mix',        ref: 'Default (unverified)',       road: 'Bituminous' },
-  { param: 'Kvi',   value: 1.15, desc: 'Vehicle damage factor â HGV',          ref: 'SATCC/TRH4 2020',           road: 'All classes' },
+  { param: 'Kvi',   value: 1.15, desc: 'Vehicle damage factor — HGV',          ref: 'SATCC/TRH4 2020',           road: 'All classes' },
 ];
 
-// ââ IRI threshold table âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── IRI threshold table ───────────────────────────────────────────────────────
 const IRI_THRESHOLDS = [
-  { band: 'Very Good',  iri_min: 0,    iri_max: 2.0,  vci: '85â100', action: 'Routine maintenance only',            color: C.green },
-  { band: 'Good',       iri_min: 2.0,  iri_max: 4.0,  vci: '70â84',  action: 'Preventive maintenance (seal coat)',  color: C.teal  },
-  { band: 'Fair',       iri_min: 4.0,  iri_max: 6.0,  vci: '50â69',  action: 'Reseal / thin overlay',              color: C.yellow },
-  { band: 'Poor',       iri_min: 6.0,  iri_max: 8.0,  vci: '30â49',  action: 'Structural overlay / rehabilitation',color: C.orange },
-  { band: 'Very Poor',  iri_min: 8.0,  iri_max: 12.0, vci: '10â29',  action: 'Major rehabilitation',               color: C.red   },
-  { band: 'Failed',     iri_min: 12.0, iri_max: null,  vci: '0â9',   action: 'Reconstruction',                     color: C.pink  },
+  { band: 'Very Good',  iri_min: 0,    iri_max: 2.0,  vci: '85–100', action: 'Routine maintenance only',            color: C.green },
+  { band: 'Good',       iri_min: 2.0,  iri_max: 4.0,  vci: '70–84',  action: 'Preventive maintenance (seal coat)',  color: C.teal  },
+  { band: 'Fair',       iri_min: 4.0,  iri_max: 6.0,  vci: '50–69',  action: 'Reseal / thin overlay',              color: C.yellow },
+  { band: 'Poor',       iri_min: 6.0,  iri_max: 8.0,  vci: '30–49',  action: 'Structural overlay / rehabilitation',color: C.orange },
+  { band: 'Very Poor',  iri_min: 8.0,  iri_max: 12.0, vci: '10–29',  action: 'Major rehabilitation',               color: C.red   },
+  { band: 'Failed',     iri_min: 12.0, iri_max: null,  vci: '0–9',   action: 'Reconstruction',                     color: C.pink  },
 ];
 
-// ââ Works cost matrix (Uganda FY 2024/25 MoWT unit costs) ââââââââââââââââââââ
+// ── Works cost matrix (Uganda FY 2024/25 MoWT unit costs) ────────────────────
 const COST_MATRIX = [
-  { type: 'Routine Maintenance', works: 'Pothole patching',          unit: 'UGX/mÂ²', bituminous: '180,000', unpaved: 'â',       note: 'Day labour, MoWT standard rates' },
+  { type: 'Routine Maintenance', works: 'Pothole patching',          unit: 'UGX/m²', bituminous: '180,000', unpaved: '—',       note: 'Day labour, MoWT standard rates' },
   { type: 'Routine Maintenance', works: 'Vegetation clearance',     unit: 'UGX/km', bituminous: '4,200,000', unpaved: '3,800,000', note: 'Per km, both shoulders' },
   { type: 'Routine Maintenance', works: 'Drainage clearing',        unit: 'UGX/km', bituminous: '6,500,000', unpaved: '5,200,000', note: 'Side drains + culverts' },
-  { type: 'Periodic Maintenance', works: 'Surface dressing (1-coat)', unit: 'UGX/mÂ²', bituminous: '28,000', unpaved: 'â',        note: 'Material + equipment + labour' },
-  { type: 'Periodic Maintenance', works: 'Thin overlay (30mm AC)',   unit: 'UGX/mÂ²', bituminous: '85,000', unpaved: 'â',         note: 'Asphalt concrete 30mm' },
-  { type: 'Periodic Maintenance', works: 'Gravel resheet (150mm)',   unit: 'UGX/mÂ²', bituminous: 'â',       unpaved: '38,000',   note: 'Gravel source within 15km' },
-  { type: 'Rehabilitation',       works: 'Structural overlay (60mm)', unit: 'UGX/mÂ²', bituminous: '145,000', unpaved: 'â',       note: 'AC 60mm + tack coat' },
-  { type: 'Rehabilitation',       works: 'Full reconstruction',      unit: 'UGX/mÂ²', bituminous: '520,000', unpaved: '280,000',  note: 'Full pavement, 200mm base' },
+  { type: 'Periodic Maintenance', works: 'Surface dressing (1-coat)', unit: 'UGX/m²', bituminous: '28,000', unpaved: '—',        note: 'Material + equipment + labour' },
+  { type: 'Periodic Maintenance', works: 'Thin overlay (30mm AC)',   unit: 'UGX/m²', bituminous: '85,000', unpaved: '—',         note: 'Asphalt concrete 30mm' },
+  { type: 'Periodic Maintenance', works: 'Gravel resheet (150mm)',   unit: 'UGX/m²', bituminous: '—',       unpaved: '38,000',   note: 'Gravel source within 15km' },
+  { type: 'Rehabilitation',       works: 'Structural overlay (60mm)', unit: 'UGX/m²', bituminous: '145,000', unpaved: '—',       note: 'AC 60mm + tack coat' },
+  { type: 'Rehabilitation',       works: 'Full reconstruction',      unit: 'UGX/m²', bituminous: '520,000', unpaved: '280,000',  note: 'Full pavement, 200mm base' },
   { type: 'Emergency',            works: 'Washout repair',           unit: 'UGX/site', bituminous: '48M', unpaved: '32M',         note: 'Average culvert/embankment washout' },
   { type: 'Emergency',            works: 'Landslip reinstatement',   unit: 'UGX/site', bituminous: '180M', unpaved: '95M',        note: 'Major slope failure, includes drainage' },
 ];
 
-// ââ Deterioration model projections ââââââââââââââââââââââââââââââââââââââââââ
+// ── Deterioration model projections ──────────────────────────────────────────
 function genDeteriorationData(iri0: number, sn: number, esal: number, rainfall: number) {
   const data = [];
   let iri = iri0;
@@ -91,14 +91,14 @@ function genDeteriorationData(iri0: number, sn: number, esal: number, rainfall: 
   return data;
 }
 
-// ââ CESAL Calculator ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── CESAL Calculator ──────────────────────────────────────────────────────────
 const ESAL_FACTORS: Record<string, { name: string; factor: number }> = {
   car:     { name: 'Cars / Taxis',         factor: 0.0001 },
   lgv:     { name: 'Light Goods (LGV)',     factor: 0.004  },
   bus_s:   { name: 'Small Bus',             factor: 0.05   },
   bus_l:   { name: 'Large Bus',             factor: 0.40   },
   lt:      { name: 'Light Truck (<5t GVW)', factor: 0.08   },
-  mt:      { name: 'Medium Truck (5â10t)',  factor: 0.80   },
+  mt:      { name: 'Medium Truck (5–10t)',  factor: 0.80   },
   ht:      { name: 'Heavy Truck (>10t)',    factor: 2.40   },
   tt_5ax:  { name: 'Truck Trailer 5-axle',  factor: 4.20   },
   tt_6ax:  { name: 'Truck Trailer 6-axle',  factor: 5.86   },
@@ -107,7 +107,7 @@ const ESAL_FACTORS: Record<string, { name: string; factor: number }> = {
 
 const TICK_STYLE = { fontSize: 9, fill: 'rgba(148,163,184,0.6)' };
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 export default function HDM4Section() {
   const [activeTab, setActiveTab] = useState<TabId>('overview');
   const calib = useTableSort(CALIB_DATA, 'param');
@@ -158,7 +158,7 @@ export default function HDM4Section() {
 
       <ModuleNavBar module="HDM4" />
 
-      {/* ââ Header ââ */}
+      {/* ── Header ── */}
       <div style={{ marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
           <div style={{ width: 38, height: 38, borderRadius: 10, flexShrink: 0,
@@ -169,16 +169,16 @@ export default function HDM4Section() {
           </div>
           <div>
             <div style={{ fontSize: 18, fontWeight: 900, color: '#e2eaf4', letterSpacing: '-0.01em' }}>
-              HDM-4 â Highway Development & Management
+              HDM-4 — Highway Development & Management
             </div>
             <div style={{ fontSize: 11, color: 'rgba(148,163,184,0.65)', marginTop: 1 }}>
-              Deterioration models Â· Uganda calibration Â· CESAL calculator Â· Economic analysis
+              Deterioration models · Uganda calibration · CESAL calculator · Economic analysis
             </div>
           </div>
         </div>
       </div>
 
-      {/* ââ BMS-style tab bar ââ */}
+      {/* ── BMS-style tab bar ── */}
       <div style={{
         display: 'flex', gap: 2, marginBottom: 20, flexShrink: 0,
         borderBottom: '1px solid rgba(77,159,255,0.15)',
@@ -201,7 +201,7 @@ export default function HDM4Section() {
         })}
       </div>
 
-      {/* ââ OVERVIEW TAB ââ */}
+      {/* ── OVERVIEW TAB ── */}
             {activeTab === 'overview' && (
         <div style={{ padding:'16px 20px', overflowY:'auto', flex:1, display:'flex', flexDirection:'column', gap:14 }}>
           {/* Definition card */}
@@ -286,13 +286,13 @@ export default function HDM4Section() {
             <div style={{ background: 'rgba(0,0,0,0.35)', borderRadius: 8, padding: '14px 18px', marginBottom: 12,
               border: `1px solid rgba(${hexRgb(C.purple)},0.2)`, overflowX: 'auto' }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: C.cyan, fontFamily: 'JetBrains Mono, monospace', whiteSpace: 'nowrap' }}>
-                ÎRI = Kgp Â· (aâ Â· exp(m Â· IRI) Â· MESAL^aâ Â· Kci^aâ Â· Krst^aâ Â· Kstm^aâ)
+                ΔRI = Kgp · (a₀ · exp(m · IRI) · MESAL^a₁ · Kci^a₂ · Krst^a₃ · Kstm^a₄)
               </div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 8 }}>
               {[
-                { sym: 'ÎRI', def: 'Annual IRI increment (m/km/yr)', color: C.cyan },
-                { sym: 'Kgp', def: 'Calibration factor â roughness progression', color: C.purple },
+                { sym: 'ΔRI', def: 'Annual IRI increment (m/km/yr)', color: C.cyan },
+                { sym: 'Kgp', def: 'Calibration factor — roughness progression', color: C.purple },
                 { sym: 'IRI', def: 'Current roughness (m/km)', color: C.green },
                 { sym: 'MESAL', def: 'Cumulative traffic loading (million ESA)', color: C.orange },
                 { sym: 'Kci', def: 'Cracking area index (calibrated)', color: C.yellow },
@@ -309,7 +309,7 @@ export default function HDM4Section() {
           {/* Interactive projection chart */}
           <div style={card(C.orange)}>
             <div style={{ fontSize: 11, fontWeight: 900, color: C.orange, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14 }}>
-              IRI Projection 2024â2034 Â· Adjust Parameters
+              IRI Projection 2024–2034 · Adjust Parameters
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 16 }}>
               {[
@@ -343,7 +343,7 @@ export default function HDM4Section() {
         </div>
       )}
 
-      {/* ââ CALIBRATION TAB ââ */}
+      {/* ── CALIBRATION TAB ── */}
       {activeTab === 'calibration' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div style={card(C.cyan)}>
@@ -393,7 +393,7 @@ export default function HDM4Section() {
                   <div style={{ width: 8, height: 8, borderRadius: 2, background: r.color, flexShrink: 0 }}/>
                   <div style={{ minWidth: 80, fontWeight: 900, fontSize: 11, color: r.color }}>{r.band}</div>
                   <div style={{ minWidth: 100, fontSize: 10, color: 'rgba(148,163,184,0.7)', fontFamily: 'monospace' }}>
-                    {r.iri_min}â{r.iri_max ?? 'â'} m/km
+                    {r.iri_min}–{r.iri_max ?? '∞'} m/km
                   </div>
                   <div style={{ minWidth: 60, fontSize: 10, color: 'rgba(148,163,184,0.55)' }}>VCI {r.vci}</div>
                   <div style={{ fontSize: 10, color: 'rgba(196,210,225,0.8)', flex: 1 }}>{r.action}</div>
@@ -404,7 +404,7 @@ export default function HDM4Section() {
         </div>
       )}
 
-      {/* ââ CESAL CALCULATOR TAB ââ */}
+      {/* ── CESAL CALCULATOR TAB ── */}
       {activeTab === 'cesal' && (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           <div style={card(C.yellow)}>
@@ -497,14 +497,14 @@ export default function HDM4Section() {
         </div>
       )}
 
-      {/* ââ COSTS TAB ââ */}
+      {/* ── COSTS TAB ── */}
       {activeTab === 'costs' && (
         <div style={card(C.green)}>
           <div style={{ fontSize: 11, fontWeight: 900, color: C.green, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>
             Uganda Road Works Unit Cost Matrix
           </div>
           <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.6)', marginBottom: 14 }}>
-            Source: MoWT Schedule of Rates FY 2024/25 Â· Department of National Roads Contract Management Division. Costs exclude VAT. Paved = bituminous.
+            Source: MoWT Schedule of Rates FY 2024/25 · Department of National Roads Contract Management Division. Costs exclude VAT. Paved = bituminous.
           </div>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
@@ -544,12 +544,12 @@ export default function HDM4Section() {
         </div>
       )}
 
-      {/* ââ NPV TAB ââ */}
+      {/* ── NPV TAB ── */}
       {activeTab === 'npv' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div style={card(C.blue)}>
             <div style={{ fontSize: 11, fontWeight: 900, color: C.blue, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14 }}>
-              NPV / BCR Scenario Analysis â Uganda National Network
+              NPV / BCR Scenario Analysis — Uganda National Network
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 20 }}>
               {[
@@ -576,7 +576,7 @@ export default function HDM4Section() {
               ))}
             </div>
             <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.5)', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 10 }}>
-              Discount rate: 12% (Uganda MFPED). Analysis period: 10 years (2024â2034). Vehicle Operating Cost savings as primary benefit stream.
+              Discount rate: 12% (Uganda MFPED). Analysis period: 10 years (2024–2034). Vehicle Operating Cost savings as primary benefit stream.
               Road User Cost model: HDM-4 VOC equations calibrated to Uganda vehicle fleet and fuel prices (URA FY2024/25).
             </div>
           </div>
