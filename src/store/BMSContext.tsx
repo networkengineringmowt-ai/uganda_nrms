@@ -115,7 +115,7 @@ const BMSContext = createContext<BMSContextType | null>(null);
 export function BMSProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  // Load data on mount — try localStorage first, then generate fresh
+  // Load data on mount - try localStorage first, then generate fresh
   useEffect(() => {
     async function init() {
       dispatch({ type: 'SET_LOADING', payload: true });
@@ -153,7 +153,7 @@ export function BMSProvider({ children }: { children: React.ReactNode }) {
         if (!savedDocs)  localStorage.setItem(DOC_KEY,  JSON.stringify(documents));
         localStorage.setItem(STORAGE_KEY, '1');
 
-        // Single batch dispatch — replaces 290+ individual re-renders with one
+        // Single batch dispatch - replaces 290+ individual re-renders with one
         dispatch({ type: 'SEED_ALL_DATA', payload: { inspections, workOrders, documents } });
 
       } catch (err) {
