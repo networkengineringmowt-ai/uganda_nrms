@@ -1,9 +1,9 @@
 /**
- * NetworkSection — Network Overview unified 4-tab view.
+ * NetworkSection - Network Overview unified 4-tab view.
  * Tabs:
- *   1. Platform Dashboard  — high-level KPI overview
- *   2. Road Network Map    — full-screen GeoJSON map + timeline
- *   3. Network Story       — scrollytelling 1986-to-now narrative
+ *   1. Platform Dashboard  - high-level KPI overview
+ *   2. Road Network Map    - full-screen GeoJSON map + timeline
+ *   3. Network Story       - scrollytelling 1986-to-now narrative
  *
  * Follows the exact BMS tab-bar pattern:
  *   borderBottom '1px solid rgba(77,159,255,0.15)'
@@ -63,7 +63,7 @@ export default function NetworkSection() {
               <span style={{fontSize:18,fontWeight:800,color:'rgba(34,197,94,1)',letterSpacing:-0.5}}>Uganda Road Network</span>
               <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>UNRA · MoWT · 21,302km · National Connectivity · NDPIV</span>
             </div>
-            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>National road network management hub — integrating UNRA inventory, condition assessments, traffic data, and NDPIV connectivity targets for the complete 21,302km classified road network spanning national, district, and community access classes.</p>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>National road network management hub - integrating UNRA inventory, condition assessments, traffic data, and NDPIV connectivity targets for the complete 21,302km classified road network spanning national, district, and community access classes.</p>
             <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
               {["21,302km Network","UNRA Registry","NDPIV Targets","GIS Linked","Condition Data","Traffic Counts"].map(b=>(
                 <span key={b} style={{background:'rgba(34,197,94,0.12)',color:'rgba(34,197,94,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
@@ -103,17 +103,17 @@ export default function NetworkSection() {
       <div style={contentStyle}>
         <Suspense fallback={<Spinner />}>
 
-          {/* Tab 1: Platform Dashboard — scrollable */}
+          {/* Tab 1: Platform Dashboard - scrollable */}
           {tab === 'dashboard' && <NET_PlatformDashboard />}
 
-          {/* Tab 2: Road Network Map — full-height, position absolute */}
+          {/* Tab 2: Road Network Map - full-height, position absolute */}
           {tab === 'roadnetwork' && (
             <div style={{ position: 'absolute', inset: 0 }}>
               <NET_RoadNetworkView />
             </div>
           )}
 
-          {/* Tab 3: Network Story — full-height, self-scrolling */}
+          {/* Tab 3: Network Story - full-height, self-scrolling */}
           {tab === 'networkstory' && (
             <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
               <NET_NetworkStory />
