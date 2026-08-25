@@ -112,7 +112,7 @@ export default function Dashboard() {
     structures.forEach(s => { const r = s.region||'Unknown'; byRegion[r]=(byRegion[r]||0)+1; });
     const byType: Record<string,number> = {};
     workOrders.forEach(w => { byType[w.type]=(byType[w.type]||0)+w.cost; });
-    const woByStatus = { 'In Progress':0, Completed:0, Planned:0, 'On Hold':0 };
+    const woByStatus = { 'In Progress':0, Completed:0, Planned:0, 'On Hold':0, Cancelled:0 };
     workOrders.forEach(w => { if (w.status in woByStatus) (woByStatus as any)[w.status]++; });
     const inspByMonth: Record<string,number> = {};
     inspections.forEach(i => {
