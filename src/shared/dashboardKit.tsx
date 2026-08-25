@@ -22,9 +22,13 @@ export const DASH_C = {
   pink: '#ff2d78', red: '#ff2d78', purple: '#b967ff', teal: '#00d4aa', blue: '#4d9fff',
   gray: 'rgba(148,163,184,0.7)',
 };
-// Canonical risk/condition scale (matches src/utils/helpers.ts RISK_SCALE_STOPS):
-// 0.00 Good/Low #22c55e · 0.25 Fair #84cc16 · 0.50 Amber #eab308 · 0.75 Poor/High #f97316 · 1.00 Critical #ef4444
-export const CONDITION_COLORS = ['#22c55e', '#84cc16', '#f97316', '#ef4444'];
+// 4-band condition scale used by overview dashboards (Good/Fair/Poor/Critical).
+// NOTE: this is a 4-stop variant for dashboards with 4 labeled bands — it is
+// distinct from the canonical 5-stop risk/condition scale in
+// src/utils/helpers.ts (CONDITION_COLORS, RISK_SCALE_STOPS), which includes
+// the amber #eab308 mid-point. Named differently here on purpose to avoid
+// confusion with that 5-stop export.
+export const DASHBOARD_COND_COLORS = ['#22c55e', '#84cc16', '#f97316', '#ef4444'];
 export const REGION_COLORS = [DASH_C.cyan, DASH_C.green, DASH_C.yellow, DASH_C.purple, DASH_C.pink, DASH_C.orange];
 
 export function rgbOf(hex: string): string {
