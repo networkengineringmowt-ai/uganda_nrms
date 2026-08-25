@@ -16,19 +16,19 @@ import type { ActiveView } from '../../index';
 import { NEON, REGION_NEON, Bar3D, GlowDefs, Chart3DWrap, AreaGradDefs, TT_NEON, TICK, AX_LINE } from '../../lib/chart3d';
 import SourceTableButton from '../../shared/SourceTableButton';
 
-// Ã¢ÂÂÃ¢ÂÂ RMS-style module health + quick-nav data (Network Overview context) Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
+// ── RMS-style module health + quick-nav data (Network Overview context) ──────
 const NETWORK_MODULE_HEALTH: { id: string; name: string; status: 'ok' | 'warn' | 'info'; note: string; view: ActiveView }[] = [
-  { id: 'NETMAP',  name: 'Road Network Map',         status: 'ok',   note: '21,302 km ÃÂ· GeoJSON live ÃÂ· NDPIV FY25/26 mapping current', view: 'roadnetwork' },
-  { id: 'STORY',   name: 'Network Story',            status: 'ok',   note: 'Scrollytelling narrative 1986 Ã¢ÂÂ present loaded',            view: 'networkstory' },
+  { id: 'NETMAP',  name: 'Road Network Map',         status: 'ok',   note: '21,302 km · GeoJSON live · NDPIV FY25/26 mapping current', view: 'roadnetwork' },
+  { id: 'STORY',   name: 'Network Story',            status: 'ok',   note: 'Scrollytelling narrative 1986 → present loaded',            view: 'networkstory' },
   { id: 'PMS',     name: 'Pavement Management (PMS)', status: 'ok',  note: 'Condition survey 2023/24; calibration current',             view: 'roadcondition' },
   { id: 'BMS',     name: 'Bridge Management (BMS)',  status: 'ok',   note: '546 structures registered; inspections tracked',          view: 'bms' },
   { id: 'TIS',     name: 'Traffic Information (TIS)', status: 'ok',  note: '10 ATC stations active; 2025 count data loaded',            view: 'traffic' },
   { id: 'NDPIV',   name: 'Projects & NDP IV',        status: 'warn', note: '8/14 projects behind schedule; financial data Q3 2025',     view: 'projects' },
-  { id: 'ARCH',    name: 'Platform Architecture',    status: 'ok',   note: 'System architecture diagram v2.0 Ã¢ÂÂ current build',          view: 'mlarchitecture' },
+  { id: 'ARCH',    name: 'Platform Architecture',    status: 'ok',   note: 'System architecture diagram v2.0 — current build',          view: 'mlarchitecture' },
 ];
 
 const NETWORK_QUICK_NAV: Array<{ label: string; icon: React.ReactNode; view: ActiveView; color: string }> = [
-  { label: 'RMS Ã¢ÂÂ Road Mgmt System', icon: <Shield size={14}/>,      view: 'rms' as ActiveView,         color: '#00f5ff' },
+  { label: 'RMS — Road Mgmt System', icon: <Shield size={14}/>,      view: 'rms' as ActiveView,         color: '#00f5ff' },
   { label: 'Pavement Mgmt (PMS)',    icon: <Activity size={14}/>,    view: 'roadcondition',             color: '#ff6b35' },
   { label: 'Bridge Mgmt (BMS)',      icon: <NetworkIcon size={14}/>, view: 'bms',                       color: '#4d9fff' },
   { label: 'Traffic Info (TIS)',     icon: <TrendingUp size={14}/>,  view: 'traffic',                   color: '#00f5ff' },
@@ -39,7 +39,7 @@ const NETWORK_QUICK_NAV: Array<{ label: string; icon: React.ReactNode; view: Act
   { label: 'Sources & Evidence',     icon: <BookOpen size={14}/>,    view: 'sources',                   color: '#94a3b8' },
 ];
 
-// Ã¢ÂÂÃ¢ÂÂ Shared RMS-style UI atoms (definition chip + animated stat tile) Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
+// ── Shared RMS-style UI atoms (definition chip + animated stat tile) ─────────
 function Chip({ label, color }: { label: string; color: string }) {
   return (
     <span style={{
@@ -107,7 +107,7 @@ function StatTile({ label, value, unit, color, tooltip, navChips, onNav }: {
                 background: `rgba(${hexRgb(color)},0.15)`, border: `1px solid rgba(${hexRgb(color)},0.3)`,
                 color, fontWeight: 700,
               }}>
-              Ã¢ÂÂ {chip.label}
+              → {chip.label}
             </button>
           ))}
         </div>
@@ -177,28 +177,28 @@ export default function PlatformDashboard() {
           ))}
         </div>
       </div>
-      {/* Ã¢ÂÂÃ¢ÂÂ Stat tiles (RMS-style animated KPI banner) Ã¢ÂÂÃ¢ÂÂ */}
+      {/* ── Stat tiles (RMS-style animated KPI banner) ── */}
       <div className="grid grid-cols-2 lg:grid-cols-6 gap-2.5">
         <StatTile label="Total Network" value="21302" unit="km" color="#4d9fff" onNav={nav}
-          tooltip="Official NDPIV FY 2025/26 figure ÃÂ· 6 regions ÃÂ· 23 maintenance stations ÃÂ· Source: MoWT/DNR"
+          tooltip="Official NDPIV FY 2025/26 figure · 6 regions · 23 maintenance stations · Source: MoWT/DNR"
           navChips={[{ label: 'Road Network', view: 'roadnetwork' }]} />
         <StatTile label="Paved Roads" value="6405" unit="km" color="#00ff88" onNav={nav}
-          tooltip="6,405 km paved (bituminous + DBST) ÃÂ· 30.1% of national network"
+          tooltip="6,405 km paved (bituminous + DBST) · 30.1% of national network"
           navChips={[{ label: 'Condition', view: 'roadcondition' }]} />
         <StatTile label="Total Links" value="1017" unit="" color="#ffd23f" onNav={nav}
-          tooltip={`${structures.filter(s => s.type === 'bridge').length || 546} bridges ÃÂ· ${networkSummary?.stations_count || 23} stations ÃÂ· GeoJSON-mapped (142 km gap)`}
+          tooltip={`${structures.filter(s => s.type === 'bridge').length || 546} bridges · ${networkSummary?.stations_count || 23} stations · GeoJSON-mapped (142 km gap)`}
           navChips={[{ label: 'GIS Map', view: 'roadnetwork' }]} />
         <StatTile label="Avg Condition" value={String(networkSummary?.avg_iri_national || 3.31)} unit="IRI" color="#b967ff" onNav={nav}
-          tooltip="International Roughness Index Ã¢ÂÂ network-wide weighted average"
+          tooltip="International Roughness Index — network-wide weighted average"
           navChips={[{ label: 'Traffic', view: 'traffic' }]} />
         <StatTile label="Paved Condition" value={String(a?.pavedFairToGoodPct ?? 94.2)} unit="%" color="#00ff88" onNav={nav}
-          tooltip="Paved network rated fair-to-good ÃÂ· National roads assessment FY 2023/24" />
+          tooltip="Paved network rated fair-to-good · National roads assessment FY 2023/24" />
         <StatTile label="Inspections Due" value={String(bridgeStats.overdue)} unit="" color="#ffd23f" onNav={nav}
           tooltip="Structure inspections overdue across the network"
           navChips={[{ label: 'Inspections', view: 'inspections' }]} />
       </div>
 
-      {/* Ã¢ÂÂÃ¢ÂÂ Network figures consistency banner Ã¢ÂÂÃ¢ÂÂ */}
+      {/* ── Network figures consistency banner ── */}
       <div style={{
         display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center',
         background: 'rgba(77,159,255,0.04)', border: '1px solid rgba(77,159,255,0.1)',
@@ -216,14 +216,14 @@ export default function PlatformDashboard() {
         <span style={{ color: 'rgba(148,163,184,0.5)', fontSize: 9 }}>Condition % based on surveyed links only</span>
       </div>
 
-      {/* Ã¢ÂÂÃ¢ÂÂ System health + Quick navigation (RMS-style 2-column) Ã¢ÂÂÃ¢ÂÂ */}
+      {/* ── System health + Quick navigation (RMS-style 2-column) ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
 
         {/* System Health */}
         <div>
           <div style={{ fontSize: 11, fontWeight: 900, color: '#4d9fff',
             marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-            System Health Ã¢ÂÂ Module Status
+            System Health — Module Status
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
             {NETWORK_MODULE_HEALTH.map(m => {
@@ -253,7 +253,7 @@ export default function PlatformDashboard() {
         <div>
           <div style={{ fontSize: 11, fontWeight: 900, color: '#4d9fff',
             marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-            Quick Navigation Ã¢ÂÂ All Modules
+            Quick Navigation — All Modules
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 7 }}>
             {NETWORK_QUICK_NAV.map(q => (
@@ -273,14 +273,14 @@ export default function PlatformDashboard() {
         </div>
       </div>
 
-      {/* Ã¢ÂÂÃ¢ÂÂ Charts Row 1 Ã¢ÂÂÃ¢ÂÂ */}
+      {/* ── Charts Row 1 ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         {/* Paved stock growth */}
         <div className="bms-card">
           <div className="flex items-center justify-between mb-4">
             <div>
               <div className="text-sm font-bold text-white">Paved Road Stock Growth</div>
-              <div className="text-[10px] text-slate-500">NDP II & III (2015/16 Ã¢ÂÂ 2022/23)</div>
+              <div className="text-[10px] text-slate-500">NDP II & III (2015/16 – 2022/23)</div>
             </div>
             <div className="flex items-center gap-2">
               <SourceTableButton anchor="tbl-005" />
@@ -338,13 +338,13 @@ export default function PlatformDashboard() {
           </Chart3DWrap>
           {a && (
             <div className="mt-2 flex gap-3 text-[10px] text-slate-500">
-              <span>2017Ã¢ÂÂ2025 motorised growth: <strong className="text-green-400">+{((( a.trafficYears.find(t=>t.year===2025)?.network_weighted_motorised_aadt??2562) / (a.trafficYears.find(t=>t.year===2017)?.network_weighted_motorised_aadt??1733) -1)*100).toFixed(1)}%</strong></span>
+              <span>2017→2025 motorised growth: <strong className="text-green-400">+{((( a.trafficYears.find(t=>t.year===2025)?.network_weighted_motorised_aadt??2562) / (a.trafficYears.find(t=>t.year===2017)?.network_weighted_motorised_aadt??1733) -1)*100).toFixed(1)}%</strong></span>
             </div>
           )}
         </div>
       </div>
 
-      {/* Ã¢ÂÂÃ¢ÂÂ Charts Row 2 Ã¢ÂÂÃ¢ÂÂ */}
+      {/* ── Charts Row 2 ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
 
         {/* Regional paved km */}
@@ -353,7 +353,7 @@ export default function PlatformDashboard() {
             <div className="text-sm font-bold text-white">Paved Road Length by Region</div>
             <div className="flex items-center gap-2">
               <SourceTableButton anchor="tbl-003" />
-              <button onClick={() => nav('roadnetwork')} className="text-[10px] text-blue-400 hover:text-blue-300">Map Ã¢ÂÂ</button>
+              <button onClick={() => nav('roadnetwork')} className="text-[10px] text-blue-400 hover:text-blue-300">Map →</button>
             </div>
           </div>
           <Chart3DWrap>
@@ -395,17 +395,17 @@ export default function PlatformDashboard() {
             ))}
           </div>
           <div className="mt-4 pt-3 border-t border-slate-700 text-[10px] text-slate-500">
-            National roads assessment survey ÃÂ· FY 2023/24
+            National roads assessment survey · FY 2023/24
           </div>
         </div>
       </div>
 
-      {/* Ã¢ÂÂÃ¢ÂÂ RMS Quick-access Ã¢ÂÂÃ¢ÂÂ */}
+      {/* ── RMS Quick-access ── */}
       <div className="bms-card">
         <div className="flex items-center justify-between mb-4">
           <div>
             <div className="text-sm font-bold text-white">Bridge Management System</div>
-            <div className="text-[10px] text-slate-500">DNR BMS ÃÂ· {structures.length} structures across the national network</div>
+            <div className="text-[10px] text-slate-500">DNR BMS · {structures.length} structures across the national network</div>
           </div>
           <button onClick={() => nav('dashboard')} className="text-[10px] text-blue-400 hover:text-blue-300 flex items-center gap-1">
             Open BMS <ArrowRight size={10}/>
@@ -439,7 +439,7 @@ export default function PlatformDashboard() {
   );
 }
 
-// Ã¢ÂÂÃ¢ÂÂ Neon colour map Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
+// ── Neon colour map ───────────────────────────────────────────────────────────
 const NEON_MAP: Record<string, string> = {
   blue:   '#4d9fff', green: '#00ff88', amber: '#ffd23f',
   purple: '#b967ff', red:   '#ff2d78', cyan:  '#00f5ff', teal: '#00d4aa',
@@ -449,7 +449,7 @@ function hexRgb(h: string): string {
   return `${parseInt(c.slice(0,2),16)},${parseInt(c.slice(2,4),16)},${parseInt(c.slice(4,6),16)}`;
 }
 
-// Ã¢ÂÂÃ¢ÂÂ Sub-components Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
+// ── Sub-components ────────────────────────────────────────────────────────────
 function BigKPI({ label, value, sub, icon, color, onClick }: {
   label: string; value: string; sub: string; icon: React.ReactNode;
   color: 'blue'|'green'|'amber'|'purple'|'red'; onClick?: ()=>void;
