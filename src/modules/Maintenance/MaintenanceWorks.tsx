@@ -81,7 +81,7 @@ export default function MaintenanceWorks() {
           </div>
         </div>
         <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>
-          Active routine and periodic maintenance contracts across Uganda's road network — tracking contractor progress, payment disbursements, physical completion rates, and quality assurance against URF Work Plan targets for FY 2025/26.
+          Active routine and periodic maintenance contracts across Uganda's road network - tracking contractor progress, payment disbursements, physical completion rates, and quality assurance against URF Work Plan targets for FY 2025/26.
         </p>
         <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
           {['URF Work Plan','PPDA Compliant','HDM-4 Standards','Force Account','Community Works','FY 2025/26'].map((b: string)=>(
