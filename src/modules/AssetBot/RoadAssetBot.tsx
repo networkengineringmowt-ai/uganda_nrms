@@ -49,12 +49,12 @@ function buildDataContext(botResults: Record<string, Row[]>): string {
 
 // ── Confidence level logic ─────────────────────────────────────────────────────
 function getConfidence(queryId: string, hasRows: boolean): { conf: '' | '' | ''; label: string } {
-  if (!hasRows) return { conf: '', label: 'Low — no data found' };
+  if (!hasRows) return { conf: '', label: 'Low - no data found' };
   const realData = ['Q01','Q02','Q03','Q04','Q05','Q06','Q08','Q09','Q10','Q11','Q12','Q13','Q15','Q16','Q20','LINK_DETAIL','ROAD_ALL_LINKS','LINK_STRUCTURES'];
   const projected = ['Q10','Q11','Q24'];
-  if (projected.includes(queryId)) return { conf: '', label: 'Medium — projected/estimated' };
-  if (realData.includes(queryId)) return { conf: '', label: 'High — from real database' };
-  return { conf: '', label: 'Medium — platform knowledge base' };
+  if (projected.includes(queryId)) return { conf: '', label: 'Medium - projected/estimated' };
+  if (realData.includes(queryId)) return { conf: '', label: 'High - from real database' };
+  return { conf: '', label: 'Medium - platform knowledge base' };
 }
 
 // ── Response text generator ───────────────────────────────────────────────────
@@ -62,22 +62,22 @@ function describeResult(queryId: string, rows: Row[]): string {
   const n = rows.length;
   const phrases: Record<string, string> = {
     Q01: `Found **${n} road links** with IRI > 8 m/km or Bad/Very Bad condition requiring rehabilitation.`,
-    Q02: `Budget breakdown across **${n} regions** — sorted by estimated maintenance cost (UGX million).`,
+    Q02: `Budget breakdown across **${n} regions** - sorted by estimated maintenance cost (UGX million).`,
     Q03: `**Top ${n} highest-risk links** ranked by ML urgency score. Gold highlights added to map.`,
     Q04: `**${n} links** ranked by estimated annual ESAL loading. High values indicate structural stress.`,
-    Q05: `Bridge condition across **${n} regions** — poor/critical column shows bridges needing attention.`,
+    Q05: `Bridge condition across **${n} regions** - poor/critical column shows bridges needing attention.`,
     Q06: `**${n} links** with AADT traffic counts. Sorted by traffic volume descending.`,
     Q08: `Maintenance backlog: **${n} groups** across regions and road classes with estimated UGX cost.`,
     Q09: `**${n} contracts/projects** listed by contract value. Status reflects current programme stage.`,
     Q10: `**${n} links** projected to reach IRI > 8 m/km within 2 years or urgency > 0.7. Act before failure.`,
     Q11: `**${n} links** in the rolling 5-year work programme, grouped by intervention year.`,
-    Q12: n > 0 ? `Network summary — **${rows[0]?.total_links ?? n} links**, ${rows[0]?.total_km ?? '—'} km total. Condition split shown below.` : 'Network summary loaded.',
+    Q12: n > 0 ? `Network summary - **${rows[0]?.total_links ?? n} links**, ${rows[0]?.total_km ?? '-'} km total. Condition split shown below.` : 'Network summary loaded.',
     Q13: `**${n} weighbridge stations** ranked by overloaded vehicle count.`,
     Q15: `Pavement type breakdown across **${n} surface categories** with average IRI per type.`,
     Q16: `**${n} links** ranked by estimated user cost (road roughness impact on vehicle operating costs).`,
-    Q20: `**${n} links** sorted by date last surveyed — never-surveyed links appear first.`,
+    Q20: `**${n} links** sorted by date last surveyed - never-surveyed links appear first.`,
     LINK_EXPLAINER: 'Uganda Department of National Roads Link ID & Location Referencing system explained.',
-    LINK_DETAIL: `Link detail retrieved — **${n} records** found.`,
+    LINK_DETAIL: `Link detail retrieved - **${n} records** found.`,
     ROAD_ALL_LINKS: `Found **${n} links** on the requested road.`,
     LINK_STRUCTURES: `Found **${n} structures** on this road link.`,
   };
@@ -105,7 +105,7 @@ function ResultTable({ rows }: { rows: Row[] }) {
             <tr key={i} style={{ background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.025)' }}>
               {cols.map(c => (
                 <td key={c} style={{ padding: '4px 8px', color: '#cbd5e1', whiteSpace: 'nowrap', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                  {row[c] === null ? '—' : String(row[c])}
+                  {row[c] === null ? '-' : String(row[c])}
                 </td>
               ))}
             </tr>
@@ -231,7 +231,7 @@ export default function RoadAssetBot() {
           text: NETWORK_SUMMARY_RESPONSE,
           queryId: 'Q21',
           confidence: '',
-          confidenceLabel: 'High — official NDPIV FY25/26 figures',
+          confidenceLabel: 'High - official NDPIV FY25/26 figures',
         }]);
         return;
       }
@@ -243,7 +243,7 @@ export default function RoadAssetBot() {
           text: explanationText ?? LINK_ID_EXPLAINER,
           queryId: 'LINK_EXPLAINER',
           confidence: '',
-          confidenceLabel: 'High — system reference data',
+          confidenceLabel: 'High - system reference data',
         }]);
         return;
       }
@@ -261,7 +261,7 @@ export default function RoadAssetBot() {
           queryId: 'LINK_DETAIL',
           linkIds: [linkId],
           confidence: allRows.length ? '' : '',
-          confidenceLabel: allRows.length ? 'High — from real data' : 'Low — insufficient data',
+          confidenceLabel: allRows.length ? 'High - from real data' : 'Low - insufficient data',
         }]);
         if (linkId) setHighlightedLinks([linkId]);
         return;
@@ -287,10 +287,10 @@ export default function RoadAssetBot() {
           text: `No data available for this query in the current database (${queryId}). The dataset may not include this category yet.`,
           queryId,
           confidence: '',
-          confidenceLabel: 'Low — no data found',
+          confidenceLabel: 'Low - no data found',
         }]);
       } else {
-        // No rule matched — hand the question to Claude Fable 5 (LLM) when a
+        // No rule matched - hand the question to Claude Fable 5 (LLM) when a
         // route is available (local server proxy or operator-supplied key).
         const history: FableTurn[] = [...historyRef.current];
         while (history.length && history[0].role === 'assistant') history.shift();
@@ -299,19 +299,19 @@ export default function RoadAssetBot() {
         }
         setMessages(prev => [...prev, {
           role: 'bot', text: ' Asking **Fable 5**…',
-          confidence: '', confidenceLabel: 'Fable 5 — generating',
+          confidence: '', confidenceLabel: 'Fable 5 - generating',
         }]);
         askFable(history, buildDataContext(botResults))
           .then(answer => {
             setMessages(prev => [...prev.slice(0, -1), answer ? {
               role: 'bot', text: answer,
               confidence: '',
-              confidenceLabel: 'Fable 5 — LLM answer grounded in platform data',
+              confidenceLabel: 'Fable 5 - LLM answer grounded in platform data',
             } : {
               role: 'bot',
               text: 'I didn\'t recognise that query, and Fable 5 isn\'t connected (start the local data-entry server, or set an API key with the  button). Try: "roads needing rehab", "budget by region", "top risk links", "overloading hotspots", "bridge condition", or "What is link A001_Link01?"',
               confidence: '',
-              confidenceLabel: 'Low — query not matched',
+              confidenceLabel: 'Low - query not matched',
             }]);
           })
           .catch((err: unknown) => {
@@ -319,7 +319,7 @@ export default function RoadAssetBot() {
             setMessages(prev => [...prev.slice(0, -1), {
               role: 'bot',
               text: `Fable 5 request failed: ${msg}. Check the API key () or the local server.`,
-              confidence: '', confidenceLabel: 'Fable 5 — error',
+              confidence: '', confidenceLabel: 'Fable 5 - error',
             }]);
           });
       }
@@ -384,7 +384,7 @@ export default function RoadAssetBot() {
               <span style={{fontSize:18,fontWeight:800,color:'rgba(124,58,237,1)',letterSpacing:-0.5}}>Road Asset Intelligence Bot</span>
               <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>NLP · ML Inference · NRMS Knowledge Base · Real-Time</span>
             </div>
-            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Conversational AI assistant for Uganda NRMS — answering natural-language queries about road conditions, project status, budget allocations, and asset health by querying the live Supabase data warehouse and NRMS knowledge graph.</p>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Conversational AI assistant for Uganda NRMS - answering natural-language queries about road conditions, project status, budget allocations, and asset health by querying the live Supabase data warehouse and NRMS knowledge graph.</p>
             <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
               {["NLP Queries","ML Inference","Asset Knowledge","NRMS Data","HDM-4 Context","Real-Time"].map(b=>(
                 <span key={b} style={{background:'rgba(124,58,237,0.12)',color:'rgba(124,58,237,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
@@ -508,7 +508,7 @@ export default function RoadAssetBot() {
               Send
             </button>
             <button
-              title={getApiKey() ? 'Fable 5 LLM connected (browser key set) — click to change/clear' : 'Connect Fable 5 LLM: paste an Anthropic API key (stored in this browser only)'}
+              title={getApiKey() ? 'Fable 5 LLM connected (browser key set) - click to change/clear' : 'Connect Fable 5 LLM: paste an Anthropic API key (stored in this browser only)'}
               onClick={() => {
                 const cur = getApiKey();
                 const v = window.prompt(

@@ -1,10 +1,10 @@
 /**
- * fable — LLM brain for the Road Asset Bot, powered by Claude Fable 5.
+ * fable - LLM brain for the Road Asset Bot, powered by Claude Fable 5.
  *
  * Key handling (the deployed site is public GitHub Pages, so NO API key ever
  * ships in this bundle):
  *   1. If the local write-back server (server/index.js) is running, chat is
- *      proxied through it — the key stays server-side in server/.env.
+ *      proxied through it - the key stays server-side in server/.env.
  *   2. Else, an operator may paste their own Anthropic API key in the bot's
  *      settings; it is stored in THIS BROWSER's localStorage only and sent
  *      directly to the Claude API (official SDK, dangerouslyAllowBrowser).
