@@ -1,5 +1,5 @@
 /**
- * BridgeWorksSection — MOWT "Bridges Development Projects" status (April 2026).
+ * BridgeWorksSection - MOWT "Bridges Development Projects" status (April 2026).
  * Source: app_data/bridge_works_2026.json (extracted from the MOWT Projects
  * Status Report). Reads live from Supabase `bridge_works` when available, else
  * the bundled JSON. Styled with Glassmorphism / Neumorphism / Liquid-Glass.
@@ -25,7 +25,7 @@ interface BridgeWork {
 const C = { cyan: '#00f5ff', teal: '#00d4aa', blue: '#4d9fff', green: '#00ff88',
   yellow: '#ffd23f', orange: '#ff6b35', red: '#ff3366', purple: '#b967ff', gray: '#94a3b8' };
 
-const bn = (n?: number | null) => (n == null ? '—' : `${(n / 1e9).toFixed(2)} Bn`);
+const bn = (n?: number | null) => (n == null ? '-' : `${(n / 1e9).toFixed(2)} Bn`);
 function progColor(p: number | null): string {
   if (p == null) return C.gray;
   if (p >= 90) return C.green;
@@ -88,7 +88,7 @@ export default function BridgeWorksSection() {
           </div>
         </div>
         <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>
-          Active and completed bridge construction, rehabilitation, and maintenance contracts across Uganda's road network — tracking lot progress, contractor performance, disbursements, and physical completion against MoWT programme targets.
+          Active and completed bridge construction, rehabilitation, and maintenance contracts across Uganda's road network - tracking lot progress, contractor performance, disbursements, and physical completion against MoWT programme targets.
         </p>
         <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
           {['MoWT Programme','UNRA Contracts','URF Funded','AfDB Co-financed','PPDA Compliant'].map((b: string)=>(
@@ -105,7 +105,7 @@ export default function BridgeWorksSection() {
           </div>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 19, fontWeight: 900, color: '#eaf6ff', letterSpacing: '-0.01em' }}>
-              Bridge Works — Development Projects
+              Bridge Works - Development Projects
             </div>
             <div style={{ fontSize: 11.5, color: 'rgba(200,225,235,0.7)', marginTop: 2 }}>
               MOWT Projects Status Report · End of April 2026 · {kpis.count} active lots
@@ -161,7 +161,7 @@ export default function BridgeWorksSection() {
 
               {/* contractor */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 11, color: 'rgba(200,225,235,0.85)' }}>
-                <Building2 size={13} style={{ color: C.blue }} /> {w.contractor || '—'}
+                <Building2 size={13} style={{ color: C.blue }} /> {w.contractor || '-'}
               </div>
 
               {/* progress */}
@@ -209,7 +209,7 @@ export default function BridgeWorksSection() {
       </div>
 
       <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.45)', marginTop: 18, textAlign: 'center' }}>
-        Source: MOWT Projects Status Report — §1.4 Bridges Development Projects (April 2026).
+        Source: MOWT Projects Status Report - §1.4 Bridges Development Projects (April 2026).
         {src === 'bundle' && ' Serving from the G: Drive data bundle (canonical store).'}
       </div>
     </div>
