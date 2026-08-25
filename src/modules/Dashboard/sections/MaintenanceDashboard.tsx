@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { supabase } from '../../../lib/supabase';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell, LineChart, Line, ScatterChart, Scatter, ZAxis } from 'recharts';
+import { GaugeC, BarH, RankList } from '../../../shared/dashboardKit';
 
 type Row = Record<string, unknown>;
 const CARD = 'rgba(15,23,42,0.5)'; const HL = '#00f5ff';
@@ -96,6 +97,7 @@ export default function MaintenanceDashboard() {
   const hasTrend = trend.some(t => t.value > 0);
   const active = rows.filter(r => !kStat || !/complete|done|closed/i.test(String(r[kStat] ?? ''))).slice(0, 15);
   const budBars = [{ name: 'Allocated', value: budget }, { name: 'Utilised', value: spent }];
+  const byContractor = kContr ? grp(rows, kContr, null).slice(0, 8) : [];
   return (
     <div style={{ width: '100%' }}>
 
@@ -144,6 +146,43 @@ export default function MaintenanceDashboard() {
             </ResponsiveContainer>
           </Card>
         )}
+        {budget > 0 && (
+          <Card title='BUDGET UTILISATION'>
+            <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <GaugeC
+                value={Math.round(spent / budget * 100)}
+                target={90}
+                color={spent / budget > 0.9 ? '#f43f5e' : HL}
+                label='of allocated FY budget spent'
+              />
+            </div>
+          </Card>
+        )}
+        {byContractor.length > 0 && (
+          <Card title='TOP CONTRACTORS BY WORKS COUNT'>
+            <div style={{ height: 200 }}>
+              <BarH
+                data={byContractor.map(c => ({ name: c.name, count: c.value }))}
+                yKey='name'
+                series={[{ key: 'count', name: 'Works', color: HL }]}
+              />
+            </div>
+          </Card>
+        )}
+        <div style={{ gridColumn: '1 / -1' }}>
+          <Card title={`ACTIVE / IN-PROGRESS WORKS (${active.length})`}>
+            <RankList
+              items={active.map((r, i) => ({
+                id: i,
+                title: kLink ? String(r[kLink] ?? `Work ${i + 1}`) : `Work ${i + 1}`,
+                subtitle: kContr && r[kContr] ? String(r[kContr]) : undefined,
+                value: kPct && num(r[kPct]) != null ? `${num(r[kPct])!.toFixed(0)}%` : (kStat ? String(r[kStat] ?? '-') : '-'),
+                badge: { label: typeOf(r), color: WCLR[typeOf(r)] },
+              }))}
+              emptyLabel='No active works recorded yet.'
+            />
+          </Card>
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { supabase } from '../../../lib/supabase';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell, LineChart, Line, ScatterChart, Scatter, ZAxis } from 'recharts';
+import { GaugeC, BarH, RankList } from '../../../shared/dashboardKit';
 
 type Row = Record<string, unknown>;
 const CARD = 'rgba(15,23,42,0.5)'; const HL = '#00f5ff';
@@ -89,6 +90,7 @@ export default function DrainageDashboard() {
   const roadsWith = kRoad ? new Set(rows.map(r => String(r[kRoad]))).size : 0;
   const kmNoDrain = rows.length && kLen ? Math.round(rows.reduce((a, r) => a + (num(r[kLen]) ?? 0), 0) * poorPct) / 100 : 0;
   const crit = rows.filter(r => condOf(r) === 'Failed' || condOf(r) === 'Poor').slice(0, 15);
+  const byRoadPoor = kRoad ? grp(crit, kRoad, null).slice(0, 8) : [];
   return (
     <div style={{ width: '100%' }}>
 
@@ -129,6 +131,41 @@ export default function DrainageDashboard() {
             </ResponsiveContainer>
           </Card>
         )}
+        <Card title='DRAINAGE STRUCTURE HEALTH'>
+          <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <GaugeC
+              value={Math.round(100 - poorPct)}
+              target={85}
+              color={poorPct > 25 ? '#f43f5e' : '#22c55e'}
+              label='in good or fair condition'
+            />
+          </div>
+        </Card>
+        {byRoadPoor.length > 0 && (
+          <Card title='TOP ROADS BY POOR/FAILED CULVERT COUNT'>
+            <div style={{ height: 200 }}>
+              <BarH
+                data={byRoadPoor.map(c => ({ name: c.name, count: c.value }))}
+                yKey='name'
+                series={[{ key: 'count', name: 'Poor/failed structures', color: '#f97316' }]}
+              />
+            </div>
+          </Card>
+        )}
+        <div style={{ gridColumn: '1 / -1' }}>
+          <Card title={`CRITICAL & POOR-CONDITION STRUCTURES (${crit.length})`}>
+            <RankList
+              items={crit.map((r, i) => ({
+                id: i,
+                title: kRoad ? String(r[kRoad] ?? `Structure ${i + 1}`) : `Structure ${i + 1}`,
+                subtitle: kType && r[kType] ? String(r[kType]) : undefined,
+                value: kDia && num(r[kDia]) != null ? `${num(r[kDia])} mm` : '-',
+                badge: { label: condOf(r), color: DCLR[condOf(r)] },
+              }))}
+              emptyLabel='No critical or poor-condition structures recorded yet.'
+            />
+          </Card>
+        </div>
       </div>
     </div>
   );

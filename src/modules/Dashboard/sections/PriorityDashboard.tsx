@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { supabase } from '../../../lib/supabase';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell, LineChart, Line, ScatterChart, Scatter, ZAxis } from 'recharts';
+import { GaugeC, RankList } from '../../../shared/dashboardKit';
 
 type Row = Record<string, unknown>;
 const CARD = 'rgba(15,23,42,0.5)'; const HL = '#00f5ff';
@@ -152,6 +153,30 @@ export default function PriorityDashboard() {
               <Scatter data={scatter} fill={HL} fillOpacity={0.55} /></ScatterChart>
           </ResponsiveContainer>
         </Card>
+        <Card title='NETWORK SHARE IN CRITICAL + HIGH TIER'>
+          <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <GaugeC
+              value={Math.round((byTier[0].value + byTier[1].value) / scored.length * 100)}
+              target={30}
+              color='#ef4444'
+              label='of ranked links need urgent action'
+            />
+          </div>
+        </Card>
+        <div style={{ gridColumn: '1 / -1' }}>
+          <Card title={`TOP ${top.length} PRIORITY LINKS - RANKED`}>
+            <RankList
+              items={top.map((s, i) => ({
+                id: i,
+                title: kName ? String(s.r[kName] ?? `Link ${i + 1}`) : `Link ${i + 1}`,
+                subtitle: `${s.reason} · ${s.km.toFixed(1)} km${s.cost ? ` · ${fmtN(s.cost, 1)} bn UGX est.` : ''}`,
+                value: `${s.score}`,
+                badge: { label: s.tier, color: TCLR[s.tier] },
+              }))}
+              emptyLabel='No ranked links available yet.'
+            />
+          </Card>
+        </div>
       </div>
     </div>
   );
