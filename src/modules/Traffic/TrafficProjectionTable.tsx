@@ -238,7 +238,7 @@ export default function TrafficProjectionTable() {
                     <td style={{ padding:'5px 8px', color:'#e2eaf4', maxWidth:200, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{l.link_name}</td>
                     <td style={{ padding:'5px 8px' }}><RoadClassPill cls={l.road_class} /></td>
                     <td style={{ padding:'5px 8px', color:'#94a3b8' }}>{l.region}</td>
-                    <td style={{ padding:'5px 8px', color:'#94a3b8' }}>{l.length_km.toFixed(0)}</td>
+                    <td style={{ padding:'5px 8px', color:'#94a3b8' }}>{l.length_km.toFixed(0)} km</td>
                     {totals.map((t, j) => (
                       <td key={j} style={{ padding:'5px 8px', textAlign:'right', fontFamily:'monospace' }}>
                         <AadtHeatCell value={t} />

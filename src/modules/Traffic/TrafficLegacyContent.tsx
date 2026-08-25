@@ -399,7 +399,7 @@ function LinkClassTable({ features, surfMap: _surfMap }: { features: PredFeature
                   <td style={{ padding: '5px 8px', color: '#94a3b8', maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.link_name ?? '-'}</td>
                   <td style={{ padding: '5px 6px', textAlign: 'center', color: clsColor, fontWeight: 800 }}>{p.road_class}</td>
                   <td style={{ padding: '5px 8px', color: '#64748b', whiteSpace: 'nowrap' }}>{p.region ?? '-'}</td>
-                  <td style={{ padding: '5px 8px', textAlign: 'right', color: '#475569', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{p.length_km?.toFixed(1) ?? '-'}</td>
+                  <td style={{ padding: '5px 8px', textAlign: 'right', color: '#475569', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{p.length_km != null ? `${p.length_km.toFixed(1)} km` : '-'}</td>
                   <td style={{ padding: '5px 6px', textAlign: 'center', color: '#94a3b8', fontVariantNumeric: 'tabular-nums' }}>{BASE_YEAR}</td>
                   <td style={{ padding: '5px 8px', textAlign: 'right', color: '#94a3b8', fontVariantNumeric: 'tabular-nums' }}>{aadt2016.toLocaleString()}</td>
                   <td style={{ padding: '5px 8px', textAlign: 'right', color: '#fbbf24', fontVariantNumeric: 'tabular-nums', fontWeight: 700 }}>+{blendedGrowthPct.toFixed(1)}%</td>
