@@ -3,10 +3,10 @@ import { useState, useEffect } from 'react';
 import { useBMS } from '../../store/BMSContext';
 import { UserBadge } from '../../modules/Auth/UserBadge';
 
-const CURR = new Date().getFullYear();   // dynamic current year — never hardcode
+const CURR = new Date().getFullYear();   // dynamic current year - never hardcode
 
 const VIEW_TITLES: Record<string, { title: string; sub: string; color?: string }> = {
-  rms:           { title: 'RMS — Road Management System', sub: 'Overview · Road network map · Road inventory · Network story', color: '#00f5ff' },
+  rms:           { title: 'RMS - Road Management System', sub: 'Overview · Road network map · Road inventory · Network story', color: '#00f5ff' },
   bms:           { title: 'Bridge Management System',     sub: 'Dashboard · Structure map · Inventory & condition · Bridge works', color: '#4d9fff' },
   lifecycle:     { title: 'Life Cycle Management',        sub: 'Per-link timeline · IRI trajectory · Intervention history · Projected maintenance', color: '#00d4aa' },
   budget:        { title: 'Budget & Maintenance',         sub: 'Maintenance financing · Unit-cost matrix · MTEF planning', color: '#ff2d78' },
@@ -50,7 +50,7 @@ const VIEW_TITLES: Record<string, { title: string; sub: string; color?: string }
   documents:     { title: 'Document Store',               sub: 'Drawings, reports, contracts and records',             color: '#4d9fff' },
   media:         { title: 'Media and Document Gallery',   sub: 'Photography, video surveys, field reports & documents · Uganda national roads', color: '#b967ff' },
   phototwin:     { title: 'Photo Gallery & Digital Twin', sub: 'Inspection photos and structural schematics',          color: '#00ff88' },
-  // Newly-wired sections — keep banner chrome consistent with the rest of the platform
+  // Newly-wired sections - keep banner chrome consistent with the rest of the platform
   roadatlas:     { title: 'Road Atlas',                   sub: 'Visual intelligence atlas · 21,160 km mapped national network · DNR GIS', color: '#00d4aa' },
   roadvideo:     { title: 'Road Video Survey',            sub: 'Georeferenced pavement survey video · frame-by-frame · 2021–2026', color: '#ff6b35' },
   bridgeworks:   { title: 'Bridge Works Programme',       sub: 'Bridge & major-culvert development projects · MoWT status report', color: '#4d9fff' },
@@ -81,6 +81,7 @@ export default function Header({ showSearch, onMenuClick }: { showSearch?: boole
     <header
       className="flex items-center gap-2 flex-shrink-0"
       style={{
+        position: 'relative',
         padding: '3px 12px',
         background: 'rgba(2,2,2,0.88)',
         backdropFilter: 'blur(20px) saturate(160%)',
@@ -98,7 +99,7 @@ export default function Header({ showSearch, onMenuClick }: { showSearch?: boole
         opacity: 0.7,
       }}/>
 
-      {/* Mobile hamburger — opens the sidebar drawer, hidden on desktop */}
+      {/* Mobile hamburger - opens the sidebar drawer, hidden on desktop */}
       <button
         className="mobile-menu-btn"
         onClick={onMenuClick}
@@ -181,7 +182,7 @@ export default function Header({ showSearch, onMenuClick }: { showSearch?: boole
         }}
       />
 
-      {/* Muted breadcrumb + live clock only — the section's own header is the title
+      {/* Muted breadcrumb + live clock only - the section's own header is the title
           (this removes the duplicate "double" header). */}
       <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'baseline', gap: 10 }}>
         <span style={{

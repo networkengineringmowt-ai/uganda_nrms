@@ -3,6 +3,7 @@ import {
   Activity, Shield, Construction, Layers, Network, Building2,
   DollarSign, Clock, Database, ShieldCheck, Route, Globe, Landmark,
   ChevronDown, Gauge, Map, Video, Hammer, FileText, Download,
+  Leaf, FolderOpen, BarChart3,
 } from 'lucide-react';
 import { useBMS } from '../../store/BMSContext';
 import { useAuth } from '../../modules/Auth/AuthContext';
@@ -30,9 +31,9 @@ const N = {
   gray:   '#94a3b8',
 };
 
-// Per-section metadata (label / icon / colour) — looked up by id.
+// Per-section metadata (label / icon / colour) - looked up by id.
 const SECTIONS: Record<string, Section> = {
-  rms:           { id: 'rms',           label: 'RMS — Road Mgmt System',   icon: <Route size={14}/>,        color: N.cyan   },
+  rms:           { id: 'rms',           label: 'RMS - Road Mgmt System',   icon: <Route size={14}/>,        color: N.cyan   },
   roadcondition: { id: 'roadcondition', label: 'Pavement Management',      icon: <Activity size={14}/>,     color: N.orange },
   bms:           { id: 'bms',           label: 'Bridge Management',         icon: <Network size={14}/>,      color: N.blue   },
   roadreserve:   { id: 'roadreserve',   label: 'Road Reserve Management',   icon: <Landmark size={14}/>,     color: N.teal   },
@@ -50,15 +51,18 @@ const SECTIONS: Record<string, Section> = {
   roadvideo:     { id: 'roadvideo',     label: 'Road Video Survey',         icon: <Video size={14}/>,        color: N.cyan   },
   bridgeworks:   { id: 'bridgeworks',   label: 'Bridge Works Programme',    icon: <Hammer size={14}/>,       color: N.blue   },
   downloads:     { id: 'downloads',     label: 'Downloads',                 icon: <Download size={14}/>,     color: N.gray   },
+  ducar:         { id: 'ducar',         label: 'DUCAR Roads',                icon: <Leaf size={14}/>,         color: N.green  },
+  socioeconomic: { id: 'socioeconomic', label: 'Socio-Economic Analysis',   icon: <BarChart3 size={14}/>,    color: N.yellow },
+  documents:     { id: 'documents',     label: 'Document Store',             icon: <FolderOpen size={14}/>,   color: N.gray   },
 };
 
-// Four top-level tabs — each groups its child sections. Navigation is unchanged
+// Four top-level tabs - each groups its child sections. Navigation is unchanged
 // (each child still calls navigate(id)); this is a presentation/IA grouping only.
 const GROUPS: Group[] = [
-  { id: 'assets',    label: 'Network & Assets',      icon: <Network size={15}/>,      color: N.cyan,   items: ['rms', 'roadcondition', 'bms', 'bridgeworks', 'roadreserve', 'roadatlas', 'roadvideo'] },
+  { id: 'assets',    label: 'Network & Assets',      icon: <Network size={15}/>,      color: N.cyan,   items: ['rms', 'roadcondition', 'bms', 'bridgeworks', 'roadreserve', 'roadatlas', 'roadvideo', 'ducar'] },
   { id: 'traffic',   label: 'Traffic & Performance', icon: <Activity size={15}/>,     color: N.orange, items: ['traffic', 'atc'] },
-  { id: 'planning',  label: 'Planning & Investment', icon: <Building2 size={15}/>,    color: N.green,  items: ['projects', 'pim', 'budget', 'lifecycle'] },
-  { id: 'knowledge', label: 'Knowledge & Admin',     icon: <Shield size={15}/>,       color: N.purple, items: ['casestudies', 'sources', 'downloads', 'gisenterprise', 'admin'] },
+  { id: 'planning',  label: 'Planning & Investment', icon: <Building2 size={15}/>,    color: N.green,  items: ['projects', 'pim', 'budget', 'lifecycle', 'socioeconomic'] },
+  { id: 'knowledge', label: 'Knowledge & Admin',     icon: <Shield size={15}/>,       color: N.purple, items: ['casestudies', 'sources', 'documents', 'downloads', 'gisenterprise', 'admin'] },
 ];
 
 export default function Sidebar() {
@@ -68,13 +72,13 @@ export default function Sidebar() {
 
   const criticalCount = structures.filter(s => s.conditionRating === 1).length;
 
-  // super level: dashboards & reports only — Admin Tools stays hidden
+  // super level: dashboards & reports only - Admin Tools stays hidden
   const isAdmin = user?.role === 'admin';
   const visibleGroups = GROUPS
     .map(g => ({ ...g, items: g.items.filter(id => id !== 'admin' || isAdmin) }))
     .filter(g => g.items.length > 0);
 
-  // Which top-level tab is expanded — defaults to the one holding the active view.
+  // Which top-level tab is expanded - defaults to the one holding the active view.
   const groupOf = (view: string) =>
     visibleGroups.find(g => g.items.includes(view as ActiveView))?.id ?? visibleGroups[0]?.id;
   const [openGroup, setOpenGroup] = useState<string | undefined>(groupOf(activeView));
