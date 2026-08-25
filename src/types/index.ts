@@ -119,7 +119,7 @@ export interface BridgeDocument {
   uploadedAt: string;
   version: string;
   url?: string;
-  // Real extracted content (populated on upload for PDF/TXT manuals) — used for
+  // Real extracted content (populated on upload for PDF/TXT manuals) - used for
   // full-text search, the in-app reader, keyword tags, and .txt export.
   extractedText?: string;
   pageCount?: number;
@@ -136,7 +136,7 @@ export type ActiveView =
   | 'roadnetwork'           // Road network GIS map (all 1,013 links)
   | 'traffic'               // Traffic & demand analytics
   | 'roadcondition'         // Road condition & pavement data
-  | 'maintenanceprogramme'  // PMS maintenance programme — priority-ranked links
+  | 'maintenanceprogramme'  // PMS maintenance programme - priority-ranked links
   | 'projects'              // Ongoing road development projects
   // ─── BMS sub-module views ──────────────────────────────────────────────────
   | 'dashboard'      // BMS structure dashboard
@@ -153,30 +153,30 @@ export type ActiveView =
   | 'trafficsummary'   // Traffic summary tables (Road Links + Stations)
   | 'oprc'             // OPRC contracts dashboard
   | 'ndpiv'            // NDP IV investment dashboard
-  | 'overloading'      // Overloading analytics — ESAL risk index & hotspot map
+  | 'overloading'      // Overloading analytics - ESAL risk index & hotspot map
   | 'growthfactors'   // Monthly/seasonal/annual growth factors
   // ─── New 10-module views ──────────────────────────────────────────────────
   | 'mlarchitecture'  // Interactive ML system architecture diagram
   | 'hdm4'            // HDM-4 deterioration models, calibration, CESAL calculator
   | 'projecttracker'  // Gantt/Kanban project progress tracker
-  | 'pim'             // Public Investment Management — PPPs, donor funding
+  | 'pim'             // Public Investment Management - PPPs, donor funding
   | 'budget'          // Budgeting & Maintenance planning
-  | 'lifecycle'       // Life Cycle Management — per-link asset timelines
+  | 'lifecycle'       // Life Cycle Management - per-link asset timelines
   | 'sources'           // Sources & Evidence catalogue
-  | 'tabularsummaries'  // Tabular summaries — all data tables aggregated
-  | 'bms'               // Bridge Management System — unified view (incl. Bridge Works tab)
-  | 'pms'               // Pavement Management System — unified view (NPMS)
+  | 'tabularsummaries'  // Tabular summaries - all data tables aggregated
+  | 'bms'               // Bridge Management System - unified view (incl. Bridge Works tab)
+  | 'pms'               // Pavement Management System - unified view (NPMS)
   | 'ntis'              // National Transport Information System
   | 'npms'              // National Pavement Management System
-  | 'network'           // Network Overview — 4-tab unified view
-  | 'rms'               // RMS — Road Management System hub (4-tab: overview, road map, network story, DNR RMS Engine architecture)
-  | 'casestudies'       // Global RMS Case Studies — world map, cards, comparative analytics, lessons
-  | 'roadreserve'       // Road Reserve Management — gazette status, encroachment register, reserve map
-  | 'admin'             // Admin Tools — 2-tab unified view (Mind Map + Data Audit)
+  | 'network'           // Network Overview - 4-tab unified view
+  | 'rms'               // RMS - Road Management System hub (4-tab: overview, road map, network story, DNR RMS Engine architecture)
+  | 'casestudies'       // Global RMS Case Studies - world map, cards, comparative analytics, lessons
+  | 'roadreserve'       // Road Reserve Management - gazette status, encroachment register, reserve map
+  | 'admin'             // Admin Tools - 2-tab unified view (Mind Map + Data Audit)
   | 'pendingsurveys'    // Pending condition survey submissions
-  | 'dataaudit'         // Data Audit Panel — admin-only cross-section KPI validation
-  | 'datacapture'       // Data Capture Hub — login-gated forms that write to Supabase
-  | 'mindmap'           // Platform Mind Map — 5D architectural schematic
+  | 'dataaudit'         // Data Audit Panel - admin-only cross-section KPI validation
+  | 'datacapture'       // Data Capture Hub - login-gated forms that write to Supabase
+  | 'mindmap'           // Platform Mind Map - 5D architectural schematic
   | 'gisenterprise'     // GIS Enterprise Dashboard
   | 'atc'               // ATC automatic traffic counters
   | 'bridgeworks'       // Bridge works programme
@@ -184,7 +184,7 @@ export type ActiveView =
   | 'downloads'         // Downloads centre
   | 'roadatlas'         // Road atlas
   | 'roadvideo'         // Road video survey viewer
-  | 'ducar';            // DUCAR — District, Urban & Community Access Roads
+  | 'ducar';            // DUCAR - District, Urban & Community Access Roads
 
 // ─── Road network types ───────────────────────────────────────────────────────
 export type RoadClass   = 'A' | 'B' | 'C' | 'M';
