@@ -1,0 +1,169 @@
+/**
+ * SocioEconomicAnalytics - Socio-Economic Analysis "Deep Analytics" tab.
+ * Recovered from the pre-deletion SocioEconomicSection.tsx (commit 5f049e5^):
+ * the cross-cutting investment-priority / gap / vulnerability matrices that
+ * synthesise the raw registries (see Exhaustive Tables) into narrative
+ * analysis - one continuous scroll, no internal tab-switcher.
+ */
+import { DASH_C } from '../../shared/dashboardKit';
+
+const CARD: React.CSSProperties = {
+  background: 'rgba(15,23,42,0.55)', border: '1px solid rgba(255,255,255,0.07)',
+  borderRadius: 10, padding: '12px 14px', marginBottom: 14,
+};
+
+function Hdr({ children, accent = DASH_C.cyan }: { children: React.ReactNode; accent?: string }) {
+  return (
+    <div style={{
+      fontSize: 10.5, fontWeight: 800, color: accent, letterSpacing: '0.08em',
+      textTransform: 'uppercase', marginBottom: 10,
+    }}>{children}</div>
+  );
+}
+
+function Analysis({ title, cols, rows, accent }: { title: string; cols: string[]; rows: string[][]; accent?: string }) {
+  return (
+    <div style={CARD}>
+      <Hdr accent={accent}>{title}</Hdr>
+      <div style={{ overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
+          <thead>
+            <tr>
+              {cols.map((c, i) => (
+                <th key={i} style={{
+                  padding: '7px 12px', background: 'rgba(2,6,23,0.9)', color: '#64748b',
+                  textAlign: 'left', fontWeight: 700, fontSize: 10, letterSpacing: '0.04em',
+                  textTransform: 'uppercase',
+                }}>{c}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, ri) => (
+              <tr key={ri} style={{
+                borderBottom: '1px solid rgba(255,255,255,0.05)',
+                background: ri % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.02)',
+              }}>
+                {row.map((cell, ci) => (
+                  <td key={ci} style={{ padding: '6px 12px', color: ci === 0 ? '#e2e8f0' : '#94a3b8', lineHeight: 1.5 }}>{cell}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+export default function SocioEconomicAnalytics() {
+  return (
+    <div>
+      <Analysis title="Extractive Sector Investment Priority Matrix" accent={DASH_C.yellow}
+        cols={['Commodity', 'Reserves Size', 'Current Dev. Stage', 'Barriers to Dev.', 'Strategic Value', 'Investment Priority', 'Recommended Action']}
+        rows={[
+          ['Oil (Albertine)', '6.5B bbl in-place', 'Development/FEED', 'EACOP financing; land acquisition; ESG risk', 'Transformational - 40% export rev by 2029', 'CRITICAL', 'Accelerate EACOP; local content; refinery feasibility'],
+          ['Phosphate (Sukulu/Tororo)', '510Mt combined', 'Early production', 'Processing plant capex; market access', 'Food security - fertiliser self-sufficiency', 'HIGH', 'Phosphate fertiliser complex; SSP/DAP plant'],
+          ['Iron Ore (Muko)', '162Mt @ 42% Fe', 'Exploration complete', 'No smelter; power cost; rail required', 'Steel for construction boom; import substitution', 'HIGH', 'DRI-EAF mini-mill; Muko-Kabale rail spur'],
+          ['Gold (Busia, Mubende)', 'Artisanal + 2Mt ore', 'Active artisanal + small', 'Formalisation; mercury pollution; smuggling', 'USD 300M+ revenue; community wealth', 'MEDIUM', 'ASM formalisation; assay labs; export licensing'],
+          ['Copper/Cobalt (Kilembe)', '4.5Mt @ 1.8% Cu', 'Mothballed since 1979', 'Rehabilitation cost USD 400M; tailings', 'EV battery value chain; regional refining', 'MEDIUM', 'PPP rehabilitation; cobalt refinery; ESG framework'],
+          ['Rare Earth Elements (Agago)', '1.8Mt @ 1.2% TREO', 'Early exploration', 'Processing complexity; tech transfer', 'Strategic minerals - EV + defence supply chain', 'MEDIUM', 'Strategic partnership; exploration programme'],
+          ['Limestone (Hima)', '500Mt', 'Active - cement', 'Market demand ceiling; dust/air quality', 'Cement self-sufficiency; EACOP demand', 'LOW-MED', 'Environmental management; capacity expansion'],
+          ['Nickel (Tiira)', '4Mt @ 0.6% Ni', 'Exploration', 'Low nickel price; laterite processing', 'EV batteries; stainless steel', 'LOW', 'Feasibility study; await nickel price recovery'],
+        ]} />
+
+      <Analysis title="Energy Sector Gap &amp; Investment Analysis" accent={DASH_C.blue}
+        cols={['Category', 'Current Status', 'Target 2030', 'Gap', 'Investment Needed', 'Key Actions']}
+        rows={[
+          ['Generation Capacity', '2,320 MW', '4,000 MW', '1,680 MW', 'USD 3.2B', 'Karuma comm.; Ayago 840MW; Kiba 380MW; Isimba optimization'],
+          ['Grid Electrification', '48.4% HH', '80% HH', '31.6% HH', 'USD 2.8B', 'Rural electrification programme; last-mile connections; mini-grids'],
+          ['Transmission Lines', '~3,100 km', '5,500 km', '2,400 km', 'USD 1.4B', '400kV backbone; East African Power Pool interconnectors'],
+          ['Industrial Park Power', '840 MW allocated', '2,000 MW', '1,160 MW', 'USD 1.1B', 'Dedicated industrial feeders; SEZ substations; captive power'],
+          ['Solar PV (commercial)', '15 MW grid-tied', '500 MW', '485 MW', 'USD 450M', 'Net metering regulation; Feed-in Tariff for solar; rooftop programme'],
+          ['Cooking Energy', '12% clean HH', '60% clean HH', '48% HH', 'USD 180M', 'LPG subsidies; improved biomass cookstove national programme'],
+          ['Energy Poverty', '26M without power', '<5M without', '21M people', 'USD 2.1B', 'Grid densification + off-grid solar home systems + mini-hydro'],
+          ['Energy Exports', '180 MW to neighbours', '800 MW', '620 MW', 'USD 600M', 'Expand EAC interconnectors; SAPP membership; surplus sales to DRC'],
+        ]} />
+
+      <Analysis title="Agricultural Productivity &amp; Food Security Analysis" accent={DASH_C.green}
+        cols={['Zone', 'Yield t/ha', 'Nat. Avg t/ha', 'Yield Gap', 'Water Access', 'Market Score', 'Food Security', 'Priority Intervention']}
+        rows={[
+          ['Buganda Basin', '3.75', '2.40', '+56%', 'Rain-fed bimodal + irrigation', '8.2/10', 'Food Secure', 'Coffee value chain upgrading; post-harvest loss reduction from 35%'],
+          ['Ankole Highlands', '3.50', '2.40', '+46%', 'Bimodal rain-fed; adequate', '6.8/10', 'Moderately Secure', 'Arabica certification; dairy + beef value chain development'],
+          ['Nile Valley North', '2.21', '1.80', '+23%', 'Uni-modal; periodic drought risk', '5.1/10', 'Food Insecure', 'Drought-tolerant varieties (NARO); small-scale irrigation units'],
+          ['Karamoja Arid Zone', '0.90', '0.80', '+13%', 'Highly variable; severe dry spells', '2.8/10', 'Severely Insecure', 'Emergency irrigation; livelihood diversification; livestock insurance'],
+          ['Busoga Sugarbelt', '4.57', '3.50', '+31%', 'Bimodal; adequate - some waterlog', '7.9/10', 'Food Secure', 'Sugar processing upgrade; maize + cassava diversification; storage'],
+          ['Rwenzori Slopes', '1.68', '1.40', '+20%', 'High rainfall; waterlogging risk', '5.5/10', 'Moderately Secure', 'Tea extension + vanilla premium; terracing; drainage improvement'],
+          ['West Nile Corridor', '2.33', '1.90', '+23%', 'Uni-modal; adequate', '5.8/10', 'Borderline Insecure', 'Tobacco crop alternatives; sunflower oil value chain; cooperatives'],
+          ['Teso Cotton Belt', '2.18', '1.75', '+25%', 'Bi-modal with dry spells', '5.4/10', 'Borderline Insecure', 'Cotton revival programme; sunflower + groundnuts diversification'],
+        ]} />
+
+      <Analysis title="Environmental Threat Assessment &amp; Conservation Priorities" accent={DASH_C.teal}
+        cols={['Ecosystem', 'Threat Level', 'Primary Threats', 'Area Lost/yr', 'Carbon Impact', 'Priority Actions', 'Est. Cost (USD M)']}
+        rows={[
+          ['Tropical Forests', 'CRITICAL', 'Charcoal/firewood, agriculture encroachment', '18,000 ha', '22 Mt CO2/yr', 'REDD+ implementation; community forest management; LPG subsidy', '180'],
+          ['Murchison Falls NP', 'HIGH', 'Oil development impact, poaching, buffer farming', '-', 'Intact stock', 'EIA enforcement; wildlife corridor; community benefit sharing', '45'],
+          ['Queen Elizabeth NP', 'HIGH', 'Human-wildlife conflict, charcoal production', '-', 'Intact stock', 'Electric fence extension; METT monitoring; tourism reinvestment', '38'],
+          ["Bwindi/Rwenzori WHS", 'MEDIUM', 'Gorilla disease, climate shift, edge encroachment', '-', 'Critical', 'Gorilla health screening; climate adaptation; benefit-sharing', '25'],
+          ['Lake Victoria', 'HIGH', 'Eutrophication, invasive water hyacinth, overfishing', 'N/A', 'Critical fishery', 'Hyacinth harvesting; waste water treatment; landing site upgrade', '95'],
+          ['Wetlands (national)', 'HIGH', 'Drainage for agriculture, urban expansion', '30,000 ha', '58 Mt CO2 stored', 'Wetland demarcation and enforcement; smart agricultural subsidies', '65'],
+          ['River Nile Catchment', 'MEDIUM', 'Hydropower dams, sedimentation, watershed deforestation', 'N/A', '-', 'Environmental flow requirements; riparian reforestation programme', '40'],
+          ['Albertine Rift', 'HIGH', 'Oil exploration, deforestation, road infrastructure', '~8,000 ha', 'High biodiversity', 'Strict EIA for oil; transboundary conservation with DRC/Rwanda', '55'],
+        ]} />
+
+      <Analysis title="District Education &amp; Health Access Analysis" accent={DASH_C.purple}
+        cols={['District', 'Literacy %', 'Primary NER', 'Development Tier']}
+        rows={[
+          ['Kampala', '90%', '94%', 'Tier 1'],
+          ['Wakiso', '87%', '94%', 'Tier 2'],
+          ['Mukono', '82%', '87%', 'Tier 2'],
+          ['Mbarara', '78%', '87%', 'Tier 2'],
+          ['Gulu', '70%', '87%', 'Tier 2'],
+          ['Lira', '67%', '78%', 'Tier 2'],
+          ['Mbale', '74%', '87%', 'Tier 2'],
+          ['Jinja', '80%', '87%', 'Tier 2'],
+          ['Kasese', '68%', '78%', 'Tier 3'],
+          ['Arua', '62%', '78%', 'Tier 2'],
+          ['Moroto', '38%', '78%', 'Tier 4'],
+          ['Kitgum', '58%', '78%', 'Tier 3'],
+        ]} />
+
+      <Analysis title="Key Education &amp; Health Policy Gaps" accent={DASH_C.pink}
+        cols={['Indicator', 'Current Value', 'SDG / NDP Target', 'Gap', 'Root Cause', 'Recommended Intervention']}
+        rows={[
+          ['Primary Completion Rate', '53%', '≥85%', '32pp', 'Poverty, child labour, distance to school >5km', 'School Meals Programme; conditional cash transfers; rural school construction'],
+          ['Secondary Enrolment (NER)', '34%', '60%', '26pp', 'USE cost barriers; pregnancy; early marriage', 'USE bursary expansion; girl-child protection; boarding subsidies'],
+          ['University Gross Enrolment', '9%', '20%', '11pp', 'Cost; limited STEM capacity; urban-rural divide', 'Student loan scheme; STEM infrastructure; distance learning'],
+          ['Skilled Birth Attendance', '74%', '≥95%', '21pp', 'HC II/III staffing gaps; distance in rural areas', 'Midwifery training scale-up; maternity waiting homes; MoH incentives'],
+          ['Under-5 Mortality', '49/1,000', '<25/1,000', '24 per 1k', 'Malaria 30%, diarrhoea 18%, pneumonia 14%', 'LLIN scale-up; ORS distribution; community health worker (VHT) programme'],
+          ['HIV Prevalence', '5.1%', '<2%', '3.1pp', 'Behaviour, GBV, low male circumcision coverage', 'PrEP scale-up; VMMC; PMTCT 100% coverage; stigma reduction'],
+          ['Doctor:Patient Ratio', '1:24,725', '1:1,000 (WHO)', '96% deficit', 'Emigration; low production; unattractive rural posting', 'Medical school expansion; rural retention bonuses; task-shifting to nurses'],
+          ['Malnutrition (stunting)', '29%', '<10%', '19pp', 'Food insecurity, poor WASH, inadequate feeding', 'SUN multi-sector nutrition; school feeding; fortification'],
+        ]} />
+
+      <Analysis title="Regional Demographic Vulnerability &amp; Development Priority Index" accent={DASH_C.cyan}
+        cols={['Region', 'Pop (M est.)', 'Density/km²', 'Youth Bulge %', 'Urban %', 'Poverty Rate', 'Food Insecurity', 'Conflict Risk', 'Development Priority']}
+        rows={[
+          ['Central', '12.8M', '820', '52%', '55%', '14%', 'Low', 'Low', 'Consolidate urban services; address inequality; affordable housing'],
+          ['Eastern', '11.5M', '240', '56%', '18%', '33%', 'Moderate', 'Low-Medium', 'Agricultural productivity; road corridor; flood management'],
+          ['Western', '10.8M', '170', '54%', '16%', '27%', 'Low-Moderate', 'Low', 'Tourism economy; oil value chain; highlands value chains'],
+          ['Northern', '8.9M', '80', '58%', '14%', '44%', 'Moderate', 'Medium', 'Post-conflict recovery; infrastructure investment; youth employment'],
+          ['West Nile', '3.8M', '135', '61%', '12%', '50%', 'High', 'Medium', 'Refugee integration; market access roads; basic services'],
+          ['Karamoja', '1.1M', '18', '63%', '6%', '77%', 'Severe', 'High', 'Emergency services; climate adaptation; mineral formalisation; peace'],
+        ]} />
+
+      <Analysis title="Macroeconomic Sector Competitiveness Assessment" accent={DASH_C.orange}
+        cols={['Sector', 'GDP Share', 'Growth Rate', 'Employment', 'Export Share', 'Competitiveness', 'Bottlenecks', 'Strategic Priority']}
+        rows={[
+          ['Agriculture', '24% / USD 9.1B', '3.8%/yr', '8.2M HH', '36% (coffee,fish,vanilla)', 'Medium', 'Low mechanisation; PHLs 30-40%; weak cooperatives', 'HIGH - food security; export diversification; agro-processing'],
+          ['Oil & Gas', 'Pre-production (0%)', '-', '12,000 (construction)', 'Expected ~40% by 2029', 'High potential', 'EACOP financing delay; ESG scrutiny; local content', 'HIGH - transformational USD 1.5B/yr revenue from 2026+'],
+          ['Manufacturing', '10% / USD 3.8B', '6.2%/yr', '0.8M', '12% (processed goods)', 'Low-Medium', 'Power cost USD 0.17/kWh; skills gap; import competition', 'HIGH - import substitution; SEZ expansion; light industry'],
+          ['ICT & Digital', '8% / USD 3.0B', '12.1%/yr', '0.4M', '5%', 'Growing fast', 'Broadband 18% penetration; digital skills gap; regulation', 'HIGH - youth employment; digital economy; fintech'],
+          ['Tourism', '4% / USD 1.5B', '8.4%/yr', '0.5M', '8% (services)', 'Medium', 'Limited air access; marketing budget; accommodation quality', 'MEDIUM - wildlife; Nile; gorilla permits (USD 700/visit)'],
+          ['Mining & Quarrying', '2% / USD 760M', '4.5%/yr', '0.1M formal', '6% (gold, minerals)', 'Low-Medium', 'Artisanal dominance; formalisation; smuggling', 'MEDIUM - Muko iron ore; Sukulu phosphate; gold formalization'],
+          ['Financial Services', '6% / USD 2.3B', '9.1%/yr', '0.15M', '-', 'Medium', 'Financial inclusion 58%; MoMo growing; capital markets thin', 'MEDIUM - capital markets; fintech regulation; pension reform'],
+          ['Construction', '5% / USD 1.9B', '7.0%/yr', '0.5M', '-', 'Medium', 'Skills gap; imported materials 60%; housing deficit 2.4M units', 'MEDIUM - housing programme; infra PPPs; local materials'],
+        ]} />
+    </div>
+  );
+}
