@@ -55,7 +55,7 @@ export default function InspectionManagement() {
           </div>
         </div>
         <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>
-          Structured field inspection records for Uganda's road and bridge network — managing visual condition surveys, NBI bridge inspections, structural assessments, defect recording, inspector assignments, and compliance tracking against MoWT annual inspection schedules.
+          Structured field inspection records for Uganda's road and bridge network - managing visual condition surveys, NBI bridge inspections, structural assessments, defect recording, inspector assignments, and compliance tracking against MoWT annual inspection schedules.
         </p>
         <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
           {['MoWT Standards','NBI Protocol','UNRA Bridges','Visual Survey','Annual Schedule','Field Data'].map((b: string)=>(
