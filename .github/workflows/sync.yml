@@ -37,10 +37,15 @@ jobs:
           VITE_SUPABASE_URL: https://vbidhkvzjigatfygnyc.supabase.co
           VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZiaWRoa3Z6amlnYXRmeWdueWNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3Mzg0NDQsImV4cCI6MjA5NzMxNDQ0NH0.4M5lsUvcoh2giNpbF5X7nMPepNVp1U9Em6Ro4aZwgY4
 
-      - name: Deploy to gh-pages branch
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Publish build output to main branch root
+        run: |
+          rsync -a dist/ ./ --exclude '.git'
+          touch .nojekyll
+
+      - name: Commit and push built site to main
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
-          publish_branch: gh-pages
-          # Incremental push (see deploy.yml) — no force_orphan.
+          commit_message: "chore: weekly rebuild — publish built site to main [skip ci]"
+          commit_user_name: "MoWT Deploy Bot"
+          commit_user_email: "deploy@mowt.go.ug"
+          push_options: '--force-with-lease'
