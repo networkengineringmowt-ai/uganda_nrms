@@ -53,7 +53,7 @@ const MILESTONES = [
   { year: 2013, label: 'NDP II',              color: C.yellow, detail: 'NDP II target: 6,000 km paved by FY 2019/20' },
   { year: 2020, label: 'NDP III',             color: C.orange, detail: 'NDP III target: 10,000 km paved by FY 2025/26' },
   { year: 2022, label: 'NDP IV Launch',       color: C.teal,   detail: 'NDP IV launched; official national road network defined as 21,302 km; OPRC contracts expanded to 9 active lots covering all six regions' },
-  { year: 2023, label: 'OPRC Scale-Up',       color: C.pink,   detail: 'Continued rehabilitation under OPRC performance contracts; bridge and culvert inventory completed — 546 structures in the 2026 BMS register' },
+  { year: 2023, label: 'OPRC Scale-Up',       color: C.pink,   detail: 'Continued rehabilitation under OPRC performance contracts; bridge and culvert inventory completed - 546 structures in the 2026 BMS register' },
   { year: 2024, label: 'Digital Transform',   color: C.indigo, detail: 'Digital transformation initiative; DNR RMS Engine development begins; ML-powered pavement condition assessment model (PyTorch, R²=0.93) enters training' },
   { year: 2025, label: 'Platform Live',       color: C.green,  detail: 'DNR Road Management System goes live; 1,017 links in GeoJSON; ML IRI prediction and HDM-4 analysis integrated; real-time ATC data feeds activated' },
   { year: 2026, label: 'Current (FY25/26)',   color: C.cyan,   detail: 'Current year: Official network 21,302 km (NDPIV FY25-26) | GeoJSON mapped 21,160 km (1,017 links) | Paved 6,405 km (30.1%) | Unpaved 14,897 km (69.9%)' },
@@ -119,7 +119,7 @@ const WTSS_FALLBACK = [
   { fy: '2024/25', stock: 6405.0, increase:  92.0, pct: 30.1, ndp: 'NDP IV'  },
 ];
 
-// Maintenance stations — station names confirmed from analytics.json lowest_vci_links.station;
+// Maintenance stations - station names confirmed from analytics.json lowest_vci_links.station;
 // paved/unpaved km are proportional estimates from regional totals.
 const STATIONS_DATA = [
   { station: 'Kampala',    region: 'Central',       paved_km: 520, unpaved_km: 520, vci: 82.5, roughness: 2.9, rutting: 8.2, confirmed_vci: true },
@@ -763,10 +763,10 @@ const PROJECT_GALLERY = [
   },
   {
     id: 'kee2',
-    title: 'KEE Viaduct — Wetlands Approach',
+    title: 'KEE Viaduct - Wetlands Approach',
     year: '2018',
     stat: '2.3 km elevated span',
-    desc: 'The elevated viaduct crosses ecologically sensitive Lake Victoria wetlands on reinforced concrete piers — the longest bridge-road in Uganda.',
+    desc: 'The elevated viaduct crosses ecologically sensitive Lake Victoria wetlands on reinforced concrete piers - the longest bridge-road in Uganda.',
     img: `${import.meta.env.BASE_URL}media/kee_aerial2.png`,
     accent: '#00ff88',
   },
@@ -793,7 +793,7 @@ const PROJECT_GALLERY = [
     title: 'Kampala Metropolitan Aerial',
     year: '2020s',
     stat: 'Urban road upgrades',
-    desc: "Aerial view of Kampala's upgraded arterial network — a city transformed by two decades of sustained investment in road infrastructure.",
+    desc: "Aerial view of Kampala's upgraded arterial network - a city transformed by two decades of sustained investment in road infrastructure.",
     img: `${import.meta.env.BASE_URL}media/kampala_flyover2.png`,
     accent: '#ff6b35',
   },
@@ -802,7 +802,7 @@ const PROJECT_GALLERY = [
     title: 'Bukakata Ferry · Lake Victoria',
     year: 'UAV Survey 2021–24',
     stat: 'Bukakata – Bussi Island',
-    desc: 'Drone survey of the Bukakata ferry terminal — the critical water-road interface connecting the mainland to the Ssese Islands on Lake Victoria.',
+    desc: 'Drone survey of the Bukakata ferry terminal - the critical water-road interface connecting the mainland to the Ssese Islands on Lake Victoria.',
     img: `${import.meta.env.BASE_URL}media/bukakata_lake.jpg`,
     accent: '#4d9fff',
   },
@@ -1034,7 +1034,7 @@ export default function NetworkStory() {
               <span style={{fontSize:18,fontWeight:800,color:'rgba(14,165,233,1)',letterSpacing:-0.5}}>Uganda Road Network Story</span>
               <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>NDPIV Vision · 21,302km · UNRA · AfDB · Climate Resilience</span>
             </div>
-            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Narrative-driven data story of Uganda's 21,302km national road network — chronicling NDPIV connectivity targets, UNRA mandate execution, AfDB/World Bank investment corridors, and the climate resilience agenda for paved and unpaved roads.</p>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Narrative-driven data story of Uganda's 21,302km national road network - chronicling NDPIV connectivity targets, UNRA mandate execution, AfDB/World Bank investment corridors, and the climate resilience agenda for paved and unpaved roads.</p>
             <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
               {["NDPIV Vision","21,302km Network","UNRA Mandate","AfDB Funded","Climate Resilient","National Story"].map(b=>(
                 <span key={b} style={{background:'rgba(14,165,233,0.12)',color:'rgba(14,165,233,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
