@@ -172,7 +172,7 @@ export default function CaseStudiesOverviewDashboard() {
         </ChartBox>
         <ChartBox title="Catalogue Composition" subtitle="agency (inner) → category weighting (outer)" accent={DASH_C.teal} height={210}>
           <SunburstApprox
-            inner={AGENCY_LBL.slice(0, 4).map((n, i) => ({ name: n, value: AGENCY_COUNT[i], color: AGENCY_COLORS[i] }))}
+            inner={AGENCY_LBL.map((n, i) => ({ name: n, value: AGENCY_COUNT[i], color: AGENCY_COLORS[i] }))}
             outer={CATEGORY_LBL.map((n, i) => ({ name: n, value: CATEGORY_COUNT[i], color: CATEGORY_COLORS[i] }))}
           />
         </ChartBox>

@@ -139,8 +139,8 @@ export default function ProjectsOverviewDashboard() {
       </ChartGrid>
 
       <ChartGrid cols="3">
-        <ChartBox title="Budget vs Expenditure" subtitle="bn UGX, top 6 projects" accent={DASH_C.cyan} height={220}>
-          <BarV data={PROJ_NAME.slice(0, 6).map((n, i) => ({
+        <ChartBox title="Budget vs Expenditure" subtitle="bn UGX, all 8 projects" accent={DASH_C.cyan} height={220}>
+          <BarV data={PROJ_NAME.map((n, i) => ({
             name: n.split('-')[0].split(' ')[0], Budget: PROJ_BN[i], Spent: Math.round(PROJ_BN[i] * PROJ_PCT[i] / 100),
           }))} xKey="name" series={[{ key: 'Budget', name: 'Budget bn', color: DASH_C.cyan }, { key: 'Spent', name: 'Spent bn', color: DASH_C.green }]} unit="bn" />
         </ChartBox>
