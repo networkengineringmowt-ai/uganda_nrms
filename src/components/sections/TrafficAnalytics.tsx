@@ -619,15 +619,14 @@ function RegionsTab({ features }: { features: PredFeature[] }) {
 
 // ─── Clustered column chart: vehicle classes by region ───────────────────────
 function VehicleClassByRegionChart({ features }: { features: PredFeature[] }) {
-  const TOP_CLASSES = VEHICLE_CLASSES.slice(0, 6); // MC, SC, LG, SB, MB, LB
-
+  // All 6 regions x all 11 vehicle classes - no subsetting either dimension.
   const data = REGIONS.map(reg => {
     const rFeats = features.filter(f => (f.properties.region ?? '') === reg);
     const regAdt = rFeats.length
       ? rFeats.reduce((s, f) => s + (f.properties.aadt_predicted ?? 0), 0) / rFeats.length
       : 0;
     const row: Record<string, number | string> = { region: reg.replace(' ', '\n') };
-    TOP_CLASSES.forEach(vc => {
+    VEHICLE_CLASSES.forEach(vc => {
       row[vc.abbr] = Math.round(regAdt * vc.pct);
     });
     return row;
@@ -639,10 +638,10 @@ function VehicleClassByRegionChart({ features }: { features: PredFeature[] }) {
         Vehicle Class Volumes by Region - Clustered Comparison
       </div>
       <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.45)', marginBottom: 14 }}>
-        Average daily vehicles per class · 6 maintenance regions · top 6 classes shown
+        Average daily vehicles per class · all 6 maintenance regions · all {VEHICLE_CLASSES.length} vehicle classes
       </div>
       <Chart3DWrap>
-        <ResponsiveContainer width="100%" height={220}>
+        <ResponsiveContainer width="100%" height={260}>
           <BarChart data={data} margin={{ top: 4, right: 12, left: 0, bottom: 0 }} barGap={2} barCategoryGap="20%">
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.08)" vertical={false}/>
             <XAxis dataKey="region" tick={{ fill: 'rgba(148,163,184,0.55)', fontSize: 9 }}
@@ -659,7 +658,7 @@ function VehicleClassByRegionChart({ features }: { features: PredFeature[] }) {
               ]}/>
             <Legend wrapperStyle={{ fontSize: 9, paddingTop: 6 }}
               formatter={(value: string) => VEHICLE_CLASSES.find(vc => vc.abbr === value)?.name ?? value}/>
-            {TOP_CLASSES.map(vc => (
+            {VEHICLE_CLASSES.map(vc => (
               <Bar key={vc.abbr} dataKey={vc.abbr} fill={vc.color} radius={[2, 2, 0, 0]}
                 fillOpacity={0.82} shape={<Bar3D/>}/>
             ))}
@@ -696,9 +695,9 @@ function ClassesTab({ features }: { features: PredFeature[] }) {
                 {(vc.pct*100).toFixed(1)}% of total ADT
               </span>
             </div>
-            {/* Regional share mini bars */}
+            {/* Regional share mini bars - all 6 regions, not a subset */}
             <div style={{ display:'flex', flexDirection:'column', gap:3 }}>
-              {REGIONS.slice(0,3).map(reg => {
+              {REGIONS.map(reg => {
                 const rFeats = features.filter(f=>(f.properties.region??'')===reg);
                 const rAdt = rFeats.length ? rFeats.reduce((s,f)=>s+(f.properties.aadt_predicted??0),0)/rFeats.length : 0;
                 const rCol = REGION_CLR[reg]??C.cyan;
