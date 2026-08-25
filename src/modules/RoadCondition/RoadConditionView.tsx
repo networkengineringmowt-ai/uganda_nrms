@@ -31,7 +31,7 @@ import PavementAgePanel from './PavementAgePanel';
 
 const BASE = import.meta.env.BASE_URL;
 
-// âââ Types ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Types ────────────────────────────────────────────────────────────────────
 interface ImageDefectSummary {
   model: string; images_processed: number;
   defect_distribution: Record<string, number>;
@@ -77,7 +77,7 @@ interface SelectedLinkData {
   riskCategory?: string; dailyEsals?: number; dominantDefect?: string;
 }
 
-// âââ Constants ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Constants ────────────────────────────────────────────────────────────────
 const ACCENT = '#6366f1';
 const BG_CARD = 'rgba(15,23,42,0.55)';
 const CLASS_COLORS: Record<string, string> = {
@@ -119,7 +119,7 @@ const LAYER_LABELS: Record<MapLayer, string> = {
   unsurveyed: 'Not Surveyed',
 };
 
-// âââ Helpers ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 function getIriBand(iri: number): string {
   if (iri < 3.5) return 'good';
   if (iri < 6.5) return 'fair';
@@ -144,13 +144,13 @@ function getLineMidpoint(geom: Geometry): [number, number] | null {
   return null;
 }
 
-// âââ Types âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Types ───────────────────────────────────────────────────────────────────
 interface LinkCond {
   iri: number; rut_mm: number; cracking: number;
   pci: number; vci: number; surface: string; year: number;
 }
 
-// âââ Loaders ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Loaders ──────────────────────────────────────────────────────────────────
 async function loadDetSummary(): Promise<DetSummary | null> {
   try { const r = await fetch(BASE + 'data/deterioration_summary.json'); return r.json(); }
   catch { return null; }
@@ -171,7 +171,7 @@ async function loadConditionLookup(): Promise<Record<string, LinkCond>> {
   } catch { return {}; }
 }
 
-// âââ MapController â flies to region bounding box âââââââââââââââââââââââââââââ
+// ─── MapController — flies to region bounding box ─────────────────────────────
 function MapController({ region }: { region: string }) {
   const map = useMap();
   useEffect(() => {
@@ -181,8 +181,8 @@ function MapController({ region }: { region: string }) {
   return null;
 }
 
-// âââ ConditionMap â interactive road condition map ââââââââââââââââââââââââââââ
-// ââ Small filter UI helpers used inside the filter drawer âââââââââââââââââââ
+// ─── ConditionMap — interactive road condition map ────────────────────────────
+// ── Small filter UI helpers used inside the filter drawer ───────────────────
 const filterInputStyle: React.CSSProperties = {
   flex: 1, fontSize: 10, padding: '5px 7px', borderRadius: 5,
   background: 'rgba(15,23,42,0.7)', border: '1px solid rgba(148,163,184,0.18)',
@@ -234,7 +234,7 @@ function ConditionMap({
   const [mapLayer, setMapLayer] = useState<MapLayer>('condition');
   const [region,   setRegion]   = useState<string>('all');
 
-  // ââ Filter drawer state ââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Filter drawer state ──────────────────────────────────────────────────
   const [filtersOpen, setFiltersOpen]   = useState(false);
   const [filterClass,    setFilterClass]    = useState<string>('all');
   const [filterSurface,  setFilterSurface]  = useState<string>('all');
@@ -242,7 +242,7 @@ function ConditionMap({
   const [filterYearMin,  setFilterYearMin]  = useState<number>(2020);
   const [filterYearMax,  setFilterYearMax]  = useState<number>(2026);
 
-  // ââ Top-N worst links overlay ââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Top-N worst links overlay ────────────────────────────────────────────
   const [showWorst, setShowWorst] = useState(false);
   const WORST_N = 20;
 
@@ -254,7 +254,7 @@ function ConditionMap({
 
   const riskMap = useMemo(() => overloading?.link_risk_map ?? {}, [overloading]);
 
-  // Top-N links by IRI (descending) â populated whenever the urgency schedule changes
+  // Top-N links by IRI (descending) — populated whenever the urgency schedule changes
   const worstLinks = useMemo(() => {
     return Object.values(urgencyMap)
       .filter(t => typeof t.iri === 'number')
@@ -324,7 +324,7 @@ function ConditionMap({
                            cond?.year ?? 2024, surfPaved);
     const isSurveyed = !!(cond || trigger);
 
-    // ââ Filter check: hide links that don't match âââââââââââââââââââââââââââ
+    // ── Filter check: hide links that don't match ───────────────────────────
     if (filterClass !== 'all' && cls !== filterClass) return { opacity: 0, fillOpacity: 0 };
     if (filterSurface !== 'all') {
       const isPaved = surface === 'bituminous' || surface.includes('paved') || cond?.surface?.includes('asphalt');
@@ -341,7 +341,7 @@ function ConditionMap({
       if (yr != null && (yr < filterYearMin || yr > filterYearMax)) return { opacity: 0, fillOpacity: 0 };
     }
 
-    // ââ Top-N worst-links highlight âââââââââââââââââââââââââââââââââââââââââ
+    // ── Top-N worst-links highlight ─────────────────────────────────────────
     if (showWorst && worstLinkIds.has(lid)) {
       return { color: '#ff0040', weight: weight + 2.5, opacity: 1, dashArray: undefined };
     }
@@ -388,7 +388,7 @@ function ConditionMap({
     if (mapLayer === 'unsurveyed') {
       return { color: isSurveyed ? '#475569' : '#ff6b35', weight, opacity: isSurveyed ? 0.2 : 0.95 };
     }
-    // IRI condition layer â use condLookup first (1017 links), then urgency, then class avg
+    // IRI condition layer — use condLookup first (1017 links), then urgency, then class avg
     if (liveIri == null) {
       return { color: '#94a3b8', weight: Math.max(weight - 0.5, 1), opacity: 0.28 };
     }
@@ -405,7 +405,7 @@ function ConditionMap({
     const risk    = riskMap[lid];
     const defect  = defectMap[lid];
     const cond    = condLookup[lid];
-    // Prefer pavement_condition over deterioration schedule, then class avg â
+    // Prefer pavement_condition over deterioration schedule, then class avg —
     // then carry forward to the current instant (now-cast)
     const iriBase = cond?.iri ?? trigger?.iri ?? classIriMap[cls] ?? 6;
     const surfSel = String(cond?.surface ?? '').toLowerCase();
@@ -419,7 +419,7 @@ function ConditionMap({
       linkId: lid,
       roadName: (props.link_name ?? props.LINK_NAME ?? trigger?.road_name ?? lid) as string,
       roadClass: cls,
-      region: (props.region ?? props.REGION ?? trigger?.region ?? 'â') as string,
+      region: (props.region ?? props.REGION ?? trigger?.region ?? '—') as string,
       lengthKm: +((props.length_km ?? props.LENGTH_KM ?? 0) as number),
       iri, band, sparkData,
       treatment: trigger?.treatment,
@@ -437,14 +437,14 @@ function ConditionMap({
     const p = feat.properties as Record<string, unknown> | null;
     const lid = (p?.link_id as string) ?? '';
 
-    // Worst-N tooltip â bind only when overlay active and link is in top-N
+    // Worst-N tooltip — bind only when overlay active and link is in top-N
     if (showWorst && worstLinkIds.has(lid)) {
       const rank = worstRankByLink[lid];
       const t = urgencyMap[lid];
-      const iri = t?.iri?.toFixed(2) ?? 'â';
+      const iri = t?.iri?.toFixed(2) ?? '—';
       (layer as unknown as { bindTooltip: (s: string, o?: object) => void }).bindTooltip(
         `<div style="font:600 11px/1.5 system-ui">
-           <div style="color:#ff5577;font-weight:800;font-size:12px">â  Rank #${rank}</div>
+           <div style="color:#ff5577;font-weight:800;font-size:12px">⚠ Rank #${rank}</div>
            <div style="color:#e2eaf4;font-family:monospace;font-size:10px">${lid}</div>
            <div style="color:#fca5a5;margin-top:3px">IRI ${iri} m/km</div>
          </div>`,
@@ -462,28 +462,28 @@ function ConditionMap({
   const legendItems = useMemo(() => {
     if (mapLayer === 'condition') return [
       { label: 'Good  IRI < 3.5',        color: IRI_COLOR.good },
-      { label: 'Fair  3.5â6.5',          color: IRI_COLOR.fair },
-      { label: 'Poor  6.5â9.0',          color: IRI_COLOR.poor },
+      { label: 'Fair  3.5–6.5',          color: IRI_COLOR.fair },
+      { label: 'Poor  6.5–9.0',          color: IRI_COLOR.poor },
       { label: 'Very Poor  > 9.0',       color: IRI_COLOR.very_poor },
       { label: 'Not Surveyed / Works',   color: '#94a3b8' },
     ];
     if (mapLayer === 'urgency') return [
-      { label: '2026 â Act Now',   color: URGENCY_COLOR.now },
+      { label: '2026 — Act Now',   color: URGENCY_COLOR.now },
       { label: '2027',             color: URGENCY_COLOR.urgent },
-      { label: '2028â29',          color: URGENCY_COLOR.soon },
+      { label: '2028–29',          color: URGENCY_COLOR.soon },
       { label: '2030+',            color: URGENCY_COLOR.planned },
     ];
     if (mapLayer === 'rutting') return [
       { label: 'Light   < 5 mm',   color: '#22c55e' },
-      { label: 'Moderate 5â10 mm', color: '#eab308' },
-      { label: 'Heavy  10â20 mm',  color: '#f97316' },
+      { label: 'Moderate 5–10 mm', color: '#eab308' },
+      { label: 'Heavy  10–20 mm',  color: '#f97316' },
       { label: 'Severe > 20 mm',   color: '#ef4444' },
       { label: 'Not surveyed',     color: '#94a3b8' },
     ];
     if (mapLayer === 'cracking') return [
       { label: 'Low  < 10%',     color: '#22c55e' },
-      { label: 'Moderate 10â25%',color: '#eab308' },
-      { label: 'High 25â50%',    color: '#f97316' },
+      { label: 'Moderate 10–25%',color: '#eab308' },
+      { label: 'High 25–50%',    color: '#f97316' },
       { label: 'Severe > 50%',   color: '#ef4444' },
       { label: 'Not surveyed',   color: '#94a3b8' },
     ];
@@ -492,10 +492,10 @@ function ConditionMap({
       { label: 'Unsealed / Gravel',  color: '#ff8c00' },
     ];
     if (mapLayer === 'class') return [
-      { label: 'Class A â Trunk',   color: CLASS_COLORS.A },
-      { label: 'Class B â Primary', color: CLASS_COLORS.B },
-      { label: 'Class C â Secondary',color: CLASS_COLORS.C },
-      { label: 'Class M â Grade-Separated Highway',color: CLASS_COLORS.M },
+      { label: 'Class A — Trunk',   color: CLASS_COLORS.A },
+      { label: 'Class B — Primary', color: CLASS_COLORS.B },
+      { label: 'Class C — Secondary',color: CLASS_COLORS.C },
+      { label: 'Class M — Grade-Separated Highway',color: CLASS_COLORS.M },
     ];
     if (mapLayer === 'unsurveyed') return [
       { label: 'Not Surveyed',  color: '#ff6b35' },
@@ -519,7 +519,7 @@ function ConditionMap({
             <Layers size={15} style={{ color: ACCENT }}/> Interactive Road Condition Map
           </div>
           <div className="text-[10px] text-slate-500 mt-0.5">
-            Click any road segment to inspect Â· toggle layers (top-right) Â· fly to region below
+            Click any road segment to inspect · toggle layers (top-right) · fly to region below
           </div>
         </div>
         <div className="flex gap-1.5 flex-wrap">
@@ -537,7 +537,7 @@ function ConditionMap({
         </div>
       </div>
 
-      {/* Map area â fills remaining height */}
+      {/* Map area — fills remaining height */}
       <div style={{ flex:1, position:'relative', minHeight:0 }}>
         {/* Map itself */}
         <div className="absolute inset-0 overflow-hidden">
@@ -565,7 +565,7 @@ function ConditionMap({
                     <div style={{ fontSize: 11, minWidth: 140 }}>
                       <strong>{m.linkName}</strong><br/>
                       {DEFECT_LABEL[m.info.dominant_defect] ?? m.info.dominant_defect}
-                      {' Â· '}{m.info.avg_severity} severity
+                      {' · '}{m.info.avg_severity} severity
                     </div>
                   </Popup>
                 </CircleMarker>
@@ -583,8 +583,8 @@ function ConditionMap({
                     if (!p) return;
                     layer.bindTooltip(
                       `<strong>${p.road_name ?? p.link_id}</strong><br/>` +
-                      `IRI ${(p.mean_iri as number)?.toFixed(2) ?? 'â'} m/km Â· ${p.condition_class ?? 'â'}<br/>` +
-                      `Survey ${p.survey_year ?? 'â'}`,
+                      `IRI ${(p.mean_iri as number)?.toFixed(2) ?? '—'} m/km · ${p.condition_class ?? '—'}<br/>` +
+                      `Survey ${p.survey_year ?? '—'}`,
                       { sticky: true, className: 'leaflet-tooltip-dark' },
                     );
                   }}
@@ -595,12 +595,12 @@ function ConditionMap({
           ) : (
             <div className="h-full flex items-center justify-center text-slate-600 text-sm"
                  style={{ background: '#0a0f1e' }}>
-              Loading mapâ¦
+              Loading map…
             </div>
           )}
         </div>
 
-        {/* Layer switcher â top-right */}
+        {/* Layer switcher — top-right */}
         <div style={{
           position: 'absolute', top: 10, right: 10,
           zIndex: 1000, display: 'flex', flexDirection: 'column', gap: 4,
@@ -637,7 +637,7 @@ function ConditionMap({
             </button>
           )}
 
-          {/* ââ Top-N Worst Links toggle ââ */}
+          {/* ── Top-N Worst Links toggle ── */}
           <div style={{
             marginTop: 8, paddingTop: 8,
             borderTop: '1px solid rgba(255,255,255,0.08)',
@@ -653,12 +653,12 @@ function ConditionMap({
                 boxShadow: showWorst ? '0 0 12px rgba(255,0,64,0.4)' : 'none',
                 display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center',
               }}>
-              â  {showWorst ? 'Hide' : 'Show'} Worst {WORST_N} Links
+              ⚠ {showWorst ? 'Hide' : 'Show'} Worst {WORST_N} Links
             </button>
           </div>
         </div>
 
-        {/* ââ Filter Drawer Toggle (left side) ââ */}
+        {/* ── Filter Drawer Toggle (left side) ── */}
         <div style={{
           position: 'absolute', top: 10, left: 10, zIndex: 1000,
         }}>
@@ -671,11 +671,11 @@ function ConditionMap({
               backdropFilter: 'blur(10px)', cursor: 'pointer',
               display: 'flex', alignItems: 'center', gap: 6,
             }}>
-            â° Filters {filtersOpen ? 'â' : 'â¶'}
+            ☰ Filters {filtersOpen ? '◀' : '▶'}
           </button>
         </div>
 
-        {/* ââ Filter Drawer (slides in from left) ââ */}
+        {/* ── Filter Drawer (slides in from left) ── */}
         {filtersOpen && (
           <div style={{
             position: 'absolute', top: 50, left: 10, zIndex: 999,
@@ -690,7 +690,7 @@ function ConditionMap({
               Network Filters
             </div>
 
-            {/* Region (re-uses existing region pills above the map â also shown here for completeness) */}
+            {/* Region (re-uses existing region pills above the map — also shown here for completeness) */}
             <FilterGroup label="Region">
               <FilterSelect value={region} onChange={setRegion} options={REGION_PILLS as unknown as readonly string[]}/>
             </FilterGroup>
@@ -698,8 +698,8 @@ function ConditionMap({
             {/* Functional class */}
             <FilterGroup label="Functional Class">
               <FilterSelect value={filterClass} onChange={setFilterClass} options={['all', 'A', 'B', 'C', 'M']}
-                labels={{ all: 'All', A: 'National (A) â Trunk', B: 'District (B) â Primary',
-                          C: 'Community (C) â Secondary', M: 'Grade-Separated (M) â Motorway/Highway' }}/>
+                labels={{ all: 'All', A: 'National (A) — Trunk', B: 'District (B) — Primary',
+                          C: 'Community (C) — Secondary', M: 'Grade-Separated (M) — Motorway/Highway' }}/>
             </FilterGroup>
 
             {/* Surface type */}
@@ -712,18 +712,18 @@ function ConditionMap({
             <FilterGroup label="Condition Band">
               <FilterSelect value={filterCondBand} onChange={setFilterCondBand}
                 options={['all', 'good', 'fair', 'poor', 'very_poor', 'unsurveyed']}
-                labels={{ all: 'All', good: 'Good (IRI < 3.5)', fair: 'Fair (3.5â6.5)',
-                          poor: 'Poor (6.5â9.0)', very_poor: 'Very Poor (> 9.0)',
+                labels={{ all: 'All', good: 'Good (IRI < 3.5)', fair: 'Fair (3.5–6.5)',
+                          poor: 'Poor (6.5–9.0)', very_poor: 'Very Poor (> 9.0)',
                           unsurveyed: 'Not Surveyed' }}/>
             </FilterGroup>
 
             {/* Survey year range */}
-            <FilterGroup label={`Trigger Year: ${filterYearMin}â${filterYearMax}`}>
+            <FilterGroup label={`Trigger Year: ${filterYearMin}–${filterYearMax}`}>
               <div style={{ display: 'flex', gap: 6, alignItems: 'center', fontSize: 9 }}>
                 <input type="number" value={filterYearMin} min={2016} max={2030}
                   onChange={e => setFilterYearMin(Number(e.target.value))}
                   style={filterInputStyle}/>
-                <span style={{ color: '#475569' }}>â</span>
+                <span style={{ color: '#475569' }}>—</span>
                 <input type="number" value={filterYearMax} min={2016} max={2030}
                   onChange={e => setFilterYearMax(Number(e.target.value))}
                   style={filterInputStyle}/>
@@ -745,7 +745,7 @@ function ConditionMap({
           </div>
         )}
 
-        {/* ââ Worst-links tooltip badge (when overlay active) ââ */}
+        {/* ── Worst-links tooltip badge (when overlay active) ── */}
         {showWorst && (
           <div style={{
             position: 'absolute', bottom: 90, right: 10, zIndex: 1000,
@@ -753,14 +753,14 @@ function ConditionMap({
             borderRadius: 8, padding: '6px 10px', backdropFilter: 'blur(8px)',
             fontSize: 9.5, color: '#fca5a5',
           }}>
-            <div style={{ fontWeight: 800, marginBottom: 2 }}>â  Worst {WORST_N} Highlighted</div>
+            <div style={{ fontWeight: 800, marginBottom: 2 }}>⚠ Worst {WORST_N} Highlighted</div>
             <div style={{ fontSize: 8.5, color: 'rgba(252,165,165,0.7)' }}>
-              Sorted by IRI â Â· click any red link to inspect
+              Sorted by IRI ↓ · click any red link to inspect
             </div>
           </div>
         )}
 
-        {/* Legend â bottom-left */}
+        {/* Legend — bottom-left */}
         <div style={{
           position: 'absolute', bottom: 10, left: 10, zIndex: 1000,
           background: 'rgba(10,15,30,0.88)', backdropFilter: 'blur(10px)',
@@ -792,12 +792,12 @@ function ConditionMap({
   );
 }
 
-// âââ Condition KPI cards ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Condition KPI cards ──────────────────────────────────────────────────────
 function CondKPIs({ c24, c30, linksProjected }: { c24: CondBand; c30: CondBand; linksProjected?: number }) {
   const bands = [
     { key: 'good_pct' as const,      label: 'Good',      color: '#00ff88', sub: 'IRI < 3.5' },
-    { key: 'fair_pct' as const,      label: 'Fair',      color: '#ffd23f', sub: 'IRI 3.5â6.5' },
-    { key: 'poor_pct' as const,      label: 'Poor',      color: '#ff6b35', sub: 'IRI 6.5â9.0' },
+    { key: 'fair_pct' as const,      label: 'Fair',      color: '#ffd23f', sub: 'IRI 3.5–6.5' },
+    { key: 'poor_pct' as const,      label: 'Poor',      color: '#ff6b35', sub: 'IRI 6.5–9.0' },
     { key: 'very_poor_pct' as const, label: 'Very Poor', color: '#ff2d78', sub: 'IRI > 9.0' },
   ];
   const notSurveyedPct = linksProjected != null
@@ -841,7 +841,7 @@ function CondKPIs({ c24, c30, linksProjected }: { c24: CondBand; c30: CondBand; 
                 Not Surveyed / Works in Progress
               </div>
               <div className="text-[10px] text-slate-500 mt-0.5">
-                {(1017 - (linksProjected ?? 0)).toLocaleString()} of 1,017 links have no ROMDAS / HDM-4 record Â· shown as grey on map
+                {(1017 - (linksProjected ?? 0)).toLocaleString()} of 1,017 links have no ROMDAS / HDM-4 record · shown as grey on map
               </div>
             </div>
             <div className="flex-1 max-w-xs">
@@ -856,7 +856,7 @@ function CondKPIs({ c24, c30, linksProjected }: { c24: CondBand; c30: CondBand; 
   );
 }
 
-// âââ Deterioration curves âââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Deterioration curves ─────────────────────────────────────────────────────
 function DetCurves({
   curves, thresholds,
 }: { curves: Record<string, CurvePt[]>; thresholds: Record<string, number> }) {
@@ -875,10 +875,10 @@ function DetCurves({
       <div className="flex items-center justify-between mb-3">
         <div>
           <div className="text-sm font-bold text-white flex items-center gap-2">
-            <TrendingUp size={15} style={{ color: ACCENT }}/> Deterioration Curves 2024â2035
+            <TrendingUp size={15} style={{ color: ACCENT }}/> Deterioration Curves 2024–2035
           </div>
           <div className="text-[10px] text-slate-500 mt-0.5">
-            Network-average IRI by road class Â· HDM-4 calibrated Â· Â±18% CI
+            Network-average IRI by road class · HDM-4 calibrated · ±18% CI
           </div>
         </div>
         <div className="flex gap-3 flex-wrap justify-end">
@@ -927,7 +927,7 @@ function DetCurves({
   );
 }
 
-// âââ Priority table âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Priority table ───────────────────────────────────────────────────────────
 function PriorityTable({ triggers }: { triggers: TriggerItem[] }) {
   return (
     <div style={{ background: BG_CARD, backdropFilter: 'blur(20px)' }}
@@ -952,7 +952,7 @@ function PriorityTable({ triggers }: { triggers: TriggerItem[] }) {
               <tr key={i}
                   className="border-b border-slate-800/40 hover:bg-slate-700/10 transition-colors">
                 <td className="py-1.5 text-slate-200 font-medium">
-                  {t.road_name.length > 28 ? t.road_name.slice(0,26)+'â¦' : t.road_name}
+                  {t.road_name.length > 28 ? t.road_name.slice(0,26)+'…' : t.road_name}
                 </td>
                 <td className="py-1.5 text-slate-400">{t.region}</td>
                 <td className="py-1.5">
@@ -981,7 +981,7 @@ function PriorityTable({ triggers }: { triggers: TriggerItem[] }) {
   );
 }
 
-// âââ Budget stacked bar âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Budget stacked bar ───────────────────────────────────────────────────────
 function BudgetPlanner({ budget, total }: { budget: BudgetPt[]; total: number }) {
   const data = budget.map(b => ({
     year: b.year,
@@ -1002,10 +1002,10 @@ function BudgetPlanner({ budget, total }: { budget: BudgetPt[]; total: number })
       <div className="flex items-center justify-between mb-4">
         <div>
           <div className="text-sm font-bold text-white flex items-center gap-2">
-            <DollarSign size={15} style={{ color: ACCENT }}/> Maintenance Budget Plan 2024â2030
+            <DollarSign size={15} style={{ color: ACCENT }}/> Maintenance Budget Plan 2024–2030
           </div>
           <div className="text-[10px] text-slate-500 mt-0.5">
-            USD millions by treatment type Â· MoWT unit costs
+            USD millions by treatment type · MoWT unit costs
           </div>
         </div>
         <div className="text-right">
@@ -1047,11 +1047,11 @@ function BudgetPlanner({ budget, total }: { budget: BudgetPt[]; total: number })
   );
 }
 
-// âââ Condition map default pane âââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Condition map default pane ───────────────────────────────────────────────
 function ConditionDefaultPane({ det }: { det: DetSummary | null }) {
   if (!det) return (
     <div style={{ color:'#475569', fontSize:11, textAlign:'center', paddingTop:20 }}>
-      Loading condition dataâ¦
+      Loading condition data…
     </div>
   );
   const c = det.network_condition_2024;
@@ -1065,7 +1065,7 @@ function ConditionDefaultPane({ det }: { det: DetSummary | null }) {
   return (
     <div>
       <div style={{ fontSize:9.5, color:'#64748b', marginBottom:10 }}>
-        Network condition FY 2023/24 Â· HDM-4 calibrated
+        Network condition FY 2023/24 · HDM-4 calibrated
       </div>
       {bands.map(b => (
         <div key={b.label} style={{ marginBottom:8 }}>
@@ -1082,7 +1082,7 @@ function ConditionDefaultPane({ det }: { det: DetSummary | null }) {
         Click any road segment to inspect its condition, IRI, urgency, overloading risk, and intervention recommendation.
       </div>
       <div style={{ marginTop:10, fontSize:9.5 }}>
-        <div style={{ color:'#64748b', marginBottom:4 }}>2024 â 2030 Projection</div>
+        <div style={{ color:'#64748b', marginBottom:4 }}>2024 → 2030 Projection</div>
         <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
           {bands.slice(0,4).map(b => {
             const d30 = (det.network_condition_2030 as unknown as Record<string,number>)[b.label.toLowerCase().replace(' ','_')+'_pct'] ?? 0;
@@ -1103,7 +1103,7 @@ function ConditionDefaultPane({ det }: { det: DetSummary | null }) {
   );
 }
 
-// âââ Render selected condition link in MapDetailPane âââââââââââââââââââââââââ
+// ─── Render selected condition link in MapDetailPane ─────────────────────────
 function renderCondFeature(f: SelectedLinkData): React.ReactNode {
   const iriColor = IRI_COLOR[f.band] ?? '#94a3b8';
   return (
@@ -1165,7 +1165,7 @@ function renderCondFeature(f: SelectedLinkData): React.ReactNode {
       {f.sparkData.length > 0 && (
         <div style={{ marginTop:12 }}>
           <div style={{ fontSize:9, color:'#64748b', marginBottom:4 }}>
-            IRI Trend Â· Class {f.roadClass} avg
+            IRI Trend · Class {f.roadClass} avg
           </div>
           <ResponsiveContainer width="100%" height={70}>
             <LineChart data={f.sparkData} margin={{ top:2, right:4, left:-28, bottom:0 }}>
@@ -1183,7 +1183,7 @@ function renderCondFeature(f: SelectedLinkData): React.ReactNode {
   );
 }
 
-// âââ Main view ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Main view ────────────────────────────────────────────────────────────────
 export type RoadConditionTabId = 'overview' | 'conditionmap' | 'inventory' | 'analytics' | 'age' | 'fwd';
 type AnalyticsSubTab = 'deterioration' | 'interventions' | 'budget';
 
@@ -1253,7 +1253,7 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
     { name: 'Low',    value: defectSummary.severity_distribution['Low']    ?? 0, fill: '#00ff88' },
   ] : [];
 
-  // ââ BMS-pattern 4 main tabs (Dashboard | Map | Inventory | Analytics) âââââ
+  // ── BMS-pattern 4 main tabs (Dashboard | Map | Inventory | Analytics) ─────
   const TABS: Array<{ id: RoadConditionTabId; label: string }> = [
     { id: 'overview',      label: 'Dashboard'                },
     { id: 'conditionmap',  label: 'Condition Map'            },
@@ -1344,7 +1344,7 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
 
       {!embedded && <CrossLinkChipBar sectionId="roadcondition" />}
 
-      {/* ââ BMS-style main tab bar ââââââââââââââââââââââââââââââââââââââââââââââ */}
+      {/* ══ BMS-style main tab bar ══════════════════════════════════════════════ */}
       {!embedded && <div style={{
         display:'flex', gap:2, padding:'0 14px', flexShrink:0,
         borderBottom:'1px solid rgba(77,159,255,0.15)', background:'rgba(4,9,18,0.85)',
@@ -1366,7 +1366,7 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
         })}
       </div>}
 
-      {/* ââ Analytics sub-tab bar (only when Analytics main tab active) ââââââââ */}
+      {/* ── Analytics sub-tab bar (only when Analytics main tab active) ──────── */}
       {tab === 'analytics' && (
         <div style={{
           display:'flex', gap:4, padding:'6px 14px 0', flexShrink:0,
@@ -1390,7 +1390,7 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
         </div>
       )}
 
-      {/* ââ Condition Map tab â full-height flex row with right-pane MapDetailPane ââ */}
+      {/* ══ Condition Map tab — full-height flex row with right-pane MapDetailPane ══ */}
       {tab === 'conditionmap' && (
         <div style={{ flex:1, display:'flex', overflow:'hidden', minHeight:0 }}>
           <div style={{ flex:1, minWidth:0, position:'relative' }}>
@@ -1414,25 +1414,25 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
         </div>
       )}
 
-      {/* ââ All other tabs â scrollable ââ */}
+      {/* ══ All other tabs — scrollable ══ */}
       {tab !== 'conditionmap' && (
       <div style={{ flex:1, minHeight:0, overflowY:'auto' }}>
       <div className="p-5 space-y-5 animate-fade-in">
 
-      {/* ââ Network Coverage banner âââââââââââââââââââââââââââââââââââââââ */}
+      {/* ── Network Coverage banner ─────────────────────────────────────── */}
       <div style={{
         padding: '5px 12px', borderRadius: 8, marginBottom: 8,
         background: 'rgba(99,102,241,0.06)', border: '1px solid rgba(99,102,241,0.18)',
         fontSize: 10, color: '#94a3b8',
       }}>
         <span style={{ fontWeight: 800, color: '#a5b4fc', fontSize: 9, letterSpacing: '0.06em', textTransform: 'uppercase', marginRight: 8 }}>NDPIV FY25-26</span>
-        <b style={{ color: '#fff' }}>21,302 km</b> Â· <b style={{ color: '#22c55e' }}>6,405 paved (30.1%)</b> Â· <b style={{ color: '#f59e0b' }}>14,897 unpaved</b> Â· GeoJSON <b style={{ color: '#fff' }}>21,160 km / 1,017 links</b> Â· <b style={{ color: '#fb923c' }}>142 km gap</b>
+        <b style={{ color: '#fff' }}>21,302 km</b> · <b style={{ color: '#22c55e' }}>6,405 paved (30.1%)</b> · <b style={{ color: '#f59e0b' }}>14,897 unpaved</b> · GeoJSON <b style={{ color: '#fff' }}>21,160 km / 1,017 links</b> · <b style={{ color: '#fb923c' }}>142 km gap</b>
       </div>
 
-      {/* ââââââââââ DASHBOARD (Overview) ââââââââââ */}
+      {/* ══════════ DASHBOARD (Overview) ══════════ */}
       {tab === 'overview' && (
         <>
-          {/* ââ Model KPI strip âââââââââââââââââââââââââââââââââââââââââââââââ */}
+          {/* ── Model KPI strip ─────────────────────────────────────────────── */}
           {d && (() => {
             function rgb(h: string) {
               const c = h.replace('#','');
@@ -1440,9 +1440,9 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
             }
             const kpis = [
               { label: 'Model',           value: 'HDM-4 + MLP',                                                  unit: 'ensemble',  color: '#6366f1' },
-              { label: 'Model Accuracy',  value: `RÂ²=${d.r_squared.toFixed(4)}`,                                 unit: 'goodness of fit', color: '#00ff88' },
+              { label: 'Model Accuracy',  value: `R²=${d.r_squared.toFixed(4)}`,                                 unit: 'goodness of fit', color: '#00ff88' },
               { label: 'Links Projected', value: d.links_projected.toLocaleString(),                               unit: 'road links', color: '#00f5ff' },
-              { label: 'Budget 24â30',    value: `$${(d.total_maintenance_budget_2024_2030_usd/1e9).toFixed(2)}B`, unit: 'USD total',  color: '#ffd23f' },
+              { label: 'Budget 24–30',    value: `$${(d.total_maintenance_budget_2024_2030_usd/1e9).toFixed(2)}B`, unit: 'USD total',  color: '#ffd23f' },
               { label: 'Interventions',   value: (d.intervention_schedule?.length ?? 0).toLocaleString(),         unit: 'triggers',   color: '#ff6b35' },
             ];
             return (
@@ -1459,8 +1459,8 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
             );
           })()}
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: -4 }}>
-            <SourceTableButton anchor="tbl-006" label="ð Condition table" />
-            <SourceTableButton anchor="tbl-007" label="ð IRI table" />
+            <SourceTableButton anchor="tbl-006" label="📋 Condition table" />
+            <SourceTableButton anchor="tbl-007" label="📋 IRI table" />
           </div>
           {d && <CondKPIs c24={d.network_condition_2024} c30={d.network_condition_2030} linksProjected={d.links_projected}/>}
 
@@ -1469,14 +1469,14 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
                className="rounded-xl border border-slate-700/30 p-4">
             <div className="text-sm font-bold text-white mb-4 flex items-center gap-2">
               <CheckCircle2 size={16} className="text-green-400"/>
-              Official Survey â Condition Overview (FY 2023/24)
+              Official Survey — Condition Overview (FY 2023/24)
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {[
-                { label:'Paved â Excellent/Good', pct: a?.pavedFairToGoodPct ?? 94.2,         color:'#00ff88' },
-                { label:'Paved â Poor/Bad',       pct: 100-(a?.pavedFairToGoodPct ?? 94.2),   color:'#ff2d78' },
-                { label:'Unpaved â Fair/Good',    pct: a?.unpavedFairToGoodPct ?? 62,          color:'#ffd23f' },
-                { label:'Unpaved â Poor',         pct: 100-(a?.unpavedFairToGoodPct ?? 62),    color:'#ff6b35' },
+                { label:'Paved — Excellent/Good', pct: a?.pavedFairToGoodPct ?? 94.2,         color:'#00ff88' },
+                { label:'Paved — Poor/Bad',       pct: 100-(a?.pavedFairToGoodPct ?? 94.2),   color:'#ff2d78' },
+                { label:'Unpaved — Fair/Good',    pct: a?.unpavedFairToGoodPct ?? 62,          color:'#ffd23f' },
+                { label:'Unpaved — Poor',         pct: 100-(a?.unpavedFairToGoodPct ?? 62),    color:'#ff6b35' },
               ].map(c => (
                 <div key={c.label}
                      className="rounded-xl p-4 border border-slate-700/30"
@@ -1503,7 +1503,7 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
           <div style={{ background: BG_CARD, backdropFilter: 'blur(20px)' }}
                className="rounded-xl border border-slate-700/30 p-4">
             <div className="text-sm font-bold text-white mb-1">
-              Paved Road Stock Growth (NDP II &amp; III)
+              Paved Road Stock Growth (NDP II & III)
             </div>
             <div className="text-[10px] text-slate-500 mb-4">
               Annual additions to the paved national road network
@@ -1537,7 +1537,7 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
                     <div className="text-sm font-black text-white">{tot.toFixed(0)} km</div>
                     <div className="text-[9px] text-slate-400">{ndp} additions</div>
                     <div className="text-[9px] text-slate-500">
-                      {items[0]?.year} â {items[items.length-1]?.year}
+                      {items[0]?.year} – {items[items.length-1]?.year}
                     </div>
                   </div>
                 );
@@ -1583,9 +1583,9 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
                   { label:'Paved Share',    col:'#00f5ff',
                     val: a ? `${a.percentPaved.toFixed(1)}%` : '30.1%' },
                   { label:'Links Modelled', col: ACCENT,
-                    val: d ? d.links_projected.toLocaleString() : 'â' },
-                  { label:'Budget 24â30',   col:'#ffd23f',
-                    val: d ? `$${(d.total_maintenance_budget_2024_2030_usd/1e9).toFixed(2)}B` : 'â' },
+                    val: d ? d.links_projected.toLocaleString() : '—' },
+                  { label:'Budget 24–30',   col:'#ffd23f',
+                    val: d ? `$${(d.total_maintenance_budget_2024_2030_usd/1e9).toFixed(2)}B` : '—' },
                 ].map(row => (
                   <div key={row.label}
                        className="flex justify-between items-center border-b border-slate-700/30 pb-2">
@@ -1597,7 +1597,7 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
             </div>
           </div>
 
-          {/* Image defect analysis â charts only, no image grid */}
+          {/* Image defect analysis — charts only, no image grid */}
           {defectSummary && (
             <div className="space-y-4">
               <div className="flex items-center gap-3">
@@ -1607,7 +1607,7 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
                 <div>
                   <h2 className="text-sm font-bold text-white">Image Defect Analysis</h2>
                   <p className="text-[10px] text-slate-400">
-                    {defectSummary.images_processed.toLocaleString()} images Â· {defectSummary.model}
+                    {defectSummary.images_processed.toLocaleString()} images · {defectSummary.model}
                   </p>
                 </div>
               </div>
@@ -1671,14 +1671,14 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
               <div className="text-[10px] text-slate-400 leading-relaxed">
                 <strong className="text-slate-300">Data sources:</strong> Condition survey FY 2023/24
                 (OPM NAPR). Network inventory July 2025 (MoWT). HDM-4 calibrated Dec 2023 for Uganda.
-                MLP RÂ²={d ? d.r_squared.toFixed(4) : 'â¦'}.
+                MLP R²={d ? d.r_squared.toFixed(4) : '…'}.
               </div>
             </div>
           </div>
         </>
       )}
 
-      {/* ââââââââââ INVENTORY & SURVEYS TAB ââââââââââ */}
+      {/* ══════════ INVENTORY & SURVEYS TAB ══════════ */}
       {tab === 'inventory' && (
         <div style={{ background: BG_CARD, backdropFilter: 'blur(20px)' }}
              className="rounded-xl border border-slate-700/30 p-4">
@@ -1686,11 +1686,11 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
             <div>
               <div style={{ fontSize: 14, fontWeight: 800, color: '#e2eaf4' }}>Condition Survey Inventory</div>
               <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.55)' }}>
-                All {allSurveyed.length.toLocaleString()} network links (FY25-26) Â· 2024 survey now-cast with the deterioration model Â· search / sort / filter
+                All {allSurveyed.length.toLocaleString()} network links (FY25-26) · 2024 survey now-cast with the deterioration model · search / sort / filter
               </div>
               <div style={{ fontSize: 9.5, fontWeight: 700, color: '#00ff88', marginTop: 2 }}>
                 <span className="animate-pulse" style={{ display:'inline-block', width:6, height:6, borderRadius:'50%', background:'#00ff88', marginRight:5 }} />
-                LIVE â values as of {new Date().toLocaleString('en-GB')} (reporting instant {nowT.toFixed(7)})
+                LIVE — values as of {new Date().toLocaleString('en-GB')} (reporting instant {nowT.toFixed(7)})
               </div>
             </div>
           </div>
@@ -1698,7 +1698,7 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
           {/* Filter row */}
           <div style={{ display: 'flex', gap: 10, marginBottom: 12, flexWrap: 'wrap', alignItems: 'center' }}>
             <input value={invSearch} onChange={e => setInvSearch(e.target.value)}
-              placeholder="Search link_id, road name, regionâ¦"
+              placeholder="Search link_id, road name, region…"
               style={{
                 flex: 1, minWidth: 220, fontSize: 11, padding: '6px 10px',
                 background: 'rgba(15,23,42,0.7)', border: '1px solid rgba(148,163,184,0.18)',
@@ -1754,7 +1754,7 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
             </span>
           </div>
 
-          {/* Table â ALL rows, scroll container (no truncation) */}
+          {/* Table — ALL rows, scroll container (no truncation) */}
           <div className="mowt-table-wrap" style={{ maxHeight: 540, overflowY: 'auto', overflowX: 'auto',
             borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)' }}>
             <table style={{ width: '100%', fontSize: 10, borderCollapse: 'collapse', minWidth: 1100 }}>
@@ -1776,19 +1776,19 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
                   return (
                     <tr key={t.link_id ?? i} style={{ background: bg, borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
                       <td style={{ padding: '5px 10px', color: '#00f5ff', fontFamily: 'monospace', fontSize: 9 }}>{t.link_id}</td>
-                      <td style={{ padding: '5px 10px', color: '#e2eaf4', maxWidth: 240, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.road_name ?? 'â'}</td>
-                      <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{t.length_km != null ? Number(t.length_km).toFixed(1) : 'â'}</td>
+                      <td style={{ padding: '5px 10px', color: '#e2eaf4', maxWidth: 240, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.road_name ?? '—'}</td>
+                      <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{t.length_km != null ? Number(t.length_km).toFixed(1) : '—'}</td>
                       <td style={{ padding: '5px 10px', color: t.road_class === 'A' ? '#00f5ff' : t.road_class === 'B' ? '#00ff88' : t.road_class === 'M' ? '#b967ff' : '#ffd23f', fontWeight: 700 }}>{t.road_class ?? '?'}</td>
-                      <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{t.region ?? 'â'}</td>
-                      <td style={{ padding: '5px 10px', color: c, fontWeight: 700 }}>{iri != null ? iri.toFixed(2) : 'â'}</td>
-                      <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{rut != null ? `${Number(rut).toFixed(1)} mm` : 'â'}</td>
-                      <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{crack != null ? `${Number(crack).toFixed(0)}%` : 'â'}</td>
+                      <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{t.region ?? '—'}</td>
+                      <td style={{ padding: '5px 10px', color: c, fontWeight: 700 }}>{iri != null ? iri.toFixed(2) : '—'}</td>
+                      <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{rut != null ? `${Number(rut).toFixed(1)} mm` : '—'}</td>
+                      <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{crack != null ? `${Number(crack).toFixed(0)}%` : '—'}</td>
                       <td style={{ padding: '5px 10px', color: c, fontWeight: 700 }}>
-                        {t.vci != null ? vciRating(Number(t.vci)) : (iri != null ? (band === 'good' ? 'Good' : band === 'fair' ? 'Fair' : band === 'poor' ? 'Poor' : 'Very Poor') : 'â')}
+                        {t.vci != null ? vciRating(Number(t.vci)) : (iri != null ? (band === 'good' ? 'Good' : band === 'fair' ? 'Fair' : band === 'poor' ? 'Poor' : 'Very Poor') : '—')}
                       </td>
-                      <td style={{ padding: '5px 10px', color: URGENCY_COLOR[t.urgency ?? 'planned'] ?? '#94a3b8', fontWeight: 600 }}>{t.urgency ?? 'â'}</td>
-                      <td style={{ padding: '5px 10px', color: 'rgba(148,163,184,0.7)', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.treatment ?? 'â'}</td>
-                      <td style={{ padding: '5px 10px', color: 'rgba(148,163,184,0.5)' }}>{t.year ?? 'â'}</td>
+                      <td style={{ padding: '5px 10px', color: URGENCY_COLOR[t.urgency ?? 'planned'] ?? '#94a3b8', fontWeight: 600 }}>{t.urgency ?? '—'}</td>
+                      <td style={{ padding: '5px 10px', color: 'rgba(148,163,184,0.7)', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.treatment ?? '—'}</td>
+                      <td style={{ padding: '5px 10px', color: 'rgba(148,163,184,0.5)' }}>{t.year ?? '—'}</td>
                     </tr>
                   );
                 })}
@@ -1799,17 +1799,17 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
             </table>
           </div>
           <div style={{ marginTop: 8, fontSize: 9, color: 'rgba(148,163,184,0.4)' }}>
-            All network links shown â scroll within the table. IRI, rutting, cracking and VCI are the measured 2024 condition-survey values <b>now-cast to the current reporting instant</b> with the calibrated deterioration model (IRI +{(IRI_GROWTH.paved*100).toFixed(0)}%/yr paved Â· +{(IRI_GROWTH.unpaved*100).toFixed(0)}%/yr unpaved, VCI decay applied); treatment and urgency come from the ML intervention schedule where the link is in the priority programme.
+            All network links shown — scroll within the table. IRI, rutting, cracking and VCI are the measured 2024 condition-survey values <b>now-cast to the current reporting instant</b> with the calibrated deterioration model (IRI +{(IRI_GROWTH.paved*100).toFixed(0)}%/yr paved · +{(IRI_GROWTH.unpaved*100).toFixed(0)}%/yr unpaved, VCI decay applied); treatment and urgency come from the ML intervention schedule where the link is in the priority programme.
           </div>
         </div>
       )}
 
-      {/* ââââââââââ DETERIORATION CURVES ââââââââââ */}
+      {/* ══════════ DETERIORATION CURVES ══════════ */}
       {tab === 'analytics' && analyticsSubTab === 'deterioration' && (
         d ? (
           <>
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <SourceTableButton anchor="tbl-038" label="ð Distress / Deterioration table" />
+              <SourceTableButton anchor="tbl-038" label="📋 Distress / Deterioration table" />
             </div>
             <DetCurves
               curves={d.class_deterioration_curves}
@@ -1817,7 +1817,7 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
             <div style={{ background: BG_CARD, backdropFilter: 'blur(20px)' }}
                  className="rounded-xl border border-slate-700/30 p-4">
               <div className="text-sm font-bold text-white mb-4">
-                Network Condition Shift 2024 â 2030
+                Network Condition Shift 2024 → 2030
               </div>
               <div className="grid grid-cols-2 gap-6">
                 {(['2024','2030'] as const).map(yr => {
@@ -1856,22 +1856,22 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
         ) : (
           <div style={{ background: BG_CARD }}
                className="rounded-xl p-8 text-center text-slate-500 border border-slate-700/30">
-            Loading deterioration dataâ¦
+            Loading deterioration data…
           </div>
         )
       )}
 
-      {/* ââââââââââ INTERVENTIONS (priority table, no map) ââââââââââ */}
+      {/* ══════════ INTERVENTIONS (priority table, no map) ══════════ */}
       {tab === 'analytics' && analyticsSubTab === 'interventions' && (
         d
           ? <PriorityTable triggers={d.intervention_schedule}/>
           : <div style={{ background: BG_CARD }}
                  className="rounded-xl p-8 text-center text-slate-500 border border-slate-700/30">
-              Loading intervention scheduleâ¦
+              Loading intervention schedule…
             </div>
       )}
 
-      {/* ââââââââââ BUDGET ââââââââââ */}
+      {/* ══════════ BUDGET ══════════ */}
       {tab === 'analytics' && analyticsSubTab === 'budget' && (
         d ? (
           <>
@@ -1901,12 +1901,12 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
         ) : (
           <div style={{ background: BG_CARD }}
                className="rounded-xl p-8 text-center text-slate-500 border border-slate-700/30">
-            Loading budget dataâ¦
+            Loading budget data…
           </div>
         )
       )}
 
-      {/* ââââââââââ FWD & STRUCTURAL ââââââââââ */}
+      {/* ══════════ FWD & STRUCTURAL ══════════ */}
       {tab === 'age' && (
         <PavementAgePanel />
       )}
@@ -1923,9 +1923,9 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
   );
 }
 
-// âââ FWD Deflection Analysis Panel âââââââââââââââââââââââââââââââââââââââââââ
+// ─── FWD Deflection Analysis Panel ───────────────────────────────────────────
 
-// âââ Measured FWD surveys (G: repository â FWD/) âââââââââââââââââââââââââââââ
+// ─── Measured FWD surveys (G: repository — FWD/) ─────────────────────────────
 interface FwdPoint { ch: number; d0: number; load?: number }
 interface FwdSurvey { road: string; source: string; sheet: string; n: number;
   d0_mean: number; d0_max: number; ch_from: number; ch_to: number; points: FwdPoint[] }
@@ -1944,16 +1944,16 @@ function FWDRealSurveys() {
     <div style={{ background: 'rgba(15,23,42,0.55)', borderRadius: 12,
       border: '1px solid rgba(0,245,255,0.15)', padding: '14px 16px' }}>
       <div style={{ fontWeight: 800, color: '#e2eaf4', fontSize: 13, marginBottom: 2 }}>
-        Measured FWD Deflection Surveys â G: repository (FWD/)
+        Measured FWD Deflection Surveys — G: repository (FWD/)
       </div>
       <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.6)', marginBottom: 10 }}>
-        {data.surveys.length} survey runs Â· {data.total_points.toLocaleString()} averaged deflection bowls Â·
-        Dynatest FWD Â· centre deflection Dâ (Î¼m); classification: â¤400 sound Â· 400â600 monitor Â· 600â800 weak Â· &gt;800 failed
+        {data.surveys.length} survey runs · {data.total_points.toLocaleString()} averaged deflection bowls ·
+        Dynatest FWD · centre deflection D₀ (μm); classification: ≤400 sound · 400–600 monitor · 600–800 weak · &gt;800 failed
       </div>
       <div style={{ overflowX: 'auto', borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)' }}>
         <table style={{ width: '100%', fontSize: 10.5, borderCollapse: 'collapse', minWidth: 760 }}>
           <thead><tr style={{ borderBottom: '1px solid rgba(148,163,184,0.15)' }}>
-            {['Road / Corridor', 'Lane / Sheet', 'Bowls', 'Chainage (km)', 'Mean Dâ (Î¼m)', 'Max Dâ (Î¼m)', 'Assessment', 'Source file'].map(h => (
+            {['Road / Corridor', 'Lane / Sheet', 'Bowls', 'Chainage (km)', 'Mean D₀ (μm)', 'Max D₀ (μm)', 'Assessment', 'Source file'].map(h => (
               <th key={h} style={{ textAlign: 'left', padding: '7px 10px', color: '#94a3b8', fontWeight: 700, fontSize: 9, whiteSpace: 'nowrap' }}>{h}</th>
             ))}
           </tr></thead>
@@ -1965,7 +1965,7 @@ function FWDRealSurveys() {
                   <td style={{ padding: '5px 10px', color: '#e2eaf4', fontWeight: 700 }}>{sv.road}</td>
                   <td style={{ padding: '5px 10px', color: '#00f5ff', fontFamily: 'monospace', fontSize: 9.5 }}>{sv.sheet}</td>
                   <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{sv.n.toLocaleString()}</td>
-                  <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{sv.ch_from.toFixed(1)} â {sv.ch_to.toFixed(1)}</td>
+                  <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{sv.ch_from.toFixed(1)} – {sv.ch_to.toFixed(1)}</td>
                   <td style={{ padding: '5px 10px', color: mColor, fontWeight: 800 }}>{sv.d0_mean.toFixed(0)}</td>
                   <td style={{ padding: '5px 10px', color: cls(sv.d0_max)[1], fontWeight: 700 }}>{sv.d0_max.toFixed(0)}</td>
                   <td style={{ padding: '5px 10px' }}>
@@ -1988,14 +1988,14 @@ function FWDPanel() {
   const ACCENT2 = '#f97316';
 
   const FWD_LINKS = [
-    { link_id:'A001_Link01', road_name:'KampalaâJinja', region:'Central',  class:'A', length_km:83,  snr:3.2, max_d0:380, avg_d0:210, sn_back:4.8, e_mod_mpa:2400, sbn_critical:0.18, rci:'Good',    survey:'Dec 2023' },
-    { link_id:'A001_Link02', road_name:'KampalaâJinja', region:'Central',  class:'A', length_km:71,  snr:2.8, max_d0:490, avg_d0:290, sn_back:3.9, e_mod_mpa:1860, sbn_critical:0.29, rci:'Fair',    survey:'Dec 2023' },
-    { link_id:'A002_Link01', road_name:'MbararaâKabale', region:'Western', class:'A', length_km:120, snr:1.9, max_d0:720, avg_d0:420, sn_back:2.8, e_mod_mpa:1100, sbn_critical:0.54, rci:'Poor',    survey:'Feb 2024' },
-    { link_id:'A104_Link01', road_name:'GuluâKampala',  region:'Northern', class:'A', length_km:360, snr:3.1, max_d0:410, avg_d0:230, sn_back:4.5, e_mod_mpa:2150, sbn_critical:0.22, rci:'Good',    survey:'Jan 2024' },
-    { link_id:'B001_Link01', road_name:'TororoâMbale',  region:'Eastern',  class:'B', length_km:55,  snr:1.4, max_d0:890, avg_d0:560, sn_back:1.9, e_mod_mpa: 680, sbn_critical:0.78, rci:'V.Poor', survey:'Mar 2024' },
-    { link_id:'B104_Link01', road_name:'HoimaâMasindi', region:'Western',  class:'B', length_km:68,  snr:2.2, max_d0:630, avg_d0:360, sn_back:3.2, e_mod_mpa:1340, sbn_critical:0.41, rci:'Poor',   survey:'Nov 2023' },
+    { link_id:'A001_Link01', road_name:'Kampala–Jinja', region:'Central',  class:'A', length_km:83,  snr:3.2, max_d0:380, avg_d0:210, sn_back:4.8, e_mod_mpa:2400, sbn_critical:0.18, rci:'Good',    survey:'Dec 2023' },
+    { link_id:'A001_Link02', road_name:'Kampala–Jinja', region:'Central',  class:'A', length_km:71,  snr:2.8, max_d0:490, avg_d0:290, sn_back:3.9, e_mod_mpa:1860, sbn_critical:0.29, rci:'Fair',    survey:'Dec 2023' },
+    { link_id:'A002_Link01', road_name:'Mbarara–Kabale', region:'Western', class:'A', length_km:120, snr:1.9, max_d0:720, avg_d0:420, sn_back:2.8, e_mod_mpa:1100, sbn_critical:0.54, rci:'Poor',    survey:'Feb 2024' },
+    { link_id:'A104_Link01', road_name:'Gulu–Kampala',  region:'Northern', class:'A', length_km:360, snr:3.1, max_d0:410, avg_d0:230, sn_back:4.5, e_mod_mpa:2150, sbn_critical:0.22, rci:'Good',    survey:'Jan 2024' },
+    { link_id:'B001_Link01', road_name:'Tororo–Mbale',  region:'Eastern',  class:'B', length_km:55,  snr:1.4, max_d0:890, avg_d0:560, sn_back:1.9, e_mod_mpa: 680, sbn_critical:0.78, rci:'V.Poor', survey:'Mar 2024' },
+    { link_id:'B104_Link01', road_name:'Hoima–Masindi', region:'Western',  class:'B', length_km:68,  snr:2.2, max_d0:630, avg_d0:360, sn_back:3.2, e_mod_mpa:1340, sbn_critical:0.41, rci:'Poor',   survey:'Nov 2023' },
     { link_id:'A109_Link01', road_name:'Kampala N Bypass', region:'Central', class:'A', length_km:17, snr:4.1, max_d0:190, avg_d0:110, sn_back:6.2, e_mod_mpa:3800, sbn_critical:0.08, rci:'Good', survey:'Oct 2023' },
-    { link_id:'B064_Link01', road_name:'MubendeâMityana', region:'Central', class:'B', length_km:74, snr:2.5, max_d0:550, avg_d0:310, sn_back:3.6, e_mod_mpa:1580, sbn_critical:0.33, rci:'Fair', survey:'Jan 2024' },
+    { link_id:'B064_Link01', road_name:'Mubende–Mityana', region:'Central', class:'B', length_km:74, snr:2.5, max_d0:550, avg_d0:310, sn_back:3.6, e_mod_mpa:1580, sbn_critical:0.33, rci:'Fair', survey:'Jan 2024' },
   ];
 
   const rciColor = (r: string) => r === 'Good' ? '#22c55e' : r === 'Fair' ? '#eab308' : r === 'Poor' ? '#f97316' : '#ef4444';
@@ -2010,11 +2010,11 @@ function FWDPanel() {
         fontSize:10, color:'rgba(148,163,184,0.8)',
       }}>
         <div style={{ fontWeight:800, color:ACCENT2, marginBottom:3, fontSize:9.5, textTransform:'uppercase', letterSpacing:'0.06em' }}>
-          Falling Weight Deflectometer (FWD) â Structural Assessment
+          Falling Weight Deflectometer (FWD) — Structural Assessment
         </div>
-        <div>Structural evaluation using Benkelman Beam / FWD deflection testing Â· Uganda national roads 2023/24 survey cycle</div>
+        <div>Structural evaluation using Benkelman Beam / FWD deflection testing · Uganda national roads 2023/24 survey cycle</div>
         <div style={{ marginTop:2 }}>
-          <strong style={{ color:'#fff' }}>8 links tested</strong> Â· Structural Number (SN), Max Deflection (Dâ), Back-calculated E-modulus, Remaining Capacity Index (RCI)
+          <strong style={{ color:'#fff' }}>8 links tested</strong> · Structural Number (SN), Max Deflection (D₀), Back-calculated E-modulus, Remaining Capacity Index (RCI)
         </div>
       </div>
 
@@ -2043,13 +2043,13 @@ function FWDPanel() {
       {/* FWD results table */}
       <div style={{ background:BG, backdropFilter:'blur(20px)', borderRadius:12, border:'1px solid rgba(255,255,255,0.07)', padding:'14px 16px' }}>
         <div style={{ fontWeight:800, color:'#e2eaf4', fontSize:13, marginBottom:12 }}>
-          Link-level Structural Summary â indicative (back-analysis pending for measured surveys)
+          Link-level Structural Summary — indicative (back-analysis pending for measured surveys)
         </div>
         <div style={{ overflowX:'auto', borderRadius:8, border:'1px solid rgba(255,255,255,0.06)' }}>
           <table style={{ width:'100%', fontSize:10, borderCollapse:'collapse', minWidth:900 }}>
             <thead style={{ position:'sticky', top:0, background:'rgba(15,23,42,0.95)', zIndex:2 }}>
               <tr style={{ borderBottom:'1px solid rgba(148,163,184,0.15)' }}>
-                {['Link ID','Road Name','Class','Region','Length km','Struct. No. (SN)','Max Dâ (Î¼m)','Avg Dâ (Î¼m)','SN Back-calc','E-mod (MPa)','Crit. Idx','RCI','Survey'].map(h => (
+                {['Link ID','Road Name','Class','Region','Length km','Struct. No. (SN)','Max D₀ (μm)','Avg D₀ (μm)','SN Back-calc','E-mod (MPa)','Crit. Idx','RCI','Survey'].map(h => (
                   <th key={h} style={{ textAlign:'left', padding:'7px 10px', color:'#94a3b8', fontWeight:700, whiteSpace:'nowrap', fontSize:9 }}>{h}</th>
                 ))}
               </tr>
@@ -2085,20 +2085,20 @@ function FWDPanel() {
         <div style={{ marginTop:10, fontSize:9, color:'rgba(148,163,184,0.45)', lineHeight:1.6 }}>
           <strong style={{ color:'rgba(148,163,184,0.7)' }}>Methodology:</strong>{' '}
           Structural Number (SN) calculated from back-analysis using ELMOD 6 software. Deflection testing at 50 m intervals with 40 kN load.
-          Critical index = (SN_required â SN_existing) / SN_required â values &gt;0.5 indicate structural deficiency requiring investigation.
-          E-modulus back-calculated for surface layer. FWD equipment: Dynatest 8002 Â· Survey contractor: UNRA / consultants 2023-2024.
+          Critical index = (SN_required − SN_existing) / SN_required — values &gt;0.5 indicate structural deficiency requiring investigation.
+          E-modulus back-calculated for surface layer. FWD equipment: Dynatest 8002 · Survey contractor: UNRA / consultants 2023-2024.
         </div>
       </div>
 
       {/* Interpretation guide */}
       <div style={{ background:BG, backdropFilter:'blur(20px)', borderRadius:12, border:'1px solid rgba(255,255,255,0.07)', padding:'14px 16px' }}>
-        <div style={{ fontWeight:800, color:'#e2eaf4', fontSize:12, marginBottom:10 }}>Structural Assessment â Interpretation Guide</div>
+        <div style={{ fontWeight:800, color:'#e2eaf4', fontSize:12, marginBottom:10 }}>Structural Assessment — Interpretation Guide</div>
         <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:10 }}>
           {[
-            { label:'SN â¥ 4.0 Â· E-mod > 2,000 MPa', tag:'Structurally Adequate', color:'#22c55e', desc:'No structural intervention required. Monitor with routine IRI surveys.' },
-            { label:'SN 2.5â4.0 Â· E-mod 1,000â2,000 MPa', tag:'Monitor', color:'#eab308', desc:'Approaching structural threshold. Schedule overlay or preventive treatment within 3 years.' },
-            { label:'SN 1.5â2.5 Â· E-mod 500â1,000 MPa', tag:'Rehabilitation Required', color:'#f97316', desc:'Structural deficiency confirmed. Full-depth reclamation or major overlay required.' },
-            { label:'SN < 1.5 Â· Dâ > 800 Î¼m', tag:'Urgent Reconstruction', color:'#ef4444', desc:'Pavement structure failed. Emergency reconstruction investigation. Remove from traffic load.' },
+            { label:'SN ≥ 4.0 · E-mod > 2,000 MPa', tag:'Structurally Adequate', color:'#22c55e', desc:'No structural intervention required. Monitor with routine IRI surveys.' },
+            { label:'SN 2.5–4.0 · E-mod 1,000–2,000 MPa', tag:'Monitor', color:'#eab308', desc:'Approaching structural threshold. Schedule overlay or preventive treatment within 3 years.' },
+            { label:'SN 1.5–2.5 · E-mod 500–1,000 MPa', tag:'Rehabilitation Required', color:'#f97316', desc:'Structural deficiency confirmed. Full-depth reclamation or major overlay required.' },
+            { label:'SN < 1.5 · D₀ > 800 μm', tag:'Urgent Reconstruction', color:'#ef4444', desc:'Pavement structure failed. Emergency reconstruction investigation. Remove from traffic load.' },
           ].map(row => (
             <div key={row.tag} style={{ background:`${row.color}11`, border:`1px solid ${row.color}33`, borderRadius:8, padding:'10px 12px' }}>
               <div style={{ fontSize:10, fontFamily:'monospace', color:'rgba(148,163,184,0.6)', marginBottom:4 }}>{row.label}</div>
