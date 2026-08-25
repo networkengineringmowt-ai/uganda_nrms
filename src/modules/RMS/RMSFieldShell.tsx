@@ -10,7 +10,7 @@ const PendingSubmissions = lazy(() =>
 type Tab = 'capture' | 'queue';
 
 /**
- * RMS level interface — field data entry ONLY, mobile-first.
+ * RMS level interface - field data entry ONLY, mobile-first.
  * No dashboards, no sidebar: a top app bar, the capture forms, and a
  * thumb-reachable bottom tab bar. On desktop it centres at phone width+.
  */
@@ -48,7 +48,7 @@ export default function RMSFieldShell() {
         </button>
       </div>
 
-      {/* Content — centred column, comfortable on phones and desktop alike */}
+      {/* Content - centred column, comfortable on phones and desktop alike */}
       <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
         <div style={{ maxWidth: 760, margin: '0 auto', width: '100%' }}>
           <Suspense fallback={
@@ -62,7 +62,7 @@ export default function RMSFieldShell() {
         </div>
       </div>
 
-      {/* Bottom tab bar — large touch targets */}
+      {/* Bottom tab bar - large touch targets */}
       <div style={{
         display: 'flex', flexShrink: 0,
         background: 'rgba(8,14,28,0.96)', borderTop: '1px solid rgba(0,245,255,0.12)',

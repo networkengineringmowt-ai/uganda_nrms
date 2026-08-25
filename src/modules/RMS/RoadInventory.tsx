@@ -1,5 +1,5 @@
 /**
- * RoadInventory — RMS → Road Inventory: the 8-way inventory split, grounded in
+ * RoadInventory - RMS → Road Inventory: the 8-way inventory split, grounded in
  * UNRA's official taxonomy (Visual Inspections manual, Feb 2012).
  * Compact layout: sub-tab ribbon (same style as BMS sub-tabs), collapsible
  * manual-reference strip, table fills the view.
@@ -75,15 +75,15 @@ export default function RoadInventory() {
     { key: 'link_name',  label: 'Link Name' },
     { key: 'road_class', label: 'Class',    comment: 'Road class A / B / C / M.' },
     { key: 'surface_type', label: 'Pavement Type',
-      comment: 'Official inventory item "Pavement Type" — carriageway paved/unpaved + wearing course.' },
+      comment: 'Official inventory item "Pavement Type" - carriageway paved/unpaved + wearing course.' },
     { key: 'length_km',  label: 'Length (km)', numeric: true, total: 'sum',
-      comment: 'Official inventory item "Dimensions" — section length. SUM = network total.' },
+      comment: 'Official inventory item "Dimensions" - section length. SUM = network total.' },
     { key: 'maintenance_region',  label: 'Region' },
     { key: 'maintenance_station', label: 'Station',
       comment: 'Maintenance station responsible (manual: Inventory Items → Station).' },
   ], []);
 
-  // measured 2022-23 field inventory, filtered to the ACTIVE category —
+  // measured 2022-23 field inventory, filtered to the ACTIVE category -
   // one numeric column PER feature subtype with the actual count per link.
   type InvRow = Record<string, string | number | null>;
   const keywords = CATEGORY_FEATURES[cat] ?? [];
@@ -225,7 +225,7 @@ export default function RoadInventory() {
               </div>
               {GRADE_SCALE.map(g => (
                 <div key={g.grade} style={{ fontSize: 9.5, color: 'rgba(196,210,225,0.75)', padding: '1px 0' }}>
-                  <strong style={{ color: '#e2eaf4' }}>{g.grade}</strong> — {g.meaning}
+                  <strong style={{ color: '#e2eaf4' }}>{g.grade}</strong> - {g.meaning}
                 </div>
               ))}
             </div>
@@ -260,7 +260,7 @@ export default function RoadInventory() {
                 </div>
               ))}
               <div style={{ flexBasis: '100%', fontSize: 9, color: 'rgba(148,163,184,0.5)' }}>
-                Measured field inventory — {inv.survey} · source: 6.Road Inventory Data/2022-23 (G: repository)
+                Measured field inventory - {inv.survey} · source: 6.Road Inventory Data/2022-23 (G: repository)
               </div>
             </div>
             <SortableFilterableTable
