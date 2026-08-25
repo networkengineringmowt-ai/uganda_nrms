@@ -1,5 +1,5 @@
 /**
- * IdentityManager — admin-only "active directory" console.
+ * IdentityManager - admin-only "active directory" console.
  * Lists every user (legacy roster auto-accepted + dynamic requests), with the
  * access-approval workflow: approve / reject pending requests, revoke active
  * users, restore revoked ones. Backed by directory.ts (G: Drive via the
@@ -59,7 +59,7 @@ export default function IdentityManager() {
     <div style={{ padding: '14px 16px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, flexWrap: 'wrap' }}>
         <div style={{ flex: 1, minWidth: 240 }}>
-          <div style={{ fontSize: 16, fontWeight: 900, color: '#e2eaf4' }}>Identity Manager — active directory</div>
+          <div style={{ fontSize: 16, fontWeight: 900, color: '#e2eaf4' }}>Identity Manager - active directory</div>
           <div style={{ fontSize: 10.5, color: 'rgba(148,163,184,0.65)' }}>
             Approve new access requests, revoke or restore users. Legacy roster users are auto-accepted.
             Stored in the G: Drive directory (directory/users.json) via the data-entry server.
@@ -107,8 +107,8 @@ export default function IdentityManager() {
                     </td>
                     <td style={TD}>{roleLabel(r.role)}</td>
                     <td style={TD}><span style={{ padding: '2px 9px', borderRadius: 999, fontSize: 9.5, fontWeight: 800, background: `${m.color}1a`, border: `1px solid ${m.color}55`, color: m.color }}>{m.label}</span></td>
-                    <td style={{ ...TD, color: 'rgba(148,163,184,0.6)', fontSize: 11 }}>{r.requestedAt ? r.requestedAt.replace('T', ' ').slice(0, 16) : '—'}</td>
-                    <td style={{ ...TD, color: 'rgba(148,163,184,0.6)', fontSize: 11 }}>{r.decidedBy ?? '—'}</td>
+                    <td style={{ ...TD, color: 'rgba(148,163,184,0.6)', fontSize: 11 }}>{r.requestedAt ? r.requestedAt.replace('T', ' ').slice(0, 16) : '-'}</td>
+                    <td style={{ ...TD, color: 'rgba(148,163,184,0.6)', fontSize: 11 }}>{r.decidedBy ?? '-'}</td>
                     <td style={TD}>
                       <div style={{ display: 'flex', gap: 6 }}>
                         {r.status === 'pending' && (<>

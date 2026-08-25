@@ -1,5 +1,5 @@
 /**
- * ActivityLog — admin-only login summaries + full audit trail.
+ * ActivityLog - admin-only login summaries + full audit trail.
  * Reads logs/audit_YYYY-MM.jsonl from the G: Drive repository via the local
  * data-entry server (GET /api/audit). When the server is unreachable it shows
  * this browser's still-queued events so nothing is invisible.
@@ -29,7 +29,7 @@ const TYPE_META: Record<string, { label: string; color: string }> = {
 };
 const meta = (t?: string) => TYPE_META[t ?? ''] ?? { label: t ?? 'event', color: '#64748b' };
 const when = (e: Ev) => e.at ?? e._logged ?? '';
-const fmtTime = (iso: string) => iso ? iso.replace('T', ' ').slice(0, 19) : '—';
+const fmtTime = (iso: string) => iso ? iso.replace('T', ' ').slice(0, 19) : '-';
 
 export default function ActivityLog() {
   const [months, setMonths] = useState<string[]>([]);
@@ -54,7 +54,7 @@ export default function ActivityLog() {
       setEvents(j.events ?? []);
       setOffline(false);
     } catch {
-      // Server unreachable — surface this browser's queued (undelivered) events.
+      // Server unreachable - surface this browser's queued (undelivered) events.
       try { setEvents((JSON.parse(localStorage.getItem('audit_log_queue') ?? '[]') as Ev[]).slice().reverse()); }
       catch { setEvents([]); }
       setMonths([]); setMonth('');
@@ -135,7 +135,7 @@ export default function ActivityLog() {
       {/* Header row */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, flexWrap: 'wrap' }}>
         <div style={{ flex: 1, minWidth: 220 }}>
-          <div style={{ fontSize: 16, fontWeight: 900, color: '#e2eaf4' }}>Activity Log — track &amp; trace</div>
+          <div style={{ fontSize: 16, fontWeight: 900, color: '#e2eaf4' }}>Activity Log - track &amp; trace</div>
           <div style={{ fontSize: 10.5, color: 'rgba(148,163,184,0.65)' }}>
             Logins, failed attempts, page views and every change · stored in the G: Drive repository (logs/audit_*.jsonl)
           </div>
@@ -166,7 +166,7 @@ export default function ActivityLog() {
           background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 8,
           fontSize: 11.5, color: '#fbbf24' }}>
           <ShieldAlert size={14} />
-          Data-entry server offline — showing only this browser's {events.length} queued event(s).
+          Data-entry server offline - showing only this browser's {events.length} queued event(s).
           Start the server (cd server &amp;&amp; npm run dev) to read the full G: Drive trail.
         </div>
       )}
@@ -188,7 +188,7 @@ export default function ActivityLog() {
       {/* Per-user login summary */}
       <div style={{ ...CARD, padding: 0, marginBottom: 14, overflow: 'hidden' }}>
         <div style={{ padding: '10px 12px 8px', fontSize: 11.5, fontWeight: 800, color: '#e2eaf4' }}>
-          Login data summary — by user{month ? ` · ${month}` : ''}
+          Login data summary - by user{month ? ` · ${month}` : ''}
         </div>
         <div style={{ maxHeight: 240, overflowY: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -256,10 +256,10 @@ export default function ActivityLog() {
                         {m.label.toUpperCase()}
                       </span>
                     </td>
-                    <td style={TD}>{e.user ?? '—'}</td>
+                    <td style={TD}>{e.user ?? '-'}</td>
                     <td style={TD}>{roleLabel(e.role)}</td>
                     <td style={{ ...TD, whiteSpace: 'normal', fontFamily: 'monospace', fontSize: 10, color: 'rgba(148,163,184,0.75)' }}>
-                      {Object.keys(detail).length ? JSON.stringify(detail) : '—'}
+                      {Object.keys(detail).length ? JSON.stringify(detail) : '-'}
                     </td>
                   </tr>
                 );
