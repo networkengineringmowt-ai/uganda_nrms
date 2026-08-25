@@ -7,7 +7,6 @@ import { useBMS } from '../../store/BMSContext';
 import type { BridgeDocument, DocumentCategory } from '../../types';
 import { formatDate } from '../../utils/helpers';
 import { v4 as uuidv4 } from 'uuid';
-import SectionDashboard from '../Dashboard/SectionDashboard';
 import { useVirtualRows } from '../../shared/useVirtualRows';
 import { useSortableColumns, sortRows, SortArrow, type ColumnType } from '../../shared/useSortableColumns';
 
@@ -217,19 +216,11 @@ export default function DocumentStore() {
     }
   }
 
-  const [tab, setTab] = useState<'content' | 'dashboard'>('content');
+  // Note: this component is now embedded as the "Exhaustive Tables" content
+  // for the "documents" section hub (SectionDashboard) - it no longer owns its
+  // own tab bar or a nested dashboard view; that lives in the shared hub.
   return (
     <div className="flex flex-col h-full animate-fade-in">
-      {/* ── Tab nav ── */}
-      <div style={{ display:'flex', gap:6, padding:'8px 14px', borderBottom:'1px solid rgba(100,100,200,0.15)' }}>
-        {(['content','dashboard'] as const).map(t => (
-          <button key={t} onClick={() => setTab(t)} style={{ fontSize:11, fontWeight:700, letterSpacing:1, padding:'4px 14px', border:`1px solid ${t===tab?'#3b82f6':'rgba(100,100,200,0.2)'}`, borderRadius:4, cursor:'pointer', background:t===tab?'#3b82f6':'rgba(100,100,200,0.06)', color:t===tab?'#020202':'rgba(200,200,200,0.7)', textTransform:'uppercase' }}>
-            {t==='content'?'Document Store':'Dashboard'}
-          </button>
-        ))}
-      </div>
-      {tab==='dashboard'&&<SectionDashboard sectionId="documents" accent="#3b82f6"/>}
-      {tab==='content'&&(<>
       {/* Header */}
       <div className="flex-shrink-0 px-6 py-4 border-b border-slate-700/60 bg-slate-900/40">
         <div className="flex items-center justify-between">
@@ -291,7 +282,7 @@ export default function DocumentStore() {
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
             <input
               className="bms-input pl-9 py-1.5 text-xs"
-              placeholder="Search titles, descriptions — and the full text inside manuals/PDFs…"
+              placeholder="Search titles, descriptions - and the full text inside manuals/PDFs…"
               value={query}
               onChange={e => setQuery(e.target.value)}
             />
@@ -303,12 +294,12 @@ export default function DocumentStore() {
         </div>
       </div>
 
-      {/* Document list — fixed-height virtualized scroll container, sticky header */}
+      {/* Document list - fixed-height virtualized scroll container, sticky header */}
       <div className="flex-1 p-4">
         {filtered.length === 0 ? (
           <div style={{ padding: 40, textAlign: 'center', color: '#64748b', fontSize: 12 }}>
             {documents.length === 0
-              ? 'No documents yet — upload a manual or PDF to extract its content for search and reporting.'
+              ? 'No documents yet - upload a manual or PDF to extract its content for search and reporting.'
               : 'No documents match the current search/filter.'}
           </div>
         ) : (
@@ -352,7 +343,6 @@ export default function DocumentStore() {
 
       {/* Reader panel */}
       {reading && <DocReader doc={reading} onClose={() => setReading(null)} />}
-      </>)}
     </div>
   );
 }
@@ -366,7 +356,7 @@ function DocRow({ doc, query, onOpen }: { doc: BridgeDocument; query: string; on
 
   function downloadText() {
     if (!doc.extractedText) return;
-    const blob = new Blob([doc.extractedText.replace(/\f/g, '\n\n— page break —\n\n')], { type: 'text/plain;charset=utf-8' });
+    const blob = new Blob([doc.extractedText.replace(/\f/g, '\n\n- page break -\n\n')], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -406,7 +396,7 @@ function DocRow({ doc, query, onOpen }: { doc: BridgeDocument; query: string; on
         ) : doc.extractionStatus === 'failed' ? (
           <span className="text-red-400">extraction failed</span>
         ) : (
-          <span className="text-slate-500">{doc.fileType} — not extractable</span>
+          <span className="text-slate-500">{doc.fileType} - not extractable</span>
         )}
       </td>
       <td className="px-4 py-3 text-xs text-slate-400">{doc.fileSize}</td>
@@ -443,7 +433,7 @@ function DocReader({ doc, onClose }: { doc: BridgeDocument; onClose: () => void 
   }, [pageText, search]);
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(2,6,15,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }} onClick={onClose}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 3500, background: 'rgba(2,6,15,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }} onClick={onClose}>
       <div
         style={{ width: 'min(900px, 100%)', height: '85vh', background: '#0b1220', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
         onClick={e => e.stopPropagation()}
@@ -522,7 +512,7 @@ function DocUploadForm({
   }
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(2,6,15,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }} onClick={onClose}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 3500, background: 'rgba(2,6,15,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }} onClick={onClose}>
       <div
         style={{ width: 'min(520px, 100%)', background: '#0b1220', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, overflow: 'hidden' }}
         onClick={e => e.stopPropagation()}
@@ -564,7 +554,7 @@ function DocUploadForm({
           >
             <Upload size={22} className="mx-auto mb-2 text-slate-500" />
             <div className="text-xs text-slate-300 font-medium">Drop PDF or text files here, or click to browse</div>
-            <div className="text-[10px] text-slate-500 mt-1">Text is extracted in your browser — nothing is sent to a server. PDF and TXT/MD/CSV are fully searchable; other file types are stored as metadata only.</div>
+            <div className="text-[10px] text-slate-500 mt-1">Text is extracted in your browser - nothing is sent to a server. PDF and TXT/MD/CSV are fully searchable; other file types are stored as metadata only.</div>
             <input
               ref={fileInputRef}
               type="file"
