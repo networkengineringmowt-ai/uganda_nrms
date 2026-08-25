@@ -775,7 +775,7 @@ function AssetsTab({ features }: { features: PredFeature[] }) {
                     {p.region??'-'}
                   </td>
                   <td style={{ padding:'5px 8px', color:'rgba(148,163,184,0.55)', fontFamily:'monospace' }}>
-                    {p.length_km?.toFixed(1)??'-'}
+                    {p.length_km != null ? `${p.length_km.toFixed(1)} km` : '-'}
                   </td>
                   <td style={{ padding:'5px 8px', color:C.cyan, fontFamily:'monospace', fontWeight:700 }}>
                     {(p.aadt_predicted??0).toLocaleString()}
