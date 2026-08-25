@@ -2,7 +2,7 @@
   "name": "uganda-bms",
   "private": true,
   "version": "1.0.0",
-  "description": "Uganda National Bridge & Major Culvert Management System \u2014 UNRA",
+  "description": "Uganda National Bridge & Major Culvert Management System — UNRA",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -24,6 +24,7 @@
     "@supabase/supabase-js": "^2.107.0",
     "exceljs": "^4.4.0",
     "html-to-image": "^1.11.13",
+    "jspdf": "^4.2.1",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.469.0",
     "react": "^18.3.1",
