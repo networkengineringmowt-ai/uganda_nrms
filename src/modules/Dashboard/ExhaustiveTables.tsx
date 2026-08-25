@@ -18,13 +18,27 @@ const FALLBACK_GEOJSON: Record<string, string> = {
   rms: 'road_network.geojson',
   pms: 'road_network.geojson',
 };
+// Fetches every row in `table`, paginating past PostgREST's ~1000-row-per-request
+// cap so no records are silently dropped - this feeds the "Exhaustive Table" view,
+// which promises ALL records, not a capped sample.
+async function fetchAllRows(table: string): Promise<Row[]> {
+  const PAGE = 1000;
+  const all: Row[] = [];
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await supabase.from(table).select('*').range(from, from + PAGE - 1);
+    if (error || !data) break;
+    all.push(...(data as Row[]));
+    if (data.length < PAGE) break; // last page
+  }
+  return all;
+}
 async function loadRows(sectionId: string): Promise<Row[]> {
   const table = SPECS[sectionId] ?? 'road_links';
   try {
-    const q = supabase.from(table).select('*').limit(900);
-    const t = new Promise<{ data: null }>(res => setTimeout(() => res({ data: null }), 4500));
-    const { data } = await Promise.race([q, t]) as { data: Row[] | null };
-    if (data && data.length) return data as Row[];
+    const q = fetchAllRows(table);
+    const t = new Promise<null>(res => setTimeout(() => res(null), 9000));
+    const data = await Promise.race([q, t]);
+    if (data && data.length) return data;
   } catch {}
   // section-specific GeoJSON fallback
   const gjPath = FALLBACK_GEOJSON[sectionId];

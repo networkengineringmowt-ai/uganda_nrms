@@ -13,12 +13,25 @@ function prettyLabel(key: string): string {
   }).join(' ');
 }
 const SPECS: Record<string, string> = { rms:'road_links', pms:'road_condition_assessments', tis:'traffic_stations', bms:'bridge_inventory', ducar:'maintenance_works', projects:'maintenance_works', reserve:'encroachments', pim:'investment_projects' };
+// Fetches every row in `table`, paginating past PostgREST's ~1000-row-per-request
+// cap so the "analysed in full" claim below is actually true, not a capped sample.
+async function fetchAllRows(table: string): Promise<Row[]> {
+  const PAGE = 1000;
+  const all: Row[] = [];
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await supabase.from(table).select('*').range(from, from + PAGE - 1);
+    if (error || !data) break;
+    all.push(...(data as Row[]));
+    if (data.length < PAGE) break; // last page
+  }
+  return all;
+}
 async function loadRows(sectionId: string): Promise<Row[]> {
   const table = SPECS[sectionId] ?? 'road_links';
   const live = (async () => { try {
-    const q = supabase.from(table).select('*').limit(900);
-    const t = new Promise<{ data: null }>(res => setTimeout(() => res({ data: null }), 4500));
-    const { data } = await Promise.race([q, t]) as { data: Row[] | null };
+    const q = fetchAllRows(table);
+    const t = new Promise<null>(res => setTimeout(() => res(null), 9000));
+    const data = await Promise.race([q, t]);
     return (data ?? []) as Row[];
   } catch { return [] as Row[]; } })();
   const fb = (async () => { try {
