@@ -23,7 +23,6 @@ import {
 } from '../../lib/chart3d';
 import { ESRI_TILE_URLS, ESRI_ATTRIBUTIONS } from '../../shared/mapSymbols';
 import { InfraLayers } from '../../shared/InfraLayers';
-import { MapLegend, LEGEND_OVERLOADING } from '../../shared/MapLegend';
 import { ModuleNavBar } from '../../shared/ModuleNavBar';
 import MapDetailPane, { StatCard, AttributeRow, SectionHeader } from '../../shared/MapDetailPane';
 import SourceTableButton from '../../shared/SourceTableButton';
