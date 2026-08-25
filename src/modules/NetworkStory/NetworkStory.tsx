@@ -53,7 +53,7 @@ const MILESTONES = [
   { year: 2013, label: 'NDP II',              color: C.yellow, detail: 'NDP II target: 6,000 km paved by FY 2019/20' },
   { year: 2020, label: 'NDP III',             color: C.orange, detail: 'NDP III target: 10,000 km paved by FY 2025/26' },
   { year: 2022, label: 'NDP IV Launch',       color: C.teal,   detail: 'NDP IV launched; official national road network defined as 21,302 km; OPRC contracts expanded to 9 active lots covering all six regions' },
-  { year: 2023, label: 'OPRC Scale-Up',       color: C.pink,   detail: 'Continued rehabilitation under OPRC performance contracts; bridge and culvert inventory completed â 998 structures in the 2026 BMS register' },
+  { year: 2023, label: 'OPRC Scale-Up',       color: C.pink,   detail: 'Continued rehabilitation under OPRC performance contracts; bridge and culvert inventory completed â 546 structures in the 2026 BMS register' },
   { year: 2024, label: 'Digital Transform',   color: C.indigo, detail: 'Digital transformation initiative; DNR RMS Engine development begins; ML-powered pavement condition assessment model (PyTorch, RÂ²=0.93) enters training' },
   { year: 2025, label: 'Platform Live',       color: C.green,  detail: 'DNR Road Management System goes live; 1,017 links in GeoJSON; ML IRI prediction and HDM-4 analysis integrated; real-time ATC data feeds activated' },
   { year: 2026, label: 'Current (FY25/26)',   color: C.cyan,   detail: 'Current year: Official network 21,302 km (NDPIV FY25-26) | GeoJSON mapped 21,160 km (1,017 links) | Paved 6,405 km (30.1%) | Unpaved 14,897 km (69.9%)' },
@@ -1137,8 +1137,8 @@ export default function NetworkStory() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 10 }}>
             <AssetCard label="Paved Roads" value={fmtT(data.total_paved_km * 5_000_000_000)} unit="Trillion UGX" detail={`${data.total_paved_km.toLocaleString()} km Ã UGX 5B/km`} color={C.green} icon={<TrendingUp size={13}/>} />
             <AssetCard label="Unpaved Roads" value={fmtT(data.total_unpaved_km * 1_200_000_000)} unit="Trillion UGX" detail={`${data.total_unpaved_km.toLocaleString()} km Ã UGX 1.2B/km`} color={C.yellow} icon={<Layers size={13}/>} />
-            <AssetCard label="Bridges (546)" value={fmtT(546 * 12_000_000_000)} unit="Trillion UGX" detail="546 bridges Ã UGX 12B avg replacement" color={C.pink} icon={<Wrench size={13}/>} />
-            <AssetCard label="Culverts (485)" value={fmtT(485 * 500_000_000)} unit="Trillion UGX" detail="485 major culverts Ã UGX 500M unit cost" color={C.purple} icon={<DollarSign size={13}/>} />
+            <AssetCard label="Bridges (312)" value={fmtT(312 * 12_000_000_000)} unit="Trillion UGX" detail="312 bridges Ã UGX 12B avg replacement" color={C.pink} icon={<Wrench size={13}/>} />
+            <AssetCard label="Culverts & Drifts (234)" value={fmtT(234 * 500_000_000)} unit="Trillion UGX" detail="234 culverts & drifts Ã UGX 500M unit cost" color={C.purple} icon={<DollarSign size={13}/>} />
           </div>
           <div style={{
             padding: '8px 12px', borderRadius: 7, fontSize: 9,
@@ -1747,7 +1747,7 @@ export default function NetworkStory() {
         <Section title="Bridge &amp; Structure Inventory" accent={C.teal}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
             {[
-              { label: 'Total Structures', value: '998',   color: C.teal, sub: '546 bridges · 452 culverts' },
+              { label: 'Total Structures', value: '546',   color: C.teal, sub: '312 bridges · 234 culverts' },
               { label: 'Total Length', value: '8,517 m', color: C.cyan, sub: 'Combined bridge deck' },
               { label: 'Avg Length', value: '19.6 m', color: C.blue, sub: 'Per bridge average' },
               { label: 'Road C-Class', value: '284 (65%)', color: C.green, sub: 'Community road bridges' },
