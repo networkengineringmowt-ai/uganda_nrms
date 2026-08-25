@@ -902,7 +902,7 @@ function AllLinksTable({
                 <tr key={l.id} style={{ background: bg, borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
                   <td style={{ padding: '5px 10px', color: '#00f5ff', fontFamily: 'monospace', fontSize: 9.5, whiteSpace: 'nowrap' }}>{l.id}</td>
                   <td style={{ padding: '5px 10px', color: '#e2eaf4', maxWidth: 240, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{l.name}</td>
-                  <td style={{ padding: '5px 10px', color: '#94a3b8', fontVariantNumeric: 'tabular-nums' }}>{l.lengthKm.toFixed(1)}</td>
+                  <td style={{ padding: '5px 10px', color: '#94a3b8', fontVariantNumeric: 'tabular-nums' }}>{l.lengthKm.toFixed(1)} km</td>
                   <td style={{ padding: '5px 10px', color: l.roadClass === 'A' ? '#00f5ff' : l.roadClass === 'B' ? '#00ff88' : l.roadClass === 'M' ? '#b967ff' : '#ffd23f', fontWeight: 800 }}>{l.roadClass}</td>
                   <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{l.region}</td>
                   <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{l.station ?? '-'}</td>
