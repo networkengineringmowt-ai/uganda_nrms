@@ -1,10 +1,10 @@
 /**
- * PavementAgePanel — age-based reporting for the national network (FY25-26).
+ * PavementAgePanel - age-based reporting for the national network (FY25-26).
  * Source: network_links.json pavement_age (NDPIV FY25-26 master); where the
  * column is blank the age is derived predictively as CURRENT_YEAR minus the
  * most recent of last-intervention / rehabilitation / completion year.
  * Remaining life = design life (20y bituminous, 7y unsealed regravel cycle)
- * minus current age — the same forward-carry principle as the traffic models.
+ * minus current age - the same forward-carry principle as the traffic models.
  */
 import { useEffect, useMemo, useState } from 'react';
 import { CURRENT_YEAR } from '../../shared/year';
@@ -133,7 +133,7 @@ export default function PavementAgePanel() {
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, flexWrap: 'wrap' }}>
         <div style={{ flex: 1, minWidth: 240 }}>
           <div style={{ fontSize: 16, fontWeight: 900, color: '#e2eaf4' }}>
-            Pavement Age — {CURRENT_YEAR} reporting
+            Pavement Age - {CURRENT_YEAR} reporting
           </div>
           <div style={{ fontSize: 10.5, color: 'rgba(148,163,184,0.65)' }}>
             FY25-26 NDPIV master · ages carried forward to {CURRENT_YEAR}; blanks derived from last
@@ -154,9 +154,9 @@ export default function PavementAgePanel() {
       {/* KPI cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 10, marginBottom: 14 }}>
         {([
-          ['Network avg age', stats.avg != null ? `${stats.avg.toFixed(1)} yrs` : '—', '#ff6b35'],
-          ['Bituminous avg', stats.avgPaved != null ? `${stats.avgPaved.toFixed(1)} yrs` : '—', '#00d4aa'],
-          ['Unsealed avg', stats.avgUnpaved != null ? `${stats.avgUnpaved.toFixed(1)} yrs` : '—', '#ffd23f'],
+          ['Network avg age', stats.avg != null ? `${stats.avg.toFixed(1)} yrs` : '-', '#ff6b35'],
+          ['Bituminous avg', stats.avgPaved != null ? `${stats.avgPaved.toFixed(1)} yrs` : '-', '#00d4aa'],
+          ['Unsealed avg', stats.avgUnpaved != null ? `${stats.avgUnpaved.toFixed(1)} yrs` : '-', '#ffd23f'],
           ['Beyond design life', `${stats.overPct.toFixed(1)}%`, '#ff2d78'],
           ['km beyond life', `${Math.round(stats.overKm).toLocaleString()} km`, '#ff2d78'],
           ['Age data coverage', `${stats.coverage.toFixed(0)}%`, '#4d9fff'],
@@ -211,7 +211,7 @@ export default function PavementAgePanel() {
                     <td style={TD}>{Math.round(r.km).toLocaleString()}</td>
                     <td style={{ ...TD, fontWeight: 800,
                       color: (r.avg ?? 0) > 15 ? '#ff2d78' : (r.avg ?? 0) > 10 ? '#ffd23f' : '#00ff88' }}>
-                      {r.avg != null ? `${r.avg.toFixed(1)} yrs` : '—'}
+                      {r.avg != null ? `${r.avg.toFixed(1)} yrs` : '-'}
                     </td>
                     <td style={{ ...TD, color: r.overPct > 30 ? '#ff2d78' : TD.color }}>{r.overPct.toFixed(1)}%</td>
                   </tr>
@@ -256,7 +256,7 @@ export default function PavementAgePanel() {
                   <td style={{ ...TD, color: r.remaining === 0 ? '#ff2d78' : '#00d4aa' }}>
                     {r.remaining === 0 ? 'EXCEEDED' : `${r.remaining} yrs`}
                   </td>
-                  <td style={TD}>{yr(r.last_intervention) ?? yr(r.rehab_year) ?? yr(r.completion_year) ?? '—'}</td>
+                  <td style={TD}>{yr(r.last_intervention) ?? yr(r.rehab_year) ?? yr(r.completion_year) ?? '-'}</td>
                 </tr>
               ))}
             </tbody>

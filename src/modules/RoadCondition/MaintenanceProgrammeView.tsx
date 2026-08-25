@@ -162,7 +162,7 @@ export default function MaintenanceProgrammeView() {
           PMS Maintenance Programme
         </h1>
         <p style={{ fontSize: 13, color: 'rgba(148,163,184,0.7)' }}>
-          Priority-ranked road interventions — {data.network_summary.total_links} links, ${data.network_summary.total_programme_cost_millions.toLocaleString('en-US', { maximumFractionDigits: 1 })}M budget
+          Priority-ranked road interventions - {data.network_summary.total_links} links, ${data.network_summary.total_programme_cost_millions.toLocaleString('en-US', { maximumFractionDigits: 1 })}M budget
         </p>
       </div>
 
@@ -214,7 +214,7 @@ export default function MaintenanceProgrammeView() {
           <div style={{ fontSize: 14, fontWeight: 700, color: '#00ff88' }}>
             {Object.entries(data.intervention_types)
               .reduce((max, [type, info]) => info.count > max.count ? { type, count: info.count } : max, { type: '', count: 0 })
-              .type || '—'}
+              .type || '-'}
           </div>
         </div>
       </div>
