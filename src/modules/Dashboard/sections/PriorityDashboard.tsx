@@ -104,7 +104,7 @@ export default function PriorityDashboard() {
   const distBins = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
   const histo = distBins.slice(0, -1).map((b, i) => ({ name: b + '-' + distBins[i + 1], value: scored.filter(s => s.score >= b && s.score < distBins[i + 1]).length }));
   const scatter = scored.map(s => ({ x: Math.round(s.c), y: s.score, z: Math.max(1, s.km) }));
-  const top = scored.slice(0, 15);
+  const top = scored; // full ranked list (already sorted desc by score) - no cap; RankList scrolls
   return (
     <div style={{ width: '100%' }}>
       {/* ── Definition Card ── */}
@@ -164,7 +164,7 @@ export default function PriorityDashboard() {
           </div>
         </Card>
         <div style={{ gridColumn: '1 / -1' }}>
-          <Card title={`TOP ${top.length} PRIORITY LINKS - RANKED`}>
+          <Card title={`ALL ${top.length} PRIORITY LINKS - RANKED (scroll for full list)`}>
             <RankList
               items={top.map((s, i) => ({
                 id: i,

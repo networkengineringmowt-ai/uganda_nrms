@@ -89,7 +89,7 @@ export default function DrainageDashboard() {
   const byType = kType ? grp(rows, kType, null) : [];
   const roadsWith = kRoad ? new Set(rows.map(r => String(r[kRoad]))).size : 0;
   const kmNoDrain = rows.length && kLen ? Math.round(rows.reduce((a, r) => a + (num(r[kLen]) ?? 0), 0) * poorPct) / 100 : 0;
-  const crit = rows.filter(r => condOf(r) === 'Failed' || condOf(r) === 'Poor').slice(0, 15);
+  const crit = rows.filter(r => condOf(r) === 'Failed' || condOf(r) === 'Poor'); // no cap; RankList scrolls
   const byRoadPoor = kRoad ? grp(crit, kRoad, null).slice(0, 8) : [];
   return (
     <div style={{ width: '100%' }}>

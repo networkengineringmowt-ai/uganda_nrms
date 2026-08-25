@@ -95,7 +95,7 @@ export default function MaintenanceDashboard() {
     if (kStart) v = rows.filter(r => { const t = new Date(String(r[kStart] ?? '')); return isFinite(t.getTime()) && ((t.getMonth() + 6) % 12) === i; }).length;
     return { name: m, value: v }; });
   const hasTrend = trend.some(t => t.value > 0);
-  const active = rows.filter(r => !kStat || !/complete|done|closed/i.test(String(r[kStat] ?? ''))).slice(0, 15);
+  const active = rows.filter(r => !kStat || !/complete|done|closed/i.test(String(r[kStat] ?? ''))); // no cap; RankList scrolls
   const budBars = [{ name: 'Allocated', value: budget }, { name: 'Utilised', value: spent }];
   const byContractor = kContr ? grp(rows, kContr, null).slice(0, 8) : [];
   return (
