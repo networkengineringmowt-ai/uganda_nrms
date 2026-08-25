@@ -1,5 +1,5 @@
 /**
- * networkDB — Central single source of truth for the Uganda National Roads Platform.
+ * networkDB - Central single source of truth for the Uganda National Roads Platform.
  *
  * All data is sourced from:
  *   • National Road Network_FY25-26(NDPIV) - draft.xlsx  (1,017 links)
@@ -10,7 +10,7 @@
  * Network-level stats → public/data/network_stats.json
  *
  * Every platform tab consumes data from this module.
- * Inconsistencies mean the source Excel was inconsistent — not the platform.
+ * Inconsistencies mean the source Excel was inconsistent - not the platform.
  */
 import { useState, useEffect } from 'react';
 

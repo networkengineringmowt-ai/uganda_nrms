@@ -1,7 +1,7 @@
 ﻿/**
  * Loads the real GeoJSON bridge/culvert data from /public and augments each
  * feature with synthetic condition ratings, inspection dates, defects, costs
- * and priority scores — all deterministically generated from the structure's
+ * and priority scores - all deterministically generated from the structure's
  * own properties so they are stable across page loads.
  */
 
@@ -139,7 +139,7 @@ async function loadBridges(): Promise<Structure[]> {
   const res   = await fetch(`${import.meta.env.BASE_URL}data/bridges2026.geojson`);
   const geo   = await res.json() as { features: { geometry: { coordinates: [number, number] } | null; properties: Record<string, any> }[] };
 
-  // Keep ALL bridges (546) — structures without GPS still belong in the
+  // Keep ALL bridges (546) - structures without GPS still belong in the
   // registry/counts; they simply have no map marker (lat/lng 0).
   return geo.features
     .map((f, idx) => {
@@ -340,7 +340,7 @@ export function generateSampleWorkOrders(structures: Structure[]): WorkOrder[] {
       id:              uuidv4(),
       structureId:     s.id,
       structureName:   s.name,
-      title:           `${t} — ${s.name}`,
+      title:           `${t} - ${s.name}`,
       description:     `${t} works addressing: ${s.defects.slice(0, 2).join(', ')}.`,
       type:            t,
       status:          st,
