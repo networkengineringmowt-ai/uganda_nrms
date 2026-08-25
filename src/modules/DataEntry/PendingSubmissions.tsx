@@ -98,8 +98,8 @@ function PendingSubmissionsInner() {
                   <td style={{ padding:'6px 10px', fontFamily:'monospace', fontSize:10 }}>{s.link_id}</td>
                   <td style={{ padding:'6px 10px', whiteSpace:'nowrap' }}>{s.survey_date}</td>
                   <td style={{ padding:'6px 10px' }}>{s.overall_condition}</td>
-                  <td style={{ padding:'6px 10px' }}>{s.iri_measured || '—'}</td>
-                  <td style={{ padding:'6px 10px' }}>{s.rutting_mm || '—'}</td>
+                  <td style={{ padding:'6px 10px' }}>{s.iri_measured || '-'}</td>
+                  <td style={{ padding:'6px 10px' }}>{s.rutting_mm || '-'}</td>
                   <td style={{ padding:'6px 10px', whiteSpace:'nowrap' }}>{s.surveyor_name}</td>
                   <td style={{ padding:'6px 10px', color:'#64748b', whiteSpace:'nowrap' }}>{new Date(s.submitted_at).toLocaleString()}</td>
                   <td style={{ padding:'6px 10px' }}>

@@ -111,7 +111,7 @@ function SurveyFormInner({ onClose }: Props) {
         body: JSON.stringify({ record: dbRow }), signal: ctrl.signal,
       }).finally(() => clearTimeout(t));
       if (!r.ok) throw new Error(`server ${r.status}`);
-      setSync(`Saved to G: Drive repository ✓ — ${form.link_id} condition updated across the platform.`);
+      setSync(`Saved to G: Drive repository ✓ - ${form.link_id} condition updated across the platform.`);
     } catch {
       // Fallback: direct anon write (works only while anon retains INSERT/UPDATE;
       // after running supabase_enable_rls.sql this degrades to local-queue).
@@ -121,10 +121,10 @@ function SurveyFormInner({ onClose }: Props) {
           .upsert(dbRow, { onConflict: 'link_id,survey_year' });
         if (!error) logEvent('change', { table: 'road_link_condition', link: form.link_id, via: 'supabase-fallback' });
         setSync(error
-          ? `Saved locally — sync failed (${error.message}). Start the data-entry server to sync.`
-          : `Synced to Supabase mirror ✓ — ${form.link_id} condition updated across the platform.`);
+          ? `Saved locally - sync failed (${error.message}). Start the data-entry server to sync.`
+          : `Synced to Supabase mirror ✓ - ${form.link_id} condition updated across the platform.`);
       } catch {
-        setSync('Saved locally — offline; will sync on next connection.');
+        setSync('Saved locally - offline; will sync on next connection.');
       }
     }
     setBusy(false);
@@ -185,7 +185,7 @@ function SurveyFormInner({ onClose }: Props) {
           <input type="number" step="0.1" min="0" max="100" style={FIELD} placeholder="e.g. 78" value={form.pci} onChange={e => set('pci', e.target.value)} />
         </div>
         <div>
-          <label style={LABEL}>VCI — Visual Condition Index (0–100)</label>
+          <label style={LABEL}>VCI - Visual Condition Index (0–100)</label>
           <input type="number" step="0.1" min="0" max="100" style={FIELD} placeholder="e.g. 84" value={form.vci} onChange={e => set('vci', e.target.value)} />
           {liveRating && (
             <div style={{ marginTop: 5, fontSize: 10, fontWeight: 700, color: VCI_RATING_COLOR[liveRating] }}>
@@ -196,7 +196,7 @@ function SurveyFormInner({ onClose }: Props) {
         <div>
           <label style={LABEL}>Drainage Score (1–5)</label>
           <select style={FIELD} value={form.drainage_score} onChange={e => set('drainage_score', e.target.value)}>
-            {[1,2,3,4,5].map(n => <option key={n} value={n}>{n} — {['Very Poor','Poor','Fair','Good','Excellent'][n-1]}</option>)}
+            {[1,2,3,4,5].map(n => <option key={n} value={n}>{n} - {['Very Poor','Poor','Fair','Good','Excellent'][n-1]}</option>)}
           </select>
         </div>
       </div>

@@ -1,5 +1,5 @@
 /**
- * DataCaptureHub — the login-gated "capture screen" reached from every platform's
+ * DataCaptureHub - the login-gated "capture screen" reached from every platform's
  * big Capture button. Lists the data-entry forms; each writes straight to the
  * Supabase Unified DB so the rest of the platform updates from a single submission.
  *
@@ -21,7 +21,7 @@ const CAPTURES: { id: CaptureId; title: string; table: string; desc: string; ico
   { id: 'encroachment',   title: 'Encroachment Report',   table: 'road_reserve_encroachments',  desc: 'Right-of-way encroachment incidents',           icon: <ShieldAlert size={18} />,   live: false },
   { id: 'gazette',        title: 'Gazette / Legal Status', table: 'road_reserve_gazette',        desc: 'Gazettement & survey status updates',           icon: <Gavel size={18} />,         live: false },
   { id: 'inspection',     title: 'Bridge Inspection',      table: 'inspections',                 desc: 'NBI-style structure condition ratings',         icon: <HardHat size={18} />,       live: false },
-  { id: 'reserve-permit', title: 'Road Reserve Permit',    table: 'road_reserve_applications',   desc: 'MOWT Form 2 — temporary use application',        icon: <ClipboardList size={18} />, live: false },
+  { id: 'reserve-permit', title: 'Road Reserve Permit',    table: 'road_reserve_applications',   desc: 'MOWT Form 2 - temporary use application',        icon: <ClipboardList size={18} />, live: false },
 ];
 
 const C = { teal: '#00d4aa', cyan: '#00f5ff', gray: '#94a3b8' };
@@ -57,7 +57,7 @@ export default function DataCaptureHub() {
               <span style={{fontSize:18,fontWeight:800,color:'rgba(245,158,11,1)',letterSpacing:-0.5}}>Field Data Capture Hub</span>
               <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>GPS Survey · Photo Capture · Offline Sync · MoWT Forms</span>
             </div>
-            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Mobile-first data entry platform for Uganda road network field surveys — GPS-georeferenced condition capture, photo uploads, pavement distress coding, and offline-capable synchronisation with the NRMS Supabase database.</p>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Mobile-first data entry platform for Uganda road network field surveys - GPS-georeferenced condition capture, photo uploads, pavement distress coding, and offline-capable synchronisation with the NRMS Supabase database.</p>
             <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
               {["GPS Survey","Photo Capture","Offline Sync","Quality Check","MoWT Forms","UNRA Field"].map(b=>(
                 <span key={b} style={{background:'rgba(245,158,11,0.12)',color:'rgba(245,158,11,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
