@@ -1,7 +1,7 @@
 /**
- * SourcesOverviewDashboard — RMS "Dashboard" tab, Sources & Evidence view.
+ * SourcesOverviewDashboard - RMS "Dashboard" tab, Sources & Evidence view.
  * Evidence catalogue, tabular summaries, and the platform data dictionary
- * underpinning every figure shown across the site — the provenance layer
+ * underpinning every figure shown across the site - the provenance layer
  * behind the platform's other flagship dashboards. Anchored to two real
  * platform figures: the 6-region breakdown (Central, Northern, Eastern,
  * Western, Southern, North Eastern) and the SQL Database & Schema tab's
@@ -9,7 +9,7 @@
  * budget, lifecycle, safety, socio, casestudies, gis). Everything else
  * (document counts, agency splits, freshness, confidence, citations) is a
  * plausible, internally-consistent illustrative evidence catalogue built
- * around those anchors. No tables here — tabular breakdowns live under
+ * around those anchors. No tables here - tabular breakdowns live under
  * Exhaustive Tables / Deep Analytics.
  */
 import {
@@ -34,11 +34,11 @@ const AGENCY_LBL = ['UNRA', 'MoWT', 'URF', 'World Bank', 'Districts', 'Dev. Part
 const AGENCY_COUNT = [1140, 512, 398, 340, 301, 156]; // sums to TOTAL_SOURCES
 const AGENCY_COLORS = [DASH_C.cyan, DASH_C.orange, DASH_C.yellow, DASH_C.green, DASH_C.purple, DASH_C.pink];
 
-// Freshness (age of underlying evidence) — canonical ordered scale, freshest first.
+// Freshness (age of underlying evidence) - canonical ordered scale, freshest first.
 const FRESH_LBL = ['<1 yr', '1–2 yr', '2–3 yr', '3–5 yr', '>5 yr'];
 const FRESH_COUNT = [892, 764, 583, 412, 196]; // sums to TOTAL_SOURCES
 
-// Evidence confidence rating — canonical ordered scale, most-confident first.
+// Evidence confidence rating - canonical ordered scale, most-confident first.
 const CONF_LBL = ['Very High', 'High', 'Moderate', 'Low', 'Very Low'];
 const CONF_COUNT = [745, 968, 682, 328, 124]; // sums to TOTAL_SOURCES
 const CONF_SCORE_MIDPTS = [95, 80, 60, 35, 15];
@@ -89,7 +89,7 @@ const QUALITY_AXES = [
   { axis: 'Accessibility', primary: 68, secondary: 85 },
 ];
 
-// Confidence-score distribution by document type — 10 sorted sample scores per type.
+// Confidence-score distribution by document type - 10 sorted sample scores per type.
 function boxStats(sorted: number[], color: string, name: string) {
   return { name, min: sorted[0], q1: sorted[2], median: (sorted[4] + sorted[5]) / 2, q3: sorted[7], max: sorted[9], color };
 }

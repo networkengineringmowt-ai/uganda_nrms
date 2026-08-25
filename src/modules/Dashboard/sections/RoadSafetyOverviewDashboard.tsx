@@ -1,10 +1,10 @@
 /**
- * RoadSafetyOverviewDashboard — RMS "Dashboard" tab, Road Safety section.
+ * RoadSafetyOverviewDashboard - RMS "Dashboard" tab, Road Safety section.
  * Port of public/dashboard.html Tab 7 (ROAD SAFETY & BLACKSPOTS, charts c88–c100)
  * into live React/Recharts, extended beyond the original 13 views. Real 2016–2025
  * fatality, blackspot-corridor, enforcement-pipeline and RSE-compliance figures
  * (matches the platform's official 3,247 2025-fatality / 847-blackspot count).
- * No tables here — tabular breakdowns live under Exhaustive Tables / Deep Analytics.
+ * No tables here - tabular breakdowns live under Exhaustive Tables / Deep Analytics.
  */
 import {
   DASH_C, KpiStrip, StatMini, SectionHdr, ChartGrid, ChartBox,
@@ -29,11 +29,6 @@ const FATAL_USER_VAL = [1240, 820, 468, 340, 218, 98, 63];
 
 const TOD_LBL = ['00-03', '03-06', '06-09', '09-12', '12-15', '15-18', '18-21', '21-24'];
 const TOD_PCT = [8.2, 4.1, 12.4, 9.8, 11.2, 14.8, 18.4, 21.1];
-
-// Blackspot lng/lat (degrees) with accident-rate size/colour — matches c93.
-const BLACKSPOT_LNG = [32.6, 32.4, 30.1, 33.8, 34.1, 34.6, 31.5, 30.8, 33.2, 32.9];
-const BLACKSPOT_LAT = [0.3, 0.2, -0.3, 0.68, 1.2, 1.4, 0.1, -0.8, 0.9, 0.6];
-const BLACKSPOTS = ACC_CORRIDOR.map((name, i) => ({ x: BLACKSPOT_LNG[i], y: BLACKSPOT_LAT[i], z: ACC_COUNT[i], label: name.split(' ')[0] }));
 
 // Region fatalities 2016–2025 (matches D.regLbl / D.regCol from the network model).
 const REG_LBL = ['Central', 'Northern', 'Eastern', 'Western', 'Southern', 'North Eastern'];
@@ -64,17 +59,17 @@ const RSE_LBL = ['Speed Humps', 'Guardrails', 'Road Signs', 'Line Marking', 'Lig
 const RSE_PCT = [82, 64, 71, 58, 42, 76, 68];
 const RSE_AVG = Math.round(RSE_PCT.reduce((a, b) => a + b, 0) / RSE_PCT.length);
 
-// "Worst blackspot" year-over-year accident & fatality count — matches the 42/yr KPI.
+// "Worst blackspot" year-over-year accident & fatality count - matches the 42/yr KPI.
 const WORST_ACC_PER_YR = [42, 38, 31, 28, 26, 24, 22, 19, 18, 17];
 const WORST_ACC_FATAL = [8, 6, 5, 4, 3, 4, 3, 2, 3, 2];
 
-// Accident risk heatmap: speed limit × roughness (IRI) — deterministic formula from the source.
+// Accident risk heatmap: speed limit × roughness (IRI) - deterministic formula from the source.
 const SPEED_LBL = ['50', '60', '80', '100', '110'];
 const SPEED = [50, 60, 80, 100, 110];
 const IRI_LEVELS = [1, 2, 3, 4, 5, 6, 7, 8];
 const RISK_Z = IRI_LEVELS.map(r => SPEED.map(s => Math.round(5 + r * 8 + (s / 50) * 12 + r * (s / 50) * 4)));
 
-// Accident heatmap: month × time-of-day — deterministic seasonal/diurnal pattern (no live incident feed yet).
+// Accident heatmap: month × time-of-day - deterministic seasonal/diurnal pattern (no live incident feed yet).
 const MONTH_LBL = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const MONTH_HR_MATRIX = MONTH_LBL.map((_, m) =>
   TOD_LBL.map((_, h) => Math.round(50 + Math.sin((h - 2) * 0.8) * 30 + Math.cos(m * 0.5) * 20))
@@ -128,10 +123,10 @@ export default function RoadSafetyOverviewDashboard() {
         </ChartBox>
       </ChartGrid>
 
-      <ChartGrid cols="12">
-        <ChartBox title="Blackspot Locations" subtitle="accident rate — size/colour = accidents/yr" accent={DASH_C.orange} height={260}>
-          <ScatterBubble data={BLACKSPOTS} xLabel="Longitude" yLabel="Latitude" color={DASH_C.orange} />
-        </ChartBox>
+      {/* Blackspot Locations (lng/lat scatter) removed per platform rule: coordinates
+          belong on maps only, never charts. Corridor accident counts are already
+          covered above by "Top 10 Accident Blackspot Corridors". */}
+      <ChartGrid cols="1">
         <ChartBox title="Fatalities by Region 2016–2025" accent={DASH_C.cyan} height={260}>
           <LineMulti data={SAFETY_YRS.map((y, i) => {
             const row: any = { year: y };
@@ -205,7 +200,7 @@ export default function RoadSafetyOverviewDashboard() {
       </ChartGrid>
 
       <ChartGrid cols="3">
-        <ChartBox title="Accident Causes — Estimated Count" subtitle="2025, from cause share × accidents reported" accent={DASH_C.yellow} height={210}>
+        <ChartBox title="Accident Causes - Estimated Count" subtitle="2025, from cause share × accidents reported" accent={DASH_C.yellow} height={210}>
           <BarH data={CAUSE_LBL.map((n, i) => ({ cause: n, count: CAUSE_COUNT[i] }))} yKey="cause" series={[{ key: 'count', name: 'Est. accidents', color: DASH_C.yellow }]} />
         </ChartBox>
         <ChartBox title="Annual Fatalities Distribution" subtitle="2016–2025" accent={DASH_C.red} height={210}>

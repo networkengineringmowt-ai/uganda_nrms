@@ -107,7 +107,7 @@ export default function MaintenanceDashboard() {
               <span style={{fontSize:18,fontWeight:800,color:'rgba(245,158,11,1)',letterSpacing:-0.5}}>Maintenance Works Dashboard</span>
               <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>Routine · Periodic · Emergency · URF Work Plan · PPDA</span>
             </div>
-            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Section-level maintenance works dashboard — tracking routine maintenance coverage, periodic treatment progress, emergency works, force account activities, and URF-funded PPDA contracts across Uganda's national road sections.</p>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Section-level maintenance works dashboard - tracking routine maintenance coverage, periodic treatment progress, emergency works, force account activities, and URF-funded PPDA contracts across Uganda's national road sections.</p>
             <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
               {["Routine Works","Periodic Maint","Emergency Works","Force Account","URF Work Plan","PPDA Contracts"].map(b=>(
                 <span key={b} style={{background:'rgba(245,158,11,0.12)',color:'rgba(245,158,11,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>

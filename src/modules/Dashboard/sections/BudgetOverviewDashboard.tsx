@@ -1,10 +1,10 @@
 /**
- * BudgetOverviewDashboard — RMS "Dashboard" tab, Budget & Finance view.
+ * BudgetOverviewDashboard - RMS "Dashboard" tab, Budget & Finance view.
  * Port of public/dashboard.html Tab 5 (BUDGET & FINANCE, charts c61–c74) into
  * live React/Recharts, extended to 23 chart tiles. Real FY25/26 budget figures
  * (matches the platform's official 1,842bn UGX allocation) plus a handful of
  * straightforward derivations (regional backlog split, utilisation trend,
- * approval pipeline) clearly noted in their subtitles. No tables here —
+ * approval pipeline) clearly noted in their subtitles. No tables here -
  * tabular breakdowns live under Exhaustive Tables / Deep Analytics.
  */
 import {
@@ -41,7 +41,7 @@ const TREAT_LBL = ['Routine', 'Resealing', 'Overlay', 'Rehab', 'Reconstruction']
 const TREAT_NEEDS = [8420, 1240, 890, 640, 215];
 const TREAT_FUNDED = [6800, 840, 520, 215, 50];
 
-// region × category budget matrix (bn UGX) — rows sum to BUD_REG
+// region × category budget matrix (bn UGX) - rows sum to BUD_REG
 const REG_CAT_BUDGET = [
   [118, 144, 152, 34, 22], // Central
   [90, 108, 116, 28, 18],  // Northern

@@ -100,7 +100,7 @@ export default function DrainageDashboard() {
               <span style={{fontSize:18,fontWeight:800,color:'rgba(6,182,212,1)',letterSpacing:-0.5}}>Drainage Infrastructure Dashboard</span>
               <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>Culverts · Cross Drains · Flood Risk · MoWT Standards</span>
             </div>
-            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Section-level drainage infrastructure dashboard — tracking culvert condition, cross-drain capacity, side-drain maintenance needs, and flood vulnerability for Uganda's national road network against MoWT drainage design standards.</p>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Section-level drainage infrastructure dashboard - tracking culvert condition, cross-drain capacity, side-drain maintenance needs, and flood vulnerability for Uganda's national road network against MoWT drainage design standards.</p>
             <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
               {["Culverts","Cross Drains","Side Drains","Flood Risk","Maintenance Need","MoWT Standards"].map(b=>(
                 <span key={b} style={{background:'rgba(6,182,212,0.12)',color:'rgba(6,182,212,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>

@@ -1,5 +1,5 @@
 /**
- * RoadAtlasOverviewDashboard — RMS "Dashboard" tab, Road Atlas section.
+ * RoadAtlasOverviewDashboard - RMS "Dashboard" tab, Road Atlas section.
  * Official Uganda road atlas reference: classified inventory, road-number
  * index, chainage references, atlas plates (map sheets), and district-level
  * statistics. Anchored to the platform's canonical network figures: total
@@ -9,7 +9,7 @@
  * All other atlas-specific figures (road-number counts, plate coverage,
  * chainage/cross-reference completeness, district rankings, edition history)
  * are illustrative but internally consistent with those anchors. No tables
- * here — tabular breakdowns live under Exhaustive Tables / Deep Analytics.
+ * here - tabular breakdowns live under Exhaustive Tables / Deep Analytics.
  */
 import {
   DASH_C, REGION_COLORS, DASHBOARD_COND_COLORS, KpiStrip, StatMini, SectionHdr, ChartGrid, ChartBox,
@@ -30,16 +30,16 @@ const SCALE5 = ['#22c55e', '#84cc16', '#eab308', '#f97316', '#ef4444'];
 
 // Road-number index: numbered routes by class (A-series trunk roads down to
 // numbered district roads); sums to the atlas-wide numbered-road total.
-const CLASS_NUMBERED = [62, 214, 574]; // A, B, C — sum 850
+const CLASS_NUMBERED = [62, 214, 574]; // A, B, C - sum 850
 const TOTAL_NUMBERED = CLASS_NUMBERED.reduce((a, b) => a + b, 0);
 
-// Numbered roads by region × class (matrix rows=REG_LBL, cols=[A,B,C]) — sums to TOTAL_NUMBERED.
+// Numbered roads by region × class (matrix rows=REG_LBL, cols=[A,B,C]) - sums to TOTAL_NUMBERED.
 const REG_CLASS_NUMBERED = [
   [15, 44, 130], [9, 36, 95], [11, 38, 105],
   [9, 28, 78], [10, 32, 88], [8, 36, 78],
 ];
 
-// Atlas plates (1:50,000 map-sheet grid) — count & coverage % by region.
+// Atlas plates (1:50,000 map-sheet grid) - count & coverage % by region.
 const REG_PLATES = [38, 52, 44, 36, 30, 46]; // sum 246
 const TOTAL_PLATES = REG_PLATES.reduce((a, b) => a + b, 0);
 const REG_PLATE_COVERAGE = [99, 91, 97, 95, 98, 88]; // %
@@ -53,11 +53,11 @@ const PLATE_STATUS_N = [178, 42, 19, 7]; // sum 246
 const CHAINAGE_COMPLETE_CLASS = [99, 93, 71]; // A, B, C
 const CHAINAGE_COMPLETE_AVG = 88; // network-wide weighted average
 
-// Chainage-reference completeness — 5-band distribution of the 850 numbered roads.
+// Chainage-reference completeness - 5-band distribution of the 850 numbered roads.
 const CHAINAGE_BAND_LBL = ['Complete (100%)', 'High (90–99%)', 'Moderate (70–89%)', 'Low (40–69%)', 'Minimal (<40%)'];
 const CHAINAGE_BAND_N = [412, 268, 110, 44, 16]; // sum 850
 
-// Road-numbering scheme compliance — 5-band distribution of the 850 numbered roads.
+// Road-numbering scheme compliance - 5-band distribution of the 850 numbered roads.
 const COMPLIANCE_BAND_LBL = ['Fully Compliant', 'Minor Variance', 'Non-Standard Format', 'Duplicate / Conflict', 'Unassigned'];
 const COMPLIANCE_BAND_N = [598, 156, 62, 21, 13]; // sum 850
 const COMPLIANCE_PCT = Math.round((COMPLIANCE_BAND_N[0] + COMPLIANCE_BAND_N[1]) / TOTAL_NUMBERED * 100); // 89%
@@ -75,7 +75,7 @@ const REG_CLASS_CHAINAGE_PCT = [
   [97, 90, 65], [100, 95, 78], [95, 85, 55],
 ];
 
-// District-level statistics — top districts by classified network length (of ~135 nationwide).
+// District-level statistics - top districts by classified network length (of ~135 nationwide).
 const TOP_DISTRICTS = [
   { name: 'Kiryandongo', km: 612 }, { name: 'Nakaseke', km: 578 }, { name: 'Moroto', km: 545 },
   { name: 'Nwoya', km: 520 }, { name: 'Kaabong', km: 498 }, { name: 'Kasese', km: 470 },
@@ -102,7 +102,7 @@ function boxStats(sorted: number[], color: string, name: string) {
   return { name, min: sorted[0], q1: sorted[2], median: (sorted[4] + sorted[5]) / 2, q3: sorted[7], max: sorted[9], color };
 }
 
-// Deterministic "numbered route" sample points (length vs districts crossed, size=AADT) — stable across renders.
+// Deterministic "numbered route" sample points (length vs districts crossed, size=AADT) - stable across renders.
 const ROUTES = Array.from({ length: 40 }, (_, i) => {
   const len = 12 + ((i * 53) % 180);
   const districts = 1 + ((i * 13) % 9);
@@ -148,7 +148,7 @@ export default function RoadAtlasOverviewDashboard() {
       </ChartGrid>
 
       <ChartGrid cols="12">
-        <ChartBox title="Numbered Route Profile" subtitle="length vs. districts crossed — size=AADT" accent={DASH_C.purple} height={260}>
+        <ChartBox title="Numbered Route Profile" subtitle="length vs. districts crossed - size=AADT" accent={DASH_C.purple} height={260}>
           <ScatterBubble data={ROUTES} xLabel="Route Length (km)" yLabel="Districts Crossed" color={DASH_C.purple} />
         </ChartBox>
         <ChartBox title="Chainage-Reference Completeness" subtitle="by road class (%)" accent={DASH_C.pink} height={260}>

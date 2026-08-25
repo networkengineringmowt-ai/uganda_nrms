@@ -1,20 +1,20 @@
 /**
- * RoadVideoOverviewDashboard — RMS "Dashboard" tab, Road Video Survey section
+ * RoadVideoOverviewDashboard - RMS "Dashboard" tab, Road Video Survey section
  * (sectionId 'roadvideo'). Continuous video log survey footage referenced to
- * road chainage, used for remote visual condition assessment — a ROMDAS-style
+ * road chainage, used for remote visual condition assessment - a ROMDAS-style
  * continuous video/condition survey system (see src/modules/RoadVideoView).
  *
  * Anchored to the platform's canonical NDPIV network figures: total classified
  * network 21,302 km; 6 regions (Central 4,436 km, Northern 3,920 km,
  * Eastern 4,290 km, Western 3,000 km, Southern 3,300 km, North Eastern 2,356 km);
  * road classes Class A Trunk (4,200 km) / Class B Regional (5,800 km) /
- * Class C District (11,302 km) — matches NetworkOverviewDashboard.tsx and
+ * Class C District (11,302 km) - matches NetworkOverviewDashboard.tsx and
  * PavementOverviewDashboard.tsx. Video-survey coverage, fleet, distress-flag
  * and footage-volume figures below are illustrative but internally consistent
  * (surveyed km + never-surveyed backlog reconcile to the class/region totals;
  * survey-recency buckets sum to each class's km; distress-flag density is
  * derived from flag counts over surveyed km, not assumed).
- * No tables here — tabular breakdowns live under Exhaustive Tables / Deep Analytics.
+ * No tables here - tabular breakdowns live under Exhaustive Tables / Deep Analytics.
  */
 import {
   DASH_C, DASHBOARD_COND_COLORS, KpiStrip, StatMini, SectionHdr, ChartGrid, ChartBox,
@@ -40,7 +40,7 @@ const CLASS_COVERAGE_PCT = CLASS_KM.map((k, i) => +(CLASS_SURVEYED[i] / k * 100)
 const REG_BACKLOG = [620, 1450, 1380, 780, 850, 1362]; // sums to 6,442
 const REG_SURVEYED = REG_KM.map((k, i) => k - REG_BACKLOG[i]); // sums to 14,860
 
-// Survey recency — 5-stop staleness scale, km by road class (each row sums to CLASS_KM)
+// Survey recency - 5-stop staleness scale, km by road class (each row sums to CLASS_KM)
 const RISK5 = ['#22c55e', '#84cc16', '#eab308', '#f97316', '#ef4444'];
 const RECENCY_LBL = ['<1yr', '1-2yr', '2-3yr', '3yr+', 'Never'];
 const RECENCY_A = [2400, 1200, 400, 100, 100];
@@ -64,7 +64,7 @@ const DIST_COUNT = [18420, 41200, 9850, 13760];
 const DIST_COLORS = [DASH_C.orange, DASH_C.purple, DASH_C.pink, DASH_C.blue];
 const TOTAL_FLAGS = DIST_COUNT.reduce((a, b) => a + b, 0); // 83,230
 
-// Severity mix per distress type (Low/Medium/High/Critical — each row sums to DIST_COUNT)
+// Severity mix per distress type (Low/Medium/High/Critical - each row sums to DIST_COUNT)
 const SEV_LBL = ['Low', 'Medium', 'High', 'Critical'];
 const SEV_BY_TYPE = [
   [7368, 5526, 3684, 1842],   // Potholes
@@ -73,7 +73,7 @@ const SEV_BY_TYPE = [
   [4800, 4200, 3200, 1560],   // Rutting
 ];
 
-// Distress flag density by road class (flags ÷ surveyed km — not assumed)
+// Distress flag density by road class (flags ÷ surveyed km - not assumed)
 const FLAGS_BY_CLASS = [12200, 28430, 42600]; // sums to TOTAL_FLAGS
 const DENSITY_BY_CLASS = FLAGS_BY_CLASS.map((f, i) => +(f / CLASS_SURVEYED[i]).toFixed(2));
 const AVG_DENSITY = +(TOTAL_FLAGS / SURVEYED_KM).toFixed(2);
@@ -114,7 +114,7 @@ const FRAMES_A = [420, 380, 510, 460, 395, 440, 505, 375, 450, 430, 395, 470];
 const FRAMES_B = [260, 240, 310, 280, 255, 300, 265, 235, 290, 270, 250, 305];
 const FRAMES_C = [140, 120, 160, 135, 110, 150, 125, 105, 145, 130, 115, 155];
 
-// Deterministic "segment sample" points — stable across renders (no Math.random()).
+// Deterministic "segment sample" points - stable across renders (no Math.random()).
 const VINTAGE_IRI_POINTS = Array.from({ length: 40 }, (_, i) => {
   const seed = i * 47.9;
   const vintage = ((seed * 131 + 23) % 450) / 100; // 0–4.5 yrs since last video pass
@@ -162,7 +162,7 @@ export default function RoadVideoOverviewDashboard() {
             '2-3yr': [RECENCY_A, RECENCY_B, RECENCY_C][i][2], '3yr+': [RECENCY_A, RECENCY_B, RECENCY_C][i][3], 'Never': [RECENCY_A, RECENCY_B, RECENCY_C][i][4],
           }))} xKey="name" series={RECENCY_LBL.map((l, i) => ({ key: l, name: l, color: RISK5[i] }))} unit="km" stacked />
         </ChartBox>
-        <ChartBox title="Survey Vintage vs Roughness" subtitle="yrs since last pass vs IRI — size=AADT" accent={DASH_C.purple} height={250}>
+        <ChartBox title="Survey Vintage vs Roughness" subtitle="yrs since last pass vs IRI - size=AADT" accent={DASH_C.purple} height={250}>
           <ScatterBubble data={VINTAGE_IRI_POINTS} xLabel="Yrs Since Survey" yLabel="IRI (m/km)" color={DASH_C.purple} />
         </ChartBox>
       </ChartGrid>

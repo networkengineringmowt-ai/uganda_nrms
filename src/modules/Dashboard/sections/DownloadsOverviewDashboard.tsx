@@ -1,22 +1,22 @@
 /**
- * DownloadsOverviewDashboard — RMS "Dashboard" tab, Downloads & Bulk Data
+ * DownloadsOverviewDashboard - RMS "Dashboard" tab, Downloads & Bulk Data
  * Exports view (sectionId 'downloads'). Covers the platform's open-data /
- * bulk-export facility — structures, road network, traffic, condition-survey
- * and reserve datasets served as CSV, KML, GeoJSON and Shapefile downloads —
+ * bulk-export facility - structures, road network, traffic, condition-survey
+ * and reserve datasets served as CSV, KML, GeoJSON and Shapefile downloads -
  * as illustrated in src/modules/Downloads/DownloadsView.tsx and built by
  * src/utils/downloads.ts.
  *
  * Anchored to already-canonical platform figures so this view stays
  * consistent with the rest of the app:
  *  - 546 structures (312 bridges, 142 box culverts, 68 culverts,
- *    24 drifts/causeways) — the same population behind structures_all.geojson.
+ *    24 drifts/causeways) - the same population behind structures_all.geojson.
  *  - 21,302 km classified road network (6 regions: Central, Northern,
  *    Eastern, Western, Southern, North Eastern).
  *  - Real per-file sizes already quoted in DownloadsView.tsx are reused here
  *    as the "Structures" dataset's per-format footprint: ~683 KB (static
  *    GeoJSON), ~186 KB (CSV), ~68 KB (Shapefile ZIP).
  * Everything else (monthly volumes, requester mix, freshness, success rate)
- * is an illustrative-but-internally-consistent data model — every breakdown
+ * is an illustrative-but-internally-consistent data model - every breakdown
  * below sums back to the same 18,460-export YTD total.
  */
 import {
@@ -25,7 +25,7 @@ import {
   GaugeC, FunnelC, RadarTile, BoxPlotApprox, WaterfallC,
 } from '../../../shared/dashboardKit';
 
-// ─── Canonical 5-stop risk/severity scale (good → bad) — for ordered dims only ─
+// ─── Canonical 5-stop risk/severity scale (good → bad) - for ordered dims only ─
 const RISK5 = ['#22c55e', '#84cc16', '#eab308', '#f97316', '#ef4444'];
 function freshColor(days: number): string {
   if (days <= 3) return RISK5[0];
@@ -42,13 +42,13 @@ const DATASETS = ['Structures', 'Road Network', 'Traffic Counts', 'Condition Sur
 const DATASET_COUNTS = [6870, 5240, 2860, 2380, 1110]; // sums to TOTAL_EXPORTS
 const DATASET_COLORS = [DASH_C.cyan, DASH_C.green, DASH_C.orange, DASH_C.yellow, DASH_C.purple];
 const AVG_SIZE_KB = [683, 4200, 1450, 980, 310]; // Structures matches the real static GeoJSON (~683 KB)
-const FRESHNESS_DAYS = [2, 6, 21, 14, 45]; // days since dataset last regenerated — Structures freshest, Reserves stalest
+const FRESHNESS_DAYS = [2, 6, 21, 14, 45]; // days since dataset last regenerated - Structures freshest, Reserves stalest
 
 const FORMATS = ['CSV', 'KML', 'GeoJSON', 'Shapefile'];
 const FORMAT_COUNTS = [9040, 2950, 5320, 1150]; // sums to TOTAL_EXPORTS
 const FORMAT_COLORS = [DASH_C.yellow, DASH_C.green, DASH_C.cyan, DASH_C.purple]; // matches DownloadsView.tsx badge colours
 
-// dataset × format matrix — every row sums to DATASET_COUNTS, every column sums to FORMAT_COUNTS
+// dataset × format matrix - every row sums to DATASET_COUNTS, every column sums to FORMAT_COUNTS
 const DATASET_FORMAT_MATRIX = [
   [2600, 1450, 2400, 420],  // Structures
   [2900, 380, 1720, 240],   // Road Network
@@ -79,13 +79,13 @@ const TOP_FILES = [
   { name: 'reserve_boundaries.shp.zip', count: 640 },
 ];
 
-// download outcomes — ordered best → worst, sums to TOTAL_EXPORTS, coloured with the canonical 5-stop scale
+// download outcomes - ordered best → worst, sums to TOTAL_EXPORTS, coloured with the canonical 5-stop scale
 const OUTCOME_DEFS = [
   { key: 'success1', label: 'Success (first try)', value: 16850, color: RISK5[0] },
   { key: 'success2', label: 'Success (after retry)', value: 1120, color: RISK5[1] },
-  { key: 'timeout', label: 'Failed — timeout', value: 310, color: RISK5[2] },
-  { key: 'formatErr', label: 'Failed — format error', value: 120, color: RISK5[3] },
-  { key: 'serverErr', label: 'Failed — server error', value: 60, color: RISK5[4] },
+  { key: 'timeout', label: 'Failed - timeout', value: 310, color: RISK5[2] },
+  { key: 'formatErr', label: 'Failed - format error', value: 120, color: RISK5[3] },
+  { key: 'serverErr', label: 'Failed - server error', value: 60, color: RISK5[4] },
 ];
 const OUTCOME_SUCCESS = OUTCOME_DEFS[0].value + OUTCOME_DEFS[1].value;
 const OUTCOME_ROW = [Object.fromEntries([
@@ -94,7 +94,7 @@ const OUTCOME_ROW = [Object.fromEntries([
 ])];
 const OUTCOME_SERIES = OUTCOME_DEFS.map(o => ({ key: o.key, name: o.label, color: o.color }));
 
-// per-format file-size spread across the 5 datasets (KB) — Structures figures match DownloadsView.tsx real sizes
+// per-format file-size spread across the 5 datasets (KB) - Structures figures match DownloadsView.tsx real sizes
 const CSV_SIZES = [120, 186, 980, 1450, 4200];
 const KML_SIZES = [260, 310, 410, 540, 1800];
 const GEOJSON_SIZES = [90, 560, 683, 1200, 3900];
@@ -272,7 +272,7 @@ export default function DownloadsOverviewDashboard() {
             { key: 'apiAdoption', name: 'API Adoption %', color: DASH_C.cyan },
           ]} />
         </ChartBox>
-        <ChartBox title="File Size vs Download Volume" subtitle="by dataset — size=days since regen" accent={DASH_C.purple} height={210}>
+        <ChartBox title="File Size vs Download Volume" subtitle="by dataset - size=days since regen" accent={DASH_C.purple} height={210}>
           <ScatterBubble data={DATASET_SCATTER} xLabel="Avg File Size (KB)" yLabel="Downloads (YTD)" color={DASH_C.purple} />
         </ChartBox>
       </ChartGrid>

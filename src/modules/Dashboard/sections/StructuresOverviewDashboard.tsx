@@ -1,11 +1,11 @@
 /**
- * StructuresOverviewDashboard — RMS "Dashboard" tab, Structures & Bridges view.
+ * StructuresOverviewDashboard - RMS "Dashboard" tab, Structures & Bridges view.
  * Port of public/dashboard.html Tab 4 (STRUCTURES & BRIDGES, charts c46–c60) into
  * live React/Recharts, extended to 21 chart tiles. Real structures-inventory
  * figures straight from the mockup's shared `D` data model (546 structures,
  * 312 bridges, 142 box culverts, condition/material/span/age breakdowns, the
  * bridge location scatter, the deficiency and repair-cost data, and the
- * inspection funnel/trend). No tables here — tabular breakdowns live under
+ * inspection funnel/trend). No tables here - tabular breakdowns live under
  * Exhaustive Tables / Deep Analytics.
  */
 import {
@@ -14,7 +14,7 @@ import {
   FunnelC, RadarTile, BoxPlotApprox, WaterfallC,
 } from '../../../shared/dashboardKit';
 
-// ─── Data model (matches public/dashboard.html's shared `D` — STRUCTURES block) ─
+// ─── Data model (matches public/dashboard.html's shared `D` - STRUCTURES block) ─
 const TOTAL_STRUCT = 546;
 const STR_TYPE = [312, 142, 68, 24];
 const STR_TYPE_LBL = ['Bridges', 'Box Culverts', 'Culverts', 'Drifts/Causeway'];
@@ -32,18 +32,17 @@ const STR_SPAN_LBL = ['<10m', '10-20m', '20-50m', '50-100m', '>100m'];
 const STR_AGE = [84, 128, 156, 112, 66];
 const STR_AGE_LBL = ['<10yr', '10-20yr', '20-30yr', '30-50yr', '>50yr'];
 
-// region × condition (Good, Fair, Poor, Critical) — sums to 546, critical column sums to 54
+// region × condition (Good, Fair, Poor, Critical) - sums to 546, critical column sums to 54
 const REG_LBL = ['Central', 'Northern', 'Eastern', 'Western', 'Southern', 'North Eastern'];
 const STR_REG_COND = [
   [44, 36, 28, 12], [30, 24, 22, 6], [52, 40, 32, 14],
   [41, 38, 27, 12], [20, 16, 14, 6], [10, 10, 8, 4],
 ];
 
-// Bridge locations (lat/lng) & condition score — real coordinate/score set from the mockup
-const B_LAT = [0.42, 0.30, 0.06, 0.44, -0.33, -0.61, 2.78, 0.70, 0.61, 1.43, 0.65, 2.25, 0.85, 1.62, -1.25, 0.31, 0.94, 0.62, -0.54, 3.02, 0.33, 3.60, -0.36, 0.50, 1.80];
-const B_LNG = [32.58, 32.58, 32.46, 33.20, 31.74, 30.64, 32.30, 34.18, 33.49, 31.36, 30.27, 32.23, 32.49, 31.98, 29.99, 32.55, 33.12, 33.50, 30.18, 32.38, 32.65, 32.08, 31.62, 32.10, 31.50];
+// Condition score for a 25-bridge sample - coordinates were dropped from this tile
+// (coords belong on maps only, never charts); ranked by score instead.
 const B_SCORE = [82, 75, 90, 68, 55, 45, 72, 38, 62, 70, 84, 76, 65, 52, 30, 88, 71, 60, 48, 55, 78, 42, 66, 80, 58];
-const BRIDGE_LOCATIONS = B_LAT.map((lat, i) => ({ x: B_LNG[i], y: lat, z: B_SCORE[i] }));
+const BRIDGE_SCORE_RANKED = [...B_SCORE].sort((a, b) => b - a).map((score, i) => ({ x: i + 1, y: score, z: score }));
 
 // Repair cost vs condition score (11 points)
 const R_COND = [20, 25, 30, 38, 45, 55, 62, 68, 75, 82, 88];
@@ -90,7 +89,7 @@ const REGION_COND_MIX = REG_LBL.map((r, i) => {
   return { axis: r, goodPct: Math.round((STR_REG_COND[i][0] / total) * 100), criticalPct: Math.round((STR_REG_COND[i][3] / total) * 100) };
 });
 
-// Critical structures by region (column 3 of STR_REG_COND — sums to the 54 KPI figure)
+// Critical structures by region (column 3 of STR_REG_COND - sums to the 54 KPI figure)
 const CRITICAL_BY_REGION = REG_LBL.map((r, i) => ({ region: r, count: STR_REG_COND[i][3] }));
 
 export default function StructuresOverviewDashboard() {
@@ -120,8 +119,8 @@ export default function StructuresOverviewDashboard() {
       </ChartGrid>
 
       <ChartGrid cols="12">
-        <ChartBox title="Bridge Network" subtitle="location & condition — size=score" accent={DASH_C.purple} height={260}>
-          <ScatterBubble data={BRIDGE_LOCATIONS} xLabel="Longitude" yLabel="Latitude" color={DASH_C.purple} />
+        <ChartBox title="Bridge Condition Score" subtitle="25 sampled bridges, ranked - size=score" accent={DASH_C.purple} height={260}>
+          <ScatterBubble data={BRIDGE_SCORE_RANKED} xLabel="Rank" yLabel="Condition Score" color={DASH_C.purple} />
         </ChartBox>
         <ChartBox title="Structure Condition by Region" accent={DASH_C.teal} height={260}>
           <HeatGrid matrix={STR_REG_COND} xLabels={COND_LBL} yLabels={REG_LBL} accent={DASH_C.teal} />

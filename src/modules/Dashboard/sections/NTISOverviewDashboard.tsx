@@ -1,19 +1,19 @@
 /**
- * NTISOverviewDashboard — "National Traffic Information System" flagship view.
+ * NTISOverviewDashboard - "National Traffic Information System" flagship view.
  * AADT trends, growth forecasting, axle-load monitoring, and road safety
- * analysis for Uganda's national corridors — the national-level rollup of
+ * analysis for Uganda's national corridors - the national-level rollup of
  * traffic intelligence, extended to 27 chart tiles.
  *
  * Anchored to the platform's already-established canonical figures:
  *  - 21,302 km total classified network, across 6 regions (Central, Northern,
- *    Eastern, Western, Southern, North Eastern) — see NetworkOverviewDashboard.
+ *    Eastern, Western, Southern, North Eastern) - see NetworkOverviewDashboard.
  *  - National avg AADT 3,847 veh/day (2025), 4.2%/yr growth, 23% HGV share,
- *    peak AADT 18,400 (Kla-Entebbe), and the 10-corridor AADT/growth dataset —
+ *    peak AADT 18,400 (Kla-Entebbe), and the 10-corridor AADT/growth dataset -
  *    see TrafficOverviewDashboard (same corridor list & figures reused here
  *    for cross-dashboard consistency).
  *  - 25 ATC (Automatic Traffic Counter) stations (15 legacy + 10 new).
  * Axle-load, weighbridge, blackspot and fatality figures are new, internally
- * consistent illustrative additions built on top of that base. No tables —
+ * consistent illustrative additions built on top of that base. No tables -
  * tabular breakdowns live under Exhaustive Tables / Deep Analytics.
  */
 import {
@@ -22,7 +22,7 @@ import {
   BoxPlotApprox, TreemapC, RadarTile, FunnelC, GaugeC, WaterfallC,
 } from '../../../shared/dashboardKit';
 
-// Canonical 5-stop risk/severity scale (Good → Critical) — used for every
+// Canonical 5-stop risk/severity scale (Good → Critical) - used for every
 // fatality / accident / overload / blackspot-severity dimension below.
 const RISK_5 = ['#22c55e', '#84cc16', '#eab308', '#f97316', '#ef4444'];
 
@@ -42,7 +42,7 @@ const REG_AADT_2025 = [2670, 2240, 2060, 2310, 1830, 1210]; // = 2025 column of 
 const VEH_LBL = ['Cars/SUV', 'Buses', 'Trucks (LGV+HGV)', 'Motorcycles', 'NMT'];
 const VEH_COMP = [45, 7, 30, 15, 3]; // Trucks = Light Comm.(18)+HGV(12) from the Traffic Overview vehicle mix
 
-// Forecast to 2030 — Normal 4.2%/yr (matches national growth KPI), Optimistic 6%/yr, Pessimistic 2%/yr.
+// Forecast to 2030 - Normal 4.2%/yr (matches national growth KPI), Optimistic 6%/yr, Pessimistic 2%/yr.
 const FC_YRS = [2025, 2026, 2027, 2028, 2029, 2030];
 const FC_NORM = [3847, 4009, 4177, 4352, 4535, 4726];
 const FC_OPT = [3847, 4078, 4323, 4582, 4857, 5148];
@@ -92,14 +92,13 @@ const CORR_SAFETY = [
 ];
 
 // ─── ATC station network (25 stations: 15 legacy + 10 new) ──────────────────
-// Deterministic station-location sample (Uganda bounds), stable across renders.
+// Deterministic per-station AADT sample, stable across renders. Station
+// coordinates were dropped from this tile (coords belong on maps only, never
+// charts) - ranked by traffic volume instead.
 const ATC_ALL = Array.from({ length: 25 }, (_, i) => {
-  const seed = i * 53.7;
-  const lat = -1.4 + ((seed * 9301 + 49297) % 233280) / 233280 * 5.4;
-  const lng = 29.6 + ((seed * 4103 + 12345) % 199999) / 199999 * 5.2;
   const aadt = 900 + ((i * 733) % 9200) + (i < 3 ? 8000 : 0);
-  return { x: +lng.toFixed(2), y: +lat.toFixed(2), z: aadt };
-});
+  return { aadt };
+}).sort((a, b) => b.aadt - a.aadt).map((s, i) => ({ x: i + 1, y: s.aadt, z: s.aadt }));
 
 const DQ_QUARTERS = ['Q1', 'Q2', 'Q3', 'Q4'];
 const DQ_MATRIX = [
@@ -255,8 +254,8 @@ export default function NTISOverviewDashboard() {
       </ChartGrid>
 
       <ChartGrid cols="3">
-        <ChartBox title="ATC Station Network" subtitle="25 stations — size = AADT" accent={DASH_C.purple} height={210}>
-          <ScatterBubble data={ATC_ALL} xLabel="Longitude" yLabel="Latitude" color={DASH_C.purple} />
+        <ChartBox title="ATC Station AADT Ranking" subtitle="25 stations - size = AADT" accent={DASH_C.purple} height={210}>
+          <ScatterBubble data={ATC_ALL} xLabel="Rank" yLabel="AADT (veh/day)" color={DASH_C.purple} />
         </ChartBox>
         <ChartBox title="Legacy vs New Stations" subtitle="25 ATC stations" accent={DASH_C.purple} height={210}>
           <DonutChart data={[{ name: 'Legacy Stations', value: 15, color: DASH_C.purple }, { name: 'New Stations (2023–25)', value: 10, color: DASH_C.cyan }]} />

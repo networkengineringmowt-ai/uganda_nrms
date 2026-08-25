@@ -1,13 +1,13 @@
 /**
- * LifecycleOverviewDashboard — RMS "Dashboard" tab, Lifecycle Cost Analysis view.
+ * LifecycleOverviewDashboard - RMS "Dashboard" tab, Lifecycle Cost Analysis view.
  * HDM-4 (Highway Development and Management model) based life-cycle costing,
  * NPV/BCR computation, and optimal maintenance strategy selection over a
  * 20-year analysis horizon. Anchored to the platform's canonical figures:
  * total classified network 21,302 km (Class A Trunk 4,200 km / Class B
- * Regional 5,800 km / Class C District 11,302 km — matches
+ * Regional 5,800 km / Class C District 11,302 km - matches
  * NetworkOverviewDashboard.tsx), total budget 1,842bn UGX/yr (Routine Maint
  * 420bn, Periodic Maint 472bn, Development 640bn, Emergency 180bn, Admin
- * 130bn — matches BudgetOverviewDashboard.tsx), and maintenance backlog
+ * 130bn - matches BudgetOverviewDashboard.tsx), and maintenance backlog
  * 2,840bn UGX. Treatment unit costs (mn UGX/km) reuse BudgetOverviewDashboard's
  * COST_PER_KM figures for cross-section consistency. The five treatment/
  * intervention types (Routine → Reseal → Overlay → Rehabilitation →
@@ -17,11 +17,11 @@
  * as a relative cost index (Year 1 = 1.0×) rather than absolute bn UGX, since
  * it illustrates HDM-4's classic "1:4:20 deferral rule" (delaying maintenance
  * by a year can cost ~4x more to fix reactively, ~20x more once full
- * reconstruction is required) — the same underlying concept as the unit-cost
+ * reconstruction is required) - the same underlying concept as the unit-cost
  * ladder, expressed as a relative multiplier over time rather than a second
  * absolute-cost total. NPV/BCR/backlog figures elsewhere on this page are
  * absolute bn UGX and stay within the scale set by the 1,842bn/yr budget and
- * 2,840bn backlog. No tables here — tabular breakdowns live under Exhaustive
+ * 2,840bn backlog. No tables here - tabular breakdowns live under Exhaustive
  * Tables / Deep Analytics.
  */
 import {
@@ -37,12 +37,12 @@ const CLASS_KM = [4200, 5800, 11302];
 const BACKLOG = 2840; // bn UGX, matches BudgetOverviewDashboard
 const HORIZON_YRS = 20;
 
-// Ordered by intervention severity — canonical risk/condition scale
+// Ordered by intervention severity - canonical risk/condition scale
 // (matches src/modules/Lifecycle/LifecycleSection.tsx INT_COLORS exactly)
 const TREAT_TYPES = ['Routine', 'Reseal', 'Overlay', 'Rehabilitation', 'Reconstruction'];
 const INT_COLORS = ['#22c55e', '#84cc16', '#eab308', '#f97316', '#ef4444'];
 
-// Treatment unit costs, mn UGX/km — matches BudgetOverviewDashboard's COST_PER_KM
+// Treatment unit costs, mn UGX/km - matches BudgetOverviewDashboard's COST_PER_KM
 const TREAT_UNIT_COST = [4.5, 118, 320, 780, 1450];
 // HDM-4 treatment trigger thresholds (network-average IRI, m/km)
 const TREAT_TRIGGER_IRI = [3.0, 5.0, 7.0, 9.5, 12.5];
@@ -59,7 +59,7 @@ const COST_INDEX_OPTIMAL = LC_YEARS.map((_, i) => +(1 + 0.018 * (i + 1)).toFixed
 const COST_INDEX_REACTIVE = LC_YEARS.map((_, i) => +(1 + 0.10 * (i + 1) + 0.0035 * (i + 1) ** 2).toFixed(2));
 const COST_INDEX_DONOTHING = LC_YEARS.map((_, i) => +(1 + 0.06 * (i + 1) + 0.045 * (i + 1) ** 2).toFixed(2));
 
-// Cost escalation multiplier by years deferred, per treatment type — same
+// Cost escalation multiplier by years deferred, per treatment type - same
 // deferral-cost concept as above, broken out by treatment severity.
 const DEFER_LBL = ['+1yr', '+2yr', '+3yr', '+4yr', '+5yr'];
 const DEFER_MATRIX = [
@@ -67,7 +67,7 @@ const DEFER_MATRIX = [
   [1.0, 1.6, 2.4, 3.4, 4.6],   // Reseal
   [1.0, 1.9, 3.1, 4.6, 6.5],   // Overlay
   [1.0, 2.3, 4.0, 6.2, 9.0],   // Rehabilitation
-  [1.0, 2.8, 5.2, 8.9, 14.0],  // Reconstruction — approaches the "20x" ceiling
+  [1.0, 2.8, 5.2, 8.9, 14.0],  // Reconstruction - approaches the "20x" ceiling
 ];
 
 // Network-average IRI trajectory under do-nothing vs HDM-4 optimal strategy
@@ -96,9 +96,9 @@ const NPV_BRIDGE = [
 // ─── Whole-of-network life-cycle cost ───────────────────────────────────────
 const CLASS_LCC_BN = [8400, 6900, 7100]; // 20-yr life-cycle cost by road class, bn UGX
 const CLASS_TREAT_MATRIX = [
-  [180, 620, 1450, 3200, 2950], // Class A Trunk — sums to 8,400
-  [220, 580, 1120, 2480, 2500], // Class B Regional — sums to 6,900
-  [340, 720, 980, 2260, 2800],  // Class C District — sums to 7,100
+  [180, 620, 1450, 3200, 2950], // Class A Trunk - sums to 8,400
+  [220, 580, 1120, 2480, 2500], // Class B Regional - sums to 6,900
+  [340, 720, 980, 2260, 2800],  // Class C District - sums to 7,100
 ];
 const TREAT_LBL_SHORT = ['Routine', 'Reseal', 'Overlay', 'Rehab', 'Reconst'];
 
@@ -135,7 +135,7 @@ const HDM_PIPELINE = [
   { name: 'Implemented', value: 612 },
 ];
 
-// Candidate road sections — IRI vs AADT, bubble = indicative treatment cost (bn UGX)
+// Candidate road sections - IRI vs AADT, bubble = indicative treatment cost (bn UGX)
 const CANDIDATES = Array.from({ length: 36 }, (_, i) => {
   const aadt = 300 + ((i * 517) % 9200);
   const iri = +(3.0 + ((i * 53) % 900) / 100).toFixed(2);
@@ -184,7 +184,7 @@ export default function LifecycleOverviewDashboard() {
       </ChartGrid>
 
       <ChartGrid cols="12">
-        <ChartBox title="20-Year Cost Trajectory" subtitle="relative cost index, Yr'26=1.0× — HDM-4 '1:4:20' deferral rule" accent={DASH_C.teal} height={250}>
+        <ChartBox title="20-Year Cost Trajectory" subtitle="relative cost index, Yr'26=1.0× - HDM-4 '1:4:20' deferral rule" accent={DASH_C.teal} height={250}>
           <LineMulti
             data={LC_YEAR_LBL.map((y, i) => ({ year: y, Optimal: COST_INDEX_OPTIMAL[i], Reactive: COST_INDEX_REACTIVE[i], 'Do-Nothing': COST_INDEX_DONOTHING[i] }))}
             xKey="year"
@@ -220,7 +220,7 @@ export default function LifecycleOverviewDashboard() {
           <BarV data={CLASS_LBL.map((c, i) => ({ name: c, lcc: CLASS_LCC_BN[i], km: CLASS_KM[i] }))} xKey="name"
             series={[{ key: 'lcc', name: 'Life-Cycle Cost', color: DASH_C.purple }]} unit="bn" />
         </ChartBox>
-        <ChartBox title="Life-Cycle Cost — Road Class × Treatment" subtitle="bn UGX" accent={DASH_C.cyan} height={200}>
+        <ChartBox title="Life-Cycle Cost - Road Class × Treatment" subtitle="bn UGX" accent={DASH_C.cyan} height={200}>
           <HeatGrid matrix={CLASS_TREAT_MATRIX} xLabels={TREAT_LBL_SHORT} yLabels={CLASS_LBL} accent={DASH_C.cyan} unit=" bn" />
         </ChartBox>
       </ChartGrid>
@@ -243,14 +243,14 @@ export default function LifecycleOverviewDashboard() {
       </ChartGrid>
 
       <ChartGrid cols="3">
-        <ChartBox title="Maintenance Timing — Years Overdue" subtitle="by treatment type" accent={DASH_C.orange} height={220}>
+        <ChartBox title="Maintenance Timing - Years Overdue" subtitle="by treatment type" accent={DASH_C.orange} height={220}>
           <BoxPlotApprox data={OVERDUE_BOX} unit="yr" />
         </ChartBox>
         <ChartBox title="Network Condition Trajectory" subtitle="avg IRI, Do-Nothing vs HDM-4 Optimal" accent={DASH_C.cyan} height={220}>
           <LineMulti data={LC_YEAR_LBL.map((y, i) => ({ year: y, Optimal: IRI_OPTIMAL[i], 'Do-Nothing': IRI_DONOTHING[i] }))} xKey="year"
             series={[{ key: 'Optimal', name: 'HDM-4 Optimal', color: DASH_C.cyan }, { key: 'Do-Nothing', name: 'Do-Nothing', color: DASH_C.pink }]} unit=" IRI" area />
         </ChartBox>
-        <ChartBox title="Candidate Sections — IRI vs AADT" subtitle="bubble = indicative treatment cost" accent={DASH_C.purple} height={220}>
+        <ChartBox title="Candidate Sections - IRI vs AADT" subtitle="bubble = indicative treatment cost" accent={DASH_C.purple} height={220}>
           <ScatterBubble data={CANDIDATES} xLabel="AADT (veh/day)" yLabel="IRI (m/km)" color={DASH_C.purple} />
         </ChartBox>
       </ChartGrid>

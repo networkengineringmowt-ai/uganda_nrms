@@ -1,18 +1,18 @@
 /**
- * AdminOverviewDashboard — RMS "Dashboard" tab flagship view for the
+ * AdminOverviewDashboard - RMS "Dashboard" tab flagship view for the
  * Administration section (sectionId 'admin').
  *
  * Scope: user accounts & access control, audit-log activity, the data
  * submission approval pipeline, module/section usage, and the platform's
  * GitHub Actions CI/CD + data-integrity operations. This is the only tab
- * built here — the section's separate "Interactive Map" tab already renders
+ * built here - the section's separate "Interactive Map" tab already renders
  * the platform-architecture mind map from src/modules/MindMap/MindMapSection
  * and is untouched by this file.
  *
  * Real anchors this illustrative data model is built around:
  *  - The repo ships a live `audit-log/` folder of daily JSON reports
  *    (2026-08-20 … 2026-08-24 as of writing), written by
- *    .github/workflows/daily-audit.yml on a 06:00 UTC cron — the "Daily
+ *    .github/workflows/daily-audit.yml on a 06:00 UTC cron - the "Daily
  *    Site Audit" trend below is framed on that real, still-growing feed.
  *  - .github/workflows/deploy.yml auto-builds & publishes on every push to
  *    main (GitHub Pages); backup.yml snapshots a backup branch on the same

@@ -1,10 +1,10 @@
 /**
- * CaseStudiesOverviewDashboard — RMS "Dashboard" tab, Case Studies view.
+ * CaseStudiesOverviewDashboard - RMS "Dashboard" tab, Case Studies view.
  * Documented project outcomes, best-practice engineering interventions, and
  * value-for-money analyses. Anchors to the platform's canonical figures: 6
  * regions (Central, Northern, Eastern, Western, Southern, North Eastern) and
  * the development partners already referenced elsewhere in UNRMS (World Bank,
- * AfDB, JICA, GOU). Extended to 20 chart tiles. No tables here — tabular
+ * AfDB, JICA, GOU). Extended to 20 chart tiles. No tables here - tabular
  * breakdowns live under Exhaustive Tables / Deep Analytics.
  */
 import {
@@ -24,17 +24,17 @@ const CATEGORY_LBL = ['Pavement Rehab', 'Bridge Construction', 'Safety Intervent
 const CATEGORY_COUNT = [26, 14, 12, 18, 16, 10]; // sums to 96
 const CATEGORY_COLORS = [DASH_C.cyan, DASH_C.blue, DASH_C.orange, DASH_C.teal, DASH_C.green, DASH_C.purple];
 
-// Outcome rating — ordered good→bad, canonical risk scale
+// Outcome rating - ordered good→bad, canonical risk scale
 const OUTCOME_LBL = ['Successful', 'Mixed', 'Lessons-Learned'];
 const OUTCOME_COUNT = [58, 27, 11]; // sums to 96
 const OUTCOME_COLORS = ['#22c55e', '#eab308', '#ef4444'];
 
-// Value-for-money score distribution — ordered good→bad, canonical 5-stop scale
+// Value-for-money score distribution - ordered good→bad, canonical 5-stop scale
 const VFM_BAND_LBL = ['Excellent (≥85)', 'Good (70–84)', 'Fair (55–69)', 'Weak (40–54)', 'Poor (<40)'];
 const VFM_BAND_COUNT = [22, 34, 24, 12, 4]; // sums to 96
 const VFM_BAND_COLORS = ['#22c55e', '#84cc16', '#eab308', '#f97316', '#ef4444'];
 
-// Documentation completeness — ordered good→bad, canonical 5-stop scale
+// Documentation completeness - ordered good→bad, canonical 5-stop scale
 const DOC_BAND_LBL = ['Complete', 'Near-Complete', 'Partial', 'Sparse', 'Draft-Only'];
 const DOC_BAND_COUNT = [31, 27, 19, 13, 6]; // sums to 96
 const DOC_BAND_COLORS = ['#22c55e', '#84cc16', '#eab308', '#f97316', '#ef4444'];

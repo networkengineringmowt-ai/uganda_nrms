@@ -1,9 +1,9 @@
 /**
- * PavementOverviewDashboard — RMS "Dashboard" tab, Pavement section.
+ * PavementOverviewDashboard - RMS "Dashboard" tab, Pavement section.
  * Port of public/dashboard.html Tab 2 (PAVEMENT MANAGEMENT, charts c16–c30)
  * into live React/Recharts, extended to 23 chart tiles. Real figures from the
  * mockup's shared `D` data object (pavCond/unpavCond/treatLbl/costPerKm/etc).
- * No tables here — tabular breakdowns live under Exhaustive Tables / Deep Analytics.
+ * No tables here - tabular breakdowns live under Exhaustive Tables / Deep Analytics.
  */
 import {
   DASH_C, REGION_COLORS, DASHBOARD_COND_COLORS, KpiStrip, StatMini, SectionHdr, ChartGrid, ChartBox,
@@ -61,7 +61,7 @@ const IRI_HEAT_YEAR = [
 // IRI heatmap: region × treatment need (deterministic, increases with severity)
 const IRI_HEAT_TREAT = REG_LBL.map((_, i) => TREAT_LBL.map((_, j) => +(2 + i * 0.7 + j * 1.1).toFixed(1)));
 
-// Pavement Condition Rating (PCR) raw sample distributions by region — matches dashboard.html's violin data
+// Pavement Condition Rating (PCR) raw sample distributions by region - matches dashboard.html's violin data
 const PCR_RAW: Record<string, number[]> = {
   Central: [72, 68, 75, 80, 55, 62, 48, 85, 71, 66, 78, 58],
   Northern: [55, 48, 62, 58, 45, 70, 52, 40, 65, 50, 47, 60],
@@ -86,7 +86,7 @@ function boxStats(name: string, raw: number[], color: string) {
   };
 }
 
-// Deterministic "segment sample" points — stable across renders (no Math.random()).
+// Deterministic "segment sample" points - stable across renders (no Math.random()).
 const AGE_IRI_POINTS = Array.from({ length: 42 }, (_, i) => {
   const seed = i * 53.7;
   const age = ((seed * 131 + 17) % 3000) / 100; // 0–30 yrs
@@ -140,7 +140,7 @@ export default function PavementOverviewDashboard() {
               { key: 'Poor', name: 'Poor', color: DASH_C.orange }, { key: 'Critical', name: 'Critical', color: DASH_C.pink },
             ]} unit="km" stacked />
         </ChartBox>
-        <ChartBox title="Segment Condition" subtitle="age vs IRI — size = AADT" accent={DASH_C.purple} height={250}>
+        <ChartBox title="Segment Condition" subtitle="age vs IRI - size = AADT" accent={DASH_C.purple} height={250}>
           <ScatterBubble data={AGE_IRI_POINTS} xLabel="Age (yrs)" yLabel="IRI (m/km)" color={DASH_C.purple} />
         </ChartBox>
       </ChartGrid>
@@ -205,7 +205,7 @@ export default function PavementOverviewDashboard() {
             series={[{ key: 'goodPct', name: 'Good %', color: DASH_C.green }, { key: 'critPct', name: 'Critical %', color: DASH_C.pink }]}
           />
         </ChartBox>
-        <ChartBox title="Waterfall — Paved Condition Breakdown" subtitle="km" accent={DASH_C.pink} height={210}>
+        <ChartBox title="Waterfall - Paved Condition Breakdown" subtitle="km" accent={DASH_C.pink} height={210}>
           <WaterfallC steps={[
             { name: 'Paved Total', delta: PAVED_TOTAL, isTotal: true }, { name: '−Critical', delta: -PAV_COND[3] },
             { name: '−Poor', delta: -PAV_COND[2] }, { name: '−Fair', delta: -PAV_COND[1] }, { name: '=Good', delta: PAV_COND[0], isTotal: true },

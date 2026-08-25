@@ -1,9 +1,9 @@
 /**
- * ProjectsOverviewDashboard — RMS "Dashboard" tab, Projects & Works view.
+ * ProjectsOverviewDashboard - RMS "Dashboard" tab, Projects & Works view.
  * Port of public/dashboard.html Tab 6 (PROJECTS, CONTRACTS & OPRC, charts
  * c75–c87) into live React/Recharts, extended to 21 chart tiles. Real project
  * portfolio, OPRC lot and contract figures straight from the mockup's shared
- * data object `D`. No tables here — tabular breakdowns live under Exhaustive
+ * data object `D`. No tables here - tabular breakdowns live under Exhaustive
  * Tables / Deep Analytics.
  */
 import {
@@ -12,7 +12,7 @@ import {
   TreemapC, RadarTile, GaugeC, BoxPlotApprox, WaterfallC,
 } from '../../../shared/dashboardKit';
 
-// ─── Data model (matches public/dashboard.html's `D` — PROJECTS/OPRC slice) ──
+// ─── Data model (matches public/dashboard.html's `D` - PROJECTS/OPRC slice) ──
 const PROJ_NAME = ['Gulu-Acholibur', 'Mbarara-Bypass', 'Ntungamo-Mirama', 'Soroti-Lira', 'Kampala Distr.', 'Masaka-Mbarara', 'Tororo-Mbale', 'Hoima-Kafu'];
 const PROJ_PCT = [88, 62, 45, 71, 34, 56, 82, 28];
 const PROJ_BN = [248, 142, 186, 124, 380, 210, 168, 290]; // budget, bn UGX
@@ -46,14 +46,14 @@ const COMPLETION_KM = [180, 240, 320, 420, 520, 428];
 // Derived stats (straightforward roll-ups of the arrays above)
 const AVG_COMPLETION = Math.round(PROJ_PCT.reduce((a, b) => a + b, 0) / PROJ_PCT.length); // 58
 const AVG_OPRC_SCORE = Math.round(OPRC_SCORE.reduce((a, b) => a + b, 0) / OPRC_SCORE.length); // 76
-// Ordered by score band — canonical risk/condition scale
+// Ordered by score band - canonical risk/condition scale
 const OPRC_BAND_COUNTS = [
   { name: 'Excellent (≥80)', value: OPRC_SCORE.filter(v => v >= 80).length, color: '#22c55e' },
   { name: 'Good (65–79)', value: OPRC_SCORE.filter(v => v >= 65 && v < 80).length, color: '#eab308' },
   { name: 'Needs Improvement (<65)', value: OPRC_SCORE.filter(v => v < 65).length, color: '#ef4444' },
 ];
 
-// Completion % grouped by status — quartiles approximated for small samples
+// Completion % grouped by status - quartiles approximated for small samples
 function groupBoxStats(idxs: number[], name: string, color: string) {
   const vals = idxs.map(i => PROJ_PCT[i]).sort((a, b) => a - b);
   const min = vals[0], max = vals[vals.length - 1];
@@ -102,7 +102,7 @@ export default function ProjectsOverviewDashboard() {
       </ChartGrid>
 
       <ChartGrid cols="12">
-        <ChartBox title="Project Timeline" subtitle="start vs end year — size = % complete" accent={DASH_C.cyan} height={260}>
+        <ChartBox title="Project Timeline" subtitle="start vs end year - size = % complete" accent={DASH_C.cyan} height={260}>
           <ScatterBubble
             data={PROJ_NAME.map((n, i) => ({ x: PROJ_START[i], y: PROJ_END[i], z: PROJ_PCT[i], label: n }))}
             xLabel="Start Year" yLabel="End Year" color={DASH_C.cyan}

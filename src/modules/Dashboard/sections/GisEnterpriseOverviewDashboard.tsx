@@ -1,14 +1,14 @@
 /**
- * GisEnterpriseOverviewDashboard — RMS "Dashboard" tab, GIS Enterprise Platform view.
+ * GisEnterpriseOverviewDashboard - RMS "Dashboard" tab, GIS Enterprise Platform view.
  * Spatial data infrastructure overview: the layer catalogue, WMS/WFS service usage,
  * aerial imagery coverage, data quality/completeness, geoprocessing throughput, CRS
  * usage, storage footprint and API access for the enterprise GIS that underpins road
  * asset management. Illustrative but internally consistent, anchored to the same
  * canonical platform figures used elsewhere: 21,302 km classified network across 6
  * regions (Central, Northern, Eastern, Western, Southern, North Eastern) and 546
- * structures (312 bridges, 142 box culverts, 68 culverts, 24 drifts/causeways) —
+ * structures (312 bridges, 142 box culverts, 68 culverts, 24 drifts/causeways) -
  * every road/structure layer's feature count below is built to match those totals.
- * No tables here — tabular breakdowns live under Exhaustive Tables / Deep Analytics.
+ * No tables here - tabular breakdowns live under Exhaustive Tables / Deep Analytics.
  */
 import {
   DASH_C, REGION_COLORS, KpiStrip, StatMini, SectionHdr, ChartGrid, ChartBox,
@@ -16,7 +16,7 @@ import {
   GaugeC, FunnelC, RadarTile, SunburstApprox, BoxPlotApprox, WaterfallC,
 } from '../../../shared/dashboardKit';
 
-// Canonical 5-stop risk/quality scale — used ONLY for ordered/severity dimensions.
+// Canonical 5-stop risk/quality scale - used ONLY for ordered/severity dimensions.
 const QUALITY_SCALE = ['#22c55e', '#84cc16', '#eab308', '#f97316', '#ef4444'];
 
 // ─── Data model ──────────────────────────────────────────────────────────────
@@ -35,7 +35,7 @@ const LAYER_STATUS = [148, 41, 25];
 const LAYER_STATUS_LBL = ['Published', 'Draft', 'Archived'];
 const LAYER_STATUS_COLORS = [DASH_C.green, DASH_C.yellow, 'rgba(148,163,184,0.55)'];
 
-// Layer status by category (Published / Draft / Archived) — rows sum to LAYER_CAT_COUNT
+// Layer status by category (Published / Draft / Archived) - rows sum to LAYER_CAT_COUNT
 const CAT_STATUS_MATRIX = [
   [30, 8, 4],   // Roads
   [20, 6, 2],   // Structures
@@ -75,7 +75,7 @@ const API_WEEKS = ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8', 'W9', 'W10'];
 const API_WMS = [186, 194, 201, 210, 198, 224, 236, 241, 252, 268];
 const API_WFS = [64, 68, 72, 70, 75, 81, 84, 88, 92, 96];
 
-// Spatial data quality issues by severity (ordered, worst last) — QUALITY_SCALE order
+// Spatial data quality issues by severity (ordered, worst last) - QUALITY_SCALE order
 const QUALITY_ISSUE_LBL = ['Minor', 'Low', 'Moderate', 'Elevated', 'Critical'];
 const QUALITY_ISSUE_COUNT = [312, 184, 96, 41, 14];
 
@@ -100,7 +100,7 @@ const PIPELINE = [
   { name: 'Published to Services', value: LAYER_STATUS[0] },
 ];
 
-// Data freshness by layer (days since last update) — box-plot style spread per category
+// Data freshness by layer (days since last update) - box-plot style spread per category
 const FRESH_ROADS = [1, 3, 5, 8, 12, 15, 20, 28, 35, 60];
 const FRESH_IMAGERY = [30, 90, 180, 240, 300, 365, 420, 540, 700, 900];
 const FRESH_ADMIN = [5, 20, 45, 60, 90, 120, 150, 200, 260, 400];
@@ -109,16 +109,15 @@ function boxStats(sorted: number[], color: string, name: string) {
   return { name, min: sorted[0], q1: sorted[2], median: (sorted[4] + sorted[5]) / 2, q3: sorted[7], max: sorted[9], color };
 }
 
-// Deterministic imagery tile sample points (Uganda bounds) — resolution (cm/px) vs age (months)
+// Deterministic imagery tile sample (42 tiles) - resolution (cm/px) vs age (months).
+// Tile coordinates were dropped (coords belong on maps only, never charts).
 const TILE_SAMPLES = Array.from({ length: 42 }, (_, i) => {
-  const seed = i * 29.71;
-  const lat = -1.4 + ((seed * 9301 + 49297) % 233280) / 233280 * 5.4;
-  const lng = 29.6 + ((seed * 4103 + 12345) % 199999) / 199999 * 5.2;
   const resCm = 5 + ((i * 37) % 45);
   const ageMo = 1 + ((i * 53) % 60);
-  return { x: +lng.toFixed(2), y: +lat.toFixed(2), z: resCm, ageMo };
+  return { z: resCm, ageMo };
 });
 const RES_VS_AGE = TILE_SAMPLES.map(t => ({ x: t.ageMo, y: t.z }));
+const TILE_RES_RANKED = [...TILE_SAMPLES].sort((a, b) => a.z - b.z).map((t, i) => ({ x: i + 1, y: t.z, z: t.z }));
 
 const CAT_STATUS_ROWS = LAYER_CAT_LBL.map((c, i) => ({
   name: c, Published: CAT_STATUS_MATRIX[i][0], Draft: CAT_STATUS_MATRIX[i][1], Archived: CAT_STATUS_MATRIX[i][2],
@@ -155,8 +154,8 @@ export default function GisEnterpriseOverviewDashboard() {
       </ChartGrid>
 
       <ChartGrid cols="12">
-        <ChartBox title="Imagery Tiles" subtitle="location & resolution — size=cm/px" accent={DASH_C.orange} height={260}>
-          <ScatterBubble data={TILE_SAMPLES} xLabel="Longitude" yLabel="Latitude" color={DASH_C.orange} />
+        <ChartBox title="Imagery Tiles by Resolution" subtitle="42 tiles, finest to coarsest - size=cm/px" accent={DASH_C.orange} height={260}>
+          <ScatterBubble data={TILE_RES_RANKED} xLabel="Rank" yLabel="Resolution (cm/px)" color={DASH_C.orange} />
         </ChartBox>
         <ChartBox title="Layer Status Mix by Category" accent={DASH_C.pink} height={260}>
           <BarV data={CAT_STATUS_ROWS} xKey="name"

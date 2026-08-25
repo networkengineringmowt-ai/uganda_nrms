@@ -1,10 +1,10 @@
 /**
- * TrafficOverviewDashboard — RMS "Dashboard" tab traffic-intelligence view.
+ * TrafficOverviewDashboard - RMS "Dashboard" tab traffic-intelligence view.
  * Port of public/dashboard.html Tab 3 (TRAFFIC INTELLIGENCE, charts c31–c45) into
  * live React/Recharts, extended to 21 chart tiles. Real corridor AADT counts,
  * ATC station network, vehicle composition, and 3-scenario forecast figures
  * (matches the platform's official 3,847 avg AADT / 18,400 Kla-Entebbe peak).
- * No tables here — tabular breakdowns live under Exhaustive Tables / Deep Analytics.
+ * No tables here - tabular breakdowns live under Exhaustive Tables / Deep Analytics.
  */
 import {
   DASH_C, REGION_COLORS, KpiStrip, StatMini, SectionHdr, ChartGrid, ChartBox,
@@ -40,11 +40,10 @@ const DAY_PCT = [82, 85, 88, 86, 100, 74, 42];
 const MONTH_LBL = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const MONTH_PCT = [88, 92, 96, 94, 100, 98, 95, 97, 100, 96, 92, 84];
 
-// ATC (Automatic Traffic Counter) station network — 25 stations, location & volume.
-const ST_LAT = [0.42, 0.85, 1.62, 2.78, 3.02, 0.31, -0.33, -0.61, -0.54, 0.33, 0.44, 0.61, 0.70, 0.30, 0.06, -0.36, -1.25, -0.62, 0.94, 0.62, 3.60, -1.24, 1.43, 0.65, 2.25];
-const ST_LNG = [32.58, 32.49, 31.98, 32.30, 32.38, 32.55, 31.74, 30.64, 30.18, 32.65, 33.20, 33.49, 34.18, 32.58, 32.46, 31.62, 29.99, 30.70, 33.12, 33.50, 32.08, 29.98, 31.36, 30.27, 32.23];
+// ATC (Automatic Traffic Counter) station network - 25 stations, ranked by volume.
+// Station coordinates were dropped from this tile (coords belong on maps only, never charts).
 const ST_AADT = [4820, 3140, 2860, 2140, 1480, 5210, 3820, 2940, 1840, 6480, 4210, 2840, 2180, 18400, 9840, 2620, 1670, 2180, 1420, 1680, 1240, 1180, 1840, 2140, 2480];
-const ATC_STATIONS = ST_LAT.map((lat, i) => ({ x: ST_LNG[i], y: lat, z: ST_AADT[i] }));
+const ATC_STATIONS = [...ST_AADT].sort((a, b) => b - a).map((aadt, i) => ({ x: i + 1, y: aadt, z: aadt }));
 
 const REG_LBL = ['Central', 'Northern', 'Eastern', 'Western', 'Southern', 'North Eastern'];
 const REG_YRS = [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
@@ -73,7 +72,7 @@ function boxStats(values: number[], color: string, name: string) {
   return { name, min: sorted[0], q1: q(0.25), median: q(0.5), q3: q(0.75), max: sorted[n - 1], color };
 }
 
-// AADT seasonality by corridor × month — same seasonal curve used in the reference mockup.
+// AADT seasonality by corridor × month - same seasonal curve used in the reference mockup.
 const SEASON_MATRIX = CORRIDORS.map((_, ci) =>
   MONTH_LBL.map((_, mi) => Math.round(CORR_AADT[ci] * (0.85 + 0.15 * Math.sin((mi / 6) * Math.PI))))
 );
@@ -114,8 +113,8 @@ export default function TrafficOverviewDashboard() {
       </ChartGrid>
 
       <ChartGrid cols="12">
-        <ChartBox title="ATC Station Network" subtitle="location & volume — size=AADT" accent={DASH_C.purple} height={260}>
-          <ScatterBubble data={ATC_STATIONS} xLabel="Longitude" yLabel="Latitude" color={DASH_C.purple} />
+        <ChartBox title="ATC Station AADT Ranking" subtitle="25 stations, ranked - size=AADT" accent={DASH_C.purple} height={260}>
+          <ScatterBubble data={ATC_STATIONS} xLabel="Rank" yLabel="AADT (veh/day)" color={DASH_C.purple} />
         </ChartBox>
         <ChartBox title="AADT Forecast 2016–2035" subtitle="3 scenarios" accent={DASH_C.cyan} height={260}>
           <LineMulti data={FC_YRS.map((y, i) => ({ year: y, Normal: FC_NORM[i], Optimistic: FC_OPT[i], Pessimistic: FC_PESS[i] }))} xKey="year"

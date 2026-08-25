@@ -1,16 +1,16 @@
 /**
- * RoadReserveOverviewDashboard — RMS "Dashboard" tab, Road Reserve Management view.
+ * RoadReserveOverviewDashboard - RMS "Dashboard" tab, Road Reserve Management view.
  * Covers surveyed road-reserve boundaries, gazette status, encroachment
  * detection/enforcement, and reserve-width compliance monitoring for Uganda's
  * classified road network. Anchored to the platform's canonical network figures
  * (matches NetworkOverviewDashboard.tsx): total classified network 21,302 km
  * across 6 regions (Central, Northern, Eastern, Western, Southern, North
- * Eastern) and 3 road classes — Class A Trunk 4,200 km, Class B Regional
- * 5,800 km, Class C District 11,302 km — each carrying a standard road-reserve
+ * Eastern) and 3 road classes - Class A Trunk 4,200 km, Class B Regional
+ * 5,800 km, Class C District 11,302 km - each carrying a standard road-reserve
  * corridor width (50 m / 30 m / 15–20 m respectively, per Uganda practice).
  * All reserve/encroachment figures below are an internally-consistent
  * illustrative data model (not live survey data), sized like the other
- * flagship section dashboards. No tables here — tabular breakdowns live under
+ * flagship section dashboards. No tables here - tabular breakdowns live under
  * Exhaustive Tables / Deep Analytics.
  */
 import {
@@ -19,7 +19,7 @@ import {
   DonutChart, PieChartTile, FunnelC, RadarTile, BoxPlotApprox, WaterfallC,
 } from '../../../shared/dashboardKit';
 
-// Canonical 5-stop severity/risk scale (best → worst) — matches src/utils/helpers.ts RISK_SCALE_STOPS.
+// Canonical 5-stop severity/risk scale (best → worst) - matches src/utils/helpers.ts RISK_SCALE_STOPS.
 const RISK5 = ['#22c55e', '#84cc16', '#eab308', '#f97316', '#ef4444'];
 
 // ─── Data model ──────────────────────────────────────────────────────────────
@@ -31,36 +31,36 @@ const CLASS_LBL = ['Class A Trunk', 'Class B Regional', 'Class C District'];
 const CLASS_KM = [4200, 5800, 11302];
 const STD_WIDTH_M = [50, 30, 20]; // gazetted reserve-width standard per class (m)
 
-// Reserve boundary survey / gazette pipeline (km) — sums verified below.
+// Reserve boundary survey / gazette pipeline (km) - sums verified below.
 const RESERVE_SURVEYED_KM = 15860; // 74% of network
 const RESERVE_GAZETTED_KM = 11240; // 53% of network, 71% of surveyed
-const RESERVE_PUBLISHED_KM = 9080; // 43% of network — gazette notice published
+const RESERVE_PUBLISHED_KM = 9080; // 43% of network - gazette notice published
 const NOT_SURVEYED_KM = NET_TOTAL - RESERVE_SURVEYED_KM; // 5,442 km
 const NOT_GAZETTED_KM = RESERVE_SURVEYED_KM - RESERVE_GAZETTED_KM; // 4,620 km
 const AWAITING_PUBLICATION_KM = RESERVE_GAZETTED_KM - RESERVE_PUBLISHED_KM; // 2,160 km
 
-// Surveyed / gazetted km per region — rows sum to RESERVE_SURVEYED_KM / RESERVE_GAZETTED_KM.
+// Surveyed / gazetted km per region - rows sum to RESERVE_SURVEYED_KM / RESERVE_GAZETTED_KM.
 const REG_SURVEYED_KM = [3630, 2660, 3040, 2370, 2470, 1690];
 const REG_GAZETTED_KM = [2580, 1780, 2140, 1720, 1780, 1240];
 
-// Surveyed / gazetted km per road class — sums to the same totals.
+// Surveyed / gazetted km per road class - sums to the same totals.
 const CLASS_SURVEYED_KM = [3780, 4640, 7440];
 const CLASS_GAZETTED_KM = [3230, 3480, 4530];
 
-// Reserve-width compliance — average surveyed width vs the gazetted standard, by class.
+// Reserve-width compliance - average surveyed width vs the gazetted standard, by class.
 const AVG_WIDTH_M = [46, 26.4, 15.8];
 const WIDTH_COMPLIANCE_PCT = AVG_WIDTH_M.map((w, i) => Math.round((w / STD_WIDTH_M[i]) * 100)); // [92, 88, 79]
 const OVERALL_COMPLIANCE_PCT = Math.round(
   CLASS_KM.reduce((s, km, i) => s + km * WIDTH_COMPLIANCE_PCT[i], 0) / NET_TOTAL,
 ); // 84
 
-// Reserve-width compliance % matrix, region × class — illustrative spread around the class averages.
+// Reserve-width compliance % matrix, region × class - illustrative spread around the class averages.
 const COMPLIANCE_MATRIX = [
   [94, 90, 82], [88, 84, 74], [90, 86, 78],
   [92, 87, 80], [91, 85, 77], [85, 80, 70],
 ];
 
-// Encroachment case counts — total 2,148 active cases.
+// Encroachment case counts - total 2,148 active cases.
 const TOTAL_CASES = 2148;
 const SEVERITY_LBL = ['Low', 'Minor', 'Moderate', 'Major', 'Severe'];
 const SEVERITY_COUNT = [512, 610, 580, 320, 126]; // sums to TOTAL_CASES
@@ -71,7 +71,7 @@ const TYPE_COLORS = [DASH_C.orange, DASH_C.green, DASH_C.blue, DASH_C.pink, DASH
 
 const REG_CASES = [640, 310, 480, 290, 280, 148]; // sums to TOTAL_CASES
 
-// Region × severity matrix — every row sums to REG_CASES, every column sums to SEVERITY_COUNT.
+// Region × severity matrix - every row sums to REG_CASES, every column sums to SEVERITY_COUNT.
 const REG_SEVERITY = [
   [152, 182, 173, 95, 38], [74, 88, 84, 46, 18], [114, 136, 130, 71, 29],
   [69, 82, 78, 43, 18], [67, 80, 76, 42, 15], [36, 42, 39, 23, 8],
@@ -100,21 +100,18 @@ const ENFORCEMENT_FUNNEL = [
 const DISTRICT_LBL = ['Wakiso', 'Mukono', 'Kampala', 'Jinja', 'Mbarara', 'Mbale', 'Masaka', 'Gulu', 'Lira', 'Arua'];
 const DISTRICT_COUNT = [214, 178, 165, 142, 128, 112, 96, 88, 76, 62];
 
-// Case age (months open) vs severity score (0–100) — older unresolved cases skew more severe.
+// Case age (months open) vs severity score (0–100) - older unresolved cases skew more severe.
 const CASE_AGE_VS_SEVERITY = [
   { x: 2, y: 22 }, { x: 4, y: 28 }, { x: 6, y: 35 }, { x: 8, y: 30 }, { x: 10, y: 42 },
   { x: 12, y: 48 }, { x: 14, y: 55 }, { x: 18, y: 50 }, { x: 21, y: 62 }, { x: 24, y: 68 },
   { x: 30, y: 72 }, { x: 36, y: 80 }, { x: 42, y: 85 }, { x: 48, y: 90 },
 ];
 
-// Encroachment case hotspots (deterministic sample points across Uganda's bounding box).
-const CASE_HOTSPOTS = Array.from({ length: 42 }, (_, i) => {
-  const seed = i * 29.7;
-  const lat = -1.4 + ((seed * 9301 + 49297) % 233280) / 233280 * 5.4;
-  const lng = 29.6 + ((seed * 4103 + 12345) % 199999) / 199999 * 5.2;
-  const severity = 20 + ((i * 613) % 80);
-  return { x: +lng.toFixed(2), y: +lat.toFixed(2), z: severity };
-});
+// Encroachment case severity (deterministic 42-case sample). Case coordinates
+// were dropped from this tile (coords belong on maps only, never charts) -
+// ranked by severity score instead.
+const CASE_HOTSPOTS = Array.from({ length: 42 }, (_, i) => 20 + ((i * 613) % 80))
+  .sort((a, b) => b - a).map((severity, i) => ({ x: i + 1, y: severity, z: severity }));
 
 // Reserve width sample points (m) per class, used for the box-plot.
 const WIDTH_A = [38, 41, 43, 45, 46, 47, 48, 49, 51, 53];
@@ -158,8 +155,8 @@ export default function RoadReserveOverviewDashboard() {
       </ChartGrid>
 
       <ChartGrid cols="12">
-        <ChartBox title="Encroachment Case Hotspots" subtitle="location — size=severity score" accent={DASH_C.purple} height={260}>
-          <ScatterBubble data={CASE_HOTSPOTS} xLabel="Longitude" yLabel="Latitude" color={DASH_C.purple} />
+        <ChartBox title="Encroachment Case Severity" subtitle="42 cases, ranked - size=severity score" accent={DASH_C.purple} height={260}>
+          <ScatterBubble data={CASE_HOTSPOTS} xLabel="Rank" yLabel="Severity Score" color={DASH_C.purple} />
         </ChartBox>
         <ChartBox title="Encroachment Severity by Region" subtitle="stacked, canonical 5-stop risk scale" accent={DASH_C.pink} height={260}>
           <BarV data={REG_LBL.map((r, i) => ({ name: r, Low: REG_SEVERITY[i][0], Minor: REG_SEVERITY[i][1], Moderate: REG_SEVERITY[i][2], Major: REG_SEVERITY[i][3], Severe: REG_SEVERITY[i][4] }))}

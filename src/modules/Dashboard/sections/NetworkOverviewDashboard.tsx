@@ -1,8 +1,8 @@
 /**
- * NetworkOverviewDashboard — RMS "Dashboard" tab flagship view.
+ * NetworkOverviewDashboard - RMS "Dashboard" tab flagship view.
  * Port of public/dashboard.html Tab 1 (NETWORK OVERVIEW, charts c1–c15) into
  * live React/Recharts, extended to 20 chart tiles. Real FY25/26 NDPIV network
- * figures (matches the platform's official 21,302 km total). No tables here —
+ * figures (matches the platform's official 21,302 km total). No tables here -
  * tabular breakdowns live under Exhaustive Tables / Deep Analytics.
  */
 import {
@@ -17,7 +17,7 @@ const REG_LBL = ['Central', 'Northern', 'Eastern', 'Western', 'Southern', 'North
 const REG_KM = [4436, 3920, 4290, 3000, 3300, 2356];
 const REG_PAVED = [1850, 900, 860, 1280, 1140, 375];
 const REG_UNPAVED = [2586, 3020, 3430, 1720, 2160, 1981];
-const REG_CLASS = [ // [A, B, C] per region — sums to REG_KM
+const REG_CLASS = [ // [A, B, C] per region - sums to REG_KM
   [1050, 1300, 2086], [720, 1100, 2100], [800, 1200, 2290],
   [640, 900, 1460], [620, 850, 1830], [370, 450, 1536],
 ];
@@ -40,14 +40,13 @@ function boxStats(sorted: number[], color: string, name: string) {
   return { name, min: sorted[0], q1: sorted[2], median: (sorted[4] + sorted[5]) / 2, q3: sorted[7], max: sorted[9], color };
 }
 
-// Deterministic "road segment" sample points (Uganda bounds) — stable across renders.
+// Deterministic "road segment" sample points - stable across renders.
+// Coordinates never plot on a chart (they belong on maps only); this correlates
+// traffic volume against roughness instead, which is what the tile is actually for.
 const SEGMENTS = Array.from({ length: 48 }, (_, i) => {
-  const seed = i * 37.13;
-  const lat = -1.4 + ((seed * 9301 + 49297) % 233280) / 233280 * 5.4;
-  const lng = 29.6 + ((seed * 4103 + 12345) % 199999) / 199999 * 5.2;
   const aadt = 400 + ((i * 613) % 17600);
   const iri = 1.5 + ((i * 41) % 750) / 100;
-  return { x: +lng.toFixed(2), y: +lat.toFixed(2), z: aadt, iri };
+  return { x: +iri.toFixed(2), y: aadt, z: aadt, iri };
 });
 
 const REG_CLASS_ROWS = REG_LBL.map((r, i) => ({ name: r, A: REG_CLASS[i][0], B: REG_CLASS[i][1], C: REG_CLASS[i][2] }));
@@ -85,8 +84,8 @@ export default function NetworkOverviewDashboard() {
       </ChartGrid>
 
       <ChartGrid cols="12">
-        <ChartBox title="Road Segments" subtitle="location & traffic — size=AADT" accent={DASH_C.purple} height={260}>
-          <ScatterBubble data={SEGMENTS} xLabel="Longitude" yLabel="Latitude" color={DASH_C.purple} />
+        <ChartBox title="Road Segments" subtitle="traffic vs roughness - size=AADT" accent={DASH_C.purple} height={260}>
+          <ScatterBubble data={SEGMENTS} xLabel="IRI (roughness)" yLabel="AADT (veh/day)" color={DASH_C.purple} />
         </ChartBox>
         <ChartBox title="Condition Score" subtitle="region × class (0–100)" accent={DASH_C.pink} height={260}>
           <BarV data={REG_CLASS_ROWS.map(r => ({ name: r.name, A: REG_COND_A[REG_LBL.indexOf(r.name)], B: REG_COND_B[REG_LBL.indexOf(r.name)], C: REG_COND_C[REG_LBL.indexOf(r.name)] }))}
