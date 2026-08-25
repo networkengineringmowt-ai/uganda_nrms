@@ -15,8 +15,8 @@ function prettyLabel(key: string): string {
 const SPECS: Record<string, string> = { rms:'road_links', pms:'road_condition_assessments', tis:'traffic_stations', bms:'bridge_inventory', ducar:'maintenance_works', projects:'maintenance_works', reserve:'encroachments', pim:'investment_projects' };
 const FALLBACK_GEOJSON: Record<string, string> = {
   tis: 'data/traffic_predictions.geojson',
-  rms: 'data/road_network.geojson',
-  pms: 'data/road_network.geojson',
+  rms: 'road_network.geojson',
+  pms: 'road_network.geojson',
 };
 async function loadRows(sectionId: string): Promise<Row[]> {
   const table = SPECS[sectionId] ?? 'road_links';
