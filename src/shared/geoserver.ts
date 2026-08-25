@@ -1,11 +1,11 @@
 /**
- * geoserver.ts — optional GeoNode/GeoServer WMS integration for the NRMS platform.
+ * geoserver.ts - optional GeoNode/GeoServer WMS integration for the NRMS platform.
  *
  * When VITE_GEOSERVER_WMS_URL is set (e.g. http://localhost/geoserver/ows for a
  * local GeoNode, or https://gis.unra.go.ug/geoserver/ows for a hosted one) the
  * GIS section can overlay the enterprise GeoNode layers as live WMS tiles.
  * When it is unset / the server is offline, callers fall back to the bundled
- * GeoJSON layers — nothing breaks.
+ * GeoJSON layers - nothing breaks.
  *
  * See geonode/ for the GeoNode stack that publishes these layers.
  */
@@ -56,7 +56,7 @@ export function wmsProps(def: WmsLayerDef) {
   };
 }
 
-/** Quick liveness probe (GetCapabilities) — used to decide WMS vs GeoJSON fallback. */
+/** Quick liveness probe (GetCapabilities) - used to decide WMS vs GeoJSON fallback. */
 export async function geoserverOnline(timeoutMs = 4000): Promise<boolean> {
   if (!GEOSERVER_ENABLED) return false;
   try {

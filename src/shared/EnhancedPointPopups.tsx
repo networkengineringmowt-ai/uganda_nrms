@@ -378,7 +378,7 @@ export function BridgePopup({ properties, coordinates }: Omit<PopupProps, 'type'
             fontSize: 11,
             fontWeight: 600,
           }}>
-            {condition} / 5 — {condColor.label}
+            {condition} / 5 - {condColor.label}
           </div>
         </div>
 

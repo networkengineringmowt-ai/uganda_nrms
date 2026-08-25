@@ -1,5 +1,5 @@
 /**
- * MapDetailPane — Right-side panel companion to a map.
+ * MapDetailPane - Right-side panel companion to a map.
  *
  * • Default view: general statistics/charts for the section.
  * • Selected view: detailed attributes for a clicked feature.
@@ -23,7 +23,7 @@ export interface MapDetailPaneProps {
   defaultSubtitle?:  string;
   /** Title shown when something is selected. */
   selectedTitle?:    string;
-  /** Optional close handler — shows  in header when selected. */
+  /** Optional close handler - shows  in header when selected. */
   onClose?:          () => void;
   /** Pane width in pixels. Default 340. */
   width?:            number;
@@ -160,7 +160,7 @@ export function AttributeRow({
         color, fontWeight: 700,
         fontFamily: mono ? 'monospace' : 'inherit',
         textAlign: 'right', maxWidth: '60%',
-      }}>{value ?? '—'}</span>
+      }}>{value ?? '-'}</span>
     </div>
   );
 }

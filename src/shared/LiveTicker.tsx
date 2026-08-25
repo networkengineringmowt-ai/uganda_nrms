@@ -1,5 +1,5 @@
 /**
- * LiveTicker — a horizontal strip of continuously-updating "current value"
+ * LiveTicker - a horizontal strip of continuously-updating "current value"
  * chips, fed by the background predictive engine (liveEngine.ts).
  *
  * Purely presentational: pass the metrics you want shown. A pulsing dot and an

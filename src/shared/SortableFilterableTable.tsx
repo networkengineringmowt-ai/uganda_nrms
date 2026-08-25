@@ -1,5 +1,5 @@
 /**
- * SortableFilterableTable — the platform-wide shared table.
+ * SortableFilterableTable - the platform-wide shared table.
  * Click a header to sort (asc/desc), type to filter across all columns,
  * one-click CSV export (via exportUtils). Styled to match the platform's
  * dark table convention so it can be dropped into any section.
@@ -132,7 +132,7 @@ export function SortableFilterableTable<T extends Record<string, any>>({
         </button>
       </div>
 
-      {/* Table — fixed-height virtualized scroll container, sticky header */}
+      {/* Table - fixed-height virtualized scroll container, sticky header */}
       <div ref={containerRef} className="dt-scroll">
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10.5 }}>
           <thead>
@@ -175,7 +175,7 @@ export function SortableFilterableTable<T extends Record<string, any>>({
                     padding: '8px 12px', color: '#c4d2e1',
                     textAlign: c.numeric ? 'right' : 'left',
                   }}>
-                    {c.render ? c.render(r) : String(r[c.key] ?? '—')}
+                    {c.render ? c.render(r) : String(r[c.key] ?? '-')}
                   </td>
                 ))}
               </tr>

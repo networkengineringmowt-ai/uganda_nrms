@@ -1,5 +1,5 @@
 /**
- * Reporting year — the platform ALWAYS reports on the current year; where
+ * Reporting year - the platform ALWAYS reports on the current year; where
  * observations lag, the predictive models (traffic projections, bridge AADT
  * prediction, deterioration curves) carry values forward to this year.
  */

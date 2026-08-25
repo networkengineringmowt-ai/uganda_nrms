@@ -1,10 +1,10 @@
 /**
- * unraStandards — the platform's single source of truth for UNRA's OFFICIAL
+ * unraStandards - the platform's single source of truth for UNRA's OFFICIAL
  * asset-management taxonomy, ingested from the Asset Management Manuals
  * ("0. Manuals/Asset Management Manuals", D:/OneDrive repository):
  *
  *   Primary source: "Manual: Visual Inspections of Paved and Unpaved Roads"
- *   (UNRA, Feb 2012, incl. Addendum No. 1) — survey defect categories with
+ *   (UNRA, Feb 2012, incl. Addendum No. 1) - survey defect categories with
  *   1–5 grade scales, and the official road-inventory item lists
  *   (Continuous/Line data vs Discrete/Point data).
  *
@@ -15,14 +15,14 @@
 // ── Survey grade scale (Visual Inspections manual, all defect tables) ─────────
 /** Official 1–5 grading used across the visual-inspection defect tables. */
 export const GRADE_SCALE = [
-  { grade: 1, meaning: 'None / as-new — defect not present' },
-  { grade: 2, meaning: 'Minor — isolated occurrence, limited area/severity' },
-  { grade: 3, meaning: 'Moderate — defect established over part of segment' },
-  { grade: 4, meaning: 'Severe — extensive occurrence and/or high severity' },
-  { grade: 5, meaning: 'Very severe — defect dominates the rateable segment' },
+  { grade: 1, meaning: 'None / as-new - defect not present' },
+  { grade: 2, meaning: 'Minor - isolated occurrence, limited area/severity' },
+  { grade: 3, meaning: 'Moderate - defect established over part of segment' },
+  { grade: 4, meaning: 'Severe - extensive occurrence and/or high severity' },
+  { grade: 5, meaning: 'Very severe - defect dominates the rateable segment' },
 ] as const;
 
-// ── Surface-condition survey defects (paved) — manual §Surveys for Paved Roads
+// ── Surface-condition survey defects (paved) - manual §Surveys for Paved Roads
 export const PAVED_DEFECTS = [
   'Cracking',
   'Potholes',
@@ -32,7 +32,7 @@ export const PAVED_DEFECTS = [
   'Roadside Friction',
 ] as const;
 
-// ── Surface-condition survey defects (gravel/earth) — §Surveys for Gravel and Earth Roads
+// ── Surface-condition survey defects (gravel/earth) - §Surveys for Gravel and Earth Roads
 export const UNPAVED_DEFECTS = [
   'Gravel Thickness',
   'Potholes',
@@ -45,7 +45,7 @@ export const UNPAVED_DEFECTS = [
   'Roadside Friction',
 ] as const;
 
-// ── Official inventory survey items — manual §Inventory Surveys ───────────────
+// ── Official inventory survey items - manual §Inventory Surveys ───────────────
 export const INVENTORY_CONTINUOUS = [
   'Pavement Type', 'Dimensions', 'Number of Lanes', 'Terrain Type',
   'Drainage Ditch', 'Footpath', 'Traffic Island', 'Road Markings',
@@ -124,15 +124,15 @@ export const INVENTORY_CATEGORIES: InventoryCategory[] = [
 
 // ── Asset Management Manuals registry (the ingested document set) ─────────────
 export const AMS_MANUALS = [
-  { id: 'visual-2012',  title: 'Manual: Visual Inspections of Paved & Unpaved Roads (Feb 2012, + Addendum 1)', role: 'Defect grading (1–5) & inventory survey items — THE taxonomy source' },
-  { id: 'rms-user',     title: 'UNRA AMS 3 — RMS User Manual 2017',                       role: 'Road Management System operation' },
-  { id: 'pms-user',     title: 'UNRA AMS 5 — PMS User Manual 2017',                       role: 'Pavement Management System operation' },
-  { id: 'bms-user',     title: 'UNRA AMS 6 — BMS User Manual v1 (Sept 2017)',             role: 'Bridge Management System operation' },
-  { id: 'gis-user',     title: 'UNRA AMS 4 — GIS User Manual 1.0 + GIS Data Dictionary',  role: 'GIS layers & attribute dictionary' },
-  { id: 'data-coll',    title: 'UNRA AMS 2 — Road Data Collection 0.1',                   role: 'Survey data-collection procedures' },
-  { id: 'loc-ref',      title: 'UNRA AMS 1 — Location Referencing 0.1',                   role: 'Link/chainage referencing convention' },
-  { id: 'data-format',  title: 'UNRA AMS — Road Data Format Specifications 1.0',          role: 'Data exchange formats' },
-  { id: 'bridge-coll',  title: 'UNRA AMS X — Bridge Data Collection 0.1',                 role: 'Structure survey procedures' },
+  { id: 'visual-2012',  title: 'Manual: Visual Inspections of Paved & Unpaved Roads (Feb 2012, + Addendum 1)', role: 'Defect grading (1–5) & inventory survey items - THE taxonomy source' },
+  { id: 'rms-user',     title: 'UNRA AMS 3 - RMS User Manual 2017',                       role: 'Road Management System operation' },
+  { id: 'pms-user',     title: 'UNRA AMS 5 - PMS User Manual 2017',                       role: 'Pavement Management System operation' },
+  { id: 'bms-user',     title: 'UNRA AMS 6 - BMS User Manual v1 (Sept 2017)',             role: 'Bridge Management System operation' },
+  { id: 'gis-user',     title: 'UNRA AMS 4 - GIS User Manual 1.0 + GIS Data Dictionary',  role: 'GIS layers & attribute dictionary' },
+  { id: 'data-coll',    title: 'UNRA AMS 2 - Road Data Collection 0.1',                   role: 'Survey data-collection procedures' },
+  { id: 'loc-ref',      title: 'UNRA AMS 1 - Location Referencing 0.1',                   role: 'Link/chainage referencing convention' },
+  { id: 'data-format',  title: 'UNRA AMS - Road Data Format Specifications 1.0',          role: 'Data exchange formats' },
+  { id: 'bridge-coll',  title: 'UNRA AMS X - Bridge Data Collection 0.1',                 role: 'Structure survey procedures' },
   { id: 'perf-ind',     title: 'Guidelines for Road Performance Indicators',              role: 'KPI design & target-setting methodology' },
   { id: 'pavement-pol', title: 'Pavement Data Collection Policies & Procedures',          role: 'Pavement survey policy' },
   { id: 'traffic-pol',  title: 'Draft Traffic Data Collection Policies (+ QMP template)', role: 'Traffic count policy & QA' },
@@ -143,4 +143,4 @@ export const AMS_MANUALS = [
 ] as const;
 
 export const MANUAL_SOURCE_NOTE =
-  'Source: UNRA Asset Management Manuals — primarily "Visual Inspections of Paved and Unpaved Roads" (Feb 2012).';
+  'Source: UNRA Asset Management Manuals - primarily "Visual Inspections of Paved and Unpaved Roads" (Feb 2012).';

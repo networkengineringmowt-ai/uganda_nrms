@@ -1,5 +1,5 @@
 /**
- * FeatureAnalyticsPanel — glass slide-in detail panel for map feature clicks.
+ * FeatureAnalyticsPanel - glass slide-in detail panel for map feature clicks.
  * Supports: road-link | bridge | culvert | atc-station
  * ATC-style: vibrant dark palette, 24 h telemetry chart, vehicle-class bars,
  *            AADT growth sparkline (2016-2025).
@@ -278,7 +278,7 @@ function BridgePanel({ f, onClose }: { f: BridgeFeature; onClose: () => void }) 
       {cRating !== null && (
         <Row label="Condition" value={
           <span style={{ color: CONDITION_COLOR[cRating] }}>
-            {cRating}/5 — {CONDITION_LABEL[cRating]}
+            {cRating}/5 - {CONDITION_LABEL[cRating]}
           </span>
         } />
       )}
@@ -299,7 +299,7 @@ function CulvertPanel({ f, onClose }: { f: CulvertFeature; onClose: () => void }
       {cRating !== null && (
         <Row label="Condition" value={
           <span style={{ color: CONDITION_COLOR[cRating] }}>
-            {cRating}/5 — {CONDITION_LABEL[cRating]}
+            {cRating}/5 - {CONDITION_LABEL[cRating]}
           </span>
         } />
       )}

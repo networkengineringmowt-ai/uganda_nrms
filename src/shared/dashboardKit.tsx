@@ -1,8 +1,8 @@
 /**
- * dashboardKit — shared "100-chart" dashboard design system.
+ * dashboardKit - shared "100-chart" dashboard design system.
  *
  * Ports the look of public/dashboard.html (the standalone NRMS Live Dashboard
- * mockup — glow KPI tiles, accent chart-boxes, dense multi-chart grids) into
+ * mockup - glow KPI tiles, accent chart-boxes, dense multi-chart grids) into
  * real React components driven by Recharts, so every section's Dashboard tab
  * can use live/real app data instead of a static page.
  *
@@ -23,7 +23,7 @@ export const DASH_C = {
   gray: 'rgba(148,163,184,0.7)',
 };
 // 4-band condition scale used by overview dashboards (Good/Fair/Poor/Critical).
-// NOTE: this is a 4-stop variant for dashboards with 4 labeled bands — it is
+// NOTE: this is a 4-stop variant for dashboards with 4 labeled bands - it is
 // distinct from the canonical 5-stop risk/condition scale in
 // src/utils/helpers.ts (CONDITION_COLORS, RISK_SCALE_STOPS), which includes
 // the amber #eab308 mid-point. Named differently here on purpose to avoid
@@ -115,11 +115,11 @@ export function StatMini({ value, label, color = DASH_C.cyan }: { value: string;
 }
 
 const GRID_COLS: Record<string, string> = {
-  '2': '1fr 1fr', '3': '1fr 1fr 1fr', '4': '1fr 1fr 1fr 1fr',
+  '1': '1fr', '2': '1fr 1fr', '3': '1fr 1fr 1fr', '4': '1fr 1fr 1fr 1fr',
   '12': '1fr 1.6fr', '21': '1.6fr 1fr', '13': '1fr 2.2fr',
 };
 
-export function ChartGrid({ cols = '3', children }: { cols?: '2' | '3' | '4' | '12' | '21' | '13'; children: ReactNode }) {
+export function ChartGrid({ cols = '3', children }: { cols?: '1' | '2' | '3' | '4' | '12' | '21' | '13'; children: ReactNode }) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: GRID_COLS[cols], gap: 12, marginBottom: 14 }}>
       {children}

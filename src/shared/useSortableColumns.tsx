@@ -24,7 +24,7 @@ export function useSortableColumns<K extends string = string>(defaultKey: K | nu
 
 /**
  * Type-aware comparator-based sort. Returns a new array; `rows` is untouched.
- * `getValue` defaults to a plain `row[key]` lookup — pass a custom one for
+ * `getValue` defaults to a plain `row[key]` lookup - pass a custom one for
  * synthetic columns whose value is computed rather than stored (e.g. a
  * specific year's projected total in a wide year-by-year table).
  */
@@ -64,7 +64,7 @@ export function useSortedRows<T extends Record<string, any>>(
   return { sorted, sortKey, sortDir, cycleSort };
 }
 
-/** ↕ neutral / ↑ asc / ↓ desc — white when inactive, amber when the column drives the sort. */
+/** ↕ neutral / ↑ asc / ↓ desc - white when inactive, amber when the column drives the sort. */
 export function SortArrow({ active, dir }: { active: boolean; dir: SortDir }) {
   const color = active && dir ? '#ffd23f' : 'rgba(255,255,255,0.55)';
   const glyph = active && dir === 'asc' ? '↑' : active && dir === 'desc' ? '↓' : '↕';
@@ -75,7 +75,7 @@ export function SortArrow({ active, dir }: { active: boolean; dir: SortDir }) {
   );
 }
 
-/** Drop-in sortable <th> — label + click-to-cycle + SortArrow, styled to match the platform's dark tables. */
+/** Drop-in sortable <th> - label + click-to-cycle + SortArrow, styled to match the platform's dark tables. */
 export function SortableTh({
   label, sortKeyName, activeKey, dir, onSort, align = 'left', style,
 }: {

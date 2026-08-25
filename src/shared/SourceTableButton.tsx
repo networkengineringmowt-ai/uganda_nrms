@@ -1,5 +1,5 @@
 /**
- * SourceTableButton — tiny pill rendered next to a chart that navigates to
+ * SourceTableButton - tiny pill rendered next to a chart that navigates to
  * Tabular Summaries and scrolls to the specific table feeding the chart.
  *
  * Usage:

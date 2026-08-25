@@ -1,5 +1,5 @@
 // src/shared/trafficProjection.ts
-// Uganda fleet composition 2026 — MoWT Traffic Surveys
+// Uganda fleet composition 2026 - MoWT Traffic Surveys
 // M class = Grade-Separated Highways (NOT urban/Kampala)
 
 export interface VehicleClass {

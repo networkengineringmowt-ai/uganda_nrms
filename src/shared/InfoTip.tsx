@@ -1,5 +1,5 @@
 /**
- * InfoTip / Term / Tip — universal hover tooltips backed by the data dictionary.
+ * InfoTip / Term / Tip - universal hover tooltips backed by the data dictionary.
  *
  *   <InfoTip term="iri" />                  icon; hover → full definition card
  *   <Term k="vci">VCI</Term>               dotted-underline text; hover → definition
@@ -48,7 +48,7 @@ function EntryCard({ e }: { e: DictEntry }) {
               <span style={{ width: 8, height: 8, borderRadius: 2, marginTop: 4, flexShrink: 0,
                 background: v.color ?? '#64748b' }} />
               <span><b style={{ color: v.color ?? '#cbd5e1' }}>{v.value}</b>
-                <span style={{ color: 'rgba(148,163,184,0.85)' }}> — {v.meaning}</span></span>
+                <span style={{ color: 'rgba(148,163,184,0.85)' }}> - {v.meaning}</span></span>
             </div>
           ))}
         </div>
@@ -69,7 +69,7 @@ function useHover() {
   return { pos, handlers };
 }
 
-/**  info icon — hover shows the dictionary definition for `term`. */
+/**  info icon - hover shows the dictionary definition for `term`. */
 export function InfoTip({ term, size = 12 }: { term: string; size?: number }) {
   const e = lookup(term);
   const { pos, handlers } = useHover();

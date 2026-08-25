@@ -1,5 +1,5 @@
 /**
- * dataDictionary — the single source of truth for what every field, metric and
+ * dataDictionary - the single source of truth for what every field, metric and
  * categorical value on the platform MEANS. Hover tips (InfoTip / Term) and the
  * browsable Data Dictionary page both read from here, so a definition written
  * once shows up everywhere.
@@ -29,12 +29,12 @@ const RAW_DICTIONARY: DictEntry[] = [
   {
     key: 'iri', term: 'IRI', label: 'International Roughness Index', unit: 'm/km', group: 'Pavement Condition',
     range: '0 (perfect) – 20+ (impassable)', source: 'ROMDAS laser profilometer survey, carried forward by the deterioration model',
-    description: 'The world-standard measure of longitudinal road roughness — the accumulated suspension travel (mm) a quarter-car experiences per km driven. Lower is smoother. Drives ride quality, vehicle operating cost and the maintenance trigger.',
+    description: 'The world-standard measure of longitudinal road roughness - the accumulated suspension travel (mm) a quarter-car experiences per km driven. Lower is smoother. Drives ride quality, vehicle operating cost and the maintenance trigger.',
     values: [
-      { value: '< 3.5', meaning: 'Good — smooth, recently surfaced', color: '#00ff88' },
-      { value: '3.5 – 6.5', meaning: 'Fair — routine maintenance', color: '#ffd23f' },
-      { value: '6.5 – 9.0', meaning: 'Poor — periodic maintenance due', color: '#ff8c00' },
-      { value: '> 9.0', meaning: 'Very Poor — rehabilitation/reconstruction', color: '#ff2d78' },
+      { value: '< 3.5', meaning: 'Good - smooth, recently surfaced', color: '#00ff88' },
+      { value: '3.5 – 6.5', meaning: 'Fair - routine maintenance', color: '#ffd23f' },
+      { value: '6.5 – 9.0', meaning: 'Poor - periodic maintenance due', color: '#ff8c00' },
+      { value: '> 9.0', meaning: 'Very Poor - rehabilitation/reconstruction', color: '#ff2d78' },
     ],
   },
   {
@@ -62,7 +62,7 @@ const RAW_DICTIONARY: DictEntry[] = [
       { value: '< 5 mm', meaning: 'Negligible', color: '#22c55e' },
       { value: '5 – 10 mm', meaning: 'Moderate', color: '#eab308' },
       { value: '10 – 20 mm', meaning: 'Severe', color: '#f97316' },
-      { value: '> 20 mm', meaning: 'Critical — safety hazard', color: '#ef4444' },
+      { value: '> 20 mm', meaning: 'Critical - safety hazard', color: '#ef4444' },
     ],
   },
   {
@@ -78,8 +78,8 @@ const RAW_DICTIONARY: DictEntry[] = [
     key: 'surface_type', term: 'Surface Type', group: 'Pavement Condition', aliases: ['surface', 'surface_cat', 'surface_ty'],
     description: 'The running-surface material of the road link.',
     values: [
-      { value: 'Bituminous / Paved', meaning: 'Sealed asphalt or surface-dressed (DBST) — the paved network', color: '#00f5ff' },
-      { value: 'Unsealed / Gravel', meaning: 'Gravel or earth wearing course — the unpaved network', color: '#ff8c00' },
+      { value: 'Bituminous / Paved', meaning: 'Sealed asphalt or surface-dressed (DBST) - the paved network', color: '#00f5ff' },
+      { value: 'Unsealed / Gravel', meaning: 'Gravel or earth wearing course - the unpaved network', color: '#ff8c00' },
       { value: 'Concrete', meaning: 'Rigid Portland-cement concrete pavement', color: '#94a3b8' },
     ],
   },
@@ -90,10 +90,10 @@ const RAW_DICTIONARY: DictEntry[] = [
     source: 'DNR functional classification (NDPIV)',
     description: 'Functional classification of the national road, setting design standard, target condition and maintenance priority.',
     values: [
-      { value: 'A', meaning: 'Class A — international trunk / primary corridor', color: '#00f5ff' },
-      { value: 'B', meaning: 'Class B — national link road', color: '#00ff88' },
-      { value: 'C', meaning: 'Class C — district/feeder collector', color: '#ffd23f' },
-      { value: 'M', meaning: 'Class M — grade-separated highway / motorway (controlled access)', color: '#b967ff' },
+      { value: 'A', meaning: 'Class A - international trunk / primary corridor', color: '#00f5ff' },
+      { value: 'B', meaning: 'Class B - national link road', color: '#00ff88' },
+      { value: 'C', meaning: 'Class C - district/feeder collector', color: '#ffd23f' },
+      { value: 'M', meaning: 'Class M - grade-separated highway / motorway (controlled access)', color: '#b967ff' },
     ],
   },
   {
@@ -106,7 +106,7 @@ const RAW_DICTIONARY: DictEntry[] = [
   },
   {
     key: 'oprc', term: 'OPRC', label: 'Output & Performance-based Road Contract', group: 'Network',
-    description: 'A multi-year contract paying the contractor for ROAD CONDITION OUTPUTS (e.g. maintaining IRI/VCI above a threshold) rather than for inputs/quantities — transferring performance risk to the contractor. 2,235 km across 90 road links are scoped under OPRC.',
+    description: 'A multi-year contract paying the contractor for ROAD CONDITION OUTPUTS (e.g. maintaining IRI/VCI above a threshold) rather than for inputs/quantities - transferring performance risk to the contractor. 2,235 km across 90 road links are scoped under OPRC.',
   },
   {
     key: 'ndpiv', term: 'NDP IV', label: 'National Development Plan IV', group: 'Network',
@@ -140,10 +140,10 @@ const RAW_DICTIONARY: DictEntry[] = [
     key: 'congestion_risk', term: 'Congestion Risk', group: 'Traffic',
     description: 'Predicted demand ÷ design capacity for the link (capacities: M 15k, A 10k, B 5k, C 2.5k PCU/day).',
     values: [
-      { value: 'Low', meaning: '< 40% of capacity — free flow', color: '#00ff88' },
-      { value: 'Medium', meaning: '40–70% — monitor growth', color: '#ffd23f' },
-      { value: 'High', meaning: '70–90% — plan capacity improvement', color: '#ff8c00' },
-      { value: 'Critical', meaning: '> 90% — immediate upgrade', color: '#ff2d78' },
+      { value: 'Low', meaning: '< 40% of capacity - free flow', color: '#00ff88' },
+      { value: 'Medium', meaning: '40–70% - monitor growth', color: '#ffd23f' },
+      { value: 'High', meaning: '70–90% - plan capacity improvement', color: '#ff8c00' },
+      { value: 'Critical', meaning: '> 90% - immediate upgrade', color: '#ff2d78' },
     ],
   },
 
@@ -151,7 +151,7 @@ const RAW_DICTIONARY: DictEntry[] = [
   {
     key: 'd0', term: 'D0 (peak deflection)', unit: 'microns (µm)', group: 'FWD / Structural', aliases: ['d300', 'd600', 'd900'],
     source: 'Falling Weight Deflectometer survey',
-    description: 'Surface deflection measured directly under the FWD load plate (D0) and at 300/600/900 mm offsets. The deflection "bowl" shape reveals layer stiffness — D0 reflects the whole pavement, outer sensors the subgrade. Higher deflection = weaker structure.',
+    description: 'Surface deflection measured directly under the FWD load plate (D0) and at 300/600/900 mm offsets. The deflection "bowl" shape reveals layer stiffness - D0 reflects the whole pavement, outer sensors the subgrade. Higher deflection = weaker structure.',
   },
   {
     key: 'load_kn', term: 'FWD Load', unit: 'kN', group: 'FWD / Structural',
@@ -172,21 +172,21 @@ const RAW_DICTIONARY: DictEntry[] = [
       { value: 'Good / 4', meaning: 'Minor defects, routine maintenance', color: '#7CFC00' },
       { value: 'Fair / 3', meaning: 'Moderate defects, monitor', color: '#ffd23f' },
       { value: 'Poor / 2', meaning: 'Significant defects, repair needed', color: '#ff8c00' },
-      { value: 'Critical / 1', meaning: 'Severe — urgent intervention / load restriction', color: '#ff2d78' },
+      { value: 'Critical / 1', meaning: 'Severe - urgent intervention / load restriction', color: '#ff2d78' },
     ],
   },
   {
     key: 'scour_risk', term: 'Scour Risk', group: 'Bridges',
-    description: 'Risk that river flow erodes material from around bridge foundations/abutments — the leading cause of bridge failure. Rated from waterway inspection and hydraulic exposure.',
+    description: 'Risk that river flow erodes material from around bridge foundations/abutments - the leading cause of bridge failure. Rated from waterway inspection and hydraulic exposure.',
     values: [
       { value: 'Low', meaning: 'Stable bed, protected foundations', color: '#00ff88' },
       { value: 'Medium', meaning: 'Some exposure, monitor at floods', color: '#ffd23f' },
-      { value: 'High', meaning: 'Active scour — countermeasures needed', color: '#ff2d78' },
+      { value: 'High', meaning: 'Active scour - countermeasures needed', color: '#ff2d78' },
     ],
   },
   {
     key: 'type_crossing', term: 'Crossing Type', group: 'Bridges', aliases: ['type_cross', 'crossingtype'],
-    description: 'What the structure carries the road over — river, stream, valley, road/rail, or drainage. Determines hydraulic and structural design.',
+    description: 'What the structure carries the road over - river, stream, valley, road/rail, or drainage. Determines hydraulic and structural design.',
   },
   {
     key: 'deck_material', term: 'Deck Material', group: 'Bridges',
@@ -194,7 +194,7 @@ const RAW_DICTIONARY: DictEntry[] = [
   },
   {
     key: 'bridge_type', term: 'Bridge Type', group: 'Bridges',
-    description: 'Structural form — slab, beam/girder, box culvert, arch, truss, suspension. Affects span capability, cost and maintenance.',
+    description: 'Structural form - slab, beam/girder, box culvert, arch, truss, suspension. Affects span capability, cost and maintenance.',
   },
 
   // ── Maintenance & programming ────────────────────────────────────────────────
@@ -202,7 +202,7 @@ const RAW_DICTIONARY: DictEntry[] = [
     key: 'urgency', term: 'Intervention Urgency', group: 'Maintenance',
     description: 'When the ML intervention model schedules works for the link, from condition and deterioration rate.',
     values: [
-      { value: 'now', meaning: 'Immediate — condition past trigger', color: '#ff2d78' },
+      { value: 'now', meaning: 'Immediate - condition past trigger', color: '#ff2d78' },
       { value: 'urgent', meaning: 'This financial year', color: '#ff8c00' },
       { value: 'soon', meaning: 'Within the medium-term plan (1–3 yr)', color: '#ffd23f' },
       { value: 'planned', meaning: 'Monitored, in the long-term programme', color: '#00ff88' },
@@ -224,7 +224,7 @@ const RAW_DICTIONARY: DictEntry[] = [
   },
   {
     key: 'bridge_no', term: 'Structure ID', group: 'Identifiers', aliases: ['structure_id', 'id'],
-    description: 'Unique structure number — B-series for bridges, C-series for major culverts.',
+    description: 'Unique structure number - B-series for bridges, C-series for major culverts.',
   },
   {
     key: 'chainage', term: 'Chainage', unit: 'km', group: 'Identifiers', aliases: ['chainage_km', 'chainage_from', 'chainage_to'],
@@ -232,11 +232,11 @@ const RAW_DICTIONARY: DictEntry[] = [
   },
 
   // ════════════════════════════════════════════════════════════════════════
-  //  EXPANDED DICTIONARY — professional NRMS terminology across all domains
+  //  EXPANDED DICTIONARY - professional NRMS terminology across all domains
   // ════════════════════════════════════════════════════════════════════════
 
   // ── Road Network Classification ─────────────────────────────────────────
-  { key: 'functional_class', term: 'Functional Class', group: 'Network Classification', description: 'Classification of a road by the service it provides — arterial, collector or access — independent of its administrative class.' },
+  { key: 'functional_class', term: 'Functional Class', group: 'Network Classification', description: 'Classification of a road by the service it provides - arterial, collector or access - independent of its administrative class.' },
   { key: 'road_number', term: 'Road Number', group: 'Network Classification', description: 'Official designation of a road (e.g. A109), unique within its class, used in the national road register.' },
   { key: 'node', term: 'Node', group: 'Network Classification', description: 'A point where road links meet (junction) or terminate; the topological connector in the network graph.' },
   { key: 'route', term: 'Route', group: 'Network Classification', description: 'A continuous itinerary made of one or more links between two major destinations.' },
@@ -249,7 +249,7 @@ const RAW_DICTIONARY: DictEntry[] = [
   { key: 'subgrade', term: 'Subgrade', group: 'Pavement Structure', description: 'The natural or improved soil foundation on which the pavement structure is built.' },
   { key: 'ac', term: 'Asphalt Concrete', abbr: 'AC', group: 'Pavement Structure', description: 'Dense, plant-mixed bitumen-and-aggregate surfacing laid hot and compacted; the standard flexible wearing course.' },
   { key: 'dbm', term: 'Dense Bitumen Macadam', abbr: 'DBM', group: 'Pavement Structure', description: 'A dense, well-graded bituminous base/binder course material.' },
-  { key: 'dbst', term: 'Double Bituminous Surface Treatment', abbr: 'DBST', group: 'Pavement Structure', description: 'Two successive sprayed-binder + chip-seal layers — the common low-cost paved surfacing in Uganda.' },
+  { key: 'dbst', term: 'Double Bituminous Surface Treatment', abbr: 'DBST', group: 'Pavement Structure', description: 'Two successive sprayed-binder + chip-seal layers - the common low-cost paved surfacing in Uganda.' },
   { key: 'prime_coat', term: 'Prime Coat', group: 'Pavement Structure', description: 'Low-viscosity bitumen sprayed onto a granular base to bond it to the overlying bituminous layer.' },
   { key: 'tack_coat', term: 'Tack Coat', group: 'Pavement Structure', description: 'Thin bitumen film sprayed between bituminous layers to ensure they bond.' },
   { key: 'layer_thickness', term: 'Layer Thickness', unit: 'mm', group: 'Pavement Structure', description: 'Compacted depth of a pavement layer; a key structural-capacity input.' },
@@ -258,13 +258,13 @@ const RAW_DICTIONARY: DictEntry[] = [
   { key: 'cbr', term: 'California Bearing Ratio', abbr: 'CBR', unit: '%', group: 'Geotechnical & Materials', description: 'Strength of subgrade/granular material as a % of a standard crushed-stone penetration resistance; the primary subgrade design input.' },
   { key: 'mdd', term: 'Maximum Dry Density', abbr: 'MDD', unit: 'kg/m³', group: 'Geotechnical & Materials', description: 'Highest dry density a soil reaches at its optimum moisture under a standard compaction effort (Proctor).' },
   { key: 'omc', term: 'Optimum Moisture Content', abbr: 'OMC', unit: '%', group: 'Geotechnical & Materials', description: 'Moisture content at which a soil compacts to its maximum dry density.' },
-  { key: 'pi', term: 'Plasticity Index', abbr: 'PI', group: 'Geotechnical & Materials', description: 'Liquid limit minus plastic limit — the moisture range over which a soil is plastic; high PI = expansive, weak material.' },
+  { key: 'pi', term: 'Plasticity Index', abbr: 'PI', group: 'Geotechnical & Materials', description: 'Liquid limit minus plastic limit - the moisture range over which a soil is plastic; high PI = expansive, weak material.' },
   { key: 'liquid_limit', term: 'Liquid Limit', abbr: 'LL', unit: '%', group: 'Geotechnical & Materials', description: 'Moisture content at which a soil passes from plastic to liquid behaviour (Atterberg limit).' },
   { key: 'plastic_limit', term: 'Plastic Limit', abbr: 'PL', unit: '%', group: 'Geotechnical & Materials', description: 'Moisture content at which a soil passes from semi-solid to plastic behaviour (Atterberg limit).' },
   { key: 'aiv', term: 'Aggregate Impact Value', abbr: 'AIV', unit: '%', group: 'Geotechnical & Materials', description: 'Resistance of aggregate to sudden impact; lower AIV = tougher aggregate.' },
   { key: 'acv', term: 'Aggregate Crushing Value', abbr: 'ACV', unit: '%', group: 'Geotechnical & Materials', description: 'Resistance of aggregate to gradual crushing load; lower = stronger.' },
   { key: 'flakiness', term: 'Flakiness Index', unit: '%', group: 'Geotechnical & Materials', description: 'Proportion of flat/elongated aggregate particles; high flakiness weakens interlock.' },
-  { key: 'marshall_stability', term: 'Marshall Stability', unit: 'kN', group: 'Geotechnical & Materials', description: 'Maximum load an asphalt specimen carries in the Marshall test — a mix-design acceptance measure.' },
+  { key: 'marshall_stability', term: 'Marshall Stability', unit: 'kN', group: 'Geotechnical & Materials', description: 'Maximum load an asphalt specimen carries in the Marshall test - a mix-design acceptance measure.' },
   { key: 'grading', term: 'Grading / Sieve Analysis', group: 'Geotechnical & Materials', description: 'Particle-size distribution of a material from sieving, controlling strength, stability and permeability.' },
 
   // ── Road Geometry & Alignment ───────────────────────────────────────────
@@ -286,7 +286,7 @@ const RAW_DICTIONARY: DictEntry[] = [
   { key: 'return_period', term: 'Return Period', unit: 'years', group: 'Drainage & Hydrology', description: 'Average interval between floods of a given size (e.g. 1-in-25-year); the design storm basis for drainage.' },
   { key: 'catchment_area', term: 'Catchment Area', unit: 'km²', group: 'Drainage & Hydrology', description: 'Land area draining to a point; drives the design flood a culvert/bridge must pass.' },
   { key: 'runoff_coefficient', term: 'Runoff Coefficient', group: 'Drainage & Hydrology', description: 'Fraction of rainfall that becomes surface runoff (Rational Method), depending on land cover and slope.' },
-  { key: 'invert_level', term: 'Invert Level', unit: 'm', group: 'Drainage & Hydrology', description: 'Elevation of the inside bottom of a pipe/channel — sets the hydraulic gradient.' },
+  { key: 'invert_level', term: 'Invert Level', unit: 'm', group: 'Drainage & Hydrology', description: 'Elevation of the inside bottom of a pipe/channel - sets the hydraulic gradient.' },
 
   // ── Bridge & Structures (extended) ──────────────────────────────────────
   { key: 'span', term: 'Span', unit: 'm', group: 'Bridges', aliases: ['span_length', 'spanlength'], description: 'Clear distance between two supports of a bridge; total length is the sum of spans.' },
@@ -296,15 +296,15 @@ const RAW_DICTIONARY: DictEntry[] = [
   { key: 'deck_width', term: 'Deck Width', unit: 'm', group: 'Bridges', aliases: ['width_m'], description: 'Out-to-out width of the bridge deck, governing how many lanes/footways it carries.' },
   { key: 'load_rating', term: 'Load Rating', group: 'Bridges', description: 'Assessed safe live-load capacity of a bridge; below legal loads triggers posting or restriction.' },
   { key: 'bci', term: 'Bridge Condition Index', abbr: 'BCI', unit: '0–100', group: 'Bridges', description: 'Composite 0–100 score of overall bridge health from weighted element condition ratings.' },
-  { key: 'superstructure', term: 'Superstructure', group: 'Bridges', description: 'The span structure above the bearings — deck, beams/girders — that carries traffic.' },
-  { key: 'substructure', term: 'Substructure', group: 'Bridges', description: 'Supports below the bearings — abutments, piers, foundations — that transfer loads to the ground.' },
+  { key: 'superstructure', term: 'Superstructure', group: 'Bridges', description: 'The span structure above the bearings - deck, beams/girders - that carries traffic.' },
+  { key: 'substructure', term: 'Substructure', group: 'Bridges', description: 'Supports below the bearings - abutments, piers, foundations - that transfer loads to the ground.' },
   { key: 'wing_wall', term: 'Wing Wall', group: 'Bridges', description: 'Retaining wall extending from an abutment to hold back and protect the approach fill.' },
   { key: 'waterway', term: 'Waterway Area', unit: 'm²', group: 'Bridges', description: 'Cross-sectional opening under a bridge available to pass flood flow; undersizing causes afflux and scour.' },
 
   // ── Traffic & Transportation (extended) ─────────────────────────────────
   { key: 'pcu', term: 'Passenger Car Unit', abbr: 'PCU', group: 'Traffic', description: 'Traffic-equivalence factor expressing mixed vehicles as equivalent cars (a truck ≈ 2–3 PCU) for capacity analysis.' },
   { key: 'hcv', term: 'Heavy Commercial Vehicle', abbr: 'HCV', group: 'Traffic', description: 'Trucks and large buses; the main contributors to pavement structural damage.' },
-  { key: 'phf', term: 'Peak Hour Factor', abbr: 'PHF', group: 'Traffic', description: 'Ratio of peak-hour volume to four times the peak 15-minute flow — a measure of within-hour flow variability.' },
+  { key: 'phf', term: 'Peak Hour Factor', abbr: 'PHF', group: 'Traffic', description: 'Ratio of peak-hour volume to four times the peak 15-minute flow - a measure of within-hour flow variability.' },
   { key: 'directional_split', term: 'Directional Split', unit: '%', group: 'Traffic', description: 'Share of traffic in each direction; used to design lanes and assess directional capacity.' },
   { key: 'mef', term: 'Monthly Expansion Factor', abbr: 'MEF', group: 'Traffic', description: 'Seasonal factor converting a short count to an annual average by removing month-of-year bias.' },
   { key: 'esa', term: 'Equivalent Standard Axle', abbr: 'ESA', group: 'Traffic', description: 'Cumulative heavy-traffic loading over the design life, in equivalent 80 kN standard axles, sizing the pavement.' },
@@ -359,29 +359,29 @@ const RAW_DICTIONARY: DictEntry[] = [
   { key: 'deterioration_model', term: 'Deterioration Model', group: 'Asset Lifecycle', description: 'Mathematical model predicting how condition (IRI, VCI, etc.) worsens over time and traffic.' },
   { key: 'eirr', term: 'Economic Internal Rate of Return', abbr: 'EIRR', unit: '%', group: 'Economic Analysis', description: 'Discount rate at which a project\'s economic benefits equal its costs; compared to the hurdle rate to justify investment.' },
   { key: 'npv', term: 'Net Present Value', abbr: 'NPV', unit: 'USD', group: 'Economic Analysis', description: 'Discounted value of net benefits over the appraisal period; positive NPV indicates an economically worthwhile project.' },
-  { key: 'voc', term: 'Vehicle Operating Cost', abbr: 'VOC', group: 'Economic Analysis', description: 'Cost to operate vehicles (fuel, tyres, maintenance, depreciation), which rises sharply with roughness — a key road-investment benefit.' },
+  { key: 'voc', term: 'Vehicle Operating Cost', abbr: 'VOC', group: 'Economic Analysis', description: 'Cost to operate vehicles (fuel, tyres, maintenance, depreciation), which rises sharply with roughness - a key road-investment benefit.' },
 
   // ── Road Inventory & Survey ─────────────────────────────────────────────
   { key: 'condition_survey', term: 'Condition Survey', group: 'Inventory & Survey', description: 'Systematic field assessment of road condition (roughness, distress, structural) feeding the PMS.' },
   { key: 'fwd', term: 'Falling Weight Deflectometer', abbr: 'FWD', group: 'Inventory & Survey', description: 'Device dropping a known load and measuring the deflection bowl to assess pavement structural capacity.' },
-  { key: 'benkelman_beam', term: 'Benkelman Beam', group: 'Inventory & Survey', description: 'Lever instrument measuring pavement rebound deflection under a loaded truck axle — a low-cost structural test.' },
+  { key: 'benkelman_beam', term: 'Benkelman Beam', group: 'Inventory & Survey', description: 'Lever instrument measuring pavement rebound deflection under a loaded truck axle - a low-cost structural test.' },
   { key: 'romdas', term: 'ROMDAS', label: 'Road Measurement Data Acquisition System', group: 'Inventory & Survey', description: 'Vehicle-mounted survey system capturing roughness, geometry, GPS and pavement imagery in one pass.' },
-  { key: 'rbf', term: 'RBF (Roughness/Bump File)', abbr: 'RBF', group: 'Inventory & Survey', description: 'ROMDAS roughness data export — chainage-indexed roughness/IRI used to map ride quality along a road.' },
+  { key: 'rbf', term: 'RBF (Roughness/Bump File)', abbr: 'RBF', group: 'Inventory & Survey', description: 'ROMDAS roughness data export - chainage-indexed roughness/IRI used to map ride quality along a road.' },
   { key: 'pgr', term: 'PGR (Pavement Image Stream)', abbr: 'PGR', group: 'Inventory & Survey', description: 'ROMDAS Ladybug image-stream file; embedded JPEG frames are carved out for pavement-distress analysis.' },
   { key: 'road_register', term: 'Road Register', group: 'Inventory & Survey', description: 'Authoritative inventory of all roads with their class, length, surface and key attributes.' },
 
   // ── GIS & Spatial Data ──────────────────────────────────────────────────
-  { key: 'wgs84', term: 'WGS84', group: 'GIS & Spatial', description: 'World Geodetic System 1984 — the global lat/long datum used by GPS and the platform basemaps (EPSG:4326).' },
+  { key: 'wgs84', term: 'WGS84', group: 'GIS & Spatial', description: 'World Geodetic System 1984 - the global lat/long datum used by GPS and the platform basemaps (EPSG:4326).' },
   { key: 'utm', term: 'UTM', label: 'Universal Transverse Mercator', group: 'GIS & Spatial', description: 'Projected metric coordinate system; Uganda falls mainly in UTM zones 35N/36N (EPSG:32635/32636).' },
   { key: 'epsg', term: 'EPSG Code', group: 'GIS & Spatial', description: 'Numeric identifier of a coordinate reference system (e.g. 4326 = WGS84 lat/long).' },
-  { key: 'geojson', term: 'GeoJSON', group: 'GIS & Spatial', description: 'Open JSON format for geographic features (points, lines, polygons) with attributes — the platform\'s map data format.' },
+  { key: 'geojson', term: 'GeoJSON', group: 'GIS & Spatial', description: 'Open JSON format for geographic features (points, lines, polygons) with attributes - the platform\'s map data format.' },
   { key: 'dem', term: 'Digital Elevation Model', abbr: 'DEM', group: 'GIS & Spatial', description: 'Raster grid of ground elevations used for slope, drainage and 3D terrain/twin rendering.' },
   { key: 'orthophoto', term: 'Orthophoto', group: 'GIS & Spatial', description: 'Geometrically corrected aerial/satellite imagery that can be measured like a map.' },
   { key: 'offset', term: 'Offset', unit: 'm', group: 'GIS & Spatial', description: 'Perpendicular distance of a feature from the road centreline, paired with chainage for linear referencing.' },
 
   // ── Administrative & Governance ─────────────────────────────────────────
   { key: 'mowt', term: 'MoWT', label: 'Ministry of Works & Transport', group: 'Governance', description: 'The Ugandan ministry responsible for transport infrastructure policy and the national roads mandate (incorporating the former UNRA).' },
-  { key: 'dnr', term: 'DNR', label: 'Directorate of National Roads', group: 'Governance', description: 'The directorate managing the national road network — planning, development and maintenance.' },
+  { key: 'dnr', term: 'DNR', label: 'Directorate of National Roads', group: 'Governance', description: 'The directorate managing the national road network - planning, development and maintenance.' },
   { key: 'road_fund', term: 'Road Fund', group: 'Governance', description: 'Dedicated financing mechanism (from road-user charges) that funds road maintenance.' },
   { key: 'axle_load_control', term: 'Axle Load Control', group: 'Governance', description: 'Enforcement regime (weighbridges/WIM) limiting axle loads to protect pavements from overloading damage.' },
 
@@ -396,7 +396,7 @@ const RAW_DICTIONARY: DictEntry[] = [
   { key: 'pmb', term: 'Polymer-Modified Bitumen', abbr: 'PMB', group: 'Bituminous Materials', description: 'Bitumen enhanced with polymers for higher rutting/cracking resistance on heavily trafficked roads.' },
   { key: 'bitumen_emulsion', term: 'Bitumen Emulsion', group: 'Bituminous Materials', description: 'Bitumen dispersed in water for cold application (prime/tack coats, surface dressing, patching).' },
   { key: 'sma', term: 'Stone Mastic Asphalt', abbr: 'SMA', group: 'Bituminous Materials', description: 'Gap-graded, rut-resistant asphalt with a stone-on-stone skeleton and rich mortar, for high-stress surfaces.' },
-  { key: 'rap', term: 'Reclaimed Asphalt Pavement', abbr: 'RAP', group: 'Bituminous Materials', description: 'Milled existing asphalt reused in new mixes — lowers cost and material consumption.' },
+  { key: 'rap', term: 'Reclaimed Asphalt Pavement', abbr: 'RAP', group: 'Bituminous Materials', description: 'Milled existing asphalt reused in new mixes - lowers cost and material consumption.' },
   { key: 'laterite', term: 'Laterite Gravel', group: 'Unbound Materials', description: 'Iron/aluminium-rich tropical gravel widely used as a wearing course and sub-base in Uganda.' },
   { key: 'crushed_stone', term: 'Crushed Stone', group: 'Unbound Materials', description: 'Mechanically crushed rock aggregate for high-quality base course and asphalt mixes.' },
 
@@ -414,11 +414,11 @@ const RAW_DICTIONARY: DictEntry[] = [
   { key: 'borrow_pit', term: 'Borrow Pit', group: 'Environmental & Social', description: 'Excavation supplying construction material (gravel/soil), requiring rehabilitation after use.' },
 
   // ── Climate & Weather ───────────────────────────────────────────────────
-  { key: 'idf_curve', term: 'IDF Curve', label: 'Intensity–Duration–Frequency', group: 'Climate & Weather', description: 'Relationship of rainfall intensity to storm duration and return period — the basis for drainage design.' },
+  { key: 'idf_curve', term: 'IDF Curve', label: 'Intensity–Duration–Frequency', group: 'Climate & Weather', description: 'Relationship of rainfall intensity to storm duration and return period - the basis for drainage design.' },
   { key: 'rainfall_intensity', term: 'Rainfall Intensity', unit: 'mm/hr', group: 'Climate & Weather', description: 'Rate of rainfall; high intensities drive peak runoff and drainage/scour design.' },
 
   // ── Emergency & Disaster ────────────────────────────────────────────────
-  { key: 'washout', term: 'Washout', group: 'Emergency & Disaster', description: 'Loss of road/embankment material where floodwater overtops or undermines the road — a common emergency failure.' },
+  { key: 'washout', term: 'Washout', group: 'Emergency & Disaster', description: 'Loss of road/embankment material where floodwater overtops or undermines the road - a common emergency failure.' },
   { key: 'detour', term: 'Detour / Diversion', group: 'Emergency & Disaster', description: 'Temporary alternative route maintaining traffic where a road/structure is impassable.' },
 
   // ── Technology & Systems ────────────────────────────────────────────────
@@ -434,7 +434,7 @@ const RAW_DICTIONARY: DictEntry[] = [
   { key: 'reflective_cracking', term: 'Reflective Cracking', group: 'Pavement Distress', description: 'Cracks in an overlay that propagate upward from joints or cracks in the underlying (often cracked or stabilised) layer.' },
   { key: 'pothole', term: 'Pothole', group: 'Pavement Distress', description: 'A bowl-shaped hole in the surface caused by localised disintegration of pavement layers, accelerated by water ingress and traffic. Counted and sized in the visual survey.' },
   { key: 'ravelling', term: 'Ravelling', aliases:['fretting'], group: 'Pavement Distress', description: 'Progressive loss of aggregate from the surface due to loss of binder adhesion (ageing, poor compaction, stripping). Produces a rough, loose texture.' },
-  { key: 'bleeding', term: 'Bleeding', aliases:['flushing','fatting up'], group: 'Pavement Distress', description: 'Excess bitumen migrating to the surface, forming a shiny, sticky film that reduces skid resistance — caused by too much binder or low air voids.' },
+  { key: 'bleeding', term: 'Bleeding', aliases:['flushing','fatting up'], group: 'Pavement Distress', description: 'Excess bitumen migrating to the surface, forming a shiny, sticky film that reduces skid resistance - caused by too much binder or low air voids.' },
   { key: 'shoving', term: 'Shoving', group: 'Pavement Distress', description: 'Permanent longitudinal displacement of surfacing in the wheel path (corrugations/washboarding) from braking/accelerating forces on an unstable mix.' },
   { key: 'edge_break', term: 'Edge Break', aliases:['edge cracking','edge failure'], group: 'Pavement Distress', description: 'Breaking-away of the pavement edge where there is no kerb or paved shoulder, worsened by weak edge support and water.' },
   { key: 'depression', term: 'Depression', group: 'Pavement Distress', description: 'Localised low areas that pond water, from settlement of the subgrade or poor compaction during construction.' },
@@ -444,8 +444,8 @@ const RAW_DICTIONARY: DictEntry[] = [
 
   // ── Pavement structure & layers ─────────────────────────────────────────────
   { key: 'subgrade', term: 'Subgrade', group: 'Pavement Structure', description: 'The natural or improved soil foundation on which the pavement is built. Its strength (CBR) governs the required pavement thickness.' },
-  { key: 'subbase', term: 'Sub-base', group: 'Pavement Structure', description: 'The layer between subgrade and base, providing load distribution, drainage and a working platform — typically natural gravel or stabilised material.' },
-  { key: 'base_course', term: 'Base Course', aliases:['roadbase'], group: 'Pavement Structure', description: 'The main structural layer beneath the surfacing, carrying and spreading wheel loads — crushed stone, gravel or stabilised material.' },
+  { key: 'subbase', term: 'Sub-base', group: 'Pavement Structure', description: 'The layer between subgrade and base, providing load distribution, drainage and a working platform - typically natural gravel or stabilised material.' },
+  { key: 'base_course', term: 'Base Course', aliases:['roadbase'], group: 'Pavement Structure', description: 'The main structural layer beneath the surfacing, carrying and spreading wheel loads - crushed stone, gravel or stabilised material.' },
   { key: 'surfacing', term: 'Surfacing', aliases:['wearing course','surface course'], group: 'Pavement Structure', description: 'The top layer in direct contact with traffic, providing a smooth, skid-resistant, waterproof riding surface (asphalt concrete or surface dressing).' },
   { key: 'binder_course', term: 'Binder Course', group: 'Pavement Structure', description: 'An intermediate asphalt layer between base and wearing course that contributes to structural capacity and regulates the surface profile.' },
   { key: 'capping_layer', term: 'Capping Layer', group: 'Pavement Structure', description: 'An improved subgrade layer placed over weak natural soils to provide a stronger, more uniform foundation.' },
@@ -457,8 +457,8 @@ const RAW_DICTIONARY: DictEntry[] = [
   // ── Materials & testing ─────────────────────────────────────────────────────
   { key: 'cbr', term: 'CBR', label: 'California Bearing Ratio', abbr:'CBR', unit:'%', group: 'Materials & Testing', range:'2 (very weak) – 80+ (strong base)', description: 'A penetration test measuring the load-bearing strength of soil/aggregate relative to crushed stone. The primary input for subgrade classification and pavement thickness design.' },
   { key: 'atterberg_limits', term: 'Atterberg Limits', group: 'Materials & Testing', description: 'Moisture-content boundaries (liquid limit, plastic limit) defining the consistency states of fine soils; used to classify soils and assess suitability.' },
-  { key: 'plasticity_index', term: 'Plasticity Index', abbr:'PI', group: 'Materials & Testing', description: 'Liquid limit minus plastic limit — the moisture range over which a soil is plastic. High PI indicates expansive, moisture-sensitive material unsuitable for base layers.' },
-  { key: 'proctor', term: 'Proctor Compaction', aliases:['mdd','omc','maximum dry density'], group: 'Materials & Testing', description: 'Laboratory test establishing the maximum dry density (MDD) and optimum moisture content (OMC) at which a material compacts best — the field compaction target.' },
+  { key: 'plasticity_index', term: 'Plasticity Index', abbr:'PI', group: 'Materials & Testing', description: 'Liquid limit minus plastic limit - the moisture range over which a soil is plastic. High PI indicates expansive, moisture-sensitive material unsuitable for base layers.' },
+  { key: 'proctor', term: 'Proctor Compaction', aliases:['mdd','omc','maximum dry density'], group: 'Materials & Testing', description: 'Laboratory test establishing the maximum dry density (MDD) and optimum moisture content (OMC) at which a material compacts best - the field compaction target.' },
   { key: 'marshall_stability', term: 'Marshall Stability', group: 'Materials & Testing', description: 'Test of an asphalt mix’s resistance to deformation (stability) and its flow, used in bituminous mix design and QA.' },
   { key: 'aggregate', term: 'Aggregate', group: 'Materials & Testing', description: 'Crushed stone, gravel or sand forming the bulk of pavement layers and asphalt mixes; graded by particle size.' },
   { key: 'aiv', term: 'AIV', label: 'Aggregate Impact Value', group: 'Materials & Testing', description: 'Measure of an aggregate’s resistance to sudden impact/shock; lower values indicate tougher stone suitable for heavily trafficked roads.' },
@@ -476,8 +476,8 @@ const RAW_DICTIONARY: DictEntry[] = [
   { key: 'bearing_capacity', term: 'Bearing Capacity', group: 'Geotechnical', description: 'The maximum load a soil can support without shear failure or excessive settlement; governs foundation and embankment design.' },
 
   // ── Geometry & alignment ────────────────────────────────────────────────────
-  { key: 'horizontal_alignment', term: 'Horizontal Alignment', group: 'Geometry & Alignment', description: 'The plan-view geometry of the road — tangents (straights), circular curves and transition (spiral) curves.' },
-  { key: 'vertical_alignment', term: 'Vertical Alignment', group: 'Geometry & Alignment', description: 'The profile-view geometry — grades and the crest/sag vertical curves connecting them.' },
+  { key: 'horizontal_alignment', term: 'Horizontal Alignment', group: 'Geometry & Alignment', description: 'The plan-view geometry of the road - tangents (straights), circular curves and transition (spiral) curves.' },
+  { key: 'vertical_alignment', term: 'Vertical Alignment', group: 'Geometry & Alignment', description: 'The profile-view geometry - grades and the crest/sag vertical curves connecting them.' },
   { key: 'gradient', term: 'Gradient', aliases:['grade','longitudinal gradient'], unit:'%', group: 'Geometry & Alignment', description: 'The rate of rise or fall of the road along its length, expressed as a percentage; steep grades reduce truck speeds and capacity.' },
   { key: 'superelevation', term: 'Superelevation', aliases:['cant'], group: 'Geometry & Alignment', description: 'The banking (cross-slope) of the road on a curve to counteract centrifugal force and allow safe higher-speed cornering.' },
   { key: 'camber', term: 'Camber', aliases:['crossfall','cross slope'], unit:'%', group: 'Geometry & Alignment', description: 'The transverse slope of the carriageway from crown to edge that sheds rainwater to the drains (typically 2.5–3% on paved roads).' },
@@ -507,14 +507,14 @@ const RAW_DICTIONARY: DictEntry[] = [
   { key: 'expansion_joint', term: 'Expansion Joint', group: 'Bridge Components', description: 'A deck joint accommodating thermal expansion/contraction while providing a continuous riding surface.' },
   { key: 'parapet', term: 'Parapet', aliases:['bridge railing'], group: 'Bridge Components', description: 'The protective barrier along a bridge edge restraining vehicles and pedestrians.' },
   { key: 'scour_protection', term: 'Scour Protection', group: 'Bridge Components', description: 'Riprap, gabions or aprons placed around foundations to resist erosion by river flow.' },
-  { key: 'superstructure', term: 'Superstructure', group: 'Bridge Components', description: 'The part of a bridge above the bearings — deck, girders and parapets — that carries traffic.' },
-  { key: 'substructure', term: 'Substructure', group: 'Bridge Components', description: 'The part of a bridge below the bearings — abutments, piers and foundations — transferring load to the ground.' },
+  { key: 'superstructure', term: 'Superstructure', group: 'Bridge Components', description: 'The part of a bridge above the bearings - deck, girders and parapets - that carries traffic.' },
+  { key: 'substructure', term: 'Substructure', group: 'Bridge Components', description: 'The part of a bridge below the bearings - abutments, piers and foundations - transferring load to the ground.' },
   { key: 'load_rating', term: 'Load Rating', group: 'Bridge Components', description: 'The assessed safe live-load capacity of a bridge, governing posting/weight limits for heavy vehicles.' },
 
   // ── Traffic & demand ────────────────────────────────────────────────────────
   { key: 'aadt', term: 'AADT', label: 'Annual Average Daily Traffic', abbr:'AADT', unit:'vpd', group: 'Traffic & Demand', source:'ATC counts expanded by seasonal/weekly factors; base year 2016', description: 'The average number of vehicles passing a point per day over a full year, the headline measure of demand. All AADT on this platform is referenced to base year 2016 and grown to the current year.' },
   { key: 'adt', term: 'ADT', label: 'Average Daily Traffic', unit:'vpd', group: 'Traffic & Demand', description: 'Average vehicles per day over a period shorter than a year (not seasonally corrected); a raw count measure.' },
-  { key: 'vpd', term: 'vpd', label: 'Vehicles Per Day', unit:'vpd', group: 'Traffic & Demand', description: 'Unit of traffic volume — number of vehicles passing a point in 24 hours.' },
+  { key: 'vpd', term: 'vpd', label: 'Vehicles Per Day', unit:'vpd', group: 'Traffic & Demand', description: 'Unit of traffic volume - number of vehicles passing a point in 24 hours.' },
   { key: 'atc', term: 'ATC', label: 'Automatic Traffic Counter', abbr:'ATC', group: 'Traffic & Demand', description: 'A roadside device (tube, loop or radar) that continuously counts and classifies passing vehicles, the primary source of volume data.' },
   { key: 'pcu', term: 'PCU', label: 'Passenger Car Unit', abbr:'PCU', group: 'Traffic & Demand', description: 'A factor expressing different vehicle types in terms of equivalent passenger cars for capacity analysis (a truck ≈ 2–3 PCU).' },
   { key: 'peak_hour_factor', term: 'Peak Hour Factor', abbr:'PHF', group: 'Traffic & Demand', description: 'Ratio of total hourly volume to the peak 15-minute rate ×4; describes the peaking of demand within the busiest hour.' },
@@ -532,7 +532,7 @@ const RAW_DICTIONARY: DictEntry[] = [
   { key: 'gvw', term: 'GVW', label: 'Gross Vehicle Weight', abbr:'GVW', unit:'tonnes', group: 'Axle Load', description: 'Total weight of a vehicle including load; subject to legal maximums enforced at weighbridges.' },
   { key: 'weighbridge', term: 'Weighbridge', group: 'Axle Load', description: 'A facility (static or weigh-in-motion) that weighs vehicle axles/gross weight to enforce load limits and protect the network.' },
   { key: 'wim', term: 'WIM', label: 'Weigh-in-Motion', abbr:'WIM', group: 'Axle Load', description: 'Technology that weighs axles as vehicles pass at speed, enabling high-volume screening for overloading without stopping traffic.' },
-  { key: 'fourth_power_law', term: 'Fourth Power Law', group: 'Axle Load', description: 'The principle that pavement damage from an axle is proportional to roughly the 4th power of its load — doubling load causes ~16× the damage.' },
+  { key: 'fourth_power_law', term: 'Fourth Power Law', group: 'Axle Load', description: 'The principle that pavement damage from an axle is proportional to roughly the 4th power of its load - doubling load causes ~16× the damage.' },
 
   // ── Road safety ─────────────────────────────────────────────────────────────
   { key: 'black_spot', term: 'Black Spot', aliases:['hazard location'], group: 'Road Safety', description: 'A location with a significantly higher crash frequency/severity than comparable sites, prioritised for safety remediation.' },
@@ -553,7 +553,7 @@ const RAW_DICTIONARY: DictEntry[] = [
   // ── Maintenance treatments ──────────────────────────────────────────────────
   { key: 'routine_maintenance', term: 'Routine Maintenance', group: 'Maintenance', description: 'Recurrent, low-cost activities (grass cutting, drain clearing, pothole patching, sign cleaning) keeping the road serviceable year-round.' },
   { key: 'periodic_maintenance', term: 'Periodic Maintenance', group: 'Maintenance', description: 'Cyclic works at multi-year intervals restoring condition (resealing, regravelling, overlays) before structural failure.' },
-  { key: 'rehabilitation', term: 'Rehabilitation', group: 'Maintenance', description: 'Major works restoring a deteriorated pavement’s structural capacity and ride — overlays, partial reconstruction.' },
+  { key: 'rehabilitation', term: 'Rehabilitation', group: 'Maintenance', description: 'Major works restoring a deteriorated pavement’s structural capacity and ride - overlays, partial reconstruction.' },
   { key: 'reconstruction', term: 'Reconstruction', group: 'Maintenance', description: 'Full rebuilding of a failed pavement to a new structure when rehabilitation is no longer economic.' },
   { key: 'surface_dressing', term: 'Surface Dressing', aliases:['chip seal','seal'], group: 'Maintenance', description: 'A sprayed bitumen film covered with chippings, sealing the surface and restoring skid resistance at low cost; not structural.' },
   { key: 'slurry_seal', term: 'Slurry Seal', group: 'Maintenance', description: 'A thin mixture of fine aggregate, bitumen emulsion and filler applied to seal fine cracks and renew texture.' },
@@ -561,21 +561,21 @@ const RAW_DICTIONARY: DictEntry[] = [
   { key: 'patching', term: 'Patching', group: 'Maintenance', description: 'Localised repair of potholes and failed areas by removing and replacing pavement material.' },
   { key: 'regravelling', term: 'Re-gravelling', group: 'Maintenance', description: 'Replacing lost wearing-course gravel on unpaved roads to restore thickness, shape and rideability.' },
   { key: 'grading', term: 'Grading', aliases:['blading'], group: 'Maintenance', description: 'Reshaping an unpaved road surface with a grader to remove corrugations/potholes and restore camber.' },
-  { key: 'crack_sealing', term: 'Crack Sealing', group: 'Maintenance', description: 'Filling cracks with bituminous sealant to keep water out and slow deterioration — a preventive treatment.' },
+  { key: 'crack_sealing', term: 'Crack Sealing', group: 'Maintenance', description: 'Filling cracks with bituminous sealant to keep water out and slow deterioration - a preventive treatment.' },
 
   // ── Maintenance strategy & lifecycle ────────────────────────────────────────
-  { key: 'preventive_maintenance', term: 'Preventive Maintenance', group: 'Asset Lifecycle', description: 'Treatments applied to roads still in good condition to extend life and defer costly rehabilitation — the most cost-effective strategy.' },
+  { key: 'preventive_maintenance', term: 'Preventive Maintenance', group: 'Asset Lifecycle', description: 'Treatments applied to roads still in good condition to extend life and defer costly rehabilitation - the most cost-effective strategy.' },
   { key: 'maintenance_trigger', term: 'Maintenance Trigger', group: 'Asset Lifecycle', description: 'A condition threshold (e.g. IRI or VCI level) that, once crossed, signals a specific treatment is due.' },
   { key: 'deterioration_model', term: 'Deterioration Model', group: 'Asset Lifecycle', description: 'A relationship predicting how condition (IRI, VCI, rutting) worsens over time/traffic, used to forecast needs and time interventions. Powers the live now-cast.' },
   { key: 'remaining_service_life', term: 'Remaining Service Life', abbr:'RSL', group: 'Asset Lifecycle', description: 'The estimated time before an asset reaches its terminal condition and requires major intervention.' },
-  { key: 'whole_life_cost', term: 'Whole-Life Cost', aliases:['life cycle cost','lcc'], group: 'Asset Lifecycle', description: 'The total cost of an asset over its life — construction, maintenance, rehabilitation and user costs — used to compare strategies.' },
+  { key: 'whole_life_cost', term: 'Whole-Life Cost', aliases:['life cycle cost','lcc'], group: 'Asset Lifecycle', description: 'The total cost of an asset over its life - construction, maintenance, rehabilitation and user costs - used to compare strategies.' },
   { key: 'do_minimum', term: 'Do-Minimum', group: 'Asset Lifecycle', description: 'The baseline scenario of only essential routine works, against which investment options are appraised.' },
   { key: 'asset_service_level', term: 'Level of Service (Asset)', group: 'Asset Lifecycle', description: 'The standard of condition/availability an authority commits to deliver, balancing cost, risk and user expectation.' },
 
   // ── Economic analysis & appraisal ───────────────────────────────────────────
   { key: 'hdm4', term: 'HDM-4', label: 'Highway Development & Management Model', abbr:'HDM-4', group: 'Economic Analysis', description: 'The World Bank/PIARC tool modelling road deterioration, works effects and road-user costs to appraise investment and maintenance strategies.' },
-  { key: 'voc', term: 'VOC', label: 'Vehicle Operating Cost', abbr:'VOC', group: 'Economic Analysis', description: 'The cost of running a vehicle (fuel, tyres, parts, depreciation) which rises sharply with roughness — the main user-cost benefit of better roads.' },
-  { key: 'ruc', term: 'Road User Cost', aliases:['rui'], group: 'Economic Analysis', description: 'Total cost borne by road users — VOC plus travel time and crash costs — reduced by improving condition and geometry.' },
+  { key: 'voc', term: 'VOC', label: 'Vehicle Operating Cost', abbr:'VOC', group: 'Economic Analysis', description: 'The cost of running a vehicle (fuel, tyres, parts, depreciation) which rises sharply with roughness - the main user-cost benefit of better roads.' },
+  { key: 'ruc', term: 'Road User Cost', aliases:['rui'], group: 'Economic Analysis', description: 'Total cost borne by road users - VOC plus travel time and crash costs - reduced by improving condition and geometry.' },
   { key: 'eirr', term: 'EIRR', label: 'Economic Internal Rate of Return', abbr:'EIRR', unit:'%', group: 'Economic Analysis', description: 'The discount rate at which a project’s economic benefits equal its costs; compared against a hurdle rate to justify investment.' },
   { key: 'npv', term: 'NPV', label: 'Net Present Value', abbr:'NPV', group: 'Economic Analysis', description: 'The present value of a project’s benefits minus costs over its life; positive NPV indicates a worthwhile investment.' },
   { key: 'bcr', term: 'BCR', label: 'Benefit-Cost Ratio', abbr:'BCR', group: 'Economic Analysis', description: 'Ratio of discounted benefits to costs; >1 indicates benefits exceed costs.' },
@@ -666,15 +666,15 @@ const RAW_DICTIONARY: DictEntry[] = [
   { key: 'dnr', term: 'DNR', label: 'Department of National Roads', abbr:'DNR', group: 'Governance', description: 'The MoWT department managing the national roads network and this platform.' },
   { key: 'ndpiv', term: 'NDP IV', label: 'National Development Plan IV', abbr:'NDP IV', group: 'Governance', description: 'Uganda’s national medium-term development framework, setting sector targets including for the roads programme.' },
   { key: 'kpi', term: 'KPI', label: 'Key Performance Indicator', abbr:'KPI', group: 'Governance', description: 'A measurable value tracking progress toward an objective (e.g. % network in good/fair condition, budget absorption).' },
-  { key: 'pct_good_fair', term: '% Network in Good/Fair Condition', group: 'Governance', unit:'%', description: 'Headline performance indicator — the share of network length assessed as good or fair, the main measure of network health.' },
+  { key: 'pct_good_fair', term: '% Network in Good/Fair Condition', group: 'Governance', unit:'%', description: 'Headline performance indicator - the share of network length assessed as good or fair, the main measure of network health.' },
   { key: 'vision2040', term: 'Vision 2040', group: 'Governance', description: 'Uganda’s long-term national development vision, the strategic backdrop for infrastructure investment targets.' },
 
   // ── Units & measures ────────────────────────────────────────────────────────
   { key: 'lane_km', term: 'Lane-km', unit:'lane-km', group: 'Units & Measures', description: 'Road length multiplied by number of lanes; the exposure measure for surfacing works and capacity.' },
-  { key: 'veh_km', term: 'Vehicle-km', aliases:['vkt','vehicle kilometres travelled'], unit:'veh-km', group: 'Units & Measures', description: 'Total distance travelled by all vehicles on a road/network — the core exposure measure for demand and crash rates.' },
+  { key: 'veh_km', term: 'Vehicle-km', aliases:['vkt','vehicle kilometres travelled'], unit:'veh-km', group: 'Units & Measures', description: 'Total distance travelled by all vehicles on a road/network - the core exposure measure for demand and crash rates.' },
   { key: 'ugx', term: 'UGX', label: 'Uganda Shilling', abbr:'UGX', group: 'Units & Measures', description: 'The national currency, the unit for budgets, costs and contract values on the platform.' },
-  { key: 'ugx_bn', term: 'UGX Billion', abbr:'UGX bn', group: 'Units & Measures', description: 'Billions of Uganda Shillings — the typical scale for programme budgets and regional funding needs.' },
-  { key: 'm_per_km', term: 'm/km', unit:'m/km', group: 'Units & Measures', description: 'Metres of accumulated roughness per kilometre — the unit of the IRI.' },
+  { key: 'ugx_bn', term: 'UGX Billion', abbr:'UGX bn', group: 'Units & Measures', description: 'Billions of Uganda Shillings - the typical scale for programme budgets and regional funding needs.' },
+  { key: 'm_per_km', term: 'm/km', unit:'m/km', group: 'Units & Measures', description: 'Metres of accumulated roughness per kilometre - the unit of the IRI.' },
 
   // ── Institutions & standards bodies ─────────────────────────────────────────
   { key: 'piarc', term: 'PIARC', label: 'World Road Association', group: 'Standards & Institutions', description: 'The international association promoting road and road-transport best practice; co-custodian of HDM-4.' },
@@ -767,7 +767,7 @@ const RAW_DICTIONARY: DictEntry[] = [
   { key: 'freeboard', term: 'Freeboard', group: 'Drainage & Hydrology', description: 'The clearance between the design flood level and the underside of a bridge/structure, allowing for debris and waves.' },
   { key: 'afflux', term: 'Afflux', group: 'Drainage & Hydrology', description: 'The rise in upstream water level caused by a structure constricting the flow.' },
   { key: 'outfall', term: 'Outfall', group: 'Drainage & Hydrology', description: 'The point where a drain discharges to a natural watercourse or land.' },
-  { key: 'desilting', term: 'Desilting', group: 'Drainage & Hydrology', description: 'Removing accumulated silt from drains and culverts to restore hydraulic capacity — a routine activity.' },
+  { key: 'desilting', term: 'Desilting', group: 'Drainage & Hydrology', description: 'Removing accumulated silt from drains and culverts to restore hydraulic capacity - a routine activity.' },
   { key: 'subsoil_drain', term: 'Subsoil Drain', aliases:['french drain'], group: 'Drainage & Hydrology', description: 'A buried perforated-pipe drain lowering the water table beneath the pavement to protect the subgrade.' },
 
   // ── More bridge & structures ────────────────────────────────────────────────
@@ -795,7 +795,7 @@ const RAW_DICTIONARY: DictEntry[] = [
   // ── More safety ─────────────────────────────────────────────────────────────
   { key: 'ksi', term: 'KSI', label: 'Killed or Seriously Injured', group: 'Road Safety', description: 'A casualty severity measure counting fatalities plus serious injuries; a primary safety performance indicator.' },
   { key: 'clear_zone', term: 'Clear Zone', group: 'Road Safety', description: 'The traversable, obstacle-free roadside area allowing an errant vehicle to recover or stop safely.' },
-  { key: 'conflict_point', term: 'Conflict Point', group: 'Road Safety', description: 'A location where vehicle/pedestrian paths cross, merge or diverge — a potential collision point at junctions.' },
+  { key: 'conflict_point', term: 'Conflict Point', group: 'Road Safety', description: 'A location where vehicle/pedestrian paths cross, merge or diverge - a potential collision point at junctions.' },
   { key: 'run_off_road', term: 'Run-off-Road Crash', group: 'Road Safety', description: 'A crash where a vehicle leaves the carriageway; addressed by clear zones, barriers and delineation.' },
   { key: 'pedestrian_crossing', term: 'Pedestrian Crossing', group: 'Road Safety', description: 'A designated place for pedestrians to cross, with markings/signals improving safety at conflict points.' },
   { key: 'sight_triangle', term: 'Sight Triangle', group: 'Road Safety', description: 'The clear area at a junction giving approaching drivers mutual visibility to avoid collisions.' },
@@ -827,7 +827,7 @@ const RAW_DICTIONARY: DictEntry[] = [
   { key: 'residual_value', term: 'Residual Value', aliases:['salvage value'], group: 'Economic Analysis', description: 'The remaining value of an asset at the end of the appraisal period, credited in the analysis.' },
   { key: 'shadow_price', term: 'Shadow Price', group: 'Economic Analysis', description: 'The true economic (opportunity) cost of a resource, used in place of distorted market prices in appraisal.' },
   { key: 'scf', term: 'Standard Conversion Factor', abbr:'SCF', group: 'Economic Analysis', description: 'A factor converting financial prices to economic prices by removing taxes/subsidies and distortions.' },
-  { key: 'travel_time_saving', term: 'Travel-Time Saving', group: 'Economic Analysis', description: 'The value of time saved by users from a faster/smoother road — a major project benefit.' },
+  { key: 'travel_time_saving', term: 'Travel-Time Saving', group: 'Economic Analysis', description: 'The value of time saved by users from a faster/smoother road - a major project benefit.' },
   { key: 'accessibility', term: 'Accessibility', group: 'Economic Analysis', description: 'The ease of reaching services/markets; improved by all-season roads, a key rural-roads benefit.' },
 
   // ── Construction equipment & plant ──────────────────────────────────────────
@@ -851,7 +851,7 @@ const RAW_DICTIONARY: DictEntry[] = [
   { key: 'inspection_cycle', term: 'Inspection Cycle', group: 'Inspection', description: 'The interval at which assets are re-inspected (e.g. annual condition survey, biennial bridge inspection).' },
 
   // ── Data & platform ─────────────────────────────────────────────────────────
-  { key: 'metadata', term: 'Metadata', group: 'Data & Platform', description: 'Data describing a dataset — its source, date, accuracy, units and meaning — essential for trust and reuse.' },
+  { key: 'metadata', term: 'Metadata', group: 'Data & Platform', description: 'Data describing a dataset - its source, date, accuracy, units and meaning - essential for trust and reuse.' },
   { key: 'attribute', term: 'Attribute', group: 'Data & Platform', description: 'A named property of a feature/record (e.g. surface type, AADT) stored as a column/field.' },
   { key: 'raster', term: 'Raster', group: 'Data & Platform', description: 'Grid-based spatial data (imagery, DEM) where each cell holds a value; contrasts with vector data.' },
   { key: 'vector', term: 'Vector Data', group: 'Data & Platform', description: 'Spatial data as points, lines and polygons with attributes; the form of the road network layers.' },
@@ -860,7 +860,7 @@ const RAW_DICTIONARY: DictEntry[] = [
   { key: 'schema', term: 'Schema', group: 'Data & Platform', description: 'The defined structure (tables, fields, types, relationships) of a database or dataset.' },
   { key: 'rls', term: 'RLS', label: 'Row-Level Security', group: 'Data & Platform', description: 'Database rules restricting which rows a user can read/write; used to keep the public mirror read-only.' },
   { key: 'now_cast', term: 'Live Now-cast', group: 'Data & Platform', description: 'The platform feature that synthesises every metric (IRI, VCI, AADT) to the current instant using deterioration/growth models that tick each second.' },
-  { key: 'data_dictionary', term: 'Data Dictionary', group: 'Data & Platform', description: 'This reference — the single source of truth for what every field, metric and categorical value on the platform means.' },
+  { key: 'data_dictionary', term: 'Data Dictionary', group: 'Data & Platform', description: 'This reference - the single source of truth for what every field, metric and categorical value on the platform means.' },
 ];
 
 // A few terms are intentionally defined in more than one place across groups;

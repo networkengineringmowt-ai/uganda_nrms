@@ -1,5 +1,5 @@
 /**
- * CrossLinkChipBar — renders a horizontal bar of chips linking to related sections.
+ * CrossLinkChipBar - renders a horizontal bar of chips linking to related sections.
  * Place at the top of any section content area.
  *
  * Usage:

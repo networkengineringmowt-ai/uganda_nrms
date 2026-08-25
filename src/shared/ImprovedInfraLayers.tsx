@@ -132,4 +132,4 @@ export function ImprovedInfraLayers() {
   );
 }
 
-// (ReactDOM reference removed — duplicate import cleaned up)
+// (ReactDOM reference removed - duplicate import cleaned up)

@@ -1,5 +1,5 @@
 /**
- * useNetworkStats — single source of truth for all network KPIs.
+ * useNetworkStats - single source of truth for all network KPIs.
  *
  * Loads network2026.geojson (1,017 links) and bridges2026.geojson once,
  * computes every statistic used across the platform, and caches the result.
@@ -9,7 +9,7 @@
  */
 
 /**
- * Official total network length — Department of National Roads FY 2025/26.
+ * Official total network length - Department of National Roads FY 2025/26.
  * Source: NDPIV Investment Programme FY 2025–2026 (MoWT/DNR, June 2025).
  * This is the gazetted figure; it differs from GeoJSON-computed totalKm
  * because some links (mainly unclassified / recently gazetted roads) are
@@ -19,9 +19,9 @@ export const OFFICIAL_NETWORK_KM = 21302;
 import { useState, useEffect } from 'react';
 
 export interface NetworkStats {
-  // Totals — GeoJSON mapped vs official Department of National Roads figure
+  // Totals - GeoJSON mapped vs official Department of National Roads figure
   totalKm: number;       // from network2026.geojson (mapped)
-  officialKm: number;    // = OFFICIAL_NETWORK_KM (21,302 km) — NDPIV FY25/26
+  officialKm: number;    // = OFFICIAL_NETWORK_KM (21,302 km) - NDPIV FY25/26
   totalLinks: number;
   // Surface
   pavedKm: number;
@@ -41,7 +41,7 @@ export interface NetworkStats {
   error?: string;
 }
 
-// Condition stats from bot_results Q12 (surveyed subset only — not full network)
+// Condition stats from bot_results Q12 (surveyed subset only - not full network)
 export interface SurveyedCondition {
   totalSurveyedLinks: number;
   goodLinks: number;
@@ -148,7 +148,7 @@ export function useNetworkStats(): NetworkStats {
   return stats;
 }
 
-/** Sync accessor — returns defaults if not yet loaded. Safe to call outside React. */
+/** Sync accessor - returns defaults if not yet loaded. Safe to call outside React. */
 export function getNetworkStats(): NetworkStats {
   return _cache ?? {
     totalKm: 21160, officialKm: OFFICIAL_NETWORK_KM, totalLinks: 1017,

@@ -20,7 +20,7 @@ interface Props {
 
 function LegendContent({ title, items }: { title?: string; items: LegendItem[] }) {
   // Long legends (15+ items, e.g. LEGEND_FULL) collapse to a compact header by
-  // default and expand on click — keeps the map clear of clutter while still
+  // default and expand on click - keeps the map clear of clutter while still
   // giving access to the full key. Short legends render fully open, no toggle.
   const collapsible = items.length > 8;
   const [open, setOpen] = useState(!collapsible);
@@ -115,22 +115,22 @@ export function MapLegend({ title, items, position = 'bottomright' }: Props) {
 }
 
 // ── Pre-built legend item sets (ESRI convention order) ────────────────────────
-// ROAD NETWORK LEGEND — by functional class then surface variant
+// ROAD NETWORK LEGEND - by functional class then surface variant
 export const LEGEND_ROAD_NETWORK: LegendItem[] = [
-  { color: '#00f5ff', label: 'Class A — National Road' },
-  { color: '#00ff88', label: 'Class B — National Road' },
-  { color: '#f59e0b', label: 'Class C — District Road' },
-  { color: '#94a3b8', label: 'Class M — Grade-Separated Highway', dash: true },
+  { color: '#00f5ff', label: 'Class A - National Road' },
+  { color: '#00ff88', label: 'Class B - National Road' },
+  { color: '#f59e0b', label: 'Class C - District Road' },
+  { color: '#94a3b8', label: 'Class M - Grade-Separated Highway', dash: true },
   { color: '#C8A84B', label: 'Unpaved / Gravel', dash: true },
 ];
 
-// BRIDGE & STRUCTURE LEGEND — Point features on map
+// BRIDGE & STRUCTURE LEGEND - Point features on map
 export const LEGEND_STRUCTURES: LegendItem[] = [
   { color: '#0891b2', label: 'Bridge', circle: true },
   { color: '#f59e0b', label: 'Major Culvert', circle: true },
 ];
 
-// STRUCTURE CONDITION LEGEND — Color-coded by rating (1=worst, 5=best)
+// STRUCTURE CONDITION LEGEND - Color-coded by rating (1=worst, 5=best)
 export const LEGEND_STRUCTURE_CONDITION: LegendItem[] = [
   { color: '#ef4444', label: '1 – Poor (Critical)' },
   { color: '#f97316', label: '2 – Bad' },
@@ -139,7 +139,7 @@ export const LEGEND_STRUCTURE_CONDITION: LegendItem[] = [
   { color: '#22c55e', label: '5 – Excellent' },
 ];
 
-// PAVEMENT CONDITION LEGEND — HDM-4 / SATCC TRH17 IRI thresholds
+// PAVEMENT CONDITION LEGEND - HDM-4 / SATCC TRH17 IRI thresholds
 export const LEGEND_CONDITION: LegendItem[] = [
   { color: '#22c55e', label: 'Good   IRI ≤ 3.5 m/km', circle: true },
   { color: '#84cc16', label: 'Fair   IRI 3.5–5.5', circle: true },
@@ -148,7 +148,7 @@ export const LEGEND_CONDITION: LegendItem[] = [
   { color: '#ef4444', label: 'Very Bad  IRI > 12.0', circle: true },
 ];
 
-// TRAFFIC VOLUME LEGEND — AADT (Annual Average Daily Traffic) correct app thresholds
+// TRAFFIC VOLUME LEGEND - AADT (Annual Average Daily Traffic) correct app thresholds
 export const LEGEND_TRAFFIC: LegendItem[] = [
   { color: '#00ff88', label: 'AADT < 2,000   Low', circle: true },
   { color: '#ffd23f', label: 'AADT 2k–8k   Medium', circle: true },
@@ -156,7 +156,7 @@ export const LEGEND_TRAFFIC: LegendItem[] = [
   { color: '#ff2d78', label: 'AADT > 15k   Very High', circle: true },
 ];
 
-// INFRASTRUCTURE LEGEND — ESRI order: lines → airports → ground transport → maintenance
+// INFRASTRUCTURE LEGEND - ESRI order: lines → airports → ground transport → maintenance
 export const LEGEND_INFRA: LegendItem[] = [
   { color: '#4ade80', label: 'Railway (Operational)', dash: true },
   { color: '#06b6d4', label: 'Ferry Route', dash: true },
@@ -167,7 +167,7 @@ export const LEGEND_INFRA: LegendItem[] = [
   { color: '#eab308', label: 'Maintenance Station', circle: true },
 ];
 
-// PROJECT STATUS LEGEND — Road project phases
+// PROJECT STATUS LEGEND - Road project phases
 export const LEGEND_PROJECTS: LegendItem[] = [
   { color: '#22c55e', label: 'Completed', circle: true },
   { color: '#3b82f6', label: 'Ongoing', circle: true },
@@ -176,7 +176,7 @@ export const LEGEND_PROJECTS: LegendItem[] = [
   { color: '#64748b', label: 'Not Started', circle: true },
 ];
 
-// CONGESTION LEGEND — Traffic congestion levels
+// CONGESTION LEGEND - Traffic congestion levels
 export const LEGEND_CONGESTION: LegendItem[] = [
   { color: '#22c55e', label: 'Free Flow', circle: true },
   { color: '#84cc16', label: 'Moderate', circle: true },
@@ -188,10 +188,10 @@ export const LEGEND_CONGESTION: LegendItem[] = [
 
 // 1. Road lines by functional class (colors match app CLASS_COLORS)
 export const LEGEND_ROAD_CLASSES: LegendItem[] = [
-  { color: '#00f5ff', label: 'Class A — National Road' },
-  { color: '#00ff88', label: 'Class B — National Road' },
-  { color: '#f59e0b', label: 'Class C — District Road' },
-  { color: '#94a3b8', label: 'Class M — Grade-Separated Highway', dash: true },
+  { color: '#00f5ff', label: 'Class A - National Road' },
+  { color: '#00ff88', label: 'Class B - National Road' },
+  { color: '#f59e0b', label: 'Class C - District Road' },
+  { color: '#94a3b8', label: 'Class M - Grade-Separated Highway', dash: true },
   { color: '#C8A84B', label: 'Unpaved / Gravel', dash: true },
 ];
 
@@ -220,9 +220,9 @@ export const LEGEND_POINTS_FULL: LegendItem[] = [
   { color: '#92400e', label: 'Maintenance Depot', circle: true },
 ];
 
-// LEGEND_FULL — all feature types in ESRI cartographic order for maps with
+// LEGEND_FULL - all feature types in ESRI cartographic order for maps with
 // roads + InfraLayers:
-//   1. Roads (by class/condition — most important)
+//   1. Roads (by class/condition - most important)
 //   2. Points of interest (stations, airports, ferries)
 //   3. Area features (regions, districts, reserves)
 //   4. Linear features (rivers, railways, ferry routes)

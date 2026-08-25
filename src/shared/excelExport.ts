@@ -1,5 +1,5 @@
 /**
- * excelExport — platform-wide Excel (.xlsx) export engine.
+ * excelExport - platform-wide Excel (.xlsx) export engine.
  * Goes beyond CSV: real Excel formulas (SUM/AVERAGE totals row), cell comments
  * on headers (column descriptions / data sources), styled + frozen header with
  * autofilter, and a metadata sheet recording provenance.
@@ -39,7 +39,7 @@ export async function exportTableToExcel(opts: XlsOptions): Promise<void> {
   const { columns, rows } = opts;
 
   const wb = new ExcelJS.Workbook();
-  wb.creator = 'Uganda National Roads Platform — DNR/MOWT';
+  wb.creator = 'Uganda National Roads Platform - DNR/MOWT';
   wb.created = new Date();
 
   // ── Data sheet ──────────────────────────────────────────────────────────────
@@ -90,7 +90,7 @@ export async function exportTableToExcel(opts: XlsOptions): Promise<void> {
         const fn = c.total === 'avg' ? 'AVERAGE' : 'SUM';
         cell.value = { formula: `${fn}(${colLetter}${first}:${colLetter}${last})` } as any;
         cell.numFmt = '#,##0.00';
-        cell.note = `${fn} of ${c.label} — live Excel formula, recalculates if you edit the data.`;
+        cell.note = `${fn} of ${c.label} - live Excel formula, recalculates if you edit the data.`;
       }
       cell.font = { bold: true, color: { argb: HEADER_FONT }, size: 10 };
       cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: TOTAL_FILL } };
@@ -112,7 +112,7 @@ export async function exportTableToExcel(opts: XlsOptions): Promise<void> {
   const metaWs = wb.addWorksheet('Metadata');
   metaWs.columns = [{ width: 26 }, { width: 80 }];
   const metaRows: [string, string][] = [
-    ['Platform', 'Uganda National Roads Platform — DNR / Ministry of Works & Transport'],
+    ['Platform', 'Uganda National Roads Platform - DNR / Ministry of Works & Transport'],
     ['Generated', new Date().toISOString()],
     ['Rows exported', String(rows.length)],
     ...Object.entries(opts.meta ?? {}),

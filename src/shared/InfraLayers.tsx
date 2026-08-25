@@ -89,7 +89,7 @@ function iconSizeForZoom(zoom: number): number {
   return 6;
 }
 
-// Simple solid circle — used at zoom < 10 for performance
+// Simple solid circle - used at zoom < 10 for performance
 function makeSimpleCircle(size: number, color: string): L.DivIcon {
   return L.divIcon({
     className: '',
@@ -176,7 +176,7 @@ export function InfraLayers({ show = ALL_GROUPS }: InfraLayersProps = {}) {
 
   return (
     <>
-      {/* ── Railways (very pale — decorative only) ── */}
+      {/* ── Railways (very pale - decorative only) ── */}
       {on('rail') && railExisting && (
         <GeoJSON
           key="il-rail-existing"

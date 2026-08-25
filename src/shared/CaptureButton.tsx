@@ -1,5 +1,5 @@
 /**
- * CaptureButton — the big "capture screen" launcher that every platform section
+ * CaptureButton - the big "capture screen" launcher that every platform section
  * can drop in. Jumps to the login-gated Data Capture Hub, which writes straight
  * to the Supabase Unified DB and so updates the rest of the platform.
  */
@@ -18,7 +18,7 @@ interface Props {
 export function CaptureButton({ capture = 'condition', label = 'field data', accent = '#00d4aa' }: Props) {
   const { dispatch } = useBMS();
   const { user } = useAuth();
-  // super level is strictly view-and-reports — hide every entry point to input
+  // super level is strictly view-and-reports - hide every entry point to input
   if (user?.role !== 'admin') return null;
   const open = () => {
     try { sessionStorage.setItem('capture_target', capture); } catch { /* ignore */ }

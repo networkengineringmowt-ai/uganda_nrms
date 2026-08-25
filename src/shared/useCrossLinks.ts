@@ -1,5 +1,5 @@
 /**
- * useCrossLinks — returns related sections and data connections for any given section.
+ * useCrossLinks - returns related sections and data connections for any given section.
  *
  * The links are static structural descriptions (not runtime-computed per link_id)
  * because cross-section data joins require shared link_id context that isn't
@@ -80,7 +80,7 @@ const CROSS_LINK_MAP: Record<string, CrossLink[]> = {
     { targetView: 'lifecycle',     label: 'Lifecycle',     description: 'HDM-4 feeds lifecycle trajectories', dataField: 'iri_trajectory / treatment_triggers' },
     { targetView: 'budget',        label: 'Budget',        description: 'HDM-4 programme cost outputs',    dataField: 'treatment_cost / nbc_ratio' },
   ],
-  // ── Newly-wired & secondary sections — so the unified chip bar appears platform-wide ──
+  // ── Newly-wired & secondary sections - so the unified chip bar appears platform-wide ──
   bridgeworks: [
     { targetView: 'bms',         label: 'BMS',          description: 'Structure inventory & condition for these works', dataField: 'bridge_id / condition_rating' },
     { targetView: 'projects',    label: 'Projects',     description: 'Bridge works within the development programme', dataField: 'project_type === Bridges' },

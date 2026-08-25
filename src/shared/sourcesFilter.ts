@@ -1,4 +1,4 @@
-// Module-level variable — set before navigating to sources so it pre-filters on mount
+// Module-level variable - set before navigating to sources so it pre-filters on mount
 let _pendingModule: string | null = null;
 
 export function setPendingSourcesModule(mod: string | null) {

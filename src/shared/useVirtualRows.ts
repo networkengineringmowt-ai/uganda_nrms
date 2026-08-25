@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 interface VirtualRowsOptions {
-  /** Fixed row height in px — required for offset math. */
+  /** Fixed row height in px - required for offset math. */
   rowHeight: number;
   /** Extra rows rendered above/below the viewport to smooth fast scrolling. */
   overscan?: number;
@@ -21,7 +21,7 @@ interface VirtualRowsResult<T> {
 }
 
 /**
- * Table-row virtualization via spacer <tr> elements — the standard technique
+ * Table-row virtualization via spacer <tr> elements - the standard technique
  * for HTML tables, where absolute positioning (used by div-based virtual
  * lists) breaks native table layout. Only rows near the viewport are mounted;
  * a leading and trailing spacer row keep the scrollbar/scroll height correct.
@@ -43,7 +43,7 @@ export function useVirtualRows<T>(rows: T[], { rowHeight, overscan = 8 }: Virtua
   }, []);
 
   // Reset scroll position tracking when the row count shrinks below where we'd
-  // scrolled to (e.g. a filter narrows the list) — avoids stranding the view
+  // scrolled to (e.g. a filter narrows the list) - avoids stranding the view
   // past the end with only spacer rows visible.
   useEffect(() => {
     const el = containerRef.current;

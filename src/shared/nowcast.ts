@@ -1,11 +1,11 @@
 /**
- * nowcast — report every metric AT THE CURRENT INSTANT, per the clock.
+ * nowcast - report every metric AT THE CURRENT INSTANT, per the clock.
  *
  * Observed values are anchored at their survey year and carried forward to the
  * fractional "now" (e.g. 2026.4471…) with the platform's predictive models:
- *   IRI  — compound annual roughness progression (HDM-4-style growth rate)
- *   VCI  — linear condition decay per year, clamped 0–100
- *   ADT  — the 2016-base growth-factor curve, linearly interpolated so the
+ *   IRI  - compound annual roughness progression (HDM-4-style growth rate)
+ *   VCI  - linear condition decay per year, clamped 0–100
+ *   ADT  - the 2016-base growth-factor curve, linearly interpolated so the
  *          factor moves continuously between calendar years
  * A 1-second tick re-renders consumers so displayed values are literally
  * "as of" the moment on screen.
@@ -65,7 +65,7 @@ export const GROWTH_2016: Record<number, number> = {
   2034: 2.40, 2035: 2.50,
 };
 
-/** Growth factor at a FRACTIONAL year — linear interpolation between years. */
+/** Growth factor at a FRACTIONAL year - linear interpolation between years. */
 export function factorAt(t: number): number {
   const y0 = Math.floor(t), y1 = y0 + 1;
   const f0 = GROWTH_2016[y0] ?? GROWTH_2016[2035] ?? 1;

@@ -1,5 +1,5 @@
 /**
- * useTableSort — lightweight click-to-sort for bespoke tables.
+ * useTableSort - lightweight click-to-sort for bespoke tables.
  * Keeps the table's own rendering/formatting; just reorders the row array.
  *
  *   const { sorted, toggle, indicator } = useTableSort(rows, 'name');

@@ -1,6 +1,6 @@
 /**
  * Shared conditional-formatting primitives for data tables across the
- * platform — road-class pills, AADT heat scale, percentage colouring,
+ * platform - road-class pills, AADT heat scale, percentage colouring,
  * null/zero highlighting, and critical-row left borders. Condition-rating
  * traffic-light colouring already exists as conditionColor/conditionBadge
  * in utils/helpers.ts; this module covers the rest so every table applies
@@ -22,7 +22,7 @@ export function roadClassColor(cls: string | null | undefined): string {
 
 export function RoadClassPill({ cls }: { cls: string | null | undefined }) {
   const color = roadClassColor(cls);
-  if (!cls) return <span style={{ color: 'rgba(148,163,184,0.4)' }}>—</span>;
+  if (!cls) return <span style={{ color: 'rgba(148,163,184,0.4)' }}>-</span>;
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
@@ -36,7 +36,7 @@ export function RoadClassPill({ cls }: { cls: string | null | undefined }) {
 }
 
 // ─── AADT heat scale ──────────────────────────────────────────────────────────
-// Discrete buckets (not continuous interpolation) — cheap to evaluate across
+// Discrete buckets (not continuous interpolation) - cheap to evaluate across
 // thousands of virtualized cells and matches the threshold-based colouring
 // style already used elsewhere in the codebase (e.g. IRI thresholds).
 const AADT_BUCKETS: Array<{ max: number; bg: string; fg: string }> = [
@@ -80,7 +80,7 @@ export function percentageColor(value: number, invert = false): string {
 }
 
 export function PercentCell({ value, invert }: { value: number | null | undefined; invert?: boolean }) {
-  if (value == null || Number.isNaN(value)) return <span style={NULL_ZERO_STYLE}>—</span>;
+  if (value == null || Number.isNaN(value)) return <span style={NULL_ZERO_STYLE}>-</span>;
   const color = percentageColor(value, invert);
   return (
     <span style={{ color, fontWeight: 700 }}>
@@ -108,7 +108,7 @@ export function NullableCell({ value, children }: { value: unknown; children: Re
 
 // ─── Condition colour by string label ─────────────────────────────────────────
 // For datasets that store condition as a label ('Very Poor'…'Excellent')
-// rather than the 1–5 ConditionRating used elsewhere — same traffic-light scale.
+// rather than the 1–5 ConditionRating used elsewhere - same traffic-light scale.
 const CONDITION_LABEL_COLORS: Record<string, string> = {
   'Very Poor': '#ef4444', 'Poor': '#f97316', 'Fair': '#eab308',
   'Good': '#84cc16', 'Very Good': '#22c55e', 'Excellent': '#22c55e',
@@ -121,7 +121,7 @@ export function conditionLabelColor(label: string | null | undefined): string {
 
 export function ConditionLabelBadge({ label }: { label: string | null | undefined }) {
   const color = conditionLabelColor(label);
-  if (!label) return <span style={{ color: 'rgba(148,163,184,0.4)' }}>—</span>;
+  if (!label) return <span style={{ color: 'rgba(148,163,184,0.4)' }}>-</span>;
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', padding: '2px 9px', borderRadius: 999,

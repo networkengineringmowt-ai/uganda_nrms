@@ -1,5 +1,5 @@
 /**
- * Visual Condition Index (VCI) rating bands — single source of truth.
+ * Visual Condition Index (VCI) rating bands - single source of truth.
  * Matches the platform UI (NetworkStory VCI_BANDS) and the Supabase schema
  * comments (road_link_condition.vci_rating, etc.):
  *   Very Good ≥85 · Good ≥75 · Fair ≥65 · Poor ≥55 · Very Poor <55

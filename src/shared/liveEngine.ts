@@ -1,5 +1,5 @@
 /**
- * liveEngine — the platform's background predictive engine.
+ * liveEngine - the platform's background predictive engine.
  *
  * Loads the 1,017-link national road network ONCE, then on every clock tick
  * projects each link's traffic and pavement condition forward to the current
@@ -76,7 +76,7 @@ async function loadLinks(): Promise<LinkModel[]> {
       const paved       = String(p.surface_ty ?? '') === 'Bituminous';
       const id          = String(p.link_id ?? p.unique_id ?? '');
       // Condition anchor: paved links carry a real build/rehab year. Unpaved (gravel)
-      // links have no build year — they are regraded on a cycle, so we anchor their
+      // links have no build year - they are regraded on a cycle, so we anchor their
       // condition to a deterministic recent grading year (2015–2025) spread by id.
       const condYear = paved
         ? (builtReal || 2010)
@@ -109,7 +109,7 @@ export function useLiveLinks(): LinkModel[] {
 }
 
 // ── Per-link predictive models (evaluated at fractional year t) ──────────────
-/** Real pavement age — only meaningful for links with a known build year. */
+/** Real pavement age - only meaningful for links with a known build year. */
 export const linkAge  = (l: LinkModel, t: number) =>
   l.builtYear > 0 ? Math.max(0, t - l.builtYear) : 0;
 /** Roughness carried forward from the condition anchor to the current instant. */

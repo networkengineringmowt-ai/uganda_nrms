@@ -1,4 +1,4 @@
-// Shared map constants — single source of truth for all map components.
+// Shared map constants - single source of truth for all map components.
 
 export const ESRI_TILE_URLS = {
   imagery: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
@@ -10,7 +10,7 @@ export const ESRI_ATTRIBUTIONS = {
   labels:  'Esri',
 };
 
-// Road line symbology — matches the dark-tarmac shimmer style on satellite imagery.
+// Road line symbology - matches the dark-tarmac shimmer style on satellite imagery.
 export const ROAD_STYLES = {
   paved:   { color: '#111111', weight: 3.5, opacity: 0.95, dashArray: undefined as string | undefined },
   unpaved: { color: '#C8A84B', weight: 1.5, opacity: 0.85, dashArray: '4,3'  as string | undefined },
@@ -18,13 +18,13 @@ export const ROAD_STYLES = {
   shimmer: { color: '#555555', weight: 1.5, opacity: 0.5 },
 };
 
-// Structure markers — minZoom keeps them hidden at country-overview zoom.
+// Structure markers - minZoom keeps them hidden at country-overview zoom.
 export const STRUCTURE_STYLES = {
   bridge:  { color: '#3B82F6', radius: 5, minZoom: 10 },
   culvert: { color: '#F59E0B', radius: 4, minZoom: 10 },
 };
 
-// Congestion risk palette — shared between PredictionsPanel and ATCView.
+// Congestion risk palette - shared between PredictionsPanel and ATCView.
 export const CONGESTION_COLORS: Record<string, string> = {
   Low:      '#22c55e',
   Medium:   '#eab308',
@@ -56,7 +56,7 @@ export const TRAFFIC_COLORS: Record<string, string> = {
   critical: '#ef4444',
 };
 
-// Infrastructure layer symbols — single source for InfraLayers.tsx and legends
+// Infrastructure layer symbols - single source for InfraLayers.tsx and legends
 export const INFRA_SYMBOLS = {
   ferryLine:          { color: '#22d3ee', weight: 2,   opacity: 0.72, dashArray: '6 4', fill: false },
   ferryPoint:         { color: '#22d3ee', fillColor: '#22d3ee',  fillOpacity: 0.75, weight: 1.5, opacity: 0.9 },

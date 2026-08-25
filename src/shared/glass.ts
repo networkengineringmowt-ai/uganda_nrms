@@ -1,5 +1,5 @@
 /**
- * glass.ts — reusable Glassmorphism / Neumorphism / Liquid-Glass style helpers.
+ * glass.ts - reusable Glassmorphism / Neumorphism / Liquid-Glass style helpers.
  * Drop these into any `style={...}` to give a surface the modern frosted look.
  * All return React.CSSProperties (include -webkit- prefixes for Safari).
  */
@@ -10,7 +10,7 @@ const rgb = (hex: string): string => {
   return `${parseInt(c.slice(0, 2), 16)},${parseInt(c.slice(2, 4), 16)},${parseInt(c.slice(4, 6), 16)}`;
 };
 
-/** Glassmorphism — translucent frosted panel with backdrop blur. */
+/** Glassmorphism - translucent frosted panel with backdrop blur. */
 export function glass(accent = '#00f5ff', radius = 16): CSSProperties {
   return {
     background: 'rgba(255,255,255,0.055)',
@@ -22,7 +22,7 @@ export function glass(accent = '#00f5ff', radius = 16): CSSProperties {
   };
 }
 
-/** Neumorphism — soft extruded (raised) or pressed (inset) surface. */
+/** Neumorphism - soft extruded (raised) or pressed (inset) surface. */
 export function neu(radius = 18, raised = true): CSSProperties {
   return {
     background: 'linear-gradient(145deg, #1a1a1a, #0a0a0a)',
@@ -34,7 +34,7 @@ export function neu(radius = 18, raised = true): CSSProperties {
   };
 }
 
-/** Liquid Glass — Apple-style: heavier blur, specular highlight, accent bleed. */
+/** Liquid Glass - Apple-style: heavier blur, specular highlight, accent bleed. */
 export function liquidGlass(accent = '#00f5ff', radius = 22): CSSProperties {
   return {
     background: `linear-gradient(135deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.045) 42%, rgba(${rgb(accent)},0.10) 100%)`,
