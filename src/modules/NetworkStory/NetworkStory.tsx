@@ -12,7 +12,7 @@ import {
 import { hexRgb, lightenHex, darkenHex, TICK, TICK_SM, AX_LINE } from '../../lib/chart3d';
 import { loadPlatformAnalytics, type PlatformAnalytics } from '../../data/platformData';
 
-// ââ Types âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Types ─────────────────────────────────────────────────────────────────────
 interface StoryData {
   total_links:      number;
   total_paved_km:   number;
@@ -31,7 +31,7 @@ interface Filters {
   surfaceType: 'all' | 'paved' | 'unpaved';
 }
 
-// ââ Colour palette âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Colour palette ─────────────────────────────────────────────────────────────
 const C = {
   purple: '#b967ff', cyan: '#00f5ff', green: '#00ff88',
   blue: '#4d9fff',  yellow: '#ffd23f', orange: '#ff6b35',
@@ -44,7 +44,7 @@ const REGION_COLORS: Record<string, string> = {
   Northern: C.orange, Eastern: C.blue, 'North Eastern': C.pink,
 };
 
-// ââ Static data âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Static data ───────────────────────────────────────────────────────────────
 const MILESTONES = [
   { year: 1962, label: 'Independence',       color: C.cyan,   detail: 'Uganda gains independence; inherited ~700 km of colonial paved roads' },
   { year: 1986, label: 'Liberation',          color: C.purple, detail: 'NRM government; national road rehabilitation programme begins' },
@@ -53,8 +53,8 @@ const MILESTONES = [
   { year: 2013, label: 'NDP II',              color: C.yellow, detail: 'NDP II target: 6,000 km paved by FY 2019/20' },
   { year: 2020, label: 'NDP III',             color: C.orange, detail: 'NDP III target: 10,000 km paved by FY 2025/26' },
   { year: 2022, label: 'NDP IV Launch',       color: C.teal,   detail: 'NDP IV launched; official national road network defined as 21,302 km; OPRC contracts expanded to 9 active lots covering all six regions' },
-  { year: 2023, label: 'OPRC Scale-Up',       color: C.pink,   detail: 'Continued rehabilitation under OPRC performance contracts; bridge and culvert inventory completed â 546 structures in the 2026 BMS register' },
-  { year: 2024, label: 'Digital Transform',   color: C.indigo, detail: 'Digital transformation initiative; DNR RMS Engine development begins; ML-powered pavement condition assessment model (PyTorch, RÂ²=0.93) enters training' },
+  { year: 2023, label: 'OPRC Scale-Up',       color: C.pink,   detail: 'Continued rehabilitation under OPRC performance contracts; bridge and culvert inventory completed — 546 structures in the 2026 BMS register' },
+  { year: 2024, label: 'Digital Transform',   color: C.indigo, detail: 'Digital transformation initiative; DNR RMS Engine development begins; ML-powered pavement condition assessment model (PyTorch, R²=0.93) enters training' },
   { year: 2025, label: 'Platform Live',       color: C.green,  detail: 'DNR Road Management System goes live; 1,017 links in GeoJSON; ML IRI prediction and HDM-4 analysis integrated; real-time ATC data feeds activated' },
   { year: 2026, label: 'Current (FY25/26)',   color: C.cyan,   detail: 'Current year: Official network 21,302 km (NDPIV FY25-26) | GeoJSON mapped 21,160 km (1,017 links) | Paved 6,405 km (30.1%) | Unpaved 14,897 km (69.9%)' },
 ];
@@ -119,7 +119,7 @@ const WTSS_FALLBACK = [
   { fy: '2024/25', stock: 6405.0, increase:  92.0, pct: 30.1, ndp: 'NDP IV'  },
 ];
 
-// Maintenance stations â station names confirmed from analytics.json lowest_vci_links.station;
+// Maintenance stations — station names confirmed from analytics.json lowest_vci_links.station;
 // paved/unpaved km are proportional estimates from regional totals.
 const STATIONS_DATA = [
   { station: 'Kampala',    region: 'Central',       paved_km: 520, unpaved_km: 520, vci: 82.5, roughness: 2.9, rutting: 8.2, confirmed_vci: true },
@@ -159,7 +159,7 @@ const WORST_LINKS = [
   { link: 'Entebbe-Nakiwogo',           region: 'Central',       station: 'Kampala', vci: 57.8, km: 3.4  },
 ];
 
-// ââ Helpers âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Helpers ───────────────────────────────────────────────────────────────────
 const fmtT = (ugx: number) => `UGX ${(ugx/1e12).toFixed(1)} T`;
 
 function downloadPng(ref: React.RefObject<HTMLDivElement>, fname: string) {
@@ -187,7 +187,7 @@ function downloadPng(ref: React.RefObject<HTMLDivElement>, fname: string) {
   img.src = url;
 }
 
-// ââ NeonDefs ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── NeonDefs ──────────────────────────────────────────────────────────────────
 function NeonDefs({ prefix }: { prefix: string }) {
   return (
     <defs>
@@ -205,7 +205,7 @@ function NeonDefs({ prefix }: { prefix: string }) {
   );
 }
 
-// ââ 3D Bar shape ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── 3D Bar shape ──────────────────────────────────────────────────────────────
 const Bar3D = (props: any) => {
   const { x, y, width, height, index } = props;
   if (!height || height <= 0) return null;
@@ -227,7 +227,7 @@ const Bar3D = (props: any) => {
   );
 };
 
-// ââ NDP Radial Gauge ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── NDP Radial Gauge ──────────────────────────────────────────────────────────
 function NdpGauge({ label, current, target, color }: {
   label: string; current: number; target: number; color: string;
 }) {
@@ -275,7 +275,7 @@ function NdpGauge({ label, current, target, color }: {
   );
 }
 
-// ââ KPI Tile ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── KPI Tile ──────────────────────────────────────────────────────────────────
 function KpiTile({ icon, label, value, color, sub }: {
   icon: React.ReactNode; label: string; value: string; color: string; sub?: string;
 }) {
@@ -305,7 +305,7 @@ function KpiTile({ icon, label, value, color, sub }: {
   );
 }
 
-// ââ Asset Card ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Asset Card ────────────────────────────────────────────────────────────────
 function AssetCard({ label, value, unit, detail, color, icon }: {
   label: string; value: string; unit: string; detail: string; color: string; icon: React.ReactNode;
 }) {
@@ -338,7 +338,7 @@ function AssetCard({ label, value, unit, detail, color, icon }: {
   );
 }
 
-// ââ Chart Section Wrapper (with download) âââââââââââââââââââââââââââââââââââââ
+// ── Chart Section Wrapper (with download) ─────────────────────────────────────
 function ChartSection({ title, accent = C.purple, children, note, minHeight = 260, id }: {
   title: string; accent?: string; children: React.ReactNode;
   note?: string; minHeight?: number; id: string;
@@ -390,7 +390,7 @@ function ChartSection({ title, accent = C.purple, children, note, minHeight = 26
   );
 }
 
-// ââ Generic Section wrapper (no download) âââââââââââââââââââââââââââââââââââââ
+// ── Generic Section wrapper (no download) ─────────────────────────────────────
 function Section({ title, accent = C.purple, children }: {
   title: string; accent?: string; children: React.ReactNode;
 }) {
@@ -414,7 +414,7 @@ function Section({ title, accent = C.purple, children }: {
   );
 }
 
-// ââ Custom Tooltips âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Custom Tooltips ───────────────────────────────────────────────────────────
 function GlassTooltip({ active, payload, label, color = C.purple }: any) {
   if (!active || !payload?.length) return null;
   return (
@@ -432,7 +432,7 @@ function GlassTooltip({ active, payload, label, color = C.purple }: any) {
   );
 }
 
-// ââ Dual Range Slider (year range) âââââââââââââââââââââââââââââââââââââââââââââ
+// ── Dual Range Slider (year range) ─────────────────────────────────────────────
 function YearRangeSlider({
   min, max, value, onChange, accent,
 }: {
@@ -473,7 +473,7 @@ function YearRangeSlider({
 }
 
 
-// ââ Project Gallery Card (kept for reference, replaced by MediaGallery) ââââââââ
+// ── Project Gallery Card (kept for reference, replaced by MediaGallery) ────────
 function ProjectCard({ p }: { p: typeof PROJECT_GALLERY[number] }) {
   const [hov, setHov] = useState(false);
   const rgb = hexRgb(p.accent);
@@ -551,7 +551,7 @@ function ProjectCard({ p }: { p: typeof PROJECT_GALLERY[number] }) {
   );
 }
 
-// ââ Filter Bar ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Filter Bar ────────────────────────────────────────────────────────────────
 function FilterBar({
   filters, setFilters,
   onRegionToggle, onDecadeToggle,
@@ -612,7 +612,7 @@ function FilterBar({
         )}
       </div>
 
-      {/* ââ Region multi-select dropdown ââ */}
+      {/* ── Region multi-select dropdown ── */}
       <div ref={regionRef} style={{ position: 'relative' }}>
         <button
           onClick={() => { setRegionOpen(v => !v); setSurfaceOpen(false); }}
@@ -658,11 +658,11 @@ function FilterBar({
         )}
       </div>
 
-      {/* ââ Year range ââ */}
+      {/* ── Year range ── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 200 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 9, color: 'rgba(148,163,184,0.55)', fontWeight: 600 }}>
-            YEAR {filters.yearRange[0]} â {filters.yearRange[1]}
+            YEAR {filters.yearRange[0]} – {filters.yearRange[1]}
           </span>
           {(filters.yearRange[0] !== 1986 || filters.yearRange[1] !== 2026) && (
             <button onClick={() => setFilters(f => ({ ...f, yearRange: [1986, 2026] }))}
@@ -677,7 +677,7 @@ function FilterBar({
         />
       </div>
 
-      {/* ââ Decade chips ââ */}
+      {/* ── Decade chips ── */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
         {[1960,1970,1980,1990,2000,2010,2020].map(d => (
           <button key={d} onClick={() => onDecadeToggle(d)}
@@ -698,7 +698,7 @@ function FilterBar({
         )}
       </div>
 
-      {/* ââ Surface type ââ */}
+      {/* ── Surface type ── */}
       <div ref={surfaceRef} style={{ position: 'relative' }}>
         <button
           onClick={() => { setSurfaceOpen(v => !v); setRegionOpen(false); }}
@@ -733,7 +733,7 @@ function FilterBar({
         )}
       </div>
 
-      {/* ââ Clear All ââ */}
+      {/* ── Clear All ── */}
       {filterCount > 0 && (
         <button onClick={clearAll}
           style={{
@@ -750,40 +750,40 @@ function FilterBar({
   );
 }
 
-// ââ Landmark Projects Gallery Data ââââââââââââââââââââââââââââââââââââââââââââ
+// ── Landmark Projects Gallery Data ────────────────────────────────────────────
 const PROJECT_GALLERY = [
   {
     id: 'kee1',
-    title: 'KampalaâEntebbe Expressway',
+    title: 'Kampala–Entebbe Expressway',
     year: '2018',
-    stat: '51 km Â· USD 476M',
+    stat: '51 km · USD 476M',
     desc: "Uganda's first expressway. The 2.3 km Nambigirwa viaduct soars over pristine papyrus wetlands connecting Kampala to Entebbe International Airport.",
     img: `${import.meta.env.BASE_URL}media/kee_nambigirwa.jpg`,
     accent: '#00f5ff',
   },
   {
     id: 'kee2',
-    title: 'KEE Viaduct â Wetlands Approach',
+    title: 'KEE Viaduct — Wetlands Approach',
     year: '2018',
     stat: '2.3 km elevated span',
-    desc: 'The elevated viaduct crosses ecologically sensitive Lake Victoria wetlands on reinforced concrete piers â the longest bridge-road in Uganda.',
+    desc: 'The elevated viaduct crosses ecologically sensitive Lake Victoria wetlands on reinforced concrete piers — the longest bridge-road in Uganda.',
     img: `${import.meta.env.BASE_URL}media/kee_aerial2.png`,
     accent: '#00ff88',
   },
   {
     id: 'nbp',
     title: 'Kampala Northern Bypass',
-    year: '2009â2014',
-    stat: '22 km Â· USD 108M',
+    year: '2009–2014',
+    stat: '22 km · USD 108M',
     desc: 'Dual-carriageway ring road diverting heavy through-traffic from the Kampala CBD, with four major interchanges and grade separations.',
     img: `${import.meta.env.BASE_URL}media/northern_bypass.png`,
     accent: '#b967ff',
   },
   {
     id: 'flyover',
-    title: 'Kampala Flyover Â· CBD Junction',
+    title: 'Kampala Flyover · CBD Junction',
     year: '2019',
-    stat: 'Jinja Rd Â· USD 34M',
+    stat: 'Jinja Rd · USD 34M',
     desc: 'Grade-separated interchange in the heart of Kampala CBD managing the confluence of Jinja Road and Kampala Road serving 3.5 million daily users.',
     img: `${import.meta.env.BASE_URL}media/kampala_flyover.png`,
     accent: '#ffd23f',
@@ -793,22 +793,22 @@ const PROJECT_GALLERY = [
     title: 'Kampala Metropolitan Aerial',
     year: '2020s',
     stat: 'Urban road upgrades',
-    desc: "Aerial view of Kampala's upgraded arterial network â a city transformed by two decades of sustained investment in road infrastructure.",
+    desc: "Aerial view of Kampala's upgraded arterial network — a city transformed by two decades of sustained investment in road infrastructure.",
     img: `${import.meta.env.BASE_URL}media/kampala_flyover2.png`,
     accent: '#ff6b35',
   },
   {
     id: 'bukakata',
-    title: 'Bukakata Ferry Â· Lake Victoria',
-    year: 'UAV Survey 2021â24',
-    stat: 'Bukakata â Bussi Island',
-    desc: 'Drone survey of the Bukakata ferry terminal â the critical water-road interface connecting the mainland to the Ssese Islands on Lake Victoria.',
+    title: 'Bukakata Ferry · Lake Victoria',
+    year: 'UAV Survey 2021–24',
+    stat: 'Bukakata – Bussi Island',
+    desc: 'Drone survey of the Bukakata ferry terminal — the critical water-road interface connecting the mainland to the Ssese Islands on Lake Victoria.',
     img: `${import.meta.env.BASE_URL}media/bukakata_lake.jpg`,
     accent: '#4d9fff',
   },
 ] as const;
 
-// ââ MAIN COMPONENT ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── MAIN COMPONENT ────────────────────────────────────────────────────────────
 export default function NetworkStory() {
   const [data,      setData]      = useState<StoryData | null>(null);
   const [analytics, setAnalytics] = useState<PlatformAnalytics | null>(null);
@@ -843,7 +843,7 @@ export default function NetworkStory() {
     return () => { document.head.removeChild(style); };
   }, []);
 
-  // ââ Cross-linking handlers âââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Cross-linking handlers ─────────────────────────────────────────────────
   const toggleRegion = useCallback((r: string) => {
     setFilters(f => ({
       ...f,
@@ -855,7 +855,7 @@ export default function NetworkStory() {
     setFilters(f => ({ ...f, decade: f.decade === d ? null : d }));
   }, []);
 
-  // ââ Memoized derived data âââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Memoized derived data ─────────────────────────────────────────────────
   const activeRegions = useMemo(
     () => (filters.regions.length > 0 ? filters.regions : ALL_REGIONS),
     [filters.regions],
@@ -974,13 +974,13 @@ export default function NetworkStory() {
     );
   }, [data, filters.yearRange]);
 
-  // ââ Loading / Error âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Loading / Error ───────────────────────────────────────────────────────
   const CEN: React.CSSProperties = { position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(2,5,8,0.98)' };
   if (loading) return (
     <div style={CEN}>
       <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
         <BookOpen size={32} style={{ color: C.purple, opacity: 0.7 }} />
-        <div style={{ color: C.purple, fontSize: 13, fontWeight: 700 }}>Loading network storyâ¦</div>
+        <div style={{ color: C.purple, fontSize: 13, fontWeight: 700 }}>Loading network story…</div>
         <div style={{ display: 'flex', gap: 6 }}>
           {[0,1,2].map(i => (
             <div key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: C.purple, animation: 'ns-pulse 1.2s ease-in-out infinite', animationDelay: `${i*0.2}s` }} />
@@ -998,7 +998,7 @@ export default function NetworkStory() {
     </div>
   );
 
-  // ââ Derived values âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Derived values ─────────────────────────────────────────────────────────
   const totalKm  = data.total_paved_km + data.total_unpaved_km;
   const pavedPct = ((data.total_paved_km / totalKm) * 100).toFixed(1);
   const ndpIIITarget = 10000;
@@ -1017,12 +1017,12 @@ export default function NetworkStory() {
           borderBottom: '1px solid rgba(255,255,255,0.06)',
           background: active ? `rgba(${hexRgb(C.cyan)},0.05)` : 'transparent',
         }}>
-        {label} {active ? (sortDir === 'asc' ? 'â' : 'â') : ''}
+        {label} {active ? (sortDir === 'asc' ? '↑' : '↓') : ''}
       </th>
     );
   }
 
-  // ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ══════════════════════════════════════════════════════════════════════════
   return (
     <div style={{ position: 'absolute', inset: 0, overflowY: 'auto', overflowX: 'hidden', background: 'rgba(2,5,8,0.98)', fontFamily: 'inherit' }}>
 
@@ -1050,13 +1050,13 @@ export default function NetworkStory() {
         boxShadow: `0 0 18px rgba(${hexRgb(C.purple)},0.5)`,
       }} />
 
-      {/* ââ Filter Bar ââ */}
+      {/* ── Filter Bar ── */}
       <FilterBar filters={filters} setFilters={setFilters}
         onRegionToggle={toggleRegion} onDecadeToggle={toggleDecade} />
 
       <div style={{ maxWidth: '100%', margin: 0, padding: '16px 16px 60px' }}>
 
-        {/* ââ HERO ââ */}
+        {/* ── HERO ── */}
         <div style={{ marginBottom: 32, paddingBottom: 24, borderBottom: `1px solid rgba(${hexRgb(C.purple)},0.1)` }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, marginBottom: 10 }}>
             <div style={{
@@ -1075,7 +1075,7 @@ export default function NetworkStory() {
                 WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
               }}>Uganda National Road Network</h1>
               <div style={{ marginTop: 6, fontSize: 12, color: 'rgba(148,163,184,0.65)', fontStyle: 'italic' }}>
-                A 40-year arc of infrastructure development Â· 1986 to present Â· Per maintenance region &amp; station
+                A 40-year arc of infrastructure development · 1986 to present · Per maintenance region & station
               </div>
             </div>
           </div>
@@ -1086,7 +1086,7 @@ export default function NetworkStory() {
           }} />
         </div>
 
-        {/* ââ KPI TILES (6) ââ */}
+        {/* ── KPI TILES (6) ── */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12, marginBottom: 28 }}>
           <KpiTile icon={<Layers size={13}/>}     label="Total Network"  value="21.3k km" color={C.cyan}   sub="All classified national roads" />
           <KpiTile icon={<TrendingUp size={13}/>}  label="Paved Stock"    value={`${(data.total_paved_km/1000).toFixed(1)}k km`} color={C.green} sub="Bituminous-sealed roads" />
@@ -1096,7 +1096,7 @@ export default function NetworkStory() {
           <KpiTile icon={<BarChart2 size={13}/>}   label="Network VCI"    value="82.03" color={C.teal} sub="Weighted avg 2025/26" />
         </div>
 
-        {/* ââ NDP Progress gauges ââ */}
+        {/* ── NDP Progress gauges ── */}
         <Section title="NDP Target Progress" accent={C.purple}>
           <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', flexWrap: 'wrap', gap: 20 }}>
             <NdpGauge label="NDP II Target (6,000 km)" current={6133} target={ndpIITarget}  color={C.green}  />
@@ -1132,13 +1132,13 @@ export default function NetworkStory() {
         </Section>
 
 
-        {/* ââ ASSET REPLACEMENT VALUE ââ */}
+        {/* ── ASSET REPLACEMENT VALUE ── */}
         <Section title="Asset Replacement Value" accent={C.teal}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 10 }}>
-            <AssetCard label="Paved Roads" value={fmtT(data.total_paved_km * 5_000_000_000)} unit="Trillion UGX" detail={`${data.total_paved_km.toLocaleString()} km Ã UGX 5B/km`} color={C.green} icon={<TrendingUp size={13}/>} />
-            <AssetCard label="Unpaved Roads" value={fmtT(data.total_unpaved_km * 1_200_000_000)} unit="Trillion UGX" detail={`${data.total_unpaved_km.toLocaleString()} km Ã UGX 1.2B/km`} color={C.yellow} icon={<Layers size={13}/>} />
-            <AssetCard label="Bridges (312)" value={fmtT(312 * 12_000_000_000)} unit="Trillion UGX" detail="312 bridges Ã UGX 12B avg replacement" color={C.pink} icon={<Wrench size={13}/>} />
-            <AssetCard label="Culverts & Drifts (234)" value={fmtT(234 * 500_000_000)} unit="Trillion UGX" detail="234 culverts & drifts Ã UGX 500M unit cost" color={C.purple} icon={<DollarSign size={13}/>} />
+            <AssetCard label="Paved Roads" value={fmtT(data.total_paved_km * 5_000_000_000)} unit="Trillion UGX" detail={`${data.total_paved_km.toLocaleString()} km × UGX 5B/km`} color={C.green} icon={<TrendingUp size={13}/>} />
+            <AssetCard label="Unpaved Roads" value={fmtT(data.total_unpaved_km * 1_200_000_000)} unit="Trillion UGX" detail={`${data.total_unpaved_km.toLocaleString()} km × UGX 1.2B/km`} color={C.yellow} icon={<Layers size={13}/>} />
+            <AssetCard label="Bridges (312)" value={fmtT(312 * 12_000_000_000)} unit="Trillion UGX" detail="312 bridges × UGX 12B avg replacement" color={C.pink} icon={<Wrench size={13}/>} />
+            <AssetCard label="Culverts & Drifts (234)" value={fmtT(234 * 500_000_000)} unit="Trillion UGX" detail="234 culverts & drifts × UGX 500M unit cost" color={C.purple} icon={<DollarSign size={13}/>} />
           </div>
           <div style={{
             padding: '8px 12px', borderRadius: 7, fontSize: 9,
@@ -1146,13 +1146,13 @@ export default function NetworkStory() {
             border: `1px solid rgba(${hexRgb(C.teal)},0.12)`,
             color: 'rgba(100,116,139,0.6)', lineHeight: 1.5,
           }}>
-            Estimated replacement values at current construction benchmarks Â· For planning reference only
+            Estimated replacement values at current construction benchmarks · For planning reference only
           </div>
         </Section>
 
-        {/* ââ PAVED STOCK GROWTH 1986â2026 ââ */}
-        <ChartSection id="paved-growth" title="Cumulative Paved Stock Growth Â· 1986â2026" accent={C.purple}
-          note="Cumulative km of paved national roads per year Â· Click milestone lines to learn more Â· Filter year range using slider above"
+        {/* ── PAVED STOCK GROWTH 1986–2026 ── */}
+        <ChartSection id="paved-growth" title="Cumulative Paved Stock Growth · 1986–2026" accent={C.purple}
+          note="Cumulative km of paved national roads per year · Click milestone lines to learn more · Filter year range using slider above"
           minHeight={300}>
           <div style={{ perspective: '1200px' }}>
             <div style={{ transform: 'perspective(1200px) rotateX(1.5deg)', transformOrigin: 'center top' }}>
@@ -1188,9 +1188,9 @@ export default function NetworkStory() {
           </div>
         </ChartSection>
 
-        {/* ââ ANNUAL PAVING RATE ââ */}
-        <ChartSection id="annual-paving" title="Annual Paving Rate Â· km Sealed per Year" accent={C.cyan}
-          note="Year-over-year increment in paved stock Â· 3D bars Â· Click a bar to filter to that decade" minHeight={260}>
+        {/* ── ANNUAL PAVING RATE ── */}
+        <ChartSection id="annual-paving" title="Annual Paving Rate · km Sealed per Year" accent={C.cyan}
+          note="Year-over-year increment in paved stock · 3D bars · Click a bar to filter to that decade" minHeight={260}>
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={annualGrowth} margin={{ top: 12, right: 24, bottom: 0, left: 10 }}
               onClick={(state: any) => {
@@ -1209,9 +1209,9 @@ export default function NetworkStory() {
           </ResponsiveContainer>
         </ChartSection>
 
-        {/* ââ WTSS STOCK TIMELINE ââ */}
-        <ChartSection id="wtss-stock" title="WTSS Paved Stock 2015/16 â 2022/23 Â· Official Statistics" accent={C.green}
-          note="Work Tool for Sector Statistics official paved stock figures by financial year Â· NDP II â NDP III transition shown" minHeight={260}>
+        {/* ── WTSS STOCK TIMELINE ── */}
+        <ChartSection id="wtss-stock" title="WTSS Paved Stock 2015/16 – 2022/23 · Official Statistics" accent={C.green}
+          note="Work Tool for Sector Statistics official paved stock figures by financial year · NDP II → NDP III transition shown" minHeight={260}>
           <div style={{ transform: 'perspective(1200px) rotateX(1deg)', transformOrigin: 'center top' }}>
             <ResponsiveContainer width="100%" height={240}>
               <LineChart data={wtssChartData} margin={{ top: 12, right: 24, bottom: 0, left: 10 }}>
@@ -1239,9 +1239,9 @@ export default function NetworkStory() {
           </div>
         </ChartSection>
 
-        {/* ââ REHABILITATION BY YEAR ââ */}
+        {/* ── REHABILITATION BY YEAR ── */}
         {filteredRehabData.length > 0 && (
-          <ChartSection id="rehab-year" title="Road Rehabilitation Activity Â· km per Year" accent={C.teal}
+          <ChartSection id="rehab-year" title="Road Rehabilitation Activity · km per Year" accent={C.teal}
             note="Rehabilitation/upgrading completions by year (sourced from road link database)" minHeight={240}>
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={filteredRehabData} margin={{ top: 12, right: 24, bottom: 0, left: 10 }}>
@@ -1256,9 +1256,9 @@ export default function NetworkStory() {
           </ChartSection>
         )}
 
-        {/* ââ TRAFFIC AADT TREND ââ */}
-        <ChartSection id="traffic-aadt" title="Network Traffic AADT Â· 2017â2025 (Motorised Vehicles/Day)" accent={C.orange}
-          note="Length-weighted AADT from traffic surveys Â· 2021 survey covers partial network (450 links)" minHeight={260}>
+        {/* ── TRAFFIC AADT TREND ── */}
+        <ChartSection id="traffic-aadt" title="Network Traffic AADT · 2017–2025 (Motorised Vehicles/Day)" accent={C.orange}
+          note="Length-weighted AADT from traffic surveys · 2021 survey covers partial network (450 links)" minHeight={260}>
           <div style={{ transform: 'perspective(1000px) rotateX(1deg)', transformOrigin: 'center top' }}>
             <ResponsiveContainer width="100%" height={240}>
               <LineChart data={trafficChartData} margin={{ top: 12, right: 24, bottom: 0, left: 10 }}>
@@ -1286,9 +1286,9 @@ export default function NetworkStory() {
           </div>
         </ChartSection>
 
-        {/* ââ TRAFFIC BY REGION 2025 ââ */}
-        <ChartSection id="traffic-region" title="Traffic by Maintenance Region Â· Motorised AADT 2025" accent={C.blue}
-          note="Click a bar to filter all charts to that region Â· Central carries highest traffic (hub effect)" minHeight={240}>
+        {/* ── TRAFFIC BY REGION 2025 ── */}
+        <ChartSection id="traffic-region" title="Traffic by Maintenance Region · Motorised AADT 2025" accent={C.blue}
+          note="Click a bar to filter all charts to that region · Central carries highest traffic (hub effect)" minHeight={240}>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={filteredTrafficRegions} layout="vertical"
               margin={{ top: 8, right: 24, bottom: 0, left: 90 }}
@@ -1312,9 +1312,9 @@ export default function NetworkStory() {
           </ResponsiveContainer>
         </ChartSection>
 
-        {/* ââ VCI BY REGION ââ */}
-        <ChartSection id="vci-region" title="Road Condition VCI by Region Â· 2024/25 & 2025/26 Cycles" accent={C.teal}
-          note="Weighted average Vertical Condition Index (VCI 0â100, higher = better) Â· Click bar to filter region" minHeight={280}>
+        {/* ── VCI BY REGION ── */}
+        <ChartSection id="vci-region" title="Road Condition VCI by Region · 2024/25 & 2025/26 Cycles" accent={C.teal}
+          note="Weighted average Vertical Condition Index (VCI 0–100, higher = better) · Click bar to filter region" minHeight={280}>
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16 }}>
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={filteredVciRegions} layout="vertical"
@@ -1374,9 +1374,9 @@ export default function NetworkStory() {
           </div>
         </ChartSection>
 
-        {/* ââ MAINTENANCE FUNDING ââ */}
-        <ChartSection id="maintenance-funding" title="Maintenance Funding Â· Roads Fund (UGX Billions)" accent={C.orange}
-          note="Indicative Roads Fund data Â· Required vs Allocated vs Received Â· Values in UGX Billions" minHeight={280}>
+        {/* ── MAINTENANCE FUNDING ── */}
+        <ChartSection id="maintenance-funding" title="Maintenance Funding · Roads Fund (UGX Billions)" accent={C.orange}
+          note="Indicative Roads Fund data · Required vs Allocated vs Received · Values in UGX Billions" minHeight={280}>
           <div style={{ height: 220, marginBottom: 16 }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={MAINTENANCE_FY} margin={{ top: 8, right: 16, bottom: 0, left: 10 }} barSize={18}>
@@ -1417,9 +1417,9 @@ export default function NetworkStory() {
           </div>
         </ChartSection>
 
-        {/* ââ DECADE BREAKDOWN ââ */}
-        <ChartSection id="decade-breakdown" title="New Paving by Decade Â· 3D Bar Chart" accent={C.green}
-          note="Km of new road sealed per decade Â· Click a bar to filter to that decade across all charts" minHeight={240}>
+        {/* ── DECADE BREAKDOWN ── */}
+        <ChartSection id="decade-breakdown" title="New Paving by Decade · 3D Bar Chart" accent={C.green}
+          note="Km of new road sealed per decade · Click a bar to filter to that decade across all charts" minHeight={240}>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={filteredDecades} margin={{ top: 16, right: 24, bottom: 0, left: 10 }}
               onClick={(state: any) => {
@@ -1436,8 +1436,8 @@ export default function NetworkStory() {
           </ResponsiveContainer>
         </ChartSection>
 
-        {/* ââ REGIONAL COMPARISON (stacked) ââ */}
-        <ChartSection id="regional-comparison" title="Regional Network Composition Â· Paved vs Unpaved" accent={C.blue}
+        {/* ── REGIONAL COMPARISON (stacked) ── */}
+        <ChartSection id="regional-comparison" title="Regional Network Composition · Paved vs Unpaved" accent={C.blue}
           note="Click a region bar to cross-filter all other charts" minHeight={260}>
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={filteredRegions} margin={{ top: 8, right: 24, bottom: 0, left: 10 }}
@@ -1457,7 +1457,7 @@ export default function NetworkStory() {
           </ResponsiveContainer>
         </ChartSection>
 
-        {/* ââ REGIONAL PAVED % ââ */}
+        {/* ── REGIONAL PAVED % ── */}
         <ChartSection id="regional-paved-pct" title="Regional Paved Network Share (%)" accent={C.indigo}
           note="Percentage of each region's classified national road network that is paved" minHeight={220}>
           <ResponsiveContainer width="100%" height={200}>
@@ -1488,9 +1488,9 @@ export default function NetworkStory() {
           </ResponsiveContainer>
         </ChartSection>
 
-        {/* ââ AGE DISTRIBUTION ââ */}
-        <ChartSection id="age-distribution" title="Age of Paved Stock Â· Years Since Last Sealing" accent={C.pink}
-          note="Distribution of current paved road stock by pavement age Â· Most pavement sealed within last 15 years" minHeight={240}>
+        {/* ── AGE DISTRIBUTION ── */}
+        <ChartSection id="age-distribution" title="Age of Paved Stock · Years Since Last Sealing" accent={C.pink}
+          note="Distribution of current paved road stock by pavement age · Most pavement sealed within last 15 years" minHeight={240}>
           <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr', gap: 16 }}>
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={data.age_distribution} margin={{ top: 12, right: 16, bottom: 0, left: 10 }} barSize={34}>
@@ -1518,10 +1518,10 @@ export default function NetworkStory() {
           </div>
         </ChartSection>
 
-        {/* ââ MAINTENANCE STATION VCI ââ */}
-        <Section title="Maintenance Stations Â· Condition &amp; Network (Indicative)" accent={C.yellow}>
+        {/* ── MAINTENANCE STATION VCI ── */}
+        <Section title="Maintenance Stations · Condition &amp; Network (Indicative)" accent={C.yellow}>
           <div style={{ fontSize: 9, color: 'rgba(100,116,139,0.6)', marginBottom: 12, padding: '5px 8px', background: `rgba(${hexRgb(C.yellow)},0.04)`, border: `1px solid rgba(${hexRgb(C.yellow)},0.12)`, borderRadius: 6 }}>
-            Station paved/unpaved km are proportional estimates from regional totals. VCI values marked â are derived from real survey data; others are regional-proportional estimates.
+            Station paved/unpaved km are proportional estimates from regional totals. VCI values marked ✓ are derived from real survey data; others are regional-proportional estimates.
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 10 }}>
             {filteredStations.map((s, i) => {
@@ -1544,7 +1544,7 @@ export default function NetworkStory() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
                     <div>
                       <div style={{ fontSize: 12, fontWeight: 800, color: rc }}>
-                        {s.station} {s.confirmed_vci && <span style={{ fontSize: 8, color: C.green }}>â</span>}
+                        {s.station} {s.confirmed_vci && <span style={{ fontSize: 8, color: C.green }}>✓</span>}
                       </div>
                       <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.5)' }}>{s.region}</div>
                     </div>
@@ -1581,8 +1581,8 @@ export default function NetworkStory() {
           </div>
         </Section>
 
-        {/* ââ WORST VCI LINKS TABLE ââ */}
-        <Section title="Worst Performing Road Links Â· Real Survey Data 2024/25" accent={C.pink}>
+        {/* ── WORST VCI LINKS TABLE ── */}
+        <Section title="Worst Performing Road Links · Real Survey Data 2024/25" accent={C.pink}>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10 }}>
               <thead>
@@ -1631,8 +1631,8 @@ export default function NetworkStory() {
           </div>
         </Section>
 
-        {/* ââ REGIONAL SORTABLE TABLE ââ */}
-        <Section title="Regional Road Statistics Â· Sortable Dashboard" accent={C.blue}>
+        {/* ── REGIONAL SORTABLE TABLE ── */}
+        <Section title="Regional Road Statistics · Sortable Dashboard" accent={C.blue}>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
               <thead>
@@ -1697,13 +1697,13 @@ export default function NetworkStory() {
               </tbody>
             </table>
             <div style={{ marginTop: 6, fontSize: 9, color: 'rgba(100,116,139,0.45)' }}>
-              Click row or column header to sort Â· Click row to cross-filter all charts Â· Coloured dot = maintenance region colour
+              Click row or column header to sort · Click row to cross-filter all charts · Coloured dot = maintenance region colour
             </div>
           </div>
         </Section>
 
-        {/* ââ MILESTONE TIMELINE ââ */}
-        <Section title="Key Policy Milestones Â· 1962âPresent" accent={C.cyan}>
+        {/* ── MILESTONE TIMELINE ── */}
+        <Section title="Key Policy Milestones · 1962–Present" accent={C.cyan}>
           <div style={{ position: 'relative', paddingLeft: 28 }}>
             <div style={{
               position: 'absolute', left: 12, top: 8, bottom: 8, width: 2,
@@ -1743,7 +1743,7 @@ export default function NetworkStory() {
           </div>
         </Section>
 
-        {/* ââ BRIDGES ââ */}
+        {/* ── BRIDGES ── */}
         <Section title="Bridge &amp; Structure Inventory" accent={C.teal}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
             {[
@@ -1766,7 +1766,7 @@ export default function NetworkStory() {
           </div>
         </Section>
 
-        {/* ââ FOOTER ââ */}
+        {/* ── FOOTER ── */}
         <div style={{
           padding: '12px 16px',
           background: `linear-gradient(135deg, rgba(${hexRgb(C.purple)},0.04), rgba(2,5,8,0.6))`,
@@ -1775,12 +1775,12 @@ export default function NetworkStory() {
           fontSize: 9, color: 'rgba(100,116,139,0.45)', lineHeight: 1.8,
         }}>
           <div style={{ color: 'rgba(148,163,184,0.4)', fontWeight: 700, marginBottom: 4 }}>DATA SOURCES &amp; NOTES</div>
-          Department of National Roads (Department of National Roads) road inventory &amp; ROMDAS condition surveys Â·
-          Official WTSS statistics (2015/16â2022/23) Â·
-          Traffic surveys (2017, 2020, 2021, 2025) Â· VCI from ROMDAS survey cycles (2024/25 &amp; 2025/26) Â·
-          Maintenance funding: indicative Roads Fund estimates Â· Station-level paved/unpaved km are proportional estimates; VCI marked â are survey-verified Â·
-          Asset replacement values for planning reference only Â· Filters apply to charts with available data Â·
-          Download PNG exports chart SVG at 2Ã resolution
+          Department of National Roads (Department of National Roads) road inventory & ROMDAS condition surveys ·
+          Official WTSS statistics (2015/16–2022/23) ·
+          Traffic surveys (2017, 2020, 2021, 2025) · VCI from ROMDAS survey cycles (2024/25 & 2025/26) ·
+          Maintenance funding: indicative Roads Fund estimates · Station-level paved/unpaved km are proportional estimates; VCI marked ✓ are survey-verified ·
+          Asset replacement values for planning reference only · Filters apply to charts with available data ·
+          Download PNG exports chart SVG at 2× resolution
         </div>
 
       </div>
