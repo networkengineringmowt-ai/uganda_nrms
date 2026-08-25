@@ -149,6 +149,17 @@ export default function OverloadingSection() {
   const linkRiskMap = summary?.link_risk_map ?? {};
   const esalBreak   = summary?.esal_breakdown_by_class ?? {};
 
+  // Full-network ESAL ranking - every link in link_risk_map, not just the top 20.
+  // link_risk_map carries fewer columns than top_overloaded_links (no road name/class/
+  // surface - the pre-generated bundle only ships full detail for the top 20), but it
+  // does carry the ranking metric (esal) for the whole network, so this is the genuine
+  // "all available records" view rather than a re-hash of the same 20.
+  const allRanked = useMemo(() =>
+    Object.entries(linkRiskMap)
+      .map(([link_id, v]) => ({ link_id, ...v }))
+      .sort((a, b) => b.esal - a.esal),
+    [linkRiskMap]);
+
   // ESAL donut data - filter Motorcycles (=0)
   const donutData = useMemo(() => {
     const total = Object.values(esalBreak).reduce((a, b) => a + b, 0);
@@ -343,7 +354,9 @@ export default function OverloadingSection() {
           <AlertTriangle size={15} style={{ color: '#ef4444' }}/>
           Top 20 Highest-Risk Road Links
         </div>
-        <div className="text-[10px] text-slate-500 mb-4">Ranked by estimated daily ESAL load</div>
+        <div className="text-[10px] text-slate-500 mb-4">
+          Ranked by estimated daily ESAL load - full detail (road name/class/surface) is only pre-computed for these top 20; see the full {allRanked.length.toLocaleString()}-link ranking below for every other road.
+        </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
@@ -386,6 +399,51 @@ export default function OverloadingSection() {
                     </span>
                   </td>
                   <td className="py-2 px-2 text-[10px] text-slate-400 capitalize">{r.surface_type}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* ── Full-network ESAL ranking - every link, not just the top 20 ── */}
+      <div className="bms-card">
+        <div className="text-sm font-bold text-white mb-1 flex items-center gap-2">
+          <Truck size={15} style={{ color: '#00f5ff' }}/>
+          Full Network Ranking - All {allRanked.length.toLocaleString()} Links
+        </div>
+        <div className="text-[10px] text-slate-500 mb-4">
+          Every link with a computed risk score, ranked by estimated daily ESAL load (no cap).
+        </div>
+        <div className="overflow-x-auto" style={{ maxHeight: 420, overflowY: 'auto' }}>
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-slate-700" style={{ position: 'sticky', top: 0, background: '#0b1220' }}>
+                {['#', 'Link ID', 'Risk Index', 'HGV %', 'Daily ESALs', 'Risk'].map(h => (
+                  <th key={h} className="text-left py-2 px-2 text-[10px] font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {allRanked.map((r, i) => (
+                <tr key={r.link_id} className="border-b border-slate-800/60 hover:bg-slate-800/30">
+                  <td className="py-2 px-2 text-[9px] text-slate-600 font-mono">{i + 1}</td>
+                  <td className="py-2 px-2 text-slate-200 font-medium text-[10px]">{r.link_id}</td>
+                  <td className="py-2 px-2 font-mono text-slate-300 text-[10px]">{r.idx.toFixed(1)}</td>
+                  <td className="py-2 px-2 font-mono text-amber-400 text-[10px]">{r.hpct.toFixed(1)}%</td>
+                  <td className="py-2 px-2 font-mono text-slate-200 text-[10px]">{r.esal.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
+                  <td className="py-2 px-2">
+                    <span
+                      className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                      style={{
+                        background: `rgba(${hexRgbInline(RISK_COLOR[r.rc] ?? '#94a3b8')},0.15)`,
+                        color: RISK_COLOR[r.rc] ?? '#94a3b8',
+                        border: `1px solid rgba(${hexRgbInline(RISK_COLOR[r.rc] ?? '#94a3b8')},0.3)`,
+                      }}
+                    >
+                      {r.rc}
+                    </span>
+                  </td>
                 </tr>
               ))}
             </tbody>
