@@ -101,13 +101,15 @@ const RISK_COLOR: Record<string, string> = {
   Critical: '#ef4444', High: '#f97316', Medium: '#eab308', Low: '#22c55e',
 };
 const REGION_BOUNDS: Record<string, [[number, number], [number, number]]> = {
-  all:      [[-1.5, 29.5], [4.2, 35.5]],
-  Central:  [[0.0,  30.0], [2.0, 33.5]],
-  Eastern:  [[0.5,  33.0], [3.5, 35.0]],
-  Northern: [[2.0,  30.5], [4.2, 34.5]],
-  Western:  [[-1.5, 29.5], [2.5, 32.0]],
+  all:            [[-1.5, 29.5], [4.2, 35.5]],
+  Central:        [[0.0,  30.0], [2.0, 33.5]],
+  Eastern:        [[0.5,  33.0], [3.5, 35.0]],
+  Northern:       [[2.0,  30.5], [4.2, 34.5]],
+  Western:        [[-1.5, 29.5], [2.5, 32.0]],
+  Southern:       [[-1.5, 30.5], [0.3, 32.5]],
+  'North Eastern':[[1.5,  33.5], [4.2, 35.5]],
 };
-const REGION_PILLS = ['all', 'Central', 'Eastern', 'Northern', 'Western'] as const;
+const REGION_PILLS = ['all', 'Central', 'Eastern', 'Northern', 'Western', 'Southern', 'North Eastern'] as const;
 const LAYER_LABELS: Record<MapLayer, string> = {
   condition:  'IRI Condition',
   urgency:    'Urgency',
