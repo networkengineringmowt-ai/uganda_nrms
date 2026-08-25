@@ -1,5 +1,5 @@
 /**
- * CriticalStructures — BMS → Inventory & Condition → Critical Structures.
+ * CriticalStructures - BMS → Inventory & Condition → Critical Structures.
  * All structures rated Critical (1) or Poor (2), ranked by priority score.
  * First consumer of the shared SortableFilterableTable (sort/filter/CSV export).
  */
@@ -73,7 +73,7 @@ export default function CriticalStructures() {
     { key: 'lastInspection', label: 'Last Inspection',
       comment: 'Date of most recent field inspection (ISO).' },
     { key: 'replacementCostBnUgx', label: 'Repl. Cost (Bn UGX)', numeric: true, total: 'sum',
-      comment: 'Estimated full replacement cost in billions of UGX — SUM gives the total exposure of the critical backlog.' },
+      comment: 'Estimated full replacement cost in billions of UGX - SUM gives the total exposure of the critical backlog.' },
   ];
 
   const criticalCount = rows.filter(r => r.rating === 1).length;
@@ -85,7 +85,7 @@ export default function CriticalStructures() {
         <div style={{ fontSize: 14, fontWeight: 900, color: '#e2eaf4' }}>Critical Structures</div>
       </div>
       <div style={{ fontSize: 11, color: 'rgba(148,163,184,0.7)', marginBottom: 14 }}>
-        {criticalCount} critical · {rows.length - criticalCount} poor — all structures rated
+        {criticalCount} critical · {rows.length - criticalCount} poor - all structures rated
         Critical or Poor, sorted by priority. Click headers to sort, filter, or export.
       </div>
       <SortableFilterableTable
