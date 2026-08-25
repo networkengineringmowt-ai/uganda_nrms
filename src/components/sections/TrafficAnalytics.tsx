@@ -1,5 +1,5 @@
 /**
- * TrafficAnalytics — ATC-style multi-tab analytics dashboard.
+ * TrafficAnalytics - ATC-style multi-tab analytics dashboard.
  * Tabs: MACRO | REGIONS | CLASSES | ASSETS | ANALYSIS | STATIONS | STRATEGIC
  */
 import { useState, useEffect, useMemo } from 'react';
@@ -413,7 +413,7 @@ function ClusteredClassChart({
 // ─── Tab components ───────────────────────────────────────────────────────────
 
 function MacroTab({ features }: { features: PredFeature[] }) {
-  // aadt_predicted is anchored at 2026.0 — carry it forward to the current
+  // aadt_predicted is anchored at 2026.0 - carry it forward to the current
   // instant (ticking every second) using the interpolated growth curve.
   const nowT = useNowTick(1000);
   const avgAadtBase = useMemo(() =>
@@ -453,18 +453,18 @@ function MacroTab({ features }: { features: PredFeature[] }) {
   );
   const forecast2030 = Math.round(avgAadt * factorTo(2030));
   const kpis = [
-    { label:'Avg Network ADT',   value: avgAadt > 0 ? Math.round(avgAadt).toLocaleString() : '—',  unit:'vpd · now', color: C.cyan, glow: C.cyan },
+    { label:'Avg Network ADT',   value: avgAadt > 0 ? Math.round(avgAadt).toLocaleString() : '-',  unit:'vpd · now', color: C.cyan, glow: C.cyan },
     { label:'Road Links',        value: features.length.toLocaleString(),                           unit:'links',color: C.blue,   glow: C.blue },
     { label:'Heavy Vehicle %',   value: heavyPct.toFixed(1),                                         unit:'%HGV', color: C.orange, glow: C.orange },
     { label:'High-Risk Links',   value: highRiskLinks.toString(),                                    unit:'links',color: C.pink,   glow: C.pink },
-    { label:'2030 ADT Forecast', value: forecast2030 > 0 ? forecast2030.toLocaleString() : '—',    unit:'vpd',  color: C.green,  glow: C.green },
+    { label:'2030 ADT Forecast', value: forecast2030 > 0 ? forecast2030.toLocaleString() : '-',    unit:'vpd',  color: C.green,  glow: C.green },
   ];
 
   return (
     <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
       <div style={{ fontSize:9.5, fontWeight:700, color:'#00ff88' }}>
         <span className="animate-pulse" style={{ display:'inline-block', width:6, height:6, borderRadius:'50%', background:'#00ff88', marginRight:5 }} />
-        LIVE — all metrics now-cast to {new Date().toLocaleString('en-GB')} (reporting instant {nowT.toFixed(7)})
+        LIVE - all metrics now-cast to {new Date().toLocaleString('en-GB')} (reporting instant {nowT.toFixed(7)})
       </div>
       {/* ── KPI Stat-Card Strip ─────────────────────────────────────────── */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:10 }}>
@@ -636,7 +636,7 @@ function VehicleClassByRegionChart({ features }: { features: PredFeature[] }) {
   return (
     <div style={{ ...GLASS, padding: '18px 20px', gridColumn: '1 / -1' }}>
       <div style={{ fontSize: 12, fontWeight: 800, color: '#fff', marginBottom: 3 }}>
-        Vehicle Class Volumes by Region — Clustered Comparison
+        Vehicle Class Volumes by Region - Clustered Comparison
       </div>
       <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.45)', marginBottom: 14 }}>
         Average daily vehicles per class · 6 maintenance regions · top 6 classes shown
@@ -769,22 +769,22 @@ function AssetsTab({ features }: { features: PredFeature[] }) {
                     {p.link_name??p.link_id}
                   </td>
                   <td style={{ padding:'5px 8px', color:CLASS_CLR[p.road_class??'']??'#94a3b8', fontWeight:700 }}>
-                    {p.road_class??'—'}
+                    {p.road_class??'-'}
                   </td>
                   <td style={{ padding:'5px 8px', color:'rgba(148,163,184,0.55)', whiteSpace:'nowrap' }}>
-                    {p.region??'—'}
+                    {p.region??'-'}
                   </td>
                   <td style={{ padding:'5px 8px', color:'rgba(148,163,184,0.55)', fontFamily:'monospace' }}>
-                    {p.length_km?.toFixed(1)??'—'}
+                    {p.length_km?.toFixed(1)??'-'}
                   </td>
                   <td style={{ padding:'5px 8px', color:C.cyan, fontFamily:'monospace', fontWeight:700 }}>
                     {(p.aadt_predicted??0).toLocaleString()}
                   </td>
                   <td style={{ padding:'5px 8px', color:C.orange, fontFamily:'monospace', fontWeight:700 }}>
-                    {p.growth_2040?p.growth_2040.toLocaleString():'—'}
+                    {p.growth_2040?p.growth_2040.toLocaleString():'-'}
                   </td>
                   <td style={{ padding:'5px 8px', color:C.yellow, fontFamily:'monospace' }}>
-                    {p.heavy_vehicle_pct!=null?`${p.heavy_vehicle_pct.toFixed(0)}%`:'—'}
+                    {p.heavy_vehicle_pct!=null?`${p.heavy_vehicle_pct.toFixed(0)}%`:'-'}
                   </td>
                   <td style={{ padding:'5px 8px' }}>
                     <span style={{ fontSize:8, fontWeight:800, padding:'1px 7px', borderRadius:10,
@@ -861,7 +861,7 @@ function AnalysisTab({ features }: { features: PredFeature[] }) {
         </svg>
       </div>
 
-      {/* Growth comparison: 2025 vs 2040 — clustered column chart */}
+      {/* Growth comparison: 2025 vs 2040 - clustered column chart */}
       {(() => {
         const chartData = REGIONS.map(reg=>{
           const rf = features.filter(f=>(f.properties.region??'')===reg);
@@ -982,14 +982,14 @@ function StationsTab({ stations, predByLink }: {
                   </td>
                   <td style={{ padding:'5px 8px', color:'rgba(226,234,244,0.7)',
                     maxWidth:160, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-                    {p.Link_Name??'—'}
+                    {p.Link_Name??'-'}
                   </td>
-                  <td style={{ padding:'5px 8px', color:rCol }}>{p.REGION??'—'}</td>
+                  <td style={{ padding:'5px 8px', color:rCol }}>{p.REGION??'-'}</td>
                   <td style={{ padding:'5px 8px', color:C.cyan, fontFamily:'monospace', fontWeight:700 }}>
-                    {pred?.aadt_predicted?pred.aadt_predicted.toLocaleString():'—'}
+                    {pred?.aadt_predicted?pred.aadt_predicted.toLocaleString():'-'}
                   </td>
                   <td style={{ padding:'5px 8px', color:C.orange, fontFamily:'monospace' }}>
-                    {pred?.heavy_vehicle_pct!=null?`${pred.heavy_vehicle_pct.toFixed(0)}%`:'—'}
+                    {pred?.heavy_vehicle_pct!=null?`${pred.heavy_vehicle_pct.toFixed(0)}%`:'-'}
                   </td>
                   <td style={{ padding:'5px 8px', color:'rgba(148,163,184,0.45)' }}>2025</td>
                 </tr>
@@ -1036,7 +1036,7 @@ function StrategicTab({ features, stations }: { features: PredFeature[]; station
 
       <div style={{ ...GLASS, padding:'22px 24px' }}>
         <div style={{ fontSize:13, fontWeight:800, color:'#fff', marginBottom:12 }}>
-          Strategic Network Assessment — Uganda National Roads
+          Strategic Network Assessment - Uganda National Roads
         </div>
         {[
           { head:'Traffic Growth Trajectory', col:C.cyan,

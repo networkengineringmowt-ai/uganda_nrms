@@ -44,7 +44,7 @@ function statusColor(s: string): string { return STATUS_CLR[s] ?? '#6b7280'; }
 
 const TT_STYLE = { background: 'rgba(8,14,28,0.96)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 11 };
 
-// ─── Diamond DivIcon factory — colored by project CATEGORY ───────────────────
+// ─── Diamond DivIcon factory - colored by project CATEGORY ───────────────────
 const ICONS: Record<string, L.DivIcon> = Object.fromEntries(
   Object.entries(CATEGORY_COLOR).map(([type, color]) => [
     type,
@@ -308,7 +308,7 @@ export default function NdpivSection() {
         {/* ── RIGHT: detail + progress + budget table ───────────────────────── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
 
-          {/* MapDetailPane — default = status distribution, selected = project detail */}
+          {/* MapDetailPane - default = status distribution, selected = project detail */}
           <NdpivDetailPane
             projects={projects}
             selected={selectedProject}

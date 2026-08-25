@@ -1,5 +1,5 @@
 /**
- * TrafficSummary — Summary Tables view.
+ * TrafficSummary - Summary Tables view.
  * Sub-tabs: Road Links Data | Traffic Counting Stations
  * Year pills 2016-2035 with interpolated AADT values.
  * Export CSV, search, sortable columns.
@@ -34,7 +34,7 @@ const GLASS: React.CSSProperties = {
   WebkitBackdropFilter:'blur(20px)', border:'1px solid rgba(99,102,241,0.12)', borderRadius:14,
 };
 
-// Growth factors 2016-2035 — BASE YEAR 2016 = 1.00 (all traffic statistics
+// Growth factors 2016-2035 - BASE YEAR 2016 = 1.00 (all traffic statistics
 // are anchored to the 2016 base year; source growth_factors_summary).
 const GF: Record<number,number> = {
   2016:1.00, 2017:1.06, 2018:1.15, 2019:1.23, 2020:1.05, 2021:1.19,
@@ -42,7 +42,7 @@ const GF: Record<number,number> = {
   2028:1.87, 2029:1.97, 2030:2.06, 2031:2.15, 2032:2.24, 2033:2.32,
   2034:2.40, 2035:2.50,
 };
-// aadt_predicted is a 2025-anchored reading — scale a year's 2016-base factor
+// aadt_predicted is a 2025-anchored reading - scale a year's 2016-base factor
 // relative to 2025 when projecting it.
 const gfTo = (y: number) => (GF[y] ?? 1) / (GF[2025] ?? 1);
 const ALL_YEARS = Object.keys(GF).map(Number).sort((a,b)=>a-b);
@@ -126,7 +126,7 @@ function RoadLinksTab({ features }: { features: PredFeature[] }) {
         p.link_id, p.link_name??'', p.road_class??'', 'Unknown', p.region??'',
         (p.length_km??0).toFixed(1), String(adt), String(adt),
         String(Math.round(adt*0.705)), String(Math.round(adt*0.08)),
-        growthAlert(p, year), `${p.heavy_vehicle_pct?.toFixed(0)??'—'}%`,
+        growthAlert(p, year), `${p.heavy_vehicle_pct?.toFixed(0)??'-'}%`,
       ];
     });
     downloadCSV([header, ...rows], `uganda-roads-traffic-${year}.csv`);
@@ -236,10 +236,10 @@ function RoadLinksTab({ features }: { features: PredFeature[] }) {
                       overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', fontWeight:600 }}>
                       {p.link_name ?? p.link_id}
                     </td>
-                    <td style={{ padding:'5px 8px', color:clsCol, fontWeight:800 }}>{cls||'—'}</td>
-                    <td style={{ padding:'5px 8px', color:regCol, whiteSpace:'nowrap' }}>{p.region??'—'}</td>
+                    <td style={{ padding:'5px 8px', color:clsCol, fontWeight:800 }}>{cls||'-'}</td>
+                    <td style={{ padding:'5px 8px', color:regCol, whiteSpace:'nowrap' }}>{p.region??'-'}</td>
                     <td style={{ padding:'5px 8px', color:'rgba(148,163,184,0.55)', fontFamily:'monospace' }}>
-                      {p.length_km?.toFixed(1)??'—'}
+                      {p.length_km?.toFixed(1)??'-'}
                     </td>
                     <td style={{ padding:'5px 8px', color:C.cyan, fontFamily:'monospace', fontWeight:700 }}>
                       {adt.toLocaleString()}
@@ -261,7 +261,7 @@ function RoadLinksTab({ features }: { features: PredFeature[] }) {
                       </span>
                     </td>
                     <td style={{ padding:'5px 8px', color:C.orange, fontFamily:'monospace' }}>
-                      {p.heavy_vehicle_pct!=null?`${p.heavy_vehicle_pct.toFixed(0)}%`:'—'}
+                      {p.heavy_vehicle_pct!=null?`${p.heavy_vehicle_pct.toFixed(0)}%`:'-'}
                     </td>
                   </tr>
                 );
@@ -310,7 +310,7 @@ function StationsTab({ stations, features }: { stations: StationFeature[]; featu
       return [
         p.TCS_NAME??p.STATION??String(p.TCS_NO??''),
         p.Link_Name??'', p.REGION??'', String(adt),
-        pred?.heavy_vehicle_pct!=null?`${pred.heavy_vehicle_pct.toFixed(0)}%`:'—',
+        pred?.heavy_vehicle_pct!=null?`${pred.heavy_vehicle_pct.toFixed(0)}%`:'-',
         String(year),
       ];
     });
@@ -378,14 +378,14 @@ function StationsTab({ stations, features }: { stations: StationFeature[]; featu
                     </td>
                     <td style={{ padding:'5px 8px', color:'rgba(226,234,244,0.7)',
                       maxWidth:160, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-                      {p.Link_Name??'—'}
+                      {p.Link_Name??'-'}
                     </td>
-                    <td style={{ padding:'5px 8px', color:rCol }}>{p.REGION??'—'}</td>
+                    <td style={{ padding:'5px 8px', color:rCol }}>{p.REGION??'-'}</td>
                     <td style={{ padding:'5px 8px', color:C.cyan, fontFamily:'monospace', fontWeight:700 }}>
-                      {adt!=null?adt.toLocaleString():'—'}
+                      {adt!=null?adt.toLocaleString():'-'}
                     </td>
                     <td style={{ padding:'5px 8px', color:C.orange, fontFamily:'monospace' }}>
-                      {pred?.heavy_vehicle_pct!=null?`${pred.heavy_vehicle_pct.toFixed(0)}%`:'—'}
+                      {pred?.heavy_vehicle_pct!=null?`${pred.heavy_vehicle_pct.toFixed(0)}%`:'-'}
                     </td>
                     <td style={{ padding:'5px 8px', color:'rgba(148,163,184,0.4)' }}>
                       {year<=2025?String(year):`Forecast ${year}`}
@@ -460,7 +460,7 @@ export default function TrafficSummary() {
           { label:'Avg ADT 2025',     value:avgAdt.toLocaleString(),          unit:'vpd',         color:C.green },
           { label:'TIS Stations',     value:stations.length.toString(),       unit:'survey pts',  color:C.orange },
           { label:'High-Risk Links',  value:highRisk.toString(),              unit:'links',       color:C.pink },
-          { label:'Total Daily VKT',  value:`${totalVkt || '—'}M`,           unit:'veh-km/day',  color:C.yellow },
+          { label:'Total Daily VKT',  value:`${totalVkt || '-'}M`,           unit:'veh-km/day',  color:C.yellow },
         ];
         return (
           <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:10, marginBottom:18 }}>

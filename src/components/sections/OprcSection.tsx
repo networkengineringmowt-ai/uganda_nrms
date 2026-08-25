@@ -291,7 +291,7 @@ export default function OprcSection() {
         {/* ── RIGHT: detail + charts ────────────────────────────────────────── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
 
-          {/* MapDetailPane — default = contractor breakdown, selected = lot detail */}
+          {/* MapDetailPane - default = contractor breakdown, selected = lot detail */}
           <OprcDetailPane
             lots={lots}
             selected={selectedLot}
@@ -302,7 +302,7 @@ export default function OprcSection() {
           {/* Clustered: Score + km per lot */}
           <div style={{ ...GLASS, padding: 14 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <PanelLabel text="Performance Score & Network km — by OPRC Lot" />
+              <PanelLabel text="Performance Score & Network km - by OPRC Lot" />
               <SourceTableButton anchor="tbl-013" />
             </div>
             <Chart3DWrap>
