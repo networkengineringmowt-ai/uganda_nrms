@@ -176,7 +176,9 @@ export type ActiveView =
   | 'roadvideo'         // Road video survey viewer
   | 'ducar'             // District, Urban and Community Access Roads
   | 'socioeconomic'     // Socio-Economic Analysis
-  | 'documents';        // Document Store
+  | 'documents'         // Document Store
+  | 'ntis'              // National Traffic Information System (flagship AADT/growth/axle-load rollup)
+  | 'npms';             // National PMS (strategic network-wide pavement performance)
 
 // âââ Road network types âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 export type RoadClass   = 'A' | 'B' | 'C' | 'M';

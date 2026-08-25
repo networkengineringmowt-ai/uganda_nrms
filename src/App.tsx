@@ -64,6 +64,7 @@ const SECTION_ACCENT: Record<string, string> = {
   gisenterprise: '#b967ff', atc: '#ff6b35', roadatlas: '#00f5ff', roadvideo: '#00f5ff',
   bridgeworks: '#4d9fff', downloads: '#94a3b8',
   ducar: '#00ff88', socioeconomic: '#ffd23f', documents: '#94a3b8',
+  ntis: '#00f5ff', npms: '#ff6b35',
 };
 function SectionHub({ sectionId }: { sectionId: string }) {
   return <SectionDashboard sectionId={sectionId} accent={SECTION_ACCENT[sectionId] ?? '#00f5ff'} />;
@@ -244,6 +245,8 @@ function AppShell() {
 
                 {activeView === 'bms' && <SectionHub sectionId="bms" />}
                 {activeView === 'pms' && <SectionHub sectionId="pms" />}
+                {activeView === 'ntis' && <SectionHub sectionId="ntis" />}
+                {activeView === 'npms' && <SectionHub sectionId="npms" />}
               </div>
             )}
 
