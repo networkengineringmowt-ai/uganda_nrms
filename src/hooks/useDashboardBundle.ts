@@ -169,7 +169,7 @@ export function useDashboardBundle(pollIntervalMs = 120_000) {
   const refresh = useCallback(async () => {
     setState(s => ({ ...s, isLoading: !s.bundle, error: null }));
     try {
-      // Try live API first — available in local dev or with a backend
+      // Try live API first - available in local dev or with a backend
       let bundle = await safeFetch<DashboardBundle>('/api/dashboard-bundle');
       let health = await safeFetch<PlatformHealth>('/api/platform/health');
 
@@ -183,7 +183,7 @@ export function useDashboardBundle(pollIntervalMs = 120_000) {
         platformHealth: health ?? { status: bundle ? 'static' : 'offline' },
         dbHealth: null,
         isLoading: false,
-        error: bundle ? null : 'Running in offline mode — live data unavailable.',
+        error: bundle ? null : 'Running in offline mode - live data unavailable.',
         lastUpdated: bundle
           ? (bundle.dashboardManifest?.generatedAt ??
              bundle.roadNetworkIntelligence?.generatedAt ??
