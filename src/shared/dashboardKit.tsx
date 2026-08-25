@@ -446,3 +446,73 @@ export function WaterfallC({ steps, unit }: {
     </ResponsiveContainer>
   );
 }
+
+// ─── Ranked item list ────────────────────────────────────────────────────────
+// A compact styled row-list for "top N" / "most critical" style content on a
+// Dashboard tab, e.g. highest-priority road links, active work orders, worst
+// -condition structures. Deliberately NOT a <table> - Dashboard tabs never
+// use raw tables platform-wide (that's what the Exhaustive Tables / Deep
+// Analytics tabs are for), so ranked detail lists live here instead, styled
+// consistently with the rest of the chart-box family.
+export interface RankItem {
+  id: string | number;
+  title: string;
+  subtitle?: string;
+  value: string;
+  badge?: { label: string; color: string };
+}
+export function RankList({ items, accent = DASH_C.cyan, emptyLabel = 'No records to show yet.' }: {
+  items: RankItem[]; accent?: string; emptyLabel?: string;
+}) {
+  if (!items.length) {
+    return (
+      <div style={{
+        padding: '18px 12px', textAlign: 'center', fontSize: 11,
+        color: 'rgba(148,163,184,0.55)', border: '1px dashed rgba(255,255,255,0.1)', borderRadius: 8,
+      }}>
+        {emptyLabel}
+      </div>
+    );
+  }
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 5, maxHeight: 240, overflowY: 'auto' }}>
+      {items.map((it, i) => {
+        const c = it.badge?.color ?? accent;
+        return (
+          <div key={it.id} style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            padding: '6px 10px', borderRadius: 7,
+            background: `rgba(${rgbOf(c)},0.05)`, border: `1px solid rgba(${rgbOf(c)},0.16)`,
+            borderLeft: `3px solid ${c}`,
+          }}>
+            <span style={{ fontSize: 9, color: 'rgba(148,163,184,0.5)', fontFamily: 'monospace', width: 16, flexShrink: 0 }}>
+              {i + 1}
+            </span>
+            <span style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#e2eaf4', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {it.title}
+              </div>
+              {it.subtitle && (
+                <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.6)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {it.subtitle}
+                </div>
+              )}
+            </span>
+            {it.badge && (
+              <span style={{
+                fontSize: 8.5, fontWeight: 800, color: c, background: `rgba(${rgbOf(c)},0.15)`,
+                border: `1px solid rgba(${rgbOf(c)},0.3)`, borderRadius: 20, padding: '2px 7px',
+                textTransform: 'uppercase', letterSpacing: '0.04em', flexShrink: 0,
+              }}>
+                {it.badge.label}
+              </span>
+            )}
+            <span style={{ fontSize: 11, fontWeight: 800, color: c, fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>
+              {it.value}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
