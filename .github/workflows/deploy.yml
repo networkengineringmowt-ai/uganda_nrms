@@ -35,6 +35,16 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund --legacy-peer-deps
 
+      - name: Restore clean source HTML entry points
+        # The build's own output lands on these same root paths (index.html,
+        # index.ntis.html, index.npms.html, index.nbms.html) once published
+        # below, so a prior run's BUILT html can otherwise get checked out
+        # here and be mistaken for source, poisoning the next build (it
+        # references stale hashed asset filenames from the previous build).
+        # .github/source-html/ is the untouched golden copy of the real
+        # Vite entry HTML — always reset root to it before building.
+        run: cp .github/source-html/index.html .github/source-html/index.ntis.html .github/source-html/index.npms.html .github/source-html/index.nbms.html ./
+
       - name: Build
         run: npx vite build
         env:

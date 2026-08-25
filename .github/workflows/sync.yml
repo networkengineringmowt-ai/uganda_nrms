@@ -29,6 +29,13 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund --legacy-peer-deps
 
+      - name: Restore clean source HTML entry points
+        # See deploy.yml — .github/source-html/ is the golden copy of the
+        # real Vite entry HTML, restored before every build so the previous
+        # run's BUILT html (which lands on these same root paths) is never
+        # mistaken for source.
+        run: cp .github/source-html/index.html .github/source-html/index.ntis.html .github/source-html/index.npms.html .github/source-html/index.nbms.html ./
+
       # Build directly with Vite (skip local-only export-data/tsc). See deploy.yml.
       - name: Build
         run: npx vite build
