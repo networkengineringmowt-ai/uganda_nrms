@@ -87,7 +87,7 @@ export function Bar3D(props: any) {
         fill={light}
         points={`${x},${y} ${x+d},${y-d} ${x+width+d},${y-d} ${x+width},${y}`}
       />
-      {/* Right / end face (only for vertical bars — looks odd on horizontal) */}
+      {/* Right / end face (only for vertical bars - looks odd on horizontal) */}
       {!isH && (
         <polygon
           fill={dark}

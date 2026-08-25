@@ -1,5 +1,5 @@
 /**
- * RoadsAPI — typed data-access layer over the canonical Supabase client.
+ * RoadsAPI - typed data-access layer over the canonical Supabase client.
  * This is the reconciled successor of the legacy root-level `supabaseClient.js`
  * (G:/…/supabaseClient.js, now deprecated): same query surface, but importing
  * the single shared client from src/lib/supabase.ts so the app has exactly one
@@ -17,7 +17,7 @@ export interface StationRow {
 }
 
 export const RoadsAPI = {
-  /** All traffic count stations (traffic_count_stations — 298 rows live). */
+  /** All traffic count stations (traffic_count_stations - 298 rows live). */
   async getStations(): Promise<StationRow[]> {
     const { data, error } = await supabase.from('traffic_count_stations').select('*').order('tcs_no');
     return error ? [] : (data as StationRow[]);

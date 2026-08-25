@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 
-// Supabase config comes from Vite env (.env, gitignored). ANON key only — it is
+// Supabase config comes from Vite env (.env, gitignored). ANON key only - it is
 // safe for the browser bundle. The service_role key must NEVER be used here.
 // Fallbacks keep the app working if .env is absent at build time.
 const SUPABASE_URL =
