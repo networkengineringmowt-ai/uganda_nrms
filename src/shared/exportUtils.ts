@@ -53,7 +53,7 @@ export async function exportChartToPNG(
   const el = containerRef.current;
   if (!el) return;
   try {
-    const dataUrl = await toPng(el, { cacheBust: true, backgroundColor: '#02050a' });
+    const dataUrl = await toPng(el, { cacheBust: true, backgroundColor: '#02050a', skipFonts: true });
     const a = document.createElement('a');
     a.href = dataUrl;
     a.download = filename.endsWith('.png') ? filename : `${filename}-${isoDate()}.png`;
@@ -74,7 +74,7 @@ export async function exportElementToPNG(elementId: string, filename: string) {
   const el = document.getElementById(elementId);
   if (!el) return;
   try {
-    const dataUrl = await toPng(el, { cacheBust: true, backgroundColor: '#02050a' });
+    const dataUrl = await toPng(el, { cacheBust: true, backgroundColor: '#02050a', skipFonts: true });
     const a = document.createElement('a');
     a.href = dataUrl;
     a.download = filename.endsWith('.png') ? filename : `${filename}-${isoDate()}.png`;
@@ -101,7 +101,7 @@ export async function exportElementToPDF(elementId: string, filename: string) {
   if (!el) return;
   const { jsPDF } = await import('jspdf');
 
-  const dataUrl = await toPng(el, { cacheBust: true, backgroundColor: '#02050a', pixelRatio: 2 });
+  const dataUrl = await toPng(el, { cacheBust: true, backgroundColor: '#02050a', pixelRatio: 2, skipFonts: true });
 
   const img = new Image();
   await new Promise<void>((resolve, reject) => {
@@ -225,8 +225,17 @@ export function scanFirstTable(containerId: string): ScannedTable | null {
   const table = container.querySelector('table');
   if (!table) return null;
 
+  // Header cells can carry UI-only decoration (e.g. the sort-direction glyph
+  // in SortableTh) marked [data-export-strip] - clone each header so that
+  // decoration can be removed without touching the live, on-screen DOM, then
+  // read the clean label text.
   const headCells = Array.from(table.querySelectorAll('thead th'));
-  const headers = headCells.map((th, i) => (th.textContent || `Column ${i + 1}`).trim());
+  const headers = headCells.map((th, i) => {
+    const clone = th.cloneNode(true) as HTMLElement;
+    clone.querySelectorAll('[data-export-strip]').forEach(el => el.remove());
+    const text = (clone.textContent || '').trim();
+    return text || `Column ${i + 1}`;
+  });
   if (!headers.length) return null;
 
   const bodyRows = Array.from(table.querySelectorAll('tbody tr'));

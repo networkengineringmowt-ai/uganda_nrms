@@ -140,17 +140,30 @@ export default function PageToolbar() {
 
     setPhase(p => ({ ...p, [fmt.id]: 'loading' }));
     const name = `nrms-${state.activeView || 'view'}`;
+    // Safety net: PNG/PDF capture shells out to html-to-image, which walks
+    // and clones the entire content pane. A data-dense dashboard (many
+    // Recharts SVGs) can legitimately take 20-30s to capture even with no
+    // network involved - 45s gives that real work room to finish, while
+    // still guaranteeing the toolbar can never lock up forever on a genuine
+    // hang (an unreachable resource, a browser quirk).
+    const withTimeout = <T,>(p: Promise<T>, ms: number) => Promise.race([
+      p,
+      new Promise<never>((_, reject) => setTimeout(() => reject(new Error('export timed out')), ms)),
+    ]);
     try {
       if (fmt.id === 'png') {
-        await exportElementToPNG(CONTENT_PANE_ID, name);
+        await withTimeout(exportElementToPNG(CONTENT_PANE_ID, name), 45000);
       } else if (fmt.id === 'pdf') {
-        await exportElementToPDF(CONTENT_PANE_ID, name);
+        // PDF pays the same capture cost as PNG, plus slicing the captured
+        // image into page-height chunks - observed to run noticeably longer
+        // than PNG on a tall, chart-dense page, so it gets more headroom.
+        await withTimeout(exportElementToPDF(CONTENT_PANE_ID, name), 60000);
       } else if (fmt.id === 'csv') {
         const scanned = scanFirstTable(CONTENT_PANE_ID);
         if (scanned && scanned.rows.length) exportTableToCSV(scanned.rows, name);
       } else if (fmt.id === 'xlsx') {
         const scanned = scanFirstTable(CONTENT_PANE_ID);
-        if (scanned && scanned.rows.length) await exportTableToXLSX(scanned.rows, scanned.headers, name);
+        if (scanned && scanned.rows.length) await withTimeout(exportTableToXLSX(scanned.rows, scanned.headers, name), 45000);
       }
       setPhase(p => ({ ...p, [fmt.id]: 'success' }));
       successTimerRef.current = setTimeout(() => {
@@ -278,7 +291,9 @@ export default function PageToolbar() {
                       {itemPhase === 'success' ? 'Downloaded' : fmt.label}
                     </span>
                     <span style={{ fontSize: 9.5, color: 'rgba(148,163,184,0.65)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {disabled ? 'No table on this view' : fmt.sub}
+                      {itemPhase === 'loading' && (fmt.id === 'png' || fmt.id === 'pdf')
+                        ? 'Generating, up to 30s for full pages...'
+                        : disabled ? 'No table on this view' : fmt.sub}
                     </span>
                   </span>
                 </button>

@@ -69,7 +69,14 @@ export function SortArrow({ active, dir }: { active: boolean; dir: SortDir }) {
   const color = active && dir ? '#ffd23f' : 'rgba(255,255,255,0.55)';
   const glyph = active && dir === 'asc' ? '↑' : active && dir === 'desc' ? '↓' : '↕';
   return (
-    <span style={{ color, fontSize: 10, marginLeft: 5, fontWeight: 900, display: 'inline-block', lineHeight: 1 }}>
+    // data-export-strip: the generic platform-wide table scanner
+    // (scanFirstTable in exportUtils.ts) uses this to exclude UI-only
+    // sort-direction glyphs from CSV/XLSX header text - without it every
+    // exported header would read e.g. "Length (km)↕" instead of "Length (km)".
+    <span
+      data-export-strip="true"
+      style={{ color, fontSize: 10, marginLeft: 5, fontWeight: 900, display: 'inline-block', lineHeight: 1 }}
+    >
       {glyph}
     </span>
   );
