@@ -1,7 +1,7 @@
 /* ══════════════════════════════════════════════════════════════════════════════
-   MOBILE RESPONSIVENESS — Uganda NRMS Platform
+   MOBILE RESPONSIVENESS - Uganda NRMS Platform
    Everything in this file is scoped to @media (max-width: 768px). Desktop
-   layout (>768px) is completely untouched — nothing here has an effect above
+   layout (>768px) is completely untouched - nothing here has an effect above
    that breakpoint.
    ══════════════════════════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
@@ -88,7 +88,7 @@
   .app-sidebar nav button {
     min-height: 44px;
   }
-  /* Dense in-table row actions stay compact — 44px rows would break data tables */
+  /* Dense in-table row actions stay compact - 44px rows would break data tables */
   table button, .bms-table button, td button, th button {
     min-height: 32px;
   }

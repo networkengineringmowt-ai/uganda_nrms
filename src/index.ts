@@ -173,7 +173,10 @@ export type ActiveView =
   | 'bridgeworks'       // Bridge works programme
   | 'downloads'         // Downloads centre
   | 'roadatlas'         // Road atlas
-  | 'roadvideo';        // Road video survey viewer
+  | 'roadvideo'         // Road video survey viewer
+  | 'ducar'             // District, Urban and Community Access Roads
+  | 'socioeconomic'     // Socio-Economic Analysis
+  | 'documents';        // Document Store
 
 // âââ Road network types âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 export type RoadClass   = 'A' | 'B' | 'C' | 'M';

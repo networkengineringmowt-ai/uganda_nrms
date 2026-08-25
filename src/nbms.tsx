@@ -1,5 +1,5 @@
 /**
- * nbms.tsx — standalone entry for the Uganda National Bridge Management System.
+ * nbms.tsx - standalone entry for the Uganda National Bridge Management System.
  * Mounts ONLY the BMS section (Dashboard · Structure Map · Inventory & Condition
  * incl. the Digital Twin · Bridge Works) in the providers it needs, with its own
  * branded header. Deployed separately to networkengineringmowt-ai/uganda_nbms.
@@ -42,7 +42,7 @@ function Header() {
               <span style={{fontSize:18,fontWeight:800,color:'rgba(14,165,233,1)',letterSpacing:-0.5}}>National Bridge Management System</span>
               <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>NBMS · UNRA · MoWT · NBI Protocol · AfDB Standards</span>
             </div>
-            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>National Bridge Management System for Uganda — providing a comprehensive national-level view of bridge condition, load capacity, inspection schedules, and maintenance investment needs across the UNRA and MoWT managed bridge portfolio.</p>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>National Bridge Management System for Uganda - providing a comprehensive national-level view of bridge condition, load capacity, inspection schedules, and maintenance investment needs across the UNRA and MoWT managed bridge portfolio.</p>
             <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
               {["NBI Protocol","National Network","UNRA / MoWT","Condition Rating","AfDB Standards","MoWT Policy"].map(b=>(
                 <span key={b} style={{background:'rgba(14,165,233,0.12)',color:'rgba(14,165,233,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
@@ -76,7 +76,7 @@ function ModuleSpinner() {
   );
 }
 
-// ── Level gate — three logins, three interfaces ───────────────────────────────
+// ── Level gate - three logins, three interfaces ───────────────────────────────
 function AppGate() {
   const { user, isAuthenticated } = useAuth();
 

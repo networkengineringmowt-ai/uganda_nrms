@@ -54,7 +54,7 @@ const DataCaptureHub     = lazy(() => import('./modules/DataEntry/DataCaptureHub
 const DataAuditPanel  = lazy(() => import('./modules/DataAudit/DataAuditPanel'));
 
 // ── Unified 6-tab section hub (Dashboard | Interactive Map | Exhaustive Tables |
-// Deep Analytics | SQL Database & Schema | Data Capture) — every sidebar section
+// Deep Analytics | SQL Database & Schema | Data Capture) - every sidebar section
 // routes through this single component so there is only ever one nav layer.
 const SectionDashboard = lazy(() => import('./modules/Dashboard/SectionDashboard'));
 const SECTION_ACCENT: Record<string, string> = {
@@ -63,6 +63,7 @@ const SECTION_ACCENT: Record<string, string> = {
   lifecycle: '#00d4aa', casestudies: '#00d4aa', sources: '#94a3b8', admin: '#00f5ff',
   gisenterprise: '#b967ff', atc: '#ff6b35', roadatlas: '#00f5ff', roadvideo: '#00f5ff',
   bridgeworks: '#4d9fff', downloads: '#94a3b8',
+  ducar: '#00ff88', socioeconomic: '#ffd23f', documents: '#94a3b8',
 };
 function SectionHub({ sectionId }: { sectionId: string }) {
   return <SectionDashboard sectionId={sectionId} accent={SECTION_ACCENT[sectionId] ?? '#00f5ff'} />;
@@ -70,7 +71,7 @@ function SectionHub({ sectionId }: { sectionId: string }) {
 
 const FULL_VIEWS      = new Set(['gismap', 'roadnetwork']);
 const SELF_SCROLL_VIEWS = new Set(['networkstory']);
-// Views whose section component already renders its own CrossLinkChipBar — the
+// Views whose section component already renders its own CrossLinkChipBar - the
 // global bar below skips these to avoid a duplicate "Related Data" strip.
 const SELF_CHIP_VIEWS = new Set(['rms', 'bms', 'pms', 'roadcondition', 'traffic', 'budget', 'lifecycle', 'projects', 'oprc', 'ndpiv', 'mlarchitecture', 'roadnetwork']);
 
@@ -149,7 +150,7 @@ function AppShell() {
 
             {!isFullView && !SELF_SCROLL_VIEWS.has(activeView) && (
               <div id="nrms-content-pane" style={{ position: 'absolute', inset: 0, overflowY: 'auto', overflowX: 'hidden', paddingBottom: 12 }}>
-                {/* Unified Related-Data chip bar — shown on every section that doesn't render its own */}
+                {/* Unified Related-Data chip bar - shown on every section that doesn't render its own */}
                 {!import.meta.env.VITE_STANDALONE && !SELF_CHIP_VIEWS.has(activeView) && <CrossLinkChipBar sectionId={activeView} />}
                 {activeView === 'network'               && <NetworkSection />}
                 {activeView === 'platform'              && <PlatformDashboard />}
@@ -181,7 +182,7 @@ function AppShell() {
                         Asset Management ML Engine
                       </div>
                       <div style={{ fontSize: 11, color: 'rgba(148,163,184,0.65)' }}>
-                        Interactive system architecture — click any node to inspect model details, inputs, and outputs
+                        Interactive system architecture - click any node to inspect model details, inputs, and outputs
                       </div>
                     </div>
                     <MLArchitectureDiagram />
@@ -205,6 +206,9 @@ function AppShell() {
                 {activeView === 'downloads'        && <SectionHub sectionId="downloads" />}
                 {activeView === 'roadatlas'        && <SectionHub sectionId="roadatlas" />}
                 {activeView === 'roadvideo'        && <SectionHub sectionId="roadvideo" />}
+                {activeView === 'ducar'            && <SectionHub sectionId="ducar" />}
+                {activeView === 'socioeconomic'    && <SectionHub sectionId="socioeconomic" />}
+                {activeView === 'documents'        && <SectionHub sectionId="documents" />}
 
                 {activeView === 'admin' && (
                   <Suspense fallback={<ModuleSpinner />}>
@@ -266,7 +270,7 @@ function RequireAdmin({ label, children }: { label: string; children: React.Reac
   );
 }
 
-// ── Level gate — three logins, three interfaces ───────────────────────────────
+// ── Level gate - three logins, three interfaces ───────────────────────────────
 //  rms   → mobile-first field capture shell (inputs only)
 //  super → full dashboards & reports, no input/audit/admin
 //  admin → everything

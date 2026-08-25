@@ -1,7 +1,7 @@
 /**
- * ntis.tsx — standalone entry for the Uganda National Traffic Information System.
+ * ntis.tsx - standalone entry for the Uganda National Traffic Information System.
  * Mounts ONLY the TIS section (Traffic Map · Counts & Analysis · Trends & Risk ·
- * Station Directory — ATC counts, projections, growth/seasonal factors,
+ * Station Directory - ATC counts, projections, growth/seasonal factors,
  * overloading & ESAL, network analytics) in its own provider stack with a
  * branded header. Supersedes the older uganda_atc app with the current UI.
  * Deployed separately to networkengineringmowt-ai/uganda_ntis.
@@ -33,7 +33,7 @@ const kfmt = (n: number) =>
   : n >= 1e3 ? (n / 1e3).toFixed(1) + 'k'
   : Math.round(n).toLocaleString('en-US');
 
-/** Live traffic strip — projects every link's AADT to the current instant. */
+/** Live traffic strip - projects every link's AADT to the current instant. */
 function NtisLiveBar() {
   const t = useTrafficLive();
   return (
@@ -90,7 +90,7 @@ function ModuleSpinner() {
   );
 }
 
-// ── Level gate — three logins, three interfaces ───────────────────────────────
+// ── Level gate - three logins, three interfaces ───────────────────────────────
 function AppGate() {
   const { user, isAuthenticated } = useAuth();
 

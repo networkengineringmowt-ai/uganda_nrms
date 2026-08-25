@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* ══════════════════════════════════════════════════════════════════════════════
-   DESIGN TOKENS — Uganda National Roads Platform · Liquid Glass Dark Theme
+   DESIGN TOKENS - Uganda National Roads Platform · Liquid Glass Dark Theme
    ══════════════════════════════════════════════════════════════════════════════ */
 :root {
   /* Void background */
@@ -416,7 +416,7 @@
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════
-   LEAFLET — Liquid glass dark theme
+   LEAFLET - Liquid glass dark theme
    ══════════════════════════════════════════════════════════════════════════════ */
 .leaflet-container {
   background: var(--bg-void) !important;
@@ -476,7 +476,7 @@
   font-size: 9px !important;
 }
 
-/* ── Tooltips — white background, bold black text for maximum readability ── */
+/* ── Tooltips - white background, bold black text for maximum readability ── */
 .leaflet-tooltip {
   background: #ffffff !important;
   border: 1.5px solid #d1d5db !important;

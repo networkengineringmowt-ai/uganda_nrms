@@ -1,5 +1,5 @@
 /**
- * npms.tsx — standalone entry for the Uganda National Pavement Management System.
+ * npms.tsx - standalone entry for the Uganda National Pavement Management System.
  * Mounts ONLY the PMS section in its own provider stack with a branded header.
  * Deployed separately to networkengineringmowt-ai/uganda_npms.
  *
@@ -42,7 +42,7 @@ function Header() {
               <span style={{fontSize:18,fontWeight:800,color:'rgba(245,158,11,1)',letterSpacing:-0.5}}>National Pavement Management System</span>
               <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>NPMS · HDM-4 · IRI Survey · PCI Rating · URF · AfDB</span>
             </div>
-            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>National Pavement Management System for Uganda — delivering national-level pavement performance analytics, HDM-4 deterioration modelling, IRI roughness profiles, and PCI condition ratings to support strategic URF budget allocation.</p>
+            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>National Pavement Management System for Uganda - delivering national-level pavement performance analytics, HDM-4 deterioration modelling, IRI roughness profiles, and PCI condition ratings to support strategic URF budget allocation.</p>
             <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
               {["National PMS","HDM-4 Powered","IRI Survey","PCI Rating","URF Priority","AfDB Standards"].map(b=>(
                 <span key={b} style={{background:'rgba(245,158,11,0.12)',color:'rgba(245,158,11,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
@@ -92,7 +92,7 @@ function ModuleSpinner() {
   );
 }
 
-// ── Level gate — three logins, three interfaces ───────────────────────────────
+// ── Level gate - three logins, three interfaces ───────────────────────────────
 function AppGate() {
   const { user, isAuthenticated } = useAuth();
 
