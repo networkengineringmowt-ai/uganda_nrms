@@ -15,6 +15,21 @@ const GLASS: React.CSSProperties = {
 };
 const ACCENT = '#6366f1';
 
+// Escape HTML special characters before applying the lightweight **bold**
+// markdown transform, so untrusted/user-influenced message text can never
+// inject markup via dangerouslySetInnerHTML below.
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+function boldMarkdownToHtml(s: string): string {
+  return escapeHtml(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+}
+
 // ââ Network summary canonical response âââââââââââââââââââââââââââââââââââââââ
 const NETWORK_SUMMARY_RESPONSE = 'The national road network is **21,302 km** (FY 2025/26), comprising **6,405 km paved (30.1%)** and **14,897 km unpaved (69.9%)**, covering **1,017 mapped links** across **6 regions** and **23 maintenance stations**. Source: NDPIV FY 2025/26 official figures, MoWT/DNR.';
 
@@ -113,7 +128,7 @@ function MessageBubble({ msg, onNavigateSources }: { msg: BotMessage; onNavigate
         color: '#e2eaf4', fontSize: 12, lineHeight: 1.6,
       }}>
         {/* Render bold markdown-style text */}
-        <span dangerouslySetInnerHTML={{ __html: msg.text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>') }} />
+        <span dangerouslySetInnerHTML={{ __html: boldMarkdownToHtml(msg.text) }} />
         {msg.rows && <ResultTable rows={msg.rows} />}
         {/* Confidence badge */}
         {!isUser && msg.confidence && (
