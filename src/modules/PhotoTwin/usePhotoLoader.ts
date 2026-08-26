@@ -66,6 +66,39 @@ function generateCandidates(folder: string): { url: string; year: string; yearCo
 // ─── Cache: avoid re-probing the same bridge ─────────────────────────────────
 const photoCache = new Map<string, BridgePhoto[]>();
 
+// ─── Verify candidate URLs actually resolve before trusting them ─────────────
+// Manifests (local or Drive) can go stale - list files that were never shipped,
+// or point at a Drive folder/script that's since been moved or deleted. Loading
+// an unverified URL renders a broken image (or a dimmed placeholder) while the
+// UI still reports "N photos found," which is worse than reporting fewer, real
+// photos. So every manifest/Drive candidate is probed with a real Image() load
+// (same technique runProbe already uses) and only confirmed hits are kept.
+function verifyPhotos(candidates: BridgePhoto[], timeoutMs = 6000): Promise<BridgePhoto[]> {
+  if (candidates.length === 0) return Promise.resolve([]);
+  return new Promise(resolve => {
+    const verified: BridgePhoto[] = [];
+    let settled = 0;
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      resolve(verified.sort((a, b) => a.year.localeCompare(b.year) || a.index - b.index));
+    };
+    const timer = setTimeout(finish, timeoutMs);
+    candidates.forEach(c => {
+      const img = new Image();
+      const complete = (ok: boolean) => {
+        if (ok) verified.push(c);
+        settled++;
+        if (settled === candidates.length) { clearTimeout(timer); finish(); }
+      };
+      img.onload = () => complete(true);
+      img.onerror = () => complete(false);
+      img.src = c.url;
+    });
+  });
+}
+
 // ─── Photo manifest (deployed site) ──────────────────────────────────────────
 // public/data/photo_manifest.json lists the thumbnails shipped under
 // public/s-photos/ (built by scripts/build_photo_album.py from S:\PHOTOS).
@@ -146,26 +179,37 @@ export function usePhotoLoader(structureId: string | null): {
 
       // Drive-first: photos served from the user's Google Drive
       setLoading(true);
-      void loadDriveManifest().then(dm => {
+      void loadDriveManifest().then(async dm => {
         if (cancelled) return;
         const dEntries = dm?.[folder];
         if (dEntries?.length) {
-          const ph = photosFromDrive(dEntries);
-          photoCache.set(folder, ph);
-          setPhotos(ph);
-          setLoading(false);
-          return;
+          const verified = await verifyPhotos(photosFromDrive(dEntries));
+          if (cancelled) return;
+          if (verified.length) {
+            photoCache.set(folder, verified);
+            setPhotos(verified);
+            setLoading(false);
+            return;
+          }
+          // Drive manifest listed entries but none actually resolved (dead
+          // script / moved folder) - fall through to the local manifest.
         }
         // Fallback: locally shipped thumbnails
-        void loadManifest().then(manifest => {
+        void loadManifest().then(async manifest => {
           if (cancelled) return;
           const entries = manifest?.[folder];
           if (entries?.length) {
-            const ph = photosFromManifest(folder, entries);
-            photoCache.set(folder, ph);
-            setPhotos(ph);
-            setLoading(false);
-            return;
+            const verified = await verifyPhotos(photosFromManifest(folder, entries));
+            if (cancelled) return;
+            if (verified.length) {
+              photoCache.set(folder, verified);
+              setPhotos(verified);
+              setLoading(false);
+              return;
+            }
+            // Manifest listed files that were never actually shipped - fall
+            // through to brute-force probing rather than reporting photos
+            // that don't exist.
           }
           runProbe();
         });
