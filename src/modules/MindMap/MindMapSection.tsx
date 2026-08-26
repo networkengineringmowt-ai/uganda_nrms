@@ -90,7 +90,7 @@ const NODES: Node[] = [
 
   // ── L7 - Platform Sections (x=1390) ───────────────────────────────────────
   { id:'sec-rms',      label:'RMS - Road Network',    sub:'tbl 001–005 · road_links',   layer:7, x:1390, y: 30,  w:180, h:50, color:'#00e5ff',
-    detail:'RoadNetworkView.tsx / RMS - 1,017 national-road links, classes A/B/C/M. tbl-001-005 (inventory, length by class/region, surface type). Source: road_links + road_link_condition.' },
+    detail:'RoadNetworkView.tsx / RMS - 1,014 national-road links, classes A/B/C/M. tbl-001-005 (inventory, length by class/region, surface type). Source: road_links + road_link_condition.' },
   { id:'sec-reserve',  label:'Road Reserve Mgmt',     sub:'road_reserve_* · tbl 047–050',layer:7, x:1390, y: 92,  w:180, h:50, color:'#00d4aa',
     detail:'RoadReserveSection.tsx - gazette & legal status, encroachment register, reserve mapping, and Road Reserve Usage permits (MOWT Form 2). Source: road_reserve_records / _encroachments / _gazette / _applications / _applicants.' },
   { id:'sec-pms',      label:'PMS - Condition',       sub:'tbl 006, 007, 038',          layer:7, x:1390, y:154,  w:180, h:50, color:'#fb923c',
