@@ -302,12 +302,16 @@ export function TreemapC({ data, colors = REGION_COLORS }: { data: { name: strin
           if (width < 2 || height < 2) return <g />;
           return (
             <g>
-              <rect x={x} y={y} width={width} height={height} style={{ fill: c, fillOpacity: 0.28, stroke: '#020508', strokeWidth: 1 }} />
+              <rect x={x} y={y} width={width} height={height} style={{ fill: c, fillOpacity: 0.4, stroke: '#020508', strokeWidth: 1 }} />
+              {/* Both labels use a fixed light fill with a dark outline, never the
+                  tile's own hue - text drawn in the same color as its background
+                  (as the value label previously was) reads as invisible on darker
+                  region colors. The outline keeps it legible over lighter tiles too. */}
               {width > 46 && height > 22 && (
-                <text x={x + 5} y={y + 14} fontSize={8} fill="#e2eaf4" fontWeight={700}>{name}</text>
+                <text x={x + 5} y={y + 14} fontSize={8} fill="#f4f8fc" fontWeight={700} stroke="#020508" strokeWidth={2.5} paintOrder="stroke" style={{ pointerEvents: 'none' }}>{name}</text>
               )}
               {width > 46 && height > 32 && (
-                <text x={x + 5} y={y + 26} fontSize={8} fill={c}>{Number(value).toLocaleString()}</text>
+                <text x={x + 5} y={y + 26} fontSize={8} fill="rgba(226,234,244,0.85)" stroke="#020508" strokeWidth={2.5} paintOrder="stroke" style={{ pointerEvents: 'none' }}>{Number(value).toLocaleString()}</text>
               )}
             </g>
           );
