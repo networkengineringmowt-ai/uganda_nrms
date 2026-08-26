@@ -314,7 +314,7 @@ function ConditionMap({
     const surface = String(p.surface_ty ?? p.SURFACE ?? '').toLowerCase();
     const weight = cls === 'A' ? 3.5 : cls === 'B' ? 2.5 : cls === 'M' ? 4 : 2;
 
-    // Primary IRI source: pavement_condition lookup (1017 links)
+    // Primary IRI source: pavement_condition lookup (1014 links)
     // Fallback: urgencyMap (deterioration schedule, 50 links)
     // Fallback: class average from deterioration curves
     const cond   = condLookup[lid];
@@ -390,7 +390,7 @@ function ConditionMap({
     if (mapLayer === 'unsurveyed') {
       return { color: isSurveyed ? '#475569' : '#ff6b35', weight, opacity: isSurveyed ? 0.2 : 0.95 };
     }
-    // IRI condition layer - use condLookup first (1017 links), then urgency, then class avg
+    // IRI condition layer - use condLookup first (1014 links), then urgency, then class avg
     if (liveIri == null) {
       return { color: '#94a3b8', weight: Math.max(weight - 0.5, 1), opacity: 0.28 };
     }
@@ -843,7 +843,7 @@ function CondKPIs({ c24, c30, linksProjected }: { c24: CondBand; c30: CondBand; 
                 Not Surveyed / Works in Progress
               </div>
               <div className="text-[10px] text-slate-500 mt-0.5">
-                {(1017 - (linksProjected ?? 0)).toLocaleString()} of 1,017 links have no ROMDAS / HDM-4 record · shown as grey on map
+                {(1014 - (linksProjected ?? 0)).toLocaleString()} of 1,014 links have no ROMDAS / HDM-4 record · shown as grey on map
               </div>
             </div>
             <div className="flex-1 max-w-xs">
@@ -1428,7 +1428,7 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
         fontSize: 10, color: '#94a3b8',
       }}>
         <span style={{ fontWeight: 800, color: '#a5b4fc', fontSize: 9, letterSpacing: '0.06em', textTransform: 'uppercase', marginRight: 8 }}>NDPIV FY25-26</span>
-        <b style={{ color: '#fff' }}>21,302 km</b> · <b style={{ color: '#22c55e' }}>6,405 paved (30.1%)</b> · <b style={{ color: '#f59e0b' }}>14,897 unpaved</b> · GeoJSON <b style={{ color: '#fff' }}>21,160 km / 1,017 links</b> · <b style={{ color: '#fb923c' }}>142 km gap</b>
+        <b style={{ color: '#fff' }}>21,302 km</b> · <b style={{ color: '#22c55e' }}>6,405 paved (30.3%)</b> · <b style={{ color: '#f59e0b' }}>14,732 unpaved</b> · GeoJSON <b style={{ color: '#fff' }}>21,137 km / 1,014 links</b> · <b style={{ color: '#fb923c' }}>165 km gap</b>
       </div>
 
       {/* ══════════ DASHBOARD (Overview) ══════════ */}
@@ -1579,11 +1579,11 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
               <div className="space-y-3">
                 {[
                   { label:'Total Network',  col:'#94a3b8',
-                    val: a ? `${a.totalNetworkKm.toLocaleString(undefined,{maximumFractionDigits:0})} km` : '21,160 km (mapped)' },
+                    val: a ? `${a.totalNetworkKm.toLocaleString(undefined,{maximumFractionDigits:0})} km` : '21,137 km (mapped)' },
                   { label:'Paved',          col:'#00ff88',
                     val: a ? `${a.pavedKm.toLocaleString(undefined,{maximumFractionDigits:0})} km` : '6,405 km' },
                   { label:'Paved Share',    col:'#00f5ff',
-                    val: a ? `${a.percentPaved.toFixed(1)}%` : '30.1%' },
+                    val: a ? `${a.percentPaved.toFixed(1)}%` : '30.3%' },
                   { label:'Links Modelled', col: ACCENT,
                     val: d ? d.links_projected.toLocaleString() : '-' },
                   { label:'Budget 24–30',   col:'#ffd23f',
@@ -2023,7 +2023,7 @@ function FWDPanel() {
       {/* KPI cards */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10 }}>
         {[
-          { label:'Links Tested', value:'8', unit:'of 1,017', color:ACCENT2 },
+          { label:'Links Tested', value:'8', unit:'of 1,014', color:ACCENT2 },
           { label:'Avg Structural No.', value:'2.9', unit:'SN', color:'#00f5ff' },
           { label:'Critical (RCI>0.5)', value:'2', unit:'links', color:'#ef4444' },
           { label:'Avg E-mod', value:'1,989', unit:'MPa', color:'#b967ff' },
