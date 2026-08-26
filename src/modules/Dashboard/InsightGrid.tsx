@@ -56,7 +56,11 @@ function groupSum(rows: Row[], key: string, val: string): [string, number][] {
 }
 
 // ── Column Profiling (spatial & id columns never become tiles) ────────────────
-const EXCLUDE = /(^|_)(lat|latitude|lng|lon|longitude|geom|geometry|coords?|id|uuid|code|created|updated|inserted|modified|date|time|photo|url|notes?|description)(_|$)/i;
+// Columns identifying an individual person (field staff, submitters,
+// contacts) are excluded from cross-analysis entirely, same as geometry/id
+// columns - a low-cardinality name column would otherwise look exactly like
+// a legitimate grouping dimension and surface as a chart tile.
+const EXCLUDE = /(^|_)(lat|latitude|lng|lon|longitude|geom|geometry|coords?|id|uuid|code|created|updated|inserted|modified|date|time|photo|url|notes?|description|surveyor|inspector|assessor|officer|engineer|supervisor|contact|submitted_by|recorded_by|prepared_by|reported_by|approved_by|reviewed_by|decided_by|email|phone|mobile)(_|$)/i;
 interface Profile { cats: string[]; nums: string[]; lenCol: string | null }
 function profile(rows: Row[]): Profile {
   if (!rows.length) return { cats: [], nums: [], lenCol: null };

@@ -71,7 +71,10 @@ function csvOut(name: string, cols: string[], rows: (string|number)[][]) {
   a.download = name + '.csv'; a.click(); URL.revokeObjectURL(a.href);
 }
 const qtile = (s: number[], p: number) => { if (!s.length) return 0; const i = (s.length - 1) * p; const lo = Math.floor(i); return s[lo] + (s[Math.min(lo + 1, s.length - 1)] - s[lo]) * (i - lo); };
-const EXCL = /lat|lng|lon|^x$|^y$|id$|_id|code|^no$|road_no|name|date/i;
+// "name" already catches surveyor_name/inspector_name/contact_name/etc.;
+// the *_by fields and contact/email/phone are added explicitly since they
+// don't contain "name" but still identify an individual person.
+const EXCL = /lat|lng|lon|^x$|^y$|id$|_id|code|^no$|road_no|name|date|submitted_by|recorded_by|prepared_by|reported_by|approved_by|reviewed_by|decided_by|created_by|updated_by|contact|email|phone|mobile/i;
 
 function Card({ title, accent, right, children }: { title: string; accent: string; right?: React.ReactNode; children: React.ReactNode }) {
   return (

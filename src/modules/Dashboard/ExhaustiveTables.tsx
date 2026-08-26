@@ -56,6 +56,12 @@ async function loadRows(sectionId: string): Promise<Row[]> {
 }
 const num = (v: unknown): number | null => { if (typeof v === 'number' && isFinite(v)) return v; if (typeof v === 'string' && v !== '' && isFinite(Number(v))) return Number(v); return null; };
 const fmtN = (n: number, d = 0) => n.toLocaleString(undefined, { maximumFractionDigits: d });
+// Any column identifying an individual person (field staff, submitters,
+// contacts) is dropped from this view entirely - never shown, exported, or
+// counted as an attribute. Deliberately narrow (matches surveyor_name,
+// inspector_name, contact_person, submitted_by, etc.) so it doesn't also
+// catch legitimate asset/place names like road_name or district_name.
+const PII_COL = /surveyor_name|inspector_name|assessor_name|officer_name|engineer_name|supervisor_name|contact_name|contact_person|contact_email|contact_phone|submitted_by|recorded_by|prepared_by|reported_by|approved_by|reviewed_by|decided_by|created_by|updated_by|^email$|_email$|^phone$|_phone|mobile|national_id|^nin$|passport/i;
 function heatCss(t: number): React.CSSProperties { const c = Math.max(0, Math.min(1, t));
   const r = c < 0.5 ? Math.round(60 + c*2*195) : 255; const g = c < 0.5 ? Math.round(150 + c*2*60) : Math.round(210 - (c-0.5)*2*165);
   return { background: 'rgba(' + r + ',' + g + ',55,0.14)', color: 'rgb(' + r + ',' + g + ',80)', fontWeight: 600 }; }
@@ -125,7 +131,7 @@ export function ExhaustiveTables({ sectionId, accent = '#00f5ff' }: { sectionId:
   const [rows, setRows] = useState<Row[] | null>(null);
   const [srt, setSrt] = useState('');
   useEffect(() => { let d = false; loadRows(sectionId).then(r => { if (!d) setRows(r); }); return () => { d = true; }; }, [sectionId]);
-  const cols = useMemo(() => rows && rows.length ? Object.keys(rows[0]) : [], [rows]);
+  const cols = useMemo(() => rows && rows.length ? Object.keys(rows[0]).filter(c => !PII_COL.test(c)) : [], [rows]);
   const numCols = useMemo(() => cols.filter(c => rows && rows.some(r => num(r[c]) != null)), [cols, rows]);
   const ranges = useMemo(() => { const m: Record<string, [number, number]> = {};
     numCols.forEach(c => { const v = (rows ?? []).map(r => num(r[c])).filter(x => x != null) as number[];
