@@ -55,8 +55,8 @@ const MILESTONES = [
   { year: 2022, label: 'NDP IV Launch',       color: C.teal,   detail: 'NDP IV launched; official national road network defined as 21,302 km; OPRC contracts expanded to 9 active lots covering all six regions' },
   { year: 2023, label: 'OPRC Scale-Up',       color: C.pink,   detail: 'Continued rehabilitation under OPRC performance contracts; bridge and culvert inventory completed - 546 structures in the 2026 BMS register' },
   { year: 2024, label: 'Digital Transform',   color: C.indigo, detail: 'Digital transformation initiative; DNR RMS Engine development begins; ML-powered pavement condition assessment model (PyTorch, R²=0.93) enters training' },
-  { year: 2025, label: 'Platform Live',       color: C.green,  detail: 'DNR Road Management System goes live; 1,017 links in GeoJSON; ML IRI prediction and HDM-4 analysis integrated; real-time ATC data feeds activated' },
-  { year: 2026, label: 'Current (FY25/26)',   color: C.cyan,   detail: 'Current year: Official network 21,302 km (NDPIV FY25-26) | GeoJSON mapped 21,160 km (1,017 links) | Paved 6,405 km (30.1%) | Unpaved 14,897 km (69.9%)' },
+  { year: 2025, label: 'Platform Live',       color: C.green,  detail: 'DNR Road Management System goes live; 1,014 links in GeoJSON; ML IRI prediction and HDM-4 analysis integrated; real-time ATC data feeds activated' },
+  { year: 2026, label: 'Current (FY25/26)',   color: C.cyan,   detail: 'Current year: Official network 21,302 km (NDPIV FY25-26) | GeoJSON mapped 21,137 km (1,014 links) | Paved 6,405 km (30.3%) | Unpaved 14,732 km (69.7%)' },
 ];
 
 const MAINTENANCE_FY = [
