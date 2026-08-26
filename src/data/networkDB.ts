@@ -2,7 +2,7 @@
  * networkDB - Central single source of truth for the Uganda National Roads Platform.
  *
  * All data is sourced from:
- *   • National Road Network_FY25-26(NDPIV) - draft.xlsx  (1,017 links)
+ *   • National Road Network_FY25-26(NDPIV) - draft.xlsx  (1,014 links)
  *   • Bridges and Culverts 2026.xlsx                     (515 bridges, 452 culverts)
  *   • TIS 2023–2025 AADT analysis.xlsx                   (298 stations, 10 vehicle classes)
  *
