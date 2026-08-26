@@ -93,7 +93,7 @@ function classifyInt(type: string): IntType {
 // ── Road Link Data - synthesised at runtime from network2026.geojson ────
 //
 // Empty placeholder. The actual array is populated by useEffect in the
-// component, which reads ALL 1,017 link features from the GeoJSON and
+// component, which reads ALL 1,014 link features from the GeoJSON and
 // synthesises a comprehensive LinkDef for each (intervention history is
 // derived from real completion_year + rehabilitation_year).
 const LINKS: LinkDef[] = [];
@@ -386,7 +386,7 @@ function TimelineCard({
 
 // ─────────────────────────────────────────────────────────────────────────────
 export default function LifecycleSection() {
-  // ── Load ALL 1,017 road links from network2026.geojson ──────────────
+  // ── Load ALL 1,014 road links from network2026.geojson ──────────────
   const [allLinks,     setAllLinks]     = useState<LinkDef[]>([]);
   const [loading,      setLoading]      = useState(true);
   const [selectedId,   setSelectedId]   = useState<string>('');
@@ -436,7 +436,7 @@ export default function LifecycleSection() {
   const nextRehabYr = Math.round(2026 + Math.max(1, (8.0 - link.currentIRI) / 0.38));
   const nextRehabCostBn = +(link.lengthKm * 2200 / 1_000_000).toFixed(1);
 
-  // ── Summary stats - across all 1,017 loaded links ───────────────────────────
+  // ── Summary stats - across all 1,014 loaded links ───────────────────────────
   const statsAll = useMemo(() => {
     if (allLinks.length === 0) return { totalKm: 0, totalInts: 0, avgIri: 0, projCost2035: 0 };
     return {
@@ -563,7 +563,7 @@ export default function LifecycleSection() {
       <div style={{ flex: 1, padding: '8px 14px 12px', overflowY: showAllLinks ? 'auto' : 'visible' }}>
       {loading && (
         <div style={{ textAlign: 'center', padding: 40, color: '#64748b', fontSize: 12 }}>
-          Loading 1,017 road links from network2026.geojson…
+          Loading 1,014 road links from network2026.geojson…
         </div>
       )}
 
