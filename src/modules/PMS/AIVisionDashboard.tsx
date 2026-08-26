@@ -4,6 +4,11 @@ import { Camera, Activity, AlertTriangle, Scan, Server, FileVideo, Cpu } from 'l
 export default function AIVisionDashboard() {
   const [analyzing, setAnalyzing] = useState(false);
   const [progress, setProgress] = useState(0);
+  // Falls back to a synthetic road-surface backdrop if the sample frame
+  // asset is unavailable, rather than leaving a broken-image icon under the
+  // bounding-box overlays - this panel is already labelled "Demonstration"
+  // above, so a synthetic backdrop is consistent with that framing.
+  const [frameError, setFrameError] = useState(false);
 
   useEffect(() => {
     // Simulate initial scan
@@ -75,12 +80,25 @@ export default function AIVisionDashboard() {
           </div>
           
           <div style={{ position: 'relative', flex: 1, minHeight: 400, background: '#000' }}>
-            <img 
-              src={`${import.meta.env.BASE_URL}media/romdas_sample.svg`} 
-              alt="ROMDAS Frame"
-              style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: analyzing ? 0.5 : 1, transition: 'opacity 0.3s' }}
-            />
-            
+            {!frameError ? (
+              <img
+                src={`${import.meta.env.BASE_URL}media/romdas_sample.svg`}
+                alt="ROMDAS Frame"
+                onError={() => setFrameError(true)}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: analyzing ? 0.5 : 1, transition: 'opacity 0.3s' }}
+              />
+            ) : (
+              <div style={{
+                width: '100%', height: '100%', opacity: analyzing ? 0.5 : 1, transition: 'opacity 0.3s',
+                background: 'repeating-linear-gradient(100deg, #23262b 0px, #23262b 3px, #1a1c20 3px, #1a1c20 7px), linear-gradient(160deg, #2a2d33, #1c1e22)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <span style={{ fontSize: 10.5, color: 'rgba(148,163,184,0.5)', fontWeight: 700, letterSpacing: '0.05em' }}>
+                  SYNTHETIC ROAD SURFACE BACKDROP - SAMPLE FRAME UNAVAILABLE
+                </span>
+              </div>
+            )}
+
             {/* Simulated Scanner Line */}
             {analyzing && (
               <div style={{
