@@ -1,4 +1,4 @@
-/* ── DNR Platform — Global Transitions & Animations ───────────────────────── */
+/* ── DNR Platform - Global Transitions & Animations ───────────────────────── */
 
 /* ── Keyframes ─────────────────────────────────────────────────────────────── */
 
@@ -56,13 +56,13 @@
   100% { transform: translate(-50%,-50%) scale(2.2); opacity: 0; }
 }
 
-/* RMS Architecture — entrance fade+slide (staggered per column) */
+/* RMS Architecture - entrance fade+slide (staggered per column) */
 @keyframes fadeSlideIn {
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* RMS Architecture — flowing data-pipeline arrow dash */
+/* RMS Architecture - flowing data-pipeline arrow dash */
 @keyframes flowDash {
   from { stroke-dashoffset: 100; }
   to   { stroke-dashoffset: 0; }
@@ -70,7 +70,7 @@
 
 /* ── Utility classes ────────────────────────────────────────────────────────── */
 
-/* Card hover lift — add class="card-lift" to any card */
+/* Card hover lift - add class="card-lift" to any card */
 .card-lift {
   transition: transform 0.2s ease, box-shadow 0.2s ease !important;
 }
@@ -100,7 +100,7 @@
   animation: node-pulse 2s ease-in-out infinite;
 }
 
-/* ── Recharts customisation — bar chart fade in ─────────────────────────────── */
+/* ── Recharts customisation - bar chart fade in ─────────────────────────────── */
 .recharts-bar-rectangle {
   animation: bar-grow 0.5s ease forwards;
 }
@@ -131,7 +131,7 @@ select:focus {
   box-shadow: 0 0 0 2px rgba(0,245,255,0.15) !important;
 }
 
-/* ── Compact spacing — tighter global layout ───────────────────────────────── */
+/* ── Compact spacing - tighter global layout ───────────────────────────────── */
 .section-content,
 [class*="section-content"] {
   padding: 8px 12px !important;
@@ -147,7 +147,7 @@ select:focus {
   padding: 8px 10px !important;
   margin-bottom: 8px !important;
 }
-/* Platform section inner padding — replaces 24px/32px defaults */
+/* Platform section inner padding - replaces 24px/32px defaults */
 .section-pad {
   padding: 8px 12px;
 }
@@ -166,7 +166,7 @@ select:focus {
   margin-bottom: 8px !important;
 }
 
-/* KPI stat cards — tighter */
+/* KPI stat cards - tighter */
 .stat-card,
 [class*="stat-card"],
 [class*="kpi-card"],
@@ -255,7 +255,7 @@ select:focus {
 
 /* ═══ Global animation layer (2026-06-12) ═══════════════════════════════════ */
 
-/* Section/tab content entrance — every freshly mounted view glides in */
+/* Section/tab content entrance - every freshly mounted view glides in */
 @keyframes ugFadeUp {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -268,7 +268,7 @@ main > div > div {
   animation: ugFadeIn 0.30s ease-out;
 }
 
-/* Buttons & tabs — lively hover/press feedback */
+/* Buttons & tabs - lively hover/press feedback */
 button {
   transition: transform 0.14s ease, filter 0.18s ease, box-shadow 0.18s ease !important;
 }
@@ -283,7 +283,7 @@ tbody tr:hover {
   background: rgba(0, 245, 255, 0.06) !important;
 }
 
-/* Cards / chips / glass panels — subtle lift on hover */
+/* Cards / chips / glass panels - subtle lift on hover */
 [style*="border-radius"][style*="border"] {
   transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
