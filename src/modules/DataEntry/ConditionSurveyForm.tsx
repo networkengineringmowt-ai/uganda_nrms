@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../Auth/AuthContext';
 import { logEvent } from '../Auth/auditLog';
 import { ProtectedRoute } from '../Auth/ProtectedRoute';
+import { roleLabel } from '../Auth/authTypes';
 import { supabase } from '../../lib/supabase';
 import { vciRating, VCI_RATING_COLOR } from '../../shared/vci';
 
@@ -73,7 +74,11 @@ function SurveyFormInner({ onClose }: Props) {
       pothole_count: Number(form.pothole_count),
       drainage_score: Number(form.drainage_score),
       overall_condition: form.overall_condition,
-      surveyor_name: user?.name ?? 'Unknown',
+      // Role only, never the individual's name - this record is visible to
+      // other reviewers (Pending Submissions) and to any exhaustive
+      // table/export downstream, so no personally-identifying attribution
+      // is stored here.
+      surveyor_name: roleLabel(user?.role) || 'Field Surveyor',
       notes: form.notes,
       submitted_at: new Date().toISOString(),
       status: 'pending',
@@ -146,7 +151,7 @@ function SurveyFormInner({ onClose }: Props) {
   return (
     <form onSubmit={handleSubmit} style={{ padding:20, display:'flex', flexDirection:'column', gap:12 }}>
       <div style={{ color:'#e2e8f0', fontSize:14, fontWeight:700, marginBottom:4 }}>Submit Condition Survey</div>
-      <div style={{ color:'#64748b', fontSize:10, marginBottom:4 }}>Surveyor: {user?.name} · {new Date().toLocaleDateString()}</div>
+      <div style={{ color:'#64748b', fontSize:10, marginBottom:4 }}>Surveyor: {roleLabel(user?.role) || 'Field Surveyor'} · {new Date().toLocaleDateString()}</div>
 
       <div>
         <label style={LABEL}>Link ID *</label>
