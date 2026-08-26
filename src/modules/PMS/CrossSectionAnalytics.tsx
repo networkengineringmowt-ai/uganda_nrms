@@ -81,8 +81,8 @@ function DonutGraphic({ card }: { card: Infographic }) {
           </Pie><Tooltip content={<CompactTooltip unit={card.unit} />} /></PieChart>
         </ResponsiveContainer>
       </div>
-      <div style={{ display: 'grid', gap: 7 }}>
-        {data.slice(0, 6).map((item, index) => (
+      <div style={{ display: 'grid', gap: 7, maxHeight: 160, overflowY: data.length > 6 ? 'auto' : 'visible', paddingRight: data.length > 6 ? 4 : 0 }}>
+        {data.map((item, index) => (
           <div key={`${item.label}-${index}`} style={{ display: 'grid', gridTemplateColumns: '8px 1fr auto', alignItems: 'center', gap: 7, minWidth: 0 }}>
             <span style={{ width: 7, height: 7, borderRadius: 99, background: COLORS[index % COLORS.length] }} />
             <span style={{ color: '#8490a5', fontSize: 9.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.label}</span>
