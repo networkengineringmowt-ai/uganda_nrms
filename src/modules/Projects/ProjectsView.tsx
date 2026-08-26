@@ -721,7 +721,7 @@ export default function ProjectsView() {
               {' '}Albertine oil roads · GKMA improvements · Northern Bypass Ph 2 · border connectivity
             </div>
             <div style={{ fontSize: 8, color: 'rgba(100,116,139,0.5)', marginTop: 4 }}>
-              Target: 35% paved network by 2030 · Current baseline: ~30.1% (6,405 km)
+              Target: 35% paved network by 2030 · Current baseline: ~30.3% (6,405 km)
             </div>
           </div>
 
