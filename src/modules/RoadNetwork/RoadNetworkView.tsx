@@ -33,6 +33,7 @@ import { MapLegend, LEGEND_FULL } from "../../shared/MapLegend";
 import SourceTableButton from '../../shared/SourceTableButton';
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
 import { BotHighlightContext } from '../AssetBot/types';
+import { useNetworkStats } from '../../shared/useNetworkStats';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface LinkProps {
@@ -142,6 +143,7 @@ export default function RoadNetworkView() {
   const [ndpiv,      setNdpiv]      = useState<NdpivData | null>(null);
   const [networkSummary, setNetworkSummary] = useState<{ official_total_km?: number } | null>(null);
   const [loading,    setLoading]    = useState(true);
+  const netStatsLoad = useNetworkStats();
 
   // UI state
   const [panel,      setPanel]      = useState<'map'|'dashboard'>('map');
@@ -343,7 +345,7 @@ export default function RoadNetworkView() {
                 borderTopColor:'#00f5ff', borderRadius:'50%',
                 animation:'spin-slow 1s linear infinite', margin:'0 auto 12px' }}/>
               <div style={{ fontSize:13, fontWeight:700 }}>Loading road network…</div>
-              <div style={{ fontSize:10, color:'rgba(0,245,255,0.5)', marginTop:4 }}>1,017 links mapped · {networkSummary?.official_total_km?.toLocaleString() || '21,302'} km official</div>
+              <div style={{ fontSize:10, color:'rgba(0,245,255,0.5)', marginTop:4 }}>{netStatsLoad.totalLinks.toLocaleString()} links mapped · {(networkSummary?.official_total_km ?? netStatsLoad.officialKm).toLocaleString()} km official</div>
             </div>
           </div>
         )}
@@ -724,6 +726,9 @@ function NetworkStatsPanel({ stats, ndpiv, storyData, animYear, animMode, networ
   animMode: boolean;
   networkSummary?: { official_total_km?: number } | null;
 }) {
+  // Live network totals (network2026.geojson) for the Coverage Note below -
+  // must not be a hardcoded snapshot, or it drifts from the StatCards above.
+  const netStats = useNetworkStats();
   // Derive KPIs - reactive to animYear in history mode, static (inventory) in current mode
   const { totalKm, pavKm, unsKm, pavPct } = useMemo(() => {
     const netTotal = ndpiv?.summary.total_km ?? stats?.totalKm ?? networkSummary?.official_total_km ?? 21302;
@@ -766,13 +771,13 @@ function NetworkStatsPanel({ stats, ndpiv, storyData, animYear, animMode, networ
       }}>
         <div style={{ fontWeight: 800, color: '#93c5fd', marginBottom: 4 }}>Coverage Note</div>
         <div style={{ display: 'flex', justifyContent: 'space-between', color: 'rgba(148,163,184,0.7)', marginBottom: 2 }}>
-          <span>GeoJSON mapped:</span><span style={{ color: '#60a5fa', fontWeight: 700 }}>21,160 km (mapped) · 1,017 links</span>
+          <span>GeoJSON mapped:</span><span style={{ color: '#60a5fa', fontWeight: 700 }}>{netStats.totalKm.toLocaleString()} km (mapped) · {netStats.totalLinks.toLocaleString()} links</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', color: 'rgba(148,163,184,0.7)', marginBottom: 2 }}>
-          <span>Official Department of National Roads 2026:</span><span style={{ color: '#00f5ff', fontWeight: 700 }}>{networkSummary?.official_total_km?.toLocaleString() || '21,302'} km</span>
+          <span>Official Department of National Roads 2026:</span><span style={{ color: '#00f5ff', fontWeight: 700 }}>{(networkSummary?.official_total_km ?? netStats.officialKm).toLocaleString()} km</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', color: 'rgba(148,163,184,0.5)' }}>
-          <span>Unmapped gap:</span><span style={{ color: '#fb923c', fontWeight: 700 }}>142 km</span>
+          <span>Unmapped gap:</span><span style={{ color: '#fb923c', fontWeight: 700 }}>{Math.max(0, (networkSummary?.official_total_km ?? netStats.officialKm) - netStats.totalKm).toLocaleString()} km</span>
         </div>
       </div>
       {ndpiv && <div style={{ fontSize:8, color:'rgba(0,245,255,0.35)', marginBottom:8 }}>Network inventory · FY 2025/26</div>}
@@ -882,8 +887,8 @@ function DashboardPanel({ stats, storyData, networkSummary }: {
 
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginBottom:16 }}>
         <KpiCard val={(networkSummary?.official_total_km || 21302).toLocaleString()} unit="km" label="Total Network" sub="1,018 links · National inventory FY25-26" color="#00f5ff"/>
-        <KpiCard val="6,405" unit="km" label="Paved Roads" sub="30.1% of network" color="#00ff88"/>
-        <KpiCard val="14,897" unit="km" label="Unsealed Roads" sub="69.9% of network" color="#ff8c00"/>
+        <KpiCard val="6,405" unit="km" label="Paved Roads" sub="30.3% of network" color="#00ff88"/>
+        <KpiCard val="14,732" unit="km" label="Unsealed Roads" sub="69.7% of network" color="#ff8c00"/>
         <KpiCard val={`+${growth.toFixed(0)}%`} unit="" label="Growth Since 1986" sub={`+${(cp2025-cp1986).toFixed(0)} km paved`} color="#ffd23f"/>
       </div>
 
@@ -1034,7 +1039,7 @@ function DashboardPanel({ stats, storyData, networkSummary }: {
           { year:2006, km:2476, label:'Department of National Roads established - 2,476 km' },
           { year:2015, km:3927, label:'NDP II target - 3,927 km' },
           { year:2020, km:5360, label:'NDP III - 5,360 km paved' },
-          { year:2025, km:6405, label:'Current - 6,405 km (30.1%)' },
+          { year:2025, km:6405, label:'Current - 6,405 km (30.3%)' },
         ].map(m => (
           <div key={m.year} style={{ display:'flex', gap:10, marginBottom:8, alignItems:'flex-start' }}>
             <div style={{ fontSize:10, fontWeight:900, color:'rgba(0,245,255,0.6)',
