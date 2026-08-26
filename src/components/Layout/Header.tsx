@@ -30,7 +30,7 @@ const VIEW_TITLES: Record<string, { title: string; sub: string; color?: string }
   sources:       { title: 'Sources & Evidence',            sub: 'Evidence Catalogue · Tabular Summaries · Documents · Downloads', color: '#94a3b8' },
   platform:      { title: 'Platform Overview',            sub: 'Uganda National Roads Management Platform',             color: '#00f5ff' },
   networkstory:  { title: 'Network Story 1986–',          sub: 'Road network development since liberation · 40-year arc', color: '#b967ff' },
-  roadnetwork:   { title: 'Road Network Map',             sub: '1,017 national road links · 21,302 km official (FY25-26) · Data: DNR GIS / NDPIV FY25-26', color: '#00ff88' },
+  roadnetwork:   { title: 'Road Network Map',             sub: '1,014 national road links · 21,302 km official (FY25-26) · Data: DNR GIS / NDPIV FY25-26', color: '#00ff88' },
   casestudies:   { title: 'Global Case Studies',          sub: 'World map · Comparative analytics · Literature Review Matrix (195 countries) · Lessons for DNR', color: '#00d4aa' },
   roadreserve:   { title: 'Road Reserve Management',      sub: 'Gazette status · Reserve corridor map · Encroachment register · Legal enforcement', color: '#00d4aa' },
   roadvideoview: { title: 'Road Survey Video',             sub: 'Road surface video archive · 2021–2026',               color: '#ff6b35' },
@@ -51,7 +51,7 @@ const VIEW_TITLES: Record<string, { title: string; sub: string; color?: string }
   media:         { title: 'Media and Document Gallery',   sub: 'Photography, video surveys, field reports & documents · Uganda national roads', color: '#b967ff' },
   phototwin:     { title: 'Photo Gallery & Digital Twin', sub: 'Inspection photos and structural schematics',          color: '#00ff88' },
   // Newly-wired sections - keep banner chrome consistent with the rest of the platform
-  roadatlas:     { title: 'Road Atlas',                   sub: 'Visual intelligence atlas · 21,160 km mapped national network · DNR GIS', color: '#00d4aa' },
+  roadatlas:     { title: 'Road Atlas',                   sub: 'Visual intelligence atlas · 21,137 km mapped national network · DNR GIS', color: '#00d4aa' },
   roadvideo:     { title: 'Road Video Survey',            sub: 'Georeferenced pavement survey video · frame-by-frame · 2021–2026', color: '#ff6b35' },
   bridgeworks:   { title: 'Bridge Works Programme',       sub: 'Bridge & major-culvert development projects · MoWT status report', color: '#4d9fff' },
   downloads:     { title: 'Downloads & Exports',          sub: 'Network, bridge & culvert inventory · WGS84 shapefiles · CSV · GeoJSON', color: '#94a3b8' },
