@@ -48,7 +48,7 @@ const SOURCES: Source[] = [
 
   { name: 'Department of National Roads Traffic Information System (TIS)',
     type: 'Survey', owner: 'Department of National Roads TIS Unit', yearRange: '2010âpresent',
-    coverage: '298 manual count stations, 21,160 km (mapped) national network',
+    coverage: '298 manual count stations, 21,137 km (mapped) national network',
     variables: 'AADT by 12 vehicle classes, directional split, peak hour, seasonal factors',
     format: 'Excel workbooks + access DB â analytics.json export',
     status: 'Active', module: ['TIS', 'Network', 'PMS'],
@@ -64,7 +64,7 @@ const SOURCES: Source[] = [
 
   { name: 'OPM NAPR Road Condition Assessment',
     type: 'Survey', owner: 'Office of the Prime Minister / NAPR', yearRange: 'July 2025',
-    coverage: 'All classified national roads (~21,160 km (mapped))',
+    coverage: 'All classified national roads (~21,137 km (mapped))',
     variables: 'Visual condition class (Good/Fair/Poor/Bad), surface type, road class',
     format: 'GeoJSON + Excel report',
     status: 'Active', module: ['PMS', 'Network'],
@@ -81,7 +81,7 @@ const SOURCES: Source[] = [
   // ââ GIS ââ
   { name: 'Uganda National Road Network GIS',
     type: 'GIS', owner: 'Department of National Roads/DNR GIS Section', yearRange: '2010âpresent',
-    coverage: '21,160 km (mapped), 1,017 links, 6 maintenance regions',
+    coverage: '21,137 km (mapped), 1,014 links, 6 maintenance regions',
     variables: 'Geometry, road_no, link_id, surface_type, road_class, length_km, chainage',
     format: 'Shapefile + GeoJSON (bundle.json, atc_stations.geojson)',
     status: 'Active', module: ['Network', 'PMS', 'TIS', 'BMS', 'Projects'],
@@ -110,7 +110,7 @@ const SOURCES: Source[] = [
     variables: '12+ tables: road_links, traffic_counts, atc_stations, atc_readings, overloading_summary',
     format: 'SQLite (traffic_platform.db)',
     status: 'Active', module: ['TIS', 'Network', 'PMS'],
-    notes: 'Platform database: 267k+ traffic records, 1,017 links, 305 ATC records' },
+    notes: 'Platform database: 267k+ traffic records, 1,014 links, 305 ATC records' },
 
   { name: 'Department of National Roads Contract Management System',
     type: 'Database', owner: 'Department of National Roads PDU / Contracts Dept', yearRange: '2010âpresent',

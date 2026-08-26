@@ -1,10 +1,11 @@
-import { lazy, Suspense, useState, useEffect } from 'react';
+import { lazy, Suspense, useState, useEffect, useMemo } from 'react';
 import { useBMS } from '../../store/BMSContext';
 import { Table2, Download, ArrowUpRight, FileText, FolderOpen, BarChart3, ExternalLink,
   Truck, Shield, Wrench, Clock, Leaf, Globe, Users, Network, DollarSign, Database,
   HardHat, Route, Activity } from 'lucide-react';
 import type { ActiveView } from '../../index';
 import { projectAllClasses, projectAADTByClass, VC_CLASSES, NETWORK_BLENDED_GROWTH } from '../../shared/trafficProjection';
+import { useNetworkStats } from '../../shared/useNetworkStats';
 
 const DocumentStore = lazy(() => import('../Documents/DocumentStore'));
 const DownloadsView  = lazy(() => import('../Downloads/DownloadsView'));
@@ -39,21 +40,9 @@ const CONDITION_DIST = [
   { label: 'Not Surveyed',  km: 0,     pct:  0.0, color: '#94a3b8', iriRange: 'N/A'        },
 ];
 
-const CLASS_KM = [
-  { cls: 'A', links: 156, km: 2615, paved: 2615, unpaved: 0,    pct: 100 },
-  { cls: 'B', links: 162, km: 2863, paved: 2354, unpaved: 509,  pct: 82.2 },
-  { cls: 'C', links: 680, km: 15537, paved: 1224, unpaved: 14313, pct: 7.9 },
-  { cls: 'M', links: 15,  km: 145,   paved: 141,  unpaved: 4,    pct: 97.2 },
-];
-
-const REGION_KM = [
-  { region: 'Central',       links: 212, km: 4760, paved: 2180, unpaved: 2580 },
-  { region: 'Eastern',       links: 153, km: 2775, paved:  640, unpaved: 2135 },
-  { region: 'North Eastern', links: 110, km: 2716, paved:  240, unpaved: 2476 },
-  { region: 'Northern',      links: 186, km: 4595, paved:  840, unpaved: 3755 },
-  { region: 'Southern',      links: 168, km: 3546, paved:  970, unpaved: 2576 },
-  { region: 'Western',       links: 184, km: 2768, paved: 1464, unpaved: 1304 },
-];
+// CLASS_KM / REGION_KM below are no longer hardcoded snapshots - see the
+// classKmLive / regionKmLive useMemo values derived from useNetworkStats()
+// inside TabularSummaries(), which read live from network2026.geojson.
 
 const TRAFFIC_TOP = [
   { road: 'A002_Link01', name: 'Kampala–Jinja', aadt: 23800, cls: 'A', year: 2025 },
@@ -696,17 +685,17 @@ const DATA_VINTAGE = [
 ];
 const DATA_GAPS = [
   { gap:'27 links missing geometry coordinates',          severity:'Low',    priority:3 },
-  { gap:'142 km official network not in GeoJSON',         severity:'Medium', priority:2 },
+  { gap:'165 km official network not in GeoJSON',         severity:'Medium', priority:2 },
   { gap:'233 links without 2024 condition survey',       severity:'High',   priority:1 },
   { gap:'715 links AADT estimated by ML model',          severity:'Medium', priority:2 },
   { gap:'191 bridges with incomplete inspection',        severity:'High',   priority:1 },
   { gap:'Pavement age unknown for 12% of links',         severity:'Low',    priority:3 },
 ];
 const KPI_VALIDATION = [
-  { kpi:'Total network km',  value:'21,302', source:'DNR official', geojson:'21,160', delta:'+142',  ok:true },
-  { kpi:'Total links',       value:'1,017',  source:'GeoJSON',      geojson:'1,017',  delta:'0',     ok:true },
-  { kpi:'Paved km',          value:'6,334',  source:'DNR survey',   geojson:'6,193',  delta:'+141',  ok:true },
-  { kpi:'Paved pct',         value:'30.1%',  source:'DNR official', geojson:'29.3%',  delta:'+0.4%', ok:true },
+  { kpi:'Total network km',  value:'21,302', source:'DNR official', geojson:'21,137', delta:'+165',  ok:true },
+  { kpi:'Total links',       value:'1,014',  source:'GeoJSON',      geojson:'1,014',  delta:'0',     ok:true },
+  { kpi:'Paved km',          value:'6,334',  source:'DNR survey',   geojson:'6,405',  delta:'-71',   ok:true },
+  { kpi:'Paved pct',         value:'30.3%',  source:'DNR official', geojson:'30.3%',  delta:'-0.2%', ok:true },
   { kpi:'Total bridges',     value:'546',    source:'BMS',          geojson:'546',    delta:'0',     ok:true },
   { kpi:'ATC stations',      value:'25',     source:'TIS database', geojson:'N/A',    delta:'N/A',   ok:true },
 ];
@@ -867,7 +856,7 @@ const SERVICE_CENTERS = [
   { service:'Cooperative stores',      total:1840,paved_access_pct:48, gravel_pct:38,no_road_pct:14},
 ];
 const NETWORK_COMPLETENESS = [
-  { dimension:'GeoJSON spatial coverage', target:'100%', achieved:'98.7%', gap:'142 km unmapped'       },
+  { dimension:'GeoJSON spatial coverage', target:'100%', achieved:'99.2%', gap:'165 km unmapped'       },
   { dimension:'Condition data coverage',  target:'100%', achieved:'77.0%', gap:'233 links unsurveyed'  },
   { dimension:'Traffic count coverage',   target:'100%', achieved:'29.4%', gap:'715 links model-only'  },
   { dimension:'Bridge inventory',         target:'100%', achieved:'84.1%', gap:'77 bridges incomplete' },
@@ -1054,7 +1043,7 @@ function Td({ children, align = 'left', mono = false, style }: { children?: Reac
   );
 }
 
-// ── ADT Projection table - ALL 1,017 links × projection years × vehicle classes ──
+// ── ADT Projection table - ALL links (live count from GeoJSON) × projection years × vehicle classes ──
 // Paginated (50/page) + searchable; base AADT loaded from the full GeoJSON network
 // (network2026.geojson - `aadt` property if present, else derived from road class).
 const ADT_PROJECTION_YEARS = [2016, 2020, 2025, 2026, 2030, 2035, 2040];
@@ -1136,7 +1125,7 @@ function AdtProjectionTable() {
     <TablePanel id="tbl-adt-projection"
       title="Annual Daily Traffic (ADT) Projections 2016–2040 by Road Link and Vehicle Class"
       accent={C.yellow}
-      source="network2026.geojson (aadt property, else derived from road class) projected via projectAADTByClass / per-class growth rates in trafficProjection.ts - all 1,017 links, paginated">
+      source={`network2026.geojson (aadt property, else derived from road class) projected via projectAADTByClass / per-class growth rates in trafficProjection.ts - all ${links.length.toLocaleString()} links, paginated`}>
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8,
         padding: '8px 14px 4px',
@@ -1259,7 +1248,7 @@ function AdtProjectionTable() {
       </div>
 
       <div style={{ padding: '4px 14px 12px', fontSize: 9, color: 'rgba(148,163,184,0.45)', fontStyle: 'italic' }}>
-        Full dataset (all 1,017 links × {ADT_PROJECTION_YEARS.length} years × {VC_CLASSES.length} vehicle classes) available via Supabase query: SELECT * FROM traffic_projections
+        Full dataset (all {links.length.toLocaleString()} links × {ADT_PROJECTION_YEARS.length} years × {VC_CLASSES.length} vehicle classes) available via Supabase query: SELECT * FROM traffic_projections
       </div>
     </TablePanel>
   );
@@ -1269,6 +1258,11 @@ function AdtProjectionTable() {
 export default function TabularSummaries() {
   const { state, navigate } = useBMS();
   const [tab, setTab] = useState<Tab>('tables');
+  // Single source of truth for network totals - the Network Coverage banner
+  // and §24 GeoJSON panel below must read counts from here rather than a
+  // hardcoded snapshot, or they silently drift out of sync with the live
+  // geoLinks count as the underlying dataset changes.
+  const netStats = useNetworkStats();
 
   // GeoJSON road links - loaded once on mount for tbl-links-full
   const [geoLinks, setGeoLinks] = useState<Array<Record<string, unknown>>>([]);
@@ -1282,6 +1276,34 @@ export default function TabularSummaries() {
       )
       .catch(() => {});
   }, []);
+  // Derived from the exact same loaded array the table below renders, so the
+  // "Showing N / M links · X km mapped" line can never disagree with the
+  // rows actually shown.
+  const geoKmTotal = useMemo(() =>
+    Math.round(geoLinks.reduce((sum, p) => sum + (parseFloat(String(p.length_km1 ?? 0)) || 0), 0)),
+    [geoLinks]);
+
+  // §1 "Road Links by Class" / "by Maintenance Region" tables - derived live
+  // from useNetworkStats() (network2026.geojson) rather than a hardcoded
+  // per-class/per-region snapshot, so class and region totals always sum to
+  // the same totalKm/totalLinks shown in the Network Coverage banner above.
+  const CLASS_ORDER = ['A', 'B', 'C', 'M'];
+  const classKmLive = useMemo(() => CLASS_ORDER
+    .filter(cls => netStats.classKm[cls] != null)
+    .map(cls => {
+      const km = netStats.classKm[cls] ?? 0;
+      const paved = netStats.classPavedKm?.[cls] ?? 0;
+      const unpaved = netStats.classUnpavedKm?.[cls] ?? Math.max(0, km - paved);
+      return { cls, links: netStats.classLinks[cls] ?? 0, km, paved, unpaved, pct: km > 0 ? parseFloat(((paved / km) * 100).toFixed(1)) : 0 };
+    }), [netStats]);
+  const regionKmLive = useMemo(() => Object.keys(netStats.regionKm)
+    .sort()
+    .map(region => {
+      const km = netStats.regionKm[region] ?? 0;
+      const paved = netStats.regionPavedKm?.[region] ?? 0;
+      const unpaved = netStats.regionUnpavedKm?.[region] ?? Math.max(0, km - paved);
+      return { region, links: netStats.regionLinks[region] ?? 0, km, paved, unpaved };
+    }), [netStats]);
 
   const bridges  = state.structures.filter(s => s.type === 'bridge');
   const culverts = state.structures.filter(s => s.type === 'culvert');
@@ -1342,8 +1364,8 @@ export default function TabularSummaries() {
         fontSize: 10, color: '#94a3b8',
       }}>
         <div style={{ fontWeight: 800, color: C.cyan, marginBottom: 3, fontSize: 9.5, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Network Coverage (single source of truth)</div>
-        <div>Official NDPIV FY25-26: <b style={{ color: '#fff' }}>21,302 km total</b> · <b style={{ color: '#22c55e' }}>6,405 km paved (30.1%)</b> · <b style={{ color: '#f59e0b' }}>14,897 km unpaved (69.9%)</b></div>
-        <div style={{ marginTop: 2 }}>Mapped in GeoJSON: <b style={{ color: '#fff' }}>21,160 km (mapped) (1,017 links)</b> · <b style={{ color: '#fb923c' }}>Unmapped: 142 km</b> - recently gazetted or under survey</div>
+        <div>Official NDPIV FY25-26: <b style={{ color: '#fff' }}>{netStats.officialKm.toLocaleString()} km total</b> · <b style={{ color: '#22c55e' }}>{netStats.pavedKm.toLocaleString()} km paved ({netStats.pavedPct.toFixed(1)}%)</b> · <b style={{ color: '#f59e0b' }}>{netStats.unpavedKm.toLocaleString()} km unpaved ({(100 - netStats.pavedPct).toFixed(1)}%)</b></div>
+        <div style={{ marginTop: 2 }}>Mapped in GeoJSON: <b style={{ color: '#fff' }}>{netStats.totalKm.toLocaleString()} km (mapped) ({netStats.totalLinks.toLocaleString()} links)</b> · <b style={{ color: '#fb923c' }}>Unmapped: {Math.max(0, netStats.officialKm - netStats.totalKm).toLocaleString()} km</b> - recently gazetted or under survey</div>
       </div>
 
       {/* ── BMS-style tab bar ── */}
@@ -1390,12 +1412,12 @@ export default function TabularSummaries() {
               <thead><tr><Th>Metric</Th><Th>Value</Th><Th>Unit</Th><Th>Source / Vintage</Th></tr></thead>
               <tbody>
                 {[
-                  ['Total network (official Department of National Roads 2026)', '21,302', 'km',           'Department of National Roads 2026'],
-                  ['Total network (GeoJSON mapped)',      '21,160', 'km',           'DNR GIS Jun 2025'],
-                  ['Unmapped gap',                        '142',    'km',           'GeoJSON vs official'],
-                  ['Paved (Bituminous + Concrete)',        '6,334',  'km (30.1%)',  'DNR GIS Jun 2025'],
-                  ['Unpaved (Gravel / Earth)',             '14,826', 'km (69.9%)',  'DNR GIS Jun 2025'],
-                  ['Road links (LRS segments)',            '1,017',  'links',       'DNR GIS Jun 2025'],
+                  ['Total network (official Department of National Roads 2026)', netStats.officialKm.toLocaleString(), 'km',           'Department of National Roads 2026'],
+                  ['Total network (GeoJSON mapped)',      netStats.totalKm.toLocaleString(), 'km',           'DNR GIS Jun 2025'],
+                  ['Unmapped gap',                        Math.max(0, netStats.officialKm - netStats.totalKm).toLocaleString(),    'km',           'GeoJSON vs official'],
+                  ['Paved (Bituminous + Concrete)',        netStats.pavedKm.toLocaleString(),  `km (${netStats.pavedPct}%)`,  'DNR GIS Jun 2025'],
+                  ['Unpaved (Gravel / Earth)',             netStats.unpavedKm.toLocaleString(), `km (${(100 - netStats.pavedPct).toFixed(1)}%)`,  'DNR GIS Jun 2025'],
+                  ['Road links (LRS segments)',            netStats.totalLinks.toLocaleString(),  'links',       'DNR GIS Jun 2025'],
                   ['Unique link IDs in GeoJSON',          '1,011',  'link IDs',    'GeoJSON analysis'],
                   ['Maintenance regions',                  '6',      'regions',     'Department of National Roads'],
                   ['Annual traffic count stations (TIS)',  '298',    'stations',    'TIS 2025'],
@@ -1417,7 +1439,7 @@ export default function TabularSummaries() {
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead><tr><Th>Class</Th><Th>Links</Th><Th>Total km</Th><Th>Paved km</Th><Th>Unpaved km</Th><Th>% Paved</Th></tr></thead>
               <tbody>
-                {CLASS_KM.map(r => (
+                {classKmLive.map(r => (
                   <tr key={r.cls}><Td><strong style={{ color: C.cyan }}>{r.cls}</strong></Td>
                     <Td mono align="right">{r.links}</Td>
                     <Td mono align="right">{r.km.toLocaleString()}</Td>
@@ -1428,11 +1450,11 @@ export default function TabularSummaries() {
                 ))}
                 <tr style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
                   <Td><strong style={{ color: '#e2eaf4' }}>Total</strong></Td>
-                  <Td mono align="right"><strong>{CLASS_KM.reduce((s,r)=>s+r.links,0)}</strong></Td>
-                  <Td mono align="right"><strong>{CLASS_KM.reduce((s,r)=>s+r.km,0).toLocaleString()}</strong></Td>
-                  <Td mono align="right"><strong style={{ color: '#22c55e' }}>{CLASS_KM.reduce((s,r)=>s+r.paved,0).toLocaleString()}</strong></Td>
-                  <Td mono align="right"><strong style={{ color: '#ff8c00' }}>{CLASS_KM.reduce((s,r)=>s+r.unpaved,0).toLocaleString()}</strong></Td>
-                  <Td mono align="right"><strong>30.1%</strong></Td>
+                  <Td mono align="right"><strong>{classKmLive.reduce((s,r)=>s+r.links,0)}</strong></Td>
+                  <Td mono align="right"><strong>{classKmLive.reduce((s,r)=>s+r.km,0).toLocaleString()}</strong></Td>
+                  <Td mono align="right"><strong style={{ color: '#22c55e' }}>{classKmLive.reduce((s,r)=>s+r.paved,0).toLocaleString()}</strong></Td>
+                  <Td mono align="right"><strong style={{ color: '#ff8c00' }}>{classKmLive.reduce((s,r)=>s+r.unpaved,0).toLocaleString()}</strong></Td>
+                  <Td mono align="right"><strong>{netStats.pavedPct}%</strong></Td>
                 </tr>
               </tbody>
             </table>
@@ -1445,7 +1467,7 @@ export default function TabularSummaries() {
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead><tr><Th>Region</Th><Th>Links</Th><Th>Total km</Th><Th>Paved km</Th><Th>Unpaved km</Th><Th>% Paved</Th></tr></thead>
               <tbody>
-                {REGION_KM.map(r => (
+                {regionKmLive.map(r => (
                   <tr key={r.region}><Td>{r.region}</Td>
                     <Td mono align="right">{r.links}</Td>
                     <Td mono align="right">{r.km.toLocaleString()}</Td>
@@ -1540,7 +1562,7 @@ export default function TabularSummaries() {
                 <tr>
                   <Td><span style={{ color:'#94a3b8' }}>Not Surveyed / Under Works</span></Td>
                   <Td><span style={{ color:'#94a3b8' }}>N/A</span></Td>
-                  <Td mono align="right"><span style={{ color:'#94a3b8' }}>~{(21160-21160*0.297-CONDITION_DIST.reduce((s,r)=>s+r.km,0)).toFixed(0)}</span></Td>
+                  <Td mono align="right"><span style={{ color:'#94a3b8' }}>~{Math.max(0, netStats.pavedKm - CONDITION_DIST.reduce((s,r)=>s+r.km,0)).toFixed(0)}</span></Td>
                   <Td mono align="right"><span style={{ color:'#94a3b8' }}>-</span></Td>
                   <Td mono><span style={{ color:'#94a3b8' }}>#94a3b8</span></Td>
                 </tr>
@@ -2232,7 +2254,7 @@ export default function TabularSummaries() {
           <SectionHeader icon={<Database size={15} style={{ color: C.pink }}/>} accent={C.pink}
             title="Data Quality & Audit" sub="GeoJSON completeness · survey coverage · KPI cross-validation · known gaps register"/>
           {/* tbl-076 */}
-          <TablePanel id="tbl-076" title="GeoJSON Field Completeness - network2026.geojson (1,017 features)" accent={C.pink} source="DNR GIS Section audit Jun 2025" chartTab="dataaudit" chartLabel="🔍 Data Audit →" onNavigate={navigate}>
+          <TablePanel id="tbl-076" title={`GeoJSON Field Completeness - network2026.geojson (${netStats.totalLinks.toLocaleString()} features)`} accent={C.pink} source="DNR GIS Section audit Jun 2025" chartTab="dataaudit" chartLabel="🔍 Data Audit →" onNavigate={navigate}>
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Field</Th><Th>Total Features</Th><Th>Filled</Th><Th>Completeness %</Th></tr></thead>
             <tbody>{GEOJSON_COMPLETENESS.map(r=><tr key={r.field}><Td mono style={{ color:C.cyan }}>{r.field}</Td><Td align="right" mono>{r.features}</Td><Td align="right" mono>{r.filled}</Td><Td align="right" mono style={{ color:r.pct===100?C.green:r.pct>90?C.yellow:'#ef4444', fontWeight:700 }}>{r.pct.toFixed(1)}%</Td></tr>)}</tbody></table>
           </TablePanel>
@@ -2457,11 +2479,11 @@ export default function TabularSummaries() {
           <div style={{ fontSize: 10, fontWeight: 900, color: C.teal, textTransform: 'uppercase',
             letterSpacing: '0.12em', marginBottom: 10, marginTop: 20,
             borderBottom: '1px solid rgba(0,212,170,0.1)', paddingBottom: 6 }}>
-            §24 - GeoJSON Road Links (network2026.geojson - Full 1,017 rows)
+            §24 - GeoJSON Road Links (network2026.geojson - Full {geoLinks.length.toLocaleString()} rows)
           </div>
           {/* tbl-links-full */}
           <TablePanel id="tbl-links-full" title="All Road Links from network2026.geojson - All Properties" accent={C.teal}
-            source="network2026.geojson · DNR GIS Section 18 Jun 2025 · 1,017 links · 21,160 km mapped | Official network: 21,302 km | Gap: 142 km">
+            source={`network2026.geojson · DNR GIS Section 18 Jun 2025 · ${geoLinks.length.toLocaleString()} links · ${geoKmTotal.toLocaleString()} km mapped | Official network: ${netStats.officialKm.toLocaleString()} km | Gap: ${Math.max(0, netStats.officialKm - geoKmTotal).toLocaleString()} km`}>
             <div style={{ padding:'8px 14px 4px', display:'flex', alignItems:'center', gap:10, flexWrap:'wrap' }}>
               <input
                 value={linkSearch}
@@ -2475,7 +2497,7 @@ export default function TabularSummaries() {
               />
               <span style={{ fontSize:9, color:'rgba(148,163,184,0.4)' }}>
                 {geoLinks.length === 0 ? 'Loading…' :
-                  `Showing ${geoLinks.filter(p => !linkSearch || String(p.link_id).toLowerCase().includes(linkSearch.toLowerCase()) || String(p.link_nam_1 ?? '').toLowerCase().includes(linkSearch.toLowerCase())).length.toLocaleString()} / ${geoLinks.length.toLocaleString()} links · 21,160 km mapped · Official: 21,302 km · Gap: 142 km`}
+                  `Showing ${geoLinks.filter(p => !linkSearch || String(p.link_id).toLowerCase().includes(linkSearch.toLowerCase()) || String(p.link_nam_1 ?? '').toLowerCase().includes(linkSearch.toLowerCase())).length.toLocaleString()} / ${geoLinks.length.toLocaleString()} links · ${geoKmTotal.toLocaleString()} km mapped · Official: ${netStats.officialKm.toLocaleString()} km · Gap: ${Math.max(0, netStats.officialKm - geoKmTotal).toLocaleString()} km`}
               </span>
             </div>
             <div style={{ maxHeight:600, overflowY:'auto' }}>
