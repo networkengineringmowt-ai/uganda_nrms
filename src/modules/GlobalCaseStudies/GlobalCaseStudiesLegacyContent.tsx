@@ -2278,7 +2278,14 @@ export default function GlobalCaseStudiesLegacyContent({ initialTab, hideTabBar 
 
   return (
     <div style={S.wrap}>
-      {/* Header */}
+      {/* Header - only when this renders as its own standalone page. When
+          embedded inside the unified section hub (hideTabBar=true), the hub's
+          own definition strip already shows the section's identity right
+          above this component, so repeating a near-identical title block
+          here read as a duplicated header - and with multiple instances of
+          this component embedded side by side in one tab (e.g. Deep
+          Analytics), it repeated once per instance. */}
+      {!hideTabBar && (
       <div style={{
         padding: '14px 18px 10px',
         borderBottom: '1px solid rgba(0,245,255,0.1)',
@@ -2297,6 +2304,7 @@ export default function GlobalCaseStudiesLegacyContent({ initialTab, hideTabBar 
           </div>
         </div>
       </div>
+      )}
 
       {/* Tab bar */}
       {!hideTabBar && (
