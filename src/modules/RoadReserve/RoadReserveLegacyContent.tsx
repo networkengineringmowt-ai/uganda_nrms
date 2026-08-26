@@ -594,24 +594,34 @@ function exportToCsv(rows: EncroachmentRecord[]) {
 }
 
 function EncroachmentRegisterTab() {
+  // Local, editable copy of the register - the View/Notice/Resolve row actions
+  // below act on this state so they're genuinely functional even though the
+  // backing data is still the static mock set (see the Supabase TODO below);
+  // once wired to a live table, this becomes the query result and the row
+  // actions become real writes instead of local state updates.
+  const [records, setRecords] = useState<EncroachmentRecord[]>(ENCROACHMENT_RECORDS);
+  const [detail, setDetail] = useState<EncroachmentRecord | null>(null);
   const [statusFilter, setStatusFilter] = useState<'all' | EncroachmentStatus>('all');
   const [classFilter, setClassFilter] = useState<'all' | string>('all');
   const [regionFilter, setRegionFilter] = useState<'all' | string>('all');
 
-  const regions = useMemo(() => Array.from(new Set(ENCROACHMENT_RECORDS.map(r => r.region))).sort(), []);
-  const classes = useMemo(() => Array.from(new Set(ENCROACHMENT_RECORDS.map(r => r.road_class))).sort(), []);
+  const regions = useMemo(() => Array.from(new Set(records.map(r => r.region))).sort(), [records]);
+  const classes = useMemo(() => Array.from(new Set(records.map(r => r.road_class))).sort(), [records]);
 
-  const filtered = useMemo(() => ENCROACHMENT_RECORDS.filter(r =>
+  const filtered = useMemo(() => records.filter(r =>
     (statusFilter === 'all' || r.status === statusFilter) &&
     (classFilter === 'all' || r.road_class === classFilter) &&
     (regionFilter === 'all' || r.region === regionFilter)
-  ), [statusFilter, classFilter, regionFilter]);
+  ), [records, statusFilter, classFilter, regionFilter]);
 
-  const totalActive   = ENCROACHMENT_RECORDS.filter(r => r.status === 'Active').length;
-  const noticesIssued = ENCROACHMENT_RECORDS.filter(r => r.status === 'Notice issued').length;
+  const totalActive   = records.filter(r => r.status === 'Active').length;
+  const noticesIssued = records.filter(r => r.status === 'Notice issued').length;
   const thisYear = '2026';
-  const resolvedThisYear = ENCROACHMENT_RECORDS.filter(r => r.status === 'Resolved' && r.date_reported.startsWith(thisYear.slice(0, 3))).length
-    || ENCROACHMENT_RECORDS.filter(r => r.status === 'Resolved').length;
+  const resolvedThisYear = records.filter(r => r.status === 'Resolved' && r.date_reported.startsWith(thisYear.slice(0, 3))).length
+    || records.filter(r => r.status === 'Resolved').length;
+
+  const setStatus = (id: string, status: EncroachmentStatus) =>
+    setRecords(rs => rs.map(r => r.id === id ? { ...r, status } : r));
 
   const selStyle: React.CSSProperties = {
     background: 'rgba(15,15,15,0.7)', border: '1px solid rgba(148,163,184,0.25)',
@@ -699,9 +709,9 @@ function EncroachmentRegisterTab() {
                   </td>
                   <td style={{ padding: '10px 14px' }}>
                     <div style={{ display: 'flex', gap: 6 }}>
-                      <button style={actionBtnStyle(C.blue)} title="View / edit record">View</button>
-                      <button style={actionBtnStyle(C.yellow)} title="Issue or update notice">Notice</button>
-                      <button style={actionBtnStyle(C.green)} title="Mark resolved">Resolve</button>
+                      <button onClick={() => setDetail(r)} style={actionBtnStyle(C.blue)} title="View / edit record">View</button>
+                      <button onClick={() => setStatus(r.id, 'Notice issued')} style={actionBtnStyle(C.yellow)} title="Issue or update notice">Notice</button>
+                      <button onClick={() => setStatus(r.id, 'Resolved')} style={actionBtnStyle(C.green)} title="Mark resolved">Resolve</button>
                     </div>
                   </td>
                 </tr>
@@ -715,10 +725,49 @@ function EncroachmentRegisterTab() {
           </table>
         </div>
         <div style={{ padding: '8px 14px', fontSize: 8.5, color: 'rgba(148,163,184,0.4)', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-          Showing {filtered.length} of {ENCROACHMENT_RECORDS.length} mock records.
+          Showing {filtered.length} of {records.length} mock records.
           {/* TODO: replace with Supabase query - SELECT id, link_id, road_no, location, chainage_km, type, date_reported, status, region, road_class, notes FROM road_reserve_encroachments */}
         </div>
       </div>
+      {detail && (
+        <div onClick={() => setDetail(null)} style={{
+          position: 'fixed', inset: 0, background: 'rgba(2,5,8,0.75)', backdropFilter: 'blur(3px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200,
+        }}>
+          <div onClick={e => e.stopPropagation()} style={{
+            width: 'min(480px, 92vw)', maxHeight: '85vh', overflow: 'auto', borderRadius: 12,
+            background: 'rgba(10,16,32,0.98)', border: `1px solid rgba(${hexRgb(C.blue)},0.3)`, padding: 18,
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 800, color: '#e2e8f0' }}>{detail.id}</div>
+                <div style={{ fontSize: 10.5, color: 'rgba(148,163,184,0.7)', marginTop: 2 }}>{detail.link_id} · {detail.road_no} · Class {detail.road_class} · {detail.region}</div>
+              </div>
+              <button onClick={() => setDetail(null)} title="Close" style={{
+                background: 'none', border: 'none', color: 'rgba(148,163,184,0.8)', cursor: 'pointer', fontSize: 16, lineHeight: 1, padding: 2,
+              }}>✕</button>
+            </div>
+            {[
+              ['Location', `${detail.location} · Chainage km ${detail.chainage_km.toFixed(1)}`],
+              ['Type', `${ENC_TYPE_ICON[detail.type]} ${detail.type}`],
+              ['Date reported', detail.date_reported],
+              ['Status', detail.status],
+              ['Notes', detail.notes],
+            ].map(([k, v]) => (
+              <div key={k} style={{ marginBottom: 8 }}>
+                <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(148,163,184,0.6)' }}>{k}</div>
+                <div style={{ fontSize: 11.5, color: '#d4dde8', marginTop: 2 }}>{v}</div>
+              </div>
+            ))}
+            <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
+              <button onClick={() => { setStatus(detail.id, 'Notice issued'); setDetail(d => d ? { ...d, status: 'Notice issued' } : d); }}
+                style={actionBtnStyle(C.yellow)}>Issue notice</button>
+              <button onClick={() => { setStatus(detail.id, 'Resolved'); setDetail(d => d ? { ...d, status: 'Resolved' } : d); }}
+                style={actionBtnStyle(C.green)}>Mark resolved</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
