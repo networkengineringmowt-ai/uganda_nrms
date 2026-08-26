@@ -51,7 +51,7 @@ const NODES: NodeDef[] = [
     x: 6, y: 14,
     detail: {
       algorithm: 'Laser profilometry + video frame capture',
-      trainingSize: '21,160 km (mapped) national network surveys',
+      trainingSize: '21,137 km (mapped) national network surveys',
       accuracy: 'IRI ±0.1 m/km, GPS ±2 m',
       inputs: ['Raw IMU data', 'GPS coordinates', 'Video frames', 'Laser distance'],
       outputs: ['IRI per 100m segment', 'Rutting depth', 'Cracking index', 'Defect photo grid'],
@@ -95,11 +95,11 @@ const NODES: NodeDef[] = [
     },
   },
   {
-    id: 'gis', layer: 'data', label: 'GIS / Road Network', sublabel: '1,017 road links',
+    id: 'gis', layer: 'data', label: 'GIS / Road Network', sublabel: '1,014 road links',
     x: 6, y: 78,
     detail: {
       algorithm: 'ArcGIS + PostGIS spatial database',
-      trainingSize: '21,160 km (mapped), 1,017 links, 6 regions',
+      trainingSize: '21,137 km (mapped), 1,014 links, 6 regions',
       accuracy: 'GPS-aligned ±5 m horizontal',
       inputs: ['Shapefile geometry', 'Attribute tables', 'Chainage data', 'Region boundaries'],
       outputs: ['Spatial join keys', 'Route lengths', 'Network topology', 'Maintenance zones'],
@@ -125,7 +125,7 @@ const NODES: NodeDef[] = [
     x: 22, y: 46,
     detail: {
       algorithm: 'PostGIS ST_Intersects + nearest-link snap',
-      trainingSize: '1,017 link geometries',
+      trainingSize: '1,014 link geometries',
       accuracy: 'Snap tolerance 50 m',
       inputs: ['Point data (stations, inspections)', 'Line geometries (road links)'],
       outputs: ['Per-link AADT', 'Per-link IRI mean', 'Link-level feature matrix'],
@@ -137,7 +137,7 @@ const NODES: NodeDef[] = [
     x: 22, y: 70,
     detail: {
       algorithm: 'Panel data construction (2016–2025)',
-      trainingSize: '10 annual snapshots × 1,017 links',
+      trainingSize: '10 annual snapshots × 1,014 links',
       accuracy: 'Calendar-year alignment ±6 months',
       inputs: ['Survey timestamps', 'Count year', 'Financial year mapping'],
       outputs: ['Balanced panel DataFrame', 'Change deltas', 'Trend features'],
@@ -175,7 +175,7 @@ const NODES: NodeDef[] = [
     x: 39, y: 58,
     detail: {
       algorithm: 'HDM-4 structural number + age computation',
-      trainingSize: '1,017 links with construction records',
+      trainingSize: '1,014 links with construction records',
       accuracy: 'SN ±0.3 from layer thickness uncertainty',
       inputs: ['Pavement layer thicknesses', 'Construction year', 'Last rehab year', 'Surface type'],
       outputs: ['Structural Number (SN)', 'Pavement age (years)', 'Remaining life fraction', 'ΔIRI/year'],
@@ -263,7 +263,7 @@ const NODES: NodeDef[] = [
     x: 74, y: 22,
     detail: {
       algorithm: 'Multi-year treatment optimisation (HDM-4 RDWE)',
-      trainingSize: 'All 1,017 paved links',
+      trainingSize: 'All 1,014 paved links',
       accuracy: 'Budget allocation ±8% vs expert panel',
       inputs: ['IRI forecast', 'Condition band', 'Unit costs', 'Budget constraint'],
       outputs: ['5-year work programme', 'Treatment schedule by link', 'NPV/BCR per intervention'],
@@ -275,7 +275,7 @@ const NODES: NodeDef[] = [
     x: 74, y: 42,
     detail: {
       algorithm: 'Network assignment + growth factoring',
-      trainingSize: 'Full 21,160 km (mapped) network',
+      trainingSize: 'Full 21,137 km (mapped) network',
       accuracy: 'Link AADT ±18% at 90% confidence',
       inputs: ['MLP forecast', 'Growth factors', 'Origin-destination matrix'],
       outputs: ['2035 AADT by link', 'Cumulative ESAL map', 'Overloading risk index'],
