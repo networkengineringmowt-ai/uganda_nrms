@@ -3,27 +3,38 @@
  * corner of every page and section on the platform. Mounted once in App.tsx
  * so it shows up everywhere without every section needing to render its own.
  *
- * Export is a small animated dropdown offering PNG / PDF / CSV / XLSX. CSV
- * and XLSX are sourced generically by scanning the content pane for its
- * first rendered <table> (see scanFirstTable in exportUtils.ts) - see that
- * file for why a DOM scan was chosen over per-module callback plumbing.
+ * The Export menu is tab-aware: it subscribes to activeSubTabStore (published
+ * by SectionSubTabs in SectionDashboard.tsx) so the offered formats and their
+ * order match whichever of the six section sub-tabs is actually on screen -
+ * data formats (CSV/XLSX/JSON) lead on Exhaustive Tables / Deep Analytics,
+ * a .sql download + "Copy SQL" lead on SQL Database & Schema, and PNG/PDF
+ * visual snapshots lead everywhere else (Dashboard / Interactive Map / Data
+ * Capture). CSV/XLSX/JSON are sourced generically by scanning the content
+ * pane for its first rendered <table> (see scanFirstTable in exportUtils.ts);
+ * SQL is sourced the same way from the first <pre> - see that file for why a
+ * DOM scan was chosen over per-module callback plumbing. A one-click "Copy"
+ * action next to the section title covers the common case (paste into
+ * Excel/Sheets, or paste SQL into a client) without opening a save dialog.
  */
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import {
   ArrowUp, ArrowLeft, Download, Loader2, ChevronDown,
-  FileImage, FileType, FileText, FileSpreadsheet, Check,
+  FileImage, FileType, FileText, FileSpreadsheet, Braces, Database, Check, Copy,
 } from 'lucide-react';
 import { useBMS } from '../store/BMSContext';
 import {
   exportElementToPNG, exportElementToPDF, exportTableToCSV, exportTableToXLSX,
-  scanFirstTable,
+  exportTableToJSON, exportTextFile, copyRowsToClipboard, copyTextToClipboard,
+  scanFirstTable, scanFirstPre,
 } from './exportUtils';
+import { subscribeActiveSubTab, getActiveSubTab } from './activeSubTabStore';
 
 const CONTENT_PANE_ID = 'nrms-content-pane';
 const ACCENT = '#00f5ff';
 
-type FormatId = 'png' | 'pdf' | 'csv' | 'xlsx';
+type FormatId = 'png' | 'pdf' | 'csv' | 'xlsx' | 'json' | 'sql';
 type Phase = 'idle' | 'loading' | 'success';
+type CopyPhase = 'idle' | 'copied';
 
 interface FormatDef {
   id: FormatId;
@@ -31,14 +42,30 @@ interface FormatDef {
   sub: string;
   icon: typeof FileImage;
   requiresTable?: boolean;
+  requiresSql?: boolean;
 }
 
-const FORMATS: FormatDef[] = [
-  { id: 'png', label: 'PNG Image', sub: 'Snapshot of current view', icon: FileImage },
-  { id: 'pdf', label: 'PDF Document', sub: 'Print-ready, paginated snapshot', icon: FileType },
-  { id: 'csv', label: 'CSV Spreadsheet', sub: 'Raw data from the on-screen table', icon: FileText, requiresTable: true },
-  { id: 'xlsx', label: 'Excel Workbook', sub: 'Styled .xlsx of the on-screen table', icon: FileSpreadsheet, requiresTable: true },
-];
+const FORMAT_DEFS: Record<FormatId, FormatDef> = {
+  png:  { id: 'png',  label: 'PNG Image',       sub: 'Snapshot of current view',              icon: FileImage },
+  pdf:  { id: 'pdf',  label: 'PDF Document',     sub: 'Print-ready, paginated snapshot',        icon: FileType },
+  csv:  { id: 'csv',  label: 'CSV Spreadsheet',  sub: 'Raw rows from the on-screen table',      icon: FileText,       requiresTable: true },
+  xlsx: { id: 'xlsx', label: 'Excel Workbook',   sub: 'Styled .xlsx of the on-screen table',    icon: FileSpreadsheet, requiresTable: true },
+  json: { id: 'json', label: 'JSON Data',        sub: 'Raw rows, machine-readable',             icon: Braces,         requiresTable: true },
+  sql:  { id: 'sql',  label: 'SQL File (.sql)',  sub: 'DDL shown on this schema tab',           icon: Database,       requiresSql: true },
+};
+
+// Which formats appear, and in what order, per section sub-tab - the leading
+// formats are what that tab's content actually is; the rest stay one click
+// away rather than disappearing, since a legacy component can still surface
+// a table or chart outside the tab's primary shape.
+const TAB_FORMAT_ORDER: Record<string, FormatId[]> = {
+  dashboard: ['png', 'pdf', 'csv', 'xlsx', 'json'],
+  map:       ['png', 'pdf', 'csv', 'xlsx', 'json'],
+  tables:    ['csv', 'xlsx', 'json', 'png', 'pdf'],
+  analytics: ['csv', 'xlsx', 'json', 'png', 'pdf'],
+  sql:       ['sql', 'png', 'pdf'],
+  capture:   ['png', 'pdf', 'csv', 'xlsx', 'json'],
+};
 
 function BtnStyle(disabled: boolean): React.CSSProperties {
   return {
@@ -54,16 +81,20 @@ function BtnStyle(disabled: boolean): React.CSSProperties {
 
 export default function PageToolbar() {
   const { state, goBack, canGoBack } = useBMS();
+  const activeTab = useSyncExternalStore(subscribeActiveSubTab, getActiveSubTab);
 
   const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [hasTable, setHasTable] = useState(false);
-  const [phase, setPhase] = useState<Record<FormatId, Phase>>({ png: 'idle', pdf: 'idle', csv: 'idle', xlsx: 'idle' });
+  const [hasSql, setHasSql] = useState(false);
+  const [phase, setPhase] = useState<Record<FormatId, Phase>>({ png: 'idle', pdf: 'idle', csv: 'idle', xlsx: 'idle', json: 'idle', sql: 'idle' });
+  const [copyPhase, setCopyPhase] = useState<CopyPhase>('idle');
   const busy = Object.values(phase).some(p => p !== 'idle');
 
   const rootRef = useRef<HTMLDivElement | null>(null);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Clear the app <header> (when one is rendered - the two full-bleed map
   // views mount no header) so this cluster never paints over the header's
@@ -98,13 +129,25 @@ export default function PageToolbar() {
     }, 160);
   };
 
-  const openMenu = () => {
-    if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+  // Re-scan whenever the menu opens AND whenever the visible tab changes
+  // while it's open (a user can flip tabs without closing the menu first).
+  const rescan = () => {
     const scanned = scanFirstTable(CONTENT_PANE_ID);
     setHasTable(!!scanned && scanned.rows.length > 0);
+    setHasSql(!!scanFirstPre(CONTENT_PANE_ID));
+  };
+
+  const openMenu = () => {
+    if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    rescan();
     setIsClosing(false);
     setIsOpen(true);
   };
+
+  useEffect(() => {
+    if (isOpen) rescan();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab.tabId, activeTab.sectionId]);
 
   const toggleMenu = () => {
     if (busy) return;
@@ -132,14 +175,21 @@ export default function PageToolbar() {
   useEffect(() => () => {
     if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
     if (successTimerRef.current) clearTimeout(successTimerRef.current);
+    if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
   }, []);
+
+  const baseName = () => {
+    const sec = activeTab.sectionId || state.activeView || 'view';
+    return `nrms-${sec}-${activeTab.tabId}`;
+  };
 
   const runExport = async (fmt: FormatDef) => {
     if (busy) return;
     if (fmt.requiresTable && !hasTable) return;
+    if (fmt.requiresSql && !hasSql) return;
 
     setPhase(p => ({ ...p, [fmt.id]: 'loading' }));
-    const name = `nrms-${state.activeView || 'view'}`;
+    const name = baseName();
     // Safety net: PNG/PDF capture shells out to html-to-image, which walks
     // and clones the entire content pane. A data-dense dashboard (many
     // Recharts SVGs) can legitimately take 20-30s to capture even with no
@@ -164,6 +214,12 @@ export default function PageToolbar() {
       } else if (fmt.id === 'xlsx') {
         const scanned = scanFirstTable(CONTENT_PANE_ID);
         if (scanned && scanned.rows.length) await withTimeout(exportTableToXLSX(scanned.rows, scanned.headers, name), 45000);
+      } else if (fmt.id === 'json') {
+        const scanned = scanFirstTable(CONTENT_PANE_ID);
+        if (scanned && scanned.rows.length) exportTableToJSON(scanned.rows, name);
+      } else if (fmt.id === 'sql') {
+        const sql = scanFirstPre(CONTENT_PANE_ID);
+        if (sql) exportTextFile(sql, name, 'sql');
       }
       setPhase(p => ({ ...p, [fmt.id]: 'success' }));
       successTimerRef.current = setTimeout(() => {
@@ -176,7 +232,30 @@ export default function PageToolbar() {
     }
   };
 
+  // One-click clipboard copy, contextual to the tab: SQL text on the schema
+  // tab, otherwise the scanned table as tab-separated rows (pastes straight
+  // into Excel/Sheets). No file dialog, no filename - the fast path for
+  // "I just want this in my clipboard."
+  const copyEnabled = activeTab.tabId === 'sql' ? hasSql : hasTable;
+  const runCopy = async () => {
+    if (!copyEnabled || copyPhase === 'copied') return;
+    let ok = false;
+    if (activeTab.tabId === 'sql') {
+      const sql = scanFirstPre(CONTENT_PANE_ID);
+      if (sql) ok = await copyTextToClipboard(sql);
+    } else {
+      const scanned = scanFirstTable(CONTENT_PANE_ID);
+      if (scanned && scanned.rows.length) ok = await copyRowsToClipboard(scanned.rows);
+    }
+    if (!ok) return;
+    setCopyPhase('copied');
+    if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+    copyTimerRef.current = setTimeout(() => setCopyPhase('idle'), 1400);
+  };
+
   const anyLoading = Object.values(phase).some(p => p === 'loading');
+  const order = TAB_FORMAT_ORDER[activeTab.tabId] ?? TAB_FORMAT_ORDER.dashboard;
+  const formats = order.map(id => FORMAT_DEFS[id]);
 
   return (
     <div style={{
@@ -208,7 +287,7 @@ export default function PageToolbar() {
         </button>
 
         <button
-          title="Export this view"
+          title={`Export ${activeTab.tabLabel}`}
           aria-label="Export this view"
           aria-haspopup="menu"
           aria-expanded={isOpen}
@@ -233,7 +312,7 @@ export default function PageToolbar() {
           <div
             role="menu"
             style={{
-              position: 'absolute', top: 36, right: 0, width: 264,
+              position: 'absolute', top: 36, right: 0, width: 278,
               background: 'rgba(6,13,24,0.95)', backdropFilter: 'blur(16px)',
               border: `1px solid ${ACCENT}2e`, borderRadius: 12,
               boxShadow: `0 12px 36px rgba(0,0,0,0.55), 0 0 24px ${ACCENT}14`,
@@ -244,15 +323,47 @@ export default function PageToolbar() {
             }}
           >
             <div style={{
-              fontSize: 9, fontWeight: 800, color: 'rgba(148,163,184,0.75)',
-              textTransform: 'uppercase', letterSpacing: '0.1em',
-              padding: '4px 8px 8px',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6,
+              padding: '4px 4px 8px',
             }}>
-              Export as
+              <div style={{ minWidth: 0 }}>
+                <div style={{
+                  fontSize: 9, fontWeight: 800, color: 'rgba(148,163,184,0.75)',
+                  textTransform: 'uppercase', letterSpacing: '0.1em',
+                }}>
+                  Export as
+                </div>
+                <div style={{
+                  fontSize: 10, fontWeight: 700, color: ACCENT, marginTop: 2,
+                  whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                }}>
+                  {activeTab.tabLabel}
+                </div>
+              </div>
+              <button
+                role="menuitem"
+                disabled={!copyEnabled || busy}
+                title={copyEnabled ? (activeTab.tabId === 'sql' ? 'Copy SQL to clipboard' : 'Copy table to clipboard (paste into Excel/Sheets)') : 'Nothing to copy on this tab'}
+                onClick={runCopy}
+                className="pt-copy-btn"
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0,
+                  padding: '5px 8px', borderRadius: 7,
+                  background: copyPhase === 'copied' ? 'rgba(52,211,153,0.14)' : `${ACCENT}12`,
+                  border: `1px solid ${copyPhase === 'copied' ? 'rgba(52,211,153,0.4)' : ACCENT + '30'}`,
+                  color: copyPhase === 'copied' ? '#34d399' : ACCENT,
+                  cursor: !copyEnabled || busy ? 'default' : 'pointer',
+                  opacity: !copyEnabled ? 0.4 : 1,
+                  fontSize: 10, fontWeight: 700,
+                }}
+              >
+                {copyPhase === 'copied' ? <Check size={12} /> : <Copy size={12} />}
+                {copyPhase === 'copied' ? 'Copied' : 'Copy'}
+              </button>
             </div>
 
-            {FORMATS.map((fmt, i) => {
-              const disabled = !!fmt.requiresTable && !hasTable;
+            {formats.map((fmt, i) => {
+              const disabled = (!!fmt.requiresTable && !hasTable) || (!!fmt.requiresSql && !hasSql);
               const itemPhase = phase[fmt.id];
               const Icon = fmt.icon;
               return (
@@ -260,7 +371,7 @@ export default function PageToolbar() {
                   key={fmt.id}
                   role="menuitem"
                   disabled={disabled || busy}
-                  title={disabled ? 'No table on this view' : `Export as ${fmt.label}`}
+                  title={disabled ? (fmt.requiresSql ? 'No SQL shown on this tab' : 'No table on this view') : `Export as ${fmt.label}`}
                   onClick={() => runExport(fmt)}
                   className="pt-export-item"
                   style={{
@@ -293,7 +404,7 @@ export default function PageToolbar() {
                     <span style={{ fontSize: 9.5, color: 'rgba(148,163,184,0.65)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {itemPhase === 'loading' && (fmt.id === 'png' || fmt.id === 'pdf')
                         ? 'Generating, up to 30s for full pages...'
-                        : disabled ? 'No table on this view' : fmt.sub}
+                        : disabled ? (fmt.requiresSql ? 'No SQL shown on this tab' : 'No table on this view') : fmt.sub}
                     </span>
                   </span>
                 </button>
@@ -335,6 +446,12 @@ export default function PageToolbar() {
         .pt-export-item span svg { transition: transform 0.15s ease; }
         .pt-export-item:not(:disabled):active {
           transform: scale(0.98);
+        }
+        .pt-copy-btn:not(:disabled):hover {
+          filter: brightness(1.25);
+        }
+        .pt-copy-btn:not(:disabled):active {
+          transform: scale(0.96);
         }
       `}</style>
     </div>

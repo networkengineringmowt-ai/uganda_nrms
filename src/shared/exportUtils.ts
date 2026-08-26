@@ -200,6 +200,66 @@ export async function exportTableToXLSX(
   triggerDownload(blob, name);
 }
 
+// ── JSON (generic - same scanned rows as CSV/XLSX) ─────────────────────────────
+
+export function exportTableToJSON(rows: Record<string, unknown>[], filename: string) {
+  if (!rows.length) return;
+  const blob = new Blob([JSON.stringify(rows, null, 2)], { type: 'application/json' });
+  const name = filename.endsWith('.json') ? filename : `${filename}-${isoDate()}.json`;
+  triggerDownload(blob, name);
+}
+
+// ── Plain-text file (used for the SQL Database & Schema tab's DDL export) ──────
+
+export function exportTextFile(text: string, filename: string, ext: string) {
+  if (!text.trim()) return;
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const suffix = `.${ext}`;
+  const name = filename.endsWith(suffix) ? filename : `${filename}-${isoDate()}${suffix}`;
+  triggerDownload(blob, name);
+}
+
+// ── Clipboard (quick "copy data" action, no file dialog) ───────────────────────
+
+export async function copyRowsToClipboard(rows: Record<string, unknown>[]): Promise<boolean> {
+  if (!rows.length || !navigator.clipboard) return false;
+  const headers = Object.keys(rows[0]);
+  // Tab-separated so a direct paste into Excel/Sheets lands in columns.
+  const lines = [headers.join('\t'), ...rows.map(r => headers.map(h => String(r[h] ?? '')).join('\t'))];
+  try {
+    await navigator.clipboard.writeText(lines.join('\n'));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export async function copyTextToClipboard(text: string): Promise<boolean> {
+  if (!text.trim() || !navigator.clipboard) return false;
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// ── DOM <pre>/<code> scanning (SQL Database & Schema tab's DDL block) ──────────
+
+/**
+ * The SQL Database & Schema tab (SchemaExplorer.tsx) renders the section's
+ * DDL as plain text inside a <pre>. Scanned the same generic way tables are
+ * scanned for CSV/XLSX, so the Export menu can offer "Download .sql" / "Copy
+ * SQL" on that tab without SchemaExplorer needing its own export plumbing.
+ */
+export function scanFirstPre(containerId: string): string | null {
+  const container = document.getElementById(containerId);
+  if (!container) return null;
+  const pre = container.querySelector('pre');
+  const text = pre?.textContent?.trim();
+  return text && text.length ? text : null;
+}
+
 // ── DOM table scanning (generic CSV/XLSX source for the platform-wide menu) ───
 
 /**
