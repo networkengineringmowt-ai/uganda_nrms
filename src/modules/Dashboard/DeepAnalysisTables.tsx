@@ -13,6 +13,15 @@ function prettyLabel(key: string): string {
   }).join(' ');
 }
 const SPECS: Record<string, string> = { rms:'road_links', pms:'road_condition_assessments', tis:'traffic_stations', bms:'bridge_inventory', ducar:'maintenance_works', projects:'maintenance_works', reserve:'encroachments', pim:'investment_projects' };
+// Static fallback ONLY for sections whose real dataset is itself road/traffic
+// geometry (so the fallback stays thematically the same section, just a
+// static sample instead of a live query) - other SPECS sections return an
+// honest empty result rather than being padded with unrelated traffic rows.
+const FALLBACK_GEOJSON: Record<string, string> = {
+  tis: 'data/traffic_predictions.geojson',
+  rms: 'road_network.geojson',
+  pms: 'road_network.geojson',
+};
 // Fetches every row in `table`, paginating past PostgREST's ~1000-row-per-request
 // cap so the "analysed in full" claim below is actually true, not a capped sample.
 async function fetchAllRows(table: string): Promise<Row[]> {
@@ -26,16 +35,24 @@ async function fetchAllRows(table: string): Promise<Row[]> {
   }
   return all;
 }
+// Sections with no entry in SPECS have no backing database table - their
+// real records live in local/static data rendered by that section's own
+// Dashboard tab. Returning [] here (instead of defaulting to RMS's
+// road_links, with a generic traffic geojson fallback on top) means this
+// view honestly says "no dataset wired" rather than mislabeling another
+// section's records - e.g. traffic AADT data - as this section's own.
 async function loadRows(sectionId: string): Promise<Row[]> {
-  const table = SPECS[sectionId] ?? 'road_links';
+  const table = SPECS[sectionId];
+  if (!table) return [];
   const live = (async () => { try {
     const q = fetchAllRows(table);
     const t = new Promise<null>(res => setTimeout(() => res(null), 9000));
     const data = await Promise.race([q, t]);
     return (data ?? []) as Row[];
   } catch { return [] as Row[]; } })();
-  const fb = (async () => { try {
-    const gj = await fetch(import.meta.env.BASE_URL + 'data/traffic_predictions.geojson').then(r => r.json());
+  const gjPath = FALLBACK_GEOJSON[sectionId];
+  const fb = (async () => { if (!gjPath) return [] as Row[]; try {
+    const gj = await fetch(import.meta.env.BASE_URL + gjPath).then(r => r.json());
     return ((gj.features ?? []) as { properties: Row }[]).map(f => f.properties);
   } catch { return [] as Row[]; } })();
   const [l, f] = await Promise.all([live, fb]);
@@ -78,19 +95,28 @@ export function DeepAnalysisTables({ sectionId, accent = '#00f5ff' }: { sectionI
       const vals = rows.map(r => r[c]).filter(v => v != null && v !== '');
       if (!vals.length || num(vals[0]) != null) return false;
       return new Set(vals.map(String)).size <= 16; });
-    const nums = cols.filter(c => !/lat|lng|lon|^x$|^y$|_id|^id$/i.test(c) && rows.filter(r => num(r[c]) != null).length >= rows.length * 0.5);
+    // Any column with at least one real numeric value gets a distribution
+    // row - no 50%-fill threshold that could quietly drop a sparsely-filled
+    // but genuinely numeric attribute from the "exhaustive" stats below.
+    const nums = cols.filter(c => !/lat|lng|lon|^x$|^y$|_id|^id$/i.test(c) && rows.some(r => num(r[c]) != null));
     const lenCol = cols.find(c => /length|km$|_km/i.test(c) && rows.some(r => num(r[c]) != null)) ?? null;
     return { cols, cats, nums, lenCol };
   }, [rows]);
   if (rows === null) return <div style={{ padding: 20, color: '#64748b', fontSize: 12 }}>Computing analysis…</div>;
-  if (!rows.length || !P) return <div style={{ padding: 16, color: '#64748b', fontSize: 12 }}>No data available yet.</div>;
+  if (!rows.length || !P) return (
+    <div style={{ padding: 16, color: '#64748b', fontSize: 12 }}>
+      {sectionId in SPECS
+        ? 'No data available yet.'
+        : "This section isn't wired to a database table yet - see its Dashboard tab above for this section's real figures."}
+    </div>
+  );
   const N = rows.length;
   return (
     <div style={{ width: '100%' }}>
       <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.08em', color: accent, margin: '4px 0 10px' }}>
         DEEP ANALYTICS - {N.toLocaleString()} RECORDS ANALYSED IN FULL - GROUP STATISTICS, DISTRIBUTIONS, CROSS-RELATIONS
       </div>
-      <Card title={'NUMERIC DISTRIBUTION STATISTICS (ALL ' + N.toLocaleString() + ' RECORDS)'} accent={accent}
+      <Card title={'NUMERIC DISTRIBUTION STATISTICS - ALL ' + P.nums.length + ' NUMERIC ATTRIBUTES (' + N.toLocaleString() + ' RECORDS)'} accent={accent}
         right={<button onClick={() => { const cols = ['Attribute','Count','Sum','Mean','Min','P25','Median','P75','P90','Max','StdDev'];
           const out = P.nums.map(c => { const v = rows.map(r => num(r[c])).filter(x => x != null).sort((a,b)=>(a as number)-(b as number)) as number[];
             const sum = v.reduce((a,b)=>a+b,0); const mean = sum/v.length;

@@ -1,4 +1,5 @@
-import { useState, lazy, Suspense } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
+import { setActiveSubTab } from '../../shared/activeSubTabStore';
 
 /* ── Section metadata ─────────────────────────────────────────────────────── */
 const DEFS: Record<string, { title: string; body: string; icon: string }> = {
@@ -129,6 +130,16 @@ function SectionSubTabs({ sectionId, accent }: { sectionId: string; accent: stri
   // section-specific content (e.g. TIS Road Safety) lives inside one of these
   // fixed slots via SECTION_EXTRAS instead of adding its own tab.
   const tabs = SUBTABS;
+
+  // Publish the visible tab (and which section it belongs to) so the
+  // platform-wide Export menu in PageToolbar can offer formats relevant to
+  // what's actually on screen - re-published on every tab click and whenever
+  // the section itself changes (sidebar navigation resets to 'dashboard').
+  useEffect(() => {
+    const label = tabs.find(t => t.id === tab)?.label ?? 'Dashboard';
+    setActiveSubTab({ tabId: tab, tabLabel: label, sectionId });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, sectionId]);
   return (
     <div style={{ width: '100%' }}>
       <style>{`@keyframes sd-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>

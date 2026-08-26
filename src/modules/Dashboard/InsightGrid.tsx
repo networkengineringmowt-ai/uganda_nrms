@@ -482,7 +482,12 @@ async function fetchRows(table: string, limit = 700): Promise<Row[]> {
   return r;
 }
 
-// Static fallback keeps the insight matrix alive when the live DB sleeps.
+// Static fallback keeps the insight matrix alive when the live DB sleeps -
+// only for sections that HAVE a real table above (spec.table), so a sleeping
+// DB never gets confused with a section that simply has no live table wired
+// yet. traffic_predictions.geojson is a generic road-network sample used
+// purely to keep the SAME section's tiles populated during a DB nap, never
+// to stand in for a different section's data.
 const FALLBACK: Record<string, string> = {
   rms: 'data/traffic_predictions.geojson',
   tis: 'data/traffic_predictions.geojson',
@@ -526,10 +531,17 @@ function LegendStrip({ P }: { P: Profile }) {
 // ── Main Component ────────────────────────────────────────────────────────────
 export function InsightGrid({ sectionId, accent }: { sectionId: string; accent?: string }) {
   const [rows, setRows] = useState<Row[] | null>(null);
+  const wired = sectionId in SPECS;
   useEffect(() => {
     let dead = false;
+    // Sections with no entry in SPECS have no backing database table (their
+    // real content lives in local/static data rendered by the section's own
+    // Dashboard/legacy components) - fetching is skipped entirely rather
+    // than silently defaulting to RMS's road_links, which used to show
+    // unrelated road-link records mislabeled as this section's insights.
+    if (!wired) { setRows([]); return; }
     (async () => {
-      const spec = SPECS[sectionId] ?? SPECS.rms;
+      const spec = SPECS[sectionId];
       const [live, fb] = await Promise.all([fetchRows(spec.table), fallbackRows(sectionId)]);
       let r = live;
       if (!r.length && spec.extra) r = await fetchRows(spec.extra);
@@ -537,7 +549,7 @@ export function InsightGrid({ sectionId, accent }: { sectionId: string; accent?:
       if (!dead) setRows(r);
     })();
     return () => { dead = true; };
-  }, [sectionId]);
+  }, [sectionId, wired]);
 
   const P = useMemo(() => profile(rows ?? []), [rows]);
   const tiles = useMemo(() => deriveTiles(rows ?? [], P), [rows, P]);
@@ -545,7 +557,9 @@ export function InsightGrid({ sectionId, accent }: { sectionId: string; accent?:
   if (rows === null) return null; // no loading placeholder - render nothing until real content is ready, avoids flash/wasted space
   if (!rows.length) return (
     <div style={{ padding: 18, background: GRID_BG, borderRadius: 10, color: '#64748b', fontSize: 11 }}>
-      No data available yet - the live database is asleep or this section's tables are empty. The grid retries automatically on the next visit.
+      {wired
+        ? "No data available yet - the live database is asleep or this section's tables are empty. The grid retries automatically on the next visit."
+        : "This section's cross-analysis grid isn't wired to a database table yet - see the Dashboard and Exhaustive Tables tabs above for this section's real figures."}
     </div>
   );
   return (
