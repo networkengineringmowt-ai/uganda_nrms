@@ -41,7 +41,7 @@ function NtisLiveBar() {
       accent="#00f5ff"
       asOf={t.asOf}
       ready={t.ready}
-      title="Traffic nowcast · 1,017 links"
+      title="Traffic nowcast · 1,014 links"
       metrics={[
         { label: 'Network AADT',     value: kfmt(t.networkAADT), unit: 'veh/day', color: '#00f5ff', sub: 'km-weighted mean' },
         { label: 'Trips today',      value: kfmt(t.tripsToday),  unit: 'veh',     color: '#00ff88', sub: 'since midnight' },

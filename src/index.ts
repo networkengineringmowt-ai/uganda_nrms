@@ -126,7 +126,7 @@ export interface BridgeDocument {
 // âââ Platform-level views âââââââââââââââââââââââââââââââââââââââââââââââââââââ
 export type ActiveView =
   | 'platform'              // Uganda National Roads Platform dashboard
-  | 'roadnetwork'           // Road network GIS map (all 1,017 links)
+  | 'roadnetwork'           // Road network GIS map (all 1,014 links)
   | 'traffic'               // Traffic & demand analytics
   | 'roadcondition'         // Road condition & pavement data
   | 'maintenanceprogramme'  // PMS maintenance programme â priority-ranked links
