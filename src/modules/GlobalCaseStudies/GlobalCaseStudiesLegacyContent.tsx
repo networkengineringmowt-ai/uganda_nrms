@@ -396,9 +396,9 @@ const CASE_STUDIES: CaseStudy[] = [
     dataApproach:'Annual ROMDAS on main roads; visual on secondary', funding:'Government + Islamic Development Bank + Arab Fund', metrics:'65% paved; 71% main roads in good condition' },
 
   { id:37, agency:'UNRA / DNR', country:'Uganda', flag:'', networkKm:21302, system:'DNR RMS Engine', pavedPct:30, rmsYears:6, budgetPerKmUsd:12500, region:'Africa', lat:1.37, lng:32.29,
-    keyFeatures:['Official network: 21,302 km (NDPIV FY25-26)','ML-powered IRI prediction (PyTorch, R²=0.93)','1,013 links in GeoJSON; 9 active OPRC lots','25 ATC + 298 TIS traffic monitoring stations'],
+    keyFeatures:['Official network: 21,302 km (NDPIV FY25-26)','ML-powered IRI prediction (PyTorch, R²=0.93)','1,014 links in GeoJSON; 9 active OPRC lots','25 ATC + 298 TIS traffic monitoring stations'],
     lessonsDNR:'This is the DNR platform itself - the benchmarks shown here represent Uganda\'s current asset management maturity and the targets set by this system.',
-    dataApproach:'ROMDAS annual surveys; ATC + TIS traffic counts; bridge inspections; satellite imagery', funding:'GoU Road Fund + World Bank + AfDB + JICA', metrics:'Official: 21,302 km | Mapped: 21,160 km (1,013 links) | Paved: 6,405 km (30.1%)' },
+    dataApproach:'ROMDAS annual surveys; ATC + TIS traffic counts; bridge inspections; satellite imagery', funding:'GoU Road Fund + World Bank + AfDB + JICA', metrics:'Official: 21,302 km | Mapped: 21,137 km (1,014 links) | Paved: 6,405 km (30.3%)' },
 
   { id:38, agency:'OBUHA Burundi', country:'Burundi', flag:'', networkKm:12322, system:'PMS', pavedPct:22, rmsYears:5, budgetPerKmUsd:7000, region:'Africa', lat:-3.37, lng:29.92,
     keyFeatures:['Lake Tanganyika corridor road development','EAC regional integration road programme'],
