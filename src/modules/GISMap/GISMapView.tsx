@@ -678,6 +678,7 @@ const StructurePanel = memo(function StructurePanel({
                           alt={currentPhoto.filename}
                           className="w-full h-full object-cover cursor-zoom-in"
                           onClick={() => setLightbox(true)}
+                          onError={e => { (e.target as HTMLImageElement).style.opacity = '0.2'; }}
                         />
                         {/* Nav arrows */}
                         {visiblePhotos.length > 1 && (
@@ -714,7 +715,8 @@ const StructurePanel = memo(function StructurePanel({
                             i === photoIdx ? 'ring-2 ring-blue-500' : 'opacity-60 hover:opacity-100'
                           }`}
                           style={{ aspectRatio: '1' }}>
-                          <img src={p.url} alt={p.filename} className="w-full h-full object-cover" />
+                          <img src={p.url} alt={p.filename} className="w-full h-full object-cover"
+                            onError={e => { (e.target as HTMLImageElement).style.opacity = '0.2'; }} />
                           <div className="absolute bottom-0 left-0 right-0 text-[7px] text-center text-white bg-black/50 py-0.5">{p.year}</div>
                         </button>
                       ))}
@@ -821,7 +823,8 @@ const StructurePanel = memo(function StructurePanel({
       {lightbox && currentPhoto && (
         <div className="absolute inset-0 z-[2000] bg-black/90 flex items-center justify-center"
           onClick={() => setLightbox(false)}>
-          <button className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors">
+          <button onClick={() => setLightbox(false)} title="Close"
+            className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors">
             <X size={20} />
           </button>
           <img src={currentPhoto.url} alt={currentPhoto.filename}
