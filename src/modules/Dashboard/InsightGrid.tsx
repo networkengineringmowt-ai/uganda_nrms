@@ -8,6 +8,7 @@
  */
 import { useEffect, useMemo, useState, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
+import { rgbOf } from '../../shared/dashboardKit';
 
 // ── Palette & Shared Style ────────────────────────────────────────────────────
 const PAL = ['#00f5ff','#00ff88','#ffd23f','#ff6b35','#b967ff','#4d9fff','#00d4aa','#ff2d78','#a3e635','#f0abfc','#fbbf24','#94a3b8'];
@@ -100,14 +101,22 @@ function pngFromSvg(svg: SVGSVGElement, name: string) {
 }
 
 // ── Tile Shell ────────────────────────────────────────────────────────────────
-function Tile({ title, sub, children }: { title: string; sub?: string; children: React.ReactNode }) {
+// Mirrors ChartBox's accent-gradient + left-border treatment (dashboardKit.tsx)
+// so the Insight Matrix reads as a continuation of the main dashboard charts,
+// not a visually distinct section.
+function Tile({ title, sub, children, accent = PAL[0] }: { title: string; sub?: string; children: React.ReactNode; accent?: string }) {
   const ref = useRef<HTMLDivElement>(null);
+  const rgb = rgbOf(accent);
   return (
-    <div ref={ref} style={{ background: GRID_BG, border: '1px solid rgba(255,255,255,0.07)',
+    <div ref={ref} style={{
+      position: 'relative',
+      background: `linear-gradient(135deg, rgba(${rgb},0.06) 0%, rgba(2,5,8,0.6) 55%, rgba(${rgb},0.015) 100%)`,
+      border: `1px solid rgba(${rgb},0.16)`, borderLeft: `3px solid ${accent}`,
+      boxShadow: `0 4px 24px rgba(${rgb},0.05), inset 0 1px 0 rgba(255,255,255,0.03)`,
       borderRadius: 10, padding: '8px 10px', minWidth: 0, display: 'flex', flexDirection: 'column' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6 }}>
         <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.06em', textTransform: 'uppercase',
-          color: 'rgba(148,163,184,0.9)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{title}</div>
+          color: accent, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{title}</div>
         <button title='Download PNG'
           onClick={() => { const s = ref.current?.querySelector('svg'); if (s) pngFromSvg(s as SVGSVGElement, title); }}
           style={{ background: 'none', border: 'none', color: 'rgba(0,245,255,0.7)', cursor: 'pointer', fontSize: 10, padding: 0 }}>PNG</button>
@@ -576,7 +585,7 @@ export function InsightGrid({ sectionId, accent }: { sectionId: string; accent?:
       </div>
       <LegendStrip P={P}/>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(238px, 1fr))', gap: 8 }}>
-        {tiles.map(t => <Tile key={t.key} title={t.title} sub={t.sub}>{t.el}</Tile>)}
+        {tiles.map(t => <Tile key={t.key} title={t.title} sub={t.sub} accent={accent ?? PAL[0]}>{t.el}</Tile>)}
       </div>
     </div>
   );

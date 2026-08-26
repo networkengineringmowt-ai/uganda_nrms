@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../../lib/supabase';
+import { mean, stdDevPop, stdError, quantile as q, mode as modeOf, skewness, kurtosis, ci95,
+  pearsonTest, oneWayAnova, chiSquareTest, sigStars } from '../../shared/statsUtils';
 
 type Row = Record<string, unknown>;
 const ACRONYMS = new Set(['aadt','id','km','esal','gps','pci','iri','vci','wim','atc','esa','fwd','mef','tcs','vcpd','gis','sql','ndpiv','osm','wgs']);
@@ -119,33 +121,70 @@ export function DeepAnalysisTables({ sectionId, accent = '#00f5ff' }: { sectionI
       <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.08em', color: accent, margin: '4px 0 10px' }}>
         DEEP ANALYTICS - {N.toLocaleString()} RECORDS ANALYSED IN FULL - GROUP STATISTICS, DISTRIBUTIONS, CROSS-RELATIONS
       </div>
-      <Card title={'NUMERIC DISTRIBUTION STATISTICS - ALL ' + P.nums.length + ' NUMERIC ATTRIBUTES (' + N.toLocaleString() + ' RECORDS)'} accent={accent}
-        right={<button onClick={() => { const cols = ['Attribute','Count','Sum','Mean','Min','P25','Median','P75','P90','Max','StdDev'];
+      <Card title={'DESCRIPTIVE STATISTICS - ALL ' + P.nums.length + ' NUMERIC ATTRIBUTES (' + N.toLocaleString() + ' RECORDS)'} accent={accent}
+        right={<button onClick={() => { const cols = ['Attribute','Count','Sum','Mean','Mode','Min','P25','Median','P75','Max','Range','IQR','Variance','StdDev','CV%','SE','CI95Low','CI95High','Skewness','Kurtosis'];
           const out = P.nums.map(c => { const v = rows.map(r => num(r[c])).filter(x => x != null).sort((a,b)=>(a as number)-(b as number)) as number[];
-            const sum = v.reduce((a,b)=>a+b,0); const mean = sum/v.length;
-            const sd = Math.sqrt(v.reduce((a,b)=>a+(b-mean)*(b-mean),0)/v.length);
-            return [c, v.length, sum, mean, v[0], qtile(v,0.25), qtile(v,0.5), qtile(v,0.75), qtile(v,0.9), v[v.length-1], sd]; });
+            const sum = v.reduce((a,b)=>a+b,0); const m = mean(v); const sd = stdDevPop(v, m); const [ciLo, ciHi] = ci95(v);
+            const p25 = q(v,0.25), p75 = q(v,0.75), min = v[0] ?? 0, max = v[v.length-1] ?? 0;
+            return [c, v.length, sum, m, modeOf(v) ?? '-', min, p25, q(v,0.5), p75, max, max-min, p75-p25, sd*sd, sd, m?sd/m*100:0, stdError(v), ciLo, ciHi, skewness(v,m), kurtosis(v,m)]; });
           csvOut(sectionId + '_numeric_stats', cols, out); }}
           style={{ background: 'rgba(0,245,255,0.08)', border: '1px solid rgba(0,245,255,0.3)', borderRadius: 6, color: accent, fontSize: 10, fontWeight: 700, padding: '3px 10px', cursor: 'pointer' }}>CSV</button>}>
         <div style={{ overflow: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10.5 }}>
-            <thead><tr>{['Attribute','Count','Sum','Mean','Min','P25','Median','P75','P90','Max','StdDev','CV%'].map(h => <th key={h} style={TH}>{h}</th>)}</tr></thead>
+            <thead><tr>{['Attribute','Count','Sum','Mean','Mode','Min','P25','Median','P75','Max','Range','IQR','Variance','StdDev','CV%','SE','95% CI (mean)','Skewness','Kurtosis'].map(h => <th key={h} style={TH}>{h}</th>)}</tr></thead>
             <tbody>{P.nums.map(c => { const v = rows.map(r => num(r[c])).filter(x => x != null).sort((a,b)=>(a as number)-(b as number)) as number[];
-              if (!v.length) return null; const sum = v.reduce((a,b)=>a+b,0); const mean = sum/v.length;
-              const sd = Math.sqrt(v.reduce((a,b)=>a+(b-mean)*(b-mean),0)/v.length); const cv = mean ? sd/mean*100 : 0;
+              if (!v.length) return null; const sum = v.reduce((a,b)=>a+b,0); const m = mean(v);
+              const sd = stdDevPop(v, m); const cv = m ? sd/m*100 : 0; const [ciLo, ciHi] = ci95(v);
+              const p25 = q(v,0.25), p75 = q(v,0.75), min = v[0] ?? 0, max = v[v.length-1] ?? 0, md = modeOf(v);
               return (<tr key={c} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                 <td style={{ ...TD, color: '#e2e8f0', fontWeight: 700 }}>{prettyLabel(c)}</td>
-                <td style={TD}>{fmtN(v.length)}</td><td style={TD}>{fmtN(sum)}</td><td style={TD}>{fmtN(mean,1)}</td>
-                <td style={TD}>{fmtN(v[0],1)}</td><td style={TD}>{fmtN(qtile(v,0.25),1)}</td>
-                <td style={{ ...TD, ...heatCss(0.5) }}>{fmtN(qtile(v,0.5),1)}</td>
-                <td style={TD}>{fmtN(qtile(v,0.75),1)}</td><td style={{ ...TD, ...heatCss(0.75) }}>{fmtN(qtile(v,0.9),1)}</td>
-                <td style={TD}>{fmtN(v[v.length-1],1)}</td><td style={TD}>{fmtN(sd,1)}</td>
-                <td style={{ ...TD, ...heatCss(Math.min(1, cv/150)) }}>{fmtN(cv,1)}%</td></tr>); })}
+                <td style={TD}>{fmtN(v.length)}</td><td style={TD}>{fmtN(sum)}</td><td style={TD}>{fmtN(m,1)}</td>
+                <td style={TD}>{md != null ? fmtN(md,1) : '—'}</td>
+                <td style={TD}>{fmtN(min,1)}</td><td style={TD}>{fmtN(p25,1)}</td>
+                <td style={{ ...TD, ...heatCss(0.5) }}>{fmtN(q(v,0.5),1)}</td>
+                <td style={TD}>{fmtN(p75,1)}</td>
+                <td style={TD}>{fmtN(max,1)}</td>
+                <td style={TD}>{fmtN(max-min,1)}</td><td style={TD}>{fmtN(p75-p25,1)}</td>
+                <td style={TD}>{fmtN(sd*sd,1)}</td><td style={TD}>{fmtN(sd,1)}</td>
+                <td style={{ ...TD, ...heatCss(Math.min(1, cv/150)) }}>{fmtN(cv,1)}%</td>
+                <td style={TD}>{fmtN(stdError(v),2)}</td>
+                <td style={TD}>[{fmtN(ciLo,1)}, {fmtN(ciHi,1)}]</td>
+                <td style={TD}>{fmtN(skewness(v,m),2)}</td><td style={TD}>{fmtN(kurtosis(v,m),2)}</td></tr>); })}
             </tbody>
           </table>
         </div>
-        <div style={{ fontSize: 10, color: '#475569', marginTop: 6 }}>Formulas: Mean = Sum/Count; StdDev = sqrt(Sum((x-Mean)^2)/N); CV% = StdDev/Mean x 100; Pxx by linear interpolation on the full sorted series.</div>
+        <div style={{ fontSize: 10, color: '#475569', marginTop: 6 }}>Formulas: Mean = Sum/Count; Variance/StdDev = population (÷N); SE and 95% CI use the sample convention (÷N-1, z≈1.96); Skewness/Kurtosis are sample, bias-corrected; Pxx by linear interpolation on the full sorted series.</div>
       </Card>
+
+      {P.nums.length >= 2 && (() => {
+        const series = P.nums.map(c => rows.map(r => num(r[c])).filter((x): x is number => x != null));
+        const pairs: { a: string; b: string; r: number; n: number; p: number }[] = [];
+        for (let i = 0; i < P.nums.length; i++) for (let j = i + 1; j < P.nums.length; j++) {
+          const res = pearsonTest(series[i], series[j]);
+          pairs.push({ a: P.nums[i], b: P.nums[j], r: res.r, n: res.n, p: res.p });
+        }
+        return (
+        <Card title={'INFERENTIAL: CORRELATION & SIGNIFICANCE MATRIX - ' + P.nums.length + ' NUMERIC ATTRIBUTES (' + pairs.length + ' PAIRS)'} accent={accent}
+          right={<button onClick={() => csvOut(sectionId + '_correlation_matrix', ['Attribute A','Attribute B','Pearson r','n','p-value','Significance'],
+            pairs.map(pr => [pr.a, pr.b, pr.r, pr.n, pr.p, sigStars(pr.p)]))}
+            style={{ background: 'rgba(0,245,255,0.08)', border: '1px solid rgba(0,245,255,0.3)', borderRadius: 6, color: accent, fontSize: 10, fontWeight: 700, padding: '3px 10px', cursor: 'pointer' }}>CSV</button>}>
+          <div style={{ overflow: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10.5 }}>
+              <thead><tr>{['Attribute A','Attribute B','Pearson r','n','p-value','Significance'].map(h => <th key={h} style={TH}>{h}</th>)}</tr></thead>
+              <tbody>{pairs.sort((x,y) => Math.abs(y.r) - Math.abs(x.r)).map(pr => (
+                <tr key={pr.a+'|'+pr.b} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                  <td style={{ ...TD, color: '#e2e8f0', fontWeight: 700 }}>{prettyLabel(pr.a)}</td>
+                  <td style={{ ...TD, color: '#e2e8f0', fontWeight: 700 }}>{prettyLabel(pr.b)}</td>
+                  <td style={{ ...TD, ...heatCss((pr.r+1)/2) }}>{pr.r.toFixed(3)}</td>
+                  <td style={TD}>{fmtN(pr.n)}</td>
+                  <td style={TD}>{pr.p < 0.001 ? '<0.001' : pr.p.toFixed(3)}</td>
+                  <td style={{ ...TD, color: sigStars(pr.p) ? '#00ff88' : '#64748b', fontWeight: 700 }}>{sigStars(pr.p) || 'n.s.'}</td>
+                </tr>))}
+              </tbody>
+            </table>
+          </div>
+          <div style={{ fontSize: 10, color: '#475569', marginTop: 6 }}>Pearson r with a two-tailed t-test (df = n-2). * p&lt;0.05, ** p&lt;0.01, *** p&lt;0.001, n.s. = not significant. |r| ≥ 0.7 strong, 0.4-0.7 moderate, &lt;0.4 weak - regardless of significance, correlation is not causation.</div>
+        </Card>); })()}
       {P.cats.map(cat => { const groups = new Map<string, Row[]>();
         rows.forEach(r => { const k = String(r[cat] ?? 'Unknown'); if (!groups.has(k)) groups.set(k, []); groups.get(k)!.push(r); });
         const ents = [...groups.entries()].sort((a,b) => b[1].length - a[1].length);
@@ -178,12 +217,46 @@ export function DeepAnalysisTables({ sectionId, accent = '#00f5ff' }: { sectionI
               </tbody>
             </table>
           </div>
+          {P.nums.length > 0 && (() => {
+            const anovas = P.nums.map(n => {
+              const groupVals = ents.map(([, g]) => g.map(r => num(r[n])).filter((x): x is number => x != null));
+              return { n, res: oneWayAnova(groupVals) };
+            }).filter(a => a.res.groups >= 2);
+            if (!anovas.length) return null;
+            return (
+              <div style={{ marginTop: 10 }}>
+                <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.06em', color: 'rgba(148,163,184,0.9)', marginBottom: 4 }}>
+                  INFERENTIAL: ONE-WAY ANOVA - DOES {prettyLabel(cat).toUpperCase()} SIGNIFICANTLY AFFECT EACH MEASURE?
+                </div>
+                <div style={{ overflow: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10.5 }}>
+                    <thead><tr>{['Measure', 'Groups', 'n', 'F-statistic', 'df', 'p-value', 'Significance', 'η² (effect size)'].map(h => <th key={h} style={TH}>{h}</th>)}</tr></thead>
+                    <tbody>{anovas.map(({ n, res }) => (
+                      <tr key={n} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                        <td style={{ ...TD, color: '#e2e8f0', fontWeight: 700 }}>{prettyLabel(n)}</td>
+                        <td style={TD}>{res.groups}</td>
+                        <td style={TD}>{fmtN(res.n)}</td>
+                        <td style={TD}>{fmtN(res.f, 2)}</td>
+                        <td style={TD}>{res.df1},{res.df2}</td>
+                        <td style={TD}>{res.p < 0.001 ? '<0.001' : res.p.toFixed(3)}</td>
+                        <td style={{ ...TD, color: sigStars(res.p) ? '#00ff88' : '#64748b', fontWeight: 700 }}>{sigStars(res.p) || 'n.s.'}</td>
+                        <td style={{ ...TD, ...heatCss(res.etaSq) }}>{res.etaSq.toFixed(3)}</td>
+                      </tr>))}
+                    </tbody>
+                  </table>
+                </div>
+                <div style={{ fontSize: 10, color: '#475569', marginTop: 6 }}>F-test on between-group vs within-group variance. * p&lt;0.05, ** p&lt;0.01, *** p&lt;0.001, n.s. = not significant. η² is the share of total variance explained by the grouping (0.01 small, 0.06 medium, 0.14+ large).</div>
+              </div>
+            );
+          })()}
         </Card>); })}
       {P.cats.length >= 2 && (() => { const [a, b] = P.cats; const ka = [...new Set(rows.map(r => String(r[a] ?? 'Unknown')))];
         const kb = [...new Set(rows.map(r => String(r[b] ?? 'Unknown')))];
         const cell = new Map<string, number>(); let mx = 1;
         rows.forEach(r => { const k = String(r[a] ?? 'Unknown') + '|' + String(r[b] ?? 'Unknown');
           const v = (cell.get(k) ?? 0) + 1; cell.set(k, v); if (v > mx) mx = v; });
+        const table = ka.map(ra => kb.map(cb => cell.get(ra + '|' + cb) ?? 0));
+        const chi = chiSquareTest(table);
         return (
         <Card title={'CROSS-RELATION MATRIX - ' + prettyLabel(a).toUpperCase() + ' x ' + prettyLabel(b).toUpperCase() + ' (RECORD COUNTS, ALL DATA)'} accent={accent}>
           <div style={{ overflow: 'auto' }}>
@@ -197,6 +270,17 @@ export function DeepAnalysisTables({ sectionId, accent = '#00f5ff' }: { sectionI
               </tr>))}
               </tbody>
             </table>
+          </div>
+          <div style={{ marginTop: 10, fontSize: 10.5 }}>
+            <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.06em', color: 'rgba(148,163,184,0.9)', marginBottom: 4 }}>
+              INFERENTIAL: CHI-SQUARE TEST OF INDEPENDENCE
+            </div>
+            <div style={{ color: '#cbd5e1' }}>
+              χ² = <b style={{ color: '#e2e8f0' }}>{fmtN(chi.chi2, 2)}</b>, df = {chi.df}, n = {fmtN(chi.n)}, p-value = {chi.p < 0.001 ? '<0.001' : chi.p.toFixed(3)}{' '}
+              (<span style={{ color: sigStars(chi.p) ? '#00ff88' : '#64748b', fontWeight: 700 }}>{sigStars(chi.p) || 'not significant'}</span>),
+              Cramér's V = {chi.cramerV.toFixed(3)} ({chi.cramerV < 0.1 ? 'negligible' : chi.cramerV < 0.3 ? 'weak' : chi.cramerV < 0.5 ? 'moderate' : 'strong'} association)
+            </div>
+            <div style={{ fontSize: 10, color: '#475569', marginTop: 4 }}>Tests whether {prettyLabel(a)} and {prettyLabel(b)} are statistically independent, or whether one predicts the other. Cramér's V is the effect size (0 = no association, 1 = perfect).</div>
           </div>
         </Card>); })()}
     </div>
