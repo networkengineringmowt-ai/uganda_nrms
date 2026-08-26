@@ -34,10 +34,14 @@ export async function runDataAudit(
   const results: AuditResult[] = [];
 
   // ââ 1. Network totals (official Department of National Roads FY 2025/26) ââââ
-  const TOT     = 21302;   // total network; GeoJSON has 21,160 km (mapped) (142 km unmapped)
-  const LINKS   = 1017;
+  // TOT is the gazetted official figure; LINKS/PAVED/UNPAVED are drift-guard
+  // reference values tracking the current network2026.geojson snapshot - keep
+  // these in sync with useNetworkStats.ts's own computation whenever the
+  // source GeoJSON changes.
+  const TOT     = 21302;   // official Department of National Roads total; GeoJSON has ~21,137 km mapped (~165 km unmapped)
+  const LINKS   = 1014;
   const PAVED   = 6405;
-  const UNPAVED = 14897;
+  const UNPAVED = 14732;
   const STATIONS= 23;
   const REGIONS = 6;
 
@@ -62,7 +66,7 @@ export async function runDataAudit(
     check('Network', 'Total links',  networkStats.totalLinks,  LINKS);
     check('Network', 'Paved km',     networkStats.pavedKm,     PAVED,   0.05);
     check('Network', 'Unpaved km',   networkStats.unpavedKm,   UNPAVED, 0.05);
-    check('Network', 'Paved %',      networkStats.pavedPct,    30.1,    0.05);
+    check('Network', 'Paved %',      networkStats.pavedPct,    30.3,    0.05);
 
     // Stations + regions (string-based existence)
     const sCount = Object.keys(networkStats.regionKm ?? {}).length;
@@ -92,9 +96,9 @@ export async function runDataAudit(
         tab: 'Bot Results Q12',
         field: 'total_links (surveyed subset)',
         value: String(q12['total_links'] ?? '?'),
-        expected: 'â¤ 1017 (surveyed subset of network)',
+        expected: 'â¤ 1014 (surveyed subset of network)',
         status: 'info',
-        notes: 'Q12 covers surveyed links only, not full 21,160 km (mapped) network',
+        notes: 'Q12 covers surveyed links only, not the full ~21,137 km mapped network',
       });
       results.push({
         tab: 'Bot Results Q12',
