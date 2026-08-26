@@ -183,10 +183,10 @@ export default function PlatformDashboard() {
           tooltip="Official NDPIV FY 2025/26 figure · 6 regions · 23 maintenance stations · Source: MoWT/DNR"
           navChips={[{ label: 'Road Network', view: 'roadnetwork' }]} />
         <StatTile label="Paved Roads" value="6405" unit="km" color="#00ff88" onNav={nav}
-          tooltip="6,405 km paved (bituminous + DBST) · 30.1% of national network"
+          tooltip="6,405 km paved (bituminous + DBST) · 30.3% of national network"
           navChips={[{ label: 'Condition', view: 'roadcondition' }]} />
-        <StatTile label="Total Links" value="1017" unit="" color="#ffd23f" onNav={nav}
-          tooltip={`${structures.filter(s => s.type === 'bridge').length || 546} bridges · ${networkSummary?.stations_count || 23} stations · GeoJSON-mapped (142 km gap)`}
+        <StatTile label="Total Links" value="1014" unit="" color="#ffd23f" onNav={nav}
+          tooltip={`${structures.filter(s => s.type === 'bridge').length || 546} bridges · ${networkSummary?.stations_count || 23} stations · GeoJSON-mapped (165 km gap)`}
           navChips={[{ label: 'GIS Map', view: 'roadnetwork' }]} />
         <StatTile label="Avg Condition" value={String(networkSummary?.avg_iri_national || 3.31)} unit="IRI" color="#b967ff" onNav={nav}
           tooltip="International Roughness Index - network-wide weighted average"
@@ -209,9 +209,9 @@ export default function PlatformDashboard() {
         <span style={{ color: 'rgba(148,163,184,0.35)', margin: '0 6px' }}>|</span>
         <span style={{ color: 'rgba(148,163,184,0.7)' }}>Source: NDPIV FY25-26 (MoWT)</span>
         <span style={{ color: 'rgba(148,163,184,0.35)', margin: '0 6px' }}>|</span>
-        <span style={{ color: '#00d4aa', fontWeight: 800 }}>Mapped in GeoJSON: 21,160 km (1,017 links)</span>
+        <span style={{ color: '#00d4aa', fontWeight: 800 }}>Mapped in GeoJSON: 21,137 km (1,014 links)</span>
         <span style={{ color: 'rgba(148,163,184,0.35)', margin: '0 6px' }}>|</span>
-        <span style={{ color: '#ffd23f' }}>Gap: 142 km (unmapped/rural)</span>
+        <span style={{ color: '#ffd23f' }}>Gap: 165 km (unmapped/rural)</span>
         <span style={{ color: 'rgba(148,163,184,0.35)', margin: '0 6px' }}>|</span>
         <span style={{ color: 'rgba(148,163,184,0.5)', fontSize: 9 }}>Condition % based on surveyed links only</span>
       </div>
