@@ -7,7 +7,7 @@
  *  - Department of National Roads Road Infrastructure Asset Management Policy 2017 v1.4
  *  - MoWT Road Classification and Numbering System
  *
- * DATA VERIFIED: Link IDs confirmed from live GeoJSON (1,017 features, 18 Jun 2025)
+ * DATA VERIFIED: Link IDs confirmed from live GeoJSON (1,014 features, 18 Jun 2025)
  */
 
 // ââ Functional Classification (from real GeoJSON data) ââââââââââââââââââââââââ
@@ -89,8 +89,8 @@ export const LINK_ID_STRUCTURE = {
     notation: 'Decimal km stored in chainage_f/chainage_t fields, e.g. 32.23 km from datum',
     datum: 'Defined at each road origin (typically at major town or border)',
   },
-  totalLinks: 1017,
-  totalLength: 21160,
+  totalLinks: 1014,
+  totalLength: 21137,
 };
 
 // ââ Maintenance Regions ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
@@ -228,7 +228,7 @@ CHAINAGE: Distance measured in km from the road datum (start of road).
   â¢ Stored as decimal km in fields chainage_f and chainage_t
   â¢ Example: chainage_f = 0.0, chainage_t = 32.27 means link spans 0 to 32.27 km
 
-Total network: 21,160 km (mapped) across 1,017 links â Data: DNR GIS Jun 2025
+Total network: 21,137 km (mapped) across 1,014 links â Data: DNR GIS Jun 2025
 
 To look up a specific road or link, say:
   "Show me link A001_Link01"
