@@ -30,6 +30,28 @@ const DEFS: Record<string, { title: string; body: string; icon: string }> = {
   downloads:    { icon: '⬇',  title: 'Downloads',                            body: 'Bulk exports of structures, road network, and survey data in CSV, KML, and GeoJSON formats.' },
   documents:    { icon: '📁', title: 'Document Store',                       body: 'Central repository of engineering drawings, survey reports, contracts, and reference documents across all road agencies.' },
   socioeconomic:{ icon: '🌍', title: 'Socio-Economic Analysis',              body: 'Population, land use, agriculture, and economic indicators mapped against the road network to inform investment prioritisation.' },
+
+  // Restored standalone legacy tabs (see the Sidebar.tsx SECTIONS comment) -
+  // each now gets its own definition card so it renders through the exact
+  // same Dashboard | Interactive Map | Exhaustive Tables | Deep Analytics |
+  // SQL Database & Schema | Data Capture shell as every other section,
+  // instead of the bespoke one-off page it used to be rendered as directly
+  // in App.tsx. No exceptions - full UI cohesion across the sidebar.
+  networkstory:  { icon: '📖', title: 'Network Story 1986–',       body: 'The Uganda road network\'s historical narrative from 1986 to present - policy eras, network growth, and paving milestones.' },
+  roadnetwork:   { icon: '🗺',  title: 'Road Network Map',           body: 'The full classified road network on an interactive map - all 1,017 links, searchable and filterable by class, region, and surface.' },
+  registry:      { icon: '📋', title: 'Structure Registry',         body: 'The complete bridge and culvert inventory register - physical properties, condition, and location for every structure.' },
+  inspections:   { icon: '✅', title: 'Inspection Management',      body: 'Scheduling, recording, and tracking of routine, principal, special, and emergency structure inspections.' },
+  gismap:        { icon: '📍', title: 'Structure GIS Map',          body: 'Bridges and culverts plotted on an interactive map, coloured by condition rating and filterable by structure type.' },
+  priority:      { icon: '📊', title: 'Priority Ranking',           body: 'Structures ranked by a composite priority score - condition, traffic level, strategic importance, and cost.' },
+  phototwin:     { icon: '📷', title: 'Photo & Digital Twin',       body: 'Photographic records and digital-twin visualisations for structures, used for remote condition review.' },
+  trafficanalytics:{ icon: '📈', title: 'Traffic Analytics',         body: 'AADT trends, vehicle classification mix, and seasonal/growth-adjusted traffic analytics across counted stations.' },
+  trafficsummary:{ icon: '📄', title: 'Traffic Summary',            body: 'Summary tables of road links and traffic-counting stations, aggregated for quick reference.' },
+  growthfactors: { icon: '📈', title: 'Growth Factors',              body: 'Monthly, seasonal, and annual traffic growth factors used to project AADT forward from count-year data.' },
+  overloading:   { icon: '⚠',  title: 'Overloading Analytics',       body: 'ESAL-based overloading risk index and axle-load hotspot mapping across the classified network.' },
+  oprc:          { icon: '🚧', title: 'OPRC Contracts',              body: 'Output & Performance-based Road Contracts - the roads selected for OPRC contracting, scoped by region, not yet awarded.' },
+  ndpiv:         { icon: '🎯', title: 'NDP IV Investments',          body: 'National Development Plan IV / Uganda Vision 2040 road infrastructure investment components and their network scope.' },
+  mlarchitecture:{ icon: '🧠', title: 'ML System Architecture',      body: 'Interactive system architecture for the platform\'s asset-management ML engine - model inputs, outputs, and data flow.' },
+  projecttracker:{ icon: '✔',  title: 'Project Tracker',             body: 'Gantt/Kanban tracking of ongoing road development projects - progress, milestones, and schedule status.' },
 };
 
 /* ─────────────────────────────────────────────────────────────────────────── */
@@ -115,10 +137,17 @@ import { DeepAnalysisTables } from './DeepAnalysisTables';
 // -> BridgeWorksSection) so they stay un-aliased.
 const SECTION_ALIAS: Record<string, string> = {
   traffic: 'tis', condition: 'pms', roadcondition: 'pms', npms: 'pms',
-  registry: 'bms', inspections: 'bms', nbms: 'bms',
+  nbms: 'bms',
   maintenance: 'ducar',
   roadreserve: 'reserve',
   gisenterprise: 'gis',
+  // registry / inspections used to alias onto 'bms' (their content is a
+  // subset of the Bridge Management hub), but now that both have been
+  // restored as their own standalone sidebar tabs they keep their own
+  // sectionId so their own DEFS card and SECTION_EXTRAS.dashboard entry
+  // (above) are what actually renders, instead of silently showing the
+  // full BMS hub under a "Structure Registry" / "Inspection Management"
+  // heading.
 };
 
 const SUBTABS = [
@@ -291,6 +320,14 @@ const BUD_Section = lazy(() => import('../Budget/BudgetSection'));
 const LC_Section = lazy(() => import('../Lifecycle/LifecycleSection'));
 const PROJ_View = lazy(() => import('../Projects/ProjectsView'));
 
+// - Restored standalone legacy tabs - own dedicated dashboard content -------
+const LazyPriorityRanking     = lazy(() => import('../Priority/PriorityRanking'));
+const LazyTrafficAnalyticsPg  = lazy(() => import('../../components/sections/TrafficAnalytics'));
+const LazyTrafficSummaryPg    = lazy(() => import('../../components/sections/TrafficSummary'));
+const LazyHDM4Section         = lazy(() => import('../HDM4/HDM4Section'));
+const LazyMLArchitecture      = lazy(() => import('../MLArchitecture/MLArchitectureDiagram'));
+const LazyProjectTracker      = lazy(() => import('../Projects/ProjectTracker'));
+
 type ExtraSlot = 'dashboard' | 'map' | 'tables' | 'analytics' | 'capture';
 const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentType<any>[]>>> = {
   rms: {
@@ -387,6 +424,29 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
     // under Projects' Deep Analytics tab.
     analytics: [LazyOprc, LazyNdpiv],
   },
+
+  // Restored standalone legacy tabs - each keeps its own un-aliased sectionId
+  // (see DEFS above) so it gets its own title/body card, with its existing
+  // bespoke component slotted into Dashboard. Map/Tables/Analytics/SQL fall
+  // back to InsightGrid/ExhaustiveTables/etc.'s honest "not wired" empty
+  // state for these ids, same as any other unwired section - not a crash,
+  // just no duplicate database table for content that's really local/static.
+  networkstory:   { dashboard: [LazyNetworkStory] },
+  roadnetwork:    { map: [LazyRoadNetworkMap] },
+  gismap:         { map: [BMS_GISMap] },
+  registry:       { dashboard: [BMS_Registry] },
+  inspections:    { dashboard: [BMS_Inspections] },
+  priority:       { dashboard: [LazyPriorityRanking] },
+  phototwin:      { dashboard: [BMS_PhotoTwin] },
+  trafficanalytics:{ dashboard: [LazyTrafficAnalyticsPg] },
+  trafficsummary: { dashboard: [LazyTrafficSummaryPg] },
+  growthfactors:  { dashboard: [LazyGrowthFactors] },
+  overloading:    { dashboard: [LazyOverloading] },
+  oprc:           { dashboard: [LazyOprc] },
+  ndpiv:          { dashboard: [LazyNdpiv] },
+  hdm4:           { dashboard: [LazyHDM4Section] },
+  mlarchitecture: { dashboard: [LazyMLArchitecture] },
+  projecttracker: { dashboard: [LazyProjectTracker] },
 };
 
 // Full-page treatment for the Interactive Map tab - the map should dominate
