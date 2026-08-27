@@ -59,6 +59,12 @@ export default function PhotoTwin() {
     [structures, selectedStructureId],
   );
 
+  // Definition-card accent (cyan) - matches the "info card" convention used
+  // platform-wide. Was a broken `${color}` template reference with no
+  // variable in scope, which threw a ReferenceError at render time and
+  // crashed this whole module.
+  const color = '0,245,255';
+
   return (
     <div className="flex h-full overflow-hidden animate-fade-in">
 
