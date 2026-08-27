@@ -1306,7 +1306,7 @@ const LESSONS: LessonTheme[] = [
 
 // ── Tab definitions ───────────────────────────────────────────────────────────
 
-type TabId = 'worldmap' | 'casestudies' | 'analytics' | 'lessons' | 'matrix';
+type TabId = 'dashboard' | 'worldmap' | 'casestudies' | 'analytics' | 'lessons' | 'matrix';
 
 const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
   { id: 'dashboard' as const, label: 'Dashboard', icon: <LayoutDashboard size={13}/> },
