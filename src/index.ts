@@ -119,6 +119,17 @@ export interface BridgeDocument {
   uploadedAt: string;
   version: string;
   url?: string;
+  // Kept in sync with src/types/index.ts's BridgeDocument - BMSContext types
+  // state.documents against THIS interface while DocumentStore.tsx imports
+  // its own BridgeDocument from src/types/index.ts; the two had drifted out
+  // of sync (this one was missing these fields entirely), which surfaced as
+  // "property does not exist" errors wherever a document flows from context
+  // state into a component typed against the other file.
+  extractedText?: string;
+  pageCount?: number;
+  wordCount?: number;
+  keywords?: string[];
+  extractionStatus?: 'ok' | 'unsupported' | 'failed';
 }
 
 // âââ App State âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
@@ -126,7 +137,7 @@ export interface BridgeDocument {
 // âââ Platform-level views âââââââââââââââââââââââââââââââââââââââââââââââââââââ
 export type ActiveView =
   | 'platform'              // Uganda National Roads Platform dashboard
-  | 'roadnetwork'           // Road network GIS map (all 1,014 links)
+  | 'roadnetwork'           // Road network GIS map (all 1,017 links)
   | 'traffic'               // Traffic & demand analytics
   | 'roadcondition'         // Road condition & pavement data
   | 'maintenanceprogramme'  // PMS maintenance programme â priority-ranked links
