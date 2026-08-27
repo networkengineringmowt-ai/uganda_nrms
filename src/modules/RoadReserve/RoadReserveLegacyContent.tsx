@@ -12,6 +12,7 @@ import {
   ClipboardList, CheckCircle2, Clock, LayoutDashboard,
 } from 'lucide-react';
 import { hexRgb } from '../../lib/chart3d';
+import { CURRENT_YEAR } from '../../shared/year';
 import { ModuleNavBar } from '../../shared/ModuleNavBar';
 import { CaptureButton } from '../../shared/CaptureButton';
 import { useBMS } from '../../store/BMSContext';
@@ -616,9 +617,9 @@ function EncroachmentRegisterTab() {
 
   const totalActive   = records.filter(r => r.status === 'Active').length;
   const noticesIssued = records.filter(r => r.status === 'Notice issued').length;
-  const thisYear = '2026';
-  const resolvedThisYear = records.filter(r => r.status === 'Resolved' && r.date_reported.startsWith(thisYear.slice(0, 3))).length
-    || records.filter(r => r.status === 'Resolved').length;
+  const resolvedThisYear = records.filter(r =>
+    r.status === 'Resolved' && new Date(r.date_reported).getFullYear() === CURRENT_YEAR
+  ).length;
 
   const setStatus = (id: string, status: EncroachmentStatus) =>
     setRecords(rs => rs.map(r => r.id === id ? { ...r, status } : r));
