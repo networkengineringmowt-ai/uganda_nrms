@@ -72,7 +72,7 @@ const C = {
 // ─── Station network constants (corrected figures) ────────────────────────────
 const ATC_LEGACY_COUNT = 15;   // 2016–2022 sites
 const ATC_NEW_COUNT    = 10;   // post-2025 new sites
-const ATC_TOTAL        = ATC_NEW_COUNT;                     // 10 active (2025+)
+const ATC_TOTAL        = ATC_LEGACY_COUNT + ATC_NEW_COUNT;  // 25
 // TIS manual stations come from atc_stations.geojson (298 features)
 
 // ─── Uganda road growth index - BASE YEAR 2016 = 1.00 (all traffic statistics
@@ -1015,7 +1015,7 @@ export default function TrafficSection() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6,1fr)', gap: 8, padding: '10px 14px', flexShrink: 0, background: 'rgba(4,9,18,0.75)', borderBottom: '1px solid rgba(0,245,255,0.08)' }}>
           <TrafficKpi label="Avg ADT" value={Math.round(kpis.avgAadt).toLocaleString()} unit="veh/day" color="#00f5ff" />
           <TrafficKpi label="Monitored Links" value={String(features.length)} unit="links" color="#4d9fff" />
-          <TrafficKpi label="ATC Stations" value={String(stations.length || 10)} unit="active" color="#b967ff" />
+          <TrafficKpi label="TIS Stations" value={String(stations.length || 298)} unit="active" color="#b967ff" />
           <TrafficKpi label="Proj Growth 2040" value={`+${kpis.growthRatio.toFixed(0)}`} unit="%" color="#00ff88" />
           <TrafficKpi label="Daily Volume" value={Math.round(kpis.totalAdt/1000).toLocaleString()} unit="K veh/day" color="#ffd23f" />
           <TrafficKpi label="Paved Monitored" value={kpis.pavingIndex.toFixed(0)} unit="%" color="#00d4aa" />
