@@ -394,13 +394,15 @@ function deriveTiles(rows: Row[], P: Profile): TileDef[] {
   const numVals = (c: string) => rows.map(r => num(r[c])).filter(v => v != null) as number[];
   const lens = P.lenCol ? rows.map(r => num(r[P.lenCol as string]) ?? 0) : undefined;
 
-  // 1 · Per-categorical: donut, ranked list, treemap, Pareto, km-affected list
+  // 1 · Per-categorical: donut + ranked list cover proportion and magnitude;
+  // km-affected adds a genuinely different (length-weighted) view. Treemap
+  // and Pareto are dropped here - for the 2-6 distinct values typical of
+  // these fields they restate the same breakdown a third and fourth time
+  // with no new information, just more scrolling.
   for (const c of P.cats) {
     const g = groupCount(rows, c);
     push('don-'+c, c.replace(/_/g,' ')+' · Share', n+' records', <DonutSVG data={g}/>);
     push('rank-'+c, c.replace(/_/g,' ')+' · Ranked Counts', 'conditional by magnitude', <HBarList data={g} colorBy='heat'/>);
-    push('tree-'+c, c.replace(/_/g,' ')+' · Treemap', 'area ∝ record count', <TreemapSVG data={g}/>);
-    push('par-'+c, c.replace(/_/g,' ')+' · Pareto', 'cumulative concentration', <ParetoSVG data={g}/>);
     if (P.lenCol) {
       const gs = groupSum(rows, c, P.lenCol);
       push('km-'+c, c.replace(/_/g,' ')+' · Km Affected', 'Σ '+P.lenCol+' per class', <HBarList data={gs} unit=' km' colorBy='heat'/>);
@@ -453,15 +455,10 @@ function deriveTiles(rows: Row[], P: Profile): TileDef[] {
     const g = groupCount(rows, c);
     if (g.length > 1) push('bul-'+c, c.replace(/_/g,' ')+' · Leader vs Runner-Up', g[0][0]+' vs '+g[1][0], <BulletSVG value={g[0][1]} target={g[1][1]} label={g[0][0].slice(0, 22)}/>);
   }
-  // 8 · Guarantee 50+: per-category-value share gauges, then stat tiles
-  outer: for (const c of P.cats) {
-    for (const [k, v] of groupCount(rows, c).slice(0, 8)) {
-      if (T.length >= 58) break outer;
-      push('gv-'+c+k, c.replace(/_/g,' ')+' = '+k, 'share of all records', <GaugeSVG value={v} max={n} label={k.slice(0, 16)}/>);
-    }
-  }
+  // 8 · P50 vs P90 spread per numeric - one tile per metric, not per value,
+  // so this doesn't re-inflate the grid the way the old per-category-value
+  // gauge wall (one tile per distinct value of every categorical field) did.
   for (const m of P.nums) {
-    if (T.length >= 62) break;
     const v = numVals(m); if (!v.length) continue;
     const s2 = [...v].sort((a, b) => a - b);
     push('p90-'+m, m.replace(/_/g,' ')+' · P50 vs P90', 'median against tail', <BulletSVG value={quantile(s2, 0.5)} target={quantile(s2, 0.9)} label={'P50 vs P90 '+m.slice(0, 16)}/>);
