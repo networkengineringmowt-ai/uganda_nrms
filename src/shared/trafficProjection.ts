@@ -2,6 +2,9 @@
 // Uganda fleet composition 2026 - MoWT Traffic Surveys
 // M class = Grade-Separated Highways (NOT urban/Kampala)
 
+import { CURRENT_YEAR } from './year';
+export { CURRENT_YEAR };
+
 export interface VehicleClass {
   id: string; label: string; sharePct: number; growthRate: number; avgOccupancy?: number;
 }
@@ -46,7 +49,6 @@ export const ROAD_CLASS_LABELS: Record<string, string> = {
 // re-exposes the same primitives above under those names.
 
 export const NETWORK_BLENDED_GROWTH = BLENDED_GROWTH_RATE;
-export const CURRENT_YEAR = 2026;
 
 const VC_KEY: Record<string, string> = {
   MC: 'motorcycles', CAR: 'cars_taxis', MB: 'minibus', BUS: 'bus',
