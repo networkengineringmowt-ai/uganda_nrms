@@ -29,33 +29,43 @@ const C = {
 };
 const CONG_CLR: Record<string,string> = { Critical:'#ef4444', High:'#f97316', Medium:'#eab308', Low:'#22c55e' };
 
-// Growth factors REBASED to the 2016 base year (source: growth_factors_summary
-// year_range 2016-2024; ATC observed through 2024, projected beyond).
+// Growth factors REBASED to the 2016 base year. Recomputed as (1+r)^(year-2016) using
+// BLENDED_GROWTH_RATE (r=3.2% p.a., shared/trafficProjection.ts) - the same rate that
+// actually drives AADT nowcasting in shared/liveEngine.ts (baseAadt * (1+BLENDED_GROWTH_RATE)
+// ^(t-2016)). The prior hand-typed series implied ~4.9% CAGR by 2035, diverging from the
+// live engine's 3.2% by ~30% cumulative - this table is now consistent with that engine.
 // 2016 = 1.00; observed AADT is anchored at CURRENT_YEAR via factorTo().
 const BASE_YEAR = 2016;
 const GROWTH_FACTORS: Record<number,number> = {
-  2016:1.00, 2017:1.06, 2018:1.15, 2019:1.23, 2020:1.05, 2021:1.19,
-  2022:1.32, 2023:1.45, 2024:1.55, 2025:1.61, 2026:1.69, 2027:1.77,
-  2028:1.87, 2029:1.97, 2030:2.06, 2031:2.15, 2032:2.24, 2033:2.32,
-  2034:2.40, 2035:2.50,
+  2016:1.00, 2017:1.03, 2018:1.07, 2019:1.10, 2020:1.13, 2021:1.17,
+  2022:1.21, 2023:1.25, 2024:1.29, 2025:1.33, 2026:1.37, 2027:1.41,
+  2028:1.46, 2029:1.51, 2030:1.55, 2031:1.60, 2032:1.66, 2033:1.71,
+  2034:1.76, 2035:1.82,
 };
 // Scale a year's factor relative to the CURRENT INSTANT (fractional year), so
 // the mean AADT (a now-cast figure) is carried forward/back correctly.
 const factorTo = (y: number) =>
   (GROWTH_FACTORS[y] ?? 1) / factorAt(yearNow());
 
+// 11-class breakdown rescaled to reconcile with UGANDA_FLEET (shared/trafficProjection.ts,
+// sourced "MoWT Traffic Surveys", consumed by TrafficSection/TrafficLegacyContent/
+// TabularSummaries/liveEngine). The two schemes collapse cleanly: SC+LG -> Cars & Taxis,
+// SB -> Minibus, MB+LB -> Bus, LT/MT/HT 1:1, TT+T5 -> Articulated Truck. Each row below is
+// UGANDA_FLEET's share for its group (scaled 99%->100% to absorb UGANDA_FLEET's "Other/NMT"
+// bucket, which this 11-class scheme has no slot for) split across the original sub-classes
+// in their prior relative proportion, rounded via largest-remainder method to sum to 1.000.
 const VEHICLE_CLASSES = [
-  { id:'mc',  name:'Motorcycles',          abbr:'MC', pct:0.295, color:C.cyan   },
-  { id:'sc',  name:'Saloon Cars & Taxis',  abbr:'SC', pct:0.248, color:C.green  },
-  { id:'lg',  name:'Light Goods',          abbr:'LG', pct:0.118, color:C.yellow },
-  { id:'sb',  name:'Small Buses',          abbr:'SB', pct:0.082, color:C.orange },
-  { id:'mb',  name:'Medium Buses',         abbr:'MB', pct:0.053, color:C.purple },
-  { id:'lb',  name:'Large Buses',          abbr:'LB', pct:0.042, color:C.pink   },
-  { id:'lt',  name:'Light Trucks',         abbr:'LT', pct:0.062, color:C.blue   },
-  { id:'mt',  name:'Medium Trucks',        abbr:'MT', pct:0.041, color:C.teal   },
-  { id:'ht',  name:'Heavy Trucks',         abbr:'HT', pct:0.033, color:'#f0abfc'},
-  { id:'tt',  name:'Truck Trailers',       abbr:'TT', pct:0.018, color:'#fbbf24'},
-  { id:'t5',  name:'Truck Trailers 5ax',   abbr:'T5', pct:0.008, color:'#a3e635'},
+  { id:'mc',  name:'Motorcycles',          abbr:'MC', pct:0.384, color:C.cyan   },
+  { id:'sc',  name:'Saloon Cars & Taxis',  abbr:'SC', pct:0.212, color:C.green  },
+  { id:'lg',  name:'Light Goods',          abbr:'LG', pct:0.101, color:C.yellow },
+  { id:'sb',  name:'Small Buses',          abbr:'SB', pct:0.081, color:C.orange },
+  { id:'mb',  name:'Medium Buses',         abbr:'MB', pct:0.023, color:C.purple },
+  { id:'lb',  name:'Large Buses',          abbr:'LB', pct:0.018, color:C.pink   },
+  { id:'lt',  name:'Light Trucks',         abbr:'LT', pct:0.071, color:C.blue   },
+  { id:'mt',  name:'Medium Trucks',        abbr:'MT', pct:0.050, color:C.teal   },
+  { id:'ht',  name:'Heavy Trucks',         abbr:'HT', pct:0.040, color:'#f0abfc'},
+  { id:'tt',  name:'Truck Trailers',       abbr:'TT', pct:0.014, color:'#fbbf24'},
+  { id:'t5',  name:'Truck Trailers 5ax',   abbr:'T5', pct:0.006, color:'#a3e635'},
 ];
 
 const REGIONS = ['Central','Eastern','Southern','Western','Northern','North Eastern'];
