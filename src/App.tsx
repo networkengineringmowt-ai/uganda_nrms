@@ -65,13 +65,23 @@ const SECTION_ACCENT: Record<string, string> = {
   bridgeworks: '#4d9fff', downloads: '#94a3b8',
   ducar: '#00ff88', socioeconomic: '#ffd23f',
   ntis: '#00f5ff', npms: '#ff6b35',
+  networkstory: '#b967ff', roadnetwork: '#00f5ff', registry: '#4d9fff',
+  inspections: '#4d9fff', gismap: '#4d9fff', priority: '#ff2d78',
+  phototwin: '#4d9fff', trafficanalytics: '#00f5ff', trafficsummary: '#00f5ff',
+  growthfactors: '#ff6b35', overloading: '#ff6b35', oprc: '#00ff88',
+  ndpiv: '#ffd23f', hdm4: '#00d4aa', mlarchitecture: '#b967ff', projecttracker: '#00ff88',
 };
 function SectionHub({ sectionId }: { sectionId: string }) {
   return <SectionDashboard sectionId={sectionId} accent={SECTION_ACCENT[sectionId] ?? '#00f5ff'} />;
 }
 
-const FULL_VIEWS      = new Set(['gismap', 'roadnetwork']);
-const SELF_SCROLL_VIEWS = new Set(['networkstory']);
+// gismap/roadnetwork/networkstory used to bypass the 6-tab hub entirely
+// (full-bleed maps, self-scrolling narrative) - they now route through
+// SectionHub like every other section for UI cohesion, so neither set has
+// any members left. Kept as empty Sets rather than deleted so the
+// isFullView / pane-wrapping logic below doesn't need restructuring.
+const FULL_VIEWS      = new Set<string>([]);
+const SELF_SCROLL_VIEWS = new Set<string>([]);
 // Views whose section component already renders its own CrossLinkChipBar - the
 // global bar below skips these to avoid a duplicate "Related Data" strip.
 const SELF_CHIP_VIEWS = new Set(['rms', 'bms', 'pms', 'roadcondition', 'traffic', 'budget', 'lifecycle', 'projects', 'oprc', 'ndpiv', 'mlarchitecture', 'roadnetwork']);
@@ -140,15 +150,6 @@ function AppShell() {
           <PageToolbar />
           <Suspense fallback={<ModuleSpinner />}>
 
-            {activeView === 'gismap'      && <GISMapView />}
-            {activeView === 'roadnetwork' && <RoadNetworkView />}
-
-            {SELF_SCROLL_VIEWS.has(activeView) && (
-              <div id="nrms-content-pane" style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
-                {activeView === 'networkstory' && <NetworkStory />}
-              </div>
-            )}
-
             {!isFullView && !SELF_SCROLL_VIEWS.has(activeView) && (
               <div id="nrms-content-pane" style={{ position: 'absolute', inset: 0, overflowY: 'auto', overflowX: 'hidden', paddingBottom: 12 }}>
                 {/* Unified Related-Data chip bar - shown on every section that doesn't render its own */}
@@ -160,37 +161,33 @@ function AppShell() {
                 {activeView === 'maintenanceprogramme'  && <MaintenanceProgrammeView />}
                 {activeView === 'projects'              && <SectionHub sectionId="projects" />}
                 {activeView === 'dashboard'        && <Dashboard />}
-                {activeView === 'registry'         && <StructureRegistry />}
-                {activeView === 'inspections'      && <InspectionManagement />}
                 {activeView === 'condition'        && <ConditionAssessment />}
                 {activeView === 'maintenance'      && <MaintenanceWorks />}
                 {activeView === 'analytics'        && <Analytics />}
-                {activeView === 'priority'         && <PriorityRanking />}
-                {activeView === 'phototwin'        && <PhotoTwin />}
-                {activeView === 'trafficanalytics' && <TrafficAnalytics />}
-                {activeView === 'trafficsummary'   && <TrafficSummary />}
-                {activeView === 'growthfactors'    && <GrowthFactorsPanel />}
-                {activeView === 'overloading'      && <OverloadingSection />}
-                {activeView === 'oprc'             && <OprcSection />}
-                {activeView === 'ndpiv'            && <NdpivSection />}
-                {activeView === 'hdm4'             && <HDM4Section />}
                 {activeView === 'tabularsummaries' && <TabularSummaries />}
 
-                {activeView === 'mlarchitecture' && (
-                  <div style={{ padding: '12px 14px' }}>
-                    <div style={{ marginBottom: 16 }}>
-                      <div style={{ fontSize: 18, fontWeight: 900, color: '#e2eaf4', marginBottom: 4 }}>
-                        Asset Management ML Engine
-                      </div>
-                      <div style={{ fontSize: 11, color: 'rgba(148,163,184,0.65)' }}>
-                        Interactive system architecture - click any node to inspect model details, inputs, and outputs
-                      </div>
-                    </div>
-                    <MLArchitectureDiagram />
-                  </div>
-                )}
+                {/* Restored standalone legacy tabs - routed through the same
+                    6-tab SectionHub as every other section (see the SECTIONS
+                    comment in Sidebar.tsx and the DEFS/SECTION_EXTRAS
+                    entries in SectionDashboard.tsx). No bespoke one-off
+                    pages left in the sidebar nav. */}
+                {activeView === 'networkstory'     && <SectionHub sectionId="networkstory" />}
+                {activeView === 'roadnetwork'      && <SectionHub sectionId="roadnetwork" />}
+                {activeView === 'gismap'           && <SectionHub sectionId="gismap" />}
+                {activeView === 'registry'         && <SectionHub sectionId="registry" />}
+                {activeView === 'inspections'      && <SectionHub sectionId="inspections" />}
+                {activeView === 'priority'         && <SectionHub sectionId="priority" />}
+                {activeView === 'phototwin'        && <SectionHub sectionId="phototwin" />}
+                {activeView === 'trafficanalytics' && <SectionHub sectionId="trafficanalytics" />}
+                {activeView === 'trafficsummary'   && <SectionHub sectionId="trafficsummary" />}
+                {activeView === 'growthfactors'    && <SectionHub sectionId="growthfactors" />}
+                {activeView === 'overloading'      && <SectionHub sectionId="overloading" />}
+                {activeView === 'oprc'             && <SectionHub sectionId="oprc" />}
+                {activeView === 'ndpiv'            && <SectionHub sectionId="ndpiv" />}
+                {activeView === 'hdm4'             && <SectionHub sectionId="hdm4" />}
+                {activeView === 'mlarchitecture'   && <SectionHub sectionId="mlarchitecture" />}
+                {activeView === 'projecttracker'   && <SectionHub sectionId="projecttracker" />}
 
-                {activeView === 'projecttracker' && <ProjectTracker />}
                 {activeView === 'pim'            && <SectionHub sectionId="pim" />}
 
                 {activeView === 'budget' && <SectionHub sectionId="budget" />}
