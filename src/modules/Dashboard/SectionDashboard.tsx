@@ -340,6 +340,15 @@ const LazyHDM4Section         = lazy(() => import('../HDM4/HDM4Section'));
 const LazyMLArchitecture      = lazy(() => import('../MLArchitecture/MLArchitectureDiagram'));
 const LazyProjectTracker      = lazy(() => import('../Projects/ProjectTracker'));
 
+// Placement rule across every hub below: chart/KPI-overview components live
+// on the Dashboard tab; summary-table/registry/list components and mixed
+// chart+table analysis pages live on the Deep Analytics tab, alongside
+// DeepAnalysisTables. The Exhaustive Tables tab is left to do exactly what
+// its name says - ExhaustiveTables.tsx's own generated grid - plus any pure
+// media/viewer content (video, photo, digital-twin) that isn't a chart or a
+// table. Nothing was deleted to make this consistent - every component that
+// used to render somewhere still renders, just in the slot that matches
+// what it actually shows.
 type ExtraSlot = 'dashboard' | 'map' | 'tables' | 'analytics' | 'capture';
 const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentType<any>[]>>> = {
   rms: {
@@ -348,32 +357,46 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
     // them here too made RMS's own hub show byte-identical content to two
     // other sidebar entries. RMS's Dashboard/Map tabs fall back to the
     // shared InsightGrid/SectionMap treatment like any other section.
-    tables: [LazyRoadInventoryTbl],
+    // Road Inventory is a records table, so it sits on Deep Analytics.
+    analytics: [LazyRoadInventoryTbl],
   },
   tis: {
     // ntis / trafficanalytics / trafficsummary / growthfactors / overloading
     // were each their own standalone sidebar row showing one facet of the
     // same traffic dataset Traffic Information already covers - folded in
     // here (nav decluttering) rather than kept as five near-duplicate rows.
-    dashboard: [LazyNTISOverview],
+    // NTIS overview, the AADT trend/KPI page, and the Road Safety overview
+    // are all pure chart panels, so all three sit on Dashboard; the counts/
+    // stations/summary tables and the mixed analysis pages sit on Deep
+    // Analytics.
+    dashboard: [LazyNTISOverview, TrafficTrendsLegacy, LazyRoadSafetyOverview],
     map: [TrafficMapLegacy],
-    tables: [TrafficCountsLegacy, TrafficStationsLegacy, LazyTrafficSummaryPg],
-    analytics: [TrafficTrendsLegacy, LazyRoadSafetyOverview, LazyTrafficAnalyticsPg, LazyGrowthFactors, LazyOverloading],
+    analytics: [TrafficCountsLegacy, TrafficStationsLegacy, LazyTrafficSummaryPg, LazyTrafficAnalyticsPg, LazyGrowthFactors, LazyOverloading],
   },
   pms: {
+    // Cross-Section Analytics is pure charts, so it sits on Dashboard; the
+    // inventory table and every table-bearing/mixed analysis view sit on
+    // Deep Analytics. AI Vision and Digital Twin are media viewers (not a
+    // chart or a table), so they stay put where they already were.
+    dashboard: [PMS_CrossSectionAnalytics],
     map: [PmsConditionMapLegacy],
-    tables: [PmsInventoryLegacy, PMS_RoadVideoView],
-    analytics: [PMS_CrossSectionAnalytics, PmsAnalyticsViewLegacy, PmsAgeLegacy, PmsFwdLegacy, PMS_LifecycleView, PMS_PavementCatalogue, PMS_AIVisionDashboard, PMS_DigitalTwin],
+    tables: [PMS_RoadVideoView],
+    analytics: [PmsInventoryLegacy, PmsAnalyticsViewLegacy, PmsAgeLegacy, PmsFwdLegacy, PMS_LifecycleView, PMS_PavementCatalogue, PMS_AIVisionDashboard, PMS_DigitalTwin],
   },
   bms: {
     // GISMap, Registry, Inspections, BridgeWorks and PhotoTwin were each
     // their own standalone sidebar row for content that's really a facet of
     // Bridge Management - folded back in here (nav decluttering) so Bridge
     // Management is the one place to find all of it, instead of six rows.
-    dashboard: [BMS_BridgeWorks],
+    // BridgeWorks and the Analytics module are both chart/KPI panels, so
+    // both sit on Dashboard; Registry/Inspections/Maintenance are records
+    // tables and Condition/Critical/Priority are table-led analysis, so all
+    // five sit on Deep Analytics. PhotoTwin is a photo viewer, not a chart
+    // or table, so it stays on Exhaustive Tables where it already was.
+    dashboard: [BMS_BridgeWorks, BMS_Analytics],
     map: [BMS_GISMap],
-    tables: [BMS_Maintenance, BMS_Registry, BMS_Inspections, BMS_PhotoTwin],
-    analytics: [BMS_Condition, BMS_Critical, BMS_Analytics, LazyPriorityRanking],
+    tables: [BMS_PhotoTwin],
+    analytics: [BMS_Maintenance, BMS_Registry, BMS_Inspections, BMS_Condition, BMS_Critical, LazyPriorityRanking],
   },
   ducar: {
     dashboard: [LazyDucarOverview],
@@ -382,11 +405,12 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
     // Socio-Economic Analysis was its own standalone row - the population/
     // land-use/economic indicators it maps directly feed investment
     // prioritisation (see DEFS above), so it's folded onto Public
-    // Investment's tabs instead of sitting as a separate row.
-    dashboard: [PimFrameworkLegacy, SE_Dashboard],
+    // Investment's tabs instead of sitting as a separate row. NDP IV's own
+    // tab here is a pure KPI/target grid, so it joins Dashboard; the PPP/
+    // donor/budget tables and pages sit on Deep Analytics.
+    dashboard: [PimFrameworkLegacy, SE_Dashboard, PimNdpivLegacy],
     map: [SE_Map],
-    tables: [PimPppLegacy, PimDonorLegacy, SE_Tables],
-    analytics: [PimBudgetLegacy, PimNdpivLegacy, SE_Analytics],
+    analytics: [PimBudgetLegacy, SE_Analytics, PimPppLegacy, PimDonorLegacy, SE_Tables],
   },
   gis: {
     map: [GisMapLegacy],
@@ -394,37 +418,42 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
   reserve: {
     dashboard: [ReserveOverviewLegacy],
     map: [ReserveMapLegacy],
-    tables: [ReserveRegisterLegacy, ReserveGazetteLegacy, ReservePermitsLegacy],
+    // Register/Gazette/Permits are all records tables (or table-led), so
+    // all three sit on Deep Analytics rather than Exhaustive Tables.
+    analytics: [ReserveRegisterLegacy, ReserveGazetteLegacy, ReservePermitsLegacy],
   },
   casestudies: {
     dashboard: [CaseStudiesNarrativeLegacy],
     map: [CaseStudiesWorldMapLegacy],
-    tables: [CaseStudiesComparisonLegacy],
-    analytics: [CaseStudiesMatrixLegacy, CaseStudiesLessonsLegacy],
+    // Comparison/Matrix/Lessons are all table-based (comparison table,
+    // literature-review matrix, lessons registry), so all three sit on Deep
+    // Analytics.
+    analytics: [CaseStudiesComparisonLegacy, CaseStudiesMatrixLegacy, CaseStudiesLessonsLegacy],
   },
   admin: {
+    // Interactive Map = the platform mind map (unchanged). Identity/Activity
+    // are records tables and Data Audit is a table-led audit log, so all
+    // three join ML System Architecture (folded in here - it was its own
+    // standalone row for a platform-level diagram) on Deep Analytics.
     map: [ADMIN_MindMap],
-    tables: [ADMIN_Identity, ADMIN_Activity],
-    // ML System Architecture was its own standalone row for a platform-level
-    // diagram - admin-level content, folded in here.
-    analytics: [ADMIN_DataAudit, LazyMLArchitecture],
+    analytics: [ADMIN_Identity, ADMIN_Activity, ADMIN_DataAudit, LazyMLArchitecture],
     capture: [ADMIN_PendingSubmissions],
   },
   sources: {
-    tables: [SRC_Catalogue, SRC_Dictionary],
-    analytics: [SRC_Tabular],
+    // Catalogue, Dictionary and Tabular Summaries are all records
+    // tables/glossaries, so all three sit on Deep Analytics.
+    analytics: [SRC_Tabular, SRC_Catalogue, SRC_Dictionary],
   },
   downloads: {
     dashboard: [DL_View],
   },
   documents: {
-    tables: [DOC_Store],
+    analytics: [DOC_Store],
   },
   socioeconomic: {
     dashboard: [SE_Dashboard],
     map: [SE_Map],
-    tables: [SE_Tables],
-    analytics: [SE_Analytics],
+    analytics: [SE_Analytics, SE_Tables],
   },
   roadatlas: {
     map: [RA_View],
@@ -452,10 +481,14 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
     analytics: [LC_Section, LazyHDM4Section],
   },
   projects: {
-    tables: [PROJ_View, LazyProjectTracker],
-    // OPRC and NDP IV each keep their own dedicated standalone sidebar
-    // section - OPRC is "roads selected for OPRC contracting", not a
-    // generic Projects sub-view - so they stay off Projects' tabs.
+    // Project Tracker is a pure chart/progress-card dashboard (no table at
+    // all), so it moves to Dashboard; the Works/NDPIV register (table-led,
+    // with its own embedded map) sits on Deep Analytics. OPRC and NDP IV
+    // each keep their own dedicated standalone sidebar section - OPRC is
+    // "roads selected for OPRC contracting", not a generic Projects
+    // sub-view - so they stay off Projects' tabs.
+    dashboard: [LazyProjectTracker],
+    analytics: [PROJ_View],
   },
 
   // Restored standalone legacy tabs - each keeps its own un-aliased sectionId
