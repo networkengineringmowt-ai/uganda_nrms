@@ -12,7 +12,7 @@ import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
   LineChart, Line,
 } from 'recharts';
-import { NEON, REGION_NEON, Bar3D, GlowDefs, Chart3DWrap, AreaGradDefs, TT_NEON, TICK, TICK_SM, AX_LINE } from '../../lib/chart3d';
+import { NEON, REGION_NEON, Bar3D, GlowDefs, Chart3DWrap, AreaGradDefs, TT_NEON, TICK, TICK_SM, AX_LINE, hexRgb } from '../../lib/chart3d';
 
 type Tab = 'condition' | 'age' | 'cost' | 'region' | 'radar';
 
@@ -184,6 +184,12 @@ export default function Analytics() {
       return { year, ...cnt };
     });
   }, [structures]);
+
+  // Definition-card accent - matches the cyan "info card" convention used
+  // platform-wide (was a broken `${color}` template reference that threw a
+  // ReferenceError at render time and crashed this whole tab - see chart3d's
+  // hexRgb() for the hex -> "r,g,b" conversion these rgba() strings need).
+  const color = hexRgb(NEON[0]);
 
   return (
     <div className="flex flex-col h-full animate-fade-in">
