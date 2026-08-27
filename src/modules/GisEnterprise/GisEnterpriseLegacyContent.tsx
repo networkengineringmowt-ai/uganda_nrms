@@ -44,11 +44,12 @@ export default function GisEnterpriseLegacyContent({ hideTabBar }: { hideTabBar?
       </div>
 
       {/* Dashboard stat strip */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
         {[
           { v: '5',      l: 'ARCHITECTURE TIERS',   c: '#c084fc' },
           { v: '1,014',  l: 'GIS ROAD LINKS',       c: '#00f5ff' },
-          { v: '546',    l: 'STRUCTURES MAPPED',    c: '#60a5fa' },
+          { v: '312',    l: 'BRIDGES MAPPED',       c: '#60a5fa' },
+          { v: '234',    l: 'CULVERTS MAPPED',      c: '#38bdf8' },
           { v: 'WMS/WFS',l: 'OGC SERVICES LIVE',    c: '#00ff88' },
         ].map(k => (
           <div key={k.l} className="bg-slate-900/60 border border-slate-800 rounded-xl p-4" style={{ borderLeft: `3px solid ${k.c}` }}>
