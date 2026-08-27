@@ -1,7 +1,17 @@
 /**
  * TrafficProjectionTable - ADT by vehicle class per link, 2016 to 2040.
  * Uses trafficProjection.ts per-class growth rates.
- * Base AADT is 2019 survey year (or 2026 estimate). Columns: per-5-year snapshot + full range CSV.
+ * Base AADT per link is real: aadt_predicted from data/traffic_predictions.geojson
+ * (the same TIS feed used by TrafficSection.tsx / OverloadingSection.tsx /
+ * PredictionsPanel.tsx / LifecycleSection.tsx), base year 2025 - that field is
+ * identical to the feed's own growth_2025 value for every link, i.e. it IS the
+ * feed's base/current-year figure. The per-vehicle-class split and the
+ * compound growth/back-projection to the other snapshot years is a model
+ * (UGANDA_FLEET share % and growth rate per class, from trafficProjection.ts),
+ * same modelling approach used elsewhere in the app to break a total AADT into
+ * vehicle classes - only the starting total AADT is real per-link data, not the
+ * per-class breakdown (the real feed has no per-vehicle-class counts).
+ * Columns: per-5-year snapshot + full range CSV.
  */
 import { useState, useMemo, useEffect } from 'react';
 import { VC_CLASSES, projectClass, VC_GROWTH } from '../../shared/trafficProjection';
@@ -39,15 +49,6 @@ function totalAt(base: number, baseYear: number, toYear: number): number {
   }, 0);
 }
 
-// ─── Assign a plausible base AADT based on class ────────────────────────────
-function classBaseAadt(road_class: string, index: number): number {
-  const rng = (index * 6364 + 1013) % 100; // deterministic pseudo-random
-  if (road_class === 'A') return 2000 + rng * 60;   // 2000-8000
-  if (road_class === 'B') return 600  + rng * 22;   // 600-2800
-  if (road_class === 'M') return 1500 + rng * 45;   // 1500-6000
-  return 80 + rng * 10;                              // C: 80-1080
-}
-
 export default function TrafficProjectionTable() {
   const [links, setLinks]       = useState<LinkRow[]>([]);
   const [loading, setLoading]   = useState(true);
@@ -57,28 +58,29 @@ export default function TrafficProjectionTable() {
   const [expandedId, setExpId]  = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(`${BASE}data/network2026.geojson`)
+    fetch(`${BASE}data/traffic_predictions.geojson`)
       .then(r => r.json())
       .then((g: { features: Array<{ properties: Record<string, unknown> }> }) => {
         const rows: LinkRow[] = g.features.map((f, i) => {
           const p = f.properties as Record<string, string | number>;
-          const rc = String(p.road_class ?? 'C');
           return {
             link_id:    String(p.link_id   ?? `Link${i+1}`),
-            link_name:  String(p.link_name ?? p.road ?? `Road ${i+1}`),
-            road_class: rc,
+            link_name:  String(p.link_name ?? `Road ${i+1}`),
+            road_class: String(p.road_class ?? 'C'),
             region:     String(p.region ?? 'Central'),
             length_km:  Number(p.length_km ?? 10),
-            // base year 2016 for all traffic statistics - class synthetic base
-            // deflated from the 2019 calibration by blended growth (1.042^3)
-            base_aadt:  Math.round(classBaseAadt(rc, i) / 1.131),
-            base_year:  2016,
+            // Real per-link base AADT from the TIS traffic_predictions.geojson
+            // feed (aadt_predicted == that feed's growth_2025, i.e. its
+            // base/current-year figure for this link). No synthetic values.
+            base_aadt:  Math.round(Number(p.aadt_predicted ?? 0)),
+            base_year:  2025,
           };
         });
         setLinks(rows);
       })
       .catch(() => {
-        // Fallback synthetic data for 20 representative links
+        // Fallback synthetic data for 20 representative links - only used if
+        // the real traffic_predictions.geojson feed fails to fetch/parse.
         const synthetic: LinkRow[] = [
           { link_id:'A001_Link01', link_name:'Kampala–Jinja',         road_class:'A', region:'Central',  length_km:83,  base_aadt:6364, base_year:2016 },
           { link_id:'A001_Link02', link_name:'Jinja–Tororo',          road_class:'A', region:'Eastern',  length_km:74,  base_aadt:4774, base_year:2016 },
@@ -150,7 +152,7 @@ export default function TrafficProjectionTable() {
 
   if (loading) return (
     <div style={{ textAlign:'center', padding:40, color:'#64748b', fontSize:12 }}>
-      Loading {links.length} road links from network2026.geojson…
+      Loading road links from traffic_predictions.geojson…
     </div>
   );
 
@@ -164,8 +166,9 @@ export default function TrafficProjectionTable() {
               ADT by Vehicle Class - 2016 to 2040
             </div>
             <div style={{ fontSize:10, color:'rgba(148,163,184,0.55)' }}>
-              {links.length.toLocaleString()} road links · base year 2016 · per-class compound growth (TIS annual rates) ·
-              snapshot years shown; CSV export gives full 2016-2040 per class
+              {links.length.toLocaleString()} road links · base AADT is real (traffic_predictions.geojson, base year 2025) ·
+              per-class compound growth (TIS annual rates) applied to project/back-project other snapshot years ·
+              CSV export gives full 2016-2040 per class
             </div>
           </div>
           <button onClick={exportCSV} style={{
@@ -300,8 +303,8 @@ export default function TrafficProjectionTable() {
           ))}
         </div>
         <div style={{ marginTop:8, fontSize:8.5, color:'rgba(148,163,184,0.4)', lineHeight:1.5 }}>
-          Source: Department of National Roads TIS · Base year 2016 · Projected using compound growth formula.
-          AADT values for links without ATC/TIS data estimated from road class average distributions.
+          Source: Department of National Roads TIS · base AADT is real per-link data from traffic_predictions.geojson
+          (base year 2025) · other years projected/back-projected using the compound growth formula above.
           Export CSV for full 2016-2040 per-class breakdown.
         </div>
       </div>

@@ -76,13 +76,15 @@ const ATC_TOTAL        = ATC_LEGACY_COUNT + ATC_NEW_COUNT;  // 25
 // TIS manual stations come from atc_stations.geojson (298 features)
 
 // ─── Uganda road growth index - BASE YEAR 2016 = 1.00 (all traffic statistics
-// are anchored to the 2016 base year; source growth_factors_summary 2016-2024,
-// projected beyond). Forward projection uses per-class compound growth.
+// are anchored to the 2016 base year). Recomputed as (1+r)^(year-2016) using
+// BLENDED_GROWTH_RATE (r=3.2% p.a., shared/trafficProjection.ts) - the same rate driving
+// AADT nowcasting in shared/liveEngine.ts. The prior hand-typed series implied ~4.9% CAGR
+// by 2035, diverging from the live engine's 3.2% by ~30% cumulative; now reconciled.
 const GROWTH_FACTORS: Record<number, number> = {
-  2016: 1.00, 2017: 1.06, 2018: 1.15, 2019: 1.23, 2020: 1.05, 2021: 1.19,
-  2022: 1.32, 2023: 1.45, 2024: 1.55, 2025: 1.61, 2026: 1.69, 2027: 1.77,
-  2028: 1.87, 2029: 1.97, 2030: 2.06, 2031: 2.15, 2032: 2.24, 2033: 2.32,
-  2034: 2.40, 2035: 2.50,
+  2016: 1.00, 2017: 1.03, 2018: 1.07, 2019: 1.10, 2020: 1.13, 2021: 1.17,
+  2022: 1.21, 2023: 1.25, 2024: 1.29, 2025: 1.33, 2026: 1.37, 2027: 1.41,
+  2028: 1.46, 2029: 1.51, 2030: 1.55, 2031: 1.60, 2032: 1.66, 2033: 1.71,
+  2034: 1.76, 2035: 1.82,
 };
 // aadt_predicted is anchored at the current year - scale a year's 2016-base
 // factor relative to the current year's factor when projecting it.
@@ -596,7 +598,10 @@ function LinkClassTable({ features, surfMap: _surfMap }: { features: PredFeature
       <div style={{ marginTop: 8, fontSize: 9, color: 'rgba(148,163,184,0.4)', lineHeight: 1.7 }}>
         <b style={{ color: '#94a3b8' }}>Method:</b> Uganda fleet composition 2026 applied to TIS AADT readings.
         Each class projected independently: projected = base × (1+g)^Δyrs from {BASE_YEAR} base year.
-        Growth rates (p.a.): Moto 6.0% · Cars 5.0% · Minibus 4.0% · Bus 3.0% · L.Trk 4.0% · M.Trk 3.5% · H.Trk 3.5% · Artic 2.5% · Other 2.0%.
+        {/* Rates below reconciled to UGANDA_FLEET.growthRate (shared/trafficProjection.ts) -
+            the values actually powering the (1+g)^Δyrs projection above; this caption
+            previously listed stale figures that didn't match the code it was describing. */}
+        Growth rates (p.a.): Moto 4.5% · Cars 3.2% · Minibus 2.8% · Bus 2.0% · L.Trk 3.5% · M.Trk 3.0% · H.Trk 2.5% · Artic 2.2% · Other 1.0%.
         Blended total ≈ 3.2% p.a. aligned with UNRA historical growth factor series. &nbsp;·&nbsp;
         <b style={{ color: '#94a3b8' }}>Speed:</b> 85th %ile 82 km/h (paved) / 57 km/h (unpaved); Mean 68 / 45 km/h. &nbsp;·&nbsp;
         <b style={{ color: '#94a3b8' }}>Overloading:</b> 23% axle-load violation rate (UNRA weigh-in-motion surveys). &nbsp;·&nbsp;

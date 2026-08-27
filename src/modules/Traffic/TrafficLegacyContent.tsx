@@ -77,13 +77,15 @@ const ATC_TOTAL        = ATC_LEGACY_COUNT + ATC_NEW_COUNT;  // 25
 // TIS manual stations come from atc_stations.geojson (298 features)
 
 // ─── Uganda road growth index - BASE YEAR 2016 = 1.00 (all traffic statistics
-// are anchored to the 2016 base year; source growth_factors_summary 2016-2024,
-// projected beyond). Forward projection uses per-class compound growth.
+// are anchored to the 2016 base year). Recomputed as (1+r)^(year-2016) using
+// BLENDED_GROWTH_RATE (r=3.2% p.a., shared/trafficProjection.ts) - the same rate driving
+// AADT nowcasting in shared/liveEngine.ts. The prior hand-typed series implied ~4.9% CAGR
+// by 2035, diverging from the live engine's 3.2% by ~30% cumulative; now reconciled.
 const GROWTH_FACTORS: Record<number, number> = {
-  2016: 1.00, 2017: 1.06, 2018: 1.15, 2019: 1.23, 2020: 1.05, 2021: 1.19,
-  2022: 1.32, 2023: 1.45, 2024: 1.55, 2025: 1.61, 2026: 1.69, 2027: 1.77,
-  2028: 1.87, 2029: 1.97, 2030: 2.06, 2031: 2.15, 2032: 2.24, 2033: 2.32,
-  2034: 2.40, 2035: 2.50,
+  2016: 1.00, 2017: 1.03, 2018: 1.07, 2019: 1.10, 2020: 1.13, 2021: 1.17,
+  2022: 1.21, 2023: 1.25, 2024: 1.29, 2025: 1.33, 2026: 1.37, 2027: 1.41,
+  2028: 1.46, 2029: 1.51, 2030: 1.55, 2031: 1.60, 2032: 1.66, 2033: 1.71,
+  2034: 1.76, 2035: 1.82,
 };
 // aadt_predicted is anchored at the current year - scale a year's 2016-base
 // factor relative to the current year's factor when projecting it.
@@ -437,7 +439,11 @@ function LinkClassTable({ features, surfMap: _surfMap }: { features: PredFeature
       </div>
       <div style={{ marginTop: 8, fontSize: 9, color: 'rgba(148,163,184,0.4)', lineHeight: 1.6 }}>
         <b style={{ color: '#94a3b8' }}>Method:</b> per-class compound growth - projected = base × (1+g)^(years).
-        Class growth (p.a.): Motorcycles 6.0% · Cars/Taxis 5.0% · LGV 4.0% · Small Bus 4.0% · Medium Bus 3.0% · Large Bus 3.0% · Light Trucks 4.0% · Heavy Trucks 3.5% · Trailers 2.5% · NMT 1.0%.
+        {/* Rates below reconciled to UGANDA_FLEET.growthRate (shared/trafficProjection.ts) -
+            the values actually powering the (1+g)^(years) projection above; this caption
+            previously listed a stale 10-class breakdown that didn't match the code it
+            was describing (SHARED_VC_CLASSES uses UGANDA_FLEET's 9-class scheme). */}
+        Class growth (p.a.): Motorcycles 4.5% · Cars/Taxis 3.2% · Minibus 2.8% · Bus 2.0% · Light Trucks 3.5% · Medium Trucks 3.0% · Heavy Trucks 2.5% · Articulated Trucks 2.2% · Other/NMT 1.0%.
       </div>
     </div>
   );

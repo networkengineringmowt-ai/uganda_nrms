@@ -15,6 +15,14 @@ const MONTH_LABELS = ['January','February','March','April','May','June',
 //  - Long rains (MAM) slightly suppress heavy traffic, boost motorcycles
 //  - Short rains (OND) similar but less intense
 //  - Dry seasons (JF, JJAS) see peak HGV and bus movement
+//
+// NOT reconciled to GrowthFactorsPanel's "live" data/growth_factors_summary.json monthly_factors
+// / seasonal_factors: checked directly, and every mef and seasonal_factor value in that generated
+// file is exactly 1.0 (region x year x vehicle_class groups only had a single sampled month, so
+// compute_growth_factors.py's monthly_aadt/annual_aadt ratio degenerates to 1.0 - a data-sparsity
+// artifact, not an observed flat seasonal profile). Since that "live" source carries no real
+// seasonal signal here, replacing this table's varied, source-cited curve with it would destroy
+// information rather than fix a contradiction. Left as-is pending a denser TIS monthly dataset.
 
 interface MEFRow {
   region: string;
