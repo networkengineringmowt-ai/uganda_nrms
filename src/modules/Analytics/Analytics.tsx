@@ -102,7 +102,13 @@ export default function Analytics() {
       const avgCond = inBand.length
         ? inBand.reduce((s, x) => s + x.conditionRating, 0) / inBand.length
         : 0;
-      return { label: b.label, count: inBand.length, avgCond: parseFloat(avgCond.toFixed(2)) };
+      return {
+        label: b.label,
+        count: inBand.length,
+        bridges: inBand.filter(s => s.type === 'bridge').length,
+        culverts: inBand.filter(s => s.type === 'culvert').length,
+        avgCond: parseFloat(avgCond.toFixed(2)),
+      };
     });
   }, [structures]);
 
@@ -335,7 +341,7 @@ function AgeTab({ ageData }: { ageData: any[] }) {
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bms-card">
-          <h3 className="text-sm font-bold text-white mb-4">Structure Count by Age Band</h3>
+          <h3 className="text-sm font-bold text-white mb-4">Structure Count by Age Band (Bridges vs Culverts)</h3>
           <Chart3DWrap>
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={ageData} margin={{ top:4, right:12, left:0, bottom:0 }}>
@@ -343,11 +349,9 @@ function AgeTab({ ageData }: { ageData: any[] }) {
                 <XAxis dataKey="label" tick={{ ...TICK }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ ...TICK }} axisLine={false} tickLine={false} />
                 <Tooltip {...TT_NEON} />
-                <Bar dataKey="count" name="Structures" radius={[4,4,0,0]} animationDuration={1200} shape={<Bar3D />}>
-                  {ageData.map((_: any, i: number) => (
-                    <Cell key={i} fill={NEON[i % NEON.length]} />
-                  ))}
-                </Bar>
+                <Legend wrapperStyle={{ fontSize:11, color:'#94a3b8' }} />
+                <Bar dataKey="bridges"  name="Bridges"  stackId="age" fill="#4d9fff" radius={[0,0,0,0]} animationDuration={1200} shape={<Bar3D />} />
+                <Bar dataKey="culverts" name="Culverts" stackId="age" fill="#00f5ff" radius={[4,4,0,0]} animationDuration={1200} shape={<Bar3D />} />
               </BarChart>
             </ResponsiveContainer>
           </Chart3DWrap>
