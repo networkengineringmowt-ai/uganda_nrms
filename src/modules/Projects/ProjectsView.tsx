@@ -245,6 +245,7 @@ function Lightbox({ src, caption, onClose, onPrev, onNext, hasPrev, hasNext }: {
         alt={caption}
         className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg shadow-2xl"
         onClick={e => e.stopPropagation()}
+        onError={e => { (e.target as HTMLImageElement).style.opacity = '0.2'; }}
       />
       <div className="absolute bottom-4 text-xs text-white/60 text-center px-4 max-w-xl">
         {caption}
