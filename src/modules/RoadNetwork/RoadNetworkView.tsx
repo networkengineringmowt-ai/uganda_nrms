@@ -135,7 +135,7 @@ const ANIM_MAX = 2026;
 const ANIM_STEP = 1;
 
 // ── Main component ─────────────────────────────────────────────────────────────
-export default function RoadNetworkView() {
+export default function RoadNetworkView({ defaultHistory }: { defaultHistory?: boolean } = {}) {
   // Data
   const [geoData,    setGeoData]    = useState<GeoJSON.FeatureCollection | null>(null);
   const [paveYears,  setPaveYears]  = useState<Record<string, number | null>>({});
@@ -153,7 +153,10 @@ export default function RoadNetworkView() {
   const [animYear,   setAnimYear]   = useState(CURRENT_YEAR);
   const [playing,    setPlaying]    = useState(false);
   const [speed,      setSpeed]      = useState(600); // ms per year
-  const [animMode,   setAnimMode]   = useState(false); // false = current state
+  // defaultHistory lets a caller (e.g. LifecycleView, where asset history
+  // over time is the whole point) open this map already in History mode
+  // instead of the usual Current-state default.
+  const [animMode,   setAnimMode]   = useState(!!defaultHistory); // false = current state
 
   // Filter (current mode)
   const [colorBy,    setColorBy]    = useState<'surface'|'class'|'region'>('surface');
