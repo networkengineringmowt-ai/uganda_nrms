@@ -3,7 +3,9 @@ import {
   Activity, Shield, Construction, Layers, Network, Building2,
   DollarSign, Clock, Database, ShieldCheck, Route, Globe, Landmark,
   ChevronDown, Gauge, Map, Video, Hammer, FileText, Download,
-  Leaf, FolderOpen, BarChart3, TrendingUp,
+  Leaf, BarChart3, TrendingUp,
+  BookOpen, Navigation, ClipboardList, ClipboardCheck, MapPin, ListOrdered,
+  Camera, LineChart, AlertTriangle, HardHat, Target, Cpu, BrainCircuit, ListTodo,
 } from 'lucide-react';
 import { useBMS } from '../../store/BMSContext';
 import { useAuth } from '../../modules/Auth/AuthContext';
@@ -55,7 +57,28 @@ const SECTIONS: Record<string, Section> = {
   downloads:     { id: 'downloads',     label: 'Downloads',                 icon: <Download size={14}/>,     color: N.gray   },
   ducar:         { id: 'ducar',         label: 'DUCAR Roads',                icon: <Leaf size={14}/>,         color: N.green  },
   socioeconomic: { id: 'socioeconomic', label: 'Socio-Economic Analysis',   icon: <BarChart3 size={14}/>,    color: N.yellow },
-  documents:     { id: 'documents',     label: 'Document Store',             icon: <FolderOpen size={14}/>,   color: N.gray   },
+
+  // Restored from history - these were standalone sidebar tabs before the
+  // 6-tab hub consolidation folded their content into a parent section's
+  // sub-tabs. The content never moved or was deleted, so this just gives
+  // each one its own row again, per an explicit request to bring back every
+  // tab that has ever existed in the nav.
+  networkstory:    { id: 'networkstory',    label: 'Network Story 1986–', icon: <BookOpen size={14}/>,       color: N.purple },
+  roadnetwork:     { id: 'roadnetwork',     label: 'Road Network Map',      icon: <Navigation size={14}/>,     color: N.cyan   },
+  registry:        { id: 'registry',        label: 'Structure Registry',    icon: <ClipboardList size={14}/>,  color: N.blue   },
+  inspections:     { id: 'inspections',     label: 'Inspection Management', icon: <ClipboardCheck size={14}/>, color: N.blue   },
+  gismap:          { id: 'gismap',          label: 'Structure GIS Map',     icon: <MapPin size={14}/>,         color: N.blue   },
+  priority:        { id: 'priority',        label: 'Priority Ranking',      icon: <ListOrdered size={14}/>,    color: N.pink   },
+  phototwin:       { id: 'phototwin',       label: 'Photo & Digital Twin',  icon: <Camera size={14}/>,         color: N.blue   },
+  trafficanalytics:{ id: 'trafficanalytics',label: 'Traffic Analytics',     icon: <LineChart size={14}/>,      color: N.cyan   },
+  trafficsummary:  { id: 'trafficsummary',  label: 'Traffic Summary',       icon: <FileText size={14}/>,       color: N.cyan   },
+  growthfactors:   { id: 'growthfactors',   label: 'Growth Factors',        icon: <TrendingUp size={14}/>,     color: N.orange },
+  overloading:     { id: 'overloading',     label: 'Overloading Analytics', icon: <AlertTriangle size={14}/>,  color: N.orange },
+  oprc:            { id: 'oprc',            label: 'OPRC Contracts',        icon: <HardHat size={14}/>,        color: N.green  },
+  ndpiv:           { id: 'ndpiv',           label: 'NDP IV (Vision 2040)',  icon: <Target size={14}/>,         color: N.yellow },
+  hdm4:            { id: 'hdm4',            label: 'HDM-4 Analysis',        icon: <Cpu size={14}/>,            color: N.teal   },
+  mlarchitecture:  { id: 'mlarchitecture',  label: 'ML System Architecture',icon: <BrainCircuit size={14}/>,   color: N.purple },
+  projecttracker:  { id: 'projecttracker',  label: 'Project Tracker',       icon: <ListTodo size={14}/>,       color: N.green  },
 };
 
 // Four top-level tabs - each groups its child sections. Navigation is unchanged
@@ -64,7 +87,14 @@ const GROUPS: Group[] = [
   { id: 'assets',    label: 'Network & Assets',      icon: <Network size={15}/>,      color: N.cyan,   items: ['rms', 'roadcondition', 'npms', 'bms', 'bridgeworks', 'roadreserve', 'roadatlas', 'roadvideo', 'ducar'] },
   { id: 'traffic',   label: 'Traffic & Performance', icon: <Activity size={15}/>,     color: N.orange, items: ['traffic', 'ntis', 'atc'] },
   { id: 'planning',  label: 'Planning & Investment', icon: <Building2 size={15}/>,    color: N.green,  items: ['projects', 'pim', 'budget', 'lifecycle', 'socioeconomic'] },
-  { id: 'knowledge', label: 'Knowledge & Admin',     icon: <Shield size={15}/>,       color: N.purple, items: ['casestudies', 'sources', 'documents', 'downloads', 'gisenterprise', 'admin'] },
+  { id: 'knowledge', label: 'Knowledge & Admin',     icon: <Shield size={15}/>,       color: N.purple, items: ['casestudies', 'sources', 'downloads', 'gisenterprise', 'admin'] },
+  // Every standalone tab that has ever existed in this sidebar, restored -
+  // see the SECTIONS comment above for why these were missing.
+  { id: 'legacy',    label: 'More Tools & Legacy',   icon: <Layers size={15}/>,       color: N.gray,   items: [
+    'networkstory', 'roadnetwork', 'registry', 'inspections', 'gismap', 'priority',
+    'phototwin', 'trafficanalytics', 'trafficsummary', 'growthfactors', 'overloading',
+    'oprc', 'ndpiv', 'hdm4', 'mlarchitecture', 'projecttracker',
+  ] },
 ];
 
 export default function Sidebar() {
