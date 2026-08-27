@@ -657,7 +657,7 @@ function VehicleClassByRegionChart({ features }: { features: PredFeature[] }) {
                 VEHICLE_CLASSES.find(vc => vc.abbr === name)?.name ?? name,
               ]}/>
             <Legend wrapperStyle={{ fontSize: 9, paddingTop: 6 }}
-              formatter={(value: string) => VEHICLE_CLASSES.find(vc => vc.abbr === value)?.name ?? value}/>
+              formatter={(value: string) => <span style={{ color: 'rgba(148,163,184,0.7)' }}>{VEHICLE_CLASSES.find(vc => vc.abbr === value)?.name ?? value}</span>}/>
             {VEHICLE_CLASSES.map(vc => (
               <Bar key={vc.abbr} dataKey={vc.abbr} fill={vc.color} radius={[2, 2, 0, 0]}
                 fillOpacity={0.82} shape={<Bar3D/>}/>
