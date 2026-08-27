@@ -152,11 +152,30 @@ export function ChartBox({ title, subtitle, accent = DASH_C.cyan, height = 200, 
 
 export interface Slice { name: string; value: number; color?: string; }
 
+// Shared slice-label renderer for every donut/pie tile - "Name 42%" printed
+// directly next to each slice (in the theme's light text colour, since
+// Recharts' default label fill is black and invisible on this dark UI),
+// not just tucked away in the legend.
+export function renderSliceLabel(props: any) {
+  const { cx, cy, midAngle, outerRadius, name, percent } = props;
+  const RAD = Math.PI / 180;
+  const r = outerRadius + 14;
+  const x = cx + r * Math.cos(-midAngle * RAD);
+  const y = cy + r * Math.sin(-midAngle * RAD);
+  if (!percent) return null;
+  return (
+    <text x={x} y={y} fill="#c3cede" fontSize={9} textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+      {`${name} ${(percent * 100).toFixed(0)}%`}
+    </text>
+  );
+}
+
 export function DonutChart({ data, colors = REGION_COLORS, innerRadius = 42 }: { data: Slice[]; colors?: string[]; innerRadius?: number }) {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <PieChart>
-        <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={innerRadius} outerRadius={innerRadius + 26} paddingAngle={2}>
+        <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={innerRadius} outerRadius={innerRadius + 26} paddingAngle={2}
+          label={renderSliceLabel} labelLine={{ stroke: 'rgba(148,163,184,0.4)' }}>
           {data.map((d, i) => <Cell key={i} fill={d.color ?? colors[i % colors.length]} />)}
         </Pie>
         <Tooltip contentStyle={TIP_STYLE} formatter={(v: number) => v.toLocaleString()} />
@@ -170,7 +189,8 @@ export function PieChartTile({ data, colors = REGION_COLORS }: { data: Slice[]; 
   return (
     <ResponsiveContainer width="100%" height="100%">
       <PieChart>
-        <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={62} label={{ fontSize: 8, fill: '#c3cede' }}>
+        <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={62}
+          label={renderSliceLabel} labelLine={{ stroke: 'rgba(148,163,184,0.4)' }}>
           {data.map((d, i) => <Cell key={i} fill={d.color ?? colors[i % colors.length]} />)}
         </Pie>
         <Tooltip contentStyle={TIP_STYLE} formatter={(v: number) => v.toLocaleString()} />
