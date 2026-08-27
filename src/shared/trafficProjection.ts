@@ -82,7 +82,11 @@ export function projectAllClasses(totalAadt: number, baseYear: number, toYear: n
   return VC_CLASSES.map(c => {
     const baseCount = totalAadt * c.share;
     const projCount = projectClass(baseCount, baseYear, c.growth, toYear);
-    return { key: c.key, label: c.label, short: c.short, baseCount, projCount, growth: c.growth };
+    // `share` is re-exposed here (not just baseCount/projCount) because
+    // TrafficLegacyContent.tsx and TrafficSection.tsx weight their blended
+    // growth-rate calculation by c.share - without it that calculation
+    // silently evaluated to NaN (accessing a field the return object never had).
+    return { key: c.key, label: c.label, short: c.short, share: c.share, baseCount, projCount, growth: c.growth };
   });
 }
 
