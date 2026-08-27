@@ -107,9 +107,15 @@ import { DeepAnalysisTables } from './DeepAnalysisTables';
 
 // Normalises a sidebar sectionId to the id used by ExhaustiveTables / DeepAnalysisTables
 // / SchemaExplorer's underlying table specs, where the two differ.
+// 'atc' and 'bridgeworks' used to alias onto 'tis'/'bms' here, which made
+// their entire Dashboard/Map/Tables/Analytics/SQL content byte-identical to
+// the Traffic and BMS sections despite having their own distinct DEFS text -
+// a real sidebar-visible duplication bug. Both now have their own dedicated
+// content (see SECTION_EXTRAS below: 'atc' -> PredictionsPanel, 'bridgeworks'
+// -> BridgeWorksSection) so they stay un-aliased.
 const SECTION_ALIAS: Record<string, string> = {
-  traffic: 'tis', atc: 'tis', condition: 'pms', roadcondition: 'pms', npms: 'pms',
-  registry: 'bms', inspections: 'bms', bridgeworks: 'bms', nbms: 'bms',
+  traffic: 'tis', condition: 'pms', roadcondition: 'pms', npms: 'pms',
+  registry: 'bms', inspections: 'bms', nbms: 'bms',
   maintenance: 'ducar',
   roadreserve: 'reserve',
   gisenterprise: 'gis',
@@ -192,6 +198,10 @@ const LazyGrowthFactors = lazy(() => import('../Traffic/GrowthFactorsPanel'));
 const LazyOverloading = lazy(() => import('../Traffic/OverloadingSection'));
 const LazyOprc = lazy(() => import('../../components/sections/OprcSection'));
 const LazyNdpiv = lazy(() => import('../../components/sections/NdpivSection'));
+
+// - ATC legacy content -------------------- (previously orphaned - never
+// imported anywhere in the app before this fix)
+const ATC_Predictions = lazy(() => import('../ATC/PredictionsPanel'));
 
 // - RMS legacy content --------------------
 const LazyRoadNetworkMap = lazy(() => import('../RoadNetwork/RoadNetworkView'));
@@ -354,7 +364,15 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
     tables: [RV_View],
   },
   bridgeworks: {
-    tables: [BMS_BridgeWorks],
+    // Its own dedicated component (KPI cards + searchable works list) - was
+    // dead code before the alias fix above since 'bridgeworks' resolved to
+    // 'bms' first and this entry was never reached.
+    dashboard: [BMS_BridgeWorks],
+  },
+  atc: {
+    // Real-time congestion/AADT forecasting for the 25-station ATC network -
+    // was a fully-built, never-imported orphan component before this fix.
+    dashboard: [ATC_Predictions],
   },
   budget: {
     analytics: [BUD_Section],
@@ -364,6 +382,10 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
   },
   projects: {
     tables: [PROJ_View],
+    // OPRC and NDP IV dashboards were fully built but never wired into any
+    // section - both are project/contract-finance content, so they belong
+    // under Projects' Deep Analytics tab.
+    analytics: [LazyOprc, LazyNdpiv],
   },
 };
 
