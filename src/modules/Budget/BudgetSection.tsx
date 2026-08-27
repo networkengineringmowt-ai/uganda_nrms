@@ -84,7 +84,7 @@ const CT = ({ active, payload, label }: any) => {
   );
 };
 
-export default function BudgetSection() {
+export default function BudgetSection({ embedded }: { embedded?: boolean } = {}) {
   const [tab, setTab] = useState<TabId>('gap');
   const imx = useTableSort(INTERVENTION_MATRIX, 'type');
   const { budgetAlignment, networkSummary } = useSectionData();
@@ -132,9 +132,12 @@ export default function BudgetSection() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
-      <CrossLinkChipBar sectionId="budget" />
+      {/* When embedded (e.g. nested inside PimLegacyContent's Budget tab),
+          this section's own cross-link chips and module nav bar would
+          duplicate the parent page's chrome, so they're suppressed. */}
+      {!embedded && <CrossLinkChipBar sectionId="budget" />}
     <div style={{ padding: '8px 14px', flex: 1 }}>
-      <ModuleNavBar module="Budget" />
+      {!embedded && <ModuleNavBar module="Budget" />}
             {/* Definition card */}
       <div style={{ background: 'rgba(255,45,120,0.04)', border: '1px solid rgba(255,45,120,0.15)', borderRadius: 14, padding: '14px 20px', marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
