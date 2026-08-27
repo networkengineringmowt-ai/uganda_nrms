@@ -6,7 +6,7 @@ import { UserBadge } from '../../modules/Auth/UserBadge';
 const CURR = new Date().getFullYear();   // dynamic current year - never hardcode
 
 const VIEW_TITLES: Record<string, { title: string; sub: string; color?: string }> = {
-  rms:           { title: 'RMS - Road Management System', sub: 'Overview · Road network map · Road inventory · Network story', color: '#00f5ff' },
+  rms:           { title: 'RMS - Road Mgmt System',        sub: 'Overview · Road network map · Road inventory · Network story', color: '#00f5ff' },
   bms:           { title: 'Bridge Management System',     sub: 'Dashboard · Structure map · Inventory & condition · Bridge works', color: '#4d9fff' },
   lifecycle:     { title: 'Life Cycle Management',        sub: 'Per-link timeline · IRI trajectory · Intervention history · Projected maintenance', color: '#00d4aa' },
   budget:        { title: 'Budget & Maintenance',         sub: 'Maintenance financing · Unit-cost matrix · MTEF planning', color: '#ff2d78' },
@@ -34,10 +34,10 @@ const VIEW_TITLES: Record<string, { title: string; sub: string; color?: string }
   casestudies:   { title: 'Global Case Studies',          sub: 'World map · Comparative analytics · Literature Review Matrix (195 countries) · Lessons for DNR', color: '#00d4aa' },
   roadreserve:   { title: 'Road Reserve Management',      sub: 'Gazette status · Reserve corridor map · Encroachment register · Legal enforcement', color: '#00d4aa' },
   roadvideoview: { title: 'Road Survey Video',             sub: 'Road surface video archive · 2021–2026',               color: '#ff6b35' },
-  traffic:       { title: 'Traffic & Demand',             sub: `Network traffic counts · base year 2016 · projected to ${CURR} · 298 TCS stations`,   color: '#ffd23f' },
+  traffic:       { title: 'Traffic Information',          sub: `Network traffic counts · base year 2016 · projected to ${CURR} · 298 TCS stations`,   color: '#ffd23f' },
   roadcondition: { title: 'Pavement Management',          sub: `Road condition · IRI · HDM-4 · maintenance programme · as of ${CURR}`,    color: '#fb923c' },
-  atc:           { title: 'ATC Live Dashboard',           sub: 'Automatic Traffic Counters · 10 permanent mother stations · Jul 2025–present', color: '#ffd23f' },
-  projects:      { title: 'Projects & Road Development',  sub: 'Ongoing upgrading & construction contracts · FY 2025/26', color: '#ff2d78' },
+  atc:           { title: 'ATC Traffic Counters',         sub: 'Automatic Traffic Counters · 10 permanent mother stations · Jul 2025–present', color: '#ffd23f' },
+  projects:      { title: 'Projects & Works',              sub: 'Ongoing upgrading & construction contracts · FY 2025/26', color: '#ff2d78' },
   // BMS
   gismap:        { title: 'Structure GIS Map',                sub: 'GIS structure map · All bridges & major culverts · 2018–2024 time series', color: '#00ff88' },
   dashboard:     { title: 'BMS Dashboard',                sub: 'Bridge Management System · DNR',                        color: '#00f5ff' },
@@ -53,7 +53,7 @@ const VIEW_TITLES: Record<string, { title: string; sub: string; color?: string }
   roadatlas:     { title: 'Road Atlas',                   sub: 'Visual intelligence atlas · 21,137 km mapped national network · DNR GIS', color: '#00d4aa' },
   roadvideo:     { title: 'Road Video Survey',            sub: 'Georeferenced pavement survey video · frame-by-frame · 2021–2026', color: '#ff6b35' },
   bridgeworks:   { title: 'Bridge Works Programme',       sub: 'Bridge & major-culvert development projects · MoWT status report', color: '#4d9fff' },
-  downloads:     { title: 'Downloads & Exports',          sub: 'Network, bridge & culvert inventory · WGS84 shapefiles · CSV · GeoJSON', color: '#94a3b8' },
+  downloads:     { title: 'Downloads',                    sub: 'Network, bridge & culvert inventory · WGS84 shapefiles · CSV · GeoJSON', color: '#94a3b8' },
   gisenterprise: { title: 'GIS Enterprise',               sub: 'Enterprise GIS architecture · client / service / data layers · WMS & tile services', color: '#b967ff' },
   hdm4:          { title: 'HDM-4 Analysis',               sub: 'Highway Development & Management · works cost matrix · economic appraisal', color: '#00f5ff' },
 };
