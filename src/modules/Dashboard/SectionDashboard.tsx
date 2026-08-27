@@ -3,27 +3,27 @@ import { setActiveSubTab } from '../../shared/activeSubTabStore';
 
 /* ── Section metadata ─────────────────────────────────────────────────────── */
 const DEFS: Record<string, { title: string; body: string; icon: string }> = {
-  rms:          { icon: '🔧', title: 'Road Maintenance System',             body: 'Tracks maintenance activities, work orders, and road condition improvement across the national road network.' },
+  rms:          { icon: '🔧', title: 'RMS - Road Mgmt System',              body: 'Tracks maintenance activities, work orders, and road condition improvement across the national road network.' },
   pms:          { icon: '📐', title: 'Pavement Management System',          body: 'IRI-based pavement condition surveys, roughness analysis, and treatment recommendations for Uganda\'s classified roads.' },
-  roadcondition:{ icon: '🛣',  title: 'Road Condition Assessment',           body: 'Visual and instrumental road condition data including cracking, rutting, potholing, and surface distress indices.' },
+  roadcondition:{ icon: '🛣',  title: 'Pavement Management',                 body: 'Visual and instrumental road condition data including cracking, rutting, potholing, and surface distress indices.' },
   bms:          { icon: '🌉', title: 'Bridge Management System',             body: 'Inventory, structural inspection reports, load ratings, and maintenance prioritisation for bridges and culverts.' },
-  traffic:      { icon: '🚦', title: 'Traffic Information System',           body: 'Automatic Traffic Counter data, AADT computation, vehicle classification, and seasonal adjustment factors.' },
-  atc:          { icon: '📡', title: 'ATC Station Network',                  body: '25 Automatic Traffic Counters (15 legacy + 10 new) providing real-time classified volume data across the national road network.' },
+  traffic:      { icon: '🚦', title: 'Traffic Information',                  body: 'Automatic Traffic Counter data, AADT computation, vehicle classification, and seasonal adjustment factors.' },
+  atc:          { icon: '📡', title: 'ATC Traffic Counters',                 body: '25 Automatic Traffic Counters (15 legacy + 10 new) providing real-time classified volume data across the national road network.' },
   ntis:         { icon: '📈', title: 'National Traffic Information System',  body: 'AADT trends, growth forecasting, axle-load monitoring, and road safety analysis for Uganda\'s national corridors.' },
   npms:         { icon: '🗺',  title: 'National PMS',                         body: 'Strategic-level pavement performance indicators and network-wide condition distribution across all road classes.' },
   nbms:         { icon: '🗂',  title: 'National BMS',                         body: 'Consolidated bridge and structure data across all road agencies - UNRA, URF, district, and urban authorities.' },
-  network:      { icon: '🌐', title: 'Road Network Overview',                body: 'The classified road network: national, district, urban, and community access roads, total extent and agency responsibilities.' },
+  network:      { icon: '🌐', title: 'Network Overview',                     body: 'The classified road network: national, district, urban, and community access roads, total extent and agency responsibilities.' },
   roadreserve:  { icon: '📏', title: 'Road Reserve Management',              body: 'Surveyed road reserve boundaries, encroachment detection, gazette status, and reserve width compliance monitoring.' },
-  gisenterprise:{ icon: '🗺',  title: 'GIS Enterprise Platform',             body: 'Spatial data infrastructure, GIS layers, aerial imagery, and geospatial analysis tools for road asset management.' },
-  bridgeworks:  { icon: '🏗',  title: 'Bridge Works Contracts',               body: 'Active and completed bridge construction and rehabilitation contracts, progress tracking, and financial performance.' },
-  pim:          { icon: '📋', title: 'Project Information Management',       body: 'Capital investment project register, milestone tracking, contractor performance, and disbursement records.' },
-  budget:       { icon: '💰', title: 'Budget Management',                    body: 'MTEF budget allocations, approved estimates, actual expenditure, and funding gap analysis by programme and road agency.' },
-  lifecycle:    { icon: '♻',  title: 'Lifecycle Cost Analysis',              body: 'HDM-4 based life-cycle costing, NPV/BCR computation, and optimal maintenance strategy selection over a 20-year horizon.' },
+  gisenterprise:{ icon: '🗺',  title: 'GIS Enterprise',                      body: 'Spatial data infrastructure, GIS layers, aerial imagery, and geospatial analysis tools for road asset management.' },
+  bridgeworks:  { icon: '🏗',  title: 'Bridge Works Programme',               body: 'Active and completed bridge construction and rehabilitation contracts, progress tracking, and financial performance.' },
+  pim:          { icon: '📋', title: 'Public Investment',                    body: 'Capital investment project register, milestone tracking, contractor performance, and disbursement records.' },
+  budget:       { icon: '💰', title: 'Budget & Maintenance',                 body: 'MTEF budget allocations, approved estimates, actual expenditure, and funding gap analysis by programme and road agency.' },
+  lifecycle:    { icon: '♻',  title: 'Life Cycle Management',                body: 'HDM-4 based life-cycle costing, NPV/BCR computation, and optimal maintenance strategy selection over a 20-year horizon.' },
   roadatlas:    { icon: '📖', title: 'Road Atlas',                           body: 'Official Uganda road atlas with classified inventory, road numbers, chainage references, and district-level statistics.' },
   roadvideo:    { icon: '🎥', title: 'Road Video Survey',                    body: 'Continuous video log survey footage referenced to road chainage, used for remote visual condition assessment.' },
-  projects:     { icon: '🏛',  title: 'Projects & Programmes',                body: 'Capital, maintenance, and safety programmes funded by GOU, World Bank, AfDB, JICA, and other development partners.' },
-  casestudies:  { icon: '📝', title: 'Case Studies',                         body: 'Documented project outcomes, best-practice engineering interventions, and value-for-money analyses.' },
-  admin:        { icon: '⚙',  title: 'Administration',                       body: 'User management, access control, audit logs, system configuration, and the platform architecture mind map.' },
+  projects:     { icon: '🏛',  title: 'Projects & Works',                     body: 'Capital, maintenance, and safety programmes funded by GOU, World Bank, AfDB, JICA, and other development partners.' },
+  casestudies:  { icon: '📝', title: 'Global Case Studies',                  body: 'Documented project outcomes, best-practice engineering interventions, and value-for-money analyses.' },
+  admin:        { icon: '⚙',  title: 'Admin Tools',                          body: 'User management, access control, audit logs, system configuration, and the platform architecture mind map.' },
   hdm4:         { icon: '🔬', title: 'HDM-4 Analysis',                       body: 'Highway Development and Management model runs for road investment planning and budget optimisation.' },
   ducar:        { icon: '🌿', title: 'DUCAR Roads',                          body: 'District, Urban, Community Access Road network data - condition, coverage, and maintenance funding by local government.' },
   sources:      { icon: '📚', title: 'Sources & Evidence',                   body: 'Evidence catalogue, tabular summaries, and the platform data dictionary underpinning every figure shown across the site.' },
@@ -343,14 +343,19 @@ const LazyProjectTracker      = lazy(() => import('../Projects/ProjectTracker'))
 type ExtraSlot = 'dashboard' | 'map' | 'tables' | 'analytics' | 'capture';
 const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentType<any>[]>>> = {
   rms: {
-    dashboard: [NetworkStoryEmbed],
-    map: [LazyRoadNetworkMap],
+    // NetworkStory and RoadNetworkMap now each have their own dedicated
+    // standalone sidebar section (networkstory / roadnetwork) - keeping
+    // them here too made RMS's own hub show byte-identical content to two
+    // other sidebar entries. RMS's Dashboard/Map tabs fall back to the
+    // shared InsightGrid/SectionMap treatment like any other section.
     tables: [LazyRoadInventoryTbl],
   },
   tis: {
     map: [TrafficMapLegacy],
     tables: [TrafficCountsLegacy, TrafficStationsLegacy],
-    analytics: [TrafficTrendsLegacy, LazyGrowthFactors, LazyOverloading, LazyRoadSafetyOverview],
+    // GrowthFactors and Overloading moved out - each now has its own
+    // dedicated standalone sidebar section (see below).
+    analytics: [TrafficTrendsLegacy, LazyRoadSafetyOverview],
   },
   pms: {
     map: [PmsConditionMapLegacy],
@@ -358,9 +363,14 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
     analytics: [PMS_CrossSectionAnalytics, PmsAnalyticsViewLegacy, PmsAgeLegacy, PmsFwdLegacy, PMS_LifecycleView, PMS_PavementCatalogue, PMS_AIVisionDashboard, PMS_DigitalTwin],
   },
   bms: {
-    map: [BMS_GISMap],
-    tables: [BMS_Registry, BMS_Inspections, BMS_BridgeWorks, BMS_Maintenance],
-    analytics: [BMS_Condition, BMS_Critical, BMS_Analytics, BMS_PhotoTwin],
+    // GISMap, Registry, Inspections, BridgeWorks and PhotoTwin each now
+    // have their own dedicated standalone sidebar section (see below) -
+    // keeping them here too made BMS's hub show byte-identical content to
+    // five other sidebar entries. Only content with no standalone home
+    // (Maintenance & Works, Condition Assessment, Analytics & Reports,
+    // Critical Structures) stays on the BMS hub itself.
+    tables: [BMS_Maintenance],
+    analytics: [BMS_Condition, BMS_Critical, BMS_Analytics],
   },
   ducar: {
     dashboard: [LazyDucarOverview],
@@ -431,10 +441,10 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
   },
   projects: {
     tables: [PROJ_View],
-    // OPRC and NDP IV dashboards were fully built but never wired into any
-    // section - both are project/contract-finance content, so they belong
-    // under Projects' Deep Analytics tab.
-    analytics: [LazyOprc, LazyNdpiv],
+    // OPRC and NDP IV each now have their own dedicated standalone sidebar
+    // section (see below) with their own distinct framing - OPRC is "roads
+    // selected for OPRC contracting", not a generic Projects sub-view - so
+    // they no longer duplicate onto Projects' Deep Analytics tab too.
   },
 
   // Restored standalone legacy tabs - each keeps its own un-aliased sectionId
