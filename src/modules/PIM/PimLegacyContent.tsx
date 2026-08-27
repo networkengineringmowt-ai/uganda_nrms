@@ -173,7 +173,13 @@ export default function PimLegacyContent({ initialTab, hideTabBar }: { initialTa
             { label: 'FY24/25 Budget', value: 'UGX 3.2T', sub: 'Roads & Bridges', color: C.yellow },
             { label: 'Donor Share', value: '50%', sub: 'of capital budget', color: C.blue },
             { label: 'Active PPPs', value: '2', sub: '+ 3 in pipeline', color: C.green },
-            { label: 'NDP IV Target', value: '12,000km', sub: 'paved by 2025/26', color: C.cyan },
+            // Reconciled to the DNR GIS Jun 2025 official network figure (6,405 km paved /
+            // 21,302 km total, 30.1% paved) used throughout the app - see TabularSummaries.tsx
+            // netStats and Projects > NDP IV card. The prior "12,000km" value didn't match this
+            // table's own baseline (5,400km 2020/21) or ~240km/yr paving rate, and coincided
+            // exactly with DUCAR's unrelated "12,000 km community roads" figure - almost
+            // certainly a copy/paste mix-up between two different road classes.
+            { label: 'NDP IV Target', value: '6,405km', sub: 'paved by 2025/26 (30.1% of network)', color: C.cyan },
           ].map(k => (
             <div key={k.label} style={{ background: `rgba(${hexRgb(k.color)},0.06)`,
               border: `1px solid rgba(${hexRgb(k.color)},0.2)`, borderRadius: 10, padding: '12px 14px' }}>
@@ -392,7 +398,10 @@ export default function PimLegacyContent({ initialTab, hideTabBar }: { initialTa
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 10, marginBottom: 18 }}>
               {[
-                { target: '12,000 km', desc: 'Paved national roads by 2025/26', base: '5,400 km (2020/21)', color: C.cyan },
+                // See KPI strip comment above: reconciled to the official 6,405km paved figure
+                // (DNR GIS Jun 2025 / TabularSummaries netStats), matching ProjectsView's NDP IV
+                // card ("Current baseline: ~30.3% / 6,405 km") for the same FY2025/26 milestone.
+                { target: '6,405 km', desc: 'Paved national roads by 2025/26', base: '5,400 km (2020/21)', color: C.cyan },
                 { target: '95%',       desc: 'National roads in good/fair condition', base: '72% (2020/21)', color: C.green },
                 { target: '2,500 km',  desc: 'New roads to be paved', base: 'Upgrading from gravel', color: C.yellow },
                 { target: '240 km/yr', desc: 'Annual paving programme', base: 'Average delivery target', color: C.orange },
