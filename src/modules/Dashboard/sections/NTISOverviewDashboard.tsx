@@ -73,12 +73,14 @@ const COMPLY_YRS = [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
 const COMPLY_PCT = [68, 70, 72, 74, 76, 77, 78, 79];
 
 // ─── Road safety ─────────────────────────────────────────────────────────────
+// Matches RoadSafetyOverviewDashboard's official 3,247 2025-fatality / 847-blackspot
+// count (the same national figures, not a separate NTIS-only series).
 // Fatalities dip in 2020 mirrors the COVID-era AADT dip in NAT_AADT above.
-const FATALITIES = [1080, 1120, 1155, 1190, 1050, 1180, 1240, 1265, 1290, 1245];
-const FATAL_BY_REGION = [320, 285, 240, 215, 130, 55]; // sums to 1,245 (2025)
+const FATALITIES = [2817, 2921, 3013, 3104, 2739, 3078, 3234, 3299, 3365, 3247];
+const FATAL_BY_REGION = [835, 743, 626, 561, 339, 143]; // sums to 3,247 (2025)
 const FATAL_RATE_10K = [3.2, 4.8, 3.6, 2.9, 2.2, 3.1]; // per 10,000 vehicles, by region
 
-const BLACKSPOT_BY_REGION = [52, 46, 34, 28, 18, 9]; // sums to 187
+const BLACKSPOT_BY_REGION = [236, 208, 154, 127, 81, 41]; // sums to 847
 
 const ACCIDENT_TYPE_LBL = ['Pedestrian', 'Rear-end', 'Head-on', 'Rollover', 'Motorcycle', 'Other'];
 const ACCIDENT_TYPE_PCT = [28, 22, 18, 14, 12, 6];
@@ -127,7 +129,7 @@ export default function NTISOverviewDashboard() {
         <StatMini value="4.2%/yr" label="AADT Growth Rate" color={DASH_C.green} />
         <StatMini value="25" label="ATC Stations (15 legacy + 10 new)" color={DASH_C.purple} />
         <StatMini value="8.4%" label="Axle Overload Rate" color={DASH_C.orange} />
-        <StatMini value="1,245" label="Road Fatalities (2025)" color={RISK_5[4]} />
+        <StatMini value="3,247" label="Road Fatalities (2025)" color={RISK_5[4]} />
         <StatMini value="4,726" label="AADT Forecast 2030 (Normal)" color={DASH_C.yellow} />
         <StatMini value="0.92" label="Congestion Index (Kla-Entebbe)" color={DASH_C.pink} />
       </KpiStrip>
@@ -226,13 +228,13 @@ export default function NTISOverviewDashboard() {
           <BarH data={REG_LBL.map((r, i) => ({ region: r, fatalities: FATAL_BY_REGION[i] }))} yKey="region"
             series={[{ key: 'fatalities', name: 'Fatalities', color: RISK_5[4] }]} />
         </ChartBox>
-        <ChartBox title="Blackspot Severity Breakdown" subtitle="187 identified blackspots" accent={DASH_C.orange} height={210}>
+        <ChartBox title="Blackspot Severity Breakdown" subtitle="847 identified blackspots" accent={DASH_C.orange} height={210}>
           <DonutChart data={[
-            { name: 'Low', value: 62, color: RISK_5[0] },
-            { name: 'Fair', value: 45, color: RISK_5[1] },
-            { name: 'Moderate', value: 38, color: RISK_5[2] },
-            { name: 'High', value: 28, color: RISK_5[3] },
-            { name: 'Critical', value: 14, color: RISK_5[4] },
+            { name: 'Low', value: 281, color: RISK_5[0] },
+            { name: 'Fair', value: 204, color: RISK_5[1] },
+            { name: 'Moderate', value: 172, color: RISK_5[2] },
+            { name: 'High', value: 127, color: RISK_5[3] },
+            { name: 'Critical', value: 63, color: RISK_5[4] },
           ]} />
         </ChartBox>
       </ChartGrid>
