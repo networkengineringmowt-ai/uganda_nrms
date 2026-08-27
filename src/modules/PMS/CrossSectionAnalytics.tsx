@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { renderSliceLabel } from '../../shared/dashboardKit';
 import {
   Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Pie, PieChart,
   ResponsiveContainer, Tooltip, XAxis, YAxis,
@@ -76,7 +77,8 @@ function DonutGraphic({ card }: { card: Infographic }) {
     <div style={{ display: 'grid', gridTemplateColumns: 'minmax(120px,.8fr) minmax(130px,1fr)', gap: 8, alignItems: 'center', minHeight: 178 }}>
       <div style={{ height: 160 }}>
         <ResponsiveContainer width="100%" height="100%">
-          <PieChart><Pie data={data} dataKey="value" nameKey="label" innerRadius="48%" outerRadius="76%" paddingAngle={2} stroke="none">
+          <PieChart><Pie data={data} dataKey="value" nameKey="label" innerRadius="48%" outerRadius="76%" paddingAngle={2} stroke="none"
+            label={renderSliceLabel} labelLine={{ stroke: 'rgba(148,163,184,0.4)' }}>
             {data.map((_, index) => <Cell key={index} fill={COLORS[index % COLORS.length]} />)}
           </Pie><Tooltip content={<CompactTooltip unit={card.unit} />} /></PieChart>
         </ResponsiveContainer>
