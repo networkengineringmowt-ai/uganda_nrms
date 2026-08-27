@@ -1014,7 +1014,7 @@ function StrategicTab({ features, stations }: { features: PredFeature[]; station
     { label:'Vehicle-km / Day',        val:`${(totalVkm/1e6).toFixed(0)}M`, sub:'network total', col:C.teal   },
     { label:'Critical Congestion',     val:String(critical), sub:'links at capacity risk', col:C.pink   },
     { label:'2040 Growth Projection',  val:`+${growPct.toFixed(0)}%`, sub:'vs 2025 baseline', col:C.green  },
-    { label:'ATC Stations',             val:'10',                   sub:'active 2025+ sites', col:C.yellow },
+    { label:'ATC Stations',             val:'25',                   sub:'15 legacy + 10 new 2025+', col:C.yellow },
     { label:'Survey Node Count',       val:String(features.length), sub:'road links monitored', col:C.blue   },
   ];
 
