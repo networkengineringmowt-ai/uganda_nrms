@@ -829,7 +829,8 @@ const StructurePanel = memo(function StructurePanel({
           </button>
           <img src={currentPhoto.url} alt={currentPhoto.filename}
             className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl"
-            onClick={e => e.stopPropagation()} />
+            onClick={e => e.stopPropagation()}
+            onError={e => { (e.target as HTMLImageElement).style.opacity = '0.2'; }} />
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-center">
             <div className="text-sm font-semibold text-white">{s.name}</div>
             <div className="text-xs text-slate-400 mt-0.5">{currentPhoto.filename} · {currentPhoto.year}</div>
