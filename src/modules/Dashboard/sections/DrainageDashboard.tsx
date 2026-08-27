@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { supabase } from '../../../lib/supabase';
+import { renderSliceLabel } from '../../../shared/dashboardKit';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell, LineChart, Line, ScatterChart, Scatter, ZAxis } from 'recharts';
 import { GaugeC, BarH, RankList } from '../../../shared/dashboardKit';
 
@@ -126,7 +127,8 @@ export default function DrainageDashboard() {
         {byType.length > 0 && (
           <Card title='STRUCTURE TYPE BREAKDOWN'>
             <ResponsiveContainer width='100%' height={200}>
-              <PieChart><Pie data={byType} dataKey='value' nameKey='name' innerRadius={45} outerRadius={80} paddingAngle={2}>
+              <PieChart><Pie data={byType} dataKey='value' nameKey='name' innerRadius={45} outerRadius={80} paddingAngle={2}
+                label={renderSliceLabel} labelLine={{ stroke: 'rgba(148,163,184,0.4)' }}>
                 {byType.map((_, i) => <Cell key={i} fill={PAL[i % PAL.length]} />)}</Pie><Tooltip {...TIP} /><Legend wrapperStyle={{ fontSize: 10, color: 'rgba(148,163,184,0.7)' }} /></PieChart>
             </ResponsiveContainer>
           </Card>

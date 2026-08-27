@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { supabase } from '../../../lib/supabase';
+import { renderSliceLabel } from '../../../shared/dashboardKit';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell, LineChart, Line, ScatterChart, Scatter, ZAxis } from 'recharts';
 import { GaugeC, RankList } from '../../../shared/dashboardKit';
 
@@ -139,7 +140,8 @@ export default function PriorityDashboard() {
         </Card>
         <Card title='PRIORITY TIER BREAKDOWN'>
           <ResponsiveContainer width='100%' height={200}>
-            <PieChart><Pie data={byTier} dataKey='value' nameKey='name' innerRadius={45} outerRadius={80} paddingAngle={2}>
+            <PieChart><Pie data={byTier} dataKey='value' nameKey='name' innerRadius={45} outerRadius={80} paddingAngle={2}
+              label={renderSliceLabel} labelLine={{ stroke: 'rgba(148,163,184,0.4)' }}>
               {byTier.map(d => <Cell key={d.name} fill={TCLR[d.name]} />)}</Pie><Tooltip {...TIP} /><Legend wrapperStyle={{ fontSize: 10, color: 'rgba(148,163,184,0.7)' }} /></PieChart>
           </ResponsiveContainer>
         </Card>
