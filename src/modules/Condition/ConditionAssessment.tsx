@@ -7,6 +7,7 @@ import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis,
   CartesianGrid, Tooltip, ReferenceLine,
 } from 'recharts';
+import { CURRENT_YEAR } from '../../shared/year';
 
 export default function ConditionAssessment() {
   const { state } = useBMS();
@@ -128,7 +129,7 @@ function ConditionDetail({ structure: s }: { structure: Structure }) {
               <span className="badge badge-blue">{s.id}</span>
             </div>
             <h2 className="text-lg font-bold text-white">{s.name}</h2>
-            <div className="text-xs text-slate-400 mt-0.5">{s.road} · {s.region} · Built {s.yearBuilt} · {2024 - s.yearBuilt} yrs old</div>
+            <div className="text-xs text-slate-400 mt-0.5">{s.road} · {s.region} · Built {s.yearBuilt} · {CURRENT_YEAR - s.yearBuilt} yrs old</div>
           </div>
         </div>
 
