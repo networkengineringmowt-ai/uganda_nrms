@@ -25,7 +25,7 @@ function Spinner() {
 }
 
 const TABS = [
-  { id: 'dashboard' as const, label: 'Dashboard', icon: <LayoutDashboard size={13}/> },
+  { id: 'dashboard' as const, label: 'Dashboard', icon: LayoutDashboard },
   { id: 'map',       label: 'History Map',         icon: MapIcon },
   { id: 'analytics', label: 'Lifecycle Analytics', icon: Activity },
 ] as const;
