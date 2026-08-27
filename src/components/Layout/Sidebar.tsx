@@ -83,17 +83,22 @@ const SECTIONS: Record<string, Section> = {
 
 // Four top-level tabs - each groups its child sections. Navigation is unchanged
 // (each child still calls navigate(id)); this is a presentation/IA grouping only.
+// The restored legacy tabs (see the SECTIONS comment above) are sorted into
+// whichever of these four groups they actually belong to, rather than sitting
+// in a catch-all "More Tools & Legacy" bucket.
 const GROUPS: Group[] = [
-  { id: 'assets',    label: 'Network & Assets',      icon: <Network size={15}/>,      color: N.cyan,   items: ['rms', 'roadcondition', 'npms', 'bms', 'bridgeworks', 'roadreserve', 'roadatlas', 'roadvideo', 'ducar'] },
-  { id: 'traffic',   label: 'Traffic & Performance', icon: <Activity size={15}/>,     color: N.orange, items: ['traffic', 'ntis', 'atc'] },
-  { id: 'planning',  label: 'Planning & Investment', icon: <Building2 size={15}/>,    color: N.green,  items: ['projects', 'pim', 'budget', 'lifecycle', 'socioeconomic'] },
-  { id: 'knowledge', label: 'Knowledge & Admin',     icon: <Shield size={15}/>,       color: N.purple, items: ['casestudies', 'sources', 'downloads', 'gisenterprise', 'admin'] },
-  // Every standalone tab that has ever existed in this sidebar, restored -
-  // see the SECTIONS comment above for why these were missing.
-  { id: 'legacy',    label: 'More Tools & Legacy',   icon: <Layers size={15}/>,       color: N.gray,   items: [
-    'networkstory', 'roadnetwork', 'registry', 'inspections', 'gismap', 'priority',
-    'phototwin', 'trafficanalytics', 'trafficsummary', 'growthfactors', 'overloading',
-    'oprc', 'ndpiv', 'hdm4', 'mlarchitecture', 'projecttracker',
+  { id: 'assets',    label: 'Network & Assets',      icon: <Network size={15}/>,      color: N.cyan,   items: [
+    'rms', 'roadcondition', 'npms', 'bms', 'bridgeworks', 'roadreserve', 'roadatlas', 'roadvideo', 'ducar',
+    'networkstory', 'roadnetwork', 'registry', 'inspections', 'gismap', 'priority', 'phototwin',
+  ] },
+  { id: 'traffic',   label: 'Traffic & Performance', icon: <Activity size={15}/>,     color: N.orange, items: [
+    'traffic', 'ntis', 'atc', 'trafficanalytics', 'trafficsummary', 'growthfactors', 'overloading',
+  ] },
+  { id: 'planning',  label: 'Planning & Investment', icon: <Building2 size={15}/>,    color: N.green,  items: [
+    'projects', 'pim', 'budget', 'lifecycle', 'socioeconomic', 'oprc', 'ndpiv', 'hdm4', 'projecttracker',
+  ] },
+  { id: 'knowledge', label: 'Knowledge & Admin',     icon: <Shield size={15}/>,       color: N.purple, items: [
+    'casestudies', 'sources', 'downloads', 'gisenterprise', 'admin', 'mlarchitecture',
   ] },
 ];
 
