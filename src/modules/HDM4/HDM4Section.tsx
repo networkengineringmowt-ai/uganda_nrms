@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  CartesianGrid, Legend, ReferenceLine,
+  CartesianGrid, Legend, ReferenceLine, PieChart, Pie, Cell,
 } from 'recharts';
 import { Chart3DWrap, Bar3D, TT_NEON, TICK } from '../../lib/chart3d';
 import { Calculator, BookOpen, Table2, TrendingUp, DollarSign, Activity } from 'lucide-react';
