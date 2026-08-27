@@ -1422,9 +1422,9 @@ export default function TabularSummaries() {
                   ['Maintenance regions',                  '6',      'regions',     'Department of National Roads'],
                   ['Annual traffic count stations (TIS)',  '298',    'stations',    'TIS 2025'],
                   ['ATC permanent stations',               '25',     'stations',    'ATC 2026 (10 new + 15 legacy)'],
-                  ['Bridges',                             String(bridges.length || 546), 'structures', 'BMS 2025'],
-                  ['Culverts',                            String(culverts.length || 530), 'structures', 'BMS 2025'],
-                  ['Critical structures (rating 1)',      String(critical.length || 0), 'structures', 'BMS 2025'],
+                  ['Bridges',                             String(bridges.length), 'structures', 'BMS 2025'],
+                  ['Culverts',                            String(culverts.length), 'structures', 'BMS 2025'],
+                  ['Critical structures (rating 1)',      String(critical.length), 'structures', 'BMS 2025'],
                 ].map(([m, v, u, s]) => (
                   <tr key={m}><Td>{m}</Td><Td mono>{v}</Td><Td>{u}</Td><Td>{s}</Td></tr>
                 ))}
