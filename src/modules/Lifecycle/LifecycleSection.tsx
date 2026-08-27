@@ -99,7 +99,9 @@ function classifyInt(type: string): IntType {
 const LINKS: LinkDef[] = [];
 
 // ── Helper: build a LinkDef from a GeoJSON feature ─────────────────────────
-function featureToLink(p: Record<string, unknown>, idx: number): LinkDef {
+// `aadtLookup` maps link_id -> aadt_predicted, sourced from the real
+// traffic_predictions.geojson feed (see the component's load effect below).
+function featureToLink(p: Record<string, unknown>, idx: number, aadtLookup?: Map<string, number>): LinkDef {
   const id        = String(p.link_id        ?? `Link${idx}`);
   const name      = String(p.link_nam_1     ?? p.link_name ?? id);
   const road      = String(p.road_no        ?? id.split('_')[0] ?? '?');
@@ -123,12 +125,15 @@ function featureToLink(p: Record<string, unknown>, idx: number): LinkDef {
   const usdPerKmM = surface === 'Bituminous' ? 6.4 : 0.8;
   const assetValueBn = Math.round(lengthKm * usdPerKmM * 3.7) / 10; // approx in Bn UGX
 
-  // AADT 2026 - class-weighted baseline × length factor
+  // AADT 2026 - real per-link traffic from traffic_predictions.geojson
+  // (aadt_predicted, keyed by link_id). Falls back to a class-weighted
+  // baseline only for the rare link with no matching traffic record, so the
+  // value is always deterministic and consistent with the rest of the app.
   const baseAadt =
     roadClass === 'A' ? 6800 :
     roadClass === 'B' ? 1900 :
     roadClass === 'M' ? 14000 : 480;
-  const aadt2026 = Math.round(baseAadt * (0.7 + Math.random() * 0.6));
+  const aadt2026 = aadtLookup?.get(id) ?? baseAadt;
 
   // Synthesise interventions from real years
   const builtYear = completion > 1900 ? completion : 1985;
@@ -398,10 +403,24 @@ export default function LifecycleSection() {
 
   useEffect(() => {
     const base = (import.meta as { env: { BASE_URL: string } }).env.BASE_URL;
-    fetch(`${base}data/network2026.geojson`)
-      .then(r => r.json())
-      .then((g: { features: Array<{ properties: Record<string, unknown> }> }) => {
-        const links: LinkDef[] = g.features.map((f, i) => featureToLink(f.properties ?? {}, i));
+    Promise.all([
+      fetch(`${base}data/network2026.geojson`).then(r => r.json()),
+      fetch(`${base}data/traffic_predictions.geojson`).then(r => r.json()),
+    ])
+      .then(([g, tp]: [
+        { features: Array<{ properties: Record<string, unknown> }> },
+        { features: Array<{ properties: Record<string, unknown> }> },
+      ]) => {
+        // link_id -> aadt_predicted, from the real traffic feed
+        const aadtLookup = new Map<string, number>();
+        for (const f of tp.features ?? []) {
+          const linkId = f.properties?.link_id;
+          const aadt = f.properties?.aadt_predicted;
+          if (typeof linkId === 'string' && typeof aadt === 'number') {
+            aadtLookup.set(linkId, Math.round(aadt));
+          }
+        }
+        const links: LinkDef[] = g.features.map((f, i) => featureToLink(f.properties ?? {}, i, aadtLookup));
         setAllLinks(links);
         if (links.length && !selectedId) setSelectedId(links[0].id);
       })
