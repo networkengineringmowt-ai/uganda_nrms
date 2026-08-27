@@ -29,16 +29,16 @@ export default function PriorityRanking() {
   const pageData = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   const pageCount = Math.ceil(filtered.length / PAGE_SIZE);
 
-  // Scatter data: priority score vs age
+  // Scatter data: priority score vs age (respects the active mode filter, same as the table/top10)
   const scatterData = useMemo(() =>
-    structures.slice(0, 200).map(s => ({
+    filtered.slice(0, 200).map(s => ({
       x: 2024 - s.yearBuilt,
       y: s.priorityScore,
       rating: s.conditionRating,
       name: s.name,
       id: s.id,
     })),
-    [structures],
+    [filtered],
   );
 
   return (
