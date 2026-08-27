@@ -63,7 +63,7 @@ const SECTION_ACCENT: Record<string, string> = {
   lifecycle: '#00d4aa', casestudies: '#00d4aa', sources: '#94a3b8', admin: '#00f5ff',
   gisenterprise: '#b967ff', atc: '#ff6b35', roadatlas: '#00f5ff', roadvideo: '#00f5ff',
   bridgeworks: '#4d9fff', downloads: '#94a3b8',
-  ducar: '#00ff88', socioeconomic: '#ffd23f', documents: '#94a3b8',
+  ducar: '#00ff88', socioeconomic: '#ffd23f',
   ntis: '#00f5ff', npms: '#ff6b35',
 };
 function SectionHub({ sectionId }: { sectionId: string }) {
@@ -209,8 +209,6 @@ function AppShell() {
                 {activeView === 'roadvideo'        && <SectionHub sectionId="roadvideo" />}
                 {activeView === 'ducar'            && <SectionHub sectionId="ducar" />}
                 {activeView === 'socioeconomic'    && <SectionHub sectionId="socioeconomic" />}
-                {activeView === 'documents'        && <SectionHub sectionId="documents" />}
-
                 {activeView === 'admin' && (
                   <Suspense fallback={<ModuleSpinner />}>
                     <RequireAdmin label="Admin Tools">

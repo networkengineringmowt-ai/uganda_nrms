@@ -187,7 +187,6 @@ export type ActiveView =
   | 'roadvideo'         // Road video survey viewer
   | 'ducar'             // District, Urban and Community Access Roads
   | 'socioeconomic'     // Socio-Economic Analysis
-  | 'documents'         // Document Store
   | 'ntis'              // National Traffic Information System (flagship AADT/growth/axle-load rollup)
   | 'npms';             // National PMS (strategic network-wide pavement performance)
 
