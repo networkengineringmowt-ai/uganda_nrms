@@ -1,16 +1,12 @@
-import React, { lazy, Suspense, useState } from 'react';
+import { Suspense } from 'react';
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
-import type { RoadConditionTabId } from '../RoadCondition/RoadConditionView';
 import SectionDashboard from '../Dashboard/SectionDashboard';
 
-const CrossSectionAnalytics = lazy(() => import('./CrossSectionAnalytics'));
-const RoadConditionView = lazy(() => import('../RoadCondition/RoadConditionView'));
-const PavementCatalogue = lazy(() => import('./PavementCatalogue'));
-const AIVisionDashboard = lazy(() => import('./AIVisionDashboard'));
-const DigitalTwin = lazy(() => import('./DigitalTwin'));
-// NPMSSection removed - was imported from '../../sections/NPMSSection' which does not exist
-const LifecycleView = lazy(() => import('../Lifecycle/LifecycleView'));
-const RoadVideoView = lazy(() => import('../RoadVideoView/RoadVideoView'));
+// NOTE: PMS sub-tab switching (Dashboard | Interactive Map | Exhaustive Tables |
+// Deep Analytics | SQL Database & Schema | Data Capture) is owned entirely by
+// <SectionDashboard> → SectionSubTabs below, which drives the actual content
+// via SECTION_EXTRAS['pms']. This component only supplies the page chrome
+// around it, so it holds no tab state of its own.
 
 function Spinner() {
   return (
@@ -24,32 +20,7 @@ function Spinner() {
   );
 }
 
-type MainTab = 'dashboard' | 'conditionmap' | 'surveys' | 'analytics' | 'lifecycle' | 'design';
-
-// 6 sub-tabs - all PMS content merged, no duplicates:
-// Dashboard  = section KPIs + condition distribution + summary (Supabase live)
-// Condition Map = network condition map
-// Inventory & Surveys = inventory/surveys + road video survey
-// Analytics = deterioration + pavement age + FWD/structural
-// Life Cycle = life cycle management
-// Design & AI Tools = design catalogue + AI defect vision + 3D digital twin
-const MAIN_TABS: Array<{ id: MainTab; label: string }> = [
-  { id: 'dashboard',  label: 'Dashboard' },
-  { id: 'conditionmap', label: 'Condition Map' },
-  { id: 'surveys',    label: 'Inventory & Surveys' },
-  { id: 'analytics',  label: 'Analytics & Deterioration' },
-  { id: 'lifecycle',  label: 'Life Cycle Management' },
-  { id: 'design',     label: 'Design Catalogue & AI Tools' },
-];
-
-const Block = ({ children }: { children: React.ReactNode }) => (
-  <div style={{ minHeight: '86vh', display: 'flex', flexDirection: 'column',
-    borderBottom: '1px solid rgba(93,167,255,0.15)' }}>{children}</div>
-);
-
 export default function PMSSection() {
-  const [mainTab, setMainTab] = useState<MainTab>('dashboard');
-
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',

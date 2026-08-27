@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Book, FileText, Download, FolderOpen, ExternalLink } from 'lucide-react';
+import { Book, FileText, Download, FolderOpen, ExternalLink, Clock } from 'lucide-react';
 
 interface Manual {
   id: string;
@@ -23,21 +23,41 @@ export default function PavementCatalogue() {
   const [manuals, setManuals] = useState<Manual[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState<string>('All');
+  const [unavailable, setUnavailable] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
+    let cancelled = false;
     fetch(`${import.meta.env.BASE_URL}manuals/pavement/manifest.json`)
       .then(r => {
         if (!r.ok) throw new Error(`Catalogue request failed (${r.status})`);
         return r.json();
       })
-      .then(data => {
+      .then((data: Manual[]) => {
+        if (cancelled) return;
         setManuals(data);
         setLoading(false);
+
+        // The manifest can reference documents that haven't been uploaded yet.
+        // Probe each file so we never present a link that just 404s.
+        data.forEach(m => {
+          const fileUrl = `${import.meta.env.BASE_URL}${m.url}`;
+          fetch(fileUrl, { method: 'HEAD' })
+            .then(res => {
+              if (cancelled) return;
+              if (!res.ok) {
+                setUnavailable(prev => ({ ...prev, [m.id]: true }));
+              }
+            })
+            .catch(() => {
+              if (!cancelled) setUnavailable(prev => ({ ...prev, [m.id]: true }));
+            });
+        });
       })
       .catch(e => {
         console.error('Failed to load pavement manuals manifest', e);
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       });
+    return () => { cancelled = true; };
   }, []);
 
   const categories = ['All', ...Array.from(new Set(manuals.map(m => m.category))).sort()];
@@ -116,6 +136,7 @@ export default function PavementCatalogue() {
           {filtered.map(m => {
             const isPdf = m.type.toLowerCase() === 'pdf';
             const fileUrl = `${import.meta.env.BASE_URL}${m.url}`;
+            const isUnavailable = !!unavailable[m.id];
             return (
               <div key={m.id} style={{
                 background: 'rgba(15,30,50,0.6)',
@@ -126,8 +147,9 @@ export default function PavementCatalogue() {
                 flexDirection: 'column',
                 gap: 12,
                 transition: 'transform 0.15s',
+                opacity: isUnavailable ? 0.55 : 1,
               }}
-              onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+              onMouseEnter={(e) => { if (!isUnavailable) e.currentTarget.style.transform = 'translateY(-2px)'; }}
               onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
               >
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
@@ -140,8 +162,20 @@ export default function PavementCatalogue() {
                     <FileText size={20} />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: '#e2eaf4', lineHeight: 1.4, marginBottom: 4, wordBreak: 'break-word' }}>
-                      {m.title}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 4 }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: '#e2eaf4', lineHeight: 1.4, wordBreak: 'break-word' }}>
+                        {m.title}
+                      </div>
+                      {isUnavailable && (
+                        <span title="This document has not been uploaded yet" style={{
+                          display: 'inline-flex', alignItems: 'center', gap: 4,
+                          background: 'rgba(148,163,184,0.12)', color: '#94a3b8',
+                          fontSize: 9, fontWeight: 700, borderRadius: 20, padding: '2px 8px',
+                          textTransform: 'uppercase' as const, letterSpacing: 0.5, flexShrink: 0,
+                        }}>
+                          <Clock size={9} /> Not yet available
+                        </span>
+                      )}
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 10, color: 'rgba(148,163,184,0.6)' }}>
                       <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><FolderOpen size={10} /> {m.category}</span>
@@ -152,21 +186,38 @@ export default function PavementCatalogue() {
                 </div>
 
                 <div style={{ marginTop: 'auto', paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: 8 }}>
-                  <a href={fileUrl} target="_blank" rel="noreferrer" style={{
-                    flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                    padding: '8px 12px', borderRadius: 6, background: 'rgba(245,158,11,0.1)',
-                    color: '#f59e0b', fontSize: 11, fontWeight: 700, textDecoration: 'none',
-                    border: '1px solid rgba(245,158,11,0.2)'
-                  }}>
-                    <ExternalLink size={14} /> Open
-                  </a>
-                  <a href={fileUrl} download style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36,
-                    borderRadius: 6, background: 'rgba(255,255,255,0.05)', color: '#e2eaf4',
-                    border: '1px solid rgba(255,255,255,0.1)', textDecoration: 'none'
-                  }} title="Download File">
-                    <Download size={14} />
-                  </a>
+                  {isUnavailable ? (
+                    <span
+                      title="Not yet available"
+                      aria-disabled="true"
+                      style={{
+                        flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                        padding: '8px 12px', borderRadius: 6, background: 'rgba(148,163,184,0.06)',
+                        color: 'rgba(148,163,184,0.6)', fontSize: 11, fontWeight: 700,
+                        border: '1px solid rgba(148,163,184,0.15)', cursor: 'not-allowed',
+                      }}
+                    >
+                      <Clock size={14} /> Not yet available
+                    </span>
+                  ) : (
+                    <>
+                      <a href={fileUrl} target="_blank" rel="noreferrer" style={{
+                        flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                        padding: '8px 12px', borderRadius: 6, background: 'rgba(245,158,11,0.1)',
+                        color: '#f59e0b', fontSize: 11, fontWeight: 700, textDecoration: 'none',
+                        border: '1px solid rgba(245,158,11,0.2)'
+                      }}>
+                        <ExternalLink size={14} /> Open
+                      </a>
+                      <a href={fileUrl} download style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36,
+                        borderRadius: 6, background: 'rgba(255,255,255,0.05)', color: '#e2eaf4',
+                        border: '1px solid rgba(255,255,255,0.1)', textDecoration: 'none'
+                      }} title="Download File">
+                        <Download size={14} />
+                      </a>
+                    </>
+                  )}
                 </div>
               </div>
             );
