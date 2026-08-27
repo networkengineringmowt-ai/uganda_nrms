@@ -167,28 +167,27 @@ export default function StructureDetailModal({ structure: s, onClose }: Props) {
                       S:\PHOTOS\{s.id.replace('BRG-', '')}\
                     </code>
                   </div>
+                  {/* file:// paths point to the field survey team's shared drive and can
+                      never resolve from a browser (no web server exists at S:\), so these
+                      are shown as informational placeholders rather than clickable/loadable
+                      images — a real <img src="file://..."> silently fails with no useful
+                      feedback for the user. */}
                   <div className="grid grid-cols-2 gap-2 mt-2">
-                    {photos.slice(0, 4).map((url, i) => (
-                      <a
-                        key={i}
-                        href={url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="block aspect-video rounded-lg bg-slate-700 border border-slate-600 overflow-hidden hover:border-blue-500 transition-colors"
-                      >
-                        <img
-                          src={url}
-                          alt={`${s.name} photo ${i + 1}`}
-                          className="w-full h-full object-cover"
-                          onError={e => {
-                            (e.target as HTMLImageElement).style.display = 'none';
-                          }}
-                        />
-                        <div className="w-full h-full flex items-center justify-center text-xs text-slate-500">
+                    {photos.slice(0, 4).map((url, i) => {
+                      const fileName = url.split('/').pop();
+                      return (
+                        <div
+                          key={i}
+                          title={`${fileName} — available on the shared drive, not viewable in the web app`}
+                          className="aspect-video rounded-lg bg-slate-700 border border-slate-600 border-dashed flex flex-col items-center justify-center gap-1 text-slate-500"
+                        >
                           <Camera size={20} />
+                          <span className="text-[10px] text-slate-500 px-1 text-center leading-tight">
+                            Not viewable here — see shared drive
+                          </span>
                         </div>
-                      </a>
-                    ))}
+                      );
+                    })}
                   </div>
                 </Section>
               )}
