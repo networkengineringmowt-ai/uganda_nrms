@@ -39,6 +39,48 @@ interface Project {
   category:  'OPRC' | 'NDPIV' | 'Vision2040' | 'Emergency';
 }
 
+// ─────────────────────────────────────────────────────────────────────────
+// DATA SOURCE NOTE (do not remove without re-checking this):
+//
+// This PROJECTS array is a hand-authored sample dataset, NOT sourced from
+// the platform's real project register. It was audited against the real
+// data used by ProjectsView.tsx (src/modules/Projects/ProjectsView.tsx,
+// via loadEnhancedProjects() -> src/data/appStore.ts -> src/data/
+// platformData.ts -> public/projects.json, 55 real UNRA/MoWT projects) to
+// see whether ProjectTracker could be switched onto that same real feed.
+//
+// Verdict: NOT swapped, because public/projects.json genuinely lacks the
+// fields this component's UI is built around, and there is no reasonable
+// way to derive them without inventing numbers:
+//   - budgetBn / spentBn  - no budget or expenditure figures exist anywhere
+//                            in the real project data (only progress %s).
+//                            These are exactly the kind of numbers that must
+//                            not be fabricated.
+//   - phase (6-state: Planning/Design/Procurement/Construction/DLP/Complete)
+//                          - real data only has a derived 3-state status
+//                            (planned/ongoing/complete); the finer phase
+//                            distinctions (e.g. Design vs Procurement vs DLP)
+//                            are not recorded anywhere in the source.
+//   - startDate            - only a target_completion_date exists; no
+//                            project start date is recorded.
+//   - category (OPRC/NDPIV/Vision2040/Emergency)
+//                          - this programme classification does not exist
+//                            in the real register.
+//   - road (road number, e.g. "A109")
+//                          - not present in the real project fields either.
+//
+// Fields that DO exist in the real data and map cleanly (name, region,
+// funder, contractor, lengthKm, physical/financial/planned progress %,
+// endDate, behind) are also the fields that make swapping in only "what's
+// available" risky here: doing that would attach real, named UNRA projects
+// to still-fabricated budget/phase/category values, which is more
+// misleading than the current wholly-separate sample set (it would look
+// like "Project X's real budget is Y Bn UGX" when Y is invented).
+// Closing this gap for real would require the platform to start capturing
+// budget/expenditure, a proper phase field, start dates, and a programme
+// category on each project record - i.e. genuinely new source data, not a
+// refactor of this component. Flag this to the data/product owner.
+// ─────────────────────────────────────────────────────────────────────────
 const PROJECTS: Project[] = [
   {
     id: 'P001', name: 'Kampala–Jinja Expressway (KJE)',
@@ -310,12 +352,17 @@ export default function ProjectTracker() {
               </div>
 
               {/* Budget */}
+              {/* NOTE: budgetBn/spentBn are in UGX BILLIONS (see field name + the
+                  "Total Programme"/"Disbursed" KPIs above, which divide by 1000 to
+                  render "T"). These per-card labels previously read "M" (millions),
+                  a 1000x unit mismatch versus the KPI totals for the same values.
+                  Fixed to "Bn" so the unit label matches the actual magnitude. */}
               <div style={{ marginTop: 10, display: 'flex', gap: 20, flexWrap: 'wrap' }}>
                 <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.5)' }}>
-                  Budget: <span style={{ color: C.yellow, fontWeight: 700 }}>UGX {p.budgetBn.toLocaleString()}M</span>
+                  Budget: <span style={{ color: C.yellow, fontWeight: 700 }}>UGX {p.budgetBn.toLocaleString()}Bn</span>
                 </div>
                 <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.5)' }}>
-                  Spent: <span style={{ color: C.green, fontWeight: 700 }}>UGX {p.spentBn.toLocaleString()}M</span>
+                  Spent: <span style={{ color: C.green, fontWeight: 700 }}>UGX {p.spentBn.toLocaleString()}Bn</span>
                   <span style={{ color: 'rgba(100,116,139,0.5)', marginLeft: 4 }}>({Math.round(p.spentBn/p.budgetBn*100)}%)</span>
                 </div>
                 <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.5)' }}>
