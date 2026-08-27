@@ -7,6 +7,7 @@ import {
 import { DollarSign, Globe, Building2, TrendingUp, FileText, LayoutDashboard } from 'lucide-react';
 import { ModuleNavBar } from '../../shared/ModuleNavBar';
 import SectionDashboard from '../Dashboard/SectionDashboard';
+import { renderSliceLabel } from '../../shared/dashboardKit';
 
 const C = {
   cyan: '#00f5ff', green: '#00ff88', yellow: '#ffd23f',
@@ -358,7 +359,7 @@ export default function PimLegacyContent({ initialTab, hideTabBar }: { initialTa
             </div>
             <ResponsiveContainer width="100%" height={240}>
               <PieChart>
-                <Pie data={DONOR_BREAKDOWN} cx="50%" cy="50%" outerRadius={90} dataKey="value" label={({ name, value }) => `${name}: ${value}%`} labelLine={false}>
+                <Pie data={DONOR_BREAKDOWN} cx="50%" cy="50%" outerRadius={90} dataKey="value" label={renderSliceLabel} labelLine={{ stroke: 'rgba(148,163,184,0.4)' }}>
                   {DONOR_BREAKDOWN.map((d, i) => <Cell key={i} fill={d.color}/>)}
                 </Pie>
                 <Tooltip content={<CT/>}/>
