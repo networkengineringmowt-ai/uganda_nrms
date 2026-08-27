@@ -1,6 +1,7 @@
 import { X, MapPin, Calendar, Wrench, AlertTriangle, Camera } from 'lucide-react';
 import type { Structure } from '../../index';
 import { conditionLabel, conditionColor, conditionBadge, formatDate, formatUGX } from '../../utils/helpers';
+import { CURRENT_YEAR } from '../../shared/year';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ReferenceLine } from 'recharts';
 
 interface Props {
@@ -66,7 +67,7 @@ export default function StructureDetailModal({ structure: s, onClose }: Props) {
                   <Field label="No. of Piers"     value={s.noOfPiers} />
                   <Field label="Surface Type"     value={s.surfaceType} />
                   <Field label="Year Built"       value={s.yearBuilt} />
-                  <Field label="Age"              value={`${2024 - s.yearBuilt} years`} />
+                  <Field label="Age"              value={`${CURRENT_YEAR - s.yearBuilt} years`} />
                 </Grid2>
               </Section>
 
