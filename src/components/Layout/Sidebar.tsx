@@ -86,19 +86,29 @@ const SECTIONS: Record<string, Section> = {
 // The restored legacy tabs (see the SECTIONS comment above) are sorted into
 // whichever of these four groups they actually belong to, rather than sitting
 // in a catch-all "More Tools & Legacy" bucket.
+// Nav trimmed to cut sidebar clutter: items that were near-duplicates of a
+// sibling (npms == roadcondition, byte-identical via SECTION_ALIAS) or whose
+// whole content is one component belonging to a clear parent domain (e.g.
+// Structure Registry -> Bridge Management, Growth Factors -> Traffic
+// Information) were folded into that parent's own tabs instead of sitting
+// as a separate top-level row - see SECTION_EXTRAS in SectionDashboard.tsx
+// for exactly where each one now renders. OPRC and NDP IV are deliberately
+// left alone: each is its own distinct dataset ("roads selected for OPRC
+// contracting", not a generic Projects sub-view), not a duplicate of
+// anything else, so they keep their own row.
 const GROUPS: Group[] = [
   { id: 'assets',    label: 'Network & Assets',      icon: <Network size={15}/>,      color: N.cyan,   items: [
-    'rms', 'roadcondition', 'npms', 'bms', 'bridgeworks', 'roadreserve', 'roadatlas', 'roadvideo', 'ducar',
-    'networkstory', 'roadnetwork', 'registry', 'inspections', 'gismap', 'priority', 'phototwin',
+    'rms', 'roadcondition', 'bms', 'roadreserve', 'roadatlas', 'roadvideo', 'ducar',
+    'networkstory', 'roadnetwork',
   ] },
   { id: 'traffic',   label: 'Traffic & Performance', icon: <Activity size={15}/>,     color: N.orange, items: [
-    'traffic', 'ntis', 'atc', 'trafficanalytics', 'trafficsummary', 'growthfactors', 'overloading',
+    'traffic', 'atc',
   ] },
   { id: 'planning',  label: 'Planning & Investment', icon: <Building2 size={15}/>,    color: N.green,  items: [
-    'projects', 'pim', 'budget', 'lifecycle', 'socioeconomic', 'oprc', 'ndpiv', 'hdm4', 'projecttracker',
+    'projects', 'pim', 'budget', 'lifecycle', 'oprc', 'ndpiv',
   ] },
   { id: 'knowledge', label: 'Knowledge & Admin',     icon: <Shield size={15}/>,       color: N.purple, items: [
-    'casestudies', 'sources', 'downloads', 'gisenterprise', 'admin', 'mlarchitecture',
+    'casestudies', 'sources', 'downloads', 'gisenterprise', 'admin',
   ] },
 ];
 
