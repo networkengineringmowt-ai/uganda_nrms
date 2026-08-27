@@ -1,0 +1,23 @@
+{
+  "date": "2026-08-27",
+  "repo": "uganda_nrms",
+  "url": "https://networkengineringmowt-ai.github.io/uganda_nrms/",
+  "technical": {
+    "httpStatus": 200,
+    "loadFailed": false,
+    "pageRendered": true,
+    "bodyTextLength": 178,
+    "consoleErrors": [],
+    "brokenImages": [],
+    "hashLinksFound": [],
+    "chartElementCount": 3
+  },
+  "accuracy": {
+    "extractedFigures": [],
+    "discrepancies": []
+  },
+  "consistency": {
+    "districtList": null,
+    "notes": []
+  }
+}
