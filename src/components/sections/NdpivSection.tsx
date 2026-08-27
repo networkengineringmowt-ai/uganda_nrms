@@ -17,11 +17,15 @@ import SourceTableButton from '../../shared/SourceTableButton';
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
+// Matches data/oprc_ndpiv.json exactly. budget_usd is 0 for every entry
+// today (these are FY26/27 NDPIV master-plan components, not yet costed
+// project-by-project) - the removed disbursed_usd/completion_pct/target_year
+// fields never existed in the real data and previously rendered as NaN/"$NaNM"
+// everywhere they were used.
 interface NdpivProject {
-  project_id: string; name: string; road_links: string[]; region: string;
+  project_id: string; name: string; component: string; road_links: string[]; region: string;
   priority: string; type: string; status: string;
-  budget_usd: number; disbursed_usd: number;
-  length_km: number; completion_pct: number; target_year: number;
+  total_km: number; funder: string; budget_usd: number;
   centroid: [number, number];
 }
 interface OprcNdpivData { oprc_lots: unknown[]; ndpiv_projects: NdpivProject[] }
@@ -141,27 +145,24 @@ export default function NdpivSection() {
     [data, regionFilter],
   );
 
-  const totalBudget    = useMemo(() => projects.reduce((s, p) => s + p.budget_usd, 0), [projects]);
-  const totalDisbursed = useMemo(() => projects.reduce((s, p) => s + p.disbursed_usd, 0), [projects]);
-  const avgCompletion  = useMemo(() =>
-    projects.length ? Math.round(projects.reduce((s, p) => s + p.completion_pct, 0) / projects.length) : 0,
-    [projects],
-  );
+  const totalBudget = useMemo(() => projects.reduce((s, p) => s + p.budget_usd, 0), [projects]);
+  const totalKm     = useMemo(() => projects.reduce((s, p) => s + p.total_km, 0), [projects]);
 
-  // Clustered by category: budget vs disbursed
+  // Clustered by category: km + road-link count (per-project cost isn't in
+  // the FY26/27 master-plan rollup yet, so this reports what's real: scope)
   const categoryCluster = useMemo(() => {
-    const m: Record<string, { budget: number; disbursed: number; count: number }> = {};
+    const m: Record<string, { km: number; links: number; count: number }> = {};
     projects.forEach(p => {
-      if (!m[p.type]) m[p.type] = { budget: 0, disbursed: 0, count: 0 };
-      m[p.type].budget    += p.budget_usd / 1e6;
-      m[p.type].disbursed += p.disbursed_usd / 1e6;
+      if (!m[p.type]) m[p.type] = { km: 0, links: 0, count: 0 };
+      m[p.type].km    += p.total_km;
+      m[p.type].links += p.road_links.length;
       m[p.type].count++;
     });
     return Object.entries(m).map(([type, v]) => ({
       type: type.split(' ')[0], // abbreviate
       fullType: type,
-      budget:    Math.round(v.budget),
-      disbursed: Math.round(v.disbursed),
+      km:    Math.round(v.km),
+      links: v.links,
       count: v.count,
     }));
   }, [projects]);
@@ -192,16 +193,16 @@ export default function NdpivSection() {
         <div>
           <div style={{ fontSize: 16, fontWeight: 900, letterSpacing: '-0.01em' }}>NDP IV Investments</div>
           <div style={{ fontSize: 10, color: '#64748b', marginTop: 1 }}>
-            National Development Plan IV · Road Infrastructure Projects
+            National Development Plan IV · Uganda Vision 2040 · Road Infrastructure Projects
           </div>
         </div>
       </div>
 
       {/* ── Summary cards ──────────────────────────────────────────────────── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 14 }}>
-        <SummaryCard title="NDP IV Projects"    value={String(projects.length)}              sub={`${projects.reduce((s,p)=>s+p.length_km,0).toLocaleString()} km total`} accent="#b967ff" />
-        <SummaryCard title="Total Budget"        value={`$${(totalBudget/1e6).toFixed(0)}M`} sub="USD committed"                                                           accent="#00ff88" />
-        <SummaryCard title="Avg Completion"      value={`${avgCompletion}%`}                 sub={`$${(totalDisbursed/1e6).toFixed(0)}M disbursed`}                        accent="#3b82f6" />
+        <SummaryCard title="NDP IV Components"  value={String(projects.length)}              sub={`${totalKm.toLocaleString()} km total`}       accent="#b967ff" />
+        <SummaryCard title="Roads Involved"      value={String(projects.reduce((s,p)=>s+p.road_links.length,0))} sub="road links across all components" accent="#3b82f6" />
+        <SummaryCard title="Total Budget"        value={totalBudget > 0 ? `$${(totalBudget/1e6).toFixed(0)}M` : 'TBD'} sub="costed per-project as FY26/27 firms up" accent="#00ff88" />
       </div>
 
       {/* ── Region filter pills ─────────────────────────────────────────────── */}
@@ -233,10 +234,10 @@ export default function NdpivSection() {
             ))}
           </div>
 
-          {/* Clustered bar: budget vs disbursed by category */}
+          {/* Clustered bar: km + road links by category */}
           <div style={{ ...GLASS, padding: 14 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <PanelLabel text="Budget vs Disbursed by Category (USD M)" />
+              <PanelLabel text="Network km & Roads by Category" />
               <SourceTableButton anchor="tbl-086" />
             </div>
             <Chart3DWrap>
@@ -247,13 +248,13 @@ export default function NdpivSection() {
                   <XAxis dataKey="type" tick={{ fill: '#64748b', fontSize: 9 }} angle={-30} textAnchor="end" interval={0} />
                   <YAxis tick={{ fill: '#64748b', fontSize: 9 }} />
                   <ReTooltip contentStyle={TT_STYLE}
-                    formatter={(v: number, name: string) => [`$${v}M`, name]}
+                    formatter={(v: number, name: string) => [name === 'Roads' ? `${v} roads` : `${v} km`, name]}
                     labelFormatter={(_: unknown, pl: { payload?: { fullType?: string } }[]) => pl[0]?.payload?.fullType ?? ''}
                   />
-                  <Bar dataKey="budget"    name="Budget"    radius={[3,3,0,0]} shape={<Bar3D/>}>
+                  <Bar dataKey="km"    name="Network km" radius={[3,3,0,0]} shape={<Bar3D/>}>
                     {categoryCluster.map(d => <Cell key={d.type} fill={categoryColor(d.fullType)} fillOpacity={0.5} />)}
                   </Bar>
-                  <Bar dataKey="disbursed" name="Disbursed" radius={[3,3,0,0]} shape={<Bar3D/>}>
+                  <Bar dataKey="links" name="Roads" radius={[3,3,0,0]} shape={<Bar3D/>}>
                     {categoryCluster.map(d => <Cell key={d.type} fill={categoryColor(d.fullType)} />)}
                   </Bar>
                 </BarChart>
@@ -294,10 +295,9 @@ export default function NdpivSection() {
                   <div style={{ minWidth: 190, fontFamily: 'system-ui,sans-serif' }}>
                     <div style={{ fontWeight: 700, marginBottom: 4, fontSize: 13 }}>{proj.name}</div>
                     <div>Status: <b style={{ color: statusColor(proj.status) }}>{proj.status}</b></div>
-                    <div>Completion: {proj.completion_pct}%</div>
-                    <div>Length: {proj.length_km} km · {proj.region}</div>
-                    <div>Budget: ${(proj.budget_usd/1e6).toFixed(0)}M · Disbursed: ${(proj.disbursed_usd/1e6).toFixed(0)}M</div>
-                    <div>Target year: {proj.target_year}</div>
+                    <div>Length: {proj.total_km} km · {proj.region}</div>
+                    <div>Roads: {proj.road_links.length} · Funder: {proj.funder}</div>
+                    <div>Budget: {proj.budget_usd > 0 ? `$${(proj.budget_usd/1e6).toFixed(0)}M` : 'TBD'}</div>
                   </div>
                 </Popup>
               </Marker>
@@ -316,58 +316,61 @@ export default function NdpivSection() {
           />
 
 
-          {/* Progress bars */}
+          {/* Network km bars - relative scope, not fabricated completion % */}
           <div style={{ ...GLASS, padding: 14 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <PanelLabel text="Project Completion" />
+              <PanelLabel text="Network km by Component" />
               <SourceTableButton anchor="tbl-014" />
             </div>
-            {projects.map(proj => (
-              <div key={proj.project_id} style={{ marginBottom: 9 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
-                  <span style={{ fontSize: 9, color: '#94a3b8', maxWidth: 210, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {proj.name}
-                  </span>
-                  <span style={{ fontSize: 9, fontWeight: 800, color: statusColor(proj.status), flexShrink: 0, marginLeft: 4 }}>
-                    {proj.completion_pct}%
-                  </span>
+            {projects.map(proj => {
+              const maxKm = Math.max(1, ...projects.map(p => p.total_km));
+              return (
+                <div key={proj.project_id} style={{ marginBottom: 9 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
+                    <span style={{ fontSize: 9, color: '#94a3b8', maxWidth: 210, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {proj.name}
+                    </span>
+                    <span style={{ fontSize: 9, fontWeight: 800, color: statusColor(proj.status), flexShrink: 0, marginLeft: 4 }}>
+                      {proj.total_km} km
+                    </span>
+                  </div>
+                  <div style={{ height: 3, background: 'rgba(255,255,255,0.06)', borderRadius: 2 }}>
+                    <div style={{
+                      width: `${(proj.total_km / maxKm) * 100}%`, height: '100%',
+                      background: statusColor(proj.status), borderRadius: 2,
+                      boxShadow: `0 0 4px ${statusColor(proj.status)}60`,
+                    }} />
+                  </div>
                 </div>
-                <div style={{ height: 3, background: 'rgba(255,255,255,0.06)', borderRadius: 2 }}>
-                  <div style={{
-                    width: `${proj.completion_pct}%`, height: '100%',
-                    background: statusColor(proj.status), borderRadius: 2,
-                    boxShadow: `0 0 4px ${statusColor(proj.status)}60`,
-                  }} />
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
-          {/* Budget disbursement table */}
+          {/* Scope table - roads/km/funder is real; per-project budget isn't
+              costed yet in the FY26/27 master-plan rollup */}
           <div style={{ ...GLASS, padding: 14 }}>
-            <PanelLabel text="Budget Disbursement" />
+            <PanelLabel text="Component Scope" />
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-                  <th style={{ textAlign: 'left',  padding: '3px 5px 7px', fontSize: 8, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Project</th>
-                  <th style={{ textAlign: 'right', padding: '3px 5px 7px', fontSize: 8, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Budget</th>
-                  <th style={{ textAlign: 'right', padding: '3px 5px 7px', fontSize: 8, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Disbursed</th>
-                  <th style={{ textAlign: 'right', padding: '3px 5px 7px', fontSize: 8, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em' }}>%</th>
+                  <th style={{ textAlign: 'left',  padding: '3px 5px 7px', fontSize: 8, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Component</th>
+                  <th style={{ textAlign: 'right', padding: '3px 5px 7px', fontSize: 8, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Roads</th>
+                  <th style={{ textAlign: 'right', padding: '3px 5px 7px', fontSize: 8, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em' }}>km</th>
+                  <th style={{ textAlign: 'left',  padding: '3px 5px 7px', fontSize: 8, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Funder</th>
                   <th style={{ textAlign: 'left',  padding: '3px 5px 7px', fontSize: 8, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Status</th>
                 </tr>
               </thead>
               <tbody>
                 {projects.map(proj => {
-                  const disbPct = Math.round((proj.disbursed_usd / proj.budget_usd) * 100);
                   const sc = statusColor(proj.status);
                   return (
                     <tr key={proj.project_id} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
                       <td style={{ padding: '5px 5px', fontSize: 9, color: '#cbd5e1', maxWidth: 85, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={proj.name}>
                         {proj.name}
                       </td>
-                      <td style={{ padding: '5px 5px', fontSize: 9, color: '#94a3b8', textAlign: 'right' }}>${(proj.budget_usd/1e6).toFixed(0)}M</td>
-                      <td style={{ padding: '5px 5px', fontSize: 9, color: '#94a3b8', textAlign: 'right' }}>${(proj.disbursed_usd/1e6).toFixed(0)}M</td>
-                      <td style={{ padding: '5px 5px', fontSize: 9, fontWeight: 700, textAlign: 'right', color: sc }}>{disbPct}%</td>
+                      <td style={{ padding: '5px 5px', fontSize: 9, color: '#94a3b8', textAlign: 'right' }}>{proj.road_links.length}</td>
+                      <td style={{ padding: '5px 5px', fontSize: 9, color: '#94a3b8', textAlign: 'right' }}>{proj.total_km}</td>
+                      <td style={{ padding: '5px 5px', fontSize: 9, color: '#94a3b8' }}>{proj.funder}</td>
                       <td style={{ padding: '5px 5px' }}>
                         <span style={{ fontSize: 8, padding: '2px 5px', borderRadius: 3, background: `${sc}20`, color: sc, fontWeight: 700, whiteSpace: 'nowrap' }}>
                           {proj.status}
@@ -395,18 +398,19 @@ function NdpivDetailPane({
 }) {
   const accent = '#b967ff';
   const statusCounts: Record<string, number> = {};
-  let totalBudget = 0, totalDisbursed = 0;
+  let totalBudget = 0, totalKm = 0, totalLinks = 0;
   projects.forEach(p => {
     statusCounts[p.status] = (statusCounts[p.status] ?? 0) + 1;
-    totalBudget    += p.budget_usd;
-    totalDisbursed += p.disbursed_usd;
+    totalBudget += p.budget_usd;
+    totalKm     += p.total_km;
+    totalLinks  += p.road_links.length;
   });
 
   const renderDefault = (
     <div>
-      <StatCard label="Total Projects" value={projects.length} unit="active" color={accent} />
-      <StatCard label="Total Budget" value={`$${(totalBudget/1e6).toFixed(0)}M`} unit="USD" color="#00ff88"
-        sub={`$${(totalDisbursed/1e6).toFixed(0)}M disbursed (${Math.round(totalDisbursed/totalBudget*100)}%)`} />
+      <StatCard label="Total Components" value={projects.length} unit="NDPIV" color={accent} />
+      <StatCard label="Network Scope" value={`${Math.round(totalKm).toLocaleString()} km`} unit={`${totalLinks} roads`} color="#00ff88"
+        sub={totalBudget > 0 ? `$${(totalBudget/1e6).toFixed(0)}M budgeted` : 'per-project costing pending'} />
 
       <SectionHeader title="Status Distribution" accent={accent} />
       <div style={{ display:'flex', flexDirection:'column', gap:4, marginBottom:10 }}>
@@ -426,15 +430,15 @@ function NdpivDetailPane({
         })}
       </div>
 
-      <SectionHeader title="Top 3 by Budget" accent={accent} />
-      {[...projects].sort((a,b) => b.budget_usd - a.budget_usd).slice(0,3).map(p => (
+      <SectionHeader title="Top 3 by Network km" accent={accent} />
+      {[...projects].sort((a,b) => b.total_km - a.total_km).slice(0,3).map(p => (
         <div key={p.project_id} style={{
           padding:'6px 8px', marginBottom:4, fontSize:9.5,
           background:'rgba(15,23,42,0.6)', border:'1px solid rgba(255,255,255,0.05)', borderRadius:6,
         }}>
           <div style={{ color:'#e2eaf4', fontWeight:700 }}>{p.name}</div>
           <div style={{ color:'#64748b', marginTop:2 }}>
-            ${(p.budget_usd/1e6).toFixed(0)}M · {p.length_km} km · {p.completion_pct}%
+            {p.total_km} km · {p.road_links.length} roads · {p.funder}
           </div>
         </div>
       ))}
@@ -459,25 +463,20 @@ function NdpivDetailPane({
             <div style={{ fontSize:9, color:'rgba(148,163,184,0.7)', marginBottom:10 }}>{p.type} · {p.region}</div>
 
             <StatCard label="Status" value={p.status} color={sc} />
-            <StatCard label="Completion" value={`${p.completion_pct}%`} unit="" color={sc} />
+            <StatCard label="Roads Selected" value={p.road_links.length} unit="road links" color={sc} />
 
             <SectionHeader title="Attributes" accent={accent} />
             <AttributeRow label="Priority" value={p.priority} color={
               p.priority === 'High' ? '#ef4444' : p.priority === 'Medium' ? '#f59e0b' : '#94a3b8'
             }/>
-            <AttributeRow label="Length" value={`${p.length_km} km`} mono />
-            <AttributeRow label="Budget" value={`$${(p.budget_usd/1e6).toFixed(1)}M`} color="#00ff88" mono />
-            <AttributeRow label="Disbursed" value={`$${(p.disbursed_usd/1e6).toFixed(1)}M`} color="#00ff88" mono />
-            <AttributeRow label="Target Year" value={p.target_year} mono />
+            <AttributeRow label="Length" value={`${p.total_km} km`} mono />
+            <AttributeRow label="Funder" value={p.funder} mono />
+            <AttributeRow label="Budget" value={p.budget_usd > 0 ? `$${(p.budget_usd/1e6).toFixed(1)}M` : 'TBD'} color="#00ff88" mono />
             <AttributeRow label="Region" value={p.region} />
 
-            <SectionHeader title="Progress" accent={accent} />
-            <div style={{ height:6, background:'rgba(255,255,255,0.06)', borderRadius:3, overflow:'hidden' }}>
-              <div style={{ width:`${p.completion_pct}%`, height:'100%', background:sc,
-                boxShadow:`0 0 8px ${sc}aa`, transition:'width 0.3s' }}/>
-            </div>
-            <div style={{ marginTop:6, fontSize:9, color:'rgba(148,163,184,0.55)' }}>
-              {p.completion_pct}% complete · {p.length_km} km scope
+            <SectionHeader title="Roads in This Component" accent={accent} />
+            <div style={{ fontSize:9.5, color:'#94a3b8', lineHeight:1.6 }}>
+              {p.road_links.join(' · ')}
             </div>
           </div>
         );
