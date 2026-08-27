@@ -209,7 +209,7 @@ export default function BudgetSection() {
                   <XAxis dataKey="fy" tick={{ ...TK, fontSize: 8 }} angle={-30} textAnchor="end"/>
                   <YAxis tick={TK} label={{ value: 'UGX Bn', angle: -90, position: 'insideLeft', style: { fontSize: 9, fill: 'rgba(148,163,184,0.5)' } }}/>
                   <Tooltip content={<CT/>}/>
-                  <Legend wrapperStyle={{ fontSize: 10 }}/>
+                  <Legend wrapperStyle={{ fontSize: 10, color: 'rgba(148,163,184,0.7)' }}/>
                   <Bar dataKey="required"  name="Required"  fill={C.red}    radius={[4,4,0,0]} opacity={0.7} shape={<Bar3D/>}/>
                   <Bar dataKey="allocated" name="Allocated" fill={C.yellow} radius={[4,4,0,0]} shape={<Bar3D/>}/>
                   <Bar dataKey="received"  name="Released"  fill={C.green}  radius={[4,4,0,0]} shape={<Bar3D/>}/>
@@ -297,7 +297,7 @@ export default function BudgetSection() {
                   <XAxis dataKey="region" tick={TK}/>
                   <YAxis tick={TK}/>
                   <Tooltip content={<CT/>}/>
-                  <Legend wrapperStyle={{ fontSize: 10 }}/>
+                  <Legend wrapperStyle={{ fontSize: 10, color: 'rgba(148,163,184,0.7)' }}/>
                   <Bar dataKey="routine"  name="Routine"  stackId="a" fill={C.green}  radius={[0,0,0,0]} shape={<Bar3D/>}/>
                   <Bar dataKey="periodic" name="Periodic" stackId="a" fill={C.yellow} radius={[0,0,0,0]} shape={<Bar3D/>}/>
                   <Bar dataKey="rehab"    name="Rehab"    stackId="a" fill={C.orange} radius={[4,4,0,0]} shape={<Bar3D/>}/>
