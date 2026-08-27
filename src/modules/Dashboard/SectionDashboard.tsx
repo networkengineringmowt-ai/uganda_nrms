@@ -236,6 +236,18 @@ const ATC_Predictions = lazy(() => import('../ATC/PredictionsPanel'));
 const LazyRoadNetworkMap = lazy(() => import('../RoadNetwork/RoadNetworkView'));
 const LazyNetworkStory = lazy(() => import('../NetworkStory/NetworkStory'));
 const LazyRoadInventoryTbl = lazy(() => import('../RMS/RoadInventory'));
+// NetworkStory's own root is `position: absolute; inset: 0`, built for the
+// old full-bleed FULL_VIEWS treatment - inside the dashboard slot's plain
+// `overflow/maxHeight` wrapper (no explicit height) that collapses to 0px
+// and makes the whole embed invisible. Give it a real height here so it
+// renders instead of vanishing.
+function NetworkStoryEmbed() {
+  return (
+    <div style={{ position: 'relative', height: 'calc(100vh - 230px)', minHeight: 620 }}>
+      <LazyNetworkStory />
+    </div>
+  );
+}
 
 // - PMS legacy content --------------------
 const PMS_CrossSectionAnalytics = lazy(() => import('../PMS/CrossSectionAnalytics'));
@@ -331,7 +343,7 @@ const LazyProjectTracker      = lazy(() => import('../Projects/ProjectTracker'))
 type ExtraSlot = 'dashboard' | 'map' | 'tables' | 'analytics' | 'capture';
 const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentType<any>[]>>> = {
   rms: {
-    dashboard: [LazyNetworkStory],
+    dashboard: [NetworkStoryEmbed],
     map: [LazyRoadNetworkMap],
     tables: [LazyRoadInventoryTbl],
   },
@@ -431,7 +443,7 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
   // back to InsightGrid/ExhaustiveTables/etc.'s honest "not wired" empty
   // state for these ids, same as any other unwired section - not a crash,
   // just no duplicate database table for content that's really local/static.
-  networkstory:   { dashboard: [LazyNetworkStory] },
+  networkstory:   { dashboard: [NetworkStoryEmbed] },
   roadnetwork:    { map: [LazyRoadNetworkMap] },
   gismap:         { map: [BMS_GISMap] },
   registry:       { dashboard: [BMS_Registry] },
