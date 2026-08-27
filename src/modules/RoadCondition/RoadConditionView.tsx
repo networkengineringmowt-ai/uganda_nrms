@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import { renderSliceLabel } from '../../shared/dashboardKit';
 import {
   ResponsiveContainer, AreaChart, Area, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar,
@@ -1643,7 +1644,8 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
                     <PieChart width={200} height={160}>
                       <Pie data={severityPieData} cx="50%" cy="50%"
                         innerRadius={44} outerRadius={68} paddingAngle={3}
-                        dataKey="value" animationDuration={900}>
+                        dataKey="value" animationDuration={900}
+                        label={renderSliceLabel} labelLine={{ stroke: 'rgba(148,163,184,0.4)' }}>
                         {severityPieData.map(s => <Cell key={s.name} fill={s.fill}/>)}
                       </Pie>
                       <Tooltip {...TT_NEON}
