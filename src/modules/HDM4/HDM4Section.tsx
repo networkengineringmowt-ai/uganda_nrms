@@ -4,6 +4,7 @@ import {
   CartesianGrid, Legend, ReferenceLine, PieChart, Pie, Cell,
 } from 'recharts';
 import { Chart3DWrap, Bar3D, TT_NEON, TICK } from '../../lib/chart3d';
+import { renderSliceLabel } from '../../shared/dashboardKit';
 import { Calculator, BookOpen, Table2, TrendingUp, DollarSign, Activity } from 'lucide-react';
 import { ModuleNavBar } from '../../shared/ModuleNavBar';
 import { useTableSort } from '../../shared/useTableSort';
@@ -250,7 +251,8 @@ export default function HDM4Section() {
               <div style={{ fontSize:10, fontWeight:700, color:'rgba(148,163,184,0.45)', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:8 }}>Treatment Mix</div>
               <ResponsiveContainer width="100%" height={150}>
                 <PieChart>
-                  <Pie data={[{name:'Routine',value:45,color:'#00ff88'},{name:'Periodic',value:30,color:'#4d9fff'},{name:'Rehab',value:18,color:'#ffd23f'},{name:'Recon',value:7,color:'#ff4757'}]} cx="50%" cy="50%" innerRadius={38} outerRadius={60} paddingAngle={3} dataKey="value">
+                  <Pie data={[{name:'Routine',value:45,color:'#00ff88'},{name:'Periodic',value:30,color:'#4d9fff'},{name:'Rehab',value:18,color:'#ffd23f'},{name:'Recon',value:7,color:'#ff4757'}]} cx="50%" cy="50%" innerRadius={38} outerRadius={60} paddingAngle={3} dataKey="value"
+                    label={renderSliceLabel} labelLine={{ stroke: 'rgba(148,163,184,0.4)' }}>
                     {[{name:'Routine',value:45,color:'#00ff88'},{name:'Periodic',value:30,color:'#4d9fff'},{name:'Rehab',value:18,color:'#ffd23f'},{name:'Recon',value:7,color:'#ff4757'}].map((_: any,i: number)=><Cell key={i} fill={[{name:'Routine',value:45,color:'#00ff88'},{name:'Periodic',value:30,color:'#4d9fff'},{name:'Rehab',value:18,color:'#ffd23f'},{name:'Recon',value:7,color:'#ff4757'}][i].color} />)}
                   </Pie>
                   <Tooltip contentStyle={{ background:'#0a0f1a', border:'1px solid rgba(0,245,255,0.18)', borderRadius:8, fontSize:11 }} formatter={(v: any)=>[`${v}%`,'Share']} />
