@@ -140,7 +140,7 @@ export default function PriorityDashboard() {
         <Card title='PRIORITY TIER BREAKDOWN'>
           <ResponsiveContainer width='100%' height={200}>
             <PieChart><Pie data={byTier} dataKey='value' nameKey='name' innerRadius={45} outerRadius={80} paddingAngle={2}>
-              {byTier.map(d => <Cell key={d.name} fill={TCLR[d.name]} />)}</Pie><Tooltip {...TIP} /><Legend wrapperStyle={{ fontSize: 10 }} /></PieChart>
+              {byTier.map(d => <Cell key={d.name} fill={TCLR[d.name]} />)}</Pie><Tooltip {...TIP} /><Legend wrapperStyle={{ fontSize: 10, color: 'rgba(148,163,184,0.7)' }} /></PieChart>
           </ResponsiveContainer>
         </Card>
         <Card title='PRIORITY SCORE VS CONDITION INDEX (BUBBLE = KM)'>
