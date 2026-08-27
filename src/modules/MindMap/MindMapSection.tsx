@@ -114,7 +114,7 @@ const NODES: Node[] = [
   { id:'sec-pim',      label:'Public Investment',     sub:'tbl 080–084',                layer:7, x:1390, y:712,  w:180, h:50, color:'#c084fc',
     detail:'PublicInvestmentSection.tsx - PIM funding, PPP projects, donor vs GoU split. tbl-080-084. Source: budget_fy_summary + ppp_projects.' },
   { id:'sec-global',   label:'Global Case Studies',   sub:'tbl 090–100',                layer:7, x:1390, y:774,  w:180, h:50, color:'#7dd3fc',
-    detail:'GlobalCaseStudiesSection.tsx - 16-country comparative RMS/BMS benchmarking. tbl-090-100. Source: global_case_studies.' },
+    detail:'GlobalCaseStudiesSection.tsx - 209-country comparative RMS/BMS benchmarking. tbl-090-100. Source: global_case_studies.' },
 ];
 
 // Bounding box of all node geometry - used to "fit to content" the canvas
