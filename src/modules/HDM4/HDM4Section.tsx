@@ -332,7 +332,7 @@ export default function HDM4Section() {
                 <XAxis dataKey="year" tick={TICK_STYLE}/>
                 <YAxis tick={TICK_STYLE} label={{ value: 'IRI (m/km)', angle: -90, position: 'insideLeft', style: { fontSize: 9, fill: 'rgba(148,163,184,0.5)' } }}/>
                 <Tooltip content={<CustomTooltip/>}/>
-                <Legend wrapperStyle={{ fontSize: 10 }}/>
+                <Legend wrapperStyle={{ fontSize: 10, color: 'rgba(148,163,184,0.7)' }}/>
                 <ReferenceLine y={4.0} stroke={C.yellow} strokeDasharray="4 3" label={{ value: 'Fair threshold', style: { fontSize: 8, fill: C.yellow } }}/>
                 <ReferenceLine y={6.0} stroke={C.orange} strokeDasharray="4 3" label={{ value: 'Poor threshold', style: { fontSize: 8, fill: C.orange } }}/>
                 <Line type="monotone" dataKey="iri" name="No treatment" stroke={C.red} strokeWidth={2} dot={false}/>
