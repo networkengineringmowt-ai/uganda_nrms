@@ -12,11 +12,13 @@ import {
 } from '../../shared/dashboardKit';
 
 // ─── Economic composition (Overview) ──────────────────────────────────────
+// Matches GDP_BY_SECTOR below (same UBOS GDP-by-sector split) so the Overview
+// donut and the Economy section donut never disagree on Uganda's GDP composition.
 const GDP_SECTORS = [
   { name: 'Services', value: 46, color: DASH_C.blue },
   { name: 'Agriculture', value: 24, color: DASH_C.green },
-  { name: 'Industry', value: 19, color: DASH_C.purple },
-  { name: 'Other', value: 11, color: DASH_C.yellow },
+  { name: 'Industry', value: 27, color: DASH_C.purple },
+  { name: 'Taxes', value: 3, color: DASH_C.yellow },
 ];
 const REGIONS = [
   { region: 'Central', poverty: 14, elec: 42 },
