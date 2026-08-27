@@ -289,7 +289,7 @@ export default function PimLegacyContent({ initialTab, hideTabBar }: { initialTa
                 <XAxis dataKey="fy" tick={{ ...TK, fontSize: 8 }} angle={-30} textAnchor="end"/>
                 <YAxis tick={TK} label={{ value: 'UGX Bn', angle: -90, position: 'insideLeft', style: { fontSize: 9, fill: 'rgba(148,163,184,0.5)' } }}/>
                 <Tooltip content={<CT/>}/>
-                <Legend wrapperStyle={{ fontSize: 10 }}/>
+                <Legend wrapperStyle={{ fontSize: 10, color: 'rgba(148,163,184,0.7)' }}/>
                 <Bar dataKey="donor" name="Donor/External" stackId="a" fill={C.blue} radius={[0,0,0,0]}/>
                 <Bar dataKey="gou" name="GoU Own Revenue" stackId="a" fill={C.yellow} radius={[4,4,0,0]}/>
               </BarChart>
@@ -305,7 +305,7 @@ export default function PimLegacyContent({ initialTab, hideTabBar }: { initialTa
                 <XAxis dataKey="fy" tick={{ ...TK, fontSize: 8 }} angle={-30} textAnchor="end"/>
                 <YAxis tick={TK}/>
                 <Tooltip content={<CT/>}/>
-                <Legend wrapperStyle={{ fontSize: 10 }}/>
+                <Legend wrapperStyle={{ fontSize: 10, color: 'rgba(148,163,184,0.7)' }}/>
                 <Line type="monotone" dataKey="roads" name="Roads" stroke={C.cyan} strokeWidth={2} dot={{ r: 3 }}/>
                 <Line type="monotone" dataKey="bridges" name="Bridges" stroke={C.orange} strokeWidth={2} dot={{ r: 3 }}/>
               </LineChart>
