@@ -351,11 +351,14 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
     tables: [LazyRoadInventoryTbl],
   },
   tis: {
+    // ntis / trafficanalytics / trafficsummary / growthfactors / overloading
+    // were each their own standalone sidebar row showing one facet of the
+    // same traffic dataset Traffic Information already covers - folded in
+    // here (nav decluttering) rather than kept as five near-duplicate rows.
+    dashboard: [LazyNTISOverview],
     map: [TrafficMapLegacy],
-    tables: [TrafficCountsLegacy, TrafficStationsLegacy],
-    // GrowthFactors and Overloading moved out - each now has its own
-    // dedicated standalone sidebar section (see below).
-    analytics: [TrafficTrendsLegacy, LazyRoadSafetyOverview],
+    tables: [TrafficCountsLegacy, TrafficStationsLegacy, LazyTrafficSummaryPg],
+    analytics: [TrafficTrendsLegacy, LazyRoadSafetyOverview, LazyTrafficAnalyticsPg, LazyGrowthFactors, LazyOverloading],
   },
   pms: {
     map: [PmsConditionMapLegacy],
@@ -363,22 +366,27 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
     analytics: [PMS_CrossSectionAnalytics, PmsAnalyticsViewLegacy, PmsAgeLegacy, PmsFwdLegacy, PMS_LifecycleView, PMS_PavementCatalogue, PMS_AIVisionDashboard, PMS_DigitalTwin],
   },
   bms: {
-    // GISMap, Registry, Inspections, BridgeWorks and PhotoTwin each now
-    // have their own dedicated standalone sidebar section (see below) -
-    // keeping them here too made BMS's hub show byte-identical content to
-    // five other sidebar entries. Only content with no standalone home
-    // (Maintenance & Works, Condition Assessment, Analytics & Reports,
-    // Critical Structures) stays on the BMS hub itself.
-    tables: [BMS_Maintenance],
-    analytics: [BMS_Condition, BMS_Critical, BMS_Analytics],
+    // GISMap, Registry, Inspections, BridgeWorks and PhotoTwin were each
+    // their own standalone sidebar row for content that's really a facet of
+    // Bridge Management - folded back in here (nav decluttering) so Bridge
+    // Management is the one place to find all of it, instead of six rows.
+    dashboard: [BMS_BridgeWorks],
+    map: [BMS_GISMap],
+    tables: [BMS_Maintenance, BMS_Registry, BMS_Inspections, BMS_PhotoTwin],
+    analytics: [BMS_Condition, BMS_Critical, BMS_Analytics, LazyPriorityRanking],
   },
   ducar: {
     dashboard: [LazyDucarOverview],
   },
   pim: {
-    dashboard: [PimFrameworkLegacy],
-    tables: [PimPppLegacy, PimDonorLegacy],
-    analytics: [PimBudgetLegacy, PimNdpivLegacy],
+    // Socio-Economic Analysis was its own standalone row - the population/
+    // land-use/economic indicators it maps directly feed investment
+    // prioritisation (see DEFS above), so it's folded onto Public
+    // Investment's tabs instead of sitting as a separate row.
+    dashboard: [PimFrameworkLegacy, SE_Dashboard],
+    map: [SE_Map],
+    tables: [PimPppLegacy, PimDonorLegacy, SE_Tables],
+    analytics: [PimBudgetLegacy, PimNdpivLegacy, SE_Analytics],
   },
   gis: {
     map: [GisMapLegacy],
@@ -397,7 +405,9 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
   admin: {
     map: [ADMIN_MindMap],
     tables: [ADMIN_Identity, ADMIN_Activity],
-    analytics: [ADMIN_DataAudit],
+    // ML System Architecture was its own standalone row for a platform-level
+    // diagram - admin-level content, folded in here.
+    analytics: [ADMIN_DataAudit, LazyMLArchitecture],
     capture: [ADMIN_PendingSubmissions],
   },
   sources: {
@@ -437,14 +447,15 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
     analytics: [BUD_Section],
   },
   lifecycle: {
-    analytics: [LC_Section],
+    // HDM-4 was its own standalone row for the model that literally powers
+    // this section's life-cycle costing (see DEFS above) - folded in here.
+    analytics: [LC_Section, LazyHDM4Section],
   },
   projects: {
-    tables: [PROJ_View],
-    // OPRC and NDP IV each now have their own dedicated standalone sidebar
-    // section (see below) with their own distinct framing - OPRC is "roads
-    // selected for OPRC contracting", not a generic Projects sub-view - so
-    // they no longer duplicate onto Projects' Deep Analytics tab too.
+    tables: [PROJ_View, LazyProjectTracker],
+    // OPRC and NDP IV each keep their own dedicated standalone sidebar
+    // section - OPRC is "roads selected for OPRC contracting", not a
+    // generic Projects sub-view - so they stay off Projects' tabs.
   },
 
   // Restored standalone legacy tabs - each keeps its own un-aliased sectionId
@@ -453,6 +464,16 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
   // back to InsightGrid/ExhaustiveTables/etc.'s honest "not wired" empty
   // state for these ids, same as any other unwired section - not a crash,
   // just no duplicate database table for content that's really local/static.
+  //
+  // gismap / registry / inspections / priority / phototwin / trafficanalytics
+  // / trafficsummary / growthfactors / overloading / hdm4 / mlarchitecture /
+  // projecttracker no longer have their own row in the sidebar (folded onto
+  // bms / tis / lifecycle / admin / projects above to cut nav clutter) but
+  // keep their entry here unchanged - the many "Related Data" cross-link
+  // pills across the app (see useCrossLinks.ts) still deep-link straight to
+  // these ids for a single-purpose focused view, and App.tsx's own
+  // activeView branches still render them, so removing the entry would turn
+  // a working pill into a blank page rather than actually removing anything.
   networkstory:   { dashboard: [NetworkStoryEmbed] },
   roadnetwork:    { map: [LazyRoadNetworkMap] },
   gismap:         { map: [BMS_GISMap] },
