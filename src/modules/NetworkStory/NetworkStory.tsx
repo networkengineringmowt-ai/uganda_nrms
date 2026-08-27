@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
+import { renderSliceLabel } from '../../shared/dashboardKit';
 import {
   AreaChart, Area, BarChart, Bar, LineChart, Line, PieChart, Pie,
   XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine,
@@ -1355,7 +1356,8 @@ export default function NetworkStory() {
                 <PieChart>
                   <Pie data={VCI_BANDS} dataKey="pct" nameKey="band"
                     cx="50%" cy="50%" innerRadius={50} outerRadius={80}
-                    paddingAngle={2} isAnimationActive animationDuration={1400}>
+                    paddingAngle={2} isAnimationActive animationDuration={1400}
+                    label={renderSliceLabel} labelLine={{ stroke: 'rgba(148,163,184,0.4)' }}>
                     {VCI_BANDS.map((b, i) => (
                       <Cell key={b.band} fill={b.color}
                         style={{ filter: `drop-shadow(0 0 5px ${b.color}66)` }} />
