@@ -301,7 +301,18 @@ function ReservePermitsLegacy() { return <LazyReserveLegacy initialTab="permits"
 const LazyCaseStudiesLegacy = lazy(() => import('../GlobalCaseStudies/GlobalCaseStudiesLegacyContent'));
 function CaseStudiesWorldMapLegacy() { return <LazyCaseStudiesLegacy initialTab="worldmap" hideTabBar />; }
 function CaseStudiesComparisonLegacy() { return <LazyCaseStudiesLegacy initialTab="analytics" hideTabBar />; }
-function CaseStudiesMatrixLegacy() { return <LazyCaseStudiesLegacy initialTab="matrix" hideTabBar />; }
+// LiteratureMatrixTab (initialTab="matrix") has the same `position: absolute;
+// inset: 0` root as NetworkStory/WorldMapTab, built for a full-bleed parent -
+// inside the analytics slot's plain `overflow/maxHeight` wrapper (no explicit
+// height) it collapses to 0px and vanishes. Same fix as NetworkStoryEmbed
+// below: give it a real height here so it actually renders.
+function CaseStudiesMatrixLegacy() {
+  return (
+    <div style={{ position: 'relative', height: 'calc(100vh - 230px)', minHeight: 620 }}>
+      <LazyCaseStudiesLegacy initialTab="matrix" hideTabBar />
+    </div>
+  );
+}
 function CaseStudiesNarrativeLegacy() { return <LazyCaseStudiesLegacy initialTab="casestudies" hideTabBar />; }
 function CaseStudiesLessonsLegacy() { return <LazyCaseStudiesLegacy initialTab="lessons" hideTabBar />; }
 
