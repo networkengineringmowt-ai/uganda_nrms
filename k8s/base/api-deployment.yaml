@@ -1,5 +1,20 @@
 # NRMS Express API — privileged Supabase write-back (surveys, data entry,
 # encroachment register). Image built from server/Dockerfile.
+#
+# server/index.js treats DRIVE_DATA_DIR as the canonical write-back store
+# (every /api/admin/:table insert/update is appended there as JSONL) and
+# defaults it to a Windows-mapped-drive path (G:/My Drive/...) if unset. That
+# path does not exist on Linux, was never overridden anywhere in this k8s
+# config, and nothing here provisioned storage for it - every write request
+# was failing fs.mkdirSync/appendFileSync and returning 500. Fixed by
+# pointing DRIVE_DATA_DIR at a mounted PVC instead so writes actually persist.
+# CAVEAT: this PVC is ReadWriteOnce, but replicas is 2 below - only one pod
+# can mount it (k3s's local-path provisioner will schedule both pods onto the
+# node that has the volume, but concurrent JSONL appends from two pods are
+# not coordinated). For the real ministry deployment either drop replicas to
+# 1, or move this to a ReadWriteMany-capable storage class before relying on
+# it as the actual canonical store. This does not affect the optional
+# Supabase mirror (SUPABASE_MIRROR=on), which is unrelated to this volume.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -22,6 +37,9 @@ spec:
           env:
             - { name: PORT, value: "8787" }
             - { name: CORS_ORIGIN, value: "https://networkengineringmowt-ai.github.io" }
+            - { name: DRIVE_DATA_DIR, value: "/data/captures" }
+          volumeMounts:
+            - { name: nrms-api-data, mountPath: /data }
           resources:
             requests: { cpu: 100m, memory: 128Mi }
             limits:   { cpu: 500m, memory: 512Mi }
@@ -29,6 +47,19 @@ spec:
             httpGet: { path: /health, port: 8787 }
             initialDelaySeconds: 5
             periodSeconds: 10
+      volumes:
+        - name: nrms-api-data
+          persistentVolumeClaim: { claimName: nrms-api-data }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nrms-api-data
+  namespace: nrms
+spec:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: local-path        # k3s built-in provisioner
+  resources: { requests: { storage: 5Gi } }
 ---
 apiVersion: v1
 kind: Service

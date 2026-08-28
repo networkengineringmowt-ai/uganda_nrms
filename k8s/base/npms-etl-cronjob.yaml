@@ -17,8 +17,16 @@ spec:
             - name: etl
               image: python:3.12-slim
               command: ["/bin/sh","-c"]
+              # scripts/pavement_data_engine.py hard-imports numpy, openpyxl, pypdf,
+              # python-docx (import name "docx") and scikit-learn (import name
+              # "sklearn") - none of those except openpyxl were being installed here,
+              # and pandas (which WAS installed) isn't imported anywhere in the
+              # script. Every nightly run was failing on `import numpy as np` before
+              # doing any work. pyodbc stays out - the script already treats it as
+              # optional (try/except ImportError) and it needs system ODBC libs this
+              # slim image doesn't have.
               args:
-                - pip install --quiet pandas openpyxl && python /repo/scripts/pavement_data_engine.py
+                - pip install --quiet numpy openpyxl pypdf python-docx scikit-learn && python /repo/scripts/pavement_data_engine.py
               volumeMounts:
                 - { name: repo, mountPath: /repo }
               resources:
