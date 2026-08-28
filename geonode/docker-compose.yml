@@ -19,7 +19,10 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-geonode}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-geonode}
+      # No password default - a silent fallback to the literal string
+      # "geonode" here would ship a database with a well-known, publicly
+      # documented password. Set POSTGRES_PASSWORD in .env (see .env.example).
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
       POSTGRES_DB: ${POSTGRES_DB:-geonode}
     volumes:
       - dbdata:/var/lib/postgresql/data
@@ -46,7 +49,9 @@ services:
     env_file: .env
     environment:
       GEOSERVER_ADMIN_USER: ${GEOSERVER_ADMIN_USER:-admin}
-      GEOSERVER_ADMIN_PASSWORD: ${GEOSERVER_ADMIN_PASSWORD:-geoserver}
+      # Same reasoning as POSTGRES_PASSWORD above - "geoserver" is a
+      # well-known default admin password for this image, not a real secret.
+      GEOSERVER_ADMIN_PASSWORD: ${GEOSERVER_ADMIN_PASSWORD:?set GEOSERVER_ADMIN_PASSWORD in .env}
       GEONODE_LB_HOST_IP: ${SITE_HOST:-localhost}
     ports:
       - "8080:8080"

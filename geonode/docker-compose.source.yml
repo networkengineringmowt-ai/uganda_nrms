@@ -16,7 +16,8 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-geonode}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-geonode}
+      # No password default - see the matching comment in docker-compose.yml.
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
       POSTGRES_DB: ${POSTGRES_DB:-geonode}
     volumes:
       - dbdata:/var/lib/postgresql/data
