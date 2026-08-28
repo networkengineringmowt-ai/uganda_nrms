@@ -81,11 +81,13 @@ const SECTIONS: Record<string, Section> = {
   projecttracker:  { id: 'projecttracker',  label: 'Project Tracker',       icon: <ListTodo size={14}/>,       color: N.green  },
 };
 
-// Four top-level tabs - each groups its child sections. Navigation is unchanged
-// (each child still calls navigate(id)); this is a presentation/IA grouping only.
-// The restored legacy tabs (see the SECTIONS comment above) are sorted into
-// whichever of these four groups they actually belong to, rather than sitting
-// in a catch-all "More Tools & Legacy" bucket.
+// Top-level tabs are grouped by which platform SYSTEM actually owns the
+// content (RMS/BMS/TIS/Planning/Knowledge), not by a generic UI bucket -
+// e.g. every bridge/culvert-related tab sits under BMS and nothing else,
+// every traffic-related tab sits under TIS and nothing else, matching how
+// the rest of the app (DEFS text, SECTION_ALIAS, module folder names) already
+// names these systems. Navigation itself is unchanged (each child still
+// calls navigate(id)); this is a presentation/IA grouping only.
 // Nav trimmed to cut sidebar clutter, but ONLY for genuine duplicates: an id
 // that SECTION_ALIAS maps onto another id's underlying data, making it
 // byte-identical to a sibling (npms -> pms/roadcondition, nbms -> bms). Those
@@ -95,29 +97,34 @@ const SECTIONS: Record<string, Section> = {
 // per explicit request to restore every such standalone tab. 'ntis' is the
 // one exception kept folded: it has DEFS text but no SECTION_EXTRAS component
 // of its own (nothing distinguishes it from 'traffic'), so it would render as
-// an empty near-duplicate if exposed. OPRC, NDP IV, and Socio-Economic
-// Analysis are deliberately their own rows: each is its own distinct dataset,
-// not a generic sub-view of Projects/PIM. Registry, Inspections, Structure
-// GIS Map, Priority Ranking, Photo & Digital Twin, and Bridge Works Programme
-// are BMS-family tabs, each with its own dedicated component (BMS_Registry,
-// BMS_Inspections, BMS_GISMap, LazyPriorityRanking, BMS_PhotoTwin,
-// BMS_BridgeWorks) - restored alongside Bridge Management rather than only
-// reachable as its sub-tabs. Traffic Analytics, Traffic Summary, Growth
-// Factors, and Overloading Analytics are Traffic-family tabs, each likewise
-// backed by its own dedicated component. HDM-4 Analysis and Project Tracker
-// are Planning-family tabs (life-cycle costing model runs; Gantt/Kanban
-// project tracking). ML System Architecture is a platform/system doc, so it
-// sits with Admin. See SECTION_EXTRAS in SectionDashboard.tsx for exactly
-// where each one's content renders, both as its own tab and (where relevant)
-// cross-linked inside a parent hub's own sub-tabs - a component appearing in
-// both places is a deliberate cross-link, not a nav duplicate.
+// an empty near-duplicate if exposed - its content IS the TIS group below.
+// OPRC, NDP IV, and Socio-Economic Analysis are deliberately their own rows:
+// each is its own distinct dataset, not a generic sub-view of Projects/PIM.
+// Registry, Inspections, Structure GIS Map, Priority Ranking, Photo & Digital
+// Twin, and Bridge Works Programme are the BMS system's own family - bridges
+// and major culverts, nothing else - each backed by its own dedicated
+// component (BMS_Registry, BMS_Inspections, BMS_GISMap, LazyPriorityRanking,
+// BMS_PhotoTwin, BMS_BridgeWorks), grouped with Bridge Management rather than
+// only reachable as its sub-tabs. Traffic Analytics, Traffic Summary, Growth
+// Factors, and Overloading Analytics are the TIS system's own family -
+// everything traffic sits under TIS (Traffic Information Sytem / traffic ->
+// 'tis' in SECTION_ALIAS), nothing else - each likewise backed by its own
+// dedicated component. HDM-4 Analysis and Project Tracker are Planning-family
+// tabs (life-cycle costing model runs; Gantt/Kanban project tracking). ML
+// System Architecture is a platform/system doc, so it sits with Admin. See
+// SECTION_EXTRAS in SectionDashboard.tsx for exactly where each one's content
+// renders, both as its own tab and (where relevant) cross-linked inside a
+// parent hub's own sub-tabs - a component appearing in both places is a
+// deliberate cross-link, not a nav duplicate.
 const GROUPS: Group[] = [
   { id: 'assets',    label: 'Network & Assets',      icon: <Network size={15}/>,      color: N.cyan,   items: [
-    'rms', 'roadcondition', 'bms', 'roadreserve', 'roadatlas', 'roadvideo', 'ducar',
+    'rms', 'roadcondition', 'roadreserve', 'roadatlas', 'roadvideo', 'ducar',
     'networkstory', 'roadnetwork',
-    'registry', 'inspections', 'gismap', 'priority', 'phototwin', 'bridgeworks',
   ] },
-  { id: 'traffic',   label: 'Traffic & Performance', icon: <Activity size={15}/>,     color: N.orange, items: [
+  { id: 'bms',       label: 'BMS - Bridge Management', icon: <Hammer size={15}/>,     color: N.blue,   items: [
+    'bms', 'registry', 'inspections', 'gismap', 'priority', 'phototwin', 'bridgeworks',
+  ] },
+  { id: 'traffic',   label: 'TIS - Traffic Information', icon: <Activity size={15}/>, color: N.orange, items: [
     'traffic', 'atc',
     'trafficanalytics', 'trafficsummary', 'growthfactors', 'overloading',
   ] },
