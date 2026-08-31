@@ -12,11 +12,16 @@ Usage:  python etl_all.py
 import json, urllib.request, urllib.error, os, time
 from pathlib import Path
 
-URL = "https://udionwmqmjcfzbdhoetv.supabase.co/rest/v1"
+# NOTE: this URL + anon-key fallback pointed at "udionwmqmjcfzbdhoetv" - an
+# earlier Supabase project that the app has since migrated away from (see
+# src/lib/supabase.ts, which uses "vbidhkvzjigatfygnycg"). Left unfixed, every
+# run of this script (whenever SUPABASE_SERVICE_ROLE_KEY isn't set/found)
+# silently talks to the wrong - likely defunct - database instead of the one
+# the deployed app actually reads/writes. Updated to match the current project.
+URL = "https://vbidhkvzjigatfygnycg.supabase.co/rest/v1"
 KEY = ("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
-       ".eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVkaW9ud21xbWpjZnpiZGhvZXR2Iiwicm9sZSI6Im"
-       "Fub24iLCJpYXQiOjE3ODA2NDI3NjcsImV4cCI6MjA5NjIxODc2N30"
-       ".EP5bruNS55m2PE1nf0p2KeOxm4Tnae5ESAj6DukqIr0")
+       ".eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZiaWRoa3Z6amlnYXRmeWdueWNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3Mzg0NDQsImV4cCI6MjA5NzMxNDQ0NH0"
+       ".4M5lsUvcoh2giNpbF5X7nMPepNVp1U9Em6Ro4aZwgY4")
 import os as _os
 def _service_key():
     k = _os.environ.get('SUPABASE_SERVICE_ROLE_KEY')
