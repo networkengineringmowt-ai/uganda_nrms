@@ -14,15 +14,18 @@ function prettyLabel(key: string): string {
     return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
   }).join(' ');
 }
-const SPECS: Record<string, string> = { rms:'road_links', pms:'road_condition_assessments', tis:'traffic_stations', bms:'bridge_inventory', ducar:'maintenance_works', projects:'maintenance_works', reserve:'encroachments', pim:'investment_projects' };
-// Static fallback ONLY for sections whose real dataset is itself road/traffic
-// geometry (so the fallback stays thematically the same section, just a
-// static sample instead of a live query) - other SPECS sections return an
-// honest empty result rather than being padded with unrelated traffic rows.
-const FALLBACK_GEOJSON: Record<string, string> = {
-  tis: 'data/traffic_predictions.geojson',
-  rms: 'road_network.geojson',
-  pms: 'road_network.geojson',
+// Table names corrected to match scripts/etl_all.py's real load targets - see
+// the identical note in ExhaustiveTables.tsx / InsightGrid.tsx. The old names
+// pointed at tables that were never created in the live project, so this
+// "analysed in full" view was always silently substituting the static
+// GeoJSON fallback below for a live query result. 'reserve'/'pim' dropped
+// (no real source dataset yet); budget/growthfactors/overloading/bridgeworks
+// added (real ETL-backed data exists for these).
+const SPECS: Record<string, string> = {
+  rms: 'road_links', pms: 'road_link_condition', tis: 'traffic_count_stations',
+  bms: 'structures', ducar: 'maintenance_programme', projects: 'maintenance_programme',
+  budget: 'budget_alignment', growthfactors: 'traffic_growth_factors',
+  overloading: 'overloading_by_link', bridgeworks: 'bridge_works',
 };
 // Fetches every row in `table`, paginating past PostgREST's ~1000-row-per-request
 // cap so the "analysed in full" claim below is actually true, not a capped sample.
@@ -46,19 +49,12 @@ async function fetchAllRows(table: string): Promise<Row[]> {
 async function loadRows(sectionId: string): Promise<Row[]> {
   const table = SPECS[sectionId];
   if (!table) return [];
-  const live = (async () => { try {
+  try {
     const q = fetchAllRows(table);
     const t = new Promise<null>(res => setTimeout(() => res(null), 9000));
     const data = await Promise.race([q, t]);
     return (data ?? []) as Row[];
-  } catch { return [] as Row[]; } })();
-  const gjPath = FALLBACK_GEOJSON[sectionId];
-  const fb = (async () => { if (!gjPath) return [] as Row[]; try {
-    const gj = await fetch(import.meta.env.BASE_URL + gjPath).then(r => r.json());
-    return ((gj.features ?? []) as { properties: Row }[]).map(f => f.properties);
-  } catch { return [] as Row[]; } })();
-  const [l, f] = await Promise.all([live, fb]);
-  return l.length ? l : f;
+  } catch { return [] as Row[]; }
 }
 const num = (v: unknown): number | null => { if (typeof v === 'number' && isFinite(v)) return v; if (typeof v === 'string' && v !== '' && isFinite(Number(v))) return Number(v); return null; };
 const fmtN = (n: number, d = 0) => n.toLocaleString(undefined, { maximumFractionDigits: d });

@@ -467,15 +467,31 @@ function deriveTiles(rows: Row[], P: Profile): TileDef[] {
 }
 
 // ── Per-Section Data Specs (Supabase '*' pulls - every attribute) ─────────────
+// These table names must match scripts/etl_all.py's actual load targets - they
+// previously named tables (road_condition_assessments, traffic_stations,
+// bridge_inventory, maintenance_works, encroachments, investment_projects)
+// that were never created in the live Supabase project (confirmed 404 on the
+// live project, road_links included, which DOES exist but was empty), so
+// every "wired" section was silently falling through to the generic
+// traffic_predictions.geojson fallback below and presenting that as if it
+// were the section's own live analysed data. Corrected to the real table
+// names the ETL actually populates; 'reserve' and 'pim' are left out
+// entirely (no source dataset exists yet to load into a real table for
+// them) rather than pointed at a table that doesn't exist, so those two
+// sections show the honest "isn't wired yet" state instead of a fake
+// "database is asleep" one. Four more sections with real ETL-backed source
+// data are added: budget, growthfactors, overloading, bridgeworks.
 const SPECS: Record<string, { table: string; extra?: string }> = {
-  rms:      { table: 'road_links' },
-  pms:      { table: 'road_condition_assessments', extra: 'road_links' },
-  tis:      { table: 'traffic_stations', extra: 'traffic_counts' },
-  bms:      { table: 'bridge_inventory', extra: 'culvert_inventory' },
-  ducar:    { table: 'maintenance_works' },
-  projects: { table: 'maintenance_works' },
-  reserve:  { table: 'encroachments' },
-  pim:      { table: 'investment_projects' },
+  rms:            { table: 'road_links' },
+  pms:            { table: 'road_link_condition' },
+  tis:            { table: 'traffic_count_stations' },
+  bms:            { table: 'structures' },
+  ducar:          { table: 'maintenance_programme' },
+  projects:       { table: 'maintenance_programme' },
+  budget:         { table: 'budget_alignment' },
+  growthfactors:  { table: 'traffic_growth_factors' },
+  overloading:    { table: 'overloading_by_link' },
+  bridgeworks:    { table: 'bridge_works' },
 };
 
 async function fetchRows(table: string, limit = 700): Promise<Row[]> {
@@ -492,29 +508,16 @@ async function fetchRows(table: string, limit = 700): Promise<Row[]> {
   return r;
 }
 
-// Static fallback keeps the insight matrix alive when the live DB sleeps -
-// only for sections that HAVE a real table above (spec.table), so a sleeping
-// DB never gets confused with a section that simply has no live table wired
-// yet. traffic_predictions.geojson is a generic road-network sample used
-// purely to keep the SAME section's tiles populated during a DB nap, never
-// to stand in for a different section's data.
-const FALLBACK: Record<string, string> = {
-  rms: 'data/traffic_predictions.geojson',
-  tis: 'data/traffic_predictions.geojson',
-  pms: 'data/traffic_predictions.geojson',
-  projects: 'data/traffic_predictions.geojson',
-  ducar: 'data/traffic_predictions.geojson',
-  reserve: 'data/traffic_predictions.geojson',
-  pim: 'data/traffic_predictions.geojson',
-  bms: 'data/traffic_predictions.geojson',
-};
-async function fallbackRows(sectionId: string): Promise<Row[]> {
-  const rel = FALLBACK[sectionId]; if (!rel) return [];
-  try {
-    const gj = await fetch(import.meta.env.BASE_URL + rel).then(r => r.json());
-    return ((gj.features ?? []) as { properties: Row }[]).map(f => f.properties);
-  } catch { return []; }
-}
+// This used to substitute the SAME generic traffic_predictions.geojson
+// sample (a fixed 1,020-record road-network file, unrelated to whatever
+// section was showing it) for every "wired" section whenever the live
+// query came back empty - which, since every SPECS table above was either
+// missing or empty in the live project, meant EVERY section's "Insight
+// Matrix" was showing this one static file's numbers dressed up as that
+// section's own live analysis. That is the opposite of "an active SQL
+// database and server connection": it looks connected and populated when
+// it silently was not. Removed - a section with no live rows now honestly
+// says so (see the empty-state copy below) instead of masking it.
 
 // ── Main Component ────────────────────────────────────────────────────────────
 // No "INSIGHT MATRIX" banner and no boxed legend strip above the tile grid -
@@ -537,10 +540,8 @@ export function InsightGrid({ sectionId, accent }: { sectionId: string; accent?:
     if (!wired) { setRows([]); return; }
     (async () => {
       const spec = SPECS[sectionId];
-      const [live, fb] = await Promise.all([fetchRows(spec.table), fallbackRows(sectionId)]);
-      let r = live;
+      let r = await fetchRows(spec.table);
       if (!r.length && spec.extra) r = await fetchRows(spec.extra);
-      if (!r.length) r = fb;
       if (!dead) setRows(r);
     })();
     return () => { dead = true; };

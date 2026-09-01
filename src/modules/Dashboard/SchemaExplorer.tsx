@@ -5,6 +5,7 @@
  * is highlighted, its direct relations listed, and all join queries printed.
  */
 import { useMemo, useState } from 'react';
+import { useDbStatus } from '../../shared/useDbStatus';
 
 const MONO = 'ui-monospace, SFMono-Regular, Menlo, monospace';
 const CARD: React.CSSProperties = { background: 'rgba(15,23,42,0.55)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '10px 12px', marginBottom: 10 };
@@ -302,6 +303,7 @@ function CodeBlock({ sql, accent }: { sql: string; accent: string }) {
 
 export function SchemaExplorer({ sectionId, accent = '#00f5ff' }: { sectionId: string; accent?: string }) {
   const [showAll, setShowAll] = useState(false);
+  const dbStatus = useDbStatus();
   const own = useMemo(() => ALL_TABLES.filter(t => t.section === sectionId), [sectionId]);
   const related = useMemo(() => {
     const ownNames = own.map(t => t.name);
@@ -314,15 +316,29 @@ export function SchemaExplorer({ sectionId, accent = '#00f5ff' }: { sectionId: s
   const shown = own.length ? own : ALL_TABLES.slice(0, 1);
   return (
     <div style={{ width: '100%' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', margin: '14px 0 8px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', margin: '14px 0 8px', flexWrap: 'wrap', gap: 8 }}>
         <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.1em', color: accent }}>
           SQL DATABASE AND SCHEMA · {ALL_TABLES.length} SECTION TABLES · {QUERIES.length} LINKING QUERIES
         </div>
-        <button onClick={() => setShowAll(v => !v)}
-          style={{ background: 'none', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 6,
-            color: '#94a3b8', fontSize: 10, padding: '3px 10px', cursor: 'pointer' }}>
-          {showAll ? 'Show section queries' : 'Show all queries'}
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {/* Live check against the Supabase project, not the static schema
+              text below - this tab used to only show designed DDL with no
+              indication of whether the platform is actually connected. */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%',
+              background: dbStatus === 'connected' ? '#00ff88' : dbStatus === 'offline' ? '#ff2d78' : '#94a3b8',
+              boxShadow: dbStatus === 'connected' ? '0 0 6px #00ff88' : dbStatus === 'offline' ? '0 0 6px #ff2d78' : 'none' }}/>
+            <span style={{ fontSize: 10, fontWeight: 700,
+              color: dbStatus === 'connected' ? '#00ff88' : dbStatus === 'offline' ? '#ff2d78' : '#94a3b8' }}>
+              {dbStatus === 'connected' ? 'Server: Live' : dbStatus === 'offline' ? 'Server: Unreachable' : 'Server: Checking…'}
+            </span>
+          </div>
+          <button onClick={() => setShowAll(v => !v)}
+            style={{ background: 'none', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 6,
+              color: '#94a3b8', fontSize: 10, padding: '3px 10px', cursor: 'pointer' }}>
+            {showAll ? 'Show section queries' : 'Show all queries'}
+          </button>
+        </div>
       </div>
 
       <div style={CARD}>

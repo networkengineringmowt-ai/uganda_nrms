@@ -13,11 +13,19 @@ function prettyLabel(key: string): string {
     return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
   }).join(' ');
 }
-const SPECS: Record<string, string> = { rms:'road_links', pms:'road_condition_assessments', tis:'traffic_stations', bms:'bridge_inventory', ducar:'maintenance_works', projects:'maintenance_works', reserve:'encroachments', pim:'investment_projects' };
-const FALLBACK_GEOJSON: Record<string, string> = {
-  tis: 'data/traffic_predictions.geojson',
-  rms: 'road_network.geojson',
-  pms: 'road_network.geojson',
+// Table names corrected to match scripts/etl_all.py's real load targets (the
+// old names - road_condition_assessments, traffic_stations, bridge_inventory,
+// maintenance_works, encroachments, investment_projects - were never created
+// in the live Supabase project, so this view always fell through to the
+// static GeoJSON fallback below and presented it as "ALL records" from a
+// live table). 'reserve'/'pim' dropped - no real source dataset exists yet
+// to populate a live table for them. Four sections with real ETL-backed
+// data added: budget, growthfactors, overloading, bridgeworks.
+const SPECS: Record<string, string> = {
+  rms: 'road_links', pms: 'road_link_condition', tis: 'traffic_count_stations',
+  bms: 'structures', ducar: 'maintenance_programme', projects: 'maintenance_programme',
+  budget: 'budget_alignment', growthfactors: 'traffic_growth_factors',
+  overloading: 'overloading_by_link', bridgeworks: 'bridge_works',
 };
 // Fetches every row in `table`, paginating past PostgREST's ~1000-row-per-request
 // cap so no records are silently dropped - this feeds the "Exhaustive Table" view,
@@ -45,15 +53,12 @@ async function loadRows(sectionId: string): Promise<Row[]> {
     const q = fetchAllRows(table);
     const t = new Promise<null>(res => setTimeout(() => res(null), 9000));
     const data = await Promise.race([q, t]);
-    if (data && data.length) return data;
+    if (data) return data;
   } catch {}
-  // section-specific GeoJSON fallback
-  const gjPath = FALLBACK_GEOJSON[sectionId];
-  if (!gjPath) return [];
-  try {
-    const gj = await fetch(import.meta.env.BASE_URL + gjPath).then(r => r.json());
-    return ((gj.features ?? []) as { properties: Row }[]).map(f => f.properties);
-  } catch { return []; }
+  // No static-file fallback: this view promises "ALL records" from the live
+  // table, so an empty/failed live query returns honestly empty rather than
+  // quietly substituting a bundled GeoJSON sample as if it were the table.
+  return [];
 }
 const num = (v: unknown): number | null => { if (typeof v === 'number' && isFinite(v)) return v; if (typeof v === 'string' && v !== '' && isFinite(Number(v))) return Number(v); return null; };
 const fmtN = (n: number, d = 0) => n.toLocaleString(undefined, { maximumFractionDigits: d });
