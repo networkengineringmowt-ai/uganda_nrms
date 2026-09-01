@@ -1,0 +1,6 @@
+import{c as i}from"./createLucideIcon-GDS-gBuX.js";import{r as n}from"./vendor-recharts-8XnV5sKi.js";import{s as d}from"./supabase-CA2jDV0z.js";/**
+ * @license lucide-react v0.469.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const T=i("Route",[["circle",{cx:"6",cy:"19",r:"3",key:"1kj8tv"}],["path",{d:"M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15",key:"1d8sl"}],["circle",{cx:"18",cy:"5",r:"3",key:"gq8acd"}]]),b={tabId:"dashboard",tabLabel:"Dashboard",sectionId:""};let a=b;const r=new Set;function k(t){a.tabId===t.tabId&&a.tabLabel===t.tabLabel&&a.sectionId===t.sectionId||(a=t,r.forEach(e=>e()))}function p(){return a}function y(t){return r.add(t),()=>r.delete(t)}const l=6e4,f=6e3;async function I(){try{const t=d.from("road_links").select("link_id",{count:"exact",head:!0}),e=new Promise(c=>setTimeout(()=>c(null),f));return await Promise.race([t,e])!==null}catch{return!1}}function E(){const[t,e]=n.useState("checking");return n.useEffect(()=>{let s=!1;const c=async()=>{const u=await I();s||e(u?"connected":"offline")};c();const o=setInterval(c,l);return()=>{s=!0,clearInterval(o)}},[]),t}export{T as R,k as a,p as g,y as s,E as u};
