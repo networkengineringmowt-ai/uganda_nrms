@@ -159,7 +159,17 @@ export interface Slice { name: string; value: number; color?: string; }
 export function renderSliceLabel(props: any) {
   const { cx, cy, midAngle, outerRadius, name, percent } = props;
   const RAD = Math.PI / 180;
-  const r = outerRadius + 14;
+  // Radial offset from the outer ring to the label anchor. Compact chart
+  // cards (height ~200px with a bottom Legend, e.g. Priority Tier Breakdown
+  // on Public Investment) only leave ~90-93px of half-height for the pie -
+  // the previous +14 offset combined with an 80px outerRadius (a common
+  // size across these tiles) pushed the topmost slice's label 1-6px above
+  // the SVG's own top edge, clipping into the card title sitting right
+  // above it. +8 keeps every label just outside the ring with comfortable
+  // headroom in every card size this renderer is used in, full-page charts
+  // included (labels simply sit a touch closer to the ring - still fully
+  // legible, no functional change).
+  const r = outerRadius + 8;
   const x = cx + r * Math.cos(-midAngle * RAD);
   const y = cy + r * Math.sin(-midAngle * RAD);
   if (!percent) return null;
