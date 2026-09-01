@@ -20,9 +20,18 @@ async function q(table: string): Promise<Row[]> {
   } catch { return []; }
 }
 async function gjRows(file: string): Promise<Row[]> {
-  try { const g = await fetch(import.meta.env.BASE_URL + 'data/' + file).then(r => r.json());
+  // Some of these GeoJSON fallback files are large (10-20MB+); on a slow or
+  // congested connection an un-timed-out fetch can leave this component's
+  // "Computing..." loading state stuck forever with no error and no way to
+  // recover. Bound it like the Supabase query above so a slow load degrades
+  // to the empty state instead of hanging indefinitely.
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 12000);
+  try {
+    const g = await fetch(import.meta.env.BASE_URL + 'data/' + file, { signal: controller.signal }).then(r => r.json());
     return ((g.features ?? []) as { properties: Row }[]).map(f => f.properties);
   } catch { return []; }
+  finally { clearTimeout(timer); }
 }
 function grp(rows: Row[], catK: string | null, numK: string | null): { name: string; value: number }[] {
   if (!catK) return [];
