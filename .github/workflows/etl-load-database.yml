@@ -1,0 +1,40 @@
+name: Load Database (ETL)
+
+# Manually-triggered only - this writes real data into the LIVE production
+# Supabase database (scripts/etl_all.py), so it must never fire automatically
+# on push or a schedule. Run it from the Actions tab ("Run workflow") whenever
+# the JSON exports in public/data change and the live tables need refreshing.
+#
+# Requires a repo secret named SUPABASE_SERVICE_ROLE_KEY (Settings → Secrets
+# and variables → Actions → New repository secret). The anon key baked into
+# the app (src/lib/supabase.ts) is read-only for these tables by design, so
+# the ETL needs the service_role key to write - add it there, never in this
+# file or in chat. This workflow only ever reads that secret through
+# ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}, which GitHub Actions redacts from
+# all logs automatically.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  etl:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run ETL → Supabase
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "::error::SUPABASE_SERVICE_ROLE_KEY repo secret is not set - add it under Settings > Secrets and variables > Actions before running this workflow."
+            exit 1
+          fi
+          python scripts/etl_all.py
