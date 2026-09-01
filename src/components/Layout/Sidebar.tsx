@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { useBMS } from '../../store/BMSContext';
 import { useAuth } from '../../modules/Auth/AuthContext';
+import { useDbStatus } from '../../shared/useDbStatus';
 import type { ActiveView } from '../../index';
 
 interface Section {
@@ -141,6 +142,7 @@ export default function Sidebar() {
   const { state, navigate } = useBMS();
   const { structures, activeView } = state;
   const { user } = useAuth();
+  const dbStatus = useDbStatus();
 
   const criticalCount = structures.filter(s => s.conditionRating === 1).length;
 
@@ -297,10 +299,18 @@ export default function Sidebar() {
         <div style={{ fontSize: 7.5, color: 'rgba(100,116,139,0.45)', letterSpacing: '0.05em' }}>
           Uganda NRMS v4.0 · DNR 2026 (FY25-26)
         </div>
+        {/* Real Supabase connectivity check (useDbStatus), not a decorative
+            dot - this used to always read "System Online" in green even
+            when the database was completely unreachable. */}
         <div style={{ marginTop: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5 }}>
-          <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#00ff88',
-            boxShadow: '0 0 6px #00ff88', animation: 'pulse 2s ease-in-out infinite', display: 'inline-block' }}/>
-          <span style={{ fontSize: 7.5, color: 'rgba(0,255,136,0.6)' }}>System Online</span>
+          <span style={{ width: 5, height: 5, borderRadius: '50%',
+            background: dbStatus === 'connected' ? '#00ff88' : dbStatus === 'offline' ? '#ff2d78' : '#94a3b8',
+            boxShadow: dbStatus === 'connected' ? '0 0 6px #00ff88' : dbStatus === 'offline' ? '0 0 6px #ff2d78' : 'none',
+            animation: dbStatus !== 'offline' ? 'pulse 2s ease-in-out infinite' : 'none', display: 'inline-block' }}/>
+          <span style={{ fontSize: 7.5,
+            color: dbStatus === 'connected' ? 'rgba(0,255,136,0.6)' : dbStatus === 'offline' ? 'rgba(255,45,120,0.75)' : 'rgba(148,163,184,0.6)' }}>
+            {dbStatus === 'connected' ? 'Database Connected' : dbStatus === 'offline' ? 'Database Offline' : 'Checking database…'}
+          </span>
         </div>
       </div>
     </aside>
