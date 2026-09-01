@@ -516,29 +516,14 @@ async function fallbackRows(sectionId: string): Promise<Row[]> {
   } catch { return []; }
 }
 
-// ── Legend ────────────────────────────────────────────────────────────────────
-function LegendStrip({ P }: { P: Profile }) {
-  return (
-    <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'center',
-      background: GRID_BG, border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10,
-      padding: '6px 12px', margin: '0 0 10px', fontSize: 10, color: '#94a3b8' }}>
-      <span style={{ fontWeight: 800, letterSpacing: '0.08em', color: '#cbd5e1' }}>LEGEND</span>
-      <span>Heat scale:</span>
-      <span style={{ display: 'inline-flex', height: 8, width: 90, borderRadius: 4, overflow: 'hidden' }}>
-        {[...Array(12)].map((_, i) => <span key={i} style={{ flex: 1, background: heatColor(i / 11) }}/>)}
-      </span>
-      <span>low → high</span>
-      <span style={{ color: GOOD }}>■ good / leader</span>
-      <span style={{ color: MID }}>■ watch / cumulative</span>
-      <span style={{ color: BAD }}>■ critical / target line</span>
-      <span>· Dimensions: {P.cats.join(', ') || '-'}</span>
-      <span>· Measures: {P.nums.join(', ') || '-'}</span>
-      <span>· PNG button on any tile exports it</span>
-    </div>
-  );
-}
-
 // ── Main Component ────────────────────────────────────────────────────────────
+// No "INSIGHT MATRIX" banner and no boxed legend strip above the tile grid -
+// those made this read as a separate, bolted-on section beneath whatever the
+// section's own hand-built charts already rendered. The platform's dashboards
+// are meant to be one continuous page of same-styled chart tiles, not a
+// curated section followed by a visually distinct "insights" container - so
+// this grid now drops straight in as more tiles in that same flow, using the
+// same Tile shell (which already mirrors ChartBox's look) as everything else.
 export function InsightGrid({ sectionId, accent }: { sectionId: string; accent?: string }) {
   const [rows, setRows] = useState<Row[] | null>(null);
   const wired = sectionId in SPECS;
@@ -573,17 +558,8 @@ export function InsightGrid({ sectionId, accent }: { sectionId: string; accent?:
     </div>
   );
   return (
-    <div style={{ width: '100%' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', margin: '2px 0 8px' }}>
-        <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.1em', color: accent ?? PAL[0] }}>
-          INSIGHT MATRIX · {tiles.length} VIEWS · {rows.length.toLocaleString()} RECORDS (ALL ANALYSED)
-        </div>
-        <div style={{ fontSize: 9.5, color: '#475569' }}>auto cross-analysis: category × category · category × measure · measure × measure</div>
-      </div>
-      <LegendStrip P={P}/>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(238px, 1fr))', gap: 8 }}>
-        {tiles.map(t => <Tile key={t.key} title={t.title} sub={t.sub} accent={accent ?? PAL[0]}>{t.el}</Tile>)}
-      </div>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(238px, 1fr))', gap: 8, width: '100%' }}>
+      {tiles.map(t => <Tile key={t.key} title={t.title} sub={t.sub} accent={accent ?? PAL[0]}>{t.el}</Tile>)}
     </div>
   );
 }
