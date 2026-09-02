@@ -693,9 +693,9 @@ const StructurePanel = memo(function StructurePanel({
                             </button>
                           </>
                         )}
-                        {/* Caption overlay */}
+                        {/* Caption overlay - year/index only, never the source
+                            filename (platform-wide rule: no file names in the UI) */}
                         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent px-3 py-2">
-                          <div className="text-[10px] font-semibold text-white">{currentPhoto.filename}</div>
                           <div className="text-[9px] text-slate-300">
                             {currentPhoto.year} · Photo {photoIdx + 1} of {visiblePhotos.length}
                           </div>
