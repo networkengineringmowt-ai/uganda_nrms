@@ -521,17 +521,24 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
   networkstory:   { dashboard: [NetworkStoryEmbed] },
   roadnetwork:    { map: [LazyRoadNetworkMap] },
   gismap:         { map: [BMS_GISMap] },
-  registry:       { dashboard: [BMS_Registry] },
-  inspections:    { dashboard: [BMS_Inspections] },
-  priority:       { dashboard: [LazyPriorityRanking] },
+  // These 8 render a table-bearing component - slotted to analytics (Deep
+  // Analytics), matching exactly how the same component is slotted for its
+  // primary sidebar section (e.g. BMS_Registry -> bms.analytics). Putting a
+  // raw <table> on Dashboard would violate the platform's no-tables-on-
+  // Dashboard rule; falling through to InsightGrid's honest empty state on
+  // Dashboard here keeps that consistent no matter which route (sidebar vs.
+  // a cross-link pill) a user reaches the section through.
+  registry:       { analytics: [BMS_Registry] },
+  inspections:    { analytics: [BMS_Inspections] },
+  priority:       { analytics: [LazyPriorityRanking] },
   phototwin:      { dashboard: [BMS_PhotoTwin] },
-  trafficanalytics:{ dashboard: [LazyTrafficAnalyticsPg] },
-  trafficsummary: { dashboard: [LazyTrafficSummaryPg] },
-  growthfactors:  { dashboard: [LazyGrowthFactors] },
-  overloading:    { dashboard: [LazyOverloading] },
+  trafficanalytics:{ analytics: [LazyTrafficAnalyticsPg] },
+  trafficsummary: { analytics: [LazyTrafficSummaryPg] },
+  growthfactors:  { analytics: [LazyGrowthFactors] },
+  overloading:    { analytics: [LazyOverloading] },
   oprc:           { dashboard: [LazyOprc] },
   ndpiv:          { dashboard: [LazyNdpiv] },
-  hdm4:           { dashboard: [LazyHDM4Section] },
+  hdm4:           { analytics: [LazyHDM4Section] },
   mlarchitecture: { dashboard: [LazyMLArchitecture] },
   projecttracker: { dashboard: [LazyProjectTracker] },
 };

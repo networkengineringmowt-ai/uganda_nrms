@@ -82,76 +82,6 @@ const qtile = (s: number[], p: number) => { if (!s.length) return 0; const i = (
 const TH2: React.CSSProperties = { padding: '6px 10px', background: 'rgba(2,6,23,0.95)', color: '#64748b', textAlign: 'left', fontWeight: 700, whiteSpace: 'nowrap', position: 'sticky', top: 0 };
 const TD2: React.CSSProperties = { padding: '5px 10px', whiteSpace: 'nowrap', color: '#cbd5e1' };
 
-// Every numeric attribute (any column with at least one real numeric value,
-// however sparsely filled) gets a full distribution row - no threshold that
-// could quietly drop a column, per the platform's "no selective reporting"
-// rule. This mirrors Deep Analytics' distribution card so the same exhaustive
-// stats are one click away from the raw table itself.
-function NumericStats({ rows, cols, sectionId, accent }: { rows: Row[]; cols: string[]; sectionId: string; accent: string }) {
-  const numCols = cols.filter(c => rows.some(r => num(r[c]) != null));
-  if (!numCols.length) return null;
-  const stats = numCols.map(c => {
-    const v = rows.map(r => num(r[c])).filter(x => x != null).sort((a, b) => (a as number) - (b as number)) as number[];
-    const sum = v.reduce((a, b) => a + b, 0);
-    const m = mean(v);
-    const sd = stdDevPop(v, m);
-    const se = stdError(v);
-    const [ciLo, ciHi] = ci95(v);
-    const md = modeOf(v);
-    const p25 = q(v, 0.25), p75 = q(v, 0.75);
-    const min = v[0] ?? 0, max = v[v.length - 1] ?? 0;
-    return { c, count: v.length, coverage: rows.length ? v.length / rows.length * 100 : 0, sum, mean: m, sd, se, ciLo, ciHi,
-      mode: md, min, max, range: max - min, p25, median: q(v, 0.5), p75, iqr: p75 - p25, cv: m ? sd / m * 100 : 0,
-      skew: skewness(v, m), kurt: kurtosis(v, m), v };
-  });
-  const HEADERS = ['Attribute', 'Count', 'Coverage %', 'Sum', 'Mean', 'Mode', 'Min', 'P25', 'Median', 'P75', 'Max', 'Range', 'IQR', 'Variance', 'StdDev', 'CV %', 'SE', '95% CI (mean)', 'Skewness', 'Kurtosis'];
-  return (
-    <div style={{ background: 'rgba(10,16,32,0.72)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '10px 12px', marginBottom: 10 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-        <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.08em', color: accent }}>
-          DESCRIPTIVE STATISTICS - ALL {numCols.length} NUMERIC ATTRIBUTES ({rows.length.toLocaleString()} RECORDS)
-        </span>
-        <button onClick={() => csvOut(sectionId + '_numeric_stats',
-          ['Attribute', 'Count', 'Coverage%', 'Sum', 'Mean', 'Mode', 'Min', 'P25', 'Median', 'P75', 'Max', 'Range', 'IQR', 'Variance', 'StdDev', 'CV%', 'SE', 'CI95Low', 'CI95High', 'Skewness', 'Kurtosis'],
-          stats.map(s => [s.c, s.count, s.coverage.toFixed(1), s.sum, s.mean, s.mode ?? '-', s.min, s.p25, s.median, s.p75, s.max, s.range, s.iqr, s.sd * s.sd, s.sd, s.cv, s.se, s.ciLo, s.ciHi, s.skew, s.kurt]))}
-          style={{ background: 'rgba(0,245,255,0.08)', border: '1px solid rgba(0,245,255,0.3)', borderRadius: 6, color: accent, fontSize: 10, fontWeight: 700, padding: '3px 10px', cursor: 'pointer' }}>CSV</button>
-      </div>
-      <div style={{ overflow: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10.5 }}>
-          <thead><tr>{HEADERS.map(h => <th key={h} style={TH2}>{h}</th>)}</tr></thead>
-          <tbody>{stats.map(s => (
-            <tr key={s.c} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-              <td style={{ ...TD2, color: '#e2e8f0', fontWeight: 700 }}>{prettyLabel(s.c)}</td>
-              <td style={TD2}>{fmtN(s.count)}</td>
-              <td style={{ ...TD2, ...heatCss(s.coverage / 100) }}>{s.coverage.toFixed(1)}%</td>
-              <td style={TD2}>{fmtN(s.sum, 1)}</td>
-              <td style={TD2}>{fmtN(s.mean, 2)}</td>
-              <td style={TD2}>{s.mode != null ? fmtN(s.mode, 2) : '—'}</td>
-              <td style={TD2}>{fmtN(s.min, 2)}</td>
-              <td style={TD2}>{fmtN(s.p25, 2)}</td>
-              <td style={{ ...TD2, ...heatCss(0.5) }}>{fmtN(s.median, 2)}</td>
-              <td style={TD2}>{fmtN(s.p75, 2)}</td>
-              <td style={TD2}>{fmtN(s.max, 2)}</td>
-              <td style={TD2}>{fmtN(s.range, 2)}</td>
-              <td style={TD2}>{fmtN(s.iqr, 2)}</td>
-              <td style={TD2}>{fmtN(s.sd * s.sd, 2)}</td>
-              <td style={TD2}>{fmtN(s.sd, 2)}</td>
-              <td style={{ ...TD2, ...heatCss(Math.min(1, s.cv / 150)) }}>{fmtN(s.cv, 1)}%</td>
-              <td style={TD2}>{fmtN(s.se, 3)}</td>
-              <td style={TD2}>[{fmtN(s.ciLo, 2)}, {fmtN(s.ciHi, 2)}]</td>
-              <td style={TD2}>{fmtN(s.skew, 2)}</td>
-              <td style={TD2}>{fmtN(s.kurt, 2)}</td>
-            </tr>
-          ))}</tbody>
-        </table>
-      </div>
-      <div style={{ fontSize: 10, color: '#475569', marginTop: 6 }}>
-        Every numeric column shown, regardless of how sparsely filled - Coverage% is the share of the {rows.length.toLocaleString()} records that actually carry a value for that attribute.
-        Variance/StdDev use the full population (÷N); SE and the 95% confidence interval for the mean use the sample convention (÷N-1, z≈1.96). Skewness &gt; 0 = right-tailed, &lt; 0 = left-tailed; Kurtosis is excess kurtosis (0 = normal-shaped tails).
-      </div>
-    </div>
-  );
-}
 
 export function ExhaustiveTables({ sectionId, accent = '#00f5ff' }: { sectionId: string; accent?: string }) {
   const [rows, setRows] = useState<Row[] | null>(null);
@@ -174,7 +104,10 @@ export function ExhaustiveTables({ sectionId, accent = '#00f5ff' }: { sectionId:
   );
   return (
     <div style={{ width: '100%' }}>
-      <NumericStats rows={rows} cols={cols} sectionId={sectionId} accent={accent} />
+      {/* Distribution/summary stats (mean, StdDev, percentiles, etc.) live on
+          the Deep Analytics tab only, per the platform's rule that formulas
+          and descriptive/inferential statistics never scatter onto other
+          tabs - see DeepAnalysisTables.tsx for the equivalent panel. */}
       <div style={{ display: 'flex', gap: 10, alignItems: 'center', margin: '4px 0 8px', flexWrap: 'wrap' }}>
         <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.08em', color: accent }}>
           EXHAUSTIVE TABLE - {rows.length.toLocaleString()} RECORDS x {cols.length} ATTRIBUTES (ALL SHOWN)
