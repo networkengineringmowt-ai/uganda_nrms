@@ -235,6 +235,7 @@ const ATC_Predictions = lazy(() => import('../ATC/PredictionsPanel'));
 // - RMS legacy content --------------------
 const LazyRoadNetworkMap = lazy(() => import('../RoadNetwork/RoadNetworkView'));
 const LazyNetworkStory = lazy(() => import('../NetworkStory/NetworkStory'));
+const LazyNetworkStoryTables = lazy(() => import('../NetworkStory/NetworkStoryTables'));
 const LazyRoadInventoryTbl = lazy(() => import('../RMS/RoadInventory'));
 // NetworkStory's own root is `position: absolute; inset: 0`, built for the
 // old full-bleed FULL_VIEWS treatment - inside the dashboard slot's plain
@@ -244,9 +245,16 @@ const LazyRoadInventoryTbl = lazy(() => import('../RMS/RoadInventory'));
 function NetworkStoryEmbed() {
   return (
     <div style={{ position: 'relative', height: 'calc(100vh - 230px)', minHeight: 620 }}>
-      <LazyNetworkStory />
+      {/* hideTables: this is a directly sidebar-reachable section's Dashboard
+          tab, so it follows the same no-tables-on-Dashboard rule as every
+          other section - the two tables live on Exhaustive Tables instead,
+          via NetworkStoryTablesEmbed below. */}
+      <LazyNetworkStory hideTables />
     </div>
   );
+}
+function NetworkStoryTablesEmbed() {
+  return <LazyNetworkStoryTables />;
 }
 
 // - PMS legacy content --------------------
@@ -518,7 +526,7 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
   // these ids for a single-purpose focused view, and App.tsx's own
   // activeView branches still render them, so removing the entry would turn
   // a working pill into a blank page rather than actually removing anything.
-  networkstory:   { dashboard: [NetworkStoryEmbed] },
+  networkstory:   { dashboard: [NetworkStoryEmbed], tables: [NetworkStoryTablesEmbed] },
   roadnetwork:    { map: [LazyRoadNetworkMap] },
   gismap:         { map: [BMS_GISMap] },
   // These 8 render a table-bearing component - slotted to analytics (Deep
