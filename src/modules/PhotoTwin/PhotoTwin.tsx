@@ -343,11 +343,12 @@ function PhotosView({ structure: s }: { structure: Structure }) {
               </a>
             </div>
 
-            {/* Bottom left: photo metadata */}
+            {/* Bottom left: photo metadata - year/site only, never the
+                source filename (platform-wide rule: no file names in the UI) */}
             <div className="absolute bottom-16 left-4 text-xs text-white/80">
               <div className="flex items-center gap-1.5">
                 <Camera size={11} />
-                <span>{currentPhoto.filename}</span>
+                <span>Survey {currentPhoto.year}</span>
               </div>
               <div className="text-white/50 text-[10px] mt-0.5">{s.road} · KM {s.chainage.toFixed(1)}</div>
             </div>
@@ -419,7 +420,7 @@ function PhotosView({ structure: s }: { structure: Structure }) {
             className="max-w-[95vw] max-h-[90vh] object-contain"
             onClick={e => e.stopPropagation()}
           />
-          <div className="mt-3 text-white/60 text-xs">{currentPhoto.filename} · {s.name} · {currentPhoto.year}</div>
+          <div className="mt-3 text-white/60 text-xs">{s.name} · {currentPhoto.year}</div>
           <div className="flex gap-4 mt-3">
             <button onClick={e => { e.stopPropagation(); prev(); }} disabled={current === 0} className="px-4 py-2 rounded-lg bg-white/10 text-white disabled:opacity-30"><ChevronLeft size={16} /></button>
             <span className="px-4 py-2 text-white/50 text-xs">{current + 1}/{displayPhotos.length}</span>
