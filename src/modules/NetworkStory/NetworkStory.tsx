@@ -1327,10 +1327,12 @@ export default function NetworkStory({ hideTables = false }: { hideTables?: bool
               <YAxis type="category" dataKey="region" tick={{ fill: 'rgba(148,163,184,0.7)', fontSize: 10 }}
                 axisLine={false} tickLine={false} width={85} />
               <Tooltip content={(p: any) => {
-                if (p?.payload?.[0]?.payload?.motorised == null) {
+                const entry = p?.payload?.[0];
+                if (!p?.active || !entry) return null;
+                if (entry.payload?.motorised == null) {
                   return (
                     <div style={{ background: 'rgba(8,12,20,0.95)', border: `1px solid ${C.blue}40`, borderRadius: 8, padding: '6px 10px' }}>
-                      <div style={{ fontSize: 10, fontWeight: 700, color: '#e2eaf4' }}>{p.payload[0].payload.region}</div>
+                      <div style={{ fontSize: 10, fontWeight: 700, color: '#e2eaf4' }}>{entry.payload.region}</div>
                       <div style={{ fontSize: 9.5, color: 'rgba(148,163,184,0.75)', marginTop: 2 }}>No 2025 AADT survey coverage yet</div>
                     </div>
                   );
