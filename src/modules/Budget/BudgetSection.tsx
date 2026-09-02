@@ -10,6 +10,7 @@ import SourceTableButton from '../../shared/SourceTableButton';
 import { useSectionData } from '../../hooks/useSectionData';
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
 import { useTableSort } from '../../shared/useTableSort';
+import { useNetworkStats } from '../../shared/useNetworkStats';
 
 const C = {
   cyan: '#00f5ff', green: '#00ff88', yellow: '#ffd23f',
@@ -51,6 +52,12 @@ const INTERVENTION_MATRIX = [
   { type: 'Emergency', label: 'Emergency Repair',        trigger: 'Washout / landslip / sudden failure',        paved: 'UGX 48M/site', unpaved: 'UGX 32M/site',   life_ext: 'Varies',    color: C.pink   },
 ];
 
+// NOTE: the `km` values below are a stale placeholder set (an old traffic-
+// survey-coverage snapshot, not actual network length) and disagreed with
+// useNetworkStats's live per-region network km by up to ~90% for some
+// regions - a real contradiction against the platform's single source of
+// truth. They're overridden with useNetworkStats().regionKm at render time
+// below; kept here only as a last-resort fallback before that hook loads.
 const DEFAULT_REGION_DATA = [
   { region: 'Central',       km: 4436, routine: 186, periodic: 140, rehab: 220, total: 546, required: 542.3, allocated: 0, gap: 542.3, coverage_pct: 0 },
   { region: 'Eastern',       km: 5292, routine: 222, periodic: 98,  rehab: 180, total: 500, required: 491.3, allocated: 0, gap: 491.3, coverage_pct: 0 },
@@ -88,7 +95,20 @@ export default function BudgetSection({ embedded }: { embedded?: boolean } = {})
   const [tab, setTab] = useState<TabId>('gap');
   const imx = useTableSort(INTERVENTION_MATRIX, 'type');
   const { budgetAlignment, networkSummary } = useSectionData();
+  const netStats = useNetworkStats();
   const [regionData, setRegionData] = useState(DEFAULT_REGION_DATA);
+
+  // Replace the placeholder km column with the platform's single source of
+  // truth (useNetworkStats, computed live from network2026.geojson) as soon
+  // as it loads, so this tab's "Network km" never disagrees with every other
+  // section's regional figures.
+  useEffect(() => {
+    if (!netStats.loaded) return;
+    setRegionData(prev => prev.map(d => ({
+      ...d,
+      km: netStats.regionKm[d.region] ?? d.km,
+    })));
+  }, [netStats.loaded, netStats.regionKm]);
   const [wp, setWp] = useState<{ current_fy: string; years: Record<string, { total_planned_ugx_bn: number }> } | null>(null);
   useEffect(() => {
     fetch(`${import.meta.env.BASE_URL}data/annual_workplans.json`)
@@ -108,11 +128,13 @@ export default function BudgetSection({ embedded }: { embedded?: boolean } = {})
   })();
   const allocated2526 = wp?.years?.['2025/26']?.total_planned_ugx_bn ?? null;
 
-  // Update region data when budget alignment loads
+  // Update region data when budget alignment loads. Starts from the *current*
+  // regionData (not the raw DEFAULT_REGION_DATA) so it never clobbers the
+  // live km values the effect above already applied, regardless of which of
+  // the two effects happens to settle first.
   useEffect(() => {
     if (budgetAlignment && budgetAlignment.length > 0) {
-      // Merge budget alignment data with default region data
-      const merged = DEFAULT_REGION_DATA.map((d: any) => {
+      setRegionData(prev => prev.map((d: any) => {
         const budgetInfo = budgetAlignment.find((b: any) => b.region_name === d.region);
         return {
           ...d,
@@ -121,8 +143,7 @@ export default function BudgetSection({ embedded }: { embedded?: boolean } = {})
           gap: (budgetInfo?.pms_need_million || d.total || 0) - (budgetInfo?.budget_allocated_million || 0),
           coverage_pct: budgetInfo?.coverage_pct || 0
         };
-      });
-      setRegionData(merged);
+      }));
     }
   }, [budgetAlignment]);
 
