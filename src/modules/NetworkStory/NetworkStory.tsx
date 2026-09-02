@@ -14,7 +14,10 @@ import { hexRgb, lightenHex, darkenHex, TICK, TICK_SM, AX_LINE } from '../../lib
 import { loadPlatformAnalytics, type PlatformAnalytics } from '../../data/platformData';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
-interface StoryData {
+// Exported so NetworkStoryTables.tsx (the Exhaustive-Tables-tab home for the
+// two tables hidden here via `hideTables`) can read the exact same shapes/
+// palette/data without duplicating them.
+export interface StoryData {
   total_links:      number;
   total_paved_km:   number;
   total_unpaved_km: number;
@@ -33,14 +36,14 @@ interface Filters {
 }
 
 // ── Colour palette ─────────────────────────────────────────────────────────────
-const C = {
+export const C = {
   purple: '#b967ff', cyan: '#00f5ff', green: '#00ff88',
   blue: '#4d9fff',  yellow: '#ffd23f', orange: '#ff6b35',
   pink: '#ff2d78',  teal: '#00d4aa',  indigo: '#7c6af7',
 };
 const NEON = [C.cyan, C.green, C.yellow, C.orange, C.pink, C.purple, C.teal, C.blue, C.indigo];
-const ALL_REGIONS = ['Central', 'Western', 'Southern', 'Northern', 'Eastern', 'North Eastern'];
-const REGION_COLORS: Record<string, string> = {
+export const ALL_REGIONS = ['Central', 'Western', 'Southern', 'Northern', 'Eastern', 'North Eastern'];
+export const REGION_COLORS: Record<string, string> = {
   Central: C.cyan, Western: C.green, Southern: C.teal,
   Northern: C.orange, Eastern: C.blue, 'North Eastern': C.pink,
 };
@@ -147,7 +150,7 @@ const STATIONS_DATA = [
 ];
 
 // Real worst-performing links from analytics.json
-const WORST_LINKS = [
+export const WORST_LINKS = [
   { link: 'Ariamoi - Moroto',           region: 'North Eastern', station: 'Moroto', vci: 43.4, km: 11.0 },
   { link: 'Nebbi - Eruba',              region: 'Northern',      station: 'Arua',   vci: 46.9, km: 63.8 },
   { link: 'Matugga - Semuto - Kapeka',  region: 'Central',       station: 'Luwero', vci: 47.0, km: 39.7 },
@@ -810,7 +813,14 @@ const PROJECT_GALLERY = [
 ] as const;
 
 // ── MAIN COMPONENT ────────────────────────────────────────────────────────────
-export default function NetworkStory() {
+// `hideTables` lets the Dashboard-tab embed (SectionDashboard's
+// NetworkStoryEmbed) suppress the two <table> blocks below, since this is a
+// directly sidebar-reachable section and the platform's no-tables-on-
+// Dashboard rule applies here just as it does to every other section - the
+// same tables are still available via this section's Exhaustive Tables tab
+// (see NetworkStoryTables.tsx, a lightweight standalone reader of the same
+// two datasets, wired in through SECTION_EXTRAS).
+export default function NetworkStory({ hideTables = false }: { hideTables?: boolean } = {}) {
   const [data,      setData]      = useState<StoryData | null>(null);
   const [analytics, setAnalytics] = useState<PlatformAnalytics | null>(null);
   const [loading,   setLoading]   = useState(true);
@@ -1623,7 +1633,10 @@ export default function NetworkStory() {
           </div>
         </Section>
 
-        {/* ── WORST VCI LINKS TABLE ── */}
+        {/* ── WORST VCI LINKS TABLE + REGIONAL STATS TABLE ──
+             Hidden on the Dashboard tab (hideTables) - see NetworkStoryTables.tsx
+             on the Exhaustive Tables tab for these same two tables. */}
+        {!hideTables && <>
         <Section title="Worst Performing Road Links · Real Survey Data 2024/25" accent={C.pink}>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10 }}>
@@ -1743,6 +1756,7 @@ export default function NetworkStory() {
             </div>
           </div>
         </Section>
+        </>}
 
         {/* ── MILESTONE TIMELINE ── */}
         <Section title="Key Policy Milestones · 1962–Present" accent={C.cyan}>
