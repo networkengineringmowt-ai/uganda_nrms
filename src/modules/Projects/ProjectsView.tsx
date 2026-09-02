@@ -158,9 +158,10 @@ function ProgressBar({ planned, actual, financial }: {
 }
 
 // ── Photo strip ───────────────────────────────────────────────────────────────
-function PhotoStrip({ photos, onPhotoClick }: {
+function PhotoStrip({ photos, onPhotoClick, projectName }: {
   photos: string[];
   onPhotoClick: (src: string) => void;
+  projectName: string;
 }) {
   if (!photos.length) return null;
   return (
@@ -174,7 +175,7 @@ function PhotoStrip({ photos, onPhotoClick }: {
         >
           <img
             src={src}
-            alt=""
+            alt={`${projectName} - site progress photo ${i + 1} of ${photos.length}`}
             className="w-full h-full object-cover rounded"
             style={{ background: '#1e293b' }}
             onError={e => {
@@ -643,6 +644,7 @@ export default function ProjectsView() {
                     <SectionHeader title="Site Photos" accent={wc} />
                     <PhotoStrip
                       photos={p.progressPhotos}
+                      projectName={p.project_name}
                       onPhotoClick={src => {
                         const idx = p.progressPhotos.indexOf(src);
                         openLightbox(p.progressPhotos, idx >= 0 ? idx : 0, p.project_name);
