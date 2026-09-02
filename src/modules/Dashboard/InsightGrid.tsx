@@ -555,7 +555,7 @@ export function InsightGrid({ sectionId, accent }: { sectionId: string; accent?:
     <div style={{ padding: 18, background: GRID_BG, borderRadius: 10, color: '#64748b', fontSize: 11 }}>
       {wired
         ? "No data available yet - the live database is asleep or this section's tables are empty. The grid retries automatically on the next visit."
-        : "This section's cross-analysis grid isn't wired to a database table yet - see the Dashboard and Exhaustive Tables tabs above for this section's real figures."}
+        : "This section's cross-analysis grid isn't wired to a database table yet - see the rest of this Dashboard tab, or the Exhaustive Tables tab above, for this section's real figures."}
     </div>
   );
   return (
