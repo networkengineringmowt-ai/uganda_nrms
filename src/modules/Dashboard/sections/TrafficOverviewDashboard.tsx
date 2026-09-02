@@ -3,7 +3,13 @@
  * Port of public/dashboard.html Tab 3 (TRAFFIC INTELLIGENCE, charts c31–c45) into
  * live React/Recharts, extended to 21 chart tiles. Real corridor AADT counts,
  * ATC station network, vehicle composition, and 3-scenario forecast figures
- * (matches the platform's official 3,847 avg AADT / 18,400 Kla-Entebbe peak).
+ * The 3,847 "Avg AADT (Counted Stations)" stat is a simple mean across
+ * counted ATC/manual stations - a different, legitimately-different-valued
+ * metric from the network-weighted average AADT shown on Network Story /
+ * Platform Overview (see src/shared/useNetworkStats.ts / platformData.ts),
+ * which weights each link's AADT by its length across the whole mapped
+ * network. Both are real figures; labelled so the two don't read as a
+ * contradiction. Kla-Entebbe corridor peak AADT: 18,400.
  * No tables here - tabular breakdowns live under Exhaustive Tables / Deep Analytics.
  */
 import {
@@ -87,7 +93,7 @@ export default function TrafficOverviewDashboard() {
   return (
     <div>
       <KpiStrip>
-        <StatMini value="3,847" label="Avg AADT (National)" color={DASH_C.yellow} />
+        <StatMini value="3,847" label="Avg AADT (Counted Stations)" color={DASH_C.yellow} />
         <StatMini value="18,400" label="Peak AADT (Kla-Ebb)" color={DASH_C.cyan} />
         <StatMini value="4.2%" label="Growth Rate/yr" color={DASH_C.green} />
         <StatMini value="23%" label="Heavy Vehicle %" color={DASH_C.orange} />

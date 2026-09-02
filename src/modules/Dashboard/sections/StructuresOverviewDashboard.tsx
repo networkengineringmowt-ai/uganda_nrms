@@ -1,12 +1,22 @@
 /**
  * StructuresOverviewDashboard - RMS "Dashboard" tab, Structures & Bridges view.
  * Port of public/dashboard.html Tab 4 (STRUCTURES & BRIDGES, charts c46–c60) into
- * live React/Recharts, extended to 21 chart tiles. Real structures-inventory
- * figures straight from the mockup's shared `D` data model (546 structures,
- * 312 bridges, 142 box culverts, condition/material/span/age breakdowns, the
- * bridge location scatter, the deficiency and repair-cost data, and the
- * inspection funnel/trend). No tables here - tabular breakdowns live under
- * Exhaustive Tables / Deep Analytics.
+ * live React/Recharts, extended to 21 chart tiles. No tables here - tabular
+ * breakdowns live under Exhaustive Tables / Deep Analytics.
+ *
+ * TOTAL_STRUCT/STR_TYPE/STR_COND below are real, sourced from
+ * public/data/bridges_summary.json (546 bridges + 452 culverts = 998
+ * structures total) - corrected from an earlier mockup version that called
+ * "546" the grand total across 4 invented types (312/142/68/24), which
+ * contradicted every other reference to "546" on the platform (that number
+ * is bridges only; see bridges2026.geojson and TabularSummaries.tsx's own
+ * culvert count). STR_COND buckets bridges_summary.json's finer condition
+ * labels into the platform's standard Good/Fair/Poor/Critical scale (Good
+ * = Good+Very Good+Satisfactory; Fair = Fair+Marginal, plus 5 unclassified
+ * "-" records folded in here as the least consequential bucket; Poor =
+ * Poor+Very Poor; Critical = Critical+Beyond Repair), combined across both
+ * bridges and culverts. STR_MAT/STR_SPAN below remain illustrative (no real
+ * per-structure material/span dataset was found to replace them).
  */
 import {
   DASH_C, REGION_COLORS, DASHBOARD_COND_COLORS, KpiStrip, StatMini, SectionHdr, ChartGrid, ChartBox,
@@ -14,13 +24,13 @@ import {
   FunnelC, RadarTile, BoxPlotApprox, WaterfallC,
 } from '../../../shared/dashboardKit';
 
-// ─── Data model (matches public/dashboard.html's shared `D` - STRUCTURES block) ─
-const TOTAL_STRUCT = 546;
-const STR_TYPE = [312, 142, 68, 24];
-const STR_TYPE_LBL = ['Bridges', 'Box Culverts', 'Culverts', 'Drifts/Causeway'];
+// ─── Data model (real: public/data/bridges_summary.json) ─
+const TOTAL_STRUCT = 998; // 546 bridges + 452 culverts
+const STR_TYPE = [546, 372, 43, 37];
+const STR_TYPE_LBL = ['Bridges', 'Pipe Culverts', 'Concrete Box Culverts', 'Other Culverts'];
 const STR_TYPE_COLORS = ['#00f5ff', '#00aacc', '#006688', '#003344'];
 
-const STR_COND = [197, 164, 131, 54];
+const STR_COND = [711, 197, 53, 37];
 const COND_LBL = ['Good', 'Fair', 'Poor', 'Critical'];
 
 const STR_MAT = [286, 134, 76, 38, 12];
@@ -96,11 +106,11 @@ export default function StructuresOverviewDashboard() {
   return (
     <div>
       <KpiStrip>
-        <StatMini value={`${TOTAL_STRUCT}`} label="Structures (Nat. Roads)" color={DASH_C.purple} />
+        <StatMini value={`${TOTAL_STRUCT}`} label="Structures (Bridges + Culverts)" color={DASH_C.purple} />
         <StatMini value={`${Math.round((STR_COND[0] / TOTAL_STRUCT) * 100)}%`} label="Good Condition" color={DASH_C.green} />
         <StatMini value={`${STR_COND[3]}`} label="Critical Structures" color="#ef4444" />
-        <StatMini value="312" label="Bridges" color={DASH_C.cyan} />
-        <StatMini value="142" label="Box Culverts" color={DASH_C.yellow} />
+        <StatMini value="546" label="Bridges" color={DASH_C.cyan} />
+        <StatMini value="43" label="Concrete Box Culverts" color={DASH_C.yellow} />
         <StatMini value="36 m" label="Avg Bridge Span" color={DASH_C.orange} />
       </KpiStrip>
 

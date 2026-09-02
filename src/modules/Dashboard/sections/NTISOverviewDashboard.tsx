@@ -7,10 +7,14 @@
  * Anchored to the platform's already-established canonical figures:
  *  - 21,302 km total classified network, across 6 regions (Central, Northern,
  *    Eastern, Western, Southern, North Eastern) - see NetworkOverviewDashboard.
- *  - National avg AADT 3,847 veh/day (2025), 4.2%/yr growth, 23% HGV share,
- *    peak AADT 18,400 (Kla-Entebbe), and the 10-corridor AADT/growth dataset -
- *    see TrafficOverviewDashboard (same corridor list & figures reused here
- *    for cross-dashboard consistency).
+ *  - National avg AADT 3,847 veh/day (2025, simple mean across counted ATC/
+ *    manual stations - NOT the same metric as the network-weighted average
+ *    AADT shown on Network Story/Platform Overview, which is length-weighted
+ *    across the whole mapped network and lands lower; both are real, see
+ *    TrafficOverviewDashboard's header for the full explanation), 4.2%/yr
+ *    growth, 23% HGV share, peak AADT 18,400 (Kla-Entebbe), and the
+ *    10-corridor AADT/growth dataset - see TrafficOverviewDashboard (same
+ *    corridor list & figures reused here for cross-dashboard consistency).
  *  - 25 ATC (Automatic Traffic Counter) stations (15 legacy + 10 new).
  * Axle-load, weighbridge, blackspot and fatality figures are new, internally
  * consistent illustrative additions built on top of that base. No tables -
@@ -125,7 +129,7 @@ export default function NTISOverviewDashboard() {
   return (
     <div>
       <KpiStrip>
-        <StatMini value="3,847" label="Avg National AADT (veh/day)" color={DASH_C.cyan} />
+        <StatMini value="3,847" label="Avg AADT, Counted Stations (veh/day)" color={DASH_C.cyan} />
         <StatMini value="4.2%/yr" label="AADT Growth Rate" color={DASH_C.green} />
         <StatMini value="25" label="ATC Stations (15 legacy + 10 new)" color={DASH_C.purple} />
         <StatMini value="8.4%" label="Axle Overload Rate" color={DASH_C.orange} />
