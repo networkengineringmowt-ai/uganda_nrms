@@ -3,7 +3,7 @@ import { renderSliceLabel } from '../../shared/dashboardKit';
 import {
   AreaChart, Area, BarChart, Bar, LineChart, Line, PieChart, Pie,
   XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine,
-  Legend, Cell,
+  Legend, Cell, LabelList,
 } from 'recharts';
 import {
   TrendingUp, MapPin, Clock, Layers, BookOpen,
@@ -934,7 +934,18 @@ export default function NetworkStory() {
           length:    r.covered_length_km,
         }))
       : TRAFFIC_REGION_2025_FALLBACK;
-    return src.filter(r => activeRegions.includes(r.region));
+    // Both the live feed and the fallback have historically omitted North
+    // Eastern's 2025 AADT (upstream survey-coverage gap, not a code bug) -
+    // silently dropping the region from the chart reads as "only 5 regions
+    // exist," violating the platform's all-6-regions rule. Backfill any
+    // missing region as an explicit no-data entry (rendered as a dashed,
+    // labelled bar below) rather than fabricating a number for it.
+    const present = new Set(src.map(r => r.region));
+    const withAllRegions = [
+      ...src,
+      ...ALL_REGIONS.filter(r => !present.has(r)).map(region => ({ region, motorised: null as number | null, length: null as number | null })),
+    ];
+    return withAllRegions.filter(r => activeRegions.includes(r.region));
   }, [analytics, activeRegions]);
 
   const filteredTrafficRegions = trafficRegionData;
@@ -1289,7 +1300,11 @@ export default function NetworkStory() {
 
         {/* ── TRAFFIC BY REGION 2025 ── */}
         <ChartSection id="traffic-region" title="Traffic by Maintenance Region · Motorised AADT 2025" accent={C.blue}
-          note="Click a bar to filter all charts to that region · Central carries highest traffic (hub effect)" minHeight={240}>
+          note={
+            filteredTrafficRegions.some(r => r.motorised == null)
+              ? 'Click a bar to filter all charts to that region · Central carries highest traffic (hub effect) · North Eastern’s 2025 AADT count is not yet available - shown as no data, not zero'
+              : 'Click a bar to filter all charts to that region · Central carries highest traffic (hub effect)'
+          } minHeight={240}>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={filteredTrafficRegions} layout="vertical"
               margin={{ top: 8, right: 24, bottom: 0, left: 90 }}
@@ -1301,13 +1316,38 @@ export default function NetworkStory() {
                 tickFormatter={v => v.toLocaleString()} />
               <YAxis type="category" dataKey="region" tick={{ fill: 'rgba(148,163,184,0.7)', fontSize: 10 }}
                 axisLine={false} tickLine={false} width={85} />
-              <Tooltip content={(p: any) => <GlassTooltip {...p} color={C.blue} />} />
+              <Tooltip content={(p: any) => {
+                if (p?.payload?.[0]?.payload?.motorised == null) {
+                  return (
+                    <div style={{ background: 'rgba(8,12,20,0.95)', border: `1px solid ${C.blue}40`, borderRadius: 8, padding: '6px 10px' }}>
+                      <div style={{ fontSize: 10, fontWeight: 700, color: '#e2eaf4' }}>{p.payload[0].payload.region}</div>
+                      <div style={{ fontSize: 9.5, color: 'rgba(148,163,184,0.75)', marginTop: 2 }}>No 2025 AADT survey coverage yet</div>
+                    </div>
+                  );
+                }
+                return <GlassTooltip {...p} color={C.blue} />;
+              }} />
               <Bar dataKey="motorised" name="Motorised AADT" radius={[0,4,4,0]}
                 isAnimationActive animationDuration={1200} cursor="pointer">
                 {filteredTrafficRegions.map((r, i) => (
-                  <Cell key={r.region} fill={REGION_COLORS[r.region] ?? NEON[i % NEON.length]}
-                    style={{ filter: `drop-shadow(0 0 5px ${REGION_COLORS[r.region] ?? NEON[i % NEON.length]}66)` }} />
+                  <Cell key={r.region}
+                    fill={r.motorised == null ? 'transparent' : (REGION_COLORS[r.region] ?? NEON[i % NEON.length])}
+                    stroke={r.motorised == null ? 'rgba(148,163,184,0.4)' : undefined}
+                    strokeDasharray={r.motorised == null ? '3 3' : undefined}
+                    style={r.motorised == null ? undefined : { filter: `drop-shadow(0 0 5px ${REGION_COLORS[r.region] ?? NEON[i % NEON.length]}66)` }} />
                 ))}
+                <LabelList dataKey="motorised" position="right"
+                  content={(props: any) => {
+                    const { x, y, width, height, value, index } = props;
+                    if (value != null) return null;
+                    const r = filteredTrafficRegions[index];
+                    return (
+                      <text x={(x ?? 0) + 6} y={(y ?? 0) + (height ?? 0) / 2} dy={4}
+                        fontSize={9.5} fontWeight={700} fill="rgba(148,163,184,0.7)">
+                        no data{r?.region === 'North Eastern' ? ' — survey pending' : ''}
+                      </text>
+                    );
+                  }} />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
@@ -1315,7 +1355,7 @@ export default function NetworkStory() {
 
         {/* ── VCI BY REGION ── */}
         <ChartSection id="vci-region" title="Road Condition VCI by Region · 2024/25 & 2025/26 Cycles" accent={C.teal}
-          note="Weighted average Vertical Condition Index (VCI 0–100, higher = better) · Click bar to filter region" minHeight={280}>
+          note="Weighted average Visual Condition Index (VCI 0–100, higher = better) · Click bar to filter region" minHeight={280}>
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16 }}>
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={filteredVciRegions} layout="vertical"
