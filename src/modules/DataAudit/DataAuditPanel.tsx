@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { CheckCircle2, AlertTriangle, XCircle, RefreshCw, ShieldCheck } from 'lucide-react';
 import { useNetworkStats } from '../../shared/useNetworkStats';
 import { runDataAudit, type AuditResult } from './DataAuditEngine';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
 
 const BASE = import.meta.env.BASE_URL;
 
@@ -22,6 +23,25 @@ const STATUS_ICON: Record<string, React.ReactNode> = {
   missing:  <XCircle size={13} style={{ color: '#ef4444' }} />,
   info:     <ShieldCheck size={13} style={{ color: '#94a3b8' }} />,
 };
+// Human-readable label for each raw status code, instead of rendering the
+// code itself (rule: labels, not raw codes).
+const STATUS_LABEL: Record<string, string> = {
+  ok: 'Pass', mismatch: 'Mismatch', missing: 'Missing', info: 'Info',
+};
+
+const auditColumns: STColumn<AuditResult>[] = [
+  { key: 'status', label: 'Status', render: r => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+      {STATUS_ICON[r.status]}
+      <span style={{ fontSize: 9, fontWeight: 700, color: STATUS_COLOR[r.status] }}>{STATUS_LABEL[r.status] ?? r.status}</span>
+    </div>
+  ) },
+  { key: 'tab', label: 'Tab', render: r => <span style={{ color: '#94a3b8' }}>{r.tab}</span> },
+  { key: 'field', label: 'Field', render: r => <span style={{ color: '#e2eaf4', fontWeight: 600 }}>{r.field}</span> },
+  { key: 'value', label: 'Value', render: r => <span style={{ color: STATUS_COLOR[r.status], fontFamily: 'monospace' }}>{String(r.value)}</span> },
+  { key: 'expected', label: 'Expected', render: r => <span style={{ color: 'rgba(148,163,184,0.7)', fontFamily: 'monospace' }}>{String(r.expected)}</span> },
+  { key: 'notes', label: 'Notes', render: r => <span style={{ color: 'rgba(148,163,184,0.6)' }}>{r.notes || <span style={{ color: 'rgba(148,163,184,0.4)', fontStyle: 'italic' }}>No notes</span>}</span> },
+];
 
 export default function DataAuditPanel() {
   const networkStats = useNetworkStats();
@@ -148,42 +168,17 @@ export default function DataAuditPanel() {
           Running audit…
         </div>
       ) : (
-        <div style={{ background: 'rgba(8,14,28,0.55)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ background: 'rgba(0,245,255,0.05)', borderBottom: '1px solid rgba(0,245,255,0.1)' }}>
-                {['Status', 'Tab', 'Field', 'Value', 'Expected', 'Notes'].map(h => (
-                  <th key={h} style={{
-                    padding: '9px 12px', textAlign: 'left', fontSize: 8, fontWeight: 900,
-                    color: 'rgba(0,245,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.1em',
-                    whiteSpace: 'nowrap',
-                  }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {results.map((r, i) => (
-                <tr key={i} style={{
-                  borderBottom: '1px solid rgba(255,255,255,0.04)',
-                  background: r.status === 'mismatch' ? 'rgba(249,115,22,0.04)' : r.status === 'missing' ? 'rgba(239,68,68,0.04)' : 'transparent',
-                }}>
-                  <td style={{ padding: '8px 12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                      {STATUS_ICON[r.status]}
-                      <span style={{ fontSize: 9, fontWeight: 700, color: STATUS_COLOR[r.status], textTransform: 'uppercase' }}>
-                        {r.status}
-                      </span>
-                    </div>
-                  </td>
-                  <td style={{ padding: '8px 12px', fontSize: 11, color: '#94a3b8' }}>{r.tab}</td>
-                  <td style={{ padding: '8px 12px', fontSize: 11, color: '#e2eaf4', fontWeight: 600 }}>{r.field}</td>
-                  <td style={{ padding: '8px 12px', fontSize: 11, color: STATUS_COLOR[r.status], fontFamily: 'monospace' }}>{String(r.value)}</td>
-                  <td style={{ padding: '8px 12px', fontSize: 11, color: 'rgba(148,163,184,0.7)', fontFamily: 'monospace' }}>{String(r.expected)}</td>
-                  <td style={{ padding: '8px 12px', fontSize: 10, color: 'rgba(148,163,184,0.5)', maxWidth: 240, overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.notes}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div style={{ background: 'rgba(8,14,28,0.55)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: 12 }}>
+          <SortableFilterableTable
+            columns={auditColumns}
+            rows={results}
+            accent="#00f5ff"
+            exportName="data_audit_results"
+            initialSort="status"
+            rowStyle={r => ({
+              background: r.status === 'mismatch' ? 'rgba(249,115,22,0.04)' : r.status === 'missing' ? 'rgba(239,68,68,0.04)' : undefined,
+            })}
+          />
         </div>
       )}
     </div>
