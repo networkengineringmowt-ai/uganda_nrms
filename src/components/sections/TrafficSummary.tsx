@@ -4,8 +4,11 @@
  * Year pills 2016-2035 with interpolated AADT values.
  * Export CSV, search, sortable columns.
  */
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { CURRENT_YEAR } from '../../shared/year';
+import { SearchableSelect } from '../../shared/SearchableSelect';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
+import { RoadClassPill, AadtHeatCell } from '../../shared/tableFormatting';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface PredProps {
@@ -69,80 +72,76 @@ function growthAlert(p: PredProps, year: number): string {
   return 'Low';
 }
 
-// ─── CSV export helper ────────────────────────────────────────────────────────
-function downloadCSV(rows: string[][], filename: string) {
-  const content = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const blob = new Blob([content], { type:'text/csv' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url; a.download = filename; a.click();
-  URL.revokeObjectURL(url);
+// ─── Road Links Data tab ──────────────────────────────────────────────────────
+interface RoadLinkRow {
+  link_id: string; link_name: string; road_class: string; region: string;
+  length_km: number | null; adt: number; adtInclMc: number; adtExclMc: number;
+  nmt: number; alert: string; heavy_vehicle_pct: number | null;
 }
 
-// ─── Road Links Data tab ──────────────────────────────────────────────────────
 function RoadLinksTab({ features }: { features: PredFeature[] }) {
   const [year,    setYear]    = useState(CURRENT_YEAR);
-  const [search,  setSearch]  = useState('');
   const [classF,  setClassF]  = useState('all');
   const [regionF, setRegionF] = useState('all');
-  const [sortCol, setSortCol] = useState<'aadt'|'name'|'class'|'len'>('aadt');
-  const [sortDir, setSortDir] = useState<1|-1>(-1);
 
   const regions = useMemo(() =>
     ['all', ...Array.from(new Set(features.map(f=>f.properties.region??'Unknown'))).sort()],
     [features]
   );
 
-  const filtered = useMemo(() => {
-    let arr = [...features];
-    if (search) {
-      const q = search.toLowerCase();
-      arr = arr.filter(f =>
-        (f.properties.link_name??'').toLowerCase().includes(q) ||
-        (f.properties.road_no??'').toLowerCase().includes(q)
-      );
-    }
+  const filteredFeatures = useMemo(() => {
+    let arr = features;
     if (classF  !== 'all') arr = arr.filter(f => f.properties.road_class === classF);
     if (regionF !== 'all') arr = arr.filter(f => f.properties.region === regionF);
-    arr.sort((a, b) => {
-      const pa = a.properties, pb = b.properties;
-      if (sortCol==='aadt')  return (aadtForYear(pa,year) - aadtForYear(pb,year)) * sortDir;
-      if (sortCol==='name')  return ((pa.link_name??'') > (pb.link_name??'') ? 1 : -1) * sortDir;
-      if (sortCol==='class') return ((pa.road_class??'') > (pb.road_class??'') ? 1 : -1) * sortDir;
-      if (sortCol==='len')   return ((pa.length_km??0) - (pb.length_km??0)) * sortDir;
-      return 0;
-    });
     return arr;
-  }, [features, search, classF, regionF, sortCol, sortDir, year]);
+  }, [features, classF, regionF]);
 
-  const handleExport = useCallback(() => {
-    const header = ['Link ID','Road Name','Class','Surface','Region','Length km',
-      `Total ADT ${year}`,`ADT incl MC ${year}`,`ADT excl MC ${year}`,
-      'NMT','Growth Alert','Heavy %'];
-    const rows = filtered.map(f => {
-      const p = f.properties;
-      const adt = aadtForYear(p, year);
-      return [
-        p.link_id, p.link_name??'', p.road_class??'', 'Unknown', p.region??'',
-        (p.length_km??0).toFixed(1), String(adt), String(adt),
-        String(Math.round(adt*0.705)), String(Math.round(adt*0.08)),
-        growthAlert(p, year), `${p.heavy_vehicle_pct?.toFixed(0)??'-'}%`,
-      ];
-    });
-    downloadCSV([header, ...rows], `uganda-roads-traffic-${year}.csv`);
-  }, [filtered, year]);
+  const rows: RoadLinkRow[] = useMemo(() => filteredFeatures.map(f => {
+    const p = f.properties;
+    const adt = aadtForYear(p, year);
+    return {
+      link_id: p.link_id, link_name: p.link_name ?? p.link_id, road_class: p.road_class ?? '-',
+      region: p.region ?? '-', length_km: p.length_km,
+      adt, adtInclMc: adt, adtExclMc: Math.round(adt * 0.705),
+      nmt: Math.round(adt * 0.08), alert: growthAlert(p, year),
+      heavy_vehicle_pct: p.heavy_vehicle_pct,
+    };
+  }), [filteredFeatures, year]);
 
-  function thSort(label: string, col: typeof sortCol) {
-    const active = sortCol === col;
-    return (
-      <th onClick={() => { if(active) setSortDir(d => d===-1?1:-1); else { setSortCol(col); setSortDir(-1); } }}
-        style={{ padding:'5px 8px', textAlign:'left', fontSize:8, fontWeight:800, cursor:'pointer',
-          color: active ? C.cyan : 'rgba(99,102,241,0.55)', textTransform:'uppercase',
-          letterSpacing:'0.07em', whiteSpace:'nowrap' }}>
-        {label}{active?(sortDir===-1?' ↓':' ↑'):''}
-      </th>
-    );
-  }
+  const columns: STColumn<RoadLinkRow>[] = useMemo(() => [
+    { key: 'link_name', label: 'Road Link' },
+    { key: 'road_class', label: 'Class', render: r => <RoadClassPill cls={r.road_class} /> },
+    { key: 'region', label: 'Region', render: r => <span style={{ color: REGION_CLR[r.region] ?? 'rgba(148,163,184,0.55)' }}>{r.region}</span> },
+    {
+      key: 'length_km', label: 'Length (km)', numeric: true, total: 'sum',
+      render: r => r.length_km != null ? `${r.length_km.toFixed(1)} km` : '-',
+    },
+    { key: 'adt', label: `Total ADT ${year}`, numeric: true, render: r => <AadtHeatCell value={r.adt} /> },
+    { key: 'adtInclMc', label: 'ADT incl MC', numeric: true, render: r => <AadtHeatCell value={r.adtInclMc} /> },
+    { key: 'adtExclMc', label: 'ADT excl MC', numeric: true, render: r => <AadtHeatCell value={r.adtExclMc} /> },
+    {
+      key: 'nmt', label: 'NMT', numeric: true,
+      comment: 'Estimated Non-Motorised Transport share of ADT.',
+      render: r => <span style={{ color: 'rgba(148,163,184,0.6)' }}>{r.nmt.toLocaleString()}</span>,
+    },
+    {
+      key: 'alert', label: 'Alert',
+      render: r => {
+        const alertCol = CONG_CLR[r.alert] ?? '#94a3b8';
+        return (
+          <span style={{ fontSize:8, fontWeight:800, padding:'1px 7px', borderRadius:10,
+            background:`rgba(${hexRgb(alertCol)},0.13)`,
+            border:`1px solid rgba(${hexRgb(alertCol)},0.32)`, color:alertCol }}>
+            {r.alert}
+          </span>
+        );
+      },
+    },
+    {
+      key: 'heavy_vehicle_pct', label: 'Heavy %', numeric: true,
+      render: r => <span style={{ color: C.orange, fontFamily: 'monospace' }}>{r.heavy_vehicle_pct != null ? `${r.heavy_vehicle_pct.toFixed(0)}%` : '-'}</span>,
+    },
+  ], [year]);
 
   return (
     <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
@@ -164,158 +163,74 @@ function RoadLinksTab({ features }: { features: PredFeature[] }) {
 
       {/* Controls */}
       <div style={{ display:'flex', gap:8, alignItems:'center', flexWrap:'wrap' }}>
-        <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search links…"
-          style={{ background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.12)',
-            borderRadius:8, color:'#e2eaf4', fontSize:11, padding:'5px 10px', outline:'none', width:200 }}/>
-        <select value={classF} onChange={e=>setClassF(e.target.value)}
+        <SearchableSelect value={classF} onChange={setClassF}
           style={{ background:'rgba(99,102,241,0.08)', border:'1px solid rgba(99,102,241,0.25)',
             borderRadius:8, color:C.cyan, fontSize:11, padding:'5px 10px', outline:'none', cursor:'pointer' }}>
           <option value="all">All Classes</option>
           {['A','B','C','M'].map(c=><option key={c} value={c}>Class {c}</option>)}
-        </select>
-        <select value={regionF} onChange={e=>setRegionF(e.target.value)}
+        </SearchableSelect>
+        <SearchableSelect value={regionF} onChange={setRegionF}
           style={{ background:'rgba(99,102,241,0.08)', border:'1px solid rgba(99,102,241,0.25)',
             borderRadius:8, color:C.cyan, fontSize:11, padding:'5px 10px', outline:'none', cursor:'pointer' }}>
           {regions.map(r=><option key={r} value={r}>{r==='all'?'All Regions':r}</option>)}
-        </select>
+        </SearchableSelect>
         <div style={{ marginLeft:'auto', display:'flex', alignItems:'center', gap:8 }}>
           <span style={{ fontSize:10, color:'rgba(148,163,184,0.4)' }}>
-            {filtered.length} links · showing {Math.min(filtered.length, 200)} rows
+            {rows.length.toLocaleString()} links · use the table's own search / CSV / Excel export below
           </span>
-          <button onClick={handleExport}
-            style={{ background:'rgba(0,255,136,0.1)', border:'1px solid rgba(0,255,136,0.3)',
-              borderRadius:8, color:C.green, fontSize:11, fontWeight:700,
-              padding:'5px 14px', cursor:'pointer' }}>
-            ⬇ Export CSV
-          </button>
         </div>
       </div>
 
       {/* Table */}
-      <div style={{ ...GLASS, padding:'0', overflow:'hidden' }}>
-        <div style={{ overflowX:'auto', maxHeight:560, overflowY:'auto' }}>
-          <table style={{ width:'100%', borderCollapse:'collapse', fontSize:10 }}>
-            <thead style={{ position:'sticky', top:0, background:'rgba(10,16,30,0.97)',
-              zIndex:2, borderBottom:'1px solid rgba(99,102,241,0.15)' }}>
-              <tr>
-                {thSort('Road Link', 'name')}
-                {thSort('Class', 'class')}
-                <th style={{ padding:'5px 8px', textAlign:'left', fontSize:8, fontWeight:800,
-                  color:'rgba(99,102,241,0.55)', textTransform:'uppercase', letterSpacing:'0.07em' }}>Region</th>
-                {thSort('Length km', 'len')}
-                {thSort(`Total ADT ${year}`, 'aadt')}
-                <th style={{ padding:'5px 8px', textAlign:'left', fontSize:8, fontWeight:800,
-                  color:'rgba(99,102,241,0.55)', textTransform:'uppercase', letterSpacing:'0.07em', whiteSpace:'nowrap' }}>ADT incl MC</th>
-                <th style={{ padding:'5px 8px', textAlign:'left', fontSize:8, fontWeight:800,
-                  color:'rgba(99,102,241,0.55)', textTransform:'uppercase', letterSpacing:'0.07em', whiteSpace:'nowrap' }}>ADT excl MC</th>
-                <th style={{ padding:'5px 8px', textAlign:'left', fontSize:8, fontWeight:800,
-                  color:'rgba(99,102,241,0.55)', textTransform:'uppercase', letterSpacing:'0.07em' }}>NMT</th>
-                <th style={{ padding:'5px 8px', textAlign:'left', fontSize:8, fontWeight:800,
-                  color:'rgba(99,102,241,0.55)', textTransform:'uppercase', letterSpacing:'0.07em', whiteSpace:'nowrap' }}>Alert</th>
-                <th style={{ padding:'5px 8px', textAlign:'left', fontSize:8, fontWeight:800,
-                  color:'rgba(99,102,241,0.55)', textTransform:'uppercase', letterSpacing:'0.07em', whiteSpace:'nowrap' }}>Heavy %</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.slice(0, 200).map((f, i) => {
-                const p    = f.properties;
-                const adt  = aadtForYear(p, year);
-                const adtMC = adt;
-                const adtNoMC = Math.round(adt * 0.705);
-                const nmt  = Math.round(adt * 0.08);
-                const alert = growthAlert(p, year);
-                const alertCol = CONG_CLR[alert] ?? '#94a3b8';
-                const cls   = p.road_class ?? '';
-                const clsCol = CLASS_CLR[cls] ?? '#94a3b8';
-                const regCol = REGION_CLR[p.region??''] ?? 'rgba(148,163,184,0.55)';
-                return (
-                  <tr key={p.link_id}
-                    style={{ borderBottom:'1px solid rgba(255,255,255,0.028)',
-                      background: i%2===0?'rgba(255,255,255,0.01)':'transparent' }}>
-                    <td style={{ padding:'5px 8px', color:'#e2eaf4', maxWidth:190,
-                      overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', fontWeight:600 }}>
-                      {p.link_name ?? p.link_id}
-                    </td>
-                    <td style={{ padding:'5px 8px', color:clsCol, fontWeight:800 }}>{cls||'-'}</td>
-                    <td style={{ padding:'5px 8px', color:regCol, whiteSpace:'nowrap' }}>{p.region??'-'}</td>
-                    <td style={{ padding:'5px 8px', color:'rgba(148,163,184,0.55)', fontFamily:'monospace' }}>
-                      {p.length_km != null ? `${p.length_km.toFixed(1)} km` : '-'}
-                    </td>
-                    <td style={{ padding:'5px 8px', color:C.cyan, fontFamily:'monospace', fontWeight:700 }}>
-                      {adt.toLocaleString()}
-                    </td>
-                    <td style={{ padding:'5px 8px', color:'rgba(0,245,255,0.7)', fontFamily:'monospace' }}>
-                      {adtMC.toLocaleString()}
-                    </td>
-                    <td style={{ padding:'5px 8px', color:'rgba(0,245,255,0.55)', fontFamily:'monospace' }}>
-                      {adtNoMC.toLocaleString()}
-                    </td>
-                    <td style={{ padding:'5px 8px', color:'rgba(148,163,184,0.45)', fontFamily:'monospace' }}>
-                      {nmt.toLocaleString()}
-                    </td>
-                    <td style={{ padding:'5px 8px' }}>
-                      <span style={{ fontSize:8, fontWeight:800, padding:'1px 7px', borderRadius:10,
-                        background:`rgba(${hexRgb(alertCol)},0.13)`,
-                        border:`1px solid rgba(${hexRgb(alertCol)},0.32)`, color:alertCol }}>
-                        {alert}
-                      </span>
-                    </td>
-                    <td style={{ padding:'5px 8px', color:C.orange, fontFamily:'monospace' }}>
-                      {p.heavy_vehicle_pct!=null?`${p.heavy_vehicle_pct.toFixed(0)}%`:'-'}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-        {filtered.length > 200 && (
-          <div style={{ padding:'8px 16px', fontSize:9, color:'rgba(148,163,184,0.35)', textAlign:'center',
-            borderTop:'1px solid rgba(255,255,255,0.04)' }}>
-            Showing 200 of {filtered.length} links · use search/filters to narrow results
-          </div>
-        )}
-      </div>
+      <SortableFilterableTable
+        columns={columns}
+        rows={rows}
+        accent={C.cyan}
+        exportName={`uganda-roads-traffic-${year}`}
+        initialSort="adt"
+        emptyText="No road links match the current filters."
+      />
     </div>
   );
 }
 
 // ─── Stations tab ─────────────────────────────────────────────────────────────
+interface StationRow {
+  name: string; link_name: string; region: string; adt: number | null;
+  heavy_vehicle_pct: number | null; lastCount: string;
+}
+
 function StationsTab({ stations, features }: { stations: StationFeature[]; features: PredFeature[] }) {
-  const [year,   setYear]   = useState(CURRENT_YEAR);
-  const [search, setSearch] = useState('');
+  const [year, setYear] = useState(CURRENT_YEAR);
 
   const predByLink = useMemo(
     () => new Map(features.map(f => [f.properties.link_id, f.properties])),
     [features],
   );
 
-  const filtered = useMemo(() => {
-    if (!search) return stations;
-    const q = search.toLowerCase();
-    return stations.filter(s => {
-      const p = s.properties;
-      return (p.TCS_NAME??'').toLowerCase().includes(q)
-        || (p.Link_Name??'').toLowerCase().includes(q)
-        || (p.REGION??'').toLowerCase().includes(q);
-    });
-  }, [stations, search]);
+  const rows: StationRow[] = useMemo(() => stations.map((s, i) => {
+    const p    = s.properties;
+    const pred = predByLink.get(p.Link_ID??'');
+    const adt  = pred ? Math.round((pred.aadt_predicted??0) * gfTo(year)) : null;
+    return {
+      name: p.TCS_NAME??p.STATION??`TCS-${p.TCS_NO??i}`,
+      link_name: p.Link_Name??'-', region: p.REGION??'-', adt,
+      heavy_vehicle_pct: pred?.heavy_vehicle_pct ?? null,
+      lastCount: year<=2025?String(year):`Forecast ${year}`,
+    };
+  }), [stations, predByLink, year]);
 
-  const handleExport = useCallback(() => {
-    const header = ['Station ID','Road Name','Region',`AADT ${year}`,'Heavy %','Last Count Year'];
-    const rows = filtered.map(s => {
-      const p    = s.properties;
-      const pred = predByLink.get(p.Link_ID??'');
-      const adt  = pred ? Math.round((pred.aadt_predicted??0) * gfTo(year)) : 0;
-      return [
-        p.TCS_NAME??p.STATION??String(p.TCS_NO??''),
-        p.Link_Name??'', p.REGION??'', String(adt),
-        pred?.heavy_vehicle_pct!=null?`${pred.heavy_vehicle_pct.toFixed(0)}%`:'-',
-        String(year),
-      ];
-    });
-    downloadCSV([header, ...rows], `uganda-atc-stations-${year}.csv`);
-  }, [filtered, year, predByLink]);
+  const columns: STColumn<StationRow>[] = useMemo(() => [
+    { key: 'name', label: 'Station ID', render: r => <span style={{ color: C.teal, fontWeight: 700 }}>{r.name}</span> },
+    { key: 'link_name', label: 'Road Name' },
+    { key: 'region', label: 'Region', render: r => <span style={{ color: REGION_CLR[r.region] ?? 'rgba(148,163,184,0.55)' }}>{r.region}</span> },
+    { key: 'adt', label: `AADT ${year}`, numeric: true, render: r => <AadtHeatCell value={r.adt} /> },
+    {
+      key: 'heavy_vehicle_pct', label: 'Heavy %', numeric: true,
+      render: r => <span style={{ color: C.orange, fontFamily: 'monospace' }}>{r.heavy_vehicle_pct != null ? `${r.heavy_vehicle_pct.toFixed(0)}%` : '-'}</span>,
+    },
+    { key: 'lastCount', label: 'Last Count' },
+  ], [year]);
 
   return (
     <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
@@ -335,68 +250,14 @@ function StationsTab({ stations, features }: { stations: StationFeature[]; featu
         ))}
       </div>
 
-      {/* Controls */}
-      <div style={{ display:'flex', gap:8, alignItems:'center' }}>
-        <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search stations…"
-          style={{ background:'rgba(255,255,255,0.06)', border:'1px solid rgba(0,212,170,0.2)',
-            borderRadius:8, color:'#e2eaf4', fontSize:11, padding:'5px 10px', outline:'none', width:220 }}/>
-        <div style={{ marginLeft:'auto', display:'flex', gap:8, alignItems:'center' }}>
-          <span style={{ fontSize:10, color:'rgba(148,163,184,0.4)' }}>{filtered.length} stations</span>
-          <button onClick={handleExport}
-            style={{ background:'rgba(0,212,170,0.1)', border:'1px solid rgba(0,212,170,0.3)',
-              borderRadius:8, color:C.teal, fontSize:11, fontWeight:700,
-              padding:'5px 14px', cursor:'pointer' }}>
-            ⬇ Export CSV
-          </button>
-        </div>
-      </div>
-
-      <div style={{ ...GLASS, padding:0, overflow:'hidden' }}>
-        <div style={{ overflowX:'auto', maxHeight:560, overflowY:'auto' }}>
-          <table style={{ width:'100%', borderCollapse:'collapse', fontSize:10 }}>
-            <thead style={{ position:'sticky', top:0, background:'rgba(10,16,30,0.97)', zIndex:2,
-              borderBottom:'1px solid rgba(0,212,170,0.14)' }}>
-              <tr>
-                {['Station ID','Road Name','Region',`AADT ${year}`,'Heavy %','Last Count'].map(h=>(
-                  <th key={h} style={{ padding:'5px 8px', textAlign:'left', fontSize:8, fontWeight:800,
-                    color:'rgba(0,212,170,0.55)', textTransform:'uppercase',
-                    letterSpacing:'0.07em', whiteSpace:'nowrap' }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((s, i) => {
-                const p    = s.properties;
-                const pred = predByLink.get(p.Link_ID??'');
-                const adt  = pred ? Math.round((pred.aadt_predicted??0) * gfTo(year)) : null;
-                const rCol = REGION_CLR[p.REGION??''] ?? 'rgba(148,163,184,0.55)';
-                return (
-                  <tr key={i} style={{ borderBottom:'1px solid rgba(255,255,255,0.028)',
-                    background: i%2===0?'rgba(255,255,255,0.01)':'transparent' }}>
-                    <td style={{ padding:'5px 8px', color:C.teal, fontWeight:700 }}>
-                      {p.TCS_NAME??p.STATION??`TCS-${p.TCS_NO??i}`}
-                    </td>
-                    <td style={{ padding:'5px 8px', color:'rgba(226,234,244,0.7)',
-                      maxWidth:160, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-                      {p.Link_Name??'-'}
-                    </td>
-                    <td style={{ padding:'5px 8px', color:rCol }}>{p.REGION??'-'}</td>
-                    <td style={{ padding:'5px 8px', color:C.cyan, fontFamily:'monospace', fontWeight:700 }}>
-                      {adt!=null?adt.toLocaleString():'-'}
-                    </td>
-                    <td style={{ padding:'5px 8px', color:C.orange, fontFamily:'monospace' }}>
-                      {pred?.heavy_vehicle_pct!=null?`${pred.heavy_vehicle_pct.toFixed(0)}%`:'-'}
-                    </td>
-                    <td style={{ padding:'5px 8px', color:'rgba(148,163,184,0.4)' }}>
-                      {year<=2025?String(year):`Forecast ${year}`}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <SortableFilterableTable
+        columns={columns}
+        rows={rows}
+        accent={C.teal}
+        exportName={`uganda-atc-stations-${year}`}
+        initialSort="adt"
+        emptyText="No station data available."
+      />
     </div>
   );
 }

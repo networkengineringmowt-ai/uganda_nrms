@@ -15,6 +15,7 @@ import { ModuleNavBar } from '../../shared/ModuleNavBar';
 import MapDetailPane, { StatCard, AttributeRow, SectionHeader } from '../../shared/MapDetailPane';
 import SourceTableButton from '../../shared/SourceTableButton';
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 // Matches data/oprc_ndpiv.json exactly. budget_usd is 0 for every entry
@@ -350,42 +351,34 @@ export default function NdpivSection() {
               costed yet in the FY26/27 master-plan rollup */}
           <div style={{ ...GLASS, padding: 14 }}>
             <PanelLabel text="Component Scope" />
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-                  <th style={{ textAlign: 'left',  padding: '3px 5px 7px', fontSize: 8, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Component</th>
-                  <th style={{ textAlign: 'right', padding: '3px 5px 7px', fontSize: 8, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Roads</th>
-                  <th style={{ textAlign: 'right', padding: '3px 5px 7px', fontSize: 8, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em' }}>km</th>
-                  <th style={{ textAlign: 'left',  padding: '3px 5px 7px', fontSize: 8, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Funder</th>
-                  <th style={{ textAlign: 'left',  padding: '3px 5px 7px', fontSize: 8, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {projects.map(proj => {
-                  const sc = statusColor(proj.status);
-                  return (
-                    <tr key={proj.project_id} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
-                      <td style={{ padding: '5px 5px', fontSize: 9, color: '#cbd5e1', maxWidth: 85, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={proj.name}>
-                        {proj.name}
-                      </td>
-                      <td style={{ padding: '5px 5px', fontSize: 9, color: '#94a3b8', textAlign: 'right' }}>{proj.road_links.length}</td>
-                      <td style={{ padding: '5px 5px', fontSize: 9, color: '#94a3b8', textAlign: 'right' }}>{proj.total_km}</td>
-                      <td style={{ padding: '5px 5px', fontSize: 9, color: '#94a3b8' }}>{proj.funder}</td>
-                      <td style={{ padding: '5px 5px' }}>
-                        <span style={{ fontSize: 8, padding: '2px 5px', borderRadius: 3, background: `${sc}20`, color: sc, fontWeight: 700, whiteSpace: 'nowrap' }}>
-                          {proj.status}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            <NdpivScopeTable projects={projects} />
           </div>
         </div>
       </div>
     </div>
   );
+}
+
+// ─── Component Scope table (sortable, colour-coded status) ─────────────────
+interface ScopeRow { project_id: string; name: string; roadsCount: number; total_km: number; funder: string; status: string; }
+function NdpivScopeTable({ projects }: { projects: NdpivProject[] }) {
+  const rows: ScopeRow[] = projects.map(p => ({
+    project_id: p.project_id, name: p.name, roadsCount: p.road_links.length,
+    total_km: p.total_km, funder: p.funder, status: p.status,
+  }));
+  const columns: STColumn<ScopeRow>[] = [
+    { key: 'name', label: 'Component', render: r => (
+      <span title={r.name} style={{ display: 'inline-block', maxWidth: 110, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.name}</span>
+    ) },
+    { key: 'roadsCount', label: 'Roads', numeric: true },
+    { key: 'total_km', label: 'Km', numeric: true, render: r => r.total_km.toLocaleString() },
+    { key: 'funder', label: 'Funder' },
+    { key: 'status', label: 'Status', render: r => {
+      const sc = statusColor(r.status);
+      return <span style={{ fontSize: 8, padding: '2px 5px', borderRadius: 3, background: `${sc}20`, color: sc, fontWeight: 700, whiteSpace: 'nowrap' }}>{r.status}</span>;
+    } },
+  ];
+  return <SortableFilterableTable columns={columns} rows={rows} accent="#b967ff" exportName="ndpiv_component_scope" initialSort="total_km" />;
 }
 
 // ─── Reusable detail pane for NDPIV ─────────────────────────────────────────

@@ -10,6 +10,9 @@ import {
 import { Chart3DWrap, Bar3D, TT_NEON, TICK } from '../../lib/chart3d';
 import { ModuleNavBar } from '../../shared/ModuleNavBar';
 import { factorAt, yearNow, useNowTick } from '../../shared/nowcast';
+import { SearchableSelect } from '../../shared/SearchableSelect';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
+import { RoadClassPill, AadtHeatCell } from '../../shared/tableFormatting';
 
 // ─── Data types ───────────────────────────────────────────────────────────────
 interface PredProps {
@@ -731,88 +734,61 @@ function ClassesTab({ features }: { features: PredFeature[] }) {
 }
 
 function AssetsTab({ features }: { features: PredFeature[] }) {
-  const [search, setSearch] = useState('');
-  const filtered = useMemo(() =>
-    features.filter(f => {
-      if (!search) return true;
-      const s = search.toLowerCase();
-      return (f.properties.link_name??'').toLowerCase().includes(s)
-        || (f.properties.road_no??'').toLowerCase().includes(s)
-        || (f.properties.region??'').toLowerCase().includes(s);
-    }).slice(0,80),
-    [features, search]
-  );
+  const rows = useMemo(() => features.map(f => f.properties), [features]);
+  const columns: STColumn<PredProps>[] = useMemo(() => [
+    {
+      key: 'link_name', label: 'Road Link',
+      render: p => <span style={{ color: '#e2eaf4' }}>{p.link_name ?? p.link_id}</span>,
+    },
+    { key: 'road_class', label: 'Class', render: p => <RoadClassPill cls={p.road_class} /> },
+    { key: 'region', label: 'Region' },
+    {
+      key: 'length_km', label: 'Length (km)', numeric: true, total: 'sum',
+      render: p => p.length_km != null ? `${p.length_km.toFixed(1)} km` : '-',
+    },
+    {
+      key: 'aadt_predicted', label: 'AADT 2025', numeric: true,
+      render: p => <AadtHeatCell value={p.aadt_predicted} />,
+    },
+    {
+      key: 'growth_2040', label: 'AADT 2040', numeric: true,
+      render: p => <AadtHeatCell value={p.growth_2040} />,
+    },
+    {
+      key: 'heavy_vehicle_pct', label: 'Heavy %', numeric: true,
+      render: p => <span style={{ color: C.yellow, fontFamily: 'monospace' }}>{p.heavy_vehicle_pct != null ? `${p.heavy_vehicle_pct.toFixed(0)}%` : '-'}</span>,
+    },
+    {
+      key: 'congestion_risk', label: 'Risk',
+      render: p => {
+        const riskCol = CONG_CLR[p.congestion_risk ?? 'Low'] ?? '#94a3b8';
+        return (
+          <span style={{ fontSize:8, fontWeight:800, padding:'1px 7px', borderRadius:10,
+            background:`rgba(${hexRgb(riskCol)},0.15)`,
+            border:`1px solid rgba(${hexRgb(riskCol)},0.35)`, color:riskCol }}>
+            {p.congestion_risk ?? 'Low'}
+          </span>
+        );
+      },
+    },
+  ], []);
+
   return (
     <div style={{ ...GLASS, padding:'18px 20px' }}>
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:14 }}>
-        <div>
-          <div style={{ fontSize:12, fontWeight:800, color:'#fff' }}>Road Links Asset Data</div>
-          <div style={{ fontSize:10, color:'rgba(148,163,184,0.45)', marginTop:2 }}>
-            {features.length} links · AADT, class, region, forecast
-          </div>
+      <div style={{ marginBottom:14 }}>
+        <div style={{ fontSize:12, fontWeight:800, color:'#fff' }}>Road Links Asset Data</div>
+        <div style={{ fontSize:10, color:'rgba(148,163,184,0.45)', marginTop:2 }}>
+          {features.length} links · AADT, class, region, forecast
         </div>
-        <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search links…"
-          style={{ background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.12)',
-            borderRadius:8, color:'#e2eaf4', fontSize:11, padding:'5px 10px', outline:'none', width:200 }}/>
       </div>
-      <div style={{ overflowX:'auto' }}>
-        <table style={{ width:'100%', borderCollapse:'collapse', fontSize:10 }}>
-          <thead>
-            <tr style={{ borderBottom:'1px solid rgba(0,245,255,0.12)' }}>
-              {['#','Road Link','Class','Region','Length km','AADT 2025','AADT 2040','Heavy %','Risk'].map(h=>(
-                <th key={h} style={{ padding:'4px 8px', textAlign:'left', fontSize:8, fontWeight:800,
-                  color:'rgba(0,245,255,0.55)', textTransform:'uppercase', letterSpacing:'0.06em',
-                  whiteSpace:'nowrap' }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((f,i)=>{
-              const p = f.properties;
-              const riskCol = CONG_CLR[p.congestion_risk??'Low']??'#94a3b8';
-              return (
-                <tr key={p.link_id} style={{ borderBottom:'1px solid rgba(255,255,255,0.03)' }}>
-                  <td style={{ padding:'5px 8px', color:'rgba(148,163,184,0.3)' }}>{i+1}</td>
-                  <td style={{ padding:'5px 8px', color:'#e2eaf4', maxWidth:180,
-                    overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-                    {p.link_name??p.link_id}
-                  </td>
-                  <td style={{ padding:'5px 8px', color:CLASS_CLR[p.road_class??'']??'#94a3b8', fontWeight:700 }}>
-                    {p.road_class??'-'}
-                  </td>
-                  <td style={{ padding:'5px 8px', color:'rgba(148,163,184,0.55)', whiteSpace:'nowrap' }}>
-                    {p.region??'-'}
-                  </td>
-                  <td style={{ padding:'5px 8px', color:'rgba(148,163,184,0.55)', fontFamily:'monospace' }}>
-                    {p.length_km != null ? `${p.length_km.toFixed(1)} km` : '-'}
-                  </td>
-                  <td style={{ padding:'5px 8px', color:C.cyan, fontFamily:'monospace', fontWeight:700 }}>
-                    {(p.aadt_predicted??0).toLocaleString()}
-                  </td>
-                  <td style={{ padding:'5px 8px', color:C.orange, fontFamily:'monospace', fontWeight:700 }}>
-                    {p.growth_2040?p.growth_2040.toLocaleString():'-'}
-                  </td>
-                  <td style={{ padding:'5px 8px', color:C.yellow, fontFamily:'monospace' }}>
-                    {p.heavy_vehicle_pct!=null?`${p.heavy_vehicle_pct.toFixed(0)}%`:'-'}
-                  </td>
-                  <td style={{ padding:'5px 8px' }}>
-                    <span style={{ fontSize:8, fontWeight:800, padding:'1px 7px', borderRadius:10,
-                      background:`rgba(${hexRgb(riskCol)},0.15)`,
-                      border:`1px solid rgba(${hexRgb(riskCol)},0.35)`, color:riskCol }}>
-                      {p.congestion_risk??'Low'}
-                    </span>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        {filtered.length===80 && features.length>80 && (
-          <div style={{ marginTop:8, fontSize:9, color:'rgba(148,163,184,0.3)', textAlign:'center' }}>
-            Showing 80 of {features.length} links · refine search to filter
-          </div>
-        )}
-      </div>
+      <SortableFilterableTable
+        columns={columns}
+        rows={rows}
+        accent={C.cyan}
+        exportName="traffic-road-links-assets"
+        initialSort="aadt_predicted"
+        emptyText="No road link asset data available."
+      />
     </div>
   );
 }
@@ -915,98 +891,47 @@ function StationsTab({ stations, predByLink }: {
   stations: StationFeature[];
   predByLink: Map<string, PredProps>;
 }) {
-  const [search, setSearch]   = useState('');
-  const [sortBy, setSortBy]   = useState<'name'|'aadt'|'heavy'>('aadt');
-  const [sortDir, setSortDir] = useState<1|-1>(-1);
+  const rows = useMemo(() => stations.map((s, i) => {
+    const p = s.properties;
+    const pred = predByLink.get(p.Link_ID ?? '');
+    return {
+      name: p.TCS_NAME ?? p.STATION ?? `TCS-${p.TCS_NO ?? i}`,
+      link_name: p.Link_Name ?? '-',
+      region: p.REGION ?? '-',
+      aadt: pred?.aadt_predicted ?? null,
+      heavy: pred?.heavy_vehicle_pct ?? null,
+      lastCount: 2025,
+    };
+  }), [stations, predByLink]);
 
-  const sorted = useMemo(() => {
-    const arr = [...stations].filter(s => {
-      if (!search) return true;
-      const p = s.properties;
-      const q = search.toLowerCase();
-      return (p.TCS_NAME??'').toLowerCase().includes(q)
-        || (p.Link_Name??'').toLowerCase().includes(q)
-        || (p.REGION??'').toLowerCase().includes(q);
-    });
-    arr.sort((a, b) => {
-      const pa = a.properties, pb = b.properties;
-      const predA = predByLink.get(pa.Link_ID??'');
-      const predB = predByLink.get(pb.Link_ID??'');
-      if (sortBy==='aadt') return ((predA?.aadt_predicted??0)-(predB?.aadt_predicted??0))*sortDir;
-      if (sortBy==='heavy') return ((predA?.heavy_vehicle_pct??0)-(predB?.heavy_vehicle_pct??0))*sortDir;
-      return ((pa.TCS_NAME??'')>(pb.TCS_NAME??'')?1:-1)*sortDir;
-    });
-    return arr;
-  }, [stations, search, sortBy, sortDir, predByLink]);
-
-  function th(label:string, key:typeof sortBy) {
-    const active = sortBy===key;
-    return (
-      <th onClick={()=>{ if(active) setSortDir(d=>d===-1?1:-1); else { setSortBy(key); setSortDir(-1); } }}
-        style={{ padding:'5px 8px', textAlign:'left', fontSize:8, fontWeight:800,
-          color: active?C.teal:'rgba(0,212,170,0.5)',
-          textTransform:'uppercase', letterSpacing:'0.07em', cursor:'pointer', whiteSpace:'nowrap' }}>
-        {label}{active?(sortDir===-1?' ↓':' ↑'):''}
-      </th>
-    );
-  }
+  const columns: STColumn<typeof rows[number]>[] = [
+    { key: 'name', label: 'Station ID', render: r => <span style={{ color: C.teal, fontWeight: 700 }}>{r.name}</span> },
+    { key: 'link_name', label: 'Road Name' },
+    { key: 'region', label: 'Region', render: r => <span style={{ color: REGION_CLR[r.region] ?? '#94a3b8' }}>{r.region}</span> },
+    { key: 'aadt', label: 'AADT 2025', numeric: true, render: r => <AadtHeatCell value={r.aadt} /> },
+    {
+      key: 'heavy', label: 'Heavy %', numeric: true,
+      render: r => <span style={{ color: C.orange, fontFamily: 'monospace' }}>{r.heavy != null ? `${r.heavy.toFixed(0)}%` : '-'}</span>,
+    },
+    { key: 'lastCount', label: 'Last Count', numeric: true },
+  ];
 
   return (
     <div style={{ ...GLASS, padding:'18px 20px' }}>
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:14 }}>
-        <div>
-          <div style={{ fontSize:12, fontWeight:800, color:'#fff' }}>ATC Station Network</div>
-          <div style={{ fontSize:10, color:'rgba(148,163,184,0.45)', marginTop:2 }}>
-            {stations.length} traffic count stations · AADT from ML ensemble predictions
-          </div>
+      <div style={{ marginBottom:14 }}>
+        <div style={{ fontSize:12, fontWeight:800, color:'#fff' }}>ATC Station Network</div>
+        <div style={{ fontSize:10, color:'rgba(148,163,184,0.45)', marginTop:2 }}>
+          {stations.length} traffic count stations · AADT from ML ensemble predictions
         </div>
-        <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search stations…"
-          style={{ background:'rgba(255,255,255,0.06)', border:'1px solid rgba(0,212,170,0.2)',
-            borderRadius:8, color:'#e2eaf4', fontSize:11, padding:'5px 10px', outline:'none', width:200 }}/>
       </div>
-      <div style={{ overflowX:'auto', maxHeight:520, overflowY:'auto' }}>
-        <table style={{ width:'100%', borderCollapse:'collapse', fontSize:10 }}>
-          <thead style={{ position:'sticky', top:0, background:'rgba(10,16,30,0.95)' }}>
-            <tr style={{ borderBottom:'1px solid rgba(0,212,170,0.14)' }}>
-              {th('Station ID','name')}
-              <th style={{ padding:'5px 8px', textAlign:'left', fontSize:8, fontWeight:800,
-                color:'rgba(0,212,170,0.5)', textTransform:'uppercase', letterSpacing:'0.07em' }}>Road Name</th>
-              <th style={{ padding:'5px 8px', textAlign:'left', fontSize:8, fontWeight:800,
-                color:'rgba(0,212,170,0.5)', textTransform:'uppercase', letterSpacing:'0.07em' }}>Region</th>
-              {th('AADT 2025','aadt')}
-              {th('Heavy %','heavy')}
-              <th style={{ padding:'5px 8px', textAlign:'left', fontSize:8, fontWeight:800,
-                color:'rgba(0,212,170,0.5)', textTransform:'uppercase', letterSpacing:'0.07em' }}>Last Count</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sorted.map((s,i)=>{
-              const p    = s.properties;
-              const pred = predByLink.get(p.Link_ID??'');
-              const rCol = REGION_CLR[p.REGION??'']??'#94a3b8';
-              return (
-                <tr key={i} style={{ borderBottom:'1px solid rgba(255,255,255,0.03)' }}>
-                  <td style={{ padding:'5px 8px', color:C.teal, fontWeight:700 }}>
-                    {p.TCS_NAME??p.STATION??`TCS-${p.TCS_NO??i}`}
-                  </td>
-                  <td style={{ padding:'5px 8px', color:'rgba(226,234,244,0.7)',
-                    maxWidth:160, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-                    {p.Link_Name??'-'}
-                  </td>
-                  <td style={{ padding:'5px 8px', color:rCol }}>{p.REGION??'-'}</td>
-                  <td style={{ padding:'5px 8px', color:C.cyan, fontFamily:'monospace', fontWeight:700 }}>
-                    {pred?.aadt_predicted?pred.aadt_predicted.toLocaleString():'-'}
-                  </td>
-                  <td style={{ padding:'5px 8px', color:C.orange, fontFamily:'monospace' }}>
-                    {pred?.heavy_vehicle_pct!=null?`${pred.heavy_vehicle_pct.toFixed(0)}%`:'-'}
-                  </td>
-                  <td style={{ padding:'5px 8px', color:'rgba(148,163,184,0.45)' }}>2025</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      <SortableFilterableTable
+        columns={columns}
+        rows={rows}
+        accent={C.teal}
+        exportName="atc-station-network"
+        initialSort="aadt"
+        emptyText="No station data available."
+      />
     </div>
   );
 }
@@ -1072,14 +997,18 @@ function StrategicTab({ features, stations }: { features: PredFeature[]; station
 type TabId = 'macro'|'regions'|'classes'|'assets'|'analysis'|'stations'|'strategic';
 type RegionTarget = 'GLOBAL'|'CENTRAL'|'EASTERN'|'SOUTHERN'|'WESTERN'|'NORTHERN'|'NORTH EASTERN';
 const TABS: { id:TabId; label:string }[] = [
-  { id:'macro',     label:'MACRO'    },
-  { id:'regions',   label:'REGIONS'  },
-  { id:'classes',   label:'CLASSES'  },
-  { id:'assets',    label:'ASSETS'   },
-  { id:'analysis',  label:'ANALYSIS' },
-  { id:'stations',  label:'STATIONS' },
-  { id:'strategic', label:'STRATEGIC'},
+  { id:'macro',     label:'Macro'    },
+  { id:'regions',   label:'Regions'  },
+  { id:'classes',   label:'Classes'  },
+  { id:'assets',    label:'Assets'   },
+  { id:'analysis',  label:'Analysis' },
+  { id:'stations',  label:'Stations' },
+  { id:'strategic', label:'Strategic'},
 ];
+const TARGET_LABELS: Record<RegionTarget, string> = {
+  GLOBAL: 'All Regions', CENTRAL: 'Central', EASTERN: 'Eastern', SOUTHERN: 'Southern',
+  WESTERN: 'Western', NORTHERN: 'Northern', 'NORTH EASTERN': 'North Eastern',
+};
 
 // ─── Main export ──────────────────────────────────────────────────────────────
 export default function TrafficAnalytics() {
@@ -1145,18 +1074,18 @@ export default function TrafficAnalytics() {
             Traffic Analytics Dashboard
           </div>
           {/* Target dropdown */}
-          <select value={target} onChange={e=>setTarget(e.target.value as RegionTarget)}
+          <SearchableSelect value={target} onChange={v=>setTarget(v as RegionTarget)}
             style={{ background:'rgba(255,210,63,0.08)', border:'1px solid rgba(255,210,63,0.3)',
               borderRadius:8, color:'#ffd23f', fontSize:11, fontWeight:700,
               padding:'5px 12px', cursor:'pointer', outline:'none', fontFamily:'inherit' }}>
             {(['GLOBAL','CENTRAL','EASTERN','SOUTHERN','WESTERN','NORTHERN','NORTH EASTERN'] as RegionTarget[]).map(r=>(
-              <option key={r} value={r}>{r}</option>
+              <option key={r} value={r}>{TARGET_LABELS[r]}</option>
             ))}
-          </select>
+          </SearchableSelect>
         </div>
         <div style={{ fontSize:11, color:'rgba(148,163,184,0.5)', marginTop:4 }}>
           {filteredFeatures.length.toLocaleString()} road links · 10 ATC + {filteredStations.length} TIS survey stations
-          {target!=='GLOBAL' && ` · filtered: ${target}`}
+          {target!=='GLOBAL' && ` · filtered: ${TARGET_LABELS[target]}`}
         </div>
       </div>
 
