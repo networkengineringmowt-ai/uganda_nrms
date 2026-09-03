@@ -7,7 +7,7 @@ import { Chart3DWrap, Bar3D, TT_NEON, TICK } from '../../lib/chart3d';
 import { renderSliceLabel } from '../../shared/dashboardKit';
 import { Calculator, BookOpen, Table2, TrendingUp, DollarSign, Activity } from 'lucide-react';
 import { ModuleNavBar } from '../../shared/ModuleNavBar';
-import { useTableSort } from '../../shared/useTableSort';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
 
 const C = {
   purple: '#b967ff', cyan: '#00f5ff', green: '#00ff88',
@@ -111,7 +111,6 @@ const TICK_STYLE = { fontSize: 9, fill: 'rgba(148,163,184,0.6)' };
 // ─────────────────────────────────────────────────────────────────────────────
 export default function HDM4Section() {
   const [activeTab, setActiveTab] = useState<TabId>('overview');
-  const calib = useTableSort(CALIB_DATA, 'param');
 
   // Deterioration controls
   const [iri0, setIri0]         = useState(2.5);
@@ -242,7 +241,7 @@ export default function HDM4Section() {
           {/* Section heading */}
           <div style={{ display:'flex', alignItems:'center', gap:10, marginTop:2 }}>
             <div style={{ flex:1, height:1, background:'rgba(0,245,255,0.10)' }} />
-            <span style={{ fontSize:9, fontWeight:800, color:'rgba(0,245,255,0.45)', letterSpacing:'0.14em', textTransform:'uppercase', whiteSpace:'nowrap' }}>INVESTMENT ANALYSIS · 6 VIEWS</span>
+            <span style={{ fontSize:9, fontWeight:800, color:'rgba(0,245,255,0.45)', letterSpacing:'0.14em', textTransform:'uppercase', whiteSpace:'nowrap' }}>Investment Analysis · 6 Views</span>
             <div style={{ flex:1, height:1, background:'rgba(0,245,255,0.10)' }} />
           </div>
           {/* Charts */}
@@ -355,30 +354,19 @@ export default function HDM4Section() {
             <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.6)', marginBottom: 14 }}>
               Source: Department of National Roads/DNR Pavement Performance Study, December 2023. Calibrated using ROMDAS surveys (2018, 2021, 2023) and HDM-4 model fitting.
             </div>
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
-                <thead>
-                  <tr>
-                    {([['param','Parameter'],['value','Value'],['desc','Description'],['ref','Reference'],['road','Road Class']] as const).map(([k,h]) => (
-                      <th key={k} onClick={() => calib.toggle(k)} style={{ padding: '8px 12px', textAlign: 'left', fontSize: 9, fontWeight: 900,
-                        color: 'rgba(0,245,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.1em', cursor: 'pointer', userSelect: 'none',
-                        borderBottom: '1px solid rgba(0,245,255,0.15)', whiteSpace: 'nowrap' }}>{h}<span style={{ opacity: 0.6 }}>{calib.indicator(k)}</span></th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {calib.sorted.map((r, i) => (
-                    <tr key={r.param} style={{ background: i % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent' }}>
-                      <td style={{ padding: '9px 12px', fontFamily: 'monospace', fontWeight: 900, color: C.cyan, fontSize: 12 }}>{r.param}</td>
-                      <td style={{ padding: '9px 12px', fontWeight: 900, color: C.yellow, textAlign: 'center' }}>{r.value}</td>
-                      <td style={{ padding: '9px 12px', color: 'rgba(196,210,225,0.8)' }}>{r.desc}</td>
-                      <td style={{ padding: '9px 12px', color: 'rgba(148,163,184,0.55)', fontSize: 10 }}>{r.ref}</td>
-                      <td style={{ padding: '9px 12px', color: 'rgba(148,163,184,0.55)', fontSize: 10 }}>{r.road}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <SortableFilterableTable<typeof CALIB_DATA[number]>
+              accent={C.cyan}
+              exportName="hdm4-calibration-coefficients"
+              initialSort="param"
+              columns={[
+                { key: 'param', label: 'Parameter', render: r => <span style={{ fontFamily: 'monospace', fontWeight: 900, color: C.cyan, fontSize: 12 }}>{r.param}</span> },
+                { key: 'value', label: 'Value', numeric: true, render: r => <span style={{ fontWeight: 900, color: C.yellow }}>{r.value}</span> },
+                { key: 'desc', label: 'Description' },
+                { key: 'ref', label: 'Reference' },
+                { key: 'road', label: 'Road Class' },
+              ] as STColumn<typeof CALIB_DATA[number]>[]}
+              rows={CALIB_DATA}
+            />
           </div>
 
           {/* IRI Thresholds */}
@@ -508,41 +496,27 @@ export default function HDM4Section() {
           <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.6)', marginBottom: 14 }}>
             Source: MoWT Schedule of Rates FY 2024/25 · Department of National Roads Contract Management Division. Costs exclude VAT. Paved = bituminous.
           </div>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
-              <thead>
-                <tr>
-                  {['Type', 'Works Description', 'Unit', 'Paved Road', 'Unpaved Road', 'Notes'].map(h => (
-                    <th key={h} style={{ padding: '8px 12px', textAlign: 'left', fontSize: 9,
-                      fontWeight: 900, color: `rgba(${hexRgb(C.green)},0.8)`,
-                      textTransform: 'uppercase', letterSpacing: '0.1em',
-                      borderBottom: `1px solid rgba(${hexRgb(C.green)},0.15)`, whiteSpace: 'nowrap' }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {COST_MATRIX.map((r, i) => {
+          <SortableFilterableTable<typeof COST_MATRIX[number]>
+            accent={C.green}
+            exportName="hdm4-works-cost-matrix"
+            columns={[
+              { key: 'type', label: 'Type', render: r => {
                   const typeColor = r.type === 'Routine Maintenance' ? C.green
                     : r.type === 'Periodic Maintenance' ? C.yellow
                     : r.type === 'Rehabilitation' ? C.orange : C.red;
                   return (
-                    <tr key={i} style={{ background: i % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent' }}>
-                      <td style={{ padding: '8px 12px', whiteSpace: 'nowrap' }}>
-                        <span style={{ fontSize: 9, padding: '2px 7px', borderRadius: 4, fontWeight: 800,
-                          background: `rgba(${hexRgb(typeColor)},0.1)`,
-                          color: typeColor }}>{r.type}</span>
-                      </td>
-                      <td style={{ padding: '8px 12px', color: 'rgba(196,210,225,0.9)' }}>{r.works}</td>
-                      <td style={{ padding: '8px 12px', color: 'rgba(148,163,184,0.55)', fontSize: 10, fontFamily: 'monospace' }}>{r.unit}</td>
-                      <td style={{ padding: '8px 12px', color: C.cyan, fontWeight: 700, fontFamily: 'monospace', fontSize: 10, whiteSpace: 'nowrap' }}>{r.bituminous}</td>
-                      <td style={{ padding: '8px 12px', color: C.yellow, fontWeight: 700, fontFamily: 'monospace', fontSize: 10, whiteSpace: 'nowrap' }}>{r.unpaved}</td>
-                      <td style={{ padding: '8px 12px', color: 'rgba(148,163,184,0.5)', fontSize: 9, maxWidth: 180 }}>{r.note}</td>
-                    </tr>
+                    <span style={{ fontSize: 9, padding: '2px 7px', borderRadius: 4, fontWeight: 800,
+                      background: `rgba(${hexRgb(typeColor)},0.1)`, color: typeColor }}>{r.type}</span>
                   );
-                })}
-              </tbody>
-            </table>
-          </div>
+                } },
+              { key: 'works', label: 'Works Description' },
+              { key: 'unit', label: 'Unit', render: r => <span style={{ fontFamily: 'monospace', fontSize: 10 }}>{r.unit}</span> },
+              { key: 'bituminous', label: 'Paved Road', render: r => <span style={{ color: C.cyan, fontWeight: 700, fontFamily: 'monospace', fontSize: 10 }}>{r.bituminous}</span> },
+              { key: 'unpaved', label: 'Unpaved Road', render: r => <span style={{ color: C.yellow, fontWeight: 700, fontFamily: 'monospace', fontSize: 10 }}>{r.unpaved}</span> },
+              { key: 'note', label: 'Notes' },
+            ] as STColumn<typeof COST_MATRIX[number]>[]}
+            rows={COST_MATRIX}
+          />
         </div>
       )}
 
