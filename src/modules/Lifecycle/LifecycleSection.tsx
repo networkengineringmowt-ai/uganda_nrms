@@ -14,6 +14,9 @@ import { Clock, Search } from 'lucide-react';
 import { ModuleNavBar } from '../../shared/ModuleNavBar';
 import SourceTableButton from '../../shared/SourceTableButton';
 import MapDetailPane, { StatCard, AttributeRow, SectionHeader } from '../../shared/MapDetailPane';
+import { SearchableSelect } from '../../shared/SearchableSelect';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
+import { RoadClassPill } from '../../shared/tableFormatting';
 
 // ── Palette ──────────────────────────────────────────────────────────────────
 const C = {
@@ -830,28 +833,6 @@ function AllLinksTable({
   allRegions: string[];
   onSelect: (id: string) => void;
 }) {
-  const [sortKey, setSortKey]   = useState<'id'|'name'|'lengthKm'|'roadClass'|'region'|'station'|'surface'|'currentIRI'|'builtYear'>('id');
-  const [sortDir, setSortDir]   = useState<'asc'|'desc'>('asc');
-
-  const sorted = useMemo(() => {
-    const arr = [...links];
-    arr.sort((a, b) => {
-      const av = (a as unknown as Record<string, unknown>)[sortKey];
-      const bv = (b as unknown as Record<string, unknown>)[sortKey];
-      let cmp = 0;
-      if (typeof av === 'number' && typeof bv === 'number') cmp = av - bv;
-      else cmp = String(av ?? '').localeCompare(String(bv ?? ''));
-      return sortDir === 'asc' ? cmp : -cmp;
-    });
-    return arr;
-  }, [links, sortKey, sortDir]);
-
-  function clickHeader(k: typeof sortKey) {
-    if (sortKey === k) setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
-    else { setSortKey(k); setSortDir('asc'); }
-  }
-  const arrow = (k: string) => sortKey === k ? (sortDir === 'asc' ? '▲' : '▼') : '';
-
   return (
     <div>
       {/* Filter row */}
@@ -866,91 +847,59 @@ function AllLinksTable({
               borderRadius: 6, color: '#e2eaf4', outline: 'none',
             }}/>
         </div>
-        <select value={regionFilter} onChange={e => setRegionFilter(e.target.value)}
+        <SearchableSelect value={regionFilter} onChange={setRegionFilter}
           style={{ fontSize: 11, padding: '6px 8px', background: 'rgba(15,23,42,0.7)',
             border: '1px solid rgba(148,163,184,0.18)', borderRadius: 6, color: '#e2eaf4' }}>
           <option value="All">All Regions</option>
           {allRegions.map(r => <option key={r} value={r}>{r}</option>)}
-        </select>
-        <select value={classFilter} onChange={e => setClassFilter(e.target.value as RoadClass | 'All')}
+        </SearchableSelect>
+        <SearchableSelect value={classFilter} onChange={v => setClassFilter(v as RoadClass | 'All')}
           style={{ fontSize: 11, padding: '6px 8px', background: 'rgba(15,23,42,0.7)',
             border: '1px solid rgba(148,163,184,0.18)', borderRadius: 6, color: '#e2eaf4' }}>
           <option value="All">All Classes</option>
           {(['A','B','C','M'] as RoadClass[]).map(c => <option key={c} value={c}>Class {c}</option>)}
-        </select>
+        </SearchableSelect>
         <span style={{ fontSize: 10, color: 'rgba(148,163,184,0.5)' }}>
           Showing {links.length.toLocaleString()} / {allCount.toLocaleString()} links · {Math.round(links.reduce((s, l) => s + l.lengthKm, 0)).toLocaleString()} km
         </span>
       </div>
 
-      {/* Table */}
-      <div style={{ overflowX: 'auto', borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)' }}>
-        <table style={{ width: '100%', fontSize: 10, borderCollapse: 'collapse', minWidth: 1100 }}>
-          <thead>
-            <tr style={{ background: 'rgba(15,23,42,0.85)', borderBottom: '1px solid rgba(148,163,184,0.15)' }}>
-              {([
-                ['id',         'Link ID'],
-                ['name',       'Road Name'],
-                ['lengthKm',   'Length km'],
-                ['roadClass',  'Class'],
-                ['region',     'Region'],
-                ['station',    'Station'],
-                ['surface',    'Surface'],
-                ['currentIRI', 'Condition (IRI)'],
-                ['builtYear',  'Built / Rehab Year'],
-              ] as const).map(([k, label]) => (
-                <th key={k} onClick={() => clickHeader(k as typeof sortKey)}
-                  style={{
-                    textAlign: 'left', padding: '7px 10px',
-                    color: sortKey === k ? '#4d9fff' : '#94a3b8',
-                    fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap',
-                    fontSize: 9.5, userSelect: 'none',
-                  }}>
-                  {label} {arrow(k)}
-                </th>
-              ))}
-              <th style={{ textAlign: 'right', padding: '7px 12px', color: '#94a3b8', fontSize: 9.5 }}>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sorted.slice(0, 1200).map((l, i) => {
-              const condC = conditionColor(l.currentIRI);
-              const condL = conditionLabel(l.currentIRI);
-              const bg = i % 2 === 0 ? 'rgba(15,23,42,0.35)' : 'transparent';
-              return (
-                <tr key={l.id} style={{ background: bg, borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
-                  <td style={{ padding: '5px 10px', color: '#00f5ff', fontFamily: 'monospace', fontSize: 9.5, whiteSpace: 'nowrap' }}>{l.id}</td>
-                  <td style={{ padding: '5px 10px', color: '#e2eaf4', maxWidth: 240, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{l.name}</td>
-                  <td style={{ padding: '5px 10px', color: '#94a3b8', fontVariantNumeric: 'tabular-nums' }}>{l.lengthKm.toFixed(1)} km</td>
-                  <td style={{ padding: '5px 10px', color: l.roadClass === 'A' ? '#00f5ff' : l.roadClass === 'B' ? '#00ff88' : l.roadClass === 'M' ? '#b967ff' : '#ffd23f', fontWeight: 800 }}>{l.roadClass}</td>
-                  <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{l.region}</td>
-                  <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{l.station ?? '-'}</td>
-                  <td style={{ padding: '5px 10px', color: l.surface === 'Bituminous' ? '#00f5ff' : '#ff8c00' }}>{l.surface === 'Bituminous' ? 'Paved' : 'Unsealed'}</td>
-                  <td style={{ padding: '5px 10px' }}>
-                    <span style={{ color: condC, fontWeight: 700 }}>{l.currentIRI.toFixed(1)}</span>
-                    <span style={{ color: 'rgba(148,163,184,0.5)', marginLeft: 6, fontSize: 9 }}>{condL}</span>
-                  </td>
-                  <td style={{ padding: '5px 10px', color: 'rgba(148,163,184,0.7)', fontSize: 9.5, whiteSpace: 'nowrap' }}>
-                    {l.builtYear}{l.rehabYear && l.rehabYear !== l.builtYear ? ` / ${l.rehabYear}` : ''}
-                  </td>
-                  <td style={{ padding: '5px 10px', textAlign: 'right' }}>
-                    <button onClick={() => onSelect(l.id)} style={{
-                      padding: '3px 9px', borderRadius: 5, fontSize: 9, fontWeight: 700,
-                      background: 'rgba(77,159,255,0.12)', border: '1px solid rgba(77,159,255,0.3)',
-                      color: '#4d9fff', cursor: 'pointer',
-                    }}>Open →</button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-      {sorted.length > 1200 && (
-        <div style={{ padding: '8px 12px', fontSize: 9.5, color: 'rgba(148,163,184,0.5)', textAlign: 'center' }}>
-          Showing first 1,200 rows of {sorted.length.toLocaleString()} - narrow filters to see more.
-        </div>
-      )}
+      {/* Table - every matching link, sortable/searchable, CSV+Excel export built in */}
+      <SortableFilterableTable<LinkDef>
+        accent="#4d9fff"
+        exportName="lifecycle-all-links"
+        initialSort="id"
+        columns={[
+          { key: 'id', label: 'Link ID' },
+          { key: 'name', label: 'Road Name' },
+          { key: 'lengthKm', label: 'Length (km)', numeric: true, total: 'sum', render: l => l.lengthKm.toFixed(1) },
+          { key: 'roadClass', label: 'Class', render: l => <RoadClassPill cls={l.roadClass} /> },
+          { key: 'region', label: 'Region' },
+          { key: 'station', label: 'Station', render: l => l.station ?? '-' },
+          { key: 'surface', label: 'Surface', render: l => (
+              <span style={{ color: l.surface === 'Bituminous' ? '#00f5ff' : '#ff8c00' }}>
+                {l.surface === 'Bituminous' ? 'Paved' : 'Unsealed'}
+              </span>
+            ) },
+          { key: 'currentIRI', label: 'Condition (IRI)', numeric: true, render: l => (
+              <>
+                <span style={{ color: conditionColor(l.currentIRI), fontWeight: 700 }}>{l.currentIRI.toFixed(1)}</span>
+                <span style={{ color: 'rgba(148,163,184,0.5)', marginLeft: 6, fontSize: 9 }}>{conditionLabel(l.currentIRI)}</span>
+              </>
+            ) },
+          { key: 'builtYear', label: 'Built / Rehab Year', numeric: true, render: l => (
+              <>{l.builtYear}{l.rehabYear && l.rehabYear !== l.builtYear ? ` / ${l.rehabYear}` : ''}</>
+            ) },
+          { key: 'dominantDefect', label: 'Action', render: l => (
+              <button onClick={() => onSelect(l.id)} style={{
+                padding: '3px 9px', borderRadius: 5, fontSize: 9, fontWeight: 700,
+                background: 'rgba(77,159,255,0.12)', border: '1px solid rgba(77,159,255,0.3)',
+                color: '#4d9fff', cursor: 'pointer',
+              }}>Open →</button>
+            ) },
+        ] as STColumn<LinkDef>[]}
+        rows={links}
+      />
     </div>
   );
 }
