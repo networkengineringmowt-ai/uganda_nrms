@@ -8,6 +8,7 @@ import {
   CartesianGrid, Tooltip, ReferenceLine,
 } from 'recharts';
 import { CURRENT_YEAR } from '../../shared/year';
+import { SearchableSelect } from '../../shared/SearchableSelect';
 
 export default function ConditionAssessment() {
   const { state } = useBMS();
@@ -42,11 +43,14 @@ export default function ConditionAssessment() {
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
             <input className="bms-input pl-9 py-1.5 text-xs" placeholder="Search structures…" value={query} onChange={e => setQuery(e.target.value)} />
           </div>
-          <select className="bms-select text-xs py-1.5" value={sortKey} onChange={e => setSortKey(e.target.value as typeof sortKey)}>
+          <SearchableSelect value={sortKey} onChange={v => setSortKey(v as typeof sortKey)}
+            style={{ appearance: 'none', cursor: 'pointer', background: 'rgba(6,13,24,0.8)',
+              border: '1px solid rgba(0,245,255,0.12)', borderRadius: 8, padding: '6px 12px',
+              fontSize: 12, color: '#e2eaf4', outline: 'none' }}>
             <option value="conditionRating">Sort: Worst First</option>
             <option value="priorityScore">Sort: Priority Score</option>
             <option value="yearBuilt">Sort: Oldest First</option>
-          </select>
+          </SearchableSelect>
           <span className="text-xs text-slate-500">{filtered.length} structures</span>
         </div>
       </div>
