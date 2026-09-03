@@ -108,7 +108,7 @@ function SectionSignatureBlock({ sectionId, accent }: { sectionId: string; accen
         <C />
         {sectionId === 'bms' && (
           <>
-            <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.08em', color: '#38bdf8', margin: '10px 0 8px' }}>DRAINAGE STRUCTURES</div>
+            <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.04em', color: '#38bdf8', margin: '10px 0 8px' }}>Drainage Structures</div>
             <LazyDrainage />
           </>
         )}
@@ -185,7 +185,7 @@ function SectionSubTabs({ sectionId, accent }: { sectionId: string; accent: stri
               border: 'none', borderBottom: tab === t.id ? '2px solid ' + accent : '2px solid transparent',
               cursor: 'pointer', fontFamily: 'inherit',
               color: tab === t.id ? accent : 'rgba(148,163,184,0.7)', borderRadius: '8px 8px 0 0' }}>
-            {t.label.toUpperCase()}
+            {t.label}
           </button>
         ))}
       </div>

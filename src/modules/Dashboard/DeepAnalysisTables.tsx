@@ -2,6 +2,9 @@ import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { mean, stdDevPop, stdError, quantile as q, mode as modeOf, skewness, kurtosis, ci95,
   pearsonTest, oneWayAnova, chiSquareTest, sigStars } from '../../shared/statsUtils';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
+import { RoadClassPill, ConditionLabelBadge } from '../../shared/tableFormatting';
+import { MAINTENANCE_REGIONS } from '../AssetBot/linkIdKnowledge';
 
 type Row = Record<string, unknown>;
 const ACRONYMS = new Set(['aadt','id','km','esal','gps','pci','iri','vci','wim','atc','esa','fwd','mef','tcs','vcpd','gis','sql','ndpiv','osm','wgs']);
@@ -58,34 +61,288 @@ async function loadRows(sectionId: string): Promise<Row[]> {
 }
 const num = (v: unknown): number | null => { if (typeof v === 'number' && isFinite(v)) return v; if (typeof v === 'string' && v !== '' && isFinite(Number(v))) return Number(v); return null; };
 const fmtN = (n: number, d = 0) => n.toLocaleString(undefined, { maximumFractionDigits: d });
-function heatCss(t: number): React.CSSProperties { const c = Math.max(0, Math.min(1, t));
-  const r = c < 0.5 ? Math.round(60 + c*2*195) : 255; const g = c < 0.5 ? Math.round(150 + c*2*60) : Math.round(210 - (c-0.5)*2*165);
-  return { background: 'rgba(' + r + ',' + g + ',55,0.14)', color: 'rgb(' + r + ',' + g + ',80)', fontWeight: 600 }; }
-function csvOut(name: string, cols: string[], rows: (string|number)[][]) {
-  const esc = (v: string|number) => '"' + String(v).replace(/"/g, '""') + '"';
-  const csv = [cols.map(esc).join(','), ...rows.map(r => r.map(esc).join(','))].join('\n');
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
-  a.download = name + '.csv'; a.click(); URL.revokeObjectURL(a.href);
+// Relative heat colouring (per-table, 0..1 -> cool green through hot red).
+function heatStyle(t: number): React.CSSProperties {
+  const c = Math.max(0, Math.min(1, t));
+  const r = c < 0.5 ? Math.round(60 + c * 2 * 195) : 255;
+  const g = c < 0.5 ? Math.round(150 + c * 2 * 60) : Math.round(210 - (c - 0.5) * 2 * 165);
+  return {
+    display: 'inline-block', minWidth: '100%', padding: '2px 8px', borderRadius: 5,
+    background: `rgba(${r},${g},55,0.14)`, color: `rgb(${r},${g},80)`, fontWeight: 700,
+    fontVariantNumeric: 'tabular-nums', textAlign: 'right',
+  };
 }
-const qtile = (s: number[], p: number) => { if (!s.length) return 0; const i = (s.length - 1) * p; const lo = Math.floor(i); return s[lo] + (s[Math.min(lo + 1, s.length - 1)] - s[lo]) * (i - lo); };
+function SigBadge({ p }: { p: number }) {
+  const stars = sigStars(p);
+  return (
+    <span style={{ color: stars ? '#00ff88' : '#94a3b8', fontWeight: 800 }}>{stars || 'n.s.'}</span>
+  );
+}
 // "name" already catches surveyor_name/inspector_name/contact_name/etc.;
 // the *_by fields and contact/email/phone are added explicitly since they
 // don't contain "name" but still identify an individual person.
 const EXCL = /lat|lng|lon|^x$|^y$|id$|_id|code|^no$|road_no|name|date|submitted_by|recorded_by|prepared_by|reported_by|approved_by|reviewed_by|decided_by|created_by|updated_by|contact|email|phone|mobile/i;
 
-function Card({ title, accent, right, children }: { title: string; accent: string; right?: React.ReactNode; children: React.ReactNode }) {
+function Card({ title, accent, children }: { title: string; accent: string; children: React.ReactNode }) {
   return (
     <div style={{ background: 'rgba(10,16,32,0.72)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '10px 12px', marginBottom: 12 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-        <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.08em', color: accent }}>{title}</span>{right}
+      <div style={{ marginBottom: 8 }}>
+        <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.04em', color: accent }}>{title}</span>
       </div>
       {children}
     </div>
   );
 }
-const TH: React.CSSProperties = { padding: '6px 10px', background: 'rgba(2,6,23,0.95)', color: '#64748b', textAlign: 'left', fontWeight: 700, whiteSpace: 'nowrap', position: 'sticky', top: 0 };
-const TD: React.CSSProperties = { padding: '5px 10px', whiteSpace: 'nowrap', color: '#cbd5e1' };
+
+// ─── Descriptive statistics row ────────────────────────────────────────────
+interface StatRow {
+  attr: string; count: number; sum: number; mean: number; mode: number | null;
+  min: number; p25: number; median: number; p75: number; max: number;
+  range: number; iqr: number; variance: number; stdDev: number; cv: number;
+  se: number; ci: string; skewness: number; kurtosis: number;
+}
+function DescriptiveStatsCard({ accent, nums, rows, sectionId }: { accent: string; nums: string[]; rows: Row[]; sectionId: string }) {
+  const statRows: StatRow[] = useMemo(() => nums.map(c => {
+    const v = rows.map(r => num(r[c])).filter((x): x is number => x != null).sort((a, b) => a - b);
+    if (!v.length) return null;
+    const sum = v.reduce((a, b) => a + b, 0);
+    const m = mean(v);
+    const sd = stdDevPop(v, m);
+    const [ciLo, ciHi] = ci95(v);
+    const p25 = q(v, 0.25), p75 = q(v, 0.75), min = v[0] ?? 0, max = v[v.length - 1] ?? 0;
+    return {
+      attr: prettyLabel(c), count: v.length, sum, mean: m, mode: modeOf(v) ?? null,
+      min, p25, median: q(v, 0.5), p75, max, range: max - min, iqr: p75 - p25,
+      variance: sd * sd, stdDev: sd, cv: m ? (sd / m) * 100 : 0, se: stdError(v),
+      ci: `[${fmtN(ciLo, 1)}, ${fmtN(ciHi, 1)}]`, skewness: skewness(v, m), kurtosis: kurtosis(v, m),
+    };
+  }).filter((r): r is StatRow => r != null), [nums, rows]);
+
+  const columns: STColumn<StatRow>[] = [
+    { key: 'attr', label: 'Attribute' },
+    { key: 'count', label: 'Count', numeric: true, render: r => fmtN(r.count) },
+    { key: 'sum', label: 'Sum', numeric: true, render: r => fmtN(r.sum) },
+    { key: 'mean', label: 'Mean', numeric: true, render: r => fmtN(r.mean, 1) },
+    { key: 'mode', label: 'Mode', numeric: true, render: r => r.mode != null ? fmtN(r.mode, 1) : '—' },
+    { key: 'min', label: 'Min', numeric: true, render: r => fmtN(r.min, 1) },
+    { key: 'p25', label: 'P25', numeric: true, render: r => fmtN(r.p25, 1) },
+    { key: 'median', label: 'Median', numeric: true, render: r => <span style={{ color: '#ffd23f', fontWeight: 800 }}>{fmtN(r.median, 1)}</span> },
+    { key: 'p75', label: 'P75', numeric: true, render: r => fmtN(r.p75, 1) },
+    { key: 'max', label: 'Max', numeric: true, render: r => fmtN(r.max, 1) },
+    { key: 'range', label: 'Range', numeric: true, render: r => fmtN(r.range, 1) },
+    { key: 'iqr', label: 'IQR', numeric: true, render: r => fmtN(r.iqr, 1) },
+    { key: 'variance', label: 'Variance', numeric: true, render: r => fmtN(r.variance, 1) },
+    { key: 'stdDev', label: 'Std Dev', numeric: true, render: r => fmtN(r.stdDev, 1) },
+    { key: 'cv', label: 'CV %', numeric: true, render: r => <span style={heatStyle(Math.min(1, r.cv / 150))}>{fmtN(r.cv, 1)}%</span> },
+    { key: 'se', label: 'SE', numeric: true, render: r => fmtN(r.se, 2) },
+    { key: 'ci', label: '95% CI (mean)' },
+    { key: 'skewness', label: 'Skewness', numeric: true, render: r => fmtN(r.skewness, 2) },
+    { key: 'kurtosis', label: 'Kurtosis', numeric: true, render: r => fmtN(r.kurtosis, 2) },
+  ];
+
+  return (
+    <Card title={`Descriptive statistics — all ${nums.length} numeric attributes (${rows.length.toLocaleString()} records)`} accent={accent}>
+      <SortableFilterableTable columns={columns} rows={statRows} accent={accent} exportName={sectionId + '_numeric_stats'} initialSort="attr" />
+      <div style={{ fontSize: 10, color: '#475569', marginTop: 6 }}>Formulas: Mean = Sum/Count; Variance/StdDev = population (÷N); SE and 95% CI use the sample convention (÷N-1, z≈1.96); Skewness/Kurtosis are sample, bias-corrected; Pxx by linear interpolation on the full sorted series.</div>
+    </Card>
+  );
+}
+
+// ─── Correlation & significance matrix ─────────────────────────────────────
+interface CorrRow { a: string; b: string; r: number; n: number; p: number; sig: string; }
+function CorrelationCard({ accent, nums, rows, sectionId }: { accent: string; nums: string[]; rows: Row[]; sectionId: string }) {
+  const corrRows: CorrRow[] = useMemo(() => {
+    const series = nums.map(c => rows.map(r => num(r[c])).filter((x): x is number => x != null));
+    const pairs: CorrRow[] = [];
+    for (let i = 0; i < nums.length; i++) for (let j = i + 1; j < nums.length; j++) {
+      const res = pearsonTest(series[i], series[j]);
+      pairs.push({ a: prettyLabel(nums[i]), b: prettyLabel(nums[j]), r: res.r, n: res.n, p: res.p, sig: sigStars(res.p) || 'n.s.' });
+    }
+    return pairs;
+  }, [nums, rows]);
+
+  const columns: STColumn<CorrRow>[] = [
+    { key: 'a', label: 'Attribute A' },
+    { key: 'b', label: 'Attribute B' },
+    { key: 'r', label: 'Pearson r', numeric: true, render: row => <span style={heatStyle((row.r + 1) / 2)}>{row.r.toFixed(3)}</span> },
+    { key: 'n', label: 'n', numeric: true, render: row => fmtN(row.n) },
+    { key: 'p', label: 'p-value', numeric: true, render: row => row.p < 0.001 ? '<0.001' : row.p.toFixed(3) },
+    { key: 'sig', label: 'Significance', render: row => <SigBadge p={row.p} /> },
+  ];
+
+  return (
+    <Card title={`Inferential: correlation & significance matrix — ${nums.length} numeric attributes (${corrRows.length} pairs)`} accent={accent}>
+      <SortableFilterableTable columns={columns} rows={corrRows} accent={accent} exportName={sectionId + '_correlation_matrix'} initialSort="r" />
+      <div style={{ fontSize: 10, color: '#475569', marginTop: 6 }}>Pearson r with a two-tailed t-test (df = n-2). * p&lt;0.05, ** p&lt;0.01, *** p&lt;0.001, n.s. = not significant. |r| ≥ 0.7 strong, 0.4-0.7 moderate, &lt;0.4 weak - regardless of significance, correlation is not causation.</div>
+    </Card>
+  );
+}
+
+// ─── Group analysis by category (+ nested one-way ANOVA) ───────────────────
+interface GroupRow {
+  key: string; count: number; share: number; kmAffected?: number; kmShare?: number;
+  means: Record<string, number | null>;
+}
+interface AnovaRow { measure: string; groups: number; n: number; f: number; df: string; p: number; etaSq: number; }
+function GroupAnalysisCard({ accent, cat, rows, nums, lenCol, sectionId }: {
+  accent: string; cat: string; rows: Row[]; nums: string[]; lenCol: string | null; sectionId: string;
+}) {
+  const isRegionCat = /region/i.test(cat);
+  const isClassCat = /class/i.test(cat);
+  const isConditionCat = /condition|rating|status/i.test(cat) && !isClassCat;
+
+  const { groupRows, statMeasures, anovaRows } = useMemo(() => {
+    const groups = new Map<string, Row[]>();
+    rows.forEach(r => { const k = String(r[cat] ?? 'Unknown'); if (!groups.has(k)) groups.set(k, []); groups.get(k)!.push(r); });
+    // Rule: all 6 maintenance regions always shown, even with zero records -
+    // never a silently-dropped region because the dataset happens to have no
+    // rows for it.
+    if (isRegionCat) MAINTENANCE_REGIONS.forEach(r => { if (!groups.has(r.id)) groups.set(r.id, []); });
+    const ents = [...groups.entries()].sort((a, b) => b[1].length - a[1].length);
+    const N = rows.length;
+    const kmTot = lenCol ? rows.reduce((a, r) => a + (num(r[lenCol]) ?? 0), 0) : 0;
+    const measures = nums.slice(0, 5);
+    const maxByMeasure: Record<string, number> = {};
+    measures.forEach(m => { const all = rows.map(r => num(r[m])).filter((x): x is number => x != null); maxByMeasure[m] = Math.max(...all, 1); });
+
+    const gRows: GroupRow[] = ents.map(([k, g]) => {
+      const km = lenCol ? g.reduce((a, r) => a + (num(r[lenCol]) ?? 0), 0) : undefined;
+      const means: Record<string, number | null> = {};
+      measures.forEach(m => { const v = g.map(r => num(r[m])).filter((x): x is number => x != null);
+        means[m] = v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; });
+      return {
+        key: k, count: g.length, share: N ? (g.length / N) * 100 : 0,
+        kmAffected: km, kmShare: lenCol && kmTot ? (km! / kmTot) * 100 : undefined,
+        means,
+      };
+    });
+
+    const anovas: AnovaRow[] = nums.map(n => {
+      const groupVals = ents.map(([, g]) => g.map(r => num(r[n])).filter((x): x is number => x != null));
+      const res = oneWayAnova(groupVals);
+      return { measure: prettyLabel(n), groups: res.groups, n: res.n, f: res.f, df: `${res.df1},${res.df2}`, p: res.p, etaSq: res.etaSq };
+    }).filter(a => a.groups >= 2);
+
+    return { groupRows: gRows, statMeasures: measures, anovaRows: anovas };
+  }, [cat, rows, nums, lenCol, isRegionCat]);
+
+  const maxCount = Math.max(...groupRows.map((g: GroupRow) => g.count), 1);
+
+  const columns: STColumn<GroupRow>[] = [
+    {
+      key: 'key', label: prettyLabel(cat),
+      render: row => {
+        if (isClassCat) return <RoadClassPill cls={row.key} />;
+        if (isConditionCat) return <ConditionLabelBadge label={row.key} />;
+        return row.key;
+      },
+    },
+    { key: 'count', label: 'Count', numeric: true, render: row => <span style={heatStyle(row.count / maxCount)}>{fmtN(row.count)}</span> },
+    { key: 'share', label: 'Share %', numeric: true, render: row => `${row.share.toFixed(1)}%` },
+    ...(lenCol ? [
+      { key: 'kmAffected', label: 'Km affected', numeric: true, render: (row: GroupRow) => row.kmAffected != null ? fmtN(row.kmAffected, 1) : <span style={{ color: 'rgba(148,163,184,0.5)', fontStyle: 'italic' }}>No data</span> } as STColumn<GroupRow>,
+      { key: 'kmShare', label: 'Km share %', numeric: true, render: (row: GroupRow) => row.kmShare != null ? `${row.kmShare.toFixed(1)}%` : '-' } as STColumn<GroupRow>,
+    ] : []),
+    ...statMeasures.map((m: string): STColumn<GroupRow> => ({
+      key: ('mean_' + m) as any,
+      label: 'Mean ' + prettyLabel(m),
+      numeric: true,
+      render: (row: GroupRow) => {
+        const v = row.means[m];
+        if (v == null) return <span style={{ color: 'rgba(148,163,184,0.5)', fontStyle: 'italic' }}>No data</span>;
+        return fmtN(v, 1);
+      },
+    })),
+  ];
+  // Flatten mean_<measure> accessors onto each row so SortableFilterableTable's
+  // generic `row[c.key]` sort/filter access (used when a column has no custom
+  // sort logic) works for the synthetic per-measure mean columns too.
+  const flatRows = groupRows.map((r: GroupRow) => {
+    const flat: Record<string, any> = { ...r };
+    statMeasures.forEach((m: string) => { flat['mean_' + m] = r.means[m]; });
+    return flat;
+  });
+
+  return (
+    <Card title={`Group analysis by ${prettyLabel(cat)} — ${groupRows.length} categories × ${rows.length.toLocaleString()} records`} accent={accent}>
+      <SortableFilterableTable columns={columns as STColumn<any>[]} rows={flatRows} accent={accent} exportName={sectionId + '_by_' + cat} initialSort="count" />
+      {anovaRows.length > 0 && (
+        <div style={{ marginTop: 12 }}>
+          <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.04em', color: 'rgba(148,163,184,0.9)', marginBottom: 6 }}>
+            Inferential: one-way ANOVA — does {prettyLabel(cat)} significantly affect each measure?
+          </div>
+          <AnovaTable accent={accent} anovaRows={anovaRows} sectionId={sectionId} cat={cat} />
+        </div>
+      )}
+    </Card>
+  );
+}
+function AnovaTable({ accent, anovaRows, sectionId, cat }: { accent: string; anovaRows: AnovaRow[]; sectionId: string; cat: string }) {
+  const columns: STColumn<AnovaRow>[] = [
+    { key: 'measure', label: 'Measure' },
+    { key: 'groups', label: 'Groups', numeric: true, render: r => fmtN(r.groups) },
+    { key: 'n', label: 'n', numeric: true, render: r => fmtN(r.n) },
+    { key: 'f', label: 'F-statistic', numeric: true, render: r => fmtN(r.f, 2) },
+    { key: 'df', label: 'df' },
+    { key: 'p', label: 'p-value', numeric: true, render: r => r.p < 0.001 ? '<0.001' : r.p.toFixed(3) },
+    { key: 'sig' as any, label: 'Significance', render: r => <SigBadge p={r.p} /> },
+    { key: 'etaSq', label: 'η² (effect size)', numeric: true, render: r => <span style={heatStyle(r.etaSq)}>{r.etaSq.toFixed(3)}</span> },
+  ];
+  return (
+    <>
+      <SortableFilterableTable columns={columns} rows={anovaRows} accent={accent} exportName={sectionId + '_anova_' + cat} initialSort="etaSq" />
+      <div style={{ fontSize: 10, color: '#475569', marginTop: 6 }}>F-test on between-group vs within-group variance. * p&lt;0.05, ** p&lt;0.01, *** p&lt;0.001, n.s. = not significant. η² is the share of total variance explained by the grouping (0.01 small, 0.06 medium, 0.14+ large).</div>
+    </>
+  );
+}
+
+// ─── Cross-relation matrix (pivot table) ────────────────────────────────────
+function CrossRelationCard({ accent, a, b, rows, sectionId }: { accent: string; a: string; b: string; rows: Row[]; sectionId: string }) {
+  const { pivotRows, columns, chi } = useMemo(() => {
+    const ka = [...new Set(rows.map(r => String(r[a] ?? 'Unknown')))];
+    const kb = [...new Set(rows.map(r => String(r[b] ?? 'Unknown')))];
+    const cell = new Map<string, number>(); let mx = 1;
+    rows.forEach(r => { const k = String(r[a] ?? 'Unknown') + '|' + String(r[b] ?? 'Unknown');
+      const v = (cell.get(k) ?? 0) + 1; cell.set(k, v); if (v > mx) mx = v; });
+    const table = ka.map(ra => kb.map(cb => cell.get(ra + '|' + cb) ?? 0));
+    const chiRes = chiSquareTest(table);
+    const pv: Row[] = ka.map(ra => {
+      const row: Row = { category: ra };
+      let total = 0;
+      kb.forEach(cb => { const v = cell.get(ra + '|' + cb) ?? 0; row[cb] = v; total += v; });
+      row.Total = total;
+      return row;
+    });
+    const cols: STColumn<Row>[] = [
+      { key: 'category', label: prettyLabel(a) },
+      ...kb.map((cb): STColumn<Row> => ({
+        key: cb, label: cb, numeric: true,
+        render: (row: Row) => { const v = Number(row[cb]) || 0;
+          return v ? <span style={heatStyle(v / mx)}>{v}</span> : <span style={{ color: 'rgba(148,163,184,0.4)' }}>-</span>; },
+      })),
+      { key: 'Total', label: 'Total', numeric: true, render: (row: Row) => <span style={{ fontWeight: 800, color: '#e2e8f0' }}>{fmtN(Number(row.Total) || 0)}</span> },
+    ];
+    return { pivotRows: pv, columns: cols, chi: chiRes };
+  }, [a, b, rows]);
+
+  return (
+    <Card title={`Cross-relation matrix — ${prettyLabel(a)} × ${prettyLabel(b)} (record counts, all data)`} accent={accent}>
+      <SortableFilterableTable columns={columns} rows={pivotRows} accent={accent} exportName={sectionId + '_cross_' + a + '_' + b} initialSort="Total" />
+      <div style={{ marginTop: 10, fontSize: 10.5 }}>
+        <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.04em', color: 'rgba(148,163,184,0.9)', marginBottom: 4 }}>
+          Inferential: chi-square test of independence
+        </div>
+        <div style={{ color: '#cbd5e1' }}>
+          χ² = <b style={{ color: '#e2e8f0' }}>{fmtN(chi.chi2, 2)}</b>, df = {chi.df}, n = {fmtN(chi.n)}, p-value = {chi.p < 0.001 ? '<0.001' : chi.p.toFixed(3)}{' '}
+          (<span style={{ color: sigStars(chi.p) ? '#00ff88' : '#94a3b8', fontWeight: 700 }}>{sigStars(chi.p) || 'not significant'}</span>),
+          Cramér's V = {chi.cramerV.toFixed(3)} ({chi.cramerV < 0.1 ? 'negligible' : chi.cramerV < 0.3 ? 'weak' : chi.cramerV < 0.5 ? 'moderate' : 'strong'} association)
+        </div>
+        <div style={{ fontSize: 10, color: '#475569', marginTop: 4 }}>Tests whether {prettyLabel(a)} and {prettyLabel(b)} are statistically independent, or whether one predicts the other. Cramér's V is the effect size (0 = no association, 1 = perfect).</div>
+      </div>
+    </Card>
+  );
+}
+
 export function DeepAnalysisTables({ sectionId, accent = '#00f5ff' }: { sectionId: string; accent?: string }) {
   const [rows, setRows] = useState<Row[] | null>(null);
   useEffect(() => { let d = false; loadRows(sectionId).then(r => { if (!d) setRows(r); }); return () => { d = true; }; }, [sectionId]);
@@ -114,171 +371,17 @@ export function DeepAnalysisTables({ sectionId, accent = '#00f5ff' }: { sectionI
   const N = rows.length;
   return (
     <div style={{ width: '100%' }}>
-      <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.08em', color: accent, margin: '4px 0 10px' }}>
-        DEEP ANALYTICS - {N.toLocaleString()} RECORDS ANALYSED IN FULL - GROUP STATISTICS, DISTRIBUTIONS, CROSS-RELATIONS
+      <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.04em', color: accent, margin: '4px 0 10px' }}>
+        Deep analytics — {N.toLocaleString()} records analysed in full: group statistics, distributions, cross-relations
       </div>
-      <Card title={'DESCRIPTIVE STATISTICS - ALL ' + P.nums.length + ' NUMERIC ATTRIBUTES (' + N.toLocaleString() + ' RECORDS)'} accent={accent}
-        right={<button onClick={() => { const cols = ['Attribute','Count','Sum','Mean','Mode','Min','P25','Median','P75','Max','Range','IQR','Variance','StdDev','CV%','SE','CI95Low','CI95High','Skewness','Kurtosis'];
-          const out = P.nums.map(c => { const v = rows.map(r => num(r[c])).filter(x => x != null).sort((a,b)=>(a as number)-(b as number)) as number[];
-            const sum = v.reduce((a,b)=>a+b,0); const m = mean(v); const sd = stdDevPop(v, m); const [ciLo, ciHi] = ci95(v);
-            const p25 = q(v,0.25), p75 = q(v,0.75), min = v[0] ?? 0, max = v[v.length-1] ?? 0;
-            return [c, v.length, sum, m, modeOf(v) ?? '-', min, p25, q(v,0.5), p75, max, max-min, p75-p25, sd*sd, sd, m?sd/m*100:0, stdError(v), ciLo, ciHi, skewness(v,m), kurtosis(v,m)]; });
-          csvOut(sectionId + '_numeric_stats', cols, out); }}
-          style={{ background: 'rgba(0,245,255,0.08)', border: '1px solid rgba(0,245,255,0.3)', borderRadius: 6, color: accent, fontSize: 10, fontWeight: 700, padding: '3px 10px', cursor: 'pointer' }}>CSV</button>}>
-        <div style={{ overflow: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10.5 }}>
-            <thead><tr>{['Attribute','Count','Sum','Mean','Mode','Min','P25','Median','P75','Max','Range','IQR','Variance','StdDev','CV%','SE','95% CI (mean)','Skewness','Kurtosis'].map(h => <th key={h} style={TH}>{h}</th>)}</tr></thead>
-            <tbody>{P.nums.map(c => { const v = rows.map(r => num(r[c])).filter(x => x != null).sort((a,b)=>(a as number)-(b as number)) as number[];
-              if (!v.length) return null; const sum = v.reduce((a,b)=>a+b,0); const m = mean(v);
-              const sd = stdDevPop(v, m); const cv = m ? sd/m*100 : 0; const [ciLo, ciHi] = ci95(v);
-              const p25 = q(v,0.25), p75 = q(v,0.75), min = v[0] ?? 0, max = v[v.length-1] ?? 0, md = modeOf(v);
-              return (<tr key={c} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                <td style={{ ...TD, color: '#e2e8f0', fontWeight: 700 }}>{prettyLabel(c)}</td>
-                <td style={TD}>{fmtN(v.length)}</td><td style={TD}>{fmtN(sum)}</td><td style={TD}>{fmtN(m,1)}</td>
-                <td style={TD}>{md != null ? fmtN(md,1) : '—'}</td>
-                <td style={TD}>{fmtN(min,1)}</td><td style={TD}>{fmtN(p25,1)}</td>
-                <td style={{ ...TD, ...heatCss(0.5) }}>{fmtN(q(v,0.5),1)}</td>
-                <td style={TD}>{fmtN(p75,1)}</td>
-                <td style={TD}>{fmtN(max,1)}</td>
-                <td style={TD}>{fmtN(max-min,1)}</td><td style={TD}>{fmtN(p75-p25,1)}</td>
-                <td style={TD}>{fmtN(sd*sd,1)}</td><td style={TD}>{fmtN(sd,1)}</td>
-                <td style={{ ...TD, ...heatCss(Math.min(1, cv/150)) }}>{fmtN(cv,1)}%</td>
-                <td style={TD}>{fmtN(stdError(v),2)}</td>
-                <td style={TD}>[{fmtN(ciLo,1)}, {fmtN(ciHi,1)}]</td>
-                <td style={TD}>{fmtN(skewness(v,m),2)}</td><td style={TD}>{fmtN(kurtosis(v,m),2)}</td></tr>); })}
-            </tbody>
-          </table>
-        </div>
-        <div style={{ fontSize: 10, color: '#475569', marginTop: 6 }}>Formulas: Mean = Sum/Count; Variance/StdDev = population (÷N); SE and 95% CI use the sample convention (÷N-1, z≈1.96); Skewness/Kurtosis are sample, bias-corrected; Pxx by linear interpolation on the full sorted series.</div>
-      </Card>
-
-      {P.nums.length >= 2 && (() => {
-        const series = P.nums.map(c => rows.map(r => num(r[c])).filter((x): x is number => x != null));
-        const pairs: { a: string; b: string; r: number; n: number; p: number }[] = [];
-        for (let i = 0; i < P.nums.length; i++) for (let j = i + 1; j < P.nums.length; j++) {
-          const res = pearsonTest(series[i], series[j]);
-          pairs.push({ a: P.nums[i], b: P.nums[j], r: res.r, n: res.n, p: res.p });
-        }
-        return (
-        <Card title={'INFERENTIAL: CORRELATION & SIGNIFICANCE MATRIX - ' + P.nums.length + ' NUMERIC ATTRIBUTES (' + pairs.length + ' PAIRS)'} accent={accent}
-          right={<button onClick={() => csvOut(sectionId + '_correlation_matrix', ['Attribute A','Attribute B','Pearson r','n','p-value','Significance'],
-            pairs.map(pr => [pr.a, pr.b, pr.r, pr.n, pr.p, sigStars(pr.p)]))}
-            style={{ background: 'rgba(0,245,255,0.08)', border: '1px solid rgba(0,245,255,0.3)', borderRadius: 6, color: accent, fontSize: 10, fontWeight: 700, padding: '3px 10px', cursor: 'pointer' }}>CSV</button>}>
-          <div style={{ overflow: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10.5 }}>
-              <thead><tr>{['Attribute A','Attribute B','Pearson r','n','p-value','Significance'].map(h => <th key={h} style={TH}>{h}</th>)}</tr></thead>
-              <tbody>{pairs.sort((x,y) => Math.abs(y.r) - Math.abs(x.r)).map(pr => (
-                <tr key={pr.a+'|'+pr.b} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                  <td style={{ ...TD, color: '#e2e8f0', fontWeight: 700 }}>{prettyLabel(pr.a)}</td>
-                  <td style={{ ...TD, color: '#e2e8f0', fontWeight: 700 }}>{prettyLabel(pr.b)}</td>
-                  <td style={{ ...TD, ...heatCss((pr.r+1)/2) }}>{pr.r.toFixed(3)}</td>
-                  <td style={TD}>{fmtN(pr.n)}</td>
-                  <td style={TD}>{pr.p < 0.001 ? '<0.001' : pr.p.toFixed(3)}</td>
-                  <td style={{ ...TD, color: sigStars(pr.p) ? '#00ff88' : '#64748b', fontWeight: 700 }}>{sigStars(pr.p) || 'n.s.'}</td>
-                </tr>))}
-              </tbody>
-            </table>
-          </div>
-          <div style={{ fontSize: 10, color: '#475569', marginTop: 6 }}>Pearson r with a two-tailed t-test (df = n-2). * p&lt;0.05, ** p&lt;0.01, *** p&lt;0.001, n.s. = not significant. |r| ≥ 0.7 strong, 0.4-0.7 moderate, &lt;0.4 weak - regardless of significance, correlation is not causation.</div>
-        </Card>); })()}
-      {P.cats.map(cat => { const groups = new Map<string, Row[]>();
-        rows.forEach(r => { const k = String(r[cat] ?? 'Unknown'); if (!groups.has(k)) groups.set(k, []); groups.get(k)!.push(r); });
-        const ents = [...groups.entries()].sort((a,b) => b[1].length - a[1].length);
-        const maxN = ents[0][1].length;
-        return (
-        <Card key={cat} title={'GROUP ANALYSIS BY ' + prettyLabel(cat).toUpperCase() + ' - ' + ents.length + ' CATEGORIES x ' + N.toLocaleString() + ' RECORDS'} accent={accent}
-          right={<button onClick={() => csvOut(sectionId + '_by_' + cat,
-            [prettyLabel(cat),'Count','Share%', ...(P.lenCol ? ['Km affected'] : []), ...P.nums.slice(0,5).map(n=>'Mean '+prettyLabel(n))],
-            ents.map(([k, g]) => [k, g.length, (g.length/N*100).toFixed(1),
-              ...(P.lenCol ? [g.reduce((a,r)=>a+(num(r[P.lenCol!])??0),0).toFixed(1)] : []),
-              ...P.nums.slice(0,5).map(n => { const v = g.map(r=>num(r[n])).filter(x=>x!=null) as number[];
-                return v.length ? (v.reduce((a,b)=>a+b,0)/v.length).toFixed(1) : '-'; })]))}
-            style={{ background: 'rgba(0,245,255,0.08)', border: '1px solid rgba(0,245,255,0.3)', borderRadius: 6, color: accent, fontSize: 10, fontWeight: 700, padding: '3px 10px', cursor: 'pointer' }}>CSV</button>}>
-          <div style={{ overflow: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10.5 }}>
-              <thead><tr>{[prettyLabel(cat), 'Count', 'Share %', ...(P.lenCol ? ['Km affected','Km share %'] : []), ...P.nums.slice(0,5).map(n => 'Mean ' + prettyLabel(n))].map(h => <th key={h} style={TH}>{h}</th>)}</tr></thead>
-              <tbody>{ents.map(([k, g]) => { const kmTot = P.lenCol ? rows.reduce((a,r)=>a+(num(r[P.lenCol!])??0),0) : 0;
-                const km = P.lenCol ? g.reduce((a,r)=>a+(num(r[P.lenCol!])??0),0) : 0;
-                return (<tr key={k} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                  <td style={{ ...TD, color: '#e2e8f0', fontWeight: 700 }}>{k}</td>
-                  <td style={{ ...TD, ...heatCss(g.length/maxN) }}>{fmtN(g.length)}</td>
-                  <td style={TD}>{(g.length/N*100).toFixed(1)}%</td>
-                  {P.lenCol && <td style={{ ...TD, ...heatCss(kmTot ? km/(kmTot*0.6) : 0) }}>{fmtN(km,1)}</td>}
-                  {P.lenCol && <td style={TD}>{kmTot ? (km/kmTot*100).toFixed(1) : '-'}%</td>}
-                  {P.nums.slice(0,5).map(n => { const v = g.map(r=>num(r[n])).filter(x=>x!=null) as number[];
-                    const all = rows.map(r=>num(r[n])).filter(x=>x!=null) as number[];
-                    const mx = Math.max(...all, 1); const m = v.length ? v.reduce((a,b)=>a+b,0)/v.length : null;
-                    return <td key={n} style={{ ...TD, ...(m != null ? heatCss(m/mx) : {}) }}>{m != null ? fmtN(m,1) : '-'}</td>; })}
-                </tr>); })}
-              </tbody>
-            </table>
-          </div>
-          {P.nums.length > 0 && (() => {
-            const anovas = P.nums.map(n => {
-              const groupVals = ents.map(([, g]) => g.map(r => num(r[n])).filter((x): x is number => x != null));
-              return { n, res: oneWayAnova(groupVals) };
-            }).filter(a => a.res.groups >= 2);
-            if (!anovas.length) return null;
-            return (
-              <div style={{ marginTop: 10 }}>
-                <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.06em', color: 'rgba(148,163,184,0.9)', marginBottom: 4 }}>
-                  INFERENTIAL: ONE-WAY ANOVA - DOES {prettyLabel(cat).toUpperCase()} SIGNIFICANTLY AFFECT EACH MEASURE?
-                </div>
-                <div style={{ overflow: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10.5 }}>
-                    <thead><tr>{['Measure', 'Groups', 'n', 'F-statistic', 'df', 'p-value', 'Significance', 'η² (effect size)'].map(h => <th key={h} style={TH}>{h}</th>)}</tr></thead>
-                    <tbody>{anovas.map(({ n, res }) => (
-                      <tr key={n} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                        <td style={{ ...TD, color: '#e2e8f0', fontWeight: 700 }}>{prettyLabel(n)}</td>
-                        <td style={TD}>{res.groups}</td>
-                        <td style={TD}>{fmtN(res.n)}</td>
-                        <td style={TD}>{fmtN(res.f, 2)}</td>
-                        <td style={TD}>{res.df1},{res.df2}</td>
-                        <td style={TD}>{res.p < 0.001 ? '<0.001' : res.p.toFixed(3)}</td>
-                        <td style={{ ...TD, color: sigStars(res.p) ? '#00ff88' : '#64748b', fontWeight: 700 }}>{sigStars(res.p) || 'n.s.'}</td>
-                        <td style={{ ...TD, ...heatCss(res.etaSq) }}>{res.etaSq.toFixed(3)}</td>
-                      </tr>))}
-                    </tbody>
-                  </table>
-                </div>
-                <div style={{ fontSize: 10, color: '#475569', marginTop: 6 }}>F-test on between-group vs within-group variance. * p&lt;0.05, ** p&lt;0.01, *** p&lt;0.001, n.s. = not significant. η² is the share of total variance explained by the grouping (0.01 small, 0.06 medium, 0.14+ large).</div>
-              </div>
-            );
-          })()}
-        </Card>); })}
-      {P.cats.length >= 2 && (() => { const [a, b] = P.cats; const ka = [...new Set(rows.map(r => String(r[a] ?? 'Unknown')))];
-        const kb = [...new Set(rows.map(r => String(r[b] ?? 'Unknown')))];
-        const cell = new Map<string, number>(); let mx = 1;
-        rows.forEach(r => { const k = String(r[a] ?? 'Unknown') + '|' + String(r[b] ?? 'Unknown');
-          const v = (cell.get(k) ?? 0) + 1; cell.set(k, v); if (v > mx) mx = v; });
-        const table = ka.map(ra => kb.map(cb => cell.get(ra + '|' + cb) ?? 0));
-        const chi = chiSquareTest(table);
-        return (
-        <Card title={'CROSS-RELATION MATRIX - ' + prettyLabel(a).toUpperCase() + ' x ' + prettyLabel(b).toUpperCase() + ' (RECORD COUNTS, ALL DATA)'} accent={accent}>
-          <div style={{ overflow: 'auto' }}>
-            <table style={{ borderCollapse: 'collapse', fontSize: 10.5 }}>
-              <thead><tr><th style={TH}>{a} \\ {b}</th>{kb.map(k => <th key={k} style={TH}>{k}</th>)}<th style={TH}>Total</th></tr></thead>
-              <tbody>{ka.map(ra => (<tr key={ra} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                <td style={{ ...TD, color: '#e2e8f0', fontWeight: 700 }}>{ra}</td>
-                {kb.map(cb => { const v = cell.get(ra + '|' + cb) ?? 0;
-                  return <td key={cb} style={{ ...TD, ...heatCss(v/mx), textAlign: 'center' }}>{v || '-'}</td>; })}
-                <td style={{ ...TD, fontWeight: 700 }}>{fmtN(kb.reduce((s, cb) => s + (cell.get(ra + '|' + cb) ?? 0), 0))}</td>
-              </tr>))}
-              </tbody>
-            </table>
-          </div>
-          <div style={{ marginTop: 10, fontSize: 10.5 }}>
-            <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.06em', color: 'rgba(148,163,184,0.9)', marginBottom: 4 }}>
-              INFERENTIAL: CHI-SQUARE TEST OF INDEPENDENCE
-            </div>
-            <div style={{ color: '#cbd5e1' }}>
-              χ² = <b style={{ color: '#e2e8f0' }}>{fmtN(chi.chi2, 2)}</b>, df = {chi.df}, n = {fmtN(chi.n)}, p-value = {chi.p < 0.001 ? '<0.001' : chi.p.toFixed(3)}{' '}
-              (<span style={{ color: sigStars(chi.p) ? '#00ff88' : '#64748b', fontWeight: 700 }}>{sigStars(chi.p) || 'not significant'}</span>),
-              Cramér's V = {chi.cramerV.toFixed(3)} ({chi.cramerV < 0.1 ? 'negligible' : chi.cramerV < 0.3 ? 'weak' : chi.cramerV < 0.5 ? 'moderate' : 'strong'} association)
-            </div>
-            <div style={{ fontSize: 10, color: '#475569', marginTop: 4 }}>Tests whether {prettyLabel(a)} and {prettyLabel(b)} are statistically independent, or whether one predicts the other. Cramér's V is the effect size (0 = no association, 1 = perfect).</div>
-          </div>
-        </Card>); })()}
+      <DescriptiveStatsCard accent={accent} nums={P.nums} rows={rows} sectionId={sectionId} />
+      {P.nums.length >= 2 && <CorrelationCard accent={accent} nums={P.nums} rows={rows} sectionId={sectionId} />}
+      {P.cats.map(cat => (
+        <GroupAnalysisCard key={cat} accent={accent} cat={cat} rows={rows} nums={P.nums} lenCol={P.lenCol} sectionId={sectionId} />
+      ))}
+      {P.cats.length >= 2 && (
+        <CrossRelationCard accent={accent} a={P.cats[0]} b={P.cats[1]} rows={rows} sectionId={sectionId} />
+      )}
     </div>
   );
 }
