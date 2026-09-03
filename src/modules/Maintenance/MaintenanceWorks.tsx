@@ -4,6 +4,8 @@ import { useBMS } from '../../store/BMSContext';
 import type { WorkOrder, WorkOrderStatus, WorkOrderType, WorkOrderPriority } from '../../index';
 import { formatDate, formatUGX } from '../../utils/helpers';
 import { v4 as uuidv4 } from 'uuid';
+import { SearchableSelect } from '../../shared/SearchableSelect';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
 
 const STATUS_COLORS: Record<WorkOrderStatus, string> = {
   'Planned':     'badge-blue',
@@ -105,14 +107,14 @@ export default function MaintenanceWorks() {
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
             <input className="bms-input pl-9 py-1.5 text-xs" placeholder="Search work orders…" value={query} onChange={e => setQuery(e.target.value)} />
           </div>
-          <select className="bms-select text-xs py-1.5" value={statusF} onChange={e => setStatusF(e.target.value as typeof statusF)}>
+          <SearchableSelect value={statusF} onChange={v => setStatusF(v as typeof statusF)} style={{ fontSize: 11, padding: '6px 10px' }}>
             <option value="all">All Statuses</option>
-            {['Planned','In Progress','Completed','On Hold','Cancelled'].map(s => <option key={s}>{s}</option>)}
-          </select>
-          <select className="bms-select text-xs py-1.5" value={priorityF} onChange={e => setPriorityF(e.target.value as typeof priorityF)}>
+            {['Planned','In Progress','Completed','On Hold','Cancelled'].map(s => <option key={s} value={s}>{s}</option>)}
+          </SearchableSelect>
+          <SearchableSelect value={priorityF} onChange={v => setPriorityF(v as typeof priorityF)} style={{ fontSize: 11, padding: '6px 10px' }}>
             <option value="all">All Priorities</option>
-            {['Critical','High','Medium','Low'].map(p => <option key={p}>{p}</option>)}
-          </select>
+            {['Critical','High','Medium','Low'].map(p => <option key={p} value={p}>{p}</option>)}
+          </SearchableSelect>
           <div className="flex-1" />
           <span className="text-xs text-slate-500">{filtered.length} work orders</span>
           <button onClick={() => { setEditing(null); setShowForm(true); }} className="bms-btn-primary text-xs py-1.5">
@@ -122,60 +124,48 @@ export default function MaintenanceWorks() {
       </div>
 
       {/* Table */}
-      <div className="flex-1 mowt-table-wrap">
-        <table className="bms-table">
-          <thead>
-            <tr>
-              <th>Work Order</th>
-              <th>Structure</th>
-              <th>Type</th>
-              <th>Priority</th>
-              <th>Status</th>
-              <th>Start Date</th>
-              <th>End Date</th>
-              <th>Cost (UGX)</th>
-              <th>Contractor</th>
-              <th>Engineer</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map(wo => (
-              <tr key={wo.id} className="hover:bg-slate-700/30 transition-colors">
-                <td className="px-4 py-3">
+      <div className="flex-1 mowt-table-wrap p-3">
+        <SortableFilterableTable<WorkOrder>
+          accent="#ffd23f"
+          exportName="maintenance-work-orders"
+          initialSort="startDate"
+          columns={[
+            { key: 'title', label: 'Work Order', render: wo => (
+                <div>
                   <div className="text-xs font-semibold text-slate-200 max-w-[200px] truncate">{wo.title}</div>
                   <div className="text-[10px] text-slate-500 font-mono">{wo.id.slice(0, 8)}…</div>
-                </td>
-                <td className="px-4 py-3">
+                </div>
+              ) },
+            { key: 'structureName', label: 'Structure', render: wo => (
+                <div>
                   <div className="text-xs text-slate-300 max-w-[150px] truncate">{wo.structureName}</div>
                   <div className="text-[10px] text-slate-500">{wo.structureId}</div>
-                </td>
-                <td className="px-4 py-3 text-xs text-slate-400 whitespace-nowrap">{wo.type}</td>
-                <td className="px-4 py-3"><span className={`badge ${PRIORITY_BADGE[wo.priority]}`}>{wo.priority}</span></td>
-                <td className="px-4 py-3">
-                  <span className={`badge ${STATUS_COLORS[wo.status]} flex items-center gap-1`}>
-                    {STATUS_ICONS[wo.status]} {wo.status}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-xs text-slate-400 whitespace-nowrap">{formatDate(wo.startDate)}</td>
-                <td className="px-4 py-3 text-xs text-slate-400 whitespace-nowrap">{formatDate(wo.endDate)}</td>
-                <td className="px-4 py-3 text-xs text-slate-300 font-mono whitespace-nowrap">{formatUGX(wo.cost)}</td>
-                <td className="px-4 py-3 text-xs text-slate-400 max-w-[140px] truncate">{wo.contractor}</td>
-                <td className="px-4 py-3 text-xs text-slate-400 max-w-[120px] truncate">{wo.engineerInCharge}</td>
-                <td className="px-4 py-3">
-                  <select
-                    className="bms-select text-[10px] py-0.5 px-2"
-                    value={wo.status}
-                    onChange={e => updateStatus(wo, e.target.value as WorkOrderStatus)}
-                    onClick={e => e.stopPropagation()}
-                  >
-                    {['Planned','In Progress','Completed','On Hold','Cancelled'].map(s => <option key={s}>{s}</option>)}
-                  </select>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                </div>
+              ) },
+            { key: 'type', label: 'Type' },
+            { key: 'priority', label: 'Priority', render: wo => <span className={`badge ${PRIORITY_BADGE[wo.priority]}`}>{wo.priority}</span> },
+            { key: 'status', label: 'Status', render: wo => (
+                <span className={`badge ${STATUS_COLORS[wo.status]} flex items-center gap-1`}>
+                  {STATUS_ICONS[wo.status]} {wo.status}
+                </span>
+              ) },
+            { key: 'startDate', label: 'Start Date', date: true, render: wo => formatDate(wo.startDate) },
+            { key: 'endDate', label: 'End Date', date: true, render: wo => formatDate(wo.endDate) },
+            { key: 'cost', label: 'Cost (UGX)', numeric: true, total: 'sum', render: wo => formatUGX(wo.cost) },
+            { key: 'contractor', label: 'Contractor' },
+            { key: 'engineerInCharge', label: 'Engineer' },
+            { key: 'id', label: 'Actions', render: wo => (
+                <SearchableSelect
+                  value={wo.status}
+                  onChange={v => updateStatus(wo, v as WorkOrderStatus)}
+                  style={{ fontSize: 10.5, padding: '3px 8px' }}
+                >
+                  {['Planned','In Progress','Completed','On Hold','Cancelled'].map(s => <option key={s} value={s}>{s}</option>)}
+                </SearchableSelect>
+              ) },
+          ] as STColumn<WorkOrder>[]}
+          rows={filtered}
+        />
       </div>
 
       {/* New WO form */}
@@ -263,9 +253,9 @@ function WorkOrderForm({
         <div className="p-6 grid grid-cols-2 gap-4 overflow-y-auto max-h-[70vh]">
           <div className="col-span-2">
             <label className="bms-label">Structure</label>
-            <select className="bms-select" value={f.structureId} onChange={e => set('structureId', e.target.value)}>
+            <SearchableSelect value={f.structureId ?? ''} onChange={v => set('structureId', v)} style={{ fontSize: 12, padding: '7px 10px' }}>
               {structures.map(s => <option key={s.id} value={s.id}>{s.name} ({s.id})</option>)}
-            </select>
+            </SearchableSelect>
           </div>
           <div className="col-span-2">
             <label className="bms-label">Title</label>
@@ -273,21 +263,21 @@ function WorkOrderForm({
           </div>
           <div>
             <label className="bms-label">Type</label>
-            <select className="bms-select" value={f.type} onChange={e => set('type', e.target.value)}>
-              {['Routine Maintenance','Preventive','Rehabilitation','Emergency Repair','Reconstruction'].map(t => <option key={t}>{t}</option>)}
-            </select>
+            <SearchableSelect value={f.type ?? ''} onChange={v => set('type', v)} style={{ fontSize: 12, padding: '7px 10px' }}>
+              {['Routine Maintenance','Preventive','Rehabilitation','Emergency Repair','Reconstruction'].map(t => <option key={t} value={t}>{t}</option>)}
+            </SearchableSelect>
           </div>
           <div>
             <label className="bms-label">Priority</label>
-            <select className="bms-select" value={f.priority} onChange={e => set('priority', e.target.value)}>
-              {['Low','Medium','High','Critical'].map(p => <option key={p}>{p}</option>)}
-            </select>
+            <SearchableSelect value={f.priority ?? ''} onChange={v => set('priority', v)} style={{ fontSize: 12, padding: '7px 10px' }}>
+              {['Low','Medium','High','Critical'].map(p => <option key={p} value={p}>{p}</option>)}
+            </SearchableSelect>
           </div>
           <div>
             <label className="bms-label">Status</label>
-            <select className="bms-select" value={f.status} onChange={e => set('status', e.target.value)}>
-              {['Planned','In Progress','Completed','On Hold','Cancelled'].map(s => <option key={s}>{s}</option>)}
-            </select>
+            <SearchableSelect value={f.status ?? ''} onChange={v => set('status', v)} style={{ fontSize: 12, padding: '7px 10px' }}>
+              {['Planned','In Progress','Completed','On Hold','Cancelled'].map(s => <option key={s} value={s}>{s}</option>)}
+            </SearchableSelect>
           </div>
           <div>
             <label className="bms-label">Cost (UGX)</label>
