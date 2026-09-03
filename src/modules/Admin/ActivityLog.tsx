@@ -7,6 +7,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { RefreshCw, Download, ShieldAlert } from 'lucide-react';
 import { roleLabel } from '../Auth/authTypes';
+import { SearchableSelect } from '../../shared/SearchableSelect';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
 
 interface Ev {
   type?: string;
@@ -20,11 +22,13 @@ interface Ev {
   [k: string]: unknown;
 }
 
+// Vivid platform palette (--neon-* in index.css) - reused rather than the
+// duller tailwind-style hexes this module used before.
 const TYPE_META: Record<string, { label: string; color: string }> = {
-  login:        { label: 'Login',        color: '#22c55e' },
-  login_failed: { label: 'Failed login', color: '#ef4444' },
+  login:        { label: 'Login',        color: '#00ff88' },
+  login_failed: { label: 'Failed login', color: '#ff3366' },
   logout:       { label: 'Logout',       color: '#94a3b8' },
-  change:       { label: 'Change',       color: '#f59e0b' },
+  change:       { label: 'Change',       color: '#ffd23f' },
   view:         { label: 'Page view',    color: '#4d9fff' },
 };
 const meta = (t?: string) => TYPE_META[t ?? ''] ?? { label: t ?? 'event', color: '#64748b' };
@@ -92,6 +96,24 @@ export default function ActivityLog() {
     return [...m.entries()].sort((a, b) => (b[1].last > a[1].last ? 1 : -1));
   }, [events]);
 
+  const perUserRows = useMemo(() => perUser.map(([user, r]) => ({ user, ...r })), [perUser]);
+
+  const perUserColumns: STColumn<{ user: string; role: string; login: number; login_failed: number; change: number; view: number; last: string }>[] = [
+    { key: 'user', label: 'User' },
+    { key: 'role', label: 'Level', render: r => (
+        <span style={{ fontWeight: 700, color: r.role === 'admin' ? '#ff3366' : r.role === 'super' ? '#ffd23f' : '#00ff88' }}>
+          {roleLabel(r.role)}
+        </span>
+      ) },
+    { key: 'login', label: 'Logins', numeric: true },
+    { key: 'login_failed', label: 'Failed Logins', numeric: true, render: r => (
+        <span style={{ color: r.login_failed ? '#ff3366' : 'inherit', fontWeight: r.login_failed ? 800 : 400 }}>{r.login_failed}</span>
+      ) },
+    { key: 'change', label: 'Changes', numeric: true },
+    { key: 'view', label: 'Page Views', numeric: true },
+    { key: 'last', label: 'Last Activity', date: true, render: r => fmtTime(r.last) },
+  ];
+
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase();
     return events.filter(e => {
@@ -100,6 +122,37 @@ export default function ActivityLog() {
       return JSON.stringify(e).toLowerCase().includes(needle);
     });
   }, [events, typeFilter, q]);
+
+  const TRAIL_CAP = 800;
+  interface TrailRow { idx: number; time: string; type: string; user: string; role: string; detail: string }
+  const trailRows: TrailRow[] = useMemo(() => filtered.slice(0, TRAIL_CAP).map((e, i) => {
+    const detail = { ...e } as Record<string, unknown>;
+    ['type', 'at', '_logged', 'user', 'role'].forEach(k => delete detail[k]);
+    return {
+      idx: i, time: when(e), type: e.type ?? 'event', user: e.user ?? '-', role: e.role ?? '',
+      detail: Object.keys(detail).length ? JSON.stringify(detail) : '',
+    };
+  }), [filtered]);
+
+  const trailColumns: STColumn<TrailRow>[] = [
+    { key: 'time', label: 'Time', date: true, render: r => fmtTime(r.time) },
+    { key: 'type', label: 'Event', render: r => {
+        const m = meta(r.type);
+        return (
+          <span style={{ padding: '2px 8px', borderRadius: 999, fontSize: 9, fontWeight: 800,
+            background: `${m.color}1a`, border: `1px solid ${m.color}55`, color: m.color }}>
+            {m.label}
+          </span>
+        );
+      } },
+    { key: 'user', label: 'User' },
+    { key: 'role', label: 'Level', render: r => roleLabel(r.role) },
+    { key: 'detail', label: 'Detail', render: r => (
+        <span style={{ whiteSpace: 'normal', fontFamily: 'monospace', fontSize: 10, color: 'rgba(148,163,184,0.75)' }}>
+          {r.detail || <span style={{ color: 'rgba(148,163,184,0.45)' }}>No additional detail</span>}
+        </span>
+      ) },
+  ];
 
   function exportCsv() {
     const head = 'time,type,user,role,detail';
@@ -119,17 +172,6 @@ export default function ActivityLog() {
     background: 'rgba(8,14,28,0.7)', border: '1px solid rgba(77,159,255,0.14)',
     borderRadius: 10, padding: '12px 14px',
   };
-  const TH: React.CSSProperties = {
-    textAlign: 'left', padding: '7px 10px', fontSize: 9.5, fontWeight: 800,
-    color: 'rgba(148,163,184,0.7)', textTransform: 'uppercase', letterSpacing: '0.06em',
-    borderBottom: '1px solid rgba(77,159,255,0.15)', position: 'sticky', top: 0,
-    background: 'rgba(4,9,18,0.95)',
-  };
-  const TD: React.CSSProperties = {
-    padding: '6px 10px', fontSize: 11, color: 'rgba(203,213,225,0.85)',
-    borderBottom: '1px solid rgba(255,255,255,0.04)', whiteSpace: 'nowrap',
-  };
-
   return (
     <div style={{ padding: '14px 16px' }}>
       {/* Header row */}
@@ -141,11 +183,11 @@ export default function ActivityLog() {
           </div>
         </div>
         {months.length > 0 && (
-          <select value={month} onChange={e => void load(e.target.value)} style={{
+          <SearchableSelect value={month} onChange={v => void load(v)} style={{
             background: 'rgba(10,16,30,0.9)', color: '#e2e8f0', border: '1px solid rgba(77,159,255,0.3)',
             borderRadius: 7, fontSize: 11, padding: '6px 9px' }}>
             {months.map(m => <option key={m} value={m}>{m}</option>)}
-          </select>
+          </SearchableSelect>
         )}
         <button onClick={() => void load(month || undefined)} style={{
           display: 'flex', alignItems: 'center', gap: 6, padding: '7px 11px', cursor: 'pointer',
@@ -155,8 +197,8 @@ export default function ActivityLog() {
         </button>
         <button onClick={exportCsv} style={{
           display: 'flex', alignItems: 'center', gap: 6, padding: '7px 11px', cursor: 'pointer',
-          background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)',
-          borderRadius: 7, color: '#22c55e', fontSize: 11, fontWeight: 700 }}>
+          background: 'rgba(0,255,136,0.1)', border: '1px solid rgba(0,255,136,0.3)',
+          borderRadius: 7, color: '#00ff88', fontSize: 11, fontWeight: 700 }}>
           <Download size={12} /> CSV
         </button>
       </div>
@@ -174,8 +216,8 @@ export default function ActivityLog() {
       {/* Summary cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 10, marginBottom: 14 }}>
         {([
-          ['Logins', stats.login, '#22c55e'], ['Failed logins', stats.login_failed, '#ef4444'],
-          ['Changes', stats.change, '#f59e0b'], ['Page views', stats.view, '#4d9fff'],
+          ['Logins', stats.login, '#00ff88'], ['Failed logins', stats.login_failed, '#ff3366'],
+          ['Changes', stats.change, '#ffd23f'], ['Page views', stats.view, '#4d9fff'],
           ['Active users', stats.users, '#b967ff'],
         ] as Array<[string, number, string]>).map(([label, n, color]) => (
           <div key={label} style={CARD}>
@@ -186,43 +228,26 @@ export default function ActivityLog() {
       </div>
 
       {/* Per-user login summary */}
-      <div style={{ ...CARD, padding: 0, marginBottom: 14, overflow: 'hidden' }}>
-        <div style={{ padding: '10px 12px 8px', fontSize: 11.5, fontWeight: 800, color: '#e2eaf4' }}>
+      <div style={{ ...CARD, padding: 12, marginBottom: 14, overflow: 'hidden' }}>
+        <div style={{ padding: '0 0 8px', fontSize: 11.5, fontWeight: 800, color: '#e2eaf4' }}>
           Login data summary - by user{month ? ` · ${month}` : ''}
         </div>
-        <div style={{ maxHeight: 240, overflowY: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead><tr>
-              <th style={TH}>User</th><th style={TH}>Level</th><th style={TH}>Logins</th>
-              <th style={TH}>Failed</th><th style={TH}>Changes</th><th style={TH}>Views</th><th style={TH}>Last activity</th>
-            </tr></thead>
-            <tbody>
-              {perUser.map(([u, r]) => (
-                <tr key={u}>
-                  <td style={TD}>{u}</td>
-                  <td style={{ ...TD, fontWeight: 700 }}>
-                    <span style={{ color: r.role === 'admin' ? '#ef4444' : r.role === 'super' ? '#f59e0b' : '#22c55e' }}>{roleLabel(r.role)}</span>
-                  </td>
-                  <td style={TD}>{r.login}</td>
-                  <td style={{ ...TD, color: r.login_failed ? '#ef4444' : TD.color }}>{r.login_failed}</td>
-                  <td style={TD}>{r.change}</td>
-                  <td style={TD}>{r.view}</td>
-                  <td style={TD}>{fmtTime(r.last)}</td>
-                </tr>
-              ))}
-              {perUser.length === 0 && (
-                <tr><td style={{ ...TD, padding: 16 }} colSpan={7}>No events recorded yet.</td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <SortableFilterableTable
+          columns={perUserColumns}
+          rows={perUserRows}
+          accent="#4d9fff"
+          exportName="activity-log-by-user"
+          initialSort="last"
+          emptyText="No events recorded yet."
+        />
       </div>
 
       {/* Event trail */}
-      <div style={{ ...CARD, padding: 0, overflow: 'hidden' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 12px 8px', flexWrap: 'wrap' }}>
+      <div style={{ ...CARD, padding: 12, overflow: 'hidden' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 0 8px', flexWrap: 'wrap' }}>
           <div style={{ fontSize: 11.5, fontWeight: 800, color: '#e2eaf4', flex: 1, minWidth: 140 }}>
             Full event trail · {filtered.length} of {events.length}
+            {filtered.length > TRAIL_CAP && ` (showing the ${TRAIL_CAP} most recent - refine the filters below to narrow further)`}
           </div>
           {['all', ...Object.keys(TYPE_META)].map(t => (
             <button key={t} onClick={() => setTypeFilter(t)} style={{
@@ -230,46 +255,21 @@ export default function ActivityLog() {
               background: typeFilter === t ? `${t === 'all' ? '#4d9fff' : meta(t).color}22` : 'rgba(255,255,255,0.03)',
               border: `1px solid ${typeFilter === t ? (t === 'all' ? '#4d9fff' : meta(t).color) : 'rgba(255,255,255,0.1)'}`,
               color: typeFilter === t ? (t === 'all' ? '#4d9fff' : meta(t).color) : 'rgba(148,163,184,0.7)' }}>
-              {t === 'all' ? 'ALL' : meta(t).label.toUpperCase()}
+              {t === 'all' ? 'All' : meta(t).label}
             </button>
           ))}
           <input value={q} onChange={e => setQ(e.target.value)} placeholder="Search user / table / detail…"
             style={{ background: 'rgba(10,16,30,0.9)', border: '1px solid rgba(77,159,255,0.25)', borderRadius: 7,
               color: '#e2e8f0', fontSize: 11, padding: '6px 10px', width: 200 }} />
         </div>
-        <div style={{ maxHeight: 420, overflowY: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead><tr>
-              <th style={TH}>Time</th><th style={TH}>Event</th><th style={TH}>User</th><th style={TH}>Level</th><th style={TH}>Detail</th>
-            </tr></thead>
-            <tbody>
-              {filtered.slice(0, 800).map((e, i) => {
-                const m = meta(e.type);
-                const detail = { ...e } as Record<string, unknown>;
-                ['type', 'at', '_logged', 'user', 'role'].forEach(k => delete detail[k]);
-                return (
-                  <tr key={i}>
-                    <td style={TD}>{fmtTime(when(e))}</td>
-                    <td style={TD}>
-                      <span style={{ padding: '2px 8px', borderRadius: 999, fontSize: 9, fontWeight: 800,
-                        background: `${m.color}1a`, border: `1px solid ${m.color}55`, color: m.color }}>
-                        {m.label.toUpperCase()}
-                      </span>
-                    </td>
-                    <td style={TD}>{e.user ?? '-'}</td>
-                    <td style={TD}>{roleLabel(e.role)}</td>
-                    <td style={{ ...TD, whiteSpace: 'normal', fontFamily: 'monospace', fontSize: 10, color: 'rgba(148,163,184,0.75)' }}>
-                      {Object.keys(detail).length ? JSON.stringify(detail) : '-'}
-                    </td>
-                  </tr>
-                );
-              })}
-              {filtered.length === 0 && (
-                <tr><td style={{ ...TD, padding: 16 }} colSpan={5}>Nothing matches the current filter.</td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <SortableFilterableTable
+          columns={trailColumns}
+          rows={trailRows}
+          accent="#4d9fff"
+          exportName="activity-event-trail"
+          initialSort="time"
+          emptyText="Nothing matches the current filter."
+        />
       </div>
     </div>
   );

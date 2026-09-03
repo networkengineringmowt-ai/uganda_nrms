@@ -46,7 +46,7 @@ const DOCS: DocSection[] = [
     id: 'datastores', title: '3 · Data Stores',
     body: [
       { table: { head: ['Store', 'Location', 'Role'], rows: [
-        ['G: Drive repository', 'G:\\My Drive\\MOWT\\Uganda National Road Network Repository', 'CANONICAL - all data, manuals, schema, scripts'],
+        ['G: Drive repository', 'G:\\My Drive\\MOWT\\Uganda National Road Network Repository', 'Canonical - all data, manuals, schema, scripts'],
         ['App data bundle', 'uganda-roads/public/data/ (44+ JSON/GeoJSON files)', 'What the deployed site reads'],
         ['Field captures', 'captures/<table>.jsonl (G: root)', 'Append-only submissions from the data-entry server'],
         ['Audit logs', 'logs/audit_YYYY-MM.jsonl (G: root)', 'Logins, failed logins, page views, changes'],
@@ -60,7 +60,7 @@ const DOCS: DocSection[] = [
     id: 'access', title: '4 · Access Control - Three Levels, Three Interfaces',
     body: [
       { table: { head: ['Level', 'Password', 'Interface'], rows: [
-        ['rms', 'rms', 'Mobile-first field capture shell ONLY - capture forms + own submissions, no dashboards, no bot'],
+        ['rms', 'rms', 'Mobile-first field capture shell only - capture forms + own submissions, no dashboards, no bot'],
         ['super', 'super', 'Every dashboard, map and report + CSV/Excel export - strictly read-only, no input/audit/admin'],
         ['admin', 'admin', 'Everything at once: all of super + Admin Tools, Activity Log, Data Audit, Data Capture, Pending Submissions'],
       ]}},
@@ -68,7 +68,7 @@ const DOCS: DocSection[] = [
         'Allowed users: src/modules/Auth/allowedUsers.ts - emails as first.lastname@unra.go.ug; the part before @ also works as a username',
         'One hardcoded password per level (the level name); the whole app sits behind the login gate',
         'Enforcement: AppGate routes the interface by role; canAccessView() blocks admin-only views; CaptureButton hides for non-admin',
-        'LIMITATION: credentials ship in the public bundle - this is an access-tier gate for trusted staff, not protection for confidential data',
+        'Limitation: credentials ship in the public bundle - this is an access-tier gate for trusted staff, not protection for confidential data',
       ]},
     ],
   },
@@ -112,7 +112,7 @@ const DOCS: DocSection[] = [
     body: [
       { bullets: [
         'Public anon Supabase key: SELECT-only. supabase_enable_rls.sql enables RLS on all 42 tables with a read-only anon policy and zero write policies',
-        'service_role key: lives ONLY in server/.env (gitignored); never in the browser bundle. Rotate after any exposure',
+        'service_role key: lives only in server/.env (gitignored); never in the browser bundle. Rotate after any exposure',
         'supabase_free_space.sql: TRUNCATEs all tables (G: is canonical) to keep the free-tier server empty',
         'Anthropic API key: server-side env, or operator-pasted browser localStorage - never committed or bundled',
         'Login gate: access-tiering only (see §4); audit trail provides accountability',
