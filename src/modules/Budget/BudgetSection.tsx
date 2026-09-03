@@ -151,6 +151,11 @@ export default function BudgetSection({ embedded }: { embedded?: boolean } = {})
   const currentAlloc = regionData.reduce((s, r) => s + r.allocated, 0);
   const fundingGap = totalRequired - currentAlloc;
 
+  // UGX/km computed into the row itself (not just at render time) so the
+  // column is sortable like every other column in this table.
+  const regionTableRows = regionData.map(r => ({ ...r, ugxPerKm: r.km ? Math.round(r.total * 1000 / r.km) : 0 }));
+  const rgx = useTableSort(regionTableRows, 'total', false);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
       {/* When embedded (e.g. nested inside PimLegacyContent's Budget tab),
@@ -336,16 +341,16 @@ export default function BudgetSection({ embedded }: { embedded?: boolean } = {})
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
               <thead>
                 <tr>
-                  {['Region', 'Network km', 'Routine', 'Periodic', 'Rehab', 'Total Required', 'UGX/km'].map(h => (
-                    <th key={h} style={{ padding: '8px 12px', textAlign: h === 'Region' ? 'left' : 'right', fontSize: 9,
-                      fontWeight: 900, color: `rgba(${hexRgb(C.blue)},0.8)`,
+                  {([['region','Region'],['km','Network km'],['routine','Routine'],['periodic','Periodic'],['rehab','Rehab'],['total','Total Required'],['ugxPerKm','UGX/km']] as const).map(([k,h]) => (
+                    <th key={k} onClick={() => rgx.toggle(k)} style={{ padding: '8px 12px', textAlign: k === 'region' ? 'left' : 'right', fontSize: 9,
+                      fontWeight: 900, color: `rgba(${hexRgb(C.blue)},0.8)`, cursor: 'pointer', userSelect: 'none',
                       textTransform: 'uppercase', letterSpacing: '0.1em',
-                      borderBottom: `1px solid rgba(${hexRgb(C.blue)},0.15)` }}>{h}</th>
+                      borderBottom: `1px solid rgba(${hexRgb(C.blue)},0.15)`, whiteSpace: 'nowrap' }}>{h}<span style={{ opacity: 0.6 }}>{rgx.indicator(k)}</span></th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {regionData.map((r, i) => (
+                {rgx.sorted.map((r, i) => (
                   <tr key={r.region} style={{ background: i % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent' }}>
                     <td style={{ padding: '8px 12px', fontWeight: 800, color: '#d4dde8' }}>{r.region}</td>
                     <td style={{ padding: '8px 12px', textAlign: 'right', color: 'rgba(148,163,184,0.6)' }}>{r.km.toLocaleString()}</td>
@@ -354,12 +359,12 @@ export default function BudgetSection({ embedded }: { embedded?: boolean } = {})
                     <td style={{ padding: '8px 12px', textAlign: 'right', color: C.orange, fontWeight: 700 }}>{r.rehab}</td>
                     <td style={{ padding: '8px 12px', textAlign: 'right', color: C.cyan, fontWeight: 800, fontSize: 12 }}>{r.total}</td>
                     <td style={{ padding: '8px 12px', textAlign: 'right', color: 'rgba(148,163,184,0.55)', fontSize: 10 }}>
-                      {Math.round(r.total * 1000 / r.km)}M
+                      {r.ugxPerKm}M
                     </td>
                   </tr>
                 ))}
                 <tr style={{ borderTop: `1px solid rgba(${hexRgb(C.blue)},0.2)`, fontWeight: 900 }}>
-                  <td style={{ padding: '10px 12px', color: '#e2eaf4' }}>TOTAL</td>
+                  <td style={{ padding: '10px 12px', color: '#e2eaf4' }}>Total (all 6 regions)</td>
                   <td style={{ padding: '10px 12px', textAlign: 'right', color: 'rgba(148,163,184,0.7)' }}>
                     {regionData.reduce((s,r) => s + r.km, 0).toLocaleString()}
                   </td>
