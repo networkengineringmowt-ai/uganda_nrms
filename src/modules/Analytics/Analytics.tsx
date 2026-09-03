@@ -13,6 +13,9 @@ import {
   LineChart, Line,
 } from 'recharts';
 import { NEON, REGION_NEON, Bar3D, GlowDefs, Chart3DWrap, AreaGradDefs, TT_NEON, TICK, TICK_SM, AX_LINE, hexRgb } from '../../lib/chart3d';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
+import { RoadClassPill } from '../../shared/tableFormatting';
+import { MAINTENANCE_REGIONS } from '../AssetBot/linkIdKnowledge';
 
 type Tab = 'condition' | 'age' | 'cost' | 'region' | 'radar';
 
@@ -157,10 +160,14 @@ export default function Analytics() {
   }, [structures]);
 
   // ─── Risk radar ───────────────────────────────────────────────────────────
+  // Always all 6 maintenance regions (not just the ones with structures
+  // present in this dataset slice) - a region with zero matched structures
+  // still gets its own spoke, at an honest 0 rather than being silently
+  // dropped from the radar.
   const radarData = useMemo(() => {
-    const regions = [...new Set(structures.map(s => s.region))].filter(Boolean);
-    return regions.map(region => {
+    return MAINTENANCE_REGIONS.map(({ id: region }) => {
       const rs = structures.filter(s => s.region === region);
+      if (!rs.length) return { subject: region, avgPriority: 0, critPct: 0, avgAge: 0, noData: true };
       const avgPriority = rs.reduce((s, x) => s + x.priorityScore, 0) / rs.length;
       const critPct     = (rs.filter(s => s.conditionRating <= 2).length / rs.length) * 100;
       const avgAge      = rs.reduce((s, x) => s + (2024 - x.yearBuilt), 0) / rs.length;
@@ -439,17 +446,20 @@ function CostTab({ costTrend, workOrders }: { costTrend: any[]; workOrders: any[
 }
 
 // ─── Region Tab ───────────────────────────────────────────────────────────────
+interface RoadLinkRow {
+  link_id: string; link_name: string; road_class: string; length_km: number | null;
+  region: string; nBridges: number; nCulverts: number; critical: number; poor: number; names: string;
+}
 function RegionTab(_props: { roadData: any[] }) {
   const { state } = useBMS();
   const [links, setLinks] = useState<Array<{ link_id: string; link_name: string | null;
     road_class: string | null; length_km: number | null; maintenance_region: string | null }>>([]);
-  const [q, setQ] = useState('');
   useEffect(() => {
     fetch(`${import.meta.env.BASE_URL}data/network_links.json`)
       .then(r => r.json()).then(setLinks).catch(() => setLinks([]));
   }, []);
 
-  const rows = useMemo(() => {
+  const rows: RoadLinkRow[] = useMemo(() => {
     const byRoad = new Map<string, typeof state.structures>();
     for (const st of state.structures) {
       const k = (st.road ?? '').trim().toLowerCase();
@@ -473,58 +483,33 @@ function RegionTab(_props: { roadData: any[] }) {
     }).sort((x, y) => (y.nBridges + y.nCulverts) - (x.nBridges + x.nCulverts));
   }, [links, state.structures]);
 
-  const filtered = rows.filter(r => !q.trim()
-    || `${r.link_id} ${r.link_name} ${r.region} ${r.names}`.toLowerCase().includes(q.toLowerCase()));
+  const totalKm = useMemo(() => rows.reduce((a, r) => a + (r.length_km ?? 0), 0), [rows]);
 
-  const TH: React.CSSProperties = { textAlign: 'left', padding: '6px 10px', fontSize: 9, fontWeight: 800,
-    color: '#94a3b8', textTransform: 'uppercase', whiteSpace: 'nowrap',
-    position: 'sticky', top: 0, background: 'rgba(15,23,42,0.97)', zIndex: 2,
-    borderBottom: '1px solid rgba(148,163,184,0.2)' };
-  const TD: React.CSSProperties = { padding: '5px 10px', fontSize: 10.5,
-    color: 'rgba(203,213,225,0.85)', borderBottom: '1px solid rgba(255,255,255,0.04)', whiteSpace: 'nowrap' };
+  const columns: STColumn<RoadLinkRow>[] = [
+    { key: 'link_id', label: 'Link ID', render: r => <span style={{ color: '#00f5ff', fontFamily: 'monospace', fontSize: 9.5 }}>{r.link_id}</span> },
+    { key: 'link_name', label: 'Link Name' },
+    { key: 'road_class', label: 'Class', render: r => <RoadClassPill cls={r.road_class} /> },
+    { key: 'length_km', label: 'Km', numeric: true, render: r => r.length_km != null ? Number(r.length_km).toFixed(1) : <span style={{ color: 'rgba(148,163,184,0.5)', fontStyle: 'italic' }}>No data</span> },
+    { key: 'region', label: 'Region' },
+    { key: 'nBridges', label: 'Bridges', numeric: true, render: r => <span style={{ color: '#4d9fff', fontWeight: 800 }}>{r.nBridges || 0}</span> },
+    { key: 'nCulverts', label: 'Major Culverts', numeric: true, render: r => <span style={{ color: '#00d4aa', fontWeight: 800 }}>{r.nCulverts || 0}</span> },
+    { key: 'critical', label: 'Critical', numeric: true, render: r => <span style={{ color: r.critical ? '#ff2d78' : 'inherit', fontWeight: 700 }}>{r.critical || 0}</span> },
+    { key: 'poor', label: 'Poor', numeric: true, render: r => <span style={{ color: r.poor ? '#f97316' : 'inherit', fontWeight: 700 }}>{r.poor || 0}</span> },
+    { key: 'names', label: 'Bridge Names', render: r => <span style={{ fontSize: 9.5, color: 'rgba(148,163,184,0.75)' }}>{r.names || '-'}</span> },
+  ];
 
   return (
     <div style={{ background: 'rgba(15,23,42,0.55)', borderRadius: 12,
       border: '1px solid rgba(255,255,255,0.07)', padding: '14px 16px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
-        <div style={{ flex: 1, minWidth: 200 }}>
-          <div style={{ fontWeight: 800, color: '#e2eaf4', fontSize: 13 }}>
-            Structures by Road Link - all {links.length.toLocaleString()} links
-          </div>
-          <div style={{ fontSize: 9.5, color: 'rgba(148,163,184,0.55)' }}>
-            Bridges &amp; major culverts on each FY25-26 network link · {state.structures.length.toLocaleString()} structures matched by link name
-          </div>
+      <div style={{ marginBottom: 10 }}>
+        <div style={{ fontWeight: 800, color: '#e2eaf4', fontSize: 13 }}>
+          Structures by Road Link - all {links.length.toLocaleString()} links ({totalKm.toLocaleString(undefined, { maximumFractionDigits: 0 })} km network length)
         </div>
-        <input value={q} onChange={e => setQ(e.target.value)} placeholder="Search link / road / bridge…"
-          style={{ background: 'rgba(10,16,30,0.9)', border: '1px solid rgba(77,159,255,0.25)', borderRadius: 7,
-            color: '#e2e8f0', fontSize: 11, padding: '6px 10px', width: 210 }} />
-        <span style={{ fontSize: 10, color: 'rgba(148,163,184,0.5)' }}>{filtered.length.toLocaleString()} rows</span>
+        <div style={{ fontSize: 9.5, color: 'rgba(148,163,184,0.55)' }}>
+          Bridges &amp; major culverts on each FY25-26 network link · {state.structures.length.toLocaleString()} structures matched by link name
+        </div>
       </div>
-      <div style={{ maxHeight: 560, overflow: 'auto', borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 980 }}>
-          <thead><tr>
-            {['Link ID', 'Link Name', 'Class', 'Km', 'Region', 'Bridges', 'Major Culverts', 'Critical', 'Poor', 'Bridge names'].map(h => (
-              <th key={h} style={TH}>{h}</th>
-            ))}
-          </tr></thead>
-          <tbody>
-            {filtered.map((r, i) => (
-              <tr key={`${r.link_id}-${i}`} style={{ background: i % 2 === 0 ? 'rgba(15,23,42,0.35)' : 'transparent' }}>
-                <td style={{ ...TD, color: '#00f5ff', fontFamily: 'monospace', fontSize: 9.5 }}>{r.link_id}</td>
-                <td style={{ ...TD, whiteSpace: 'normal', maxWidth: 240 }}>{r.link_name}</td>
-                <td style={{ ...TD, color: '#ffd23f', fontWeight: 700 }}>{r.road_class}</td>
-                <td style={TD}>{r.length_km != null ? Number(r.length_km).toFixed(1) : '-'}</td>
-                <td style={TD}>{r.region}</td>
-                <td style={{ ...TD, color: '#4d9fff', fontWeight: 800 }}>{r.nBridges || '-'}</td>
-                <td style={{ ...TD, color: '#00d4aa', fontWeight: 800 }}>{r.nCulverts || '-'}</td>
-                <td style={{ ...TD, color: r.critical ? '#ff2d78' : TD.color as string, fontWeight: 700 }}>{r.critical || '-'}</td>
-                <td style={{ ...TD, color: r.poor ? '#f97316' : TD.color as string, fontWeight: 700 }}>{r.poor || '-'}</td>
-                <td style={{ ...TD, whiteSpace: 'normal', maxWidth: 340, fontSize: 9.5, color: 'rgba(148,163,184,0.75)' }}>{r.names || '-'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <SortableFilterableTable columns={columns} rows={rows} accent="#4d9fff" exportName="structures_by_road_link" initialSort="nBridges" />
     </div>
   );
 }
