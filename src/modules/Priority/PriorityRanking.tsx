@@ -6,6 +6,7 @@ import type { Structure } from '../../index';
 import {
   ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Cell,
 } from 'recharts';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
 
 type FilterMode = 'all' | 'bridges' | 'culverts' | 'critical' | 'poor';
 
@@ -13,8 +14,6 @@ export default function PriorityRanking() {
   const { state }    = useBMS();
   const { structures } = state;
   const [mode, setMode] = useState<FilterMode>('all');
-  const [page, setPage] = useState(1);
-  const PAGE_SIZE = 30;
 
   const filtered = useMemo(() => {
     let list = [...structures].sort((a, b) => b.priorityScore - a.priorityScore);
@@ -26,8 +25,6 @@ export default function PriorityRanking() {
   }, [structures, mode]);
 
   const top10 = filtered.slice(0, 10);
-  const pageData = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-  const pageCount = Math.ceil(filtered.length / PAGE_SIZE);
 
   // Scatter data: priority score vs age (respects the active mode filter, same as the table/top10)
   const scatterData = useMemo(() =>
@@ -69,7 +66,7 @@ export default function PriorityRanking() {
           {(['all','bridges','culverts','critical','poor'] as FilterMode[]).map(m => (
             <button
               key={m}
-              onClick={() => { setMode(m); setPage(1); }}
+              onClick={() => setMode(m)}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-colors
                 ${mode === m ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-400 hover:text-white'}`}
             >{m}</button>
@@ -95,92 +92,59 @@ export default function PriorityRanking() {
             </div>
           </div>
 
-          {/* Full table */}
-          <div className="flex-1 mowt-table-wrap">
-            <table className="bms-table">
-              <thead>
-                <tr>
-                  <th>Rank</th>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Type</th>
-                  <th>Road</th>
-                  <th>Region</th>
-                  <th>Condition</th>
-                  <th>Traffic</th>
-                  <th>Age (yrs)</th>
-                  <th>Strategic Imp.</th>
-                  <th>Priority Score</th>
-                  <th>Est. Cost</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pageData.map((s, i) => (
-                  <tr key={s.id}>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0
-                          ${i + ((page-1)*PAGE_SIZE) < 3 ? 'bg-red-500 text-white' :
-                            i + ((page-1)*PAGE_SIZE) < 10 ? 'bg-orange-500/20 text-orange-400' :
-                            'bg-slate-700 text-slate-400'}`}
-                        >
-                          {s.priorityRank}
-                        </span>
+          {/* Full table - every ranked structure, sortable/searchable/exportable */}
+          <div className="flex-1 mowt-table-wrap p-3">
+            <SortableFilterableTable<Structure>
+              accent="#ff6b9d"
+              exportName="priority-ranking"
+              initialSort="priorityRank"
+              columns={[
+                { key: 'priorityRank', label: 'Rank', numeric: true, render: s => (
+                    <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0
+                      ${s.priorityRank <= 3 ? 'bg-red-500 text-white' :
+                        s.priorityRank <= 10 ? 'bg-orange-500/20 text-orange-400' :
+                        'bg-slate-700 text-slate-400'}`}
+                    >
+                      {s.priorityRank}
+                    </span>
+                  ) },
+                { key: 'id', label: 'ID', render: s => <span className="text-xs font-mono text-blue-400 font-bold">{s.id}</span> },
+                { key: 'name', label: 'Name' },
+                { key: 'type', label: 'Type', render: s => <span className={`badge ${s.type === 'bridge' ? 'badge-blue' : 'badge-purple'}`}>{s.type}</span> },
+                { key: 'road', label: 'Road' },
+                { key: 'region', label: 'Region' },
+                { key: 'conditionRating', label: 'Condition', numeric: true, render: s => (
+                    <span className={`badge ${conditionBadge(s.conditionRating)}`}>
+                      {s.conditionRating} – {conditionLabel(s.conditionRating)}
+                    </span>
+                  ) },
+                { key: 'traffic', label: 'Traffic', render: s => (
+                    <span className={`badge ${
+                      s.traffic === 'Very High' ? 'badge-critical' :
+                      s.traffic === 'High'      ? 'badge-poor' :
+                      s.traffic === 'Medium'    ? 'badge-fair' : 'badge-good'
+                    }`}>{s.traffic}</span>
+                  ) },
+                { key: 'yearBuilt', label: 'Age (yrs)', numeric: true, render: s => 2024 - s.yearBuilt },
+                { key: 'strategicImportance', label: 'Strategic Imp.', numeric: true, render: s => <StarRating value={s.strategicImportance} /> },
+                { key: 'priorityScore', label: 'Priority Score', numeric: true, render: s => (
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 bg-slate-700 rounded-full h-2 min-w-[50px]">
+                        <div
+                          className="rounded-full h-2"
+                          style={{ width: `${s.priorityScore}%`, background: conditionColor(s.conditionRating) }}
+                        />
                       </div>
-                    </td>
-                    <td className="px-4 py-3 text-xs font-mono text-blue-400 font-bold">{s.id}</td>
-                    <td className="px-4 py-3 text-xs text-slate-200 font-medium max-w-[180px] truncate">{s.name}</td>
-                    <td className="px-4 py-3">
-                      <span className={`badge ${s.type === 'bridge' ? 'badge-blue' : 'badge-purple'}`}>{s.type}</span>
-                    </td>
-                    <td className="px-4 py-3 text-xs text-slate-400 max-w-[150px] truncate">{s.road}</td>
-                    <td className="px-4 py-3 text-xs text-slate-400">{s.region}</td>
-                    <td className="px-4 py-3">
-                      <span className={`badge ${conditionBadge(s.conditionRating)}`}>
-                        {s.conditionRating} – {conditionLabel(s.conditionRating)}
+                      <span className="text-xs font-bold" style={{ color: conditionColor(s.conditionRating) }}>
+                        {s.priorityScore}
                       </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`badge ${
-                        s.traffic === 'Very High' ? 'badge-critical' :
-                        s.traffic === 'High'      ? 'badge-poor' :
-                        s.traffic === 'Medium'    ? 'badge-fair' : 'badge-good'
-                      }`}>{s.traffic}</span>
-                    </td>
-                    <td className="px-4 py-3 text-xs text-slate-400">{2024 - s.yearBuilt}</td>
-                    <td className="px-4 py-3">
-                      <StarRating value={s.strategicImportance} />
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 bg-slate-700 rounded-full h-2 min-w-[50px]">
-                          <div
-                            className="rounded-full h-2"
-                            style={{ width: `${s.priorityScore}%`, background: conditionColor(s.conditionRating) }}
-                          />
-                        </div>
-                        <span className="text-xs font-bold" style={{ color: conditionColor(s.conditionRating) }}>
-                          {s.priorityScore}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-xs text-slate-400 font-mono whitespace-nowrap">
-                      {formatUGX(s.estimatedReplacementCost)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Pagination */}
-          <div className="flex items-center justify-between px-6 py-3 border-t border-slate-700/60 bg-slate-900/50 flex-shrink-0">
-            <span className="text-xs text-slate-500">Showing {((page-1)*PAGE_SIZE)+1}–{Math.min(page*PAGE_SIZE, filtered.length)} of {filtered.length}</span>
-            <div className="flex items-center gap-2">
-              <button onClick={() => setPage(p => Math.max(1, p-1))} disabled={page===1} className="bms-btn-secondary text-xs py-1 px-3 disabled:opacity-40">← Prev</button>
-              <span className="text-xs text-slate-400">Page {page}/{pageCount}</span>
-              <button onClick={() => setPage(p => Math.min(pageCount, p+1))} disabled={page===pageCount} className="bms-btn-secondary text-xs py-1 px-3 disabled:opacity-40">Next →</button>
-            </div>
+                    </div>
+                  ) },
+                { key: 'estimatedReplacementCost', label: 'Est. Cost', numeric: true, total: 'sum',
+                  render: s => formatUGX(s.estimatedReplacementCost) },
+              ] as STColumn<Structure>[]}
+              rows={filtered}
+            />
           </div>
         </div>
 
