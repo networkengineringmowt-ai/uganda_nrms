@@ -17,7 +17,10 @@ import {
   Legend as ReChartLegend,
 } from 'recharts';
 import { ESRI_TILE_URLS, ESRI_ATTRIBUTIONS } from '../../shared/mapSymbols';
-import { Chart3DWrap, Bar3D, TT_NEON, TICK } from '../../lib/chart3d';
+import { Chart3DWrap, Bar3D, TT_NEON, TICK, TICK_SM } from '../../lib/chart3d';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
+import { PercentCell } from '../../shared/tableFormatting';
+import { useTableSort } from '../../shared/useTableSort';
 const SectionDashboard = lazy(() => import('../Dashboard/SectionDashboard'));
 
 // ── Colour helpers ────────────────────────────────────────────────────────────
@@ -1680,107 +1683,80 @@ function CaseStudiesTab() {
 
 // ── Tab 3: Comparative Analytics ─────────────────────────────────────────────
 
+const comparisonColumns: STColumn<CaseStudy>[] = [
+  { key: 'flag', label: 'Flag', render: cs => <span style={{ fontSize: 16 }}>{cs.flag}</span> },
+  {
+    key: 'agency', label: 'Agency',
+    render: cs => <span style={{ fontWeight: 700, color: REGION_COLOR[cs.region], whiteSpace: 'nowrap' }}>{cs.agency}</span>,
+  },
+  { key: 'country', label: 'Country' },
+  { key: 'region', label: 'Region', render: cs => <span style={S.badge(REGION_COLOR[cs.region])}>{cs.region}</span> },
+  {
+    key: 'networkKm', label: 'Network (km)', numeric: true,
+    render: cs => <span style={{ color: '#00f5ff', fontWeight: 600 }}>{cs.networkKm.toLocaleString()}</span>,
+  },
+  { key: 'system', label: 'System' },
+  { key: 'pavedPct', label: 'Paved (%)', numeric: true, render: cs => <PercentCell value={cs.pavedPct} /> },
+  {
+    key: 'rmsYears', label: 'RMS Yrs', numeric: true,
+    render: cs => <span style={{ color: '#ffd23f', fontWeight: 600 }}>{cs.rmsYears}</span>,
+  },
+  {
+    key: 'budgetPerKmUsd', label: 'Budget/km (USD)', numeric: true,
+    render: cs => <span style={{ color: '#b967ff', fontWeight: 600 }}>{cs.budgetPerKmUsd.toLocaleString()}</span>,
+  },
+  { key: 'metrics', label: 'Key Metric', render: cs => <>{cs.metrics.split(';')[0]}</> },
+];
+
 function AnalyticsTab() {
-  const handleExportCSV = () => {
-    const headers = ['Agency', 'Country', 'Region', 'Network (km)', 'System', 'Paved (%)', 'RMS Years', 'Budget/km (USD)', 'Metrics'];
-    const rows = CASE_STUDIES.map(cs => [
-      cs.agency, cs.country, cs.region, cs.networkKm, cs.system,
-      cs.pavedPct, cs.rmsYears, cs.budgetPerKmUsd, cs.metrics,
-    ]);
-    const csv = [headers, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'global_case_studies_comparison.csv';
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+  const budgetRanked = useMemo(
+    () => [...CASE_STUDIES].sort((a, b) => b.budgetPerKmUsd - a.budgetPerKmUsd),
+    [],
+  );
 
   return (
     <div style={S.sectionPad}>
+      {/* Budget-per-km comparison chart - the KPI this tab is named for,
+          previously only available buried in a table column. */}
+      <div style={{ ...S.card(), marginBottom: 12 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: '#e2e8f0', marginBottom: 2 }}>
+          Maintenance Budget per km by Agency
+        </div>
+        <div style={{ fontSize: 9.5, color: 'rgba(148,163,184,0.55)', marginBottom: 8 }}>
+          USD / km / year · bar colour = agency's region
+        </div>
+        <Chart3DWrap>
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={budgetRanked} margin={{ top: 4, right: 10, left: 4, bottom: 34 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+              <XAxis
+                dataKey="agency" tick={TICK_SM} interval={0}
+                angle={-38} textAnchor="end" height={56}
+              />
+              <YAxis
+                tick={TICK} tickFormatter={(v: number) => `$${(v / 1000).toFixed(0)}k`}
+                label={{ value: 'USD / km / yr', angle: -90, position: 'insideLeft', fill: 'rgba(148,163,184,0.6)', fontSize: 9 }}
+              />
+              <ReTooltip {...TT_NEON} formatter={(v: number) => [`$${v.toLocaleString()}/km/yr`, 'Budget']} />
+              <Bar dataKey="budgetPerKmUsd" radius={[3, 3, 0, 0]} maxBarSize={26} shape={<Bar3D />}>
+                {budgetRanked.map(cs => <Cell key={cs.id} fill={REGION_COLOR[cs.region]} />)}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </Chart3DWrap>
+      </div>
+
       {/* Full comparison table */}
       <div style={S.card()}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: '#e2e8f0' }}>
-            Full Comparison Table - All {CASE_STUDIES.length} Agencies
-          </div>
-          <button
-            onClick={handleExportCSV}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 5,
-              background: 'rgba(0,245,255,0.1)',
-              border: '1px solid rgba(0,245,255,0.3)',
-              borderRadius: 7, padding: '5px 12px',
-              color: '#00f5ff', fontSize: 10, fontWeight: 700,
-              cursor: 'pointer',
-            }}
-          >
-            <Download size={11} /> Export CSV
-          </button>
+        <div style={{ fontSize: 12, fontWeight: 700, color: '#e2e8f0', marginBottom: 12 }}>
+          Full Comparison Table - All {CASE_STUDIES.length} Agencies
         </div>
-
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10 }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid rgba(0,245,255,0.15)' }}>
-                {['Flag', 'Agency', 'Country', 'Region', 'Network (km)', 'System', 'Paved (%)', 'RMS Yrs', 'Budget/km (USD)', 'Key Metric'].map(h => (
-                  <th key={h} style={{
-                    padding: '6px 10px', textAlign: 'left',
-                    color: 'rgba(148,163,184,0.6)', fontWeight: 700,
-                    fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.05em',
-                    whiteSpace: 'nowrap',
-                  }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {CASE_STUDIES.map((cs, i) => {
-                const rc = REGION_COLOR[cs.region];
-                return (
-                  <tr
-                    key={cs.id}
-                    style={{
-                      borderBottom: '1px solid rgba(255,255,255,0.04)',
-                      background: i % 2 === 0 ? 'rgba(255,255,255,0.01)' : 'transparent',
-                    }}
-                  >
-                    <td style={{ padding: '7px 10px', fontSize: 16 }}>{cs.flag}</td>
-                    <td style={{ padding: '7px 10px', fontWeight: 700, color: rc, whiteSpace: 'nowrap' }}>{cs.agency}</td>
-                    <td style={{ padding: '7px 10px', color: 'rgba(226,232,240,0.8)', whiteSpace: 'nowrap' }}>{cs.country}</td>
-                    <td style={{ padding: '7px 10px' }}>
-                      <span style={S.badge(rc)}>{cs.region}</span>
-                    </td>
-                    <td style={{ padding: '7px 10px', color: '#00f5ff', fontWeight: 600, textAlign: 'right' }}>
-                      {cs.networkKm.toLocaleString()}
-                    </td>
-                    <td style={{ padding: '7px 10px', color: 'rgba(226,232,240,0.7)', maxWidth: 160, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {cs.system}
-                    </td>
-                    <td style={{ padding: '7px 10px', textAlign: 'center' }}>
-                      <div style={{
-                        display: 'inline-block',
-                        background: `rgba(${hexRgb(rc)},0.15)`,
-                        color: rc,
-                        fontWeight: 700,
-                        borderRadius: 4, padding: '1px 7px',
-                      }}>{cs.pavedPct}%</div>
-                    </td>
-                    <td style={{ padding: '7px 10px', textAlign: 'center', color: '#ffd23f', fontWeight: 600 }}>
-                      {cs.rmsYears}
-                    </td>
-                    <td style={{ padding: '7px 10px', textAlign: 'right', color: '#b967ff', fontWeight: 600 }}>
-                      {cs.budgetPerKmUsd.toLocaleString()}
-                    </td>
-                    <td style={{ padding: '7px 10px', color: 'rgba(226,232,240,0.65)', maxWidth: 200, fontSize: 9 }}>
-                      {cs.metrics.split(';')[0]}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        <SortableFilterableTable
+          columns={comparisonColumns}
+          rows={CASE_STUDIES}
+          accent="#00f5ff"
+          exportName="global-case-studies-comparison"
+        />
       </div>
     </div>
   );
@@ -2075,11 +2051,21 @@ function LiteratureMatrixTab() {
   const rows = useMemo(() =>
     CASE_STUDIES
       .filter(cs => regionFilter === 'All' || cs.region === regionFilter)
-      .map(cs => ({ cs, scores: computeScores(cs) })),
+      .map(cs => {
+        const scores = computeScores(cs);
+        return { cs, scores, country: cs.country, region: cs.region, avg: scores.reduce((a, b) => a + b, 0) / scores.length };
+      }),
     [regionFilter]
   );
 
   const colAverages = useMemo(() => columnAverages(rows), [rows]);
+
+  // Lightweight click-to-sort on the two identifying columns and the Avg
+  // score - a full SortableFilterableTable swap would drop the sticky
+  // country column, the click-for-radar / compare-mode row selection and
+  // the column-average footer row, so this table keeps its bespoke markup
+  // and gets sort arrows via the shared useTableSort hook instead.
+  const { sorted, toggle, indicator } = useTableSort(rows, 'country');
 
   const handleRowClick = (cs: CaseStudy) => {
     if (!compareMode) {
@@ -2164,21 +2150,21 @@ function LiteratureMatrixTab() {
         <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 900 }}>
           <thead>
             <tr style={{ background: 'rgba(8,8,8,0.95)', position: 'sticky', top: 0, zIndex: 2 }}>
-              <th style={{ ...thStyle, position: 'sticky', left: 0, zIndex: 3, background: 'rgba(8,8,8,0.97)', minWidth: 160, textAlign: 'left', paddingLeft: 10 }}>
-                Country / Agency
+              <th onClick={() => toggle('country')} style={{ ...thStyle, position: 'sticky', left: 0, zIndex: 3, background: 'rgba(8,8,8,0.97)', minWidth: 160, textAlign: 'left', paddingLeft: 10, cursor: 'pointer', userSelect: 'none' }}>
+                Country / Agency{indicator('country')}
               </th>
-              <th style={{ ...thStyle, minWidth: 60 }}>Region</th>
+              <th onClick={() => toggle('region')} style={{ ...thStyle, minWidth: 60, cursor: 'pointer', userSelect: 'none' }}>Region{indicator('region')}</th>
               {AM_COMPONENTS.map(c => (
                 <th key={c} style={{ ...thStyle, minWidth: 72, padding: '6px 4px', textAlign: 'center', lineHeight: 1.2 }}>
                   {c}
                 </th>
               ))}
-              <th style={{ ...thStyle, minWidth: 50 }}>Avg</th>
+              <th onClick={() => toggle('avg')} style={{ ...thStyle, minWidth: 50, cursor: 'pointer', userSelect: 'none' }}>Avg{indicator('avg')}</th>
             </tr>
           </thead>
           <tbody>
-            {rows.map(({ cs, scores }) => {
-              const avg = (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1);
+            {sorted.map(({ cs, scores, avg: avgNum }) => {
+              const avg = avgNum.toFixed(1);
               const isCompA = compareA?.id === cs.id;
               const isCompB = compareB?.id === cs.id;
               const highlight = isCompA ? 'rgba(0,245,255,0.08)' : isCompB ? 'rgba(255,107,53,0.08)' : '';
@@ -2211,7 +2197,7 @@ function LiteratureMatrixTab() {
                   </td>
                   <td style={{ ...tdStyle, textAlign: 'center' }}>
                     <span style={{ fontSize: 8, color: REGION_COLOR[cs.region] ?? '#94a3b8', fontWeight: 700 }}>
-                      {cs.region.replace('Asia-Pacific', 'A-P').replace('Americas', 'AMER').replace('Middle East', 'ME').replace('Africa', 'AFR').replace('Europe', 'EUR')}
+                      {cs.region.replace('Asia-Pacific', 'A-Pac').replace('Americas', 'Amer').replace('Middle East', 'Mid E').replace('Africa', 'Afr').replace('Europe', 'Eur')}
                     </span>
                   </td>
                   {scores.map((score, si) => (
