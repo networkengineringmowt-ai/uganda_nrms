@@ -4,7 +4,8 @@
  * MEF < 1.0 = below-average month; MEF > 1.0 = above-average month.
  */
 import { useState, useMemo } from 'react';
-import { Download } from 'lucide-react';
+import { SearchableSelect } from '../../shared/SearchableSelect';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const MONTH_LABELS = ['January','February','March','April','May','June',
@@ -99,17 +100,45 @@ export default function SeasonalFactorsTable() {
     return { label:'', color:'#94a3b8' };
   }
 
-  function exportCSV() {
-    const header = ['Region','Vehicle Class','Annual Growth %','Base Year',...MONTH_LABELS,'Annual Avg MEF'].join(',');
-    const rows = MEF_DATA.map(r => {
-      const avg = (r.factors.reduce((s,v)=>s+v,0)/12).toFixed(3);
-      return [r.region, r.class, (r.annualGrowthRate).toFixed(1), r.baseYear, ...r.factors.map(v=>v.toFixed(3)), avg].join(',');
-    });
-    const blob = new Blob([[header,...rows].join('\n')], { type:'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href=url; a.download='uganda_roads_seasonal_mef.csv'; a.click();
-    URL.revokeObjectURL(url);
-  }
+  // Flatten each row's 12-value factors array into named m0..m11 fields (plus
+  // the annual average) so the shared sortable table - which sorts/filters on
+  // named keys - can address each month as its own column.
+  type TableRow = MEFRow & Record<`m${number}`, number> & { avg: number };
+  const tableRows: TableRow[] = useMemo(() => (filtered.length > 0 ? filtered : []).map(row => {
+    const monthFields = Object.fromEntries(row.factors.map((v, i) => [`m${i}`, v])) as Record<`m${number}`, number>;
+    const avg = row.factors.reduce((s, v) => s + v, 0) / 12;
+    return { ...row, ...monthFields, avg };
+  }), [filtered]);
+
+  const columns: STColumn<TableRow>[] = useMemo(() => [
+    { key: 'region', label: 'Region' },
+    { key: 'class', label: 'Vehicle Class' },
+    {
+      key: 'annualGrowthRate', label: 'Growth %/Yr', numeric: true,
+      render: r => <span style={{ color: '#00f5ff', fontWeight: 700 }}>{r.annualGrowthRate.toFixed(1)}%</span>,
+    },
+    ...MONTHS.map((m, i) => {
+      const s = seasonForMonth(i);
+      const mk = `m${i}` as `m${number}`;
+      return {
+        key: mk, label: m, numeric: true,
+        comment: `${MONTH_LABELS[i]} monthly expansion factor (${s.label}). Monthly AADT ÷ Annual AADT.`,
+        render: (r: TableRow) => (
+          <span style={{
+            display: 'inline-block', minWidth: 34, padding: '2px 6px', borderRadius: 4,
+            fontWeight: 700, fontFamily: 'monospace',
+            background: mefBg(r[mk]), color: mefColor(r[mk]),
+          }}>
+            {r[mk].toFixed(2)}
+          </span>
+        ),
+      } satisfies STColumn<TableRow>;
+    }),
+    {
+      key: 'avg', label: 'Annual Avg', numeric: true,
+      render: r => <span style={{ color: 'rgba(148,163,184,0.8)', fontFamily: 'monospace' }}>{r.avg.toFixed(2)}</span>,
+    },
+  ], []);
 
   const BG = 'rgba(15,15,15,0.55)';
 
@@ -125,27 +154,22 @@ export default function SeasonalFactorsTable() {
             <div style={{ fontSize:10, color:'rgba(148,163,184,0.55)' }}>
               Monthly expansion factors relative to annual average (1.00 = annual average).
               Uganda bi-modal rainfall (MAM Long Rains · OND Short Rains) creates predictable seasonal traffic patterns.
+              Sort any column or use the table's own search / CSV / Excel export below.
             </div>
           </div>
-          <button onClick={exportCSV} style={{
-            display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, fontSize:10, fontWeight:700,
-            background:'rgba(0,245,255,0.1)', border:'1px solid rgba(0,245,255,0.3)', color:'#00f5ff', cursor:'pointer',
-          }}>
-            <Download size={12}/> Export CSV
-          </button>
         </div>
 
         {/* Filters */}
         <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
-          <select value={regionFilter} onChange={e=>setRegion(e.target.value)}
+          <SearchableSelect value={regionFilter} onChange={setRegion}
             style={{ fontSize:10, padding:'5px 8px', borderRadius:6, background:'rgba(15,15,15,0.7)', border:'1px solid rgba(148,163,184,0.18)', color:'#e2eaf4' }}>
             <option value="All">All Regions</option>
             {regions.map(r=><option key={r} value={r}>{r}</option>)}
-          </select>
-          <select value={classFilter} onChange={e=>setClass(e.target.value)}
+          </SearchableSelect>
+          <SearchableSelect value={classFilter} onChange={setClass}
             style={{ fontSize:10, padding:'5px 8px', borderRadius:6, background:'rgba(15,15,15,0.7)', border:'1px solid rgba(148,163,184,0.18)', color:'#e2eaf4' }}>
             {classes.map(c=><option key={c} value={c}>{c==='All'?'All Vehicle Classes':c}</option>)}
-          </select>
+          </SearchableSelect>
         </div>
       </div>
 
@@ -160,58 +184,15 @@ export default function SeasonalFactorsTable() {
         ))}
       </div>
 
-      {/* Heatmap table */}
-      <div style={{ overflowX:'auto', borderRadius:10, border:'1px solid rgba(255,255,255,0.06)' }}>
-        <table style={{ fontSize:9.5, borderCollapse:'collapse', minWidth:900, width:'100%' }}>
-          <thead style={{ position:'sticky', top:0, background:'rgba(15,15,15,0.97)', zIndex:2 }}>
-            <tr style={{ borderBottom:'1px solid rgba(148,163,184,0.15)' }}>
-              <th style={{ ...TH2, minWidth:140 }}>Region</th>
-              <th style={{ ...TH2, minWidth:100 }}>Vehicle Class</th>
-              <th style={{ ...TH2 }}>Growth %/yr</th>
-              {MONTHS.map((m, i) => {
-                const s = seasonForMonth(i);
-                return (
-                  <th key={m} style={{ ...TH2, textAlign:'center', minWidth:50,
-                    borderBottom: `2px solid ${s.color}55` }}>
-                    <div>{m}</div>
-                    <div style={{ fontSize:7, color:s.color, marginTop:1 }}>
-                      {[2,3,4].includes(i)?'MAM':[8,9,10].includes(i)?'OND':[11,0,1].includes(i)?'DS1':'DS2'}
-                    </div>
-                  </th>
-                );
-              })}
-              <th style={{ ...TH2, textAlign:'center' }}>Avg</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(filtered.length > 0 ? filtered : MEF_DATA.slice(0,1)).map((row, i) => {
-              const avg = (row.factors.reduce((s,v)=>s+v,0)/12).toFixed(2);
-              return (
-                <tr key={`${row.region}-${row.class}`} style={{ background: i%2===0?'rgba(15,15,15,0.3)':'transparent',
-                  borderBottom:'1px solid rgba(255,255,255,0.03)' }}>
-                  <td style={{ padding:'6px 10px', color:'#d4dde8', fontWeight:600 }}>{row.region}</td>
-                  <td style={{ padding:'6px 10px', color:'#94a3b8' }}>{row.class}</td>
-                  <td style={{ padding:'6px 10px', color:'#00f5ff', fontWeight:700, textAlign:'center' }}>
-                    {row.annualGrowthRate.toFixed(1)}%
-                  </td>
-                  {row.factors.map((v, j) => (
-                    <td key={j} style={{
-                      padding:'6px 8px', textAlign:'center', fontWeight:700,
-                      fontFamily:'monospace', fontSize:9,
-                      background: mefBg(v), color: mefColor(v),
-                    }}>
-                      {v.toFixed(2)}
-                    </td>
-                  ))}
-                  <td style={{ padding:'6px 8px', textAlign:'center', color:'rgba(148,163,184,0.7)', fontFamily:'monospace' }}>
-                    {avg}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      {/* Seasonal MEF table */}
+      <SortableFilterableTable
+        columns={columns}
+        rows={tableRows}
+        accent="#00f5ff"
+        exportName="uganda-roads-seasonal-mef"
+        initialSort="region"
+        emptyText="No seasonal factor data for this region / vehicle-class combination."
+      />
 
       {/* Interpretation note */}
       <div style={{ background:BG, backdropFilter:'blur(20px)', borderRadius:10, border:'1px solid rgba(255,255,255,0.06)', padding:'12px 14px', fontSize:9, color:'rgba(148,163,184,0.55)', lineHeight:1.6 }}>
@@ -224,9 +205,3 @@ export default function SeasonalFactorsTable() {
     </div>
   );
 }
-
-const TH2: React.CSSProperties = {
-  textAlign: 'left', padding: '7px 8px',
-  color: '#94a3b8', fontWeight: 700, whiteSpace: 'nowrap',
-  fontSize: 9, borderBottom: '1px solid rgba(148,163,184,0.15)',
-};

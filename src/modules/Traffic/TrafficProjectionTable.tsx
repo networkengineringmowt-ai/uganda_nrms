@@ -18,6 +18,7 @@ import { VC_CLASSES, projectClass, VC_GROWTH } from '../../shared/trafficProject
 import { useVirtualRows } from '../../shared/useVirtualRows';
 import { RoadClassPill, AadtHeatCell } from '../../shared/tableFormatting';
 import { useSortableColumns, sortRows, SortArrow } from '../../shared/useSortableColumns';
+import { SearchableSelect } from '../../shared/SearchableSelect';
 import { Download } from 'lucide-react';
 
 const BASE = import.meta.env.BASE_URL;
@@ -185,16 +186,16 @@ export default function TrafficProjectionTable() {
             placeholder="Search link ID or name…"
             style={{ fontSize:10, padding:'5px 10px', borderRadius:6, background:'rgba(15,15,15,0.7)',
               border:'1px solid rgba(148,163,184,0.18)', color:'#e2eaf4', outline:'none', minWidth:220 }}/>
-          <select value={classFilter} onChange={e => { setClass(e.target.value); }}
+          <SearchableSelect value={classFilter} onChange={setClass}
             style={{ fontSize:10, padding:'5px 8px', borderRadius:6, background:'rgba(15,15,15,0.7)',
               border:'1px solid rgba(148,163,184,0.18)', color:'#e2eaf4' }}>
             {classes.map(c => <option key={c} value={c}>{c === 'All' ? 'All Classes' : `Class ${c}`}</option>)}
-          </select>
-          <select value={regionFilter} onChange={e => { setReg(e.target.value); }}
+          </SearchableSelect>
+          <SearchableSelect value={regionFilter} onChange={setReg}
             style={{ fontSize:10, padding:'5px 8px', borderRadius:6, background:'rgba(15,15,15,0.7)',
               border:'1px solid rgba(148,163,184,0.18)', color:'#e2eaf4' }}>
             {regions.map(r => <option key={r} value={r}>{r}</option>)}
-          </select>
+          </SearchableSelect>
           <span className="record-badge">
             {filtered.length.toLocaleString()} / {links.length.toLocaleString()} links
           </span>
@@ -263,7 +264,7 @@ export default function TrafficProjectionTable() {
                         <td key={j} style={{ padding:'6px 8px', verticalAlign:'top' }}>
                           {VC_CLASSES.map(vc => (
                             <div key={vc.key} style={{ display:'flex', justifyContent:'space-between', gap:4, fontSize:8, marginBottom:1 }}>
-                              <span style={{ color:'rgba(148,163,184,0.55)' }}>{vc.short}</span>
+                              <span style={{ color:'rgba(148,163,184,0.55)' }} title={vc.label}>{vc.short}</span>
                               <span style={{ color:'#94a3b8', fontFamily:'monospace' }}>
                                 {aadtAt(l.base_aadt, l.base_year, vc.key, y).toLocaleString()}
                               </span>

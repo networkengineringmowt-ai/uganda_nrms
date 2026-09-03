@@ -18,6 +18,8 @@ import {
 } from '../../lib/chart3d';
 import { ModuleNavBar } from '../../shared/ModuleNavBar';
 import SourceTableButton from '../../shared/SourceTableButton';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
+import { RoadClassPill } from '../../shared/tableFormatting';
 
 // ── Risk colour palette ───────────────────────────────────────────────────────
 const RISK_COLOR: Record<string, string> = {
@@ -157,8 +159,18 @@ export default function OverloadingSection() {
   const allRanked = useMemo(() =>
     Object.entries(linkRiskMap)
       .map(([link_id, v]) => ({ link_id, ...v }))
-      .sort((a, b) => b.esal - a.esal),
+      .sort((a, b) => b.esal - a.esal)
+      .map((r, i) => ({ ...r, rank: i + 1 })),
     [linkRiskMap]);
+
+  const top20WithRank = useMemo(
+    () => top20.map((r, i) => ({ ...r, rank: i + 1 })),
+    [top20],
+  );
+  const top20LengthKm = useMemo(
+    () => top20.reduce((s, r) => s + (r.length_km ?? 0), 0),
+    [top20],
+  );
 
   // ESAL donut data - filter Motorcycles (=0)
   const donutData = useMemo(() => {
@@ -187,6 +199,84 @@ export default function OverloadingSection() {
     { name: 'Medium',   count: riskDist.Medium   ?? 0, color: RISK_COLOR.Medium   },
     { name: 'Low',      count: riskDist.Low       ?? 0, color: RISK_COLOR.Low      },
   ];
+
+  const top20Columns: STColumn<LinkRow & { rank: number }>[] = useMemo(() => [
+    {
+      key: 'road_name', label: 'Road',
+      render: r => (
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ fontSize: 9, color: 'rgba(148,163,184,0.5)', fontFamily: 'monospace', width: 18, flexShrink: 0 }}>{r.rank}</span>
+          <span style={{ color: '#e2eaf4', fontWeight: 600 }} title={r.road_name}>{r.road_name}</span>
+        </span>
+      ),
+    },
+    { key: 'region', label: 'Region' },
+    { key: 'road_class', label: 'Class', render: r => <RoadClassPill cls={r.road_class} /> },
+    {
+      key: 'length_km', label: 'Length (km)', numeric: true, total: 'sum',
+      comment: 'Length of this road link affected by the overloading risk assessment.',
+      render: r => r.length_km != null ? r.length_km.toFixed(1) : '-',
+    },
+    {
+      key: 'hgv_pct', label: 'HGV %', numeric: true,
+      render: r => <span style={{ color: '#ffd23f', fontFamily: 'monospace' }}>{r.hgv_pct.toFixed(1)}%</span>,
+    },
+    {
+      key: 'estimated_daily_esals', label: 'Daily ESALs', numeric: true, total: 'sum',
+      render: r => <span style={{ color: '#e2eaf4', fontFamily: 'monospace' }}>{r.estimated_daily_esals.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>,
+    },
+    {
+      key: 'pavement_damage_factor', label: 'Dmg Factor', numeric: true,
+      render: r => <span style={{ color: '#c4d2e1', fontFamily: 'monospace' }}>{r.pavement_damage_factor.toFixed(2)}×</span>,
+    },
+    {
+      key: 'risk_category', label: 'Risk',
+      render: r => (
+        <span style={{
+          fontSize: 10, fontWeight: 800, padding: '2px 9px', borderRadius: 999,
+          background: `rgba(${hexRgbInline(RISK_COLOR[r.risk_category] ?? '#94a3b8')},0.15)`,
+          color: RISK_COLOR[r.risk_category] ?? '#94a3b8',
+          border: `1px solid rgba(${hexRgbInline(RISK_COLOR[r.risk_category] ?? '#94a3b8')},0.3)`,
+        }}>
+          {r.risk_category}
+        </span>
+      ),
+    },
+    {
+      key: 'surface_type', label: 'Surface',
+      render: r => <span style={{ textTransform: 'capitalize' }}>{r.surface_type}</span>,
+    },
+  ], []);
+
+  const allRankedColumns: STColumn<{ link_id: string; rank: number } & LinkRisk>[] = useMemo(() => [
+    { key: 'rank', label: '#', numeric: true, width: 44 },
+    { key: 'link_id', label: 'Link ID', render: r => <span style={{ color: '#e2eaf4', fontWeight: 600 }}>{r.link_id}</span> },
+    {
+      key: 'idx', label: 'Risk Index', numeric: true,
+      render: r => <span style={{ color: '#c4d2e1', fontFamily: 'monospace' }}>{r.idx.toFixed(1)}</span>,
+    },
+    {
+      key: 'hpct', label: 'HGV %', numeric: true,
+      render: r => <span style={{ color: '#ffd23f', fontFamily: 'monospace' }}>{r.hpct.toFixed(1)}%</span>,
+    },
+    {
+      key: 'esal', label: 'Daily ESALs', numeric: true, total: 'sum',
+      render: r => <span style={{ color: '#e2eaf4', fontFamily: 'monospace' }}>{r.esal.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>,
+    },
+    {
+      key: 'rc', label: 'Risk',
+      render: r => (
+        <span style={{
+          fontSize: 10, fontWeight: 800, padding: '2px 9px', borderRadius: 999,
+          background: `rgba(${hexRgbInline(RISK_COLOR[r.rc] ?? '#94a3b8')},0.15)`,
+          color: RISK_COLOR[r.rc] ?? '#94a3b8',
+          border: `1px solid rgba(${hexRgbInline(RISK_COLOR[r.rc] ?? '#94a3b8')},0.3)`,
+        }}>
+          {r.rc}
+        </span>
+      ),
+    },
+  ], []);
 
   function onLinkClick(props: any) {
     const lr = linkRiskMap[props?.link_id ?? ''];
@@ -356,54 +446,16 @@ export default function OverloadingSection() {
         </div>
         <div className="text-[10px] text-slate-500 mb-4">
           Ranked by estimated daily ESAL load - full detail (road name/class/surface) is only pre-computed for these top 20; see the full {allRanked.length.toLocaleString()}-link ranking below for every other road.
+          {' '}Combined length affected: <span style={{ color: '#e2eaf4', fontWeight: 700 }}>{top20LengthKm.toFixed(1)} km</span>.
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs">
-            <thead>
-              <tr className="border-b border-slate-700">
-                {['Road', 'Region', 'Class', 'HGV %', 'Daily ESALs', 'Dmg Factor', 'Risk', 'Surface'].map(h => (
-                  <th key={h} className="text-left py-2 px-2 text-[10px] font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {top20.map((r, i) => (
-                <tr key={r.link_id} className="border-b border-slate-800/60 hover:bg-slate-800/30">
-                  <td className="py-2 px-2">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[9px] text-slate-600 font-mono w-5 flex-shrink-0">{i + 1}</span>
-                      <span className="text-slate-200 font-medium truncate max-w-[180px]" title={r.road_name}>
-                        {r.road_name}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="py-2 px-2 text-slate-400 text-[10px]">{r.region}</td>
-                  <td className="py-2 px-2">
-                    <span className="text-[10px] font-bold" style={{ color: r.road_class === 'A' ? '#00f5ff' : r.road_class === 'B' ? '#00ff88' : '#ffd23f' }}>
-                      {r.road_class}
-                    </span>
-                  </td>
-                  <td className="py-2 px-2 font-mono text-amber-400 text-[10px]">{r.hgv_pct.toFixed(1)}%</td>
-                  <td className="py-2 px-2 font-mono text-slate-200 text-[10px]">{r.estimated_daily_esals.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
-                  <td className="py-2 px-2 font-mono text-slate-300 text-[10px]">{r.pavement_damage_factor.toFixed(2)}×</td>
-                  <td className="py-2 px-2">
-                    <span
-                      className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                      style={{
-                        background: `rgba(${hexRgbInline(RISK_COLOR[r.risk_category] ?? '#94a3b8')},0.15)`,
-                        color: RISK_COLOR[r.risk_category] ?? '#94a3b8',
-                        border: `1px solid rgba(${hexRgbInline(RISK_COLOR[r.risk_category] ?? '#94a3b8')},0.3)`,
-                      }}
-                    >
-                      {r.risk_category}
-                    </span>
-                  </td>
-                  <td className="py-2 px-2 text-[10px] text-slate-400 capitalize">{r.surface_type}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <SortableFilterableTable
+          columns={top20Columns}
+          rows={top20WithRank}
+          accent="#ef4444"
+          exportName="top-20-overloaded-links"
+          initialSort="estimated_daily_esals"
+          emptyText="No overloaded-link data available."
+        />
       </div>
 
       {/* ── Full-network ESAL ranking - every link, not just the top 20 ── */}
@@ -413,42 +465,17 @@ export default function OverloadingSection() {
           Full Network Ranking - All {allRanked.length.toLocaleString()} Links
         </div>
         <div className="text-[10px] text-slate-500 mb-4">
-          Every link with a computed risk score, ranked by estimated daily ESAL load (no cap).
+          Every link with a computed risk score, ranked by estimated daily ESAL load (no cap). Link-level length (km) is not
+          carried in this dataset - see the Top 20 table above for length figures on the highest-risk links.
         </div>
-        <div className="overflow-x-auto" style={{ maxHeight: 420, overflowY: 'auto' }}>
-          <table className="w-full text-xs">
-            <thead>
-              <tr className="border-b border-slate-700" style={{ position: 'sticky', top: 0, background: '#0b1220' }}>
-                {['#', 'Link ID', 'Risk Index', 'HGV %', 'Daily ESALs', 'Risk'].map(h => (
-                  <th key={h} className="text-left py-2 px-2 text-[10px] font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {allRanked.map((r, i) => (
-                <tr key={r.link_id} className="border-b border-slate-800/60 hover:bg-slate-800/30">
-                  <td className="py-2 px-2 text-[9px] text-slate-600 font-mono">{i + 1}</td>
-                  <td className="py-2 px-2 text-slate-200 font-medium text-[10px]">{r.link_id}</td>
-                  <td className="py-2 px-2 font-mono text-slate-300 text-[10px]">{r.idx.toFixed(1)}</td>
-                  <td className="py-2 px-2 font-mono text-amber-400 text-[10px]">{r.hpct.toFixed(1)}%</td>
-                  <td className="py-2 px-2 font-mono text-slate-200 text-[10px]">{r.esal.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
-                  <td className="py-2 px-2">
-                    <span
-                      className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                      style={{
-                        background: `rgba(${hexRgbInline(RISK_COLOR[r.rc] ?? '#94a3b8')},0.15)`,
-                        color: RISK_COLOR[r.rc] ?? '#94a3b8',
-                        border: `1px solid rgba(${hexRgbInline(RISK_COLOR[r.rc] ?? '#94a3b8')},0.3)`,
-                      }}
-                    >
-                      {r.rc}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <SortableFilterableTable
+          columns={allRankedColumns}
+          rows={allRanked}
+          accent="#00f5ff"
+          exportName="full-network-esal-ranking"
+          initialSort="esal"
+          emptyText="No network risk-ranking data available."
+        />
       </div>
 
       {/* ── Info panel ── */}

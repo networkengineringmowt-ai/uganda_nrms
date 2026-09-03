@@ -8,6 +8,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '../../lib/supabase';
 import { ShieldAlert, AlertTriangle, RefreshCw, Database, TrendingUp } from 'lucide-react';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
+import { NullableCell } from '../../shared/tableFormatting';
 
 // ── palette ────────────────────────────────────────────────────────────────────
 const C = {
@@ -44,7 +46,7 @@ interface SafetyData {
   serious:       number;
   minor:         number;
   byYear:        { year: number; count: number }[];
-  blackspots:    { name: string; district: string; accidents: number; severity: string }[];
+  blackspots:    { name: string; district: string; accidents: number; severity: number | null }[];
 }
 
 // ── Supabase helpers ───────────────────────────────────────────────────────────
@@ -108,16 +110,17 @@ async function fetchSafetyData(): Promise<SafetyData | null> {
     .map(([y, c]) => ({ year: Number(y), count: c }))
     .sort((a, b) => a.year - b.year);
 
-  // Top-5 blackspots
+  // All known blackspots (server-side fetch already capped at 50 rows above -
+  // a technical fetch limit, not a curated "top N" - every fetched blackspot
+  // is shown, sortable by any column).
   const blackspots = bsRows
     .map(b => ({
       name:      b.road_name ?? b.road_link_id ?? '-',
       district:  b.district ?? '-',
       accidents: Number(b.accident_count ?? 0),
-      severity:  b.severity_score != null ? String(Number(b.severity_score).toFixed(1)) : '-',
+      severity:  b.severity_score != null ? Number(b.severity_score) : null,
     }))
-    .sort((a, b) => b.accidents - a.accidents)
-    .slice(0, 5);
+    .sort((a, b) => b.accidents - a.accidents);
 
   return {
     totalAll: total12m,
@@ -205,32 +208,33 @@ function YearChart({ byYear }: { byYear: { year: number; count: number }[] }) {
   );
 }
 
-function BlackspotTable({ spots }: { spots: { name: string; district: string; accidents: number; severity: string }[] }) {
+function BlackspotTable({ spots }: { spots: { name: string; district: string; accidents: number; severity: number | null }[] }) {
   if (!spots.length) return null;
+  const columns: STColumn<typeof spots[number]>[] = [
+    { key: 'name', label: 'Road Link / Name' },
+    { key: 'district', label: 'District' },
+    {
+      key: 'accidents', label: 'Accidents', numeric: true, total: 'sum',
+      render: s => <NullableCell value={s.accidents}><span style={{ color: C.red, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{s.accidents.toLocaleString()}</span></NullableCell>,
+    },
+    {
+      key: 'severity', label: 'Severity Score', numeric: true,
+      render: s => <NullableCell value={s.severity}><span style={{ color: 'rgba(148,163,184,0.85)' }}>{s.severity!.toFixed(1)}</span></NullableCell>,
+    },
+  ];
   return (
-    <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.07)' }}>
-      <div style={{ padding: '9px 14px', background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.07)', fontSize: 10, fontWeight: 700, color: 'rgba(148,163,184,0.75)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-        Top Road Blackspots
+    <div style={{ borderRadius: 10, padding: '9px 14px 14px', border: '1px solid rgba(255,255,255,0.07)', background: 'rgba(255,255,255,0.02)' }}>
+      <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(148,163,184,0.75)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>
+        Road Blackspots
       </div>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
-        <thead>
-          <tr>
-            {['Road Link / Name', 'District', 'Accidents', 'Severity Score'].map(h => (
-              <th key={h} style={{ padding: '7px 12px', textAlign: 'left', color: 'rgba(148,163,184,0.5)', fontWeight: 600, fontSize: 9, textTransform: 'uppercase', letterSpacing: 0.4, borderBottom: '1px solid rgba(255,255,255,0.05)' }}>{h}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {spots.map((s, i) => (
-            <tr key={i} style={{ background: i % 2 ? 'rgba(255,255,255,0.02)' : 'transparent' }}>
-              <td style={{ padding: '7px 12px', color: '#d1d5db', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name ?? '-'}</td>
-              <td style={{ padding: '7px 12px', color: 'rgba(148,163,184,0.65)' }}>{s.district ?? '-'}</td>
-              <td style={{ padding: '7px 12px', color: C.red, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{s.accidents ?? '-'}</td>
-              <td style={{ padding: '7px 12px', color: 'rgba(148,163,184,0.65)' }}>{s.severity ?? '-'}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <SortableFilterableTable
+        columns={columns}
+        rows={spots}
+        accent={C.red}
+        exportName="road-blackspots"
+        initialSort="accidents"
+        emptyText="No blackspot records available."
+      />
     </div>
   );
 }

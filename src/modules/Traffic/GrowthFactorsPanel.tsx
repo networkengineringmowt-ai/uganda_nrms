@@ -10,6 +10,8 @@ import {
 import { TrendingUp, BarChart2, Activity, ArrowUpDown } from 'lucide-react';
 import { NEON, REGION_NEON, GlowDefs, Chart3DWrap, TT_NEON, TICK } from '../../lib/chart3d';
 import { ModuleNavBar } from '../../shared/ModuleNavBar';
+import { SearchableSelect } from '../../shared/SearchableSelect';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -341,106 +343,77 @@ function AnnualGrowthChart({
 
 // ─── Top growing roads table ──────────────────────────────────────────────────
 
-type SortKey = 'cagr_total' | 'link_name' | 'region' | 'year_from';
-
 function TopRoadsTable({ data }: { data: GFTopRoad[] }) {
-  const [sortKey,  setSortKey]  = useState<SortKey>('cagr_total');
-  const [sortDesc, setSortDesc] = useState(true);
-
-  function toggleSort(k: SortKey) {
-    if (k === sortKey) setSortDesc(d => !d);
-    else { setSortKey(k); setSortDesc(true); }
-  }
-
-  const sorted = useMemo(() => [...data].sort((a, b) => {
-    const av = a[sortKey], bv = b[sortKey];
-    if (typeof av === 'number' && typeof bv === 'number')
-      return sortDesc ? bv - av : av - bv;
-    const as = String(av ?? ''), bs = String(bv ?? '');
-    return sortDesc ? bs.localeCompare(as) : as.localeCompare(bs);
-  }), [data, sortKey, sortDesc]);
-
-  const Th = ({ label, k }: { label: string; k: SortKey }) => (
-    <th
-      onClick={() => toggleSort(k)}
-      style={{
-        padding: '6px 10px', textAlign: 'left', fontSize: 9,
-        fontWeight: 700, color: sortKey === k ? '#6366f1' : 'rgba(148,163,184,0.45)',
-        textTransform: 'uppercase', letterSpacing: '0.08em',
-        cursor: 'pointer', userSelect: 'none', borderBottom: '1px solid rgba(99,102,241,0.1)',
-        whiteSpace: 'nowrap',
-      }}
-    >
-      {label} {sortKey === k ? (sortDesc ? '▼' : '▲') : ''}
-    </th>
-  );
-
-  if (!sorted.length) {
-    return (
-      <div style={{ color: 'rgba(148,163,184,0.4)', fontSize: 12, textAlign: 'center', padding: 20 }}>
-        No road-level growth data available.
-      </div>
-    );
-  }
+  const columns: STColumn<GFTopRoad>[] = useMemo(() => [
+    {
+      key: 'link_name', label: 'Road / Link',
+      render: road => (
+        <div style={{ maxWidth: 220 }}>
+          <div style={{ fontWeight: 600, fontSize: 11, color: '#e2eaf4', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {road.link_name}
+          </div>
+          <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.4)', fontFamily: 'monospace' }}>
+            {road.link_id}
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'region', label: 'Region',
+      render: road => (
+        <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: REGION_NEON[road.region] ?? '#64748b' }}>
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: REGION_NEON[road.region] ?? '#64748b', flexShrink: 0 }} />
+          {road.region}
+        </span>
+      ),
+    },
+    {
+      key: 'cagr_total', label: 'CAGR', numeric: true,
+      comment: 'Compound annual growth rate of total traffic (AADT) between the base and latest survey year.',
+      render: road => {
+        const pct     = road.cagr_total * 100;
+        const isPos   = pct >= 0;
+        const color   = isPos ? '#00ff88' : '#ff6b35';
+        const absCAGR = Math.abs(pct);
+        return (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'flex-end' }}>
+            <span style={{ fontSize: 13, fontWeight: 900, color, fontFamily: 'monospace', minWidth: 56 }}>
+              {isPos ? '+' : ''}{pct.toFixed(1)}%
+            </span>
+            <div style={{ flex: 1, maxWidth: 60, height: 5, background: 'rgba(148,163,184,0.06)', borderRadius: 3, overflow: 'hidden' }}>
+              <div style={{ height: '100%', width: `${Math.min(100, absCAGR / 0.30 * 100)}%`, background: color, borderRadius: 3 }} />
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      key: 'year_from', label: 'Survey Period', numeric: true,
+      render: road => (
+        <span style={{ color: 'rgba(148,163,184,0.6)', fontSize: 10, fontFamily: 'monospace' }}>
+          {road.year_from}→{road.year_to}
+        </span>
+      ),
+    },
+    {
+      key: 'aadt_from', label: 'AADT Trend', numeric: true,
+      render: road => (
+        <span style={{ fontSize: 9, color: 'rgba(148,163,184,0.5)', fontFamily: 'monospace' }}>
+          {Math.round(road.aadt_from).toLocaleString()} → {Math.round(road.aadt_to).toLocaleString()} vpd
+        </span>
+      ),
+    },
+  ], []);
 
   return (
-    <div style={{ overflowX: 'auto', maxHeight: 340, overflowY: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
-        <thead style={{ position: 'sticky', top: 0, background: 'rgba(10,15,30,0.95)' }}>
-          <tr>
-            <Th label="Road / Link" k="link_name" />
-            <Th label="Region"      k="region" />
-            <Th label="CAGR"        k="cagr_total" />
-            <Th label="Base Year"   k="year_from" />
-            <th style={{ padding: '6px 10px', fontSize: 9, color: 'rgba(148,163,184,0.45)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', borderBottom: '1px solid rgba(99,102,241,0.1)' }}>AADT Trend</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sorted.map((road, i) => {
-            const pct     = road.cagr_total * 100;
-            const isPos   = pct >= 0;
-            const color   = isPos ? '#00ff88' : '#ff6b35';
-            const absCAGR = Math.abs(pct);
-            return (
-              <tr key={`${road.link_id}-${i}`}
-                style={{ borderBottom: '1px solid rgba(148,163,184,0.05)' }}
-                className="hover:bg-slate-800/40">
-                <td style={{ padding: '7px 10px', color: '#e2eaf4', maxWidth: 220 }}>
-                  <div style={{ fontWeight: 600, fontSize: 11, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {road.link_name}
-                  </div>
-                  <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.4)', fontFamily: 'monospace' }}>
-                    {road.link_id}
-                  </div>
-                </td>
-                <td style={{ padding: '7px 10px', color: REGION_NEON[road.region] ?? '#64748b', fontSize: 11 }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: REGION_NEON[road.region] ?? '#64748b', flexShrink: 0 }} />
-                    {road.region}
-                  </span>
-                </td>
-                <td style={{ padding: '7px 10px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontSize: 13, fontWeight: 900, color, fontFamily: 'monospace', minWidth: 56 }}>
-                      {isPos ? '+' : ''}{pct.toFixed(1)}%
-                    </span>
-                    <div style={{ flex: 1, height: 5, background: 'rgba(148,163,184,0.06)', borderRadius: 3, overflow: 'hidden', minWidth: 40 }}>
-                      <div style={{ height: '100%', width: `${Math.min(100, absCAGR / 0.30 * 100)}%`, background: color, borderRadius: 3 }} />
-                    </div>
-                  </div>
-                </td>
-                <td style={{ padding: '7px 10px', color: 'rgba(148,163,184,0.5)', fontSize: 10, fontFamily: 'monospace' }}>
-                  {road.year_from}→{road.year_to}
-                </td>
-                <td style={{ padding: '7px 10px', fontSize: 9, color: 'rgba(148,163,184,0.45)', fontFamily: 'monospace' }}>
-                  {Math.round(road.aadt_from).toLocaleString()} → {Math.round(road.aadt_to).toLocaleString()} vpd
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+    <SortableFilterableTable
+      columns={columns}
+      rows={data}
+      accent="#ffd23f"
+      exportName="top-growing-roads"
+      initialSort="cagr_total"
+      emptyText="No road-level growth data available."
+    />
   );
 }
 
@@ -550,37 +523,37 @@ export default function GrowthFactorsPanel() {
           {/* Region */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <span style={{ fontSize: 9, fontWeight: 700, color: 'rgba(148,163,184,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Region</span>
-            <select value={selectedRegion} onChange={e => setSelectedRegion(e.target.value)}
+            <SearchableSelect value={selectedRegion} onChange={setSelectedRegion}
               style={{ background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.25)',
                 borderRadius: 7, color: '#e2eaf4', fontSize: 11, fontWeight: 600,
                 padding: '3px 8px', cursor: 'pointer', outline: 'none', fontFamily: 'inherit' }}>
               <option value="all">All Regions</option>
               {data.regions.map(r => <option key={r} value={r}>{r}</option>)}
-            </select>
+            </SearchableSelect>
           </div>
 
           {/* Vehicle class */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <span style={{ fontSize: 9, fontWeight: 700, color: 'rgba(148,163,184,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Class</span>
-            <select value={selectedVC} onChange={e => setSelectedVC(e.target.value)}
+            <SearchableSelect value={selectedVC} onChange={setSelectedVC}
               style={{ background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.25)',
                 borderRadius: 7, color: '#e2eaf4', fontSize: 11, fontWeight: 600,
                 padding: '3px 8px', cursor: 'pointer', outline: 'none', fontFamily: 'inherit' }}>
               {data.vehicle_classes.map(vc => (
                 <option key={vc} value={vc}>{VC_LABELS[vc] ?? vc}</option>
               ))}
-            </select>
+            </SearchableSelect>
           </div>
 
           {/* Year */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <span style={{ fontSize: 9, fontWeight: 700, color: 'rgba(148,163,184,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Year</span>
-            <select value={selectedYear} onChange={e => setSelectedYear(Number(e.target.value))}
+            <SearchableSelect value={String(selectedYear)} onChange={v => setSelectedYear(Number(v))}
               style={{ background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.25)',
                 borderRadius: 7, color: '#e2eaf4', fontSize: 11, fontWeight: 600,
                 padding: '3px 8px', cursor: 'pointer', outline: 'none', fontFamily: 'inherit' }}>
               {availableYears.map(y => <option key={y} value={y}>{y}</option>)}
-            </select>
+            </SearchableSelect>
           </div>
         </div>
       </div>
