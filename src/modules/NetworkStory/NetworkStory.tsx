@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { hexRgb, lightenHex, darkenHex, TICK, TICK_SM, AX_LINE } from '../../lib/chart3d';
 import { loadPlatformAnalytics, type PlatformAnalytics } from '../../data/platformData';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 // Exported so NetworkStoryTables.tsx (the Exhaustive-Tables-tab home for the
@@ -161,6 +162,66 @@ export const WORST_LINKS = [
   { link: 'Atiak - Nimule',             region: 'Northern',      station: 'Gulu',   vci: 56.7, km: 37.3 },
   { link: 'Gulu Airport road',          region: 'Northern',      station: 'Gulu',   vci: 57.2, km: 4.1  },
   { link: 'Entebbe-Nakiwogo',           region: 'Central',       station: 'Kampala', vci: 57.8, km: 3.4  },
+];
+
+// Shared SortableFilterableTable column specs for the two tables above, used
+// both here (Dashboard tab, when !hideTables) and in NetworkStoryTables.tsx
+// (Exhaustive Tables tab) so the two stay visually identical.
+export const WORST_LINKS_COLUMNS: STColumn<typeof WORST_LINKS[number]>[] = [
+  { key: 'link', label: 'Road Link' },
+  { key: 'region', label: 'Region', render: row => (
+    <span style={{
+      padding: '2px 7px', borderRadius: 5, fontSize: 9, fontWeight: 700,
+      background: `rgba(${hexRgb(REGION_COLORS[row.region] ?? C.blue)},0.12)`,
+      color: REGION_COLORS[row.region] ?? C.blue,
+    }}>{row.region}</span>
+  ) },
+  { key: 'station', label: 'Station' },
+  { key: 'vci', label: 'VCI', numeric: true, render: row => {
+    const vciColor = row.vci < 50 ? C.pink : row.vci < 60 ? C.orange : C.yellow;
+    return (
+      <span style={{
+        padding: '2px 8px', borderRadius: 5, fontWeight: 800, fontSize: 11,
+        background: `rgba(${hexRgb(vciColor)},0.15)`,
+        border: `1px solid rgba(${hexRgb(vciColor)},0.3)`,
+        color: vciColor, boxShadow: `0 0 8px rgba(${hexRgb(vciColor)},0.25)`,
+      }}>{row.vci.toFixed(1)}</span>
+    );
+  } },
+  { key: 'km', label: 'Length (km)', numeric: true, render: row => row.km.toFixed(1) },
+];
+
+export interface RegionStatRow { region: string; paved_km: number; unpaved_km: number; links: number; total: number; pct: number; }
+export const REGION_STAT_COLUMNS: STColumn<RegionStatRow>[] = [
+  { key: 'region', label: 'Region', render: row => {
+    const rc = REGION_COLORS[row.region] ?? C.blue;
+    return (
+      <span style={{ display: 'inline-flex', alignItems: 'center', fontWeight: 700, color: '#e2eaf4' }}>
+        <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: rc, marginRight: 8 }} />
+        {row.region}
+      </span>
+    );
+  } },
+  { key: 'paved_km', label: 'Paved km', numeric: true, render: row => <span style={{ color: C.green, fontWeight: 600 }}>{row.paved_km.toLocaleString()}</span> },
+  { key: 'unpaved_km', label: 'Unpaved km', numeric: true, render: row => <span style={{ color: 'rgba(148,163,184,0.7)' }}>{row.unpaved_km.toLocaleString()}</span> },
+  { key: 'total', label: 'Total km', numeric: true, render: row => row.total.toLocaleString() },
+  { key: 'pct', label: 'Paved %', numeric: true, render: row => {
+    const rc = REGION_COLORS[row.region] ?? C.blue;
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 7, justifyContent: 'flex-end' }}>
+        <span style={{ color: rc, fontWeight: 700, fontSize: 10, minWidth: 38, textAlign: 'right' }}>{row.pct.toFixed(1)}%</span>
+        <div style={{ width: 64, height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+          <div style={{
+            height: '100%', width: `${row.pct}%`,
+            background: `linear-gradient(90deg, ${rc}, rgba(${hexRgb(rc)},0.45))`,
+            borderRadius: 3, transition: 'width 0.3s',
+            boxShadow: `0 0 6px rgba(${hexRgb(rc)},0.5)`,
+          }} />
+        </div>
+      </div>
+    );
+  } },
+  { key: 'links', label: 'Links', numeric: true, render: row => <span style={{ color: C.yellow }}>{row.links.toLocaleString()}</span> },
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -828,9 +889,6 @@ export default function NetworkStory({ hideTables = false }: { hideTables?: bool
   const [filters, setFilters] = useState<Filters>({
     regions: [], yearRange: [1986, 2026], decade: null, surfaceType: 'all',
   });
-  const [sortCol, setSortCol] = useState<'region'|'paved_km'|'unpaved_km'|'total'|'pct'|'links'>('paved_km');
-  const [sortDir, setSortDir] = useState<'asc'|'desc'>('desc');
-  const [hovRow,  setHovRow]  = useState<string|null>(null);
   const [hovStation, setHovStation] = useState<string|null>(null);
 
   // Load data + inject slider CSS
@@ -917,19 +975,16 @@ export default function NetworkStory({ hideTables = false }: { hideTables?: bool
     return rows;
   }, [data, activeRegions, filters.surfaceType]);
 
+  // Padded with any of the 6 canonical maintenance regions missing from the
+  // loaded JSON (as an explicit zero-data row, not fabricated figures) so the
+  // Regional Road Statistics table below never silently drops a region - see
+  // the identical ALL_REGIONS-padding pattern used for trafficRegionData below.
   const sortedRegions = useMemo(() => {
     if (!data) return [];
-    const rows = data.by_region.filter(r => activeRegions.includes(r.region));
-    return [...rows].sort((a, b) => {
-      const tA = a.paved_km + a.unpaved_km, tB = b.paved_km + b.unpaved_km;
-      const pA = tA > 0 ? a.paved_km / tA : 0, pB = tB > 0 ? b.paved_km / tB : 0;
-      const va: string | number = sortCol === 'region' ? a.region : sortCol === 'paved_km' ? a.paved_km : sortCol === 'unpaved_km' ? a.unpaved_km : sortCol === 'total' ? tA : sortCol === 'pct' ? pA : a.links;
-      const vb: string | number = sortCol === 'region' ? b.region : sortCol === 'paved_km' ? b.paved_km : sortCol === 'unpaved_km' ? b.unpaved_km : sortCol === 'total' ? tB : sortCol === 'pct' ? pB : b.links;
-      if (va < vb) return sortDir === 'asc' ? -1 : 1;
-      if (va > vb) return sortDir === 'asc' ?  1 : -1;
-      return 0;
-    });
-  }, [data, activeRegions, sortCol, sortDir]);
+    const present = new Map(data.by_region.map(r => [r.region, r]));
+    const withAllRegions = ALL_REGIONS.map(region => present.get(region) ?? { region, paved_km: 0, unpaved_km: 0, links: 0 });
+    return withAllRegions.filter(r => activeRegions.includes(r.region));
+  }, [data, activeRegions]);
 
   const filteredVciRegions = useMemo(
     () => VCI_REGIONS.filter(r => activeRegions.includes(r.region)),
@@ -1026,23 +1081,6 @@ export default function NetworkStory({ hideTables = false }: { hideTables?: bool
   const ndpIIITarget = 10000;
   const ndpIITarget  = 6000;
   const milestoneMs  = MILESTONES.filter(m => m.year >= filters.yearRange[0] && m.year <= filters.yearRange[1]);
-
-  function TH(col: typeof sortCol, label: string) {
-    const active = sortCol === col;
-    return (
-      <th onClick={() => { if (col === sortCol) setSortDir(d => d === 'asc' ? 'desc' : 'asc'); else { setSortCol(col); setSortDir('desc'); } }}
-        style={{
-          padding: '8px 10px', fontSize: 9, fontWeight: 700, textTransform: 'uppercase',
-          letterSpacing: '0.1em', color: active ? C.cyan : 'rgba(148,163,184,0.5)',
-          textAlign: col === 'region' ? 'left' : 'right', cursor: 'pointer',
-          userSelect: 'none', whiteSpace: 'nowrap',
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
-          background: active ? `rgba(${hexRgb(C.cyan)},0.05)` : 'transparent',
-        }}>
-        {label} {active ? (sortDir === 'asc' ? '↑' : '↓') : ''}
-      </th>
-    );
-  }
 
   // ══════════════════════════════════════════════════════════════════════════
   return (
@@ -1640,122 +1678,26 @@ export default function NetworkStory({ hideTables = false }: { hideTables?: bool
              on the Exhaustive Tables tab for these same two tables. */}
         {!hideTables && <>
         <Section title="Worst Performing Road Links · Real Survey Data 2024/25" accent={C.pink}>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10 }}>
-              <thead>
-                <tr>
-                  {['#', 'Road Link', 'Region', 'Station', 'VCI', 'Length (km)'].map(h => (
-                    <th key={h} style={{
-                      padding: '7px 10px', textAlign: h === '#' || h === 'VCI' || h === 'Length (km)' ? 'center' : 'left',
-                      fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em',
-                      color: 'rgba(148,163,184,0.5)', borderBottom: '1px solid rgba(255,255,255,0.06)',
-                    }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {WORST_LINKS.filter(l => activeRegions.includes(l.region)).map((l, i) => {
-                  const vciColor = l.vci < 50 ? C.pink : l.vci < 60 ? C.orange : C.yellow;
-                  return (
-                    <tr key={l.link}
-                      style={{ background: i % 2 === 0 ? 'rgba(255,255,255,0.01)' : 'transparent', cursor: 'pointer' }}
-                      onClick={() => toggleRegion(l.region)}>
-                      <td style={{ padding: '8px 10px', textAlign: 'center', color: 'rgba(100,116,139,0.5)', fontSize: 9 }}>{i+1}</td>
-                      <td style={{ padding: '8px 10px', color: '#e2eaf4', fontWeight: 600 }}>{l.link}</td>
-                      <td style={{ padding: '8px 10px' }}>
-                        <span style={{
-                          padding: '2px 7px', borderRadius: 5, fontSize: 9, fontWeight: 700,
-                          background: `rgba(${hexRgb(REGION_COLORS[l.region] ?? C.blue)},0.12)`,
-                          color: REGION_COLORS[l.region] ?? C.blue,
-                        }}>{l.region}</span>
-                      </td>
-                      <td style={{ padding: '8px 10px', color: 'rgba(148,163,184,0.65)' }}>{l.station}</td>
-                      <td style={{ padding: '8px 10px', textAlign: 'center' }}>
-                        <span style={{
-                          padding: '2px 8px', borderRadius: 5, fontWeight: 800, fontSize: 11,
-                          background: `rgba(${hexRgb(vciColor)},0.15)`,
-                          border: `1px solid rgba(${hexRgb(vciColor)},0.3)`,
-                          color: vciColor,
-                          boxShadow: `0 0 8px rgba(${hexRgb(vciColor)},0.25)`,
-                        }}>{l.vci.toFixed(1)}</span>
-                      </td>
-                      <td style={{ padding: '8px 10px', textAlign: 'center', color: 'rgba(148,163,184,0.6)' }}>{l.km.toFixed(1)}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          <SortableFilterableTable
+            columns={WORST_LINKS_COLUMNS}
+            rows={WORST_LINKS.filter(l => activeRegions.includes(l.region))}
+            accent={C.pink}
+            exportName="worst_performing_road_links"
+            initialSort="vci"
+          />
         </Section>
 
         {/* ── REGIONAL SORTABLE TABLE ── */}
-        <Section title="Regional Road Statistics · Sortable Dashboard" accent={C.blue}>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
-              <thead>
-                <tr>
-                  {TH('region',     'Region')}
-                  {TH('paved_km',   'Paved km')}
-                  {TH('unpaved_km', 'Unpaved km')}
-                  {TH('total',      'Total km')}
-                  {TH('pct',        'Paved %')}
-                  {TH('links',      'Links')}
-                </tr>
-              </thead>
-              <tbody>
-                {sortedRegions.map(r => {
-                  const total = r.paved_km + r.unpaved_km;
-                  const pct   = total > 0 ? (r.paved_km / total) * 100 : 0;
-                  const rc    = REGION_COLORS[r.region] ?? C.blue;
-                  const isHov = hovRow === r.region;
-                  return (
-                    <tr key={r.region}
-                      onMouseEnter={() => setHovRow(r.region)}
-                      onMouseLeave={() => setHovRow(null)}
-                      onClick={() => toggleRegion(r.region)}
-                      style={{
-                        background: isHov ? `rgba(${hexRgb(rc)},0.07)` : 'transparent',
-                        transition: 'background 0.15s', cursor: 'pointer',
-                      }}>
-                      <td style={{ padding: '9px 10px', fontWeight: 700, color: isHov ? rc : '#e2eaf4', whiteSpace: 'nowrap' }}>
-                        <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: rc, marginRight: 8 }} />
-                        {r.region}
-                      </td>
-                      <td style={{ padding: '9px 10px', textAlign: 'right', color: C.green, fontWeight: 600 }}>
-                        {r.paved_km.toLocaleString()}
-                      </td>
-                      <td style={{ padding: '9px 10px', textAlign: 'right', color: 'rgba(148,163,184,0.55)' }}>
-                        {r.unpaved_km.toLocaleString()}
-                      </td>
-                      <td style={{ padding: '9px 10px', textAlign: 'right', color: '#e2eaf4' }}>
-                        {total.toLocaleString()}
-                      </td>
-                      <td style={{ padding: '9px 10px', textAlign: 'right', minWidth: 130 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 7, justifyContent: 'flex-end' }}>
-                          <span style={{ color: rc, fontWeight: 700, fontSize: 10, minWidth: 38, textAlign: 'right' }}>
-                            {pct.toFixed(1)}%
-                          </span>
-                          <div style={{ width: 64, height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
-                            <div style={{
-                              height: '100%', width: `${pct}%`,
-                              background: `linear-gradient(90deg, ${rc}, rgba(${hexRgb(rc)},0.45))`,
-                              borderRadius: 3, transition: 'width 0.3s',
-                              boxShadow: `0 0 6px rgba(${hexRgb(rc)},0.5)`,
-                            }} />
-                          </div>
-                        </div>
-                      </td>
-                      <td style={{ padding: '9px 10px', textAlign: 'right', color: C.yellow }}>
-                        {r.links.toLocaleString()}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-            <div style={{ marginTop: 6, fontSize: 9, color: 'rgba(100,116,139,0.45)' }}>
-              Click row or column header to sort · Click row to cross-filter all charts · Coloured dot = maintenance region colour
-            </div>
+        <Section title="Regional Road Statistics · Sortable" accent={C.blue}>
+          <SortableFilterableTable
+            columns={REGION_STAT_COLUMNS}
+            rows={sortedRegions.map(r => ({ ...r, total: r.paved_km + r.unpaved_km, pct: (r.paved_km + r.unpaved_km) > 0 ? (r.paved_km / (r.paved_km + r.unpaved_km)) * 100 : 0 }))}
+            accent={C.blue}
+            exportName="regional_road_statistics"
+            initialSort="paved_km"
+          />
+          <div style={{ marginTop: 6, fontSize: 9, color: 'rgba(100,116,139,0.45)' }}>
+            Click a column header to sort · All 6 maintenance regions shown (zero-data regions included, not dropped) · Coloured dot = maintenance region colour
           </div>
         </Section>
         </>}
