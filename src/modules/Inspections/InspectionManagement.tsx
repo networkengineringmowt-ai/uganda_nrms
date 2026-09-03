@@ -4,6 +4,19 @@ import { useBMS } from '../../store/BMSContext';
 import type { Inspection, InspectionType } from '../../index';
 import { conditionColor, conditionLabel, conditionBadge, formatDate, INSPECTORS } from '../../utils/helpers';
 import { v4 as uuidv4 } from 'uuid';
+import { SearchableSelect } from '../../shared/SearchableSelect';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
+
+// Vivid platform palette (rule: reuse these, never invent muted colours).
+const NEON = { green: '#00ff88', amber: '#ffd23f', orange: '#ff6b35', red: '#ff3366', purple: '#b967ff' };
+
+// Equivalent of the plain .bms-select CSS class, as inline style -
+// SearchableSelect takes `style`, not `className`.
+const bmsSelectStyle = {
+  appearance: 'none' as const, cursor: 'pointer', background: 'rgba(6,13,24,0.8)',
+  border: '1px solid rgba(0,245,255,0.12)', borderRadius: 8, padding: '8px 12px',
+  fontSize: 13, color: '#e2eaf4', outline: 'none', width: '100%',
+};
 
 export default function InspectionManagement() {
   const { state, dispatch } = useBMS();
@@ -12,8 +25,6 @@ export default function InspectionManagement() {
   const [query,       setQuery]       = useState('');
   const [typeFilter,  setTypeFilter]  = useState<'all' | InspectionType>('all');
   const [showForm,    setShowForm]    = useState(false);
-  const [page,        setPage]        = useState(1);
-  const PAGE_SIZE = 20;
 
   const filtered = useMemo(() => {
     let list = [...inspections].sort((a, b) =>
@@ -31,8 +42,67 @@ export default function InspectionManagement() {
     return list;
   }, [inspections, query, typeFilter]);
 
-  const pageCount = Math.ceil(filtered.length / PAGE_SIZE);
-  const pageData  = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const columns: STColumn<Inspection>[] = useMemo(() => [
+    { key: 'structureName', label: 'Structure', render: i => (
+        <div>
+          <div style={{ fontWeight: 700, color: '#e2e8f0' }}>{i.structureName}</div>
+          <div style={{ fontSize: 9.5, color: 'rgba(148,163,184,0.6)' }}>{i.structureId}</div>
+        </div>
+      ) },
+    { key: 'date', label: 'Date', date: true, render: i => formatDate(i.date) },
+    // Inspector shows the anonymised inspector code (e.g. INS-004), never a real name -
+    // do not swap this for identity detail (platform-wide rule).
+    { key: 'inspector', label: 'Inspector' },
+    { key: 'type', label: 'Inspection Type', render: i => (
+        <span className={`badge text-[10px] ${
+          i.type === 'Emergency' ? 'badge-critical' :
+          i.type === 'Special'   ? 'badge-fair' :
+          i.type === 'Principal' ? 'badge-blue' : 'badge-slate'
+        }`}>{i.type}</span>
+      ) },
+    { key: 'deckRating', label: 'Deck', numeric: true, render: i => <RatingDot v={i.deckRating} /> },
+    { key: 'superstructureRating', label: 'Superstructure', numeric: true, render: i => <RatingDot v={i.superstructureRating} /> },
+    { key: 'substructureRating', label: 'Substructure', numeric: true, render: i => <RatingDot v={i.substructureRating} /> },
+    { key: 'channelRating', label: 'Channel', numeric: true, render: i => <RatingDot v={i.channelRating} /> },
+    { key: 'visualScore', label: 'Visual Score', numeric: true, render: i => (
+        <div className="flex items-center gap-2 justify-end">
+          <div className="flex-1 bg-slate-700 rounded-full h-1.5 min-w-[40px]">
+            <div className="rounded-full h-1.5" style={{ width: `${i.visualScore}%`, background: conditionColor(i.overallCondition) }} />
+          </div>
+          <span className="text-[10px] text-slate-400 w-7 text-right">{i.visualScore}</span>
+        </div>
+      ) },
+    { key: 'overallCondition', label: 'Overall Condition', render: i => (
+        <span className={`badge ${conditionBadge(i.overallCondition)}`}>
+          {i.overallCondition} – {conditionLabel(i.overallCondition)}
+        </span>
+      ) },
+    { key: 'nextInspection', label: 'Next Due', date: true, render: i => formatDate(i.nextInspection) },
+    { key: 'photos', label: 'Photos', numeric: true, render: i => (
+        <span className="inline-flex items-center gap-1 justify-end text-slate-400">
+          <Camera size={12} /> {i.photos.length}
+        </span>
+      ) },
+    { key: 'defects', label: 'Defects Recorded', render: i => i.defects.length === 0 ? (
+        <span style={{ color: 'rgba(148,163,184,0.45)' }}>No defects recorded</span>
+      ) : (
+        <div className="flex flex-wrap gap-1">
+          {i.defects.map(d => <span key={d} className="badge badge-critical text-[9px]">{d}</span>)}
+        </div>
+      ) },
+    { key: 'findings', label: 'Findings', render: i => (
+        <span title={i.findings} style={{ display: 'inline-block', maxWidth: 240, overflow: 'hidden',
+          textOverflow: 'ellipsis', whiteSpace: 'nowrap', verticalAlign: 'bottom' }}>
+          {i.findings || <span style={{ color: 'rgba(148,163,184,0.45)' }}>No findings recorded</span>}
+        </span>
+      ) },
+    { key: 'recommendations', label: 'Recommendations', render: i => (
+        <span title={i.recommendations} style={{ display: 'inline-block', maxWidth: 240, overflow: 'hidden',
+          textOverflow: 'ellipsis', whiteSpace: 'nowrap', verticalAlign: 'bottom' }}>
+          {i.recommendations || <span style={{ color: 'rgba(148,163,184,0.45)' }}>No recommendations recorded</span>}
+        </span>
+      ) },
+  ], []);
 
   // Upcoming due
   const upcomingDue = useMemo(() =>
@@ -72,16 +142,19 @@ export default function InspectionManagement() {
               className="bms-input pl-9 py-1.5 text-xs"
               placeholder="Search by structure, inspector…"
               value={query}
-              onChange={e => { setQuery(e.target.value); setPage(1); }}
+              onChange={e => setQuery(e.target.value)}
             />
           </div>
-          <select className="bms-select text-xs py-1.5" value={typeFilter} onChange={e => { setTypeFilter(e.target.value as typeof typeFilter); setPage(1); }}>
+          <SearchableSelect value={typeFilter} onChange={v => setTypeFilter(v as typeof typeFilter)}
+            style={{ appearance: 'none', cursor: 'pointer', background: 'rgba(6,13,24,0.8)',
+              border: '1px solid rgba(0,245,255,0.12)', borderRadius: 8, padding: '6px 12px',
+              fontSize: 12, color: '#e2eaf4', outline: 'none' }}>
             <option value="all">All Types</option>
             <option value="Routine">Routine</option>
             <option value="Principal">Principal</option>
             <option value="Special">Special</option>
             <option value="Emergency">Emergency</option>
-          </select>
+          </SearchableSelect>
           <div className="flex-1" />
           <span className="text-xs text-slate-500">{filtered.length} inspections</span>
           <button onClick={() => setShowForm(true)} className="bms-btn-primary text-xs py-1.5">
@@ -92,44 +165,14 @@ export default function InspectionManagement() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Main table */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <div className="flex-1 mowt-table-wrap">
-            <table className="bms-table">
-              <thead>
-                <tr>
-                  <th>Structure</th>
-                  <th>Date</th>
-                  <th>Inspector</th>
-                  <th>Type</th>
-                  <th>Deck</th>
-                  <th>Super.</th>
-                  <th>Sub.</th>
-                  <th>Channel</th>
-                  <th>Visual Score</th>
-                  <th>Overall</th>
-                  <th>Next Due</th>
-                  <th>Photos</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pageData.map(insp => (
-                  <InspectionRow key={insp.id} insp={insp} />
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Pagination */}
-          <div className="flex items-center justify-between px-6 py-3 border-t border-slate-700/60 bg-slate-900/50 flex-shrink-0">
-            <span className="text-xs text-slate-500">
-              Showing {((page - 1) * PAGE_SIZE) + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length}
-            </span>
-            <div className="flex items-center gap-2">
-              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="bms-btn-secondary text-xs py-1 px-3 disabled:opacity-40">← Prev</button>
-              <span className="text-xs text-slate-400">Page {page} / {pageCount}</span>
-              <button onClick={() => setPage(p => Math.min(pageCount, p + 1))} disabled={page === pageCount} className="bms-btn-secondary text-xs py-1 px-3 disabled:opacity-40">Next →</button>
-            </div>
-          </div>
+        <div className="flex-1 flex flex-col overflow-hidden p-4">
+          <SortableFilterableTable
+            columns={columns}
+            rows={filtered}
+            accent={NEON.purple}
+            exportName="inspection-log"
+            initialSort="date"
+          />
         </div>
 
         {/* Right panel: upcoming due */}
@@ -176,96 +219,9 @@ export default function InspectionManagement() {
   );
 }
 
-// ─── Table Row ────────────────────────────────────────────────────────────────
-function InspectionRow({ insp }: { insp: Inspection }) {
-  const [expanded, setExpanded] = useState(false);
-
-  return (
-    <>
-      <tr onClick={() => setExpanded(e => !e)} className="hover:bg-slate-700/30 transition-colors cursor-pointer">
-        <td className="px-4 py-3">
-          <div className="text-xs font-semibold text-slate-200">{insp.structureName}</div>
-          <div className="text-[10px] text-slate-500">{insp.structureId}</div>
-        </td>
-        <td className="px-4 py-3 text-xs text-slate-400 whitespace-nowrap">{formatDate(insp.date)}</td>
-        <td className="px-4 py-3 text-xs text-slate-400">{insp.inspector}</td>
-        <td className="px-4 py-3">
-          <span className={`badge text-[10px] ${
-            insp.type === 'Emergency' ? 'badge-critical' :
-            insp.type === 'Special'   ? 'badge-fair' :
-            insp.type === 'Principal' ? 'badge-blue' : 'badge-slate'
-          }`}>{insp.type}</span>
-        </td>
-        <td className="px-4 py-3 text-xs text-center"><RatingDot v={insp.deckRating} /></td>
-        <td className="px-4 py-3 text-xs text-center"><RatingDot v={insp.superstructureRating} /></td>
-        <td className="px-4 py-3 text-xs text-center"><RatingDot v={insp.substructureRating} /></td>
-        <td className="px-4 py-3 text-xs text-center"><RatingDot v={insp.channelRating} /></td>
-        <td className="px-4 py-3">
-          <div className="flex items-center gap-2">
-            <div className="flex-1 bg-slate-700 rounded-full h-1.5 min-w-[40px]">
-              <div
-                className="rounded-full h-1.5"
-                style={{ width: `${insp.visualScore}%`, background: conditionColor(insp.overallCondition) }}
-              />
-            </div>
-            <span className="text-[10px] text-slate-400 w-7 text-right">{insp.visualScore}</span>
-          </div>
-        </td>
-        <td className="px-4 py-3">
-          <span className={`badge ${conditionBadge(insp.overallCondition)}`}>
-            {insp.overallCondition} – {conditionLabel(insp.overallCondition)}
-          </span>
-        </td>
-        <td className="px-4 py-3 text-xs text-slate-400 whitespace-nowrap">{formatDate(insp.nextInspection)}</td>
-        <td className="px-4 py-3 text-xs text-slate-500">
-          <div className="flex items-center gap-1">
-            <Camera size={12} />
-            <span>{insp.photos.length}</span>
-          </div>
-        </td>
-      </tr>
-      {expanded && (
-        <tr className="bg-slate-800/60">
-          <td colSpan={12} className="px-6 py-4">
-            <div className="grid grid-cols-2 gap-6">
-              <div>
-                <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Findings</div>
-                <p className="text-xs text-slate-300">{insp.findings}</p>
-              </div>
-              <div>
-                <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Recommendations</div>
-                <p className="text-xs text-slate-300">{insp.recommendations}</p>
-              </div>
-              {insp.defects.length > 0 && (
-                <div className="col-span-2">
-                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Defects Recorded</div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {insp.defects.map(d => (
-                      <span key={d} className="badge badge-critical text-[9px]">{d}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {insp.photos.length > 0 && (
-                <div>
-                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Photo Files</div>
-                  <div className="flex flex-wrap gap-1">
-                    {insp.photos.map(p => (
-                      <code key={p} className="text-[10px] text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded">{p}</code>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </td>
-        </tr>
-      )}
-    </>
-  );
-}
-
 function RatingDot({ v }: { v: number }) {
-  const color = v >= 7 ? '#22c55e' : v >= 5 ? '#f59e0b' : v >= 3 ? '#f97316' : '#ef4444';
+  // NBI 0-9 component rating, coloured on the platform's vivid palette.
+  const color = v >= 7 ? NEON.green : v >= 5 ? NEON.amber : v >= 3 ? NEON.orange : NEON.red;
   return (
     <span className="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold"
       style={{ background: color + '22', color }}>
@@ -341,22 +297,22 @@ function InspectionForm({
         <div className="p-6 grid grid-cols-2 gap-4 overflow-y-auto max-h-[70vh]">
           <div className="col-span-2">
             <label className="bms-label">Structure</label>
-            <select className="bms-select" value={f.structureId} onChange={e => set('structureId', e.target.value)}>
+            <SearchableSelect value={f.structureId} onChange={v => set('structureId', v)} style={bmsSelectStyle}>
               {structures.map(s => <option key={s.id} value={s.id}>{s.name} ({s.id})</option>)}
-            </select>
+            </SearchableSelect>
           </div>
           <FormField label="Date" type="date" value={f.date} onChange={v => set('date', v)} />
           <div>
             <label className="bms-label">Inspector</label>
-            <select className="bms-select" value={f.inspector} onChange={e => set('inspector', e.target.value)}>
-              {INSPECTORS.map(i => <option key={i}>{i}</option>)}
-            </select>
+            <SearchableSelect value={f.inspector} onChange={v => set('inspector', v)} style={bmsSelectStyle}>
+              {INSPECTORS.map(i => <option key={i} value={i}>{i}</option>)}
+            </SearchableSelect>
           </div>
           <div>
             <label className="bms-label">Inspection Type</label>
-            <select className="bms-select" value={f.type} onChange={e => set('type', e.target.value)}>
-              {['Routine', 'Principal', 'Special', 'Emergency'].map(t => <option key={t}>{t}</option>)}
-            </select>
+            <SearchableSelect value={f.type} onChange={v => set('type', v)} style={bmsSelectStyle}>
+              {['Routine', 'Principal', 'Special', 'Emergency'].map(t => <option key={t} value={t}>{t}</option>)}
+            </SearchableSelect>
           </div>
           <FormField label="Overall Condition (1-5)" type="number" value={f.overallCondition} onChange={v => set('overallCondition', v)} min={1} max={5} />
           <FormField label="Deck Rating (NBI 0-9)"          type="number" value={f.deckRating}           onChange={v => set('deckRating', v)} min={0} max={9} />
