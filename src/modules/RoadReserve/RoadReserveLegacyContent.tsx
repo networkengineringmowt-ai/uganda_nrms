@@ -17,6 +17,8 @@ import { ModuleNavBar } from '../../shared/ModuleNavBar';
 import { CaptureButton } from '../../shared/CaptureButton';
 import { useBMS } from '../../store/BMSContext';
 import SectionDashboard from '../Dashboard/SectionDashboard';
+import { SearchableSelect } from '../../shared/SearchableSelect';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
 
 // ── Color palette (matches platform convention) ──────────────────────────────
 const C = {
@@ -656,18 +658,18 @@ function EncroachmentRegisterTab() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, color: 'rgba(148,163,184,0.6)', fontWeight: 700 }}>
           <Filter size={12}/> Filter:
         </div>
-        <select style={selStyle} value={statusFilter} onChange={e => setStatusFilter(e.target.value as any)}>
+        <SearchableSelect style={selStyle} value={statusFilter} onChange={v => setStatusFilter(v as any)}>
           <option value="all">All statuses</option>
           {(['Active', 'Notice issued', 'Evicted', 'Resolved'] as EncroachmentStatus[]).map(s => <option key={s} value={s}>{s}</option>)}
-        </select>
-        <select style={selStyle} value={classFilter} onChange={e => setClassFilter(e.target.value)}>
+        </SearchableSelect>
+        <SearchableSelect style={selStyle} value={classFilter} onChange={setClassFilter}>
           <option value="all">All road classes</option>
           {classes.map(c => <option key={c} value={c}>Class {c}</option>)}
-        </select>
-        <select style={selStyle} value={regionFilter} onChange={e => setRegionFilter(e.target.value)}>
+        </SearchableSelect>
+        <SearchableSelect style={selStyle} value={regionFilter} onChange={setRegionFilter}>
           <option value="all">All regions</option>
           {regions.map(r => <option key={r} value={r}>{r}</option>)}
-        </select>
+        </SearchableSelect>
         <div style={{ flex: 1 }} />
         <button onClick={() => exportToCsv(filtered)} style={{
           display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 7,
@@ -680,50 +682,49 @@ function EncroachmentRegisterTab() {
 
       {/* Table */}
       <div style={{ ...card(C.teal), padding: 0, overflow: 'hidden' }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10.5 }}>
-            <thead>
-              <tr style={{ background: 'rgba(0,212,170,0.06)', borderBottom: '1px solid rgba(0,212,170,0.2)' }}>
-                {['Road Link', 'Location / Chainage', 'Type', 'Date Reported', 'Status', 'Action'].map(h => (
-                  <th key={h} style={{ textAlign: 'left', padding: '10px 14px', color: 'rgba(148,163,184,0.75)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', fontSize: 9.5 }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((r, i) => (
-                <tr key={r.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', background: i % 2 ? 'rgba(255,255,255,0.012)' : 'transparent' }}>
-                  <td style={{ padding: '10px 14px', fontWeight: 800, color: '#d4dde8' }}>{r.link_id}<div style={{ fontSize: 9, color: 'rgba(148,163,184,0.5)', fontWeight: 500 }}>{r.road_no} · Class {r.road_class} · {r.region}</div></td>
-                  <td style={{ padding: '10px 14px', color: '#c4d2e1' }}>{r.location}<div style={{ fontSize: 9, color: 'rgba(148,163,184,0.5)' }}>Chainage km {r.chainage_km.toFixed(1)}</div></td>
-                  <td style={{ padding: '10px 14px' }}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '3px 9px', borderRadius: 999,
-                      background: 'rgba(148,163,184,0.1)', color: '#d4dde8', fontWeight: 700, fontSize: 9.5 }}>
-                      {ENC_TYPE_ICON[r.type]} {r.type}
-                    </span>
-                  </td>
-                  <td style={{ padding: '10px 14px', color: '#c4d2e1' }}>{r.date_reported}</td>
-                  <td style={{ padding: '10px 14px' }}>
-                    <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 999, fontSize: 9.5, fontWeight: 800,
-                      color: ENC_STATUS_COLOR[r.status], background: `rgba(${hexRgb(ENC_STATUS_COLOR[r.status])},0.12)`,
-                      border: `1px solid rgba(${hexRgb(ENC_STATUS_COLOR[r.status])},0.3)` }}>
-                      {r.status}
-                    </span>
-                  </td>
-                  <td style={{ padding: '10px 14px' }}>
-                    <div style={{ display: 'flex', gap: 6 }}>
-                      <button onClick={() => setDetail(r)} style={actionBtnStyle(C.blue)} title="View / edit record">View</button>
-                      <button onClick={() => setStatus(r.id, 'Notice issued')} style={actionBtnStyle(C.yellow)} title="Issue or update notice">Notice</button>
-                      <button onClick={() => setStatus(r.id, 'Resolved')} style={actionBtnStyle(C.green)} title="Mark resolved">Resolve</button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {filtered.length === 0 && (
-                <tr><td colSpan={6} style={{ padding: '24px', textAlign: 'center', color: 'rgba(148,163,184,0.5)', fontSize: 11 }}>
-                  No encroachment records match the selected filters.
-                </td></tr>
-              )}
-            </tbody>
-          </table>
+        <div style={{ padding: '12px 14px 0' }}>
+          <SortableFilterableTable<EncroachmentRecord>
+            accent={C.teal}
+            exportName="encroachment-register"
+            initialSort="date_reported"
+            emptyText="No encroachment records match the selected filters."
+            columns={[
+              { key: 'link_id', label: 'Road Link', render: r => (
+                  <div>
+                    <div style={{ fontWeight: 800, color: '#d4dde8' }}>{r.link_id}</div>
+                    <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.5)', fontWeight: 500 }}>{r.road_no} · Class {r.road_class} · {r.region}</div>
+                  </div>
+                ) },
+              { key: 'location', label: 'Location / Chainage', render: r => (
+                  <div>
+                    <div>{r.location}</div>
+                    <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.5)' }}>Chainage km {r.chainage_km.toFixed(1)}</div>
+                  </div>
+                ) },
+              { key: 'type', label: 'Type', render: r => (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '3px 9px', borderRadius: 999,
+                    background: 'rgba(148,163,184,0.1)', color: '#d4dde8', fontWeight: 700, fontSize: 9.5 }}>
+                    {ENC_TYPE_ICON[r.type]} {r.type}
+                  </span>
+                ) },
+              { key: 'date_reported', label: 'Date Reported', date: true },
+              { key: 'status', label: 'Status', render: r => (
+                  <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 999, fontSize: 9.5, fontWeight: 800,
+                    color: ENC_STATUS_COLOR[r.status], background: `rgba(${hexRgb(ENC_STATUS_COLOR[r.status])},0.12)`,
+                    border: `1px solid rgba(${hexRgb(ENC_STATUS_COLOR[r.status])},0.3)` }}>
+                    {r.status}
+                  </span>
+                ) },
+              { key: 'id', label: 'Action', render: r => (
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <button onClick={() => setDetail(r)} style={actionBtnStyle(C.blue)} title="View / edit record">View</button>
+                    <button onClick={() => setStatus(r.id, 'Notice issued')} style={actionBtnStyle(C.yellow)} title="Issue or update notice">Notice</button>
+                    <button onClick={() => setStatus(r.id, 'Resolved')} style={actionBtnStyle(C.green)} title="Mark resolved">Resolve</button>
+                  </div>
+                ) },
+            ] as STColumn<EncroachmentRecord>[]}
+            rows={filtered}
+          />
         </div>
         <div style={{ padding: '8px 14px', fontSize: 8.5, color: 'rgba(148,163,184,0.4)', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
           Showing {filtered.length} of {records.length} mock records.
@@ -827,34 +828,32 @@ function GazetteTab() {
           <div style={{ padding: '14px 18px 8px', fontSize: 11, fontWeight: 900, color: C.teal, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
             Gazette & Legal Status Register
           </div>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10.5 }}>
-              <thead>
-                <tr style={{ background: 'rgba(0,212,170,0.06)', borderBottom: '1px solid rgba(0,212,170,0.2)' }}>
-                  {['Road Name', 'Gazette No.', 'Date Gazetted', 'Reserve Width', 'Survey Status', 'Remarks'].map(h => (
-                    <th key={h} style={{ textAlign: 'left', padding: '9px 14px', color: 'rgba(148,163,184,0.75)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', fontSize: 9.5 }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {GAZETTE_RECORDS.map((g, i) => (
-                  <tr key={`${g.road_no}-${g.gazette_no}`} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', background: i % 2 ? 'rgba(255,255,255,0.012)' : 'transparent' }}>
-                    <td style={{ padding: '9px 14px', fontWeight: 800, color: '#d4dde8' }}>{g.road_name}<div style={{ fontSize: 9, color: 'rgba(148,163,184,0.5)', fontWeight: 500 }}>{g.road_no} · Class {g.road_class}</div></td>
-                    <td style={{ padding: '9px 14px', color: '#c4d2e1', fontFamily: 'monospace' }}>{g.gazette_no}</td>
-                    <td style={{ padding: '9px 14px', color: '#c4d2e1' }}>{g.date_gazetted}</td>
-                    <td style={{ padding: '9px 14px', color: '#c4d2e1' }}>{g.reserve_width_m} m</td>
-                    <td style={{ padding: '9px 14px' }}>
-                      <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 999, fontSize: 9.5, fontWeight: 800,
-                        color: SURVEY_COLOR[g.survey_status], background: `rgba(${hexRgb(SURVEY_COLOR[g.survey_status])},0.12)`,
-                        border: `1px solid rgba(${hexRgb(SURVEY_COLOR[g.survey_status])},0.3)` }}>
-                        {g.survey_status}
-                      </span>
-                    </td>
-                    <td style={{ padding: '9px 14px', color: 'rgba(196,210,225,0.75)', maxWidth: 260 }}>{g.remarks}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div style={{ padding: '0 12px' }}>
+            <SortableFilterableTable<GazetteRecord>
+              accent={C.teal}
+              exportName="gazette-legal-status"
+              initialSort="date_gazetted"
+              columns={[
+                { key: 'road_name', label: 'Road Name', render: g => (
+                    <div>
+                      <div style={{ fontWeight: 800, color: '#d4dde8' }}>{g.road_name}</div>
+                      <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.5)', fontWeight: 500 }}>{g.road_no} · Class {g.road_class}</div>
+                    </div>
+                  ) },
+                { key: 'gazette_no', label: 'Gazette No.', render: g => <span style={{ fontFamily: 'monospace' }}>{g.gazette_no}</span> },
+                { key: 'date_gazetted', label: 'Date Gazetted', date: true },
+                { key: 'reserve_width_m', label: 'Reserve Width', numeric: true, render: g => `${g.reserve_width_m} m` },
+                { key: 'survey_status', label: 'Survey Status', render: g => (
+                    <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 999, fontSize: 9.5, fontWeight: 800,
+                      color: SURVEY_COLOR[g.survey_status], background: `rgba(${hexRgb(SURVEY_COLOR[g.survey_status])},0.12)`,
+                      border: `1px solid rgba(${hexRgb(SURVEY_COLOR[g.survey_status])},0.3)` }}>
+                      {g.survey_status}
+                    </span>
+                  ) },
+                { key: 'remarks', label: 'Remarks' },
+              ] as STColumn<GazetteRecord>[]}
+              rows={GAZETTE_RECORDS}
+            />
           </div>
           <div style={{ padding: '8px 14px', fontSize: 8.5, color: 'rgba(148,163,184,0.4)', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
             {/* TODO: replace with Supabase query - SELECT road_no, road_name, gazette_no, date_gazetted, reserve_width_m, survey_status, remarks, road_class FROM road_reserve_gazette */}
@@ -953,16 +952,16 @@ function PermitsTab() {
       {/* Filters + export */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
         <Filter size={13} style={{ color: 'rgba(148,163,184,0.6)' }} />
-        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value as any)} style={selectStyle()}>
+        <SearchableSelect value={statusFilter} onChange={v => setStatusFilter(v as any)} style={selectStyle()}>
           <option value="all">All statuses</option>
           {(['Draft', 'Submitted', 'Under Review', 'Recommended', 'Approved', 'Rejected'] as ApplicationStatus[]).map(s => (
             <option key={s} value={s}>{s}</option>
           ))}
-        </select>
-        <select value={activityFilter} onChange={e => setActivityFilter(e.target.value)} style={selectStyle()}>
+        </SearchableSelect>
+        <SearchableSelect value={activityFilter} onChange={setActivityFilter} style={selectStyle()}>
           <option value="all">All activities</option>
           {activities.map(a => <option key={a} value={a}>{a}</option>)}
-        </select>
+        </SearchableSelect>
         <div style={{ flex: 1 }} />
         <button onClick={() => exportApplicationsToCsv(filtered)} style={actionBtnStyle(C.teal)}>
           <Download size={12}/> Export CSV
@@ -974,49 +973,52 @@ function PermitsTab() {
         <div style={{ padding: '14px 18px 8px', fontSize: 11, fontWeight: 900, color: C.blue, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
           Road Reserve Usage Applications - MOWT Form 2
         </div>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10.5 }}>
-            <thead>
-              <tr style={{ background: 'rgba(77,159,255,0.06)', borderBottom: '1px solid rgba(77,159,255,0.2)' }}>
-                {['Application No.', 'Date', 'Applicant', 'Activity / Structure', 'Location', 'Dimensions', 'Status', 'Recommendation'].map(h => (
-                  <th key={h} style={{ textAlign: 'left', padding: '9px 14px', color: 'rgba(148,163,184,0.75)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', fontSize: 9.5 }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((a, i) => {
-                const recColor = a.final_recommendation === 'Suitable' ? C.green : a.final_recommendation === 'Not Suitable' ? C.red : C.gray;
-                return (
-                  <tr key={a.application_number} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', background: i % 2 ? 'rgba(255,255,255,0.012)' : 'transparent' }}>
-                    <td style={{ padding: '9px 14px', fontFamily: 'monospace', color: '#c4d2e1' }}>{a.application_number}
-                      <div style={{ fontSize: 8.5, color: 'rgba(148,163,184,0.5)' }}>{a.file_reference_number}</div>
-                    </td>
-                    <td style={{ padding: '9px 14px', color: '#c4d2e1' }}>{a.application_date}</td>
-                    <td style={{ padding: '9px 14px', fontWeight: 800, color: '#d4dde8' }}>{a.registered_name}
-                      <div style={{ fontSize: 8.5, color: 'rgba(148,163,184,0.5)', fontWeight: 500 }}>TIN {a.applicant_tin}</div>
-                    </td>
-                    <td style={{ padding: '9px 14px', color: '#c4d2e1' }}>{a.nature_of_structure}
-                      <div style={{ fontSize: 8.5, color: 'rgba(148,163,184,0.5)' }}>{a.nature_of_activity}</div>
-                    </td>
-                    <td style={{ padding: '9px 14px', color: 'rgba(196,210,225,0.85)' }}>{a.road_name}
-                      <div style={{ fontSize: 8.5, color: 'rgba(148,163,184,0.5)' }}>{a.district} · {a.road_or_highway}</div>
-                    </td>
-                    <td style={{ padding: '9px 14px', color: 'rgba(196,210,225,0.8)', fontSize: 9.5 }}>{a.size_summary}</td>
-                    <td style={{ padding: '9px 14px' }}>
-                      <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 999, fontSize: 9.5, fontWeight: 800,
-                        color: APP_STATUS_COLOR[a.status], background: `rgba(${hexRgb(APP_STATUS_COLOR[a.status])},0.12)`,
-                        border: `1px solid rgba(${hexRgb(APP_STATUS_COLOR[a.status])},0.3)` }}>
-                        {a.status}
-                      </span>
-                    </td>
-                    <td style={{ padding: '9px 14px' }}>
-                      <span style={{ fontWeight: 800, color: recColor }}>{a.final_recommendation}</span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        <div style={{ padding: '0 12px' }}>
+          <SortableFilterableTable<ApplicationRecord>
+            accent={C.blue}
+            exportName="road-reserve-applications"
+            initialSort="application_date"
+            columns={[
+              { key: 'application_number', label: 'Application No.', render: a => (
+                  <div>
+                    <div style={{ fontFamily: 'monospace' }}>{a.application_number}</div>
+                    <div style={{ fontSize: 8.5, color: 'rgba(148,163,184,0.5)' }}>{a.file_reference_number}</div>
+                  </div>
+                ) },
+              { key: 'application_date', label: 'Date', date: true },
+              { key: 'registered_name', label: 'Applicant', render: a => (
+                  <div>
+                    <div style={{ fontWeight: 800, color: '#d4dde8' }}>{a.registered_name}</div>
+                    <div style={{ fontSize: 8.5, color: 'rgba(148,163,184,0.5)', fontWeight: 500 }}>TIN {a.applicant_tin}</div>
+                  </div>
+                ) },
+              { key: 'nature_of_structure', label: 'Activity / Structure', render: a => (
+                  <div>
+                    <div>{a.nature_of_structure}</div>
+                    <div style={{ fontSize: 8.5, color: 'rgba(148,163,184,0.5)' }}>{a.nature_of_activity}</div>
+                  </div>
+                ) },
+              { key: 'road_name', label: 'Location', render: a => (
+                  <div>
+                    <div style={{ color: 'rgba(196,210,225,0.85)' }}>{a.road_name}</div>
+                    <div style={{ fontSize: 8.5, color: 'rgba(148,163,184,0.5)' }}>{a.district} · {a.road_or_highway}</div>
+                  </div>
+                ) },
+              { key: 'size_summary', label: 'Dimensions' },
+              { key: 'status', label: 'Status', render: a => (
+                  <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 999, fontSize: 9.5, fontWeight: 800,
+                    color: APP_STATUS_COLOR[a.status], background: `rgba(${hexRgb(APP_STATUS_COLOR[a.status])},0.12)`,
+                    border: `1px solid rgba(${hexRgb(APP_STATUS_COLOR[a.status])},0.3)` }}>
+                    {a.status}
+                  </span>
+                ) },
+              { key: 'final_recommendation', label: 'Recommendation', render: a => {
+                  const recColor = a.final_recommendation === 'Suitable' ? C.green : a.final_recommendation === 'Not Suitable' ? C.red : C.gray;
+                  return <span style={{ fontWeight: 800, color: recColor }}>{a.final_recommendation}</span>;
+                } },
+            ] as STColumn<ApplicationRecord>[]}
+            rows={filtered}
+          />
         </div>
         <div style={{ padding: '8px 14px', fontSize: 8.5, color: 'rgba(148,163,184,0.4)', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
           Showing {filtered.length} of {ROAD_RESERVE_APPLICATIONS.length} mock applications.
