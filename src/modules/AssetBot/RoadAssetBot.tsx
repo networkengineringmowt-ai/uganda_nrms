@@ -5,6 +5,7 @@ import { BotHighlightContext, type BotMessage, type Row } from './types';
 import { matchIntentFull, QUICK_QUERIES } from './intentMatcher';
 import { LINK_ID_EXPLAINER } from './linkIdKnowledge';
 import { askFable, getApiKey, setApiKey, type FableTurn } from './fable';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
 
 const BASE = import.meta.env.BASE_URL;
 const GLASS: React.CSSProperties = {
@@ -85,33 +86,25 @@ function describeResult(queryId: string, rows: Row[]): string {
 }
 
 // ── Result table ──────────────────────────────────────────────────────────────
+// Columns are dynamic - each bot query returns a different row shape - so the
+// STColumn list is built at render time from the first row's keys.
 function ResultTable({ rows }: { rows: Row[] }) {
   if (!rows.length) return <p style={{ color: '#64748b', fontSize: 11, margin: '8px 0' }}>No data available.</p>;
   const cols = Object.keys(rows[0]);
+  const columns: STColumn<Row>[] = cols.map(c => ({
+    key: c,
+    label: c.replace(/_/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase()),
+    numeric: typeof rows[0][c] === 'number',
+    render: row => row[c] === null || row[c] === undefined ? '-' : String(row[c]),
+  }));
   return (
-    <div style={{ overflowX: 'auto', maxHeight: 260, overflowY: 'auto', borderRadius: 6, marginTop: 8, border: '1px solid rgba(255,255,255,0.08)' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10, minWidth: 400 }}>
-        <thead>
-          <tr style={{ background: 'rgba(99,102,241,0.15)', position: 'sticky', top: 0 }}>
-            {cols.map(c => (
-              <th key={c} style={{ padding: '5px 8px', color: '#94a3b8', fontWeight: 700, textAlign: 'left', whiteSpace: 'nowrap', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                {c}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, i) => (
-            <tr key={i} style={{ background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.025)' }}>
-              {cols.map(c => (
-                <td key={c} style={{ padding: '4px 8px', color: '#cbd5e1', whiteSpace: 'nowrap', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                  {row[c] === null ? '-' : String(row[c])}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div style={{ marginTop: 8 }}>
+      <SortableFilterableTable<Row>
+        accent={ACCENT}
+        exportName="asset-bot-result"
+        columns={columns}
+        rows={rows}
+      />
     </div>
   );
 }
