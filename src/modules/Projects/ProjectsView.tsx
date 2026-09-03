@@ -17,6 +17,9 @@ import { loadEnhancedProjects, type Project } from '../../data/appStore';
 import { ModuleNavBar } from '../../shared/ModuleNavBar';
 import MapDetailPane, { StatCard, AttributeRow, SectionHeader } from '../../shared/MapDetailPane';
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
+import { SearchableSelect } from '../../shared/SearchableSelect';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
+import { NULL_ZERO_STYLE } from '../../shared/tableFormatting';
 
 // ── Under-construction corridor definitions ───────────────────────────────────
 interface UCorridor {
@@ -73,6 +76,13 @@ const UNDER_CONSTRUCTION: UCorridor[] = [
   },
 ];
 
+// Inline equivalent of the .bms-input CSS class, since SearchableSelect
+// takes a style prop rather than className (see index.css .bms-input).
+const bmsInputStyle: React.CSSProperties = {
+  background: 'rgba(6,13,24,0.8)', border: '1px solid rgba(0,245,255,0.12)',
+  borderRadius: 8, padding: '4px 10px', color: '#e2eaf4',
+};
+
 // ── Colour helpers ────────────────────────────────────────────────────────────
 const FUNDER_COLORS: Record<string, string> = {
   GOU: '#3b82f6', GoU: '#3b82f6',
@@ -119,6 +129,19 @@ const MARKER_COLOR: Record<Project['status'], string> = {
   ongoing:  '#f59e0b',
   complete: '#22c55e',
 };
+const STATUS_LABEL: Record<Project['status'], string> = {
+  planned: 'Planned', ongoing: 'Ongoing', complete: 'Complete',
+};
+function StatusBadge({ status }: { status: Project['status'] | null | undefined }) {
+  if (!status) return <span style={NULL_ZERO_STYLE}>No data</span>;
+  const color = MARKER_COLOR[status] ?? '#64748b';
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', padding: '2px 9px', borderRadius: 999,
+      background: `${color}1f`, border: `1px solid ${color}55`, color, fontSize: 10, fontWeight: 800,
+    }}>{STATUS_LABEL[status] ?? status}</span>
+  );
+}
 
 // ── Map controller: flies to target on change ─────────────────────────────────
 function MapController({ target }: { target: [number, number] | null }) {
@@ -319,6 +342,64 @@ export default function ProjectsView() {
     totalKm:  projects.reduce((s, p) => s + p.parsed_length_km, 0),
   }), [projects]);
 
+  // ── Works Register table - Project rows mapped to a flat, uniquely-keyed
+  // shape (SortableFilterableTable uses each column's key as its React key,
+  // so every column here needs a distinct one even where two columns derive
+  // from the same underlying Project field, e.g. project_name -> both the
+  // Name and the inferred Type columns).
+  interface RegisterRow extends Record<string, unknown> {
+    project_name: string; region: string | null; km: number; status: Project['status'];
+    funder: string; type: string; completion: string | null;
+  }
+  const registerRows: RegisterRow[] = useMemo(() => filtered.map(p => ({
+    project_name: p.project_name, region: p.regions, km: p.parsed_length_km,
+    status: p.status, funder: p.funding_agency, type: inferWorksType(p.project_name),
+    completion: p.target_completion_date,
+  })), [filtered]);
+  const registerColumns: STColumn<RegisterRow>[] = useMemo(() => [
+    { key: 'project_name', label: 'Project Name' },
+    { key: 'region', label: 'Region', render: r => r.region || <span style={NULL_ZERO_STYLE}>No data</span> },
+    {
+      key: 'km', label: 'Length (km)', numeric: true,
+      render: r => r.km ? r.km.toLocaleString(undefined, { maximumFractionDigits: 1 }) : <span style={NULL_ZERO_STYLE}>No data</span>,
+    },
+    { key: 'status', label: 'Status', render: r => <StatusBadge status={r.status} /> },
+    { key: 'funder', label: 'Funder', render: r => r.funder || <span style={NULL_ZERO_STYLE}>No data</span> },
+    { key: 'type', label: 'Type' },
+    { key: 'completion', label: 'Completion', render: r => r.completion || <span style={NULL_ZERO_STYLE}>No data</span> },
+  ], []);
+
+  // ── NDPIV table - Link ID/Road No./Class/Surface/OPRC Lot are not yet
+  // joined to the master network register for these projects, so they
+  // render an explicit "No data" flag rather than a fabricated value.
+  interface NdpivRow extends Record<string, unknown> {
+    linkId: null; roadNo: null; linkName: string; cls: null; km: number;
+    surface: null; region: string | null; component: string; funder: string; oprcLot: null;
+  }
+  const ndpivProjects = useMemo(
+    () => filtered.filter(p => p.project_name.toLowerCase().includes('ndp') || p.funding_agency.toLowerCase().includes('gou')),
+    [filtered],
+  );
+  const ndpivRows: NdpivRow[] = useMemo(() => ndpivProjects.map(p => ({
+    linkId: null, roadNo: null, linkName: p.project_name, cls: null, km: p.parsed_length_km,
+    surface: null, region: p.regions, component: inferWorksType(p.project_name), funder: p.funding_agency, oprcLot: null,
+  })), [ndpivProjects]);
+  const ndpivColumns: STColumn<NdpivRow>[] = useMemo(() => [
+    { key: 'linkId', label: 'Link ID', render: () => <span style={NULL_ZERO_STYLE}>No data</span> },
+    { key: 'roadNo', label: 'Road No.', render: () => <span style={NULL_ZERO_STYLE}>No data</span> },
+    { key: 'linkName', label: 'Link Name' },
+    { key: 'cls', label: 'Class', render: () => <span style={NULL_ZERO_STYLE}>No data</span> },
+    {
+      key: 'km', label: 'Length (km)', numeric: true,
+      render: r => r.km ? r.km.toLocaleString(undefined, { maximumFractionDigits: 1 }) : <span style={NULL_ZERO_STYLE}>No data</span>,
+    },
+    { key: 'surface', label: 'Surface', render: () => <span style={NULL_ZERO_STYLE}>No data</span> },
+    { key: 'region', label: 'Region', render: r => r.region || <span style={NULL_ZERO_STYLE}>No data</span> },
+    { key: 'component', label: 'NDPIV Component' },
+    { key: 'funder', label: 'Funder', render: r => r.funder || <span style={NULL_ZERO_STYLE}>No data</span> },
+    { key: 'oprcLot', label: 'OPRC Lot', render: () => <span style={NULL_ZERO_STYLE}>No data</span> },
+  ], []);
+
   const scrollToCard = useCallback((id: string) => {
     if (!cardListRef.current) return;
     const el = cardListRef.current.querySelector(`[data-project-id="${id}"]`) as HTMLElement | null;
@@ -422,16 +503,16 @@ export default function ProjectsView() {
               <input value={search} onChange={e => setSearch(e.target.value)}
                 placeholder="Search projects…" className="bms-input pl-6 w-full text-xs" style={{ height: 26 }} />
             </div>
-            <select value={regionF} onChange={e => setRegionF(e.target.value)} className="bms-input text-xs" style={{ height: 26 }}>
+            <SearchableSelect value={regionF} onChange={setRegionF} style={{ ...bmsInputStyle, height: 26, fontSize: 12 }}>
               <option value="all">All Regions</option>
               {regions.map(r => <option key={r} value={r}>{r}</option>)}
-            </select>
-            <select value={statusF} onChange={e => setStatusF(e.target.value as typeof statusF)} className="bms-input text-xs" style={{ height: 26 }}>
+            </SearchableSelect>
+            <SearchableSelect value={statusF} onChange={v => setStatusF(v as typeof statusF)} style={{ ...bmsInputStyle, height: 26, fontSize: 12 }}>
               <option value="all">All Status</option>
               <option value="planned">Planned</option>
               <option value="ongoing">Ongoing</option>
               <option value="complete">Complete</option>
-            </select>
+            </SearchableSelect>
             <span className="text-[10px] text-slate-400 font-bold">{filtered.length}/{projects.length}</span>
           </div>
           <MapContainer
@@ -757,8 +838,10 @@ export default function ProjectsView() {
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
                     <XAxis dataKey="fullType" tick={{ fill: '#64748b', fontSize: 8 }}
                       tickFormatter={(s: string) => s.split(' ')[0]} />
-                    <YAxis yAxisId="cnt" tick={{ fill: '#64748b', fontSize: 8 }} />
-                    <YAxis yAxisId="km" orientation="right" tick={{ fill: '#64748b', fontSize: 8 }} />
+                    <YAxis yAxisId="cnt" tick={{ fill: '#64748b', fontSize: 8 }}
+                      label={{ value: 'Projects', angle: -90, position: 'insideLeft', fill: '#64748b', fontSize: 8 }} />
+                    <YAxis yAxisId="km" orientation="right" tick={{ fill: '#64748b', fontSize: 8 }}
+                      label={{ value: 'km', angle: 90, position: 'insideRight', fill: '#64748b', fontSize: 8 }} />
                     <ReTooltip
                       contentStyle={{ background: 'rgba(8,14,28,0.96)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 10 }}
                       formatter={(v: number, name: string) => [name === 'count' ? `${v} projects` : `${v} km`, name === 'count' ? 'Projects' : 'Total km']}
@@ -789,36 +872,14 @@ export default function ProjectsView() {
 
           <div style={{ fontSize: 14, fontWeight: 900, color: '#e2eaf4', marginBottom: 4 }}>Works Register - All Projects</div>
           <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.55)', marginBottom: 12 }}>
-            {projects.length} projects · source: appStore / NDPIV Excel
+            {projects.length} projects · {stats.totalKm.toFixed(0)} km total · source: appStore / NDPIV Excel
           </div>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', fontSize: 9, borderCollapse: 'collapse', minWidth: 900 }}>
-              <thead>
-                <tr style={{ borderBottom: '1px solid rgba(148,163,184,0.12)' }}>
-                  {['Project Name','Region','km','Status','Funder','Type','Completion'].map(h => (
-                    <th key={h} style={{ textAlign: 'left', padding: '6px 10px', color: '#64748b', fontWeight: 700, whiteSpace: 'nowrap' }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((p, i) => (
-                  <tr key={p.id} style={{ borderBottom: '1px solid rgba(148,163,184,0.04)', background: i % 2 === 0 ? 'rgba(15,23,42,0.3)' : 'transparent' }}>
-                    <td style={{ padding: '5px 10px', color: '#e2eaf4', maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.project_name}</td>
-                    <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{p.regions ?? '-'}</td>
-                    <td style={{ padding: '5px 10px', color: '#f59e0b', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{p.parsed_length_km ? p.parsed_length_km.toFixed(1) : '-'}</td>
-                    <td style={{ padding: '5px 10px' }}>
-                      <span style={{ color: p.status === 'ongoing' ? '#00ff88' : p.status === 'complete' ? '#00f5ff' : '#94a3b8', fontWeight: 600 }}>
-                        {p.status ?? '-'}
-                      </span>
-                    </td>
-                    <td style={{ padding: '5px 10px', color: '#64748b', maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.funding_agency}</td>
-                    <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{inferWorksType(p.project_name)}</td>
-                    <td style={{ padding: '5px 10px', color: '#64748b' }}>{p.target_completion_date ?? '-'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <SortableFilterableTable
+            accent="#f59e0b"
+            exportName="works-register"
+            columns={registerColumns}
+            rows={registerRows}
+          />
         </div>
       )}
 
@@ -829,35 +890,12 @@ export default function ProjectsView() {
           <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.55)', marginBottom: 12 }}>
             National Development Plan IV · FY 2025/26 – 2029/30 · links matched from master network register
           </div>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', fontSize: 9, borderCollapse: 'collapse', minWidth: 700 }}>
-              <thead>
-                <tr style={{ borderBottom: '1px solid rgba(77,159,255,0.2)' }}>
-                  {['Link ID','Road No.','Link Name','Class','Length km','Surface','Region','NDPIV Component','Funder','OPRC Lot'].map(h => (
-                    <th key={h} style={{ textAlign: 'left', padding: '6px 10px', color: '#4d9fff', fontWeight: 700, whiteSpace: 'nowrap', fontSize: 8 }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {filtered
-                  .filter(p => p.project_name.toLowerCase().includes('ndp') || p.funding_agency.toLowerCase().includes('gou'))
-                  .map((p, i) => (
-                  <tr key={p.id} style={{ borderBottom: '1px solid rgba(148,163,184,0.04)', background: i % 2 === 0 ? 'rgba(15,23,42,0.3)' : 'transparent' }}>
-                    <td style={{ padding: '5px 8px', color: '#00f5ff', fontFamily: 'monospace', fontSize: 8 }}>-</td>
-                    <td style={{ padding: '5px 8px', color: '#94a3b8' }}>-</td>
-                    <td style={{ padding: '5px 8px', color: '#e2eaf4', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.project_name}</td>
-                    <td style={{ padding: '5px 8px', color: '#f59e0b', fontWeight: 700 }}>-</td>
-                    <td style={{ padding: '5px 8px', color: '#f59e0b', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{p.parsed_length_km?.toFixed(1) ?? '-'}</td>
-                    <td style={{ padding: '5px 8px', color: '#94a3b8' }}>-</td>
-                    <td style={{ padding: '5px 8px', color: '#64748b' }}>{p.regions ?? '-'}</td>
-                    <td style={{ padding: '5px 8px', color: '#94a3b8' }}>{inferWorksType(p.project_name)}</td>
-                    <td style={{ padding: '5px 8px', color: '#64748b' }}>{p.funding_agency}</td>
-                    <td style={{ padding: '5px 8px', color: '#94a3b8' }}>-</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <SortableFilterableTable
+            accent="#4d9fff"
+            exportName="ndpiv-projects"
+            columns={ndpivColumns}
+            rows={ndpivRows}
+          />
         </div>
       )}
 
