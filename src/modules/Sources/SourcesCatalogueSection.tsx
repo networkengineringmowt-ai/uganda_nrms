@@ -1,6 +1,8 @@
-import { useState, useMemo, useCallback, useEffect } from 'react';
-import { Download, Filter, ExternalLink, BookOpen } from 'lucide-react';
+import { useState, useMemo, useEffect } from 'react';
+import { Filter, ExternalLink, BookOpen } from 'lucide-react';
 import { consumePendingSourcesModule } from '../../shared/sourcesFilter';
+import { SearchableSelect } from '../../shared/SearchableSelect';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
 
 const C = {
   cyan: '#00f5ff', green: '#00ff88', yellow: '#ffd23f',
@@ -976,6 +978,9 @@ const SOURCES: Source[] = [
 
 const STATUS_COLOR = { Active: C.green, Archived: C.gray, Planned: C.blue, Partial: C.yellow };
 const TYPES: SourceType[] = ['Survey', 'GIS', 'Database', 'Report', 'Manual', 'Project', 'External', 'Model', 'Standard', 'Research', 'Case Study'];
+// Decoded meaning for the bare category letter shown in the table (rather
+// than a raw, unexplained "A"/"B"/"C"/"D" code alone).
+const CATEGORY_LABEL: Record<SourceCategory, string> = { A: 'Primary Data', B: 'Standards', C: 'Research', D: 'Case Studies' };
 const CATEGORIES: { id: SourceCategory | 'All'; label: string }[] = [
   { id: 'All', label: `All (${SOURCES.length})` },
   { id: 'A', label: 'A â Primary Data' },
@@ -1012,18 +1017,50 @@ export default function SourcesCatalogueSection() {
     return true;
   }), [typeFilter, statusFilter, moduleFilter, categoryFilter, search]);
 
-  const exportCSV = useCallback(() => {
-    const headers = ['Name', 'Type', 'Owner', 'Year Range', 'Coverage', 'Variables', 'Format', 'Status', 'Modules', 'Notes'];
-    const rows = filtered.map(s => [
-      s.name, s.type, s.owner, s.yearRange, s.coverage,
-      s.variables, s.format, s.status, s.module.join('; '), s.notes ?? '',
-    ].map(v => `"${String(v).replace(/"/g, '""')}"`));
-    const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = 'Department of National Roads_Sources_Catalogue.csv'; a.click();
-    URL.revokeObjectURL(url);
-  }, [filtered]);
+  const columns: STColumn<Source>[] = useMemo(() => [
+    { key: 'category', label: 'Category', render: s => {
+        const cat = s.category ?? 'A';
+        return (
+          <span title={`Category ${cat} - ${CATEGORY_LABEL[cat]}`} style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, fontWeight: 900,
+            background: 'rgba(0,245,255,0.08)', color: C.cyan }}>
+            {cat} - {CATEGORY_LABEL[cat]}
+          </span>
+        );
+      } },
+    { key: 'name', label: 'Source Name', width: 240 },
+    { key: 'type', label: 'Type', render: s => {
+        const tc = TYPE_COLOR[s.type];
+        return <span style={{ fontSize: 9, padding: '2px 8px', borderRadius: 4, fontWeight: 800,
+          background: `rgba(${hexRgb(tc)},0.12)`, color: tc }}>{s.type}</span>;
+      } },
+    { key: 'owner', label: 'Owner' },
+    { key: 'yearRange', label: 'Year Range' },
+    { key: 'coverage', label: 'Coverage', width: 200 },
+    { key: 'variables', label: 'Key Variables', width: 220 },
+    { key: 'format', label: 'Format' },
+    { key: 'status', label: 'Status', render: s => {
+        const sc = STATUS_COLOR[s.status];
+        return <span style={{ fontSize: 9, padding: '2px 7px', borderRadius: 4, fontWeight: 800,
+          background: `rgba(${hexRgb(sc)},0.1)`, color: sc }}>{s.status}</span>;
+      } },
+    { key: 'module', label: 'Modules', render: s => (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+          {s.module.map(m => (
+            <span key={m} style={{ fontSize: 8, padding: '1px 5px', borderRadius: 3,
+              background: 'rgba(255,255,255,0.06)', color: 'rgba(148,163,184,0.6)', fontWeight: 700 }}>{m}</span>
+          ))}
+        </div>
+      ) },
+    { key: 'notes', label: 'Notes', width: 220, render: s => s.notes
+        ? <span style={{ fontSize: 10, color: 'rgba(100,116,139,0.75)' }}>{s.notes}</span>
+        : <span style={{ color: 'rgba(148,163,184,0.35)' }}>No additional notes</span> },
+    { key: 'link', label: 'Link', render: s => s.link ? (
+        <a href={s.link} target="_blank" rel="noopener noreferrer"
+          style={{ color: C.cyan, display: 'flex', alignItems: 'center', gap: 3, fontSize: 10 }}>
+          <ExternalLink size={10}/> Open
+        </a>
+      ) : <span style={{ color: 'rgba(148,163,184,0.35)' }}>No link</span> },
+  ], []);
 
   const ALL_MODULES = Array.from(new Set(SOURCES.flatMap(s => s.module))).sort();
 
@@ -1149,101 +1186,30 @@ export default function SourcesCatalogueSection() {
           </div>
 
           {/* Module filter */}
-          <select value={moduleFilter} onChange={e => setModuleFilter(e.target.value)} style={{
+          <SearchableSelect value={moduleFilter} onChange={setModuleFilter} style={{
             background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(255,255,255,0.08)',
             borderRadius: 7, color: '#d4dde8', fontSize: 10, padding: '5px 10px' }}>
             <option value="All">All Modules</option>
             {ALL_MODULES.map(m => <option key={m} value={m}>{m}</option>)}
-          </select>
+          </SearchableSelect>
 
-          <button onClick={exportCSV} style={{
-            marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 5,
-            padding: '6px 14px', borderRadius: 7, border: 'none', cursor: 'pointer',
-            background: `rgba(${hexRgb(C.cyan)},0.12)`,
-            color: C.cyan, fontSize: 11, fontWeight: 700,
-            boxShadow: `inset 0 0 0 1px rgba(${hexRgb(C.cyan)},0.3)`,
-          }}>
-            <Download size={12}/> Export CSV ({filtered.length})
-          </button>
+          <span style={{ marginLeft: 'auto', fontSize: 10, color: 'rgba(148,163,184,0.6)', fontWeight: 700 }}>
+            {filtered.length} of {SOURCES.length} sources - use the table's own CSV / Excel export below
+          </span>
         </div>
       </div>
 
       {/* Table */}
       <div style={{ background: 'rgba(8,14,28,0.6)', border: '1px solid rgba(255,255,255,0.06)',
-        borderRadius: 12, overflow: 'hidden' }}>
-        <div style={{ overflowX: 'auto', overflowY: 'auto', maxHeight: 'calc(100vh - 380px)' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
-            <thead style={{ position: 'sticky', top: 0, zIndex: 2 }}>
-              <tr style={{ background: 'rgba(8,14,28,0.95)' }}>
-                {['Cat.', 'Source Name', 'Type', 'Owner', 'Year Range', 'Coverage', 'Key Variables', 'Format', 'Status', 'Modules', 'Link'].map(h => (
-                  <th key={h} style={{ padding: '10px 12px', textAlign: 'left', fontSize: 8,
-                    fontWeight: 900, color: 'rgba(0,245,255,0.65)',
-                    textTransform: 'uppercase', letterSpacing: '0.1em',
-                    borderBottom: '1px solid rgba(0,245,255,0.12)',
-                    whiteSpace: 'nowrap' }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((s, i) => {
-                const tc = TYPE_COLOR[s.type];
-                const sc = STATUS_COLOR[s.status];
-                return (
-                  <tr key={s.name} style={{ background: i % 2 === 0 ? 'rgba(255,255,255,0.015)' : 'transparent',
-                    borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                    <td style={{ padding: '9px 12px', whiteSpace: 'nowrap' }}>
-                      <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, fontWeight: 900,
-                        background: 'rgba(0,245,255,0.08)', color: C.cyan }}>
-                        {s.category ?? 'A'}
-                      </span>
-                    </td>
-                    <td style={{ padding: '9px 12px', minWidth: 200, maxWidth: 280 }}>
-                      <div style={{ fontWeight: 700, color: '#d4dde8', lineHeight: 1.3 }}>{s.name}</div>
-                      {s.notes && <div style={{ fontSize: 9, color: 'rgba(100,116,139,0.6)', marginTop: 2, lineHeight: 1.3 }}>{s.notes}</div>}
-                    </td>
-                    <td style={{ padding: '9px 12px', whiteSpace: 'nowrap' }}>
-                      <span style={{ fontSize: 9, padding: '2px 8px', borderRadius: 4, fontWeight: 800,
-                        background: `rgba(${hexRgb(tc)},0.12)`, color: tc }}>{s.type}</span>
-                    </td>
-                    <td style={{ padding: '9px 12px', color: 'rgba(148,163,184,0.7)', whiteSpace: 'nowrap', fontSize: 10 }}>{s.owner}</td>
-                    <td style={{ padding: '9px 12px', color: 'rgba(148,163,184,0.6)', whiteSpace: 'nowrap', fontSize: 10, fontFamily: 'monospace' }}>{s.yearRange}</td>
-                    <td style={{ padding: '9px 12px', color: 'rgba(148,163,184,0.65)', fontSize: 10, minWidth: 160, maxWidth: 220, lineHeight: 1.4 }}>{s.coverage}</td>
-                    <td style={{ padding: '9px 12px', color: 'rgba(196,210,225,0.75)', fontSize: 10, minWidth: 180, maxWidth: 240, lineHeight: 1.4 }}>{s.variables}</td>
-                    <td style={{ padding: '9px 12px', color: 'rgba(148,163,184,0.55)', fontSize: 9, whiteSpace: 'nowrap' }}>{s.format}</td>
-                    <td style={{ padding: '9px 12px', whiteSpace: 'nowrap' }}>
-                      <span style={{ fontSize: 9, padding: '2px 7px', borderRadius: 4, fontWeight: 800,
-                        background: `rgba(${hexRgb(sc)},0.1)`, color: sc }}>{s.status}</span>
-                    </td>
-                    <td style={{ padding: '9px 12px', minWidth: 100 }}>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-                        {s.module.map(m => (
-                          <span key={m} style={{ fontSize: 8, padding: '1px 5px', borderRadius: 3,
-                            background: 'rgba(255,255,255,0.06)', color: 'rgba(148,163,184,0.6)',
-                            fontWeight: 700 }}>{m}</span>
-                        ))}
-                      </div>
-                    </td>
-                    <td style={{ padding: '9px 12px' }}>
-                      {s.link && (
-                        <a href={s.link} target="_blank" rel="noopener noreferrer"
-                          style={{ color: C.cyan, display: 'flex', alignItems: 'center', gap: 3, fontSize: 10 }}>
-                          <ExternalLink size={10}/> Open
-                        </a>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-              {filtered.length === 0 && (
-                <tr>
-                  <td colSpan={11} style={{ padding: '40px', textAlign: 'center', color: 'rgba(100,116,139,0.5)', fontSize: 12 }}>
-                    No sources match the current filters.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        borderRadius: 12, overflow: 'hidden', padding: 12 }}>
+        <SortableFilterableTable
+          columns={columns}
+          rows={filtered}
+          accent={C.cyan}
+          exportName="sources-evidence-catalogue"
+          initialSort="name"
+          emptyText="No sources match the current filters."
+        />
       </div>
       </div>{/* end flex padding wrapper */}
     </div>

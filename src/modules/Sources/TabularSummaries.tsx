@@ -6,6 +6,7 @@ import { Table2, Download, ArrowUpRight, FileText, FolderOpen, BarChart3, Extern
 import type { ActiveView } from '../../index';
 import { projectAllClasses, projectAADTByClass, VC_CLASSES, NETWORK_BLENDED_GROWTH } from '../../shared/trafficProjection';
 import { useNetworkStats } from '../../shared/useNetworkStats';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
 
 const DocumentStore = lazy(() => import('../Documents/DocumentStore'));
 const DownloadsView  = lazy(() => import('../Downloads/DownloadsView'));
@@ -55,6 +56,17 @@ const TRAFFIC_TOP = [
   { road: 'A006_Link12', name: 'Gulu–Atiak', aadt: 5800, cls: 'A', year: 2025 },
   { road: 'B102_Link01', name: 'Njeru–Bukoloto', aadt: 5300, cls: 'B', year: 2025 },
   { road: 'A007_Link04', name: 'Mbale–Namunsi–Kumi', aadt: 6200, cls: 'A', year: 2025 },
+];
+const TRAFFIC_TOP_COLUMNS: STColumn<typeof TRAFFIC_TOP[number]>[] = [
+  { key: 'road', label: 'Link ID', render: r => <span style={{ color: C.cyan }}>{r.road}</span> },
+  { key: 'name', label: 'Corridor' },
+  { key: 'cls', label: 'Class', render: r => (
+      <span style={{ fontSize: 8, padding: '1px 5px', borderRadius: 3, fontWeight: 800,
+        background: r.cls === 'A' ? 'rgba(0,245,255,0.1)' : 'rgba(77,159,255,0.1)',
+        color: r.cls === 'A' ? C.cyan : C.blue }}>Class {r.cls}</span>
+    ) },
+  { key: 'aadt', label: 'AADT (veh/day)', numeric: true, render: r => r.aadt.toLocaleString() },
+  { key: 'year', label: 'Year', numeric: true },
 ];
 
 const VEHICLE_CLASS = [
@@ -128,9 +140,9 @@ const MAINT_STATIONS = [
   { id: 'MS01', name: 'Kampala Central HQ', region: 'Central', type: 'Regional HQ', km_resp: 420 },
   { id: 'MS02', name: 'Entebbe Station',    region: 'Central', type: 'Station',     km_resp: 148 },
   { id: 'MS03', name: 'Mukono Station',     region: 'Central', type: 'Station',     km_resp: 196 },
-  { id: 'MS04', name: 'Masaka Station',     region: 'Southern', type: 'Station',    km_resp: 312 },
-  { id: 'MS05', name: 'Mbarara HQ',        region: 'Southern', type: 'Regional HQ', km_resp: 580 },
-  { id: 'MS06', name: 'Kabale Station',    region: 'Southern', type: 'Station',     km_resp: 244 },
+  { id: 'MS04', name: 'Masaka Station',     region: 'Western', type: 'Station',    km_resp: 312 },
+  { id: 'MS05', name: 'Mbarara HQ',        region: 'Western', type: 'Regional HQ', km_resp: 580 },
+  { id: 'MS06', name: 'Kabale Station',    region: 'Western', type: 'Station',     km_resp: 244 },
   { id: 'MS07', name: 'Fort Portal HQ',    region: 'Western', type: 'Regional HQ',  km_resp: 510 },
   { id: 'MS08', name: 'Hoima Station',     region: 'Western', type: 'Station',      km_resp: 280 },
   { id: 'MS09', name: 'Gulu HQ',           region: 'Northern', type: 'Regional HQ', km_resp: 640 },
@@ -138,6 +150,17 @@ const MAINT_STATIONS = [
   { id: 'MS11', name: 'Soroti Station',    region: 'Eastern',  type: 'Station',     km_resp: 290 },
   { id: 'MS12', name: 'Mbale HQ',          region: 'Eastern',  type: 'Regional HQ', km_resp: 460 },
   { id: 'MS13', name: 'Moroto Station',    region: 'North Eastern', type: 'Station', km_resp: 520 },
+];
+const MAINT_STATIONS_COLUMNS: STColumn<typeof MAINT_STATIONS[number]>[] = [
+  { key: 'id', label: 'Station ID' },
+  { key: 'name', label: 'Station Name' },
+  { key: 'region', label: 'Region' },
+  { key: 'type', label: 'Station Type', render: r => (
+      <span style={{ fontSize: 9, padding: '2px 7px', borderRadius: 4, fontWeight: 800,
+        background: r.type === 'Regional HQ' ? 'rgba(185,103,255,0.12)' : 'rgba(77,159,255,0.12)',
+        color: r.type === 'Regional HQ' ? C.purple : C.blue }}>{r.type}</span>
+    ) },
+  { key: 'km_resp', label: 'Km Responsibility', numeric: true, total: 'sum', render: r => r.km_resp.toLocaleString() },
 ];
 
 const WEIGHBRIDGES = [
@@ -163,6 +186,13 @@ const ATC_STATIONS = [
   { id: 'U0009', name: 'Lira (A1 km 450)', class: 'ATC', road: 'A006_Link10', installed: 2025, aadt: 3100 },
   { id: 'U0010', name: 'Kabale (A4 km 420)', class: 'ATC', road: 'A004_Link04', installed: 2025, aadt: 2600 },
 ];
+const ATC_STATIONS_COLUMNS: STColumn<typeof ATC_STATIONS[number]>[] = [
+  { key: 'id', label: 'Site ID', render: r => <span style={{ color: C.yellow }}>{r.id}</span> },
+  { key: 'name', label: 'Station Name' },
+  { key: 'road', label: 'Road Link', render: r => <span style={{ color: C.cyan }}>{r.road}</span> },
+  { key: 'installed', label: 'Installed', numeric: true },
+  { key: 'aadt', label: 'AADT (veh/day)', numeric: true, render: r => r.aadt.toLocaleString() },
+];
 
 const FERRY_ROUTES = [
   { id: 'F01', name: 'Namasale–Lwampanga', water_body: 'Lake Kyoga', km: 18.5, frequency: 'Daily', capacity_veh: 12 },
@@ -178,8 +208,8 @@ const AIRPORTS = [
   { name: 'Arua Airport',           class: 'Domestic',      region: 'Northern',      runway_m: 1480, paved: true  },
   { name: 'Gulu Airport',           class: 'Domestic',      region: 'Northern',      runway_m: 1920, paved: true  },
   { name: 'Kasese Airport',         class: 'Domestic',      region: 'Western',       runway_m: 1300, paved: true  },
-  { name: 'Kisoro Airstrip',        class: 'Airfield',      region: 'Southern',      runway_m:  880, paved: false },
-  { name: 'Mbarara Airstrip',       class: 'Airfield',      region: 'Southern',      runway_m: 1100, paved: false },
+  { name: 'Kisoro Airstrip',        class: 'Airfield',      region: 'Western',      runway_m:  880, paved: false },
+  { name: 'Mbarara Airstrip',       class: 'Airfield',      region: 'Western',      runway_m: 1100, paved: false },
   { name: 'Soroti Airport',         class: 'Domestic',      region: 'Eastern',       runway_m: 1650, paved: true  },
   { name: 'Moroto Airstrip',        class: 'Airfield',      region: 'North Eastern', runway_m:  950, paved: false },
 ];
@@ -228,6 +258,22 @@ const HIST_NETWORK = [
   { year: 2020, paved_km: 5640, total_km: 20700, pct_paved: 27.2 },
   { year: 2025, paved_km: 6334, total_km: 21160, pct_paved: 29.9 },
   { year: 2026, paved_km: 6405, total_km: 21302, pct_paved: 30.1 },
+];
+// Annual gain vs the previous chronological survey year, precomputed against
+// HIST_NETWORK's fixed year order so the figure stays correct however the
+// table is later sorted (rather than being derived from adjacent-row position).
+const HIST_NETWORK_ROWS = HIST_NETWORK.map((r, i) => ({
+  ...r, gain: i > 0 ? r.paved_km - HIST_NETWORK[i - 1].paved_km : null,
+}));
+const HIST_NETWORK_COLUMNS: STColumn<typeof HIST_NETWORK_ROWS[number]>[] = [
+  { key: 'year', label: 'Year', numeric: true },
+  { key: 'paved_km', label: 'Paved (km)', numeric: true, total: 'sum',
+    render: r => <span style={{ color: '#00ff88' }}>{r.paved_km.toLocaleString()}</span> },
+  { key: 'total_km', label: 'Total (km)', numeric: true, render: r => r.total_km.toLocaleString() },
+  { key: 'pct_paved', label: '% Paved', numeric: true, render: r => `${r.pct_paved}%` },
+  { key: 'gain', label: 'Annual Gain (Paved km)', numeric: true, render: r => r.gain == null
+      ? <span style={{ color: 'rgba(148,163,184,0.4)' }}>No prior survey</span>
+      : <span style={{ color: r.gain > 0 ? '#00ff88' : '#ff6b35' }}>{r.gain > 0 ? '+' : ''}{r.gain}</span> },
 ];
 
 // ── §9 Axle Load & Overloading ────────────────────────────────────────────────
@@ -964,6 +1010,40 @@ const CAT_C_RESEARCH = [
   { ref:'P53', author:'Hawk / NCHRP 483',                      yr:'2003', title:'Asset Management Plan Development for Bridge Networks',               notes:'Bridge AMP structure used in DNR BMS 5-year inspection/maintenance planning' },
 ];
 
+const GLOBAL_CASES_COLUMNS: STColumn<typeof GLOBAL_CASES_TABLE[number]>[] = [
+  { key: 'id', label: '#', numeric: true },
+  { key: 'agency', label: 'Agency' },
+  { key: 'country', label: 'Country', render: r => <span>{r.flag} {r.country}</span> },
+  { key: 'km', label: 'Network (km)', numeric: true, render: r => r.km.toLocaleString() },
+  { key: 'paved_pct', label: '% Paved', numeric: true, render: r => `${r.paved_pct}%` },
+  { key: 'system', label: 'System' },
+  { key: 'yrs_active', label: 'Years Active' },
+  { key: 'budget_km_usd', label: 'Budget (USD/km)', numeric: true, render: r => `$${r.budget_km_usd.toLocaleString()}` },
+  { key: 'innovation', label: 'Innovation', width: 260 },
+  { key: 'dnr', label: 'DNR Application', width: 260 },
+];
+
+const CAT_B_STANDARDS_COLUMNS: STColumn<typeof CAT_B_STANDARDS[number]>[] = [
+  { key: 'name', label: 'Standard', width: 260 },
+  { key: 'body', label: 'Issuing Body' },
+  { key: 'yr', label: 'Year', numeric: true },
+  { key: 'module', label: 'Applies To Module' },
+  { key: 'status', label: 'Status', render: r => (
+      <span style={{ fontSize: 9, padding: '2px 7px', borderRadius: 4, fontWeight: 800,
+        background: r.status === 'Active' ? 'rgba(0,255,136,0.12)' : 'rgba(148,163,184,0.12)',
+        color: r.status === 'Active' ? C.green : C.gray }}>{r.status}</span>
+    ) },
+  { key: 'notes', label: 'Notes', width: 260 },
+];
+
+const CAT_C_RESEARCH_COLUMNS: STColumn<typeof CAT_C_RESEARCH[number]>[] = [
+  { key: 'ref', label: 'Ref.' },
+  { key: 'author', label: 'Author / Source' },
+  { key: 'yr', label: 'Year', numeric: true },
+  { key: 'title', label: 'Title', width: 280 },
+  { key: 'notes', label: 'DNR Application', width: 280 },
+];
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function SectionHeader({ icon, title, sub, accent = C.cyan }: { icon: React.ReactNode; title: string; sub: string; accent?: string }) {
   return (
@@ -1266,7 +1346,6 @@ export default function TabularSummaries() {
 
   // GeoJSON road links - loaded once on mount for tbl-links-full
   const [geoLinks, setGeoLinks] = useState<Array<Record<string, unknown>>>([]);
-  const [linkSearch, setLinkSearch] = useState('');
   useEffect(() => {
     const base = (import.meta as { env: { BASE_URL: string } }).env.BASE_URL;
     fetch(`${base}data/network2026.geojson`)
@@ -1282,6 +1361,38 @@ export default function TabularSummaries() {
   const geoKmTotal = useMemo(() =>
     Math.round(geoLinks.reduce((sum, p) => sum + (parseFloat(String(p.length_km1 ?? 0)) || 0), 0)),
     [geoLinks]);
+
+  // Normalised rows/columns for tbl-links-full (SortableFilterableTable) -
+  // length_km carries a 'sum' total so the footer shows km affected for
+  // whatever subset the user has searched/sorted down to (rule: always show
+  // km alongside a statistic where the data supports it).
+  const geoLinkRows = useMemo(() => geoLinks.map(p => ({
+    link_id: String(p.link_id ?? ''),
+    name: String(p.link_nam_1 ?? ''),
+    road_no: String(p.road_no ?? ''),
+    cls: String(p.road_class ?? '?'),
+    length_km: Number(p.length_km1 ?? 0) || 0,
+    surface: String(p.surface_ty ?? ''),
+    region: String(p.maintena_1 ?? ''),
+    station: String(p.maintenanc ?? ''),
+    completion: p.completion ? String(p.completion) : '',
+    rehab: p.rehabilita ? String(p.rehabilita) : '',
+  })), [geoLinks]);
+  const GEO_CLASS_COLOR: Record<string, string> = { A: C.cyan, B: C.green, C: C.yellow, M: C.purple };
+  const geoLinkColumns: STColumn<typeof geoLinkRows[number]>[] = useMemo(() => [
+    { key: 'link_id', label: 'Link ID', render: r => <span style={{ color: C.teal, fontWeight: 700 }}>{r.link_id}</span> },
+    { key: 'name', label: 'Name', render: r => r.name || <span style={{ color: 'rgba(148,163,184,0.4)' }}>No name recorded</span> },
+    { key: 'road_no', label: 'Road No.', render: r => r.road_no || <span style={{ color: 'rgba(148,163,184,0.4)' }}>-</span> },
+    { key: 'cls', label: 'Class', render: r => <span style={{ color: GEO_CLASS_COLOR[r.cls] ?? '#94a3b8', fontWeight: 800 }}>{r.cls}</span> },
+    { key: 'length_km', label: 'Length (km)', numeric: true, total: 'sum', render: r => r.length_km.toFixed(2) },
+    { key: 'surface', label: 'Surface', render: r => r.surface
+        ? <span style={{ color: r.surface === 'Bituminous' ? C.cyan : C.orange }}>{r.surface}</span>
+        : <span style={{ color: 'rgba(148,163,184,0.4)' }}>Not recorded</span> },
+    { key: 'region', label: 'Maintenance Region', render: r => r.region || <span style={{ color: 'rgba(148,163,184,0.4)' }}>Unassigned</span> },
+    { key: 'station', label: 'Maintenance Station', render: r => r.station || <span style={{ color: 'rgba(148,163,184,0.4)' }}>Unassigned</span> },
+    { key: 'completion', label: 'Completion Year', render: r => r.completion || <span style={{ color: 'rgba(148,163,184,0.35)' }}>-</span> },
+    { key: 'rehab', label: 'Rehab Year', render: r => r.rehab || <span style={{ color: 'rgba(148,163,184,0.35)' }}>-</span> },
+  ], []);
 
   // §1 "Road Links by Class" / "by Maintenance Region" tables - derived live
   // from useNetworkStats() (network2026.geojson) rather than a hardcoded
@@ -1506,25 +1617,10 @@ export default function TabularSummaries() {
           <TablePanel id="tbl-005" title="Historical Road Network Growth (1986–2026)" accent={C.purple}
             source="Department of National Roads WTSS / Annual Monitoring Reports" onNavigate={navigate}
             chartTab="networkstory" chartLabel="📊 Network Story →">
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead><tr><Th>Year</Th><Th>Paved km</Th><Th>Total km</Th><Th>% Paved</Th><Th>Annual Gain (paved km)</Th></tr></thead>
-              <tbody>
-                {HIST_NETWORK.map((r, i) => (
-                  <tr key={r.year}><Td mono>{r.year}</Td>
-                    <Td mono align="right"><span style={{ color: '#22c55e' }}>{r.paved_km.toLocaleString()}</span></Td>
-                    <Td mono align="right">{r.total_km.toLocaleString()}</Td>
-                    <Td mono align="right">{r.pct_paved}%</Td>
-                    <Td mono align="right" >
-                      {i > 0
-                        ? <span style={{ color: r.paved_km > HIST_NETWORK[i-1].paved_km ? '#22c55e' : '#f97316' }}>
-                            {r.paved_km > HIST_NETWORK[i-1].paved_km ? '+' : ''}{r.paved_km - HIST_NETWORK[i-1].paved_km}
-                          </span>
-                        : '-'}
-                    </Td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div style={{ padding: 10 }}>
+              <SortableFilterableTable columns={HIST_NETWORK_COLUMNS} rows={HIST_NETWORK_ROWS}
+                accent={C.purple} exportName="historical-network-growth" initialSort="year" />
+            </div>
           </TablePanel>
 
           {/* ── SECTION 2: CONDITION ─── */}
@@ -1600,22 +1696,10 @@ export default function TabularSummaries() {
           <TablePanel id="tbl-008" title="Top 10 Road Links by AADT 2025 (TIS)" accent={C.yellow}
             source="TIS 2025 - Annual Monitoring Report" onNavigate={navigate}
             chartTab="traffic" chartLabel="📊 Traffic Map →">
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead><tr><Th>#</Th><Th>Link ID</Th><Th>Corridor</Th><Th>Class</Th><Th>AADT (veh/day)</Th><Th>Year</Th></tr></thead>
-              <tbody>
-                {[...TRAFFIC_TOP].sort((a,b)=>b.aadt-a.aadt).map((r, i) => (
-                  <tr key={r.road}><Td mono>{i+1}</Td>
-                    <Td mono><span style={{ color: C.cyan }}>{r.road}</span></Td>
-                    <Td>{r.name}</Td>
-                    <Td><span style={{ fontSize:8, padding:'1px 5px', borderRadius:3, fontWeight:800,
-                      background: r.cls==='A'?'rgba(0,245,255,0.1)':'rgba(77,159,255,0.1)',
-                      color: r.cls==='A'?C.cyan:C.blue }}>{r.cls}</span></Td>
-                    <Td mono align="right">{r.aadt.toLocaleString()}</Td>
-                    <Td mono>{r.year}</Td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div style={{ padding: 10 }}>
+              <SortableFilterableTable columns={TRAFFIC_TOP_COLUMNS} rows={TRAFFIC_TOP}
+                accent={C.yellow} exportName="top-links-by-aadt" initialSort="aadt" />
+            </div>
           </TablePanel>
 
           {/* tbl-009 */}
@@ -1639,19 +1723,10 @@ export default function TabularSummaries() {
           <TablePanel id="tbl-010" title="ATC Permanent Count Stations (New 2025 Deployment)" accent={C.yellow}
             source="ATC 2026 - 10 new stations U0001–U0010" onNavigate={navigate}
             chartTab="trafficanalytics" chartLabel="📊 Analytics →">
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead><tr><Th>Site ID</Th><Th>Station Name</Th><Th>Road Link</Th><Th>Installed</Th><Th>AADT (veh/day)</Th></tr></thead>
-              <tbody>
-                {ATC_STATIONS.map(r => (
-                  <tr key={r.id}><Td mono><span style={{ color: C.yellow }}>{r.id}</span></Td>
-                    <Td>{r.name}</Td>
-                    <Td mono><span style={{ color: C.cyan }}>{r.road}</span></Td>
-                    <Td mono>{r.installed}</Td>
-                    <Td mono align="right">{r.aadt.toLocaleString()}</Td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div style={{ padding: 10 }}>
+              <SortableFilterableTable columns={ATC_STATIONS_COLUMNS} rows={ATC_STATIONS}
+                accent={C.yellow} exportName="atc-count-stations" initialSort="id" />
+            </div>
           </TablePanel>
 
           {/* ── SECTION 4: BRIDGES ─── */}
@@ -1772,22 +1847,12 @@ export default function TabularSummaries() {
           </div>
 
           {/* tbl-015 */}
-          <TablePanel id="tbl-015" title="Department of National Roads Maintenance Stations (MS01–MS23)" accent={C.orange}
+          <TablePanel id="tbl-015" title={`Department of National Roads Maintenance Stations (${MAINT_STATIONS[0].id}–${MAINT_STATIONS[MAINT_STATIONS.length - 1].id})`} accent={C.orange}
             source="maintenance_stations.geojson (public/data/)">
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead><tr><Th>ID</Th><Th>Station Name</Th><Th>Region</Th><Th>Type</Th><Th>km Responsible</Th></tr></thead>
-              <tbody>
-                {MAINT_STATIONS.map(r => (
-                  <tr key={r.id}><Td mono><span style={{ color:C.orange }}>{r.id}</span></Td>
-                    <Td>{r.name}</Td><Td>{r.region}</Td>
-                    <Td><span style={{ fontSize:8, padding:'1px 5px', borderRadius:3,
-                      background:r.type.includes('HQ')?'rgba(255,107,53,0.12)':'rgba(148,163,184,0.08)',
-                      color:r.type.includes('HQ')?C.orange:'#94a3b8', fontWeight:800 }}>{r.type}</span></Td>
-                    <Td mono align="right">{r.km_resp}</Td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div style={{ padding: 10 }}>
+              <SortableFilterableTable columns={MAINT_STATIONS_COLUMNS} rows={MAINT_STATIONS}
+                accent={C.orange} exportName="maintenance-stations" initialSort="id" />
+            </div>
           </TablePanel>
 
           {/* tbl-016 */}
@@ -2396,27 +2461,10 @@ export default function TabularSummaries() {
           {/* tbl-101 */}
           <TablePanel id="tbl-101" title="Global RMS Case Studies - All 15 Countries Analysed" accent={C.green}
             source="DNR RMS research synthesis (Jun 2026) - RMS section case studies" chartTab="rms" chartLabel="🌍 View in RMS →" onNavigate={navigate}>
-            <table style={{ width:'100%', borderCollapse:'collapse', fontSize:9 }}>
-              <thead><tr>
-                <Th>#</Th><Th>Agency</Th><Th>Country</Th><Th>Network km</Th>
-                <Th>Paved %</Th><Th>System</Th><Th>Active Since</Th>
-                <Th>Budget USD/km</Th><Th>Key Innovation</Th><Th>DNR Applicability</Th>
-              </tr></thead>
-              <tbody>{GLOBAL_CASES_TABLE.map(r => (
-                <tr key={r.id} style={{ background: r.id%2===0?'rgba(15,23,42,0.35)':'transparent', borderBottom:'1px solid rgba(255,255,255,0.03)' }}>
-                  <Td align="center" mono style={{ color:'rgba(148,163,184,0.4)' }}>{r.id}</Td>
-                  <Td style={{ color:C.green, fontWeight:700, whiteSpace:'nowrap' }}>{r.flag} {r.agency}</Td>
-                  <Td style={{ whiteSpace:'nowrap' }}>{r.country}</Td>
-                  <Td align="right" mono>{r.km.toLocaleString()}</Td>
-                  <Td align="right" mono style={{ color:r.paved_pct>50?C.green:r.paved_pct>25?C.yellow:C.orange }}>{r.paved_pct}%</Td>
-                  <Td style={{ fontSize:8.5, maxWidth:160, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{r.system}</Td>
-                  <Td align="center" mono style={{ color:'rgba(148,163,184,0.6)' }}>{r.yrs_active}</Td>
-                  <Td align="right" mono style={{ color:'rgba(148,163,184,0.7)' }}>${r.budget_km_usd.toLocaleString()}</Td>
-                  <Td style={{ fontSize:8.5, maxWidth:220, color:'rgba(203,213,225,0.8)' }}>{r.innovation}</Td>
-                  <Td style={{ fontSize:8.5, maxWidth:240, color:C.teal }}>{r.dnr}</Td>
-                </tr>
-              ))}</tbody>
-            </table>
+            <div style={{ padding: 10 }}>
+              <SortableFilterableTable columns={GLOBAL_CASES_COLUMNS} rows={GLOBAL_CASES_TABLE}
+                accent={C.green} exportName="global-rms-case-studies" initialSort="id" />
+            </div>
           </TablePanel>
 
           {/* ── SECTION 22: CATEGORY B STANDARDS ─── */}
@@ -2428,25 +2476,10 @@ export default function TabularSummaries() {
           {/* tbl-102 */}
           <TablePanel id="tbl-102" title="Category B - International Standards, Guidelines & Manuals (All 20)" accent={C.blue}
             source="Sources Catalogue Category B · DNR platform evidence base" chartTab="sources" chartLabel="📚 Sources →" onNavigate={navigate}>
-            <table style={{ width:'100%', borderCollapse:'collapse', fontSize:9 }}>
-              <thead><tr>
-                <Th>#</Th><Th>Standard / Manual</Th><Th>Issuing Body</Th>
-                <Th>Year</Th><Th>DNR Modules</Th><Th>Status</Th><Th>DNR Relevance</Th>
-              </tr></thead>
-              <tbody>{CAT_B_STANDARDS.map((r,i) => (
-                <tr key={r.name} style={{ background: i%2===0?'rgba(15,23,42,0.35)':'transparent', borderBottom:'1px solid rgba(255,255,255,0.03)' }}>
-                  <Td align="center" mono style={{ color:'rgba(148,163,184,0.4)' }}>{i+1}</Td>
-                  <Td style={{ color:C.cyan, fontWeight:600, maxWidth:280, fontSize:8.5 }}>{r.name}</Td>
-                  <Td style={{ color:'rgba(148,163,184,0.7)', whiteSpace:'nowrap', fontSize:8.5 }}>{r.body}</Td>
-                  <Td align="center" mono style={{ color:'rgba(148,163,184,0.5)' }}>{r.yr}</Td>
-                  <Td style={{ color:C.blue, fontSize:8, whiteSpace:'nowrap' }}>{r.module}</Td>
-                  <Td align="center"><span style={{ fontSize:8, padding:'1px 6px', borderRadius:3,
-                    background:r.status==='Active'?'rgba(0,255,136,0.1)':'rgba(148,163,184,0.08)',
-                    color:r.status==='Active'?C.green:'rgba(148,163,184,0.5)', fontWeight:700 }}>{r.status}</span></Td>
-                  <Td style={{ fontSize:8.5, color:'rgba(196,210,225,0.75)', maxWidth:260 }}>{r.notes}</Td>
-                </tr>
-              ))}</tbody>
-            </table>
+            <div style={{ padding: 10 }}>
+              <SortableFilterableTable columns={CAT_B_STANDARDS_COLUMNS} rows={CAT_B_STANDARDS}
+                accent={C.blue} exportName="category-b-standards" initialSort="name" />
+            </div>
           </TablePanel>
 
           {/* ── SECTION 23: CATEGORY C RESEARCH ─── */}
@@ -2458,21 +2491,10 @@ export default function TabularSummaries() {
           {/* tbl-103 */}
           <TablePanel id="tbl-103" title="Category C - Global Research Papers & Studies (All 53)" accent={C.purple}
             source="Sources Catalogue Category C · DNR evidence base for ML, PMS, BMS, HDM4, Traffic modules" chartTab="sources" chartLabel="📚 Sources →" onNavigate={navigate}>
-            <table style={{ width:'100%', borderCollapse:'collapse', fontSize:9 }}>
-              <thead><tr>
-                <Th>Ref</Th><Th>Title</Th><Th>Author / Publisher</Th>
-                <Th>Year</Th><Th>Key Finding / DNR Application</Th>
-              </tr></thead>
-              <tbody>{CAT_C_RESEARCH.map((r,i) => (
-                <tr key={r.ref} style={{ background: i%2===0?'rgba(15,23,42,0.35)':'transparent', borderBottom:'1px solid rgba(255,255,255,0.03)' }}>
-                  <Td mono style={{ color:C.purple, fontWeight:800, whiteSpace:'nowrap', fontSize:8 }}>{r.ref}</Td>
-                  <Td style={{ color:'#d4dde8', fontWeight:600, maxWidth:280, fontSize:8.5 }}>{r.title}</Td>
-                  <Td style={{ color:'rgba(148,163,184,0.7)', maxWidth:200, fontSize:8.5 }}>{r.author}</Td>
-                  <Td align="center" mono style={{ color:'rgba(148,163,184,0.5)' }}>{r.yr}</Td>
-                  <Td style={{ fontSize:8.5, color:'rgba(196,210,225,0.75)', maxWidth:320 }}>{r.notes}</Td>
-                </tr>
-              ))}</tbody>
-            </table>
+            <div style={{ padding: 10 }}>
+              <SortableFilterableTable columns={CAT_C_RESEARCH_COLUMNS} rows={CAT_C_RESEARCH}
+                accent={C.purple} exportName="category-c-research" initialSort="ref" />
+            </div>
           </TablePanel>
 
           {/* ── SECTION 24: GEOJSON ROAD LINKS ─── */}
@@ -2484,58 +2506,14 @@ export default function TabularSummaries() {
           {/* tbl-links-full */}
           <TablePanel id="tbl-links-full" title="All Road Links from network2026.geojson - All Properties" accent={C.teal}
             source={`network2026.geojson · DNR GIS Section 18 Jun 2025 · ${geoLinks.length.toLocaleString()} links · ${geoKmTotal.toLocaleString()} km mapped | Official network: ${netStats.officialKm.toLocaleString()} km | Gap: ${Math.max(0, netStats.officialKm - geoKmTotal).toLocaleString()} km`}>
-            <div style={{ padding:'8px 14px 4px', display:'flex', alignItems:'center', gap:10, flexWrap:'wrap' }}>
-              <input
-                value={linkSearch}
-                onChange={e => setLinkSearch(e.target.value)}
-                placeholder="Search link_id or road name…"
-                style={{
-                  width:280, padding:'5px 10px', fontSize:10,
-                  background:'rgba(0,0,0,0.3)', border:'1px solid rgba(0,212,170,0.25)',
-                  borderRadius:6, color:'#e2eaf4', outline:'none',
-                }}
-              />
-              <span style={{ fontSize:9, color:'rgba(148,163,184,0.4)' }}>
-                {geoLinks.length === 0 ? 'Loading…' :
-                  `Showing ${geoLinks.filter(p => !linkSearch || String(p.link_id).toLowerCase().includes(linkSearch.toLowerCase()) || String(p.link_nam_1 ?? '').toLowerCase().includes(linkSearch.toLowerCase())).length.toLocaleString()} / ${geoLinks.length.toLocaleString()} links · ${geoKmTotal.toLocaleString()} km mapped · Official: ${netStats.officialKm.toLocaleString()} km · Gap: ${Math.max(0, netStats.officialKm - geoKmTotal).toLocaleString()} km`}
-              </span>
-            </div>
-            <div style={{ maxHeight:600, overflowY:'auto' }}>
-              <table style={{ width:'100%', borderCollapse:'collapse', fontSize:8.5 }}>
-                <thead style={{ position:'sticky', top:0, background:'rgba(4,9,18,0.97)' }}>
-                  <tr>
-                    <Th>Link ID</Th><Th>Name</Th><Th>Road No.</Th><Th>Class</Th>
-                    <Th>Length km</Th><Th>Surface</Th><Th>Region</Th><Th>Station</Th>
-                    <Th>Completion</Th><Th>Rehab Year</Th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {geoLinks
-                    .filter(p => !linkSearch ||
-                      String(p.link_id).toLowerCase().includes(linkSearch.toLowerCase()) ||
-                      String(p.link_nam_1 ?? '').toLowerCase().includes(linkSearch.toLowerCase()))
-                    .map((p, i) => {
-                      const clsColor: Record<string,string> = { A:C.cyan, B:C.green, C:C.yellow, M:C.purple };
-                      const cls = String(p.road_class ?? '?');
-                      const km = Number(p.length_km1 ?? 0);
-                      return (
-                        <tr key={String(p.link_id)} style={{ background: i%2===0?'rgba(15,23,42,0.35)':'transparent', borderBottom:'1px solid rgba(255,255,255,0.02)' }}>
-                          <Td mono style={{ color:C.teal, fontWeight:700, whiteSpace:'nowrap' }}>{String(p.link_id)}</Td>
-                          <Td style={{ maxWidth:200, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{String(p.link_nam_1 ?? '-')}</Td>
-                          <Td mono style={{ color:'rgba(148,163,184,0.6)', whiteSpace:'nowrap' }}>{String(p.road_no ?? '-')}</Td>
-                          <Td align="center" style={{ color:clsColor[cls]??'#94a3b8', fontWeight:800 }}>{cls}</Td>
-                          <Td align="right" mono>{km.toFixed(2)}</Td>
-                          <Td style={{ color: String(p.surface_ty) === 'Bituminous' ? C.cyan : C.orange, fontSize:8 }}>{String(p.surface_ty ?? '-')}</Td>
-                          <Td style={{ color:'rgba(148,163,184,0.7)', whiteSpace:'nowrap', fontSize:8 }}>{String(p.maintena_1 ?? '-')}</Td>
-                          <Td style={{ color:'rgba(148,163,184,0.5)', fontSize:8 }}>{String(p.maintenanc ?? '-')}</Td>
-                          <Td align="center" mono style={{ color:'rgba(148,163,184,0.5)' }}>{p.completion ? String(p.completion) : '-'}</Td>
-                          <Td align="center" mono style={{ color:'rgba(148,163,184,0.4)' }}>{p.rehabilita ? String(p.rehabilita) : '-'}</Td>
-                        </tr>
-                      );
-                    })}
-                </tbody>
-              </table>
-            </div>
+            {geoLinks.length === 0 ? (
+              <div style={{ padding: 20, textAlign: 'center', color: 'rgba(148,163,184,0.5)', fontSize: 11 }}>Loading…</div>
+            ) : (
+              <div style={{ padding: 10 }}>
+                <SortableFilterableTable columns={geoLinkColumns} rows={geoLinkRows}
+                  accent={C.teal} exportName="road-links-full-geojson" initialSort="link_id" />
+              </div>
+            )}
           </TablePanel>
 
           <AdtProjectionTable />
