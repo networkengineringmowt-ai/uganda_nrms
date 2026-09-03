@@ -29,6 +29,9 @@ import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
 import { vciRating } from '../../shared/vci';
 import { useNowTick, iriNow, vciNow, IRI_GROWTH, yearNow } from '../../shared/nowcast';
 import PavementAgePanel from './PavementAgePanel';
+import { SearchableSelect } from '../../shared/SearchableSelect';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
+import { RoadClassPill, ConditionLabelBadge, NullableCell } from '../../shared/tableFormatting';
 
 const BASE = import.meta.env.BASE_URL;
 
@@ -209,13 +212,13 @@ function FilterSelect<T extends string>({
   value: T; onChange: (v: T) => void; options: readonly T[]; labels?: Partial<Record<T, string>>;
 }) {
   return (
-    <select value={value} onChange={e => onChange(e.target.value as T)} style={{
+    <SearchableSelect value={value} onChange={v => onChange(v as T)} style={{
       width: '100%', fontSize: 10, padding: '5px 7px', borderRadius: 5,
       background: 'rgba(15,23,42,0.7)', border: '1px solid rgba(148,163,184,0.18)',
       color: '#e2eaf4', outline: 'none', cursor: 'pointer',
     }}>
       {options.map(o => <option key={o} value={o}>{labels?.[o] ?? o}</option>)}
-    </select>
+    </SearchableSelect>
   );
 }
 
@@ -796,13 +799,14 @@ function ConditionMap({
 }
 
 // ─── Condition KPI cards ──────────────────────────────────────────────────────
-function CondKPIs({ c24, c30, linksProjected }: { c24: CondBand; c30: CondBand; linksProjected?: number }) {
+function CondKPIs({ c24, c30, linksProjected, totalNetworkKm }: { c24: CondBand; c30: CondBand; linksProjected?: number; totalNetworkKm?: number }) {
   const bands = [
     { key: 'good_pct' as const,      label: 'Good',      color: '#00ff88', sub: 'IRI < 3.5' },
     { key: 'fair_pct' as const,      label: 'Fair',      color: '#ffd23f', sub: 'IRI 3.5–6.5' },
     { key: 'poor_pct' as const,      label: 'Poor',      color: '#ff6b35', sub: 'IRI 6.5–9.0' },
     { key: 'very_poor_pct' as const, label: 'Very Poor', color: '#ff2d78', sub: 'IRI > 9.0' },
   ];
+  const netKm = totalNetworkKm ?? 21302;
   const notSurveyedPct = linksProjected != null
     ? Math.max(0, ((1013 - linksProjected) / 1013) * 100)
     : null;
@@ -811,6 +815,7 @@ function CondKPIs({ c24, c30, linksProjected }: { c24: CondBand; c30: CondBand; 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {bands.map(b => {
           const v = c24[b.key]; const delta = +(c30[b.key] - v).toFixed(1);
+          const km = (v / 100) * netKm;
           return (
             <div key={b.key}
               style={{ background: BG_CARD, backdropFilter: 'blur(20px)', borderLeft: `4px solid ${b.color}` }}
@@ -818,6 +823,9 @@ function CondKPIs({ c24, c30, linksProjected }: { c24: CondBand; c30: CondBand; 
               <div className="text-2xl font-black" style={{ color: b.color }}>{v}%</div>
               <div className="text-xs font-semibold text-slate-300 mt-1">{b.label}</div>
               <div className="text-[10px] text-slate-500">{b.sub}</div>
+              <div className="text-[10px] font-semibold mt-0.5" style={{ color: b.color }}>
+                ≈{km.toLocaleString(undefined, { maximumFractionDigits: 0 })} km affected
+              </div>
               <div className="mt-2 text-[10px] flex gap-1">
                 <span className="text-slate-400">2030:</span>
                 <span style={{ color: b.color }} className="font-bold">{c30[b.key]}%</span>
@@ -844,7 +852,7 @@ function CondKPIs({ c24, c30, linksProjected }: { c24: CondBand; c30: CondBand; 
                 Not Surveyed / Works in Progress
               </div>
               <div className="text-[10px] text-slate-500 mt-0.5">
-                {(1014 - (linksProjected ?? 0)).toLocaleString()} of 1,014 links have no ROMDAS / HDM-4 record · shown as grey on map
+                {(1014 - (linksProjected ?? 0)).toLocaleString()} of 1,014 links have no ROMDAS / HDM-4 record · ≈{((notSurveyedPct / 100) * netKm).toLocaleString(undefined, { maximumFractionDigits: 0 })} km · shown as grey on map
               </div>
             </div>
             <div className="flex-1 max-w-xs">
@@ -932,54 +940,48 @@ function DetCurves({
 
 // ─── Priority table ───────────────────────────────────────────────────────────
 function PriorityTable({ triggers }: { triggers: TriggerItem[] }) {
+  const totalKm = triggers.reduce((s, t) => s + (t.length_km ?? 0), 0);
   return (
     <div style={{ background: BG_CARD, backdropFilter: 'blur(20px)' }}
          className="rounded-xl border border-slate-700/30 p-4">
-      <div className="text-sm font-bold text-white mb-3 flex items-center gap-2">
-        <Zap size={15} style={{ color: ACCENT }}/> Top 10 Priority Interventions
+      <div className="text-sm font-bold text-white mb-1 flex items-center gap-2">
+        <Zap size={15} style={{ color: ACCENT }}/> Priority Interventions
       </div>
-      <div className="mowt-table-wrap overflow-x-auto">
-        <table className="w-full text-[10px]">
-          <thead>
-            <tr className="text-slate-500 border-b border-slate-700/50">
-              <th className="text-left pb-2">Road Name</th>
-              <th className="text-left pb-2">Region</th>
-              <th className="text-left pb-2">Treatment</th>
-              <th className="text-right pb-2">IRI</th>
-              <th className="text-right pb-2">Year</th>
-              <th className="text-right pb-2">Cost</th>
-            </tr>
-          </thead>
-          <tbody>
-            {triggers.slice(0, 10).map((t, i) => (
-              <tr key={i}
-                  className="border-b border-slate-800/40 hover:bg-slate-700/10 transition-colors">
-                <td className="py-1.5 text-slate-200 font-medium">
-                  {t.road_name.length > 28 ? t.road_name.slice(0,26)+'…' : t.road_name}
-                </td>
-                <td className="py-1.5 text-slate-400">{t.region}</td>
-                <td className="py-1.5">
-                  <span className="px-1.5 py-0.5 rounded text-[9px] font-bold"
-                    style={{ background: URGENCY_COLOR[t.urgency]+'22', color: URGENCY_COLOR[t.urgency] }}>
-                    {t.treatment}
-                  </span>
-                </td>
-                <td className="py-1.5 text-right font-mono" style={{
-                  color: t.iri >= 12 ? '#ff2d78' : t.iri >= 9 ? '#ff6b35' : t.iri >= 6.5 ? '#ffd23f' : '#00ff88',
-                }}>
-                  {t.iri.toFixed(1)}
-                </td>
-                <td className="py-1.5 text-right text-slate-400">{t.trigger_year}</td>
-                <td className="py-1.5 text-right font-mono" style={{ color: ACCENT }}>
-                  ${t.total_cost_usd >= 1e6
-                    ? (t.total_cost_usd/1e6).toFixed(1)+'M'
-                    : (t.total_cost_usd/1000).toFixed(0)+'k'}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="text-[10px] text-slate-500 mb-3">
+        All {triggers.length.toLocaleString()} scheduled interventions · {totalKm.toLocaleString(undefined, { maximumFractionDigits: 0 })} km affected
       </div>
+      <SortableFilterableTable<TriggerItem>
+        accent={ACCENT}
+        exportName="priority-interventions"
+        initialSort="priority_score"
+        columns={[
+          { key: 'road_name', label: 'Road Name' },
+          { key: 'road_class', label: 'Class', render: t => <RoadClassPill cls={t.road_class} /> },
+          { key: 'region', label: 'Region' },
+          { key: 'length_km', label: 'Length (km)', numeric: true, total: 'sum',
+            render: t => t.length_km.toFixed(1) },
+          { key: 'treatment', label: 'Treatment', render: t => (
+              <span style={{ padding: '2px 7px', borderRadius: 5, fontSize: 9.5, fontWeight: 800,
+                background: (URGENCY_COLOR[t.urgency] ?? '#94a3b8') + '22', color: URGENCY_COLOR[t.urgency] ?? '#94a3b8' }}>
+                {t.treatment}
+              </span>
+            ) },
+          { key: 'urgency', label: 'Urgency', render: t => (
+              <span style={{ color: URGENCY_COLOR[t.urgency] ?? '#94a3b8', fontWeight: 700, textTransform: 'capitalize' }}>
+                {t.urgency}
+              </span>
+            ) },
+          { key: 'iri', label: 'IRI (m/km)', numeric: true, render: t => (
+              <span style={{ color: t.iri >= 12 ? '#ff2d78' : t.iri >= 9 ? '#ff6b35' : t.iri >= 6.5 ? '#ffd23f' : '#00ff88', fontWeight: 700 }}>
+                {t.iri.toFixed(1)}
+              </span>
+            ) },
+          { key: 'trigger_year', label: 'Trigger Year', numeric: true },
+          { key: 'total_cost_usd', label: 'Est. Cost (USD)', numeric: true, total: 'sum',
+            render: t => `$${t.total_cost_usd >= 1e6 ? (t.total_cost_usd/1e6).toFixed(1)+'M' : (t.total_cost_usd/1000).toFixed(0)+'k'}` },
+        ] as STColumn<TriggerItem>[]}
+        rows={triggers}
+      />
     </div>
   );
 }
@@ -1465,7 +1467,7 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
             <SourceTableButton anchor="tbl-006" label="📋 Condition table" />
             <SourceTableButton anchor="tbl-007" label="📋 IRI table" />
           </div>
-          {d && <CondKPIs c24={d.network_condition_2024} c30={d.network_condition_2030} linksProjected={d.links_projected}/>}
+          {d && <CondKPIs c24={d.network_condition_2024} c30={d.network_condition_2030} linksProjected={d.links_projected} totalNetworkKm={a?.totalNetworkKm}/>}
 
           {/* Official survey */}
           <div style={{ background: BG_CARD, backdropFilter: 'blur(20px)' }}
@@ -1708,100 +1710,68 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
                 background: 'rgba(15,23,42,0.7)', border: '1px solid rgba(148,163,184,0.18)',
                 borderRadius: 6, color: '#e2eaf4', outline: 'none',
               }}/>
-            <select value={invRegion} onChange={e => setInvRegion(e.target.value)}
+            <SearchableSelect value={invRegion} onChange={setInvRegion}
               style={{ fontSize: 11, padding: '6px 10px', background: 'rgba(15,23,42,0.7)',
                 border: '1px solid rgba(148,163,184,0.18)', borderRadius: 6, color: '#e2eaf4' }}>
               <option value="all">All Regions</option>
               {[...new Set(allSurveyed.map(t => t.region).filter(Boolean))].sort().map(r => (
                 <option key={r} value={r}>{r}</option>
               ))}
-            </select>
-            <select value={invClass} onChange={e => setInvClass(e.target.value)}
+            </SearchableSelect>
+            <SearchableSelect value={invClass} onChange={setInvClass}
               style={{ fontSize: 11, padding: '6px 10px', background: 'rgba(15,23,42,0.7)',
                 border: '1px solid rgba(148,163,184,0.18)', borderRadius: 6, color: '#e2eaf4' }}>
               <option value="all">All Classes</option>
               {['A','B','C','M'].map(c => <option key={c} value={c}>Class {c}</option>)}
-            </select>
-            <select value={invSurface} onChange={e => setInvSurface(e.target.value)}
+            </SearchableSelect>
+            <SearchableSelect value={invSurface} onChange={setInvSurface}
               style={{ fontSize: 11, padding: '6px 10px', background: 'rgba(15,23,42,0.7)',
                 border: '1px solid rgba(148,163,184,0.18)', borderRadius: 6, color: '#e2eaf4' }}>
               <option value="all">All Surfaces</option>
               <option value="paved">Paved</option>
               <option value="unpaved">Unpaved</option>
-            </select>
-            <button onClick={() => {
-              const headers = ['link_id','road_name','length_km','road_class','region','surface_cat','iri','rut_mm','cracking','vci','year','urgency','treatment','trigger_year','total_cost_usd'];
-              const csv = [
-                headers.join(','),
-                ...invFiltered.map(t => headers.map(h => {
-                  const v = (t as unknown as Record<string, unknown>)[h];
-                  return v == null ? '' : String(v).replace(/,/g, ';');
-                }).join(',')),
-              ].join('\n');
-              const blob = new Blob([csv], { type: 'text/csv' });
-              const url = URL.createObjectURL(blob);
-              const link = document.createElement('a');
-              link.href = url;
-              link.download = `condition_inventory_${Date.now()}.csv`;
-              link.click();
-              URL.revokeObjectURL(url);
-            }}
-              style={{
-                padding: '6px 14px', fontSize: 10, fontWeight: 700,
-                background: 'rgba(0,245,255,0.1)', border: '1px solid rgba(0,245,255,0.3)',
-                color: '#00f5ff', borderRadius: 6, cursor: 'pointer',
-              }}>
-              Export CSV
-            </button>
+            </SearchableSelect>
             <span style={{ fontSize: 10, color: 'rgba(148,163,184,0.5)' }}>
-              {invFiltered.length.toLocaleString()} / {allSurveyed.length.toLocaleString()} rows
+              {invFiltered.length.toLocaleString()} / {allSurveyed.length.toLocaleString()} rows · {invFiltered.reduce((s, t) => s + (t.length_km ?? 0), 0).toLocaleString(undefined, { maximumFractionDigits: 0 })} km
             </span>
           </div>
 
-          {/* Table - ALL rows, scroll container (no truncation) */}
-          <div className="mowt-table-wrap" style={{ maxHeight: 540, overflowY: 'auto', overflowX: 'auto',
-            borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)' }}>
-            <table style={{ width: '100%', fontSize: 10, borderCollapse: 'collapse', minWidth: 1100 }}>
-              <thead style={{ position: 'sticky', top: 0, background: 'rgba(15,23,42,0.95)', zIndex: 2 }}>
-                <tr style={{ borderBottom: '1px solid rgba(148,163,184,0.15)' }}>
-                  {['Link ID','Road Name','Length km','Class','Region','IRI now','Rutting now','Cracking % now','Condition now','Urgency','Treatment','Survey Yr'].map(h => (
-                    <th key={h} style={{ textAlign: 'left', padding: '7px 10px', color: '#94a3b8', fontWeight: 700, whiteSpace: 'nowrap', fontSize: 9.5 }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {invFiltered.map((t, i) => {
-                  const iri = t.iri != null ? Number(t.iri) : null;
-                  const band = iri != null ? getIriBand(iri) : 'fair';
-                  const c = iri != null ? (IRI_COLOR[band] ?? '#94a3b8') : '#64748b';
-                  const rut = t.rut_mm;
-                  const crack = t.cracking;
-                  const bg = i % 2 === 0 ? 'rgba(15,23,42,0.35)' : 'transparent';
-                  return (
-                    <tr key={t.link_id ?? i} style={{ background: bg, borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
-                      <td style={{ padding: '5px 10px', color: '#00f5ff', fontFamily: 'monospace', fontSize: 9 }}>{t.link_id}</td>
-                      <td style={{ padding: '5px 10px', color: '#e2eaf4', maxWidth: 240, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.road_name ?? '-'}</td>
-                      <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{t.length_km != null ? Number(t.length_km).toFixed(1) : '-'}</td>
-                      <td style={{ padding: '5px 10px', color: t.road_class === 'A' ? '#00f5ff' : t.road_class === 'B' ? '#00ff88' : t.road_class === 'M' ? '#b967ff' : '#ffd23f', fontWeight: 700 }}>{t.road_class ?? '?'}</td>
-                      <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{t.region ?? '-'}</td>
-                      <td style={{ padding: '5px 10px', color: c, fontWeight: 700 }}>{iri != null ? iri.toFixed(2) : '-'}</td>
-                      <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{rut != null ? `${Number(rut).toFixed(1)} mm` : '-'}</td>
-                      <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{crack != null ? `${Number(crack).toFixed(0)}%` : '-'}</td>
-                      <td style={{ padding: '5px 10px', color: c, fontWeight: 700 }}>
-                        {t.vci != null ? vciRating(Number(t.vci)) : (iri != null ? (band === 'good' ? 'Good' : band === 'fair' ? 'Fair' : band === 'poor' ? 'Poor' : 'Very Poor') : '-')}
-                      </td>
-                      <td style={{ padding: '5px 10px', color: URGENCY_COLOR[t.urgency ?? 'planned'] ?? '#94a3b8', fontWeight: 600 }}>{t.urgency ?? '-'}</td>
-                      <td style={{ padding: '5px 10px', color: 'rgba(148,163,184,0.7)', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.treatment ?? '-'}</td>
-                      <td style={{ padding: '5px 10px', color: 'rgba(148,163,184,0.5)' }}>{t.year ?? '-'}</td>
-                    </tr>
-                  );
-                })}
-                {invFiltered.length === 0 && (
-                  <tr><td colSpan={12} style={{ padding: 32, textAlign: 'center', color: '#64748b', fontSize: 11 }}>No links match the current filters.</td></tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+          {/* Table - ALL rows, sortable/searchable, CSV+Excel export built in */}
+          <SortableFilterableTable<InvRow>
+            accent={ACCENT}
+            exportName="condition-inventory"
+            emptyText="No links match the current filters."
+            columns={[
+              { key: 'link_id', label: 'Link ID' },
+              { key: 'road_name', label: 'Road Name' },
+              { key: 'length_km', label: 'Length (km)', numeric: true, total: 'sum',
+                render: r => r.length_km != null ? Number(r.length_km).toFixed(1) : <NullableCell value={null}>-</NullableCell> },
+              { key: 'road_class', label: 'Class', render: r => <RoadClassPill cls={r.road_class} /> },
+              { key: 'region', label: 'Region' },
+              { key: 'iri', label: 'IRI Now', numeric: true, render: r => {
+                  const iri = r.iri != null ? Number(r.iri) : null;
+                  if (iri == null) return <NullableCell value={null}>-</NullableCell>;
+                  const band = getIriBand(iri);
+                  return <span style={{ color: IRI_COLOR[band] ?? '#94a3b8', fontWeight: 700 }}>{iri.toFixed(2)}</span>;
+                } },
+              { key: 'rut_mm', label: 'Rutting Now (mm)', numeric: true,
+                render: r => <NullableCell value={r.rut_mm}>{r.rut_mm != null ? Number(r.rut_mm).toFixed(1) : '-'}</NullableCell> },
+              { key: 'cracking', label: 'Cracking Now (%)', numeric: true,
+                render: r => <NullableCell value={r.cracking}>{r.cracking != null ? `${Number(r.cracking).toFixed(0)}%` : '-'}</NullableCell> },
+              { key: 'vci', label: 'Condition Now', render: r => {
+                  const iri = r.iri != null ? Number(r.iri) : null;
+                  const label = r.vci != null ? vciRating(Number(r.vci))
+                    : (iri != null ? ({ good: 'Good', fair: 'Fair', poor: 'Poor', very_poor: 'Very Poor' } as const)[getIriBand(iri)] : null);
+                  return <ConditionLabelBadge label={label} />;
+                } },
+              { key: 'urgency', label: 'Urgency', render: r => r.urgency
+                  ? <span style={{ color: URGENCY_COLOR[r.urgency] ?? '#94a3b8', fontWeight: 700, textTransform: 'capitalize' }}>{r.urgency}</span>
+                  : <NullableCell value={null}>-</NullableCell> },
+              { key: 'treatment', label: 'Treatment', render: r => r.treatment ?? '-' },
+              { key: 'year', label: 'Survey Year', numeric: true, render: r => r.year ?? '-' },
+            ] as STColumn<InvRow>[]}
+            rows={invFiltered}
+          />
           <div style={{ marginTop: 8, fontSize: 9, color: 'rgba(148,163,184,0.4)' }}>
             All network links shown - scroll within the table. IRI, rutting, cracking and VCI are the measured 2024 condition-survey values <b>now-cast to the current reporting instant</b> with the calibrated deterioration model (IRI +{(IRI_GROWTH.paved*100).toFixed(0)}%/yr paved · +{(IRI_GROWTH.unpaved*100).toFixed(0)}%/yr unpaved, VCI decay applied); treatment and urgency come from the ML intervention schedule where the link is in the priority programme.
           </div>
@@ -1942,8 +1912,8 @@ function FWDRealSurveys() {
   }, []);
   if (!data || !data.surveys?.length) return null;
   const cls = (d0: number): [string, string] =>
-    d0 > 800 ? ['FAILED', '#ef4444'] : d0 > 600 ? ['WEAK', '#f97316']
-    : d0 > 400 ? ['MONITOR', '#eab308'] : ['SOUND', '#22c55e'];
+    d0 > 800 ? ['Failed', '#ef4444'] : d0 > 600 ? ['Weak', '#f97316']
+    : d0 > 400 ? ['Monitor', '#eab308'] : ['Sound', '#22c55e'];
   return (
     <div style={{ background: 'rgba(15,23,42,0.55)', borderRadius: 12,
       border: '1px solid rgba(0,245,255,0.15)', padding: '14px 16px' }}>
@@ -1952,37 +1922,32 @@ function FWDRealSurveys() {
       </div>
       <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.6)', marginBottom: 10 }}>
         {data.surveys.length} survey runs · {data.total_points.toLocaleString()} averaged deflection bowls ·
-        Dynatest FWD · centre deflection D₀ (μm); classification: ≤400 sound · 400–600 monitor · 600–800 weak · &gt;800 failed
+        Dynatest FWD · centre deflection D₀ (μm); classification: ≤400 Sound · 400–600 Monitor · 600–800 Weak · &gt;800 Failed
       </div>
-      <div style={{ overflowX: 'auto', borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)' }}>
-        <table style={{ width: '100%', fontSize: 10.5, borderCollapse: 'collapse', minWidth: 760 }}>
-          <thead><tr style={{ borderBottom: '1px solid rgba(148,163,184,0.15)' }}>
-            {['Road / Corridor', 'Lane / Sheet', 'Bowls', 'Chainage (km)', 'Mean D₀ (μm)', 'Max D₀ (μm)', 'Assessment', 'Source file'].map(h => (
-              <th key={h} style={{ textAlign: 'left', padding: '7px 10px', color: '#94a3b8', fontWeight: 700, fontSize: 9, whiteSpace: 'nowrap' }}>{h}</th>
-            ))}
-          </tr></thead>
-          <tbody>
-            {data.surveys.map((sv, i) => {
+      <SortableFilterableTable<FwdSurvey & { assessment: string }>
+        accent="#00f5ff"
+        exportName="fwd-deflection-surveys"
+        columns={[
+          { key: 'road', label: 'Road / Corridor' },
+          { key: 'sheet', label: 'Lane / Sheet' },
+          { key: 'n', label: 'Bowls', numeric: true, total: 'sum' },
+          { key: 'ch_from', label: 'Chainage (km)', numeric: true,
+            render: sv => `${sv.ch_from.toFixed(1)} – ${sv.ch_to.toFixed(1)}` },
+          { key: 'd0_mean', label: 'Mean D₀ (μm)', numeric: true,
+            render: sv => <span style={{ color: cls(sv.d0_mean)[1], fontWeight: 800 }}>{sv.d0_mean.toFixed(0)}</span> },
+          { key: 'd0_max', label: 'Max D₀ (μm)', numeric: true,
+            render: sv => <span style={{ color: cls(sv.d0_max)[1], fontWeight: 700 }}>{sv.d0_max.toFixed(0)}</span> },
+          { key: 'assessment', label: 'Assessment', render: sv => {
               const [mTag, mColor] = cls(sv.d0_mean);
               return (
-                <tr key={i} style={{ background: i % 2 === 0 ? 'rgba(15,23,42,0.3)' : 'transparent', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
-                  <td style={{ padding: '5px 10px', color: '#e2eaf4', fontWeight: 700 }}>{sv.road}</td>
-                  <td style={{ padding: '5px 10px', color: '#00f5ff', fontFamily: 'monospace', fontSize: 9.5 }}>{sv.sheet}</td>
-                  <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{sv.n.toLocaleString()}</td>
-                  <td style={{ padding: '5px 10px', color: '#94a3b8' }}>{sv.ch_from.toFixed(1)} – {sv.ch_to.toFixed(1)}</td>
-                  <td style={{ padding: '5px 10px', color: mColor, fontWeight: 800 }}>{sv.d0_mean.toFixed(0)}</td>
-                  <td style={{ padding: '5px 10px', color: cls(sv.d0_max)[1], fontWeight: 700 }}>{sv.d0_max.toFixed(0)}</td>
-                  <td style={{ padding: '5px 10px' }}>
-                    <span style={{ fontSize: 8.5, fontWeight: 800, padding: '2px 8px', borderRadius: 99,
-                      background: `${mColor}22`, border: `1px solid ${mColor}55`, color: mColor }}>{mTag}</span>
-                  </td>
-                  <td style={{ padding: '5px 10px', color: 'rgba(148,163,184,0.45)', fontSize: 9 }}>{sv.source}</td>
-                </tr>
+                <span style={{ fontSize: 8.5, fontWeight: 800, padding: '2px 8px', borderRadius: 99,
+                  background: `${mColor}22`, border: `1px solid ${mColor}55`, color: mColor }}>{mTag}</span>
               );
-            })}
-          </tbody>
-        </table>
-      </div>
+            } },
+          { key: 'source', label: 'Source File' },
+        ] as STColumn<FwdSurvey & { assessment: string }>[]}
+        rows={data.surveys.map(sv => ({ ...sv, assessment: cls(sv.d0_mean)[0] }))}
+      />
     </div>
   );
 }
@@ -1996,13 +1961,13 @@ function FWDPanel() {
     { link_id:'A001_Link02', road_name:'Kampala–Jinja', region:'Central',  class:'A', length_km:71,  snr:2.8, max_d0:490, avg_d0:290, sn_back:3.9, e_mod_mpa:1860, sbn_critical:0.29, rci:'Fair',    survey:'Dec 2023' },
     { link_id:'A002_Link01', road_name:'Mbarara–Kabale', region:'Western', class:'A', length_km:120, snr:1.9, max_d0:720, avg_d0:420, sn_back:2.8, e_mod_mpa:1100, sbn_critical:0.54, rci:'Poor',    survey:'Feb 2024' },
     { link_id:'A104_Link01', road_name:'Gulu–Kampala',  region:'Northern', class:'A', length_km:360, snr:3.1, max_d0:410, avg_d0:230, sn_back:4.5, e_mod_mpa:2150, sbn_critical:0.22, rci:'Good',    survey:'Jan 2024' },
-    { link_id:'B001_Link01', road_name:'Tororo–Mbale',  region:'Eastern',  class:'B', length_km:55,  snr:1.4, max_d0:890, avg_d0:560, sn_back:1.9, e_mod_mpa: 680, sbn_critical:0.78, rci:'V.Poor', survey:'Mar 2024' },
+    { link_id:'B001_Link01', road_name:'Tororo–Mbale',  region:'Eastern',  class:'B', length_km:55,  snr:1.4, max_d0:890, avg_d0:560, sn_back:1.9, e_mod_mpa: 680, sbn_critical:0.78, rci:'Very Poor', survey:'Mar 2024' },
     { link_id:'B104_Link01', road_name:'Hoima–Masindi', region:'Western',  class:'B', length_km:68,  snr:2.2, max_d0:630, avg_d0:360, sn_back:3.2, e_mod_mpa:1340, sbn_critical:0.41, rci:'Poor',   survey:'Nov 2023' },
     { link_id:'A109_Link01', road_name:'Kampala N Bypass', region:'Central', class:'A', length_km:17, snr:4.1, max_d0:190, avg_d0:110, sn_back:6.2, e_mod_mpa:3800, sbn_critical:0.08, rci:'Good', survey:'Oct 2023' },
     { link_id:'B064_Link01', road_name:'Mubende–Mityana', region:'Central', class:'B', length_km:74, snr:2.5, max_d0:550, avg_d0:310, sn_back:3.6, e_mod_mpa:1580, sbn_critical:0.33, rci:'Fair', survey:'Jan 2024' },
   ];
 
-  const rciColor = (r: string) => r === 'Good' ? '#22c55e' : r === 'Fair' ? '#eab308' : r === 'Poor' ? '#f97316' : '#ef4444';
+  const totalFwdKm = FWD_LINKS.reduce((s, l) => s + l.length_km, 0);
 
   return (
     <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
@@ -2049,41 +2014,32 @@ function FWDPanel() {
         <div style={{ fontWeight:800, color:'#e2eaf4', fontSize:13, marginBottom:12 }}>
           Link-level Structural Summary - indicative (back-analysis pending for measured surveys)
         </div>
-        <div style={{ overflowX:'auto', borderRadius:8, border:'1px solid rgba(255,255,255,0.06)' }}>
-          <table style={{ width:'100%', fontSize:10, borderCollapse:'collapse', minWidth:900 }}>
-            <thead style={{ position:'sticky', top:0, background:'rgba(15,23,42,0.95)', zIndex:2 }}>
-              <tr style={{ borderBottom:'1px solid rgba(148,163,184,0.15)' }}>
-                {['Link ID','Road Name','Class','Region','Length km','Struct. No. (SN)','Max D₀ (μm)','Avg D₀ (μm)','SN Back-calc','E-mod (MPa)','Crit. Idx','RCI','Survey'].map(h => (
-                  <th key={h} style={{ textAlign:'left', padding:'7px 10px', color:'#94a3b8', fontWeight:700, whiteSpace:'nowrap', fontSize:9 }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {FWD_LINKS.map((l, i) => {
-                const rc = rciColor(l.rci);
-                return (
-                  <tr key={l.link_id} style={{ background: i%2===0?'rgba(15,23,42,0.3)':'transparent', borderBottom:'1px solid rgba(255,255,255,0.03)' }}>
-                    <td style={{ padding:'5px 10px', color:'#00f5ff', fontFamily:'monospace', fontSize:9 }}>{l.link_id}</td>
-                    <td style={{ padding:'5px 10px', color:'#e2eaf4', maxWidth:200, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{l.road_name}</td>
-                    <td style={{ padding:'5px 10px', color:'#ffd23f', fontWeight:700 }}>{l.class}</td>
-                    <td style={{ padding:'5px 10px', color:'#94a3b8' }}>{l.region}</td>
-                    <td style={{ padding:'5px 10px', color:'#94a3b8' }}>{l.length_km}</td>
-                    <td style={{ padding:'5px 10px', color: l.snr<2?'#ef4444':l.snr<3?'#f97316':'#22c55e', fontWeight:700 }}>{l.snr.toFixed(1)}</td>
-                    <td style={{ padding:'5px 10px', color: l.max_d0>600?'#ef4444':l.max_d0>400?'#f97316':'#eab308', fontWeight:700 }}>{l.max_d0}</td>
-                    <td style={{ padding:'5px 10px', color:'#94a3b8' }}>{l.avg_d0}</td>
-                    <td style={{ padding:'5px 10px', color:'#00f5ff' }}>{l.sn_back.toFixed(1)}</td>
-                    <td style={{ padding:'5px 10px', color:'#b967ff', fontFamily:'monospace' }}>{l.e_mod_mpa.toLocaleString()}</td>
-                    <td style={{ padding:'5px 10px', color: l.sbn_critical>0.5?'#ef4444':l.sbn_critical>0.3?'#f97316':'#22c55e', fontWeight:700 }}>{l.sbn_critical.toFixed(2)}</td>
-                    <td style={{ padding:'5px 10px' }}>
-                      <span style={{ fontSize:9, fontWeight:800, padding:'2px 7px', borderRadius:99, background:`${rc}22`, color:rc }}>{l.rci}</span>
-                    </td>
-                    <td style={{ padding:'5px 10px', color:'rgba(148,163,184,0.5)', fontSize:9 }}>{l.survey}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        <div style={{ fontSize: 9.5, color: 'rgba(148,163,184,0.5)', marginBottom: 8 }}>
+          {FWD_LINKS.length} links tested · {totalFwdKm.toLocaleString()} km covered
         </div>
+        <SortableFilterableTable<typeof FWD_LINKS[number]>
+          accent="#f97316"
+          exportName="fwd-structural-summary"
+          columns={[
+            { key: 'link_id', label: 'Link ID' },
+            { key: 'road_name', label: 'Road Name' },
+            { key: 'class', label: 'Class', render: l => <RoadClassPill cls={l.class} /> },
+            { key: 'region', label: 'Region' },
+            { key: 'length_km', label: 'Length (km)', numeric: true, total: 'sum' },
+            { key: 'snr', label: 'Struct. No. (SN)', numeric: true,
+              render: l => <span style={{ color: l.snr<2?'#ef4444':l.snr<3?'#f97316':'#22c55e', fontWeight:700 }}>{l.snr.toFixed(1)}</span> },
+            { key: 'max_d0', label: 'Max D₀ (μm)', numeric: true,
+              render: l => <span style={{ color: l.max_d0>600?'#ef4444':l.max_d0>400?'#f97316':'#eab308', fontWeight:700 }}>{l.max_d0}</span> },
+            { key: 'avg_d0', label: 'Avg D₀ (μm)', numeric: true },
+            { key: 'sn_back', label: 'SN Back-calc', numeric: true, render: l => l.sn_back.toFixed(1) },
+            { key: 'e_mod_mpa', label: 'E-mod (MPa)', numeric: true, render: l => l.e_mod_mpa.toLocaleString() },
+            { key: 'sbn_critical', label: 'Critical Index', numeric: true,
+              render: l => <span style={{ color: l.sbn_critical>0.5?'#ef4444':l.sbn_critical>0.3?'#f97316':'#22c55e', fontWeight:700 }}>{l.sbn_critical.toFixed(2)}</span> },
+            { key: 'rci', label: 'RCI', render: l => <ConditionLabelBadge label={l.rci} /> },
+            { key: 'survey', label: 'Survey' },
+          ] as STColumn<typeof FWD_LINKS[number]>[]}
+          rows={FWD_LINKS}
+        />
 
         {/* Methodology note */}
         <div style={{ marginTop:10, fontSize:9, color:'rgba(148,163,184,0.45)', lineHeight:1.6 }}>

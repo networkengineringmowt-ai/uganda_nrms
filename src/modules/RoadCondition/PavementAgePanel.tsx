@@ -8,6 +8,9 @@
  */
 import { useEffect, useMemo, useState } from 'react';
 import { CURRENT_YEAR } from '../../shared/year';
+import { SearchableSelect } from '../../shared/SearchableSelect';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
+import { RoadClassPill, NullableCell } from '../../shared/tableFormatting';
 
 interface Link {
   link_id: string | null; road_no: string | null; road_class: string | null;
@@ -46,7 +49,6 @@ export default function PavementAgePanel() {
   const [links, setLinks] = useState<Link[]>([]);
   const [region, setRegion] = useState('all');
   const [surface, setSurface] = useState<'all' | 'paved' | 'unpaved'>('all');
-  const [sortDesc, setSortDesc] = useState(true);
 
   useEffect(() => {
     fetch(`${import.meta.env.BASE_URL}data/network_links.json`)
@@ -95,33 +97,23 @@ export default function PavementAgePanel() {
   }), [aged]);
   const maxBandKm = Math.max(1, ...bands.map(b => b.km));
 
+  // Every maintenance region is always shown, even with zero km under the
+  // current filter - a region never silently disappears from the summary.
   const byRegion = useMemo(() => regions.map(rg => {
     const sel = aged.filter(r => r.maintenance_region === rg);
     const km = sel.reduce((a, r) => a + r.km, 0);
     const avg = km ? sel.reduce((a, r) => a + (r.age as number) * r.km, 0) / km : null;
     const over = sel.filter(r => r.overLife).reduce((a, r) => a + r.km, 0);
     return { region: rg, km, avg, overPct: km ? 100 * over / km : 0 };
-  }).filter(r => r.km > 0).sort((a, b) => (b.avg ?? 0) - (a.avg ?? 0)), [aged, regions]);
+  }).sort((a, b) => (b.avg ?? 0) - (a.avg ?? 0)), [aged, regions]);
 
   const oldest = useMemo(() =>
-    [...aged].sort((a, b) => sortDesc
-      ? (b.age as number) - (a.age as number)
-      : (a.age as number) - (b.age as number)),
-    [aged, sortDesc]);
+    [...aged].sort((a, b) => (b.age as number) - (a.age as number)),
+    [aged]);
 
   const CARD: React.CSSProperties = {
     background: 'rgba(8,8,8,0.7)', border: '1px solid rgba(255,107,53,0.16)',
     borderRadius: 10, padding: '12px 14px',
-  };
-  const TH: React.CSSProperties = {
-    textAlign: 'left', padding: '6px 10px', fontSize: 9.5, fontWeight: 800,
-    color: 'rgba(148,163,184,0.7)', textTransform: 'uppercase', letterSpacing: '0.06em',
-    borderBottom: '1px solid rgba(255,107,53,0.18)', position: 'sticky', top: 0,
-    background: 'rgba(8,8,8,0.95)',
-  };
-  const TD: React.CSSProperties = {
-    padding: '5px 10px', fontSize: 11, color: 'rgba(203,213,225,0.85)',
-    borderBottom: '1px solid rgba(255,255,255,0.04)', whiteSpace: 'nowrap',
   };
   const SEL: React.CSSProperties = {
     background: 'rgba(10,16,30,0.9)', color: '#e2e8f0', border: '1px solid rgba(255,107,53,0.3)',
@@ -140,15 +132,15 @@ export default function PavementAgePanel() {
             intervention/rehab/completion · design life {DESIGN_LIFE.paved}y bituminous / {DESIGN_LIFE.unpaved}y unsealed
           </div>
         </div>
-        <select value={region} onChange={e => setRegion(e.target.value)} style={SEL}>
-          <option value="all">All regions</option>
+        <SearchableSelect value={region} onChange={setRegion} style={SEL}>
+          <option value="all">All Regions</option>
           {regions.map(r => <option key={r} value={r}>{r}</option>)}
-        </select>
-        <select value={surface} onChange={e => setSurface(e.target.value as 'all' | 'paved' | 'unpaved')} style={SEL}>
-          <option value="all">All surfaces</option>
-          <option value="paved">Bituminous (paved)</option>
+        </SearchableSelect>
+        <SearchableSelect value={surface} onChange={v => setSurface(v as 'all' | 'paved' | 'unpaved')} style={SEL}>
+          <option value="all">All Surfaces</option>
+          <option value="paved">Bituminous (Paved)</option>
           <option value="unpaved">Unsealed</option>
-        </select>
+        </SearchableSelect>
       </div>
 
       {/* KPI cards */}
@@ -198,69 +190,71 @@ export default function PavementAgePanel() {
           <div style={{ padding: '11px 12px 7px', fontSize: 11.5, fontWeight: 800, color: '#e2eaf4' }}>
             Km-weighted age by maintenance region
           </div>
-          <div style={{ maxHeight: 235, overflowY: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead><tr>
-                <th style={TH}>Region</th><th style={TH}>Network km</th>
-                <th style={TH}>Avg age</th><th style={TH}>Beyond design life</th>
-              </tr></thead>
-              <tbody>
-                {byRegion.map(r => (
-                  <tr key={r.region}>
-                    <td style={{ ...TD, fontWeight: 700, color: '#9bd0ff' }}>{r.region}</td>
-                    <td style={TD}>{Math.round(r.km).toLocaleString()}</td>
-                    <td style={{ ...TD, fontWeight: 800,
-                      color: (r.avg ?? 0) > 15 ? '#ff2d78' : (r.avg ?? 0) > 10 ? '#ffd23f' : '#00ff88' }}>
-                      {r.avg != null ? `${r.avg.toFixed(1)} yrs` : '-'}
-                    </td>
-                    <td style={{ ...TD, color: r.overPct > 30 ? '#ff2d78' : TD.color }}>{r.overPct.toFixed(1)}%</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div style={{ padding: '0 8px 8px' }}>
+            <SortableFilterableTable<typeof byRegion[number]>
+              accent="#ff6b35"
+              exportName="pavement-age-by-region"
+              initialSort="km"
+              columns={[
+                { key: 'region', label: 'Region' },
+                { key: 'km', label: 'Network (km)', numeric: true, total: 'sum',
+                  render: r => Math.round(r.km).toLocaleString() },
+                { key: 'avg', label: 'Avg Age', numeric: true, render: r => (
+                    <NullableCell value={r.avg}>
+                      <span style={{ fontWeight: 800,
+                        color: (r.avg ?? 0) > 15 ? '#ff2d78' : (r.avg ?? 0) > 10 ? '#ffd23f' : '#00ff88' }}>
+                        {r.avg != null ? `${r.avg.toFixed(1)} yrs` : '-'}
+                      </span>
+                    </NullableCell>
+                  ) },
+                { key: 'overPct', label: 'Beyond Design Life', numeric: true, render: r => (
+                    <span style={{ color: r.overPct > 30 ? '#ff2d78' : 'inherit' }}>{r.overPct.toFixed(1)}%</span>
+                  ) },
+              ] as STColumn<typeof byRegion[number]>[]}
+              rows={byRegion}
+            />
           </div>
         </div>
       </div>
 
-      {/* Oldest links */}
+      {/* All links with age data */}
       <div style={{ ...CARD, padding: 0, overflow: 'hidden' }}>
         <div style={{ display: 'flex', alignItems: 'center', padding: '11px 12px 7px' }}>
           <div style={{ fontSize: 11.5, fontWeight: 800, color: '#e2eaf4', flex: 1 }}>
-            All links with age data · {aged.length} (sorted {sortDesc ? 'oldest' : 'youngest'} first)
+            All links with age data · {aged.length} links · {Math.round(aged.reduce((a, r) => a + r.km, 0)).toLocaleString()} km · click a column to sort
           </div>
-          <button onClick={() => setSortDesc(d => !d)} style={{
-            padding: '5px 10px', borderRadius: 7, fontSize: 10, fontWeight: 700, cursor: 'pointer',
-            background: 'rgba(255,107,53,0.12)', border: '1px solid rgba(255,107,53,0.3)', color: '#ff6b35' }}>
-            Sort: {sortDesc ? 'oldest first' : 'youngest first'}
-          </button>
         </div>
-        <div style={{ maxHeight: 560, overflowY: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead><tr>
-              <th style={TH}>Link</th><th style={TH}>Name</th><th style={TH}>Class</th>
-              <th style={TH}>Surface</th><th style={TH}>Region</th><th style={TH}>Km</th>
-              <th style={TH}>Age ({CURRENT_YEAR})</th><th style={TH}>Remaining life</th><th style={TH}>Last intervention</th>
-            </tr></thead>
-            <tbody>
-              {oldest.map(r => (
-                <tr key={`${r.link_id}-${r.link_name}`}>
-                  <td style={{ ...TD, fontWeight: 700, color: '#9bd0ff' }}>{r.link_id}</td>
-                  <td style={{ ...TD, whiteSpace: 'normal', maxWidth: 260 }}>{r.link_name}</td>
-                  <td style={TD}>{r.road_class}</td>
-                  <td style={TD}>{r.surface_type}</td>
-                  <td style={TD}>{r.maintenance_region}</td>
-                  <td style={TD}>{r.km.toFixed(1)}</td>
-                  <td style={{ ...TD, fontWeight: 800, color: r.overLife ? '#ff2d78' : '#ffd23f' }}>
-                    {r.age} yrs{r.derived ? ' *' : ''}
-                  </td>
-                  <td style={{ ...TD, color: r.remaining === 0 ? '#ff2d78' : '#00d4aa' }}>
-                    {r.remaining === 0 ? 'EXCEEDED' : `${r.remaining} yrs`}
-                  </td>
-                  <td style={TD}>{yr(r.last_intervention) ?? yr(r.rehab_year) ?? yr(r.completion_year) ?? '-'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div style={{ padding: '0 8px 8px' }}>
+          <SortableFilterableTable<typeof oldest[number]>
+            accent="#ff6b35"
+            exportName="pavement-age-links"
+            initialSort="age"
+            columns={[
+              { key: 'link_id', label: 'Link' },
+              { key: 'link_name', label: 'Name', render: r => r.link_name ?? '-' },
+              { key: 'road_class', label: 'Class', render: r => <RoadClassPill cls={r.road_class} /> },
+              { key: 'surface_type', label: 'Surface', render: r => r.surface_type ?? '-' },
+              { key: 'maintenance_region', label: 'Region', render: r => r.maintenance_region ?? '-' },
+              { key: 'km', label: 'Length (km)', numeric: true, total: 'sum', render: r => r.km.toFixed(1) },
+              { key: 'age', label: `Age (${CURRENT_YEAR})`, numeric: true, render: r => (
+                  <NullableCell value={r.age}>
+                    <span style={{ fontWeight: 800, color: r.overLife ? '#ff2d78' : '#ffd23f' }}>
+                      {r.age} yrs{r.derived ? ' *' : ''}
+                    </span>
+                  </NullableCell>
+                ) },
+              { key: 'remaining', label: 'Remaining Life', numeric: true, render: r => (
+                  <NullableCell value={r.remaining}>
+                    <span style={{ color: r.remaining === 0 ? '#ff2d78' : '#00d4aa' }}>
+                      {r.remaining === 0 ? 'Exceeded' : `${r.remaining} yrs`}
+                    </span>
+                  </NullableCell>
+                ) },
+              { key: 'last_intervention', label: 'Last Intervention', numeric: true,
+                render: r => yr(r.last_intervention) ?? yr(r.rehab_year) ?? yr(r.completion_year) ?? '-' },
+            ] as STColumn<typeof oldest[number]>[]}
+            rows={oldest}
+          />
         </div>
         <div style={{ padding: '7px 12px', fontSize: 9, color: 'rgba(100,116,139,0.6)' }}>
           * age derived from intervention history · remaining life = design life − current age (floored at 0)

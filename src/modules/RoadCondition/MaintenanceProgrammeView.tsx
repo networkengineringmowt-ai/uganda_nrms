@@ -4,18 +4,9 @@ import {
   CartesianGrid, Legend, Cell, PieChart, Pie,
 } from 'recharts';
 import { AlertTriangle, TrendingUp, DollarSign, Wrench, Filter, Download } from 'lucide-react';
-import { useVirtualRows } from '../../shared/useVirtualRows';
 import { RoadClassPill, ConditionLabelBadge, criticalRowStyle, NullableCell } from '../../shared/tableFormatting';
-import { useSortableColumns, sortRows, SortArrow, type ColumnType } from '../../shared/useSortableColumns';
-
-const ROW_HEIGHT = 40;
-const COLUMN_COUNT = 8;
-
-type LinkSortKey = 'priority_rank' | 'road_name' | 'road_class' | 'current_iri' |
-  'condition_now' | 'intervention_type' | 'length_km' | 'estimated_cost_usd';
-const LINK_SORT_TYPES: Partial<Record<LinkSortKey, ColumnType>> = {
-  priority_rank: 'numeric', current_iri: 'numeric', length_km: 'numeric', estimated_cost_usd: 'numeric',
-};
+import { SearchableSelect } from '../../shared/SearchableSelect';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
 
 const C = {
   cyan: '#00f5ff', green: '#00ff88', yellow: '#ffd23f',
@@ -66,7 +57,6 @@ export default function MaintenanceProgrammeView() {
   const [data, setData] = useState<MaintenanceProgramme | null>(null);
   const [filterClass, setFilterClass] = useState<string>('all');
   const [filterIntervention, setFilterIntervention] = useState<string>('all');
-  const [sortBy, setSortBy] = useState<'priority' | 'cost' | 'iri'>('priority');
 
   useEffect(() => {
     fetch(`${import.meta.env.BASE_URL}data/maintenance_programme.json`)
@@ -124,25 +114,13 @@ export default function MaintenanceProgrammeView() {
       filtered = filtered.filter(l => l.intervention_type === filterIntervention);
     }
 
-    const sorted = [...filtered];
-    if (sortBy === 'priority') {
-      sorted.sort((a, b) => (a.priority_rank || 999) - (b.priority_rank || 999));
-    } else if (sortBy === 'cost') {
-      sorted.sort((a, b) => b.estimated_cost_usd - a.estimated_cost_usd);
-    } else if (sortBy === 'iri') {
-      sorted.sort((a, b) => b.current_iri - a.current_iri);
-    }
+    return [...filtered].sort((a, b) => (a.priority_rank || 999) - (b.priority_rank || 999));
+  }, [data, filterClass, filterIntervention]);
 
-    return sorted;
-  }, [data, filterClass, filterIntervention, sortBy]);
-
-  const { sortKey: colSortKey, sortDir: colSortDir, cycleSort } = useSortableColumns<LinkSortKey>();
-  const columnSorted = useMemo(
-    () => sortRows(filteredAndSorted, colSortKey, colSortDir, colSortKey ? (LINK_SORT_TYPES[colSortKey] ?? 'text') : 'text'),
-    [filteredAndSorted, colSortKey, colSortDir],
+  const filteredKm = useMemo(
+    () => filteredAndSorted.reduce((s, l) => s + (l.length_km ?? 0), 0),
+    [filteredAndSorted],
   );
-  const { containerRef, visibleRows: paginated, topSpacerHeight, bottomSpacerHeight } =
-    useVirtualRows(columnSorted, { rowHeight: ROW_HEIGHT });
 
   if (!data) {
     return (
@@ -301,12 +279,13 @@ export default function MaintenanceProgrammeView() {
         padding: 20,
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
             <h3 style={{ fontSize: 13, fontWeight: 700, color: '#e2eaf4' }}>Priority Links</h3>
             <span className="record-badge">{filteredAndSorted.length.toLocaleString()} links</span>
+            <span className="record-badge">{filteredKm.toLocaleString(undefined, { maximumFractionDigits: 0 })} km</span>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
-            <select value={filterClass} onChange={(e) => { setFilterClass(e.target.value); }}
+            <SearchableSelect value={filterClass} onChange={setFilterClass}
               style={{
                 background: 'rgba(15,15,15,0.8)',
                 border: `1px solid rgba(77,159,255,0.3)`,
@@ -317,11 +296,11 @@ export default function MaintenanceProgrammeView() {
               }}>
               <option value="all">All Classes</option>
               {roadClasses.map(cls => (
-                <option key={cls} value={cls}>{cls}</option>
+                <option key={cls} value={cls}>Class {cls}</option>
               ))}
-            </select>
+            </SearchableSelect>
 
-            <select value={filterIntervention} onChange={(e) => { setFilterIntervention(e.target.value); }}
+            <SearchableSelect value={filterIntervention} onChange={setFilterIntervention}
               style={{
                 background: 'rgba(15,15,15,0.8)',
                 border: `1px solid rgba(77,159,255,0.3)`,
@@ -334,73 +313,33 @@ export default function MaintenanceProgrammeView() {
               {interventionTypes.map(type => (
                 <option key={type} value={type}>{type}</option>
               ))}
-            </select>
-
-            <select value={sortBy} onChange={(e) => setSortBy(e.target.value as any)}
-              style={{
-                background: 'rgba(15,15,15,0.8)',
-                border: `1px solid rgba(77,159,255,0.3)`,
-                borderRadius: 6,
-                padding: '6px 10px',
-                fontSize: 12,
-                color: '#e2eaf4',
-              }}>
-              <option value="priority">Priority Rank</option>
-              <option value="cost">Cost</option>
-              <option value="iri">IRI</option>
-            </select>
+            </SearchableSelect>
           </div>
         </div>
 
-        <div ref={containerRef} className="dt-scroll">
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid rgba(77,159,255,0.2)' }}>
-                {([
-                  ['Rank', 'priority_rank', 'left'],
-                  ['Road', 'road_name', 'left'],
-                  ['Class', 'road_class', 'left'],
-                  ['Current IRI', 'current_iri', 'center'],
-                  ['Condition', 'condition_now', 'left'],
-                  ['Intervention', 'intervention_type', 'left'],
-                  ['Length (km)', 'length_km', 'center'],
-                  ['Cost (USD)', 'estimated_cost_usd', 'right'],
-                ] as [string, LinkSortKey, 'left' | 'center' | 'right'][]).map(([label, key, align]) => (
-                  <th key={key} className="dt-sticky-th" style={{ padding: '10px 8px', textAlign: align, color: colSortKey === key ? '#ffd23f' : 'rgba(148,163,184,0.7)', fontWeight: 600, background: '#0f0f0f', cursor: 'pointer', userSelect: 'none' }}
-                    onClick={() => cycleSort(key)}>
-                    {label}<SortArrow active={colSortKey === key} dir={colSortDir} />
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {topSpacerHeight > 0 && (
-                <tr aria-hidden style={{ height: topSpacerHeight }}><td colSpan={COLUMN_COUNT} style={{ padding: 0, border: 'none' }} /></tr>
-              )}
-              {paginated.map((link, idx) => (
-                <tr key={idx} style={{ borderBottom: '1px solid rgba(77,159,255,0.1)', background: idx % 2 ? 'rgba(77,159,255,0.02)' : 'transparent', ...criticalRowStyle(link.condition_now === 'Very Poor') }}>
-                  <td style={{ padding: '10px 8px', color: C.cyan, fontWeight: 600 }}>#{link.priority_rank}</td>
-                  <td style={{ padding: '10px 8px', color: '#e2eaf4' }}>{link.road_name}</td>
-                  <td style={{ padding: '10px 8px' }}><RoadClassPill cls={link.road_class} /></td>
-                  <td style={{ padding: '10px 8px', textAlign: 'center', color: link.current_iri > 9 ? C.red : link.current_iri > 6.5 ? C.orange : C.green }}>
-                    {link.current_iri.toFixed(1)}
-                  </td>
-                  <td style={{ padding: '10px 8px' }}><ConditionLabelBadge label={link.condition_now} /></td>
-                  <td style={{ padding: '10px 8px', color: 'rgba(148,163,184,0.8)', fontSize: 11 }}>{link.intervention_type}</td>
-                  <td style={{ padding: '10px 8px', textAlign: 'center', color: 'rgba(148,163,184,0.8)' }}>
-                    <NullableCell value={link.length_km}>{link.length_km.toFixed(1)}</NullableCell>
-                  </td>
-                  <td style={{ padding: '10px 8px', textAlign: 'right', color: C.yellow, fontWeight: 600 }}>
-                    <NullableCell value={link.estimated_cost_usd}>${(link.estimated_cost_usd / 1e6).toFixed(1)}M</NullableCell>
-                  </td>
-                </tr>
-              ))}
-              {bottomSpacerHeight > 0 && (
-                <tr aria-hidden style={{ height: bottomSpacerHeight }}><td colSpan={COLUMN_COUNT} style={{ padding: 0, border: 'none' }} /></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <SortableFilterableTable<PriorityLink>
+          accent={C.blue}
+          exportName="priority-links"
+          initialSort="priority_rank"
+          rowStyle={link => criticalRowStyle(link.condition_now === 'Very Poor')}
+          columns={[
+            { key: 'priority_rank', label: 'Rank', numeric: true, render: link => `#${link.priority_rank}` },
+            { key: 'road_name', label: 'Road' },
+            { key: 'road_class', label: 'Class', render: link => <RoadClassPill cls={link.road_class} /> },
+            { key: 'current_iri', label: 'Current IRI', numeric: true, render: link => (
+                <span style={{ color: link.current_iri > 9 ? C.red : link.current_iri > 6.5 ? C.orange : C.green, fontWeight: 700 }}>
+                  {link.current_iri.toFixed(1)}
+                </span>
+              ) },
+            { key: 'condition_now', label: 'Condition', render: link => <ConditionLabelBadge label={link.condition_now} /> },
+            { key: 'intervention_type', label: 'Intervention' },
+            { key: 'length_km', label: 'Length (km)', numeric: true, total: 'sum',
+              render: link => <NullableCell value={link.length_km}>{link.length_km.toFixed(1)}</NullableCell> },
+            { key: 'estimated_cost_usd', label: 'Cost (USD)', numeric: true, total: 'sum',
+              render: link => <NullableCell value={link.estimated_cost_usd}>${(link.estimated_cost_usd / 1e6).toFixed(1)}M</NullableCell> },
+          ] as STColumn<PriorityLink>[]}
+          rows={filteredAndSorted}
+        />
       </div>
     </div>
   );
