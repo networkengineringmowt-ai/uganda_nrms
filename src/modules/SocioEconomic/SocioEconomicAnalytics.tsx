@@ -6,6 +6,8 @@
  * analysis - one continuous scroll, no internal tab-switcher.
  */
 import { DASH_C } from '../../shared/dashboardKit';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
+import { PercentCell, NULL_ZERO_STYLE } from '../../shared/tableFormatting';
 
 const CARD: React.CSSProperties = {
   background: 'rgba(15,23,42,0.55)', border: '1px solid rgba(255,255,255,0.07)',
@@ -21,37 +23,76 @@ function Hdr({ children, accent = DASH_C.cyan }: { children: React.ReactNode; ac
   );
 }
 
+// ─── Conditional formatting for the enum-style rating columns that recur
+// across these matrices (Investment Priority, Threat Level, Food Security,
+// Conflict Risk, Competitiveness…) - traffic-light colouring, vivid palette.
+// Uses the platform's standard vivid traffic-light hexes directly (matches
+// aadtHeat/percentageColor in tableFormatting.tsx) rather than DASH_C.red,
+// which is aliased to the pink swatch in this module's palette.
+const SEVERITY_COLORS: Record<string, string> = {
+  critical: '#ff3366', severe: '#ff3366', 'severely insecure': '#ff3366',
+  high: DASH_C.orange, 'medium-high': DASH_C.orange, 'low-med': DASH_C.yellow,
+  medium: DASH_C.yellow, moderate: DASH_C.yellow, 'low-medium': DASH_C.yellow,
+  'low-moderate': DASH_C.yellow, 'moderately secure': DASH_C.yellow, 'borderline insecure': DASH_C.yellow,
+  low: DASH_C.green, 'food secure': DASH_C.green,
+};
+function severityColor(text: string): string | undefined {
+  return SEVERITY_COLORS[text.trim().toLowerCase()];
+}
+function SeverityCell({ value }: { value: string }) {
+  const color = severityColor(value);
+  if (!color) return <>{value}</>;
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', padding: '2px 9px', borderRadius: 999,
+      background: `${color}1f`, border: `1px solid ${color}55`, color, fontSize: 10, fontWeight: 800,
+    }}>{value}</span>
+  );
+}
+function kebab(s: string): string {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
+const NUMERIC_RE = /^-?[\d,]+(\.\d+)?$/;
+const PERCENT_RE = /^-?\d+(\.\d+)?%$/;
+
+/**
+ * Analysis - builds an STColumn set from plain cols[]/rows[][] matrices and
+ * renders through the shared SortableFilterableTable (sortable headers with
+ * visible sort arrows, live search/filter, CSV+Excel export) so every
+ * cross-cutting matrix on this tab gets the platform's standard table
+ * behaviour without hand-rolling markup per table.
+ */
 function Analysis({ title, cols, rows, accent }: { title: string; cols: string[]; rows: string[][]; accent?: string }) {
+  const columns: STColumn<Record<string, string | number>>[] = cols.map((label, i) => {
+    const key = `c${i}`;
+    const raw = rows.map(r => String(r[i] ?? '').trim());
+    const isPercent = raw.every(v => v === '' || PERCENT_RE.test(v));
+    const isNumeric = !isPercent && raw.every(v => v === '' || NUMERIC_RE.test(v));
+    return {
+      key, label, numeric: isPercent || isNumeric,
+      render: (row) => {
+        const v = row[key];
+        if (v === '' || v == null) return <span style={NULL_ZERO_STYLE}>No data</span>;
+        if (isPercent) return <PercentCell value={v as number} />;
+        if (isNumeric) return <>{(v as number).toLocaleString()}</>;
+        return <SeverityCell value={String(v)} />;
+      },
+    };
+  });
+
+  const dataRows = rows.map(row => Object.fromEntries(cols.map((_, i) => {
+    const key = `c${i}`;
+    const cell = String(row[i] ?? '').trim();
+    if (PERCENT_RE.test(cell)) return [key, parseFloat(cell)];
+    if (NUMERIC_RE.test(cell)) return [key, parseFloat(cell.replace(/,/g, ''))];
+    return [key, row[i]];
+  })));
+
   return (
     <div style={CARD}>
       <Hdr accent={accent}>{title}</Hdr>
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
-          <thead>
-            <tr>
-              {cols.map((c, i) => (
-                <th key={i} style={{
-                  padding: '7px 12px', background: 'rgba(2,6,23,0.9)', color: '#64748b',
-                  textAlign: 'left', fontWeight: 700, fontSize: 10, letterSpacing: '0.04em',
-                  textTransform: 'uppercase',
-                }}>{c}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row, ri) => (
-              <tr key={ri} style={{
-                borderBottom: '1px solid rgba(255,255,255,0.05)',
-                background: ri % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.02)',
-              }}>
-                {row.map((cell, ci) => (
-                  <td key={ci} style={{ padding: '6px 12px', color: ci === 0 ? '#e2e8f0' : '#94a3b8', lineHeight: 1.5 }}>{cell}</td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <SortableFilterableTable columns={columns} rows={dataRows} accent={accent ?? DASH_C.cyan} exportName={kebab(title)} />
     </div>
   );
 }
@@ -62,14 +103,14 @@ export default function SocioEconomicAnalytics() {
       <Analysis title="Extractive Sector Investment Priority Matrix" accent={DASH_C.yellow}
         cols={['Commodity', 'Reserves Size', 'Current Dev. Stage', 'Barriers to Dev.', 'Strategic Value', 'Investment Priority', 'Recommended Action']}
         rows={[
-          ['Oil (Albertine)', '6.5B bbl in-place', 'Development/FEED', 'EACOP financing; land acquisition; ESG risk', 'Transformational - 40% export rev by 2029', 'CRITICAL', 'Accelerate EACOP; local content; refinery feasibility'],
-          ['Phosphate (Sukulu/Tororo)', '510Mt combined', 'Early production', 'Processing plant capex; market access', 'Food security - fertiliser self-sufficiency', 'HIGH', 'Phosphate fertiliser complex; SSP/DAP plant'],
-          ['Iron Ore (Muko)', '162Mt @ 42% Fe', 'Exploration complete', 'No smelter; power cost; rail required', 'Steel for construction boom; import substitution', 'HIGH', 'DRI-EAF mini-mill; Muko-Kabale rail spur'],
-          ['Gold (Busia, Mubende)', 'Artisanal + 2Mt ore', 'Active artisanal + small', 'Formalisation; mercury pollution; smuggling', 'USD 300M+ revenue; community wealth', 'MEDIUM', 'ASM formalisation; assay labs; export licensing'],
-          ['Copper/Cobalt (Kilembe)', '4.5Mt @ 1.8% Cu', 'Mothballed since 1979', 'Rehabilitation cost USD 400M; tailings', 'EV battery value chain; regional refining', 'MEDIUM', 'PPP rehabilitation; cobalt refinery; ESG framework'],
-          ['Rare Earth Elements (Agago)', '1.8Mt @ 1.2% TREO', 'Early exploration', 'Processing complexity; tech transfer', 'Strategic minerals - EV + defence supply chain', 'MEDIUM', 'Strategic partnership; exploration programme'],
-          ['Limestone (Hima)', '500Mt', 'Active - cement', 'Market demand ceiling; dust/air quality', 'Cement self-sufficiency; EACOP demand', 'LOW-MED', 'Environmental management; capacity expansion'],
-          ['Nickel (Tiira)', '4Mt @ 0.6% Ni', 'Exploration', 'Low nickel price; laterite processing', 'EV batteries; stainless steel', 'LOW', 'Feasibility study; await nickel price recovery'],
+          ['Oil (Albertine)', '6.5B bbl in-place', 'Development/FEED', 'EACOP financing; land acquisition; ESG risk', 'Transformational - 40% export rev by 2029', 'Critical', 'Accelerate EACOP; local content; refinery feasibility'],
+          ['Phosphate (Sukulu/Tororo)', '510Mt combined', 'Early production', 'Processing plant capex; market access', 'Food security - fertiliser self-sufficiency', 'High', 'Phosphate fertiliser complex; SSP/DAP plant'],
+          ['Iron Ore (Muko)', '162Mt @ 42% Fe', 'Exploration complete', 'No smelter; power cost; rail required', 'Steel for construction boom; import substitution', 'High', 'DRI-EAF mini-mill; Muko-Kabale rail spur'],
+          ['Gold (Busia, Mubende)', 'Artisanal + 2Mt ore', 'Active artisanal + small', 'Formalisation; mercury pollution; smuggling', 'USD 300M+ revenue; community wealth', 'Medium', 'ASM formalisation; assay labs; export licensing'],
+          ['Copper/Cobalt (Kilembe)', '4.5Mt @ 1.8% Cu', 'Mothballed since 1979', 'Rehabilitation cost USD 400M; tailings', 'EV battery value chain; regional refining', 'Medium', 'PPP rehabilitation; cobalt refinery; ESG framework'],
+          ['Rare Earth Elements (Agago)', '1.8Mt @ 1.2% TREO', 'Early exploration', 'Processing complexity; tech transfer', 'Strategic minerals - EV + defence supply chain', 'Medium', 'Strategic partnership; exploration programme'],
+          ['Limestone (Hima)', '500Mt', 'Active - cement', 'Market demand ceiling; dust/air quality', 'Cement self-sufficiency; EACOP demand', 'Low-Med', 'Environmental management; capacity expansion'],
+          ['Nickel (Tiira)', '4Mt @ 0.6% Ni', 'Exploration', 'Low nickel price; laterite processing', 'EV batteries; stainless steel', 'Low', 'Feasibility study; await nickel price recovery'],
         ]} />
 
       <Analysis title="Energy Sector Gap &amp; Investment Analysis" accent={DASH_C.blue}
@@ -101,14 +142,14 @@ export default function SocioEconomicAnalytics() {
       <Analysis title="Environmental Threat Assessment &amp; Conservation Priorities" accent={DASH_C.teal}
         cols={['Ecosystem', 'Threat Level', 'Primary Threats', 'Area Lost/yr', 'Carbon Impact', 'Priority Actions', 'Est. Cost (USD M)']}
         rows={[
-          ['Tropical Forests', 'CRITICAL', 'Charcoal/firewood, agriculture encroachment', '18,000 ha', '22 Mt CO2/yr', 'REDD+ implementation; community forest management; LPG subsidy', '180'],
-          ['Murchison Falls NP', 'HIGH', 'Oil development impact, poaching, buffer farming', '-', 'Intact stock', 'EIA enforcement; wildlife corridor; community benefit sharing', '45'],
-          ['Queen Elizabeth NP', 'HIGH', 'Human-wildlife conflict, charcoal production', '-', 'Intact stock', 'Electric fence extension; METT monitoring; tourism reinvestment', '38'],
-          ["Bwindi/Rwenzori WHS", 'MEDIUM', 'Gorilla disease, climate shift, edge encroachment', '-', 'Critical', 'Gorilla health screening; climate adaptation; benefit-sharing', '25'],
-          ['Lake Victoria', 'HIGH', 'Eutrophication, invasive water hyacinth, overfishing', 'N/A', 'Critical fishery', 'Hyacinth harvesting; waste water treatment; landing site upgrade', '95'],
-          ['Wetlands (national)', 'HIGH', 'Drainage for agriculture, urban expansion', '30,000 ha', '58 Mt CO2 stored', 'Wetland demarcation and enforcement; smart agricultural subsidies', '65'],
-          ['River Nile Catchment', 'MEDIUM', 'Hydropower dams, sedimentation, watershed deforestation', 'N/A', '-', 'Environmental flow requirements; riparian reforestation programme', '40'],
-          ['Albertine Rift', 'HIGH', 'Oil exploration, deforestation, road infrastructure', '~8,000 ha', 'High biodiversity', 'Strict EIA for oil; transboundary conservation with DRC/Rwanda', '55'],
+          ['Tropical Forests', 'Critical', 'Charcoal/firewood, agriculture encroachment', '18,000 ha', '22 Mt CO2/yr', 'REDD+ implementation; community forest management; LPG subsidy', '180'],
+          ['Murchison Falls NP', 'High', 'Oil development impact, poaching, buffer farming', '-', 'Intact stock', 'EIA enforcement; wildlife corridor; community benefit sharing', '45'],
+          ['Queen Elizabeth NP', 'High', 'Human-wildlife conflict, charcoal production', '-', 'Intact stock', 'Electric fence extension; METT monitoring; tourism reinvestment', '38'],
+          ["Bwindi/Rwenzori WHS", 'Medium', 'Gorilla disease, climate shift, edge encroachment', '-', 'Critical', 'Gorilla health screening; climate adaptation; benefit-sharing', '25'],
+          ['Lake Victoria', 'High', 'Eutrophication, invasive water hyacinth, overfishing', 'N/A', 'Critical fishery', 'Hyacinth harvesting; waste water treatment; landing site upgrade', '95'],
+          ['Wetlands (national)', 'High', 'Drainage for agriculture, urban expansion', '30,000 ha', '58 Mt CO2 stored', 'Wetland demarcation and enforcement; smart agricultural subsidies', '65'],
+          ['River Nile Catchment', 'Medium', 'Hydropower dams, sedimentation, watershed deforestation', 'N/A', '-', 'Environmental flow requirements; riparian reforestation programme', '40'],
+          ['Albertine Rift', 'High', 'Oil exploration, deforestation, road infrastructure', '~8,000 ha', 'High biodiversity', 'Strict EIA for oil; transboundary conservation with DRC/Rwanda', '55'],
         ]} />
 
       <Analysis title="District Education &amp; Health Access Analysis" accent={DASH_C.purple}

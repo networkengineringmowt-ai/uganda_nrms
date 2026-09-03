@@ -7,6 +7,8 @@
  * internal tab-switcher - each registry is just another card in the scroll).
  */
 import { DASH_C } from '../../shared/dashboardKit';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
+import { PercentCell, NULL_ZERO_STYLE } from '../../shared/tableFormatting';
 
 const CARD: React.CSSProperties = {
   background: 'rgba(15,23,42,0.55)', border: '1px solid rgba(255,255,255,0.07)',
@@ -22,34 +24,74 @@ function Hdr({ children, accent = DASH_C.cyan }: { children: React.ReactNode; ac
   );
 }
 
+// ─── Conditional formatting for the short enum/status columns that recur
+// across these registries (Status, UNESCO WHS, etc.) - vivid traffic-light
+// colouring, same hexes as aadtHeat/percentageColor in tableFormatting.tsx.
+const STATUS_COLORS: Record<string, string> = {
+  operational: DASH_C.green, active: DASH_C.green, yes: DASH_C.green,
+  commissioning: DASH_C.yellow, developing: DASH_C.yellow, 'under dev': DASH_C.yellow,
+  'under construction': DASH_C.yellow, 'early production': DASH_C.yellow,
+  planned: DASH_C.blue, exploration: DASH_C.blue, 'exploration complete': DASH_C.blue,
+  appraisal: DASH_C.blue, explored: DASH_C.blue,
+  standby: DASH_C.orange, mothballed: '#ff3366', no: DASH_C.gray,
+};
+function statusColor(text: string): string | undefined {
+  return STATUS_COLORS[text.trim().toLowerCase()];
+}
+function StatusCell({ value }: { value: string }) {
+  const color = statusColor(value);
+  if (!color) return <>{value}</>;
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', padding: '2px 9px', borderRadius: 999,
+      background: `${color}1f`, border: `1px solid ${color}55`, color, fontSize: 10, fontWeight: 800,
+    }}>{value}</span>
+  );
+}
+function kebab(s: string): string {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
+const NUMERIC_RE = /^-?[\d,]+(\.\d+)?$/;
+const PERCENT_RE = /^-?\d+(\.\d+)?%$/;
+
+/**
+ * Registry - builds an STColumn set from plain cols[]/rows[][] matrices and
+ * renders through the shared SortableFilterableTable (sortable headers with
+ * visible sort arrows, live search/filter, CSV+Excel export) so every
+ * registry on this tab gets the platform's standard table behaviour without
+ * hand-rolling markup per table.
+ */
 function Registry({ title, cols, rows, accent }: { title: string; cols: string[]; rows: (string | number)[][]; accent?: string }) {
+  const columns: STColumn<Record<string, string | number>>[] = cols.map((label, i) => {
+    const key = `c${i}`;
+    const raw = rows.map(r => String(r[i] ?? '').trim());
+    const isPercent = raw.every(v => v === '' || PERCENT_RE.test(v));
+    const isNumeric = !isPercent && raw.every(v => v === '' || NUMERIC_RE.test(v));
+    return {
+      key, label, numeric: isPercent || isNumeric,
+      render: (row) => {
+        const v = row[key];
+        if (v === '' || v == null) return <span style={NULL_ZERO_STYLE}>No data</span>;
+        if (isPercent) return <PercentCell value={v as number} />;
+        if (isNumeric) return <>{(v as number).toLocaleString()}</>;
+        return <StatusCell value={String(v)} />;
+      },
+    };
+  });
+
+  const dataRows = rows.map(row => Object.fromEntries(cols.map((_, i) => {
+    const key = `c${i}`;
+    const cell = String(row[i] ?? '').trim();
+    if (PERCENT_RE.test(cell)) return [key, parseFloat(cell)];
+    if (NUMERIC_RE.test(cell)) return [key, parseFloat(cell.replace(/,/g, ''))];
+    return [key, row[i]];
+  })));
+
   return (
     <div style={CARD}>
-      <Hdr accent={accent}>{title} ({rows.length} records)</Hdr>
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
-          <thead>
-            <tr>
-              {cols.map((c, i) => (
-                <th key={i} style={{
-                  padding: '6px 10px', background: 'rgba(2,6,23,0.9)', color: '#64748b',
-                  textAlign: 'left', fontWeight: 700, whiteSpace: 'nowrap', fontSize: 10,
-                  letterSpacing: '0.04em', textTransform: 'uppercase',
-                }}>{c}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row, ri) => (
-              <tr key={ri} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                {row.map((cell, ci) => (
-                  <td key={ci} style={{ padding: '5px 10px', color: '#cbd5e1', whiteSpace: 'nowrap' }}>{cell}</td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Hdr accent={accent}>{title} ({rows.length.toLocaleString()} records)</Hdr>
+      <SortableFilterableTable columns={columns} rows={dataRows} accent={accent ?? DASH_C.cyan} exportName={kebab(title)} />
     </div>
   );
 }

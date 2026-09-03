@@ -20,11 +20,17 @@ const GDP_SECTORS = [
   { name: 'Industry', value: 27, color: DASH_C.purple },
   { name: 'Taxes', value: 3, color: DASH_C.yellow },
 ];
+// All 6 UBOS statistical regions (matches the Regional Demographic
+// Vulnerability table in the Deep Analytics tab and ACCESS_BY_REG below -
+// West Nile/Karamoja poverty figures are carried over from that table
+// rather than a separate, possibly-inconsistent estimate).
 const REGIONS = [
   { region: 'Central', poverty: 14, elec: 42 },
   { region: 'Eastern', poverty: 26, elec: 18 },
   { region: 'Northern', poverty: 32, elec: 14 },
   { region: 'Western', poverty: 19, elec: 22 },
+  { region: 'West Nile', poverty: 50, elec: 18 },
+  { region: 'Karamoja', poverty: 77, elec: 9 },
 ];
 
 // ─── Energy ────────────────────────────────────────────────────────────────
