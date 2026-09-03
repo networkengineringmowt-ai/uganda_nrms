@@ -34,6 +34,8 @@ import SourceTableButton from '../../shared/SourceTableButton';
 import CrossLinkChipBar from '../../shared/CrossLinkChipBar';
 import { BotHighlightContext } from '../AssetBot/types';
 import { useNetworkStats } from '../../shared/useNetworkStats';
+import { SearchableSelect } from '../../shared/SearchableSelect';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface LinkProps {
@@ -502,10 +504,10 @@ export default function RoadNetworkView({ defaultHistory }: { defaultHistory?: b
                   ))}
                 </div>
                 <div style={{ fontSize:9, color:'rgba(100,116,139,0.6)', marginBottom:3 }}>Region</div>
-                <select value={regFilter} onChange={e => setRegFilter(e.target.value)} className="bms-select" style={{ fontSize:10 }}>
+                <SearchableSelect value={regFilter} onChange={setRegFilter} style={{ fontSize:10, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 5, padding: '4px 7px', color: '#e2eaf4' }}>
                   <option value="all">All Regions</option>
                   {regions.map(r => <option key={r} value={r}>{r}</option>)}
-                </select>
+                </SearchableSelect>
               </div>
             </div>
           )}
@@ -957,57 +959,43 @@ function DashboardPanel({ stats, storyData, networkSummary }: {
         </div>
       </div>
 
-      {/* Accurate station-level region table */}
+      {/* Accurate station-level region table - all maintenance regions, every time */}
       <div style={{ marginBottom:16 }}>
         <div style={sectionHead}>Region & Station Breakdown</div>
-        <table style={{ width:'100%', fontSize:9, borderCollapse:'collapse' }}>
-          <thead>
-            <tr>
-              {['Region','Links','Paved km','Unsealed km','% Paved'].map(h => (
-                <th key={h} style={{ padding:'5px 6px', textAlign:'left', color:'rgba(0,245,255,0.5)',
-                  fontWeight:700, textTransform:'uppercase', letterSpacing:'0.06em',
-                  borderBottom:'1px solid rgba(0,245,255,0.08)', fontSize:8 }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {storyData.by_region.map(r => {
-              const tot = r.paved_km + r.unpaved_km;
-              return (
-                <tr key={r.region} style={{ borderBottom:'1px solid rgba(0,245,255,0.04)' }}>
-                  <td style={{ padding:'5px 6px', color: REGION_COLORS[r.region] ?? '#94a3b8', fontWeight:700 }}>{r.region}</td>
-                  <td style={{ padding:'5px 6px', color:'#94a3b8' }}>{r.links}</td>
-                  <td style={{ padding:'5px 6px', color:C.paved }}>{r.paved_km.toFixed(0)}</td>
-                  <td style={{ padding:'5px 6px', color:C.unsealed }}>{r.unpaved_km.toFixed(0)}</td>
-                  <td style={{ padding:'5px 6px' }}>
-                    <div style={{ display:'flex', alignItems:'center', gap:4 }}>
-                      <div style={{ flex:1, height:3, background:'rgba(255,255,255,0.05)', borderRadius:2 }}>
-                        <div style={{ height:'100%', background:REGION_COLORS[r.region]??'#64748b',
-                          width:`${(r.paved_km/tot*100)}%`, borderRadius:2 }}/>
-                      </div>
-                      <span style={{ color:'#e2eaf4', fontWeight:700 }}>{(r.paved_km/tot*100).toFixed(0)}%</span>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-            {/* Totals row */}
-            <tr style={{ borderTop:'1px solid rgba(0,245,255,0.12)' }}>
-              <td style={{ padding:'6px 6px', color:'rgba(0,245,255,0.8)', fontWeight:900, fontSize:10 }}>TOTAL</td>
-              <td style={{ padding:'6px 6px', color:'rgba(0,245,255,0.8)', fontWeight:700 }}>1,020</td>
-              <td style={{ padding:'6px 6px', color:'#00ff88', fontWeight:700 }}>
-                {storyData.by_region.reduce((s,r)=>s+r.paved_km,0).toFixed(0)}
-              </td>
-              <td style={{ padding:'6px 6px', color:C.unsealed, fontWeight:700 }}>
-                {storyData.by_region.reduce((s,r)=>s+r.unpaved_km,0).toFixed(0)}
-              </td>
-              <td style={{ padding:'6px 6px', color:'#ffd23f', fontWeight:700 }}>
-                {(storyData.by_region.reduce((s,r)=>s+r.paved_km,0) /
-                  storyData.by_region.reduce((s,r)=>s+r.paved_km+r.unpaved_km,0)*100).toFixed(1)}%
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div style={{ display:'flex', justifyContent:'space-between', fontSize:9, color:'rgba(148,163,184,0.6)', marginBottom:6 }}>
+          <span>{storyData.by_region.length} regions · {storyData.by_region.reduce((s,r)=>s+r.links,0).toLocaleString()} links</span>
+          <span>
+            <span style={{ color:'#00ff88', fontWeight:700 }}>{storyData.by_region.reduce((s,r)=>s+r.paved_km,0).toFixed(0)} km paved</span>
+            {' + '}
+            <span style={{ color:C.unsealed, fontWeight:700 }}>{storyData.by_region.reduce((s,r)=>s+r.unpaved_km,0).toFixed(0)} km unsealed</span>
+            {' = '}
+            <span style={{ color:'#ffd23f', fontWeight:700 }}>
+              {(storyData.by_region.reduce((s,r)=>s+r.paved_km,0) /
+                storyData.by_region.reduce((s,r)=>s+r.paved_km+r.unpaved_km,0)*100).toFixed(1)}% paved
+            </span>
+          </span>
+        </div>
+        <SortableFilterableTable<RegionEntry & { pavedPct: number }>
+          accent="#00f5ff"
+          exportName="region-station-breakdown"
+          initialSort="paved_km"
+          columns={[
+            { key: 'region', label: 'Region', render: r => <span style={{ color: REGION_COLORS[r.region] ?? '#94a3b8', fontWeight: 700 }}>{r.region}</span> },
+            { key: 'links', label: 'Links', numeric: true, total: 'sum' },
+            { key: 'paved_km', label: 'Paved (km)', numeric: true, total: 'sum', render: r => <span style={{ color: C.paved }}>{r.paved_km.toFixed(0)}</span> },
+            { key: 'unpaved_km', label: 'Unsealed (km)', numeric: true, total: 'sum', render: r => <span style={{ color: C.unsealed }}>{r.unpaved_km.toFixed(0)}</span> },
+            { key: 'pavedPct', label: '% Paved', numeric: true, render: r => (
+                <div style={{ display:'flex', alignItems:'center', gap:4 }}>
+                  <div style={{ flex:1, height:3, background:'rgba(255,255,255,0.05)', borderRadius:2 }}>
+                    <div style={{ height:'100%', background:REGION_COLORS[r.region]??'#64748b',
+                      width:`${r.pavedPct}%`, borderRadius:2 }}/>
+                  </div>
+                  <span style={{ color:'#e2eaf4', fontWeight:700 }}>{r.pavedPct.toFixed(0)}%</span>
+                </div>
+              ) },
+          ] as STColumn<RegionEntry & { pavedPct: number }>[]}
+          rows={storyData.by_region.map(r => ({ ...r, pavedPct: (r.paved_km + r.unpaved_km) ? (r.paved_km / (r.paved_km + r.unpaved_km) * 100) : 0 }))}
+        />
       </div>
 
       {/* Vision 2040 & NDP programs */}
