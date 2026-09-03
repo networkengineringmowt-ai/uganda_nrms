@@ -5,6 +5,7 @@ import { ProtectedRoute } from '../Auth/ProtectedRoute';
 import { roleLabel } from '../Auth/authTypes';
 import { supabase } from '../../lib/supabase';
 import { vciRating, VCI_RATING_COLOR } from '../../shared/vci';
+import { SearchableSelect } from '../../shared/SearchableSelect';
 
 interface SurveyPayload {
   id: string;
@@ -165,9 +166,9 @@ function SurveyFormInner({ onClose }: Props) {
         </div>
         <div>
           <label style={LABEL}>Overall Condition *</label>
-          <select style={FIELD} value={form.overall_condition} onChange={e => set('overall_condition', e.target.value)}>
-            {['Good','Fair','Poor','Bad','Very Bad'].map(c => <option key={c}>{c}</option>)}
-          </select>
+          <SearchableSelect value={form.overall_condition} onChange={v => set('overall_condition', v)} style={FIELD}>
+            {['Good','Fair','Poor','Bad','Very Bad'].map(c => <option key={c} value={c}>{c}</option>)}
+          </SearchableSelect>
         </div>
         <div>
           <label style={LABEL}>IRI Measured (m/km)</label>
@@ -200,9 +201,9 @@ function SurveyFormInner({ onClose }: Props) {
         </div>
         <div>
           <label style={LABEL}>Drainage Score (1–5)</label>
-          <select style={FIELD} value={form.drainage_score} onChange={e => set('drainage_score', e.target.value)}>
+          <SearchableSelect value={form.drainage_score} onChange={v => set('drainage_score', v)} style={FIELD}>
             {[1,2,3,4,5].map(n => <option key={n} value={n}>{n} - {['Very Poor','Poor','Fair','Good','Excellent'][n-1]}</option>)}
-          </select>
+          </SearchableSelect>
         </div>
       </div>
 

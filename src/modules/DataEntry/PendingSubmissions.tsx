@@ -1,6 +1,18 @@
 import { useEffect, useState } from 'react';
 import { ProtectedRoute } from '../Auth/ProtectedRoute';
 import { fetchCapturedTable } from '../../shared/useCapturedRecords';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
+import { NullableCell } from '../../shared/tableFormatting';
+
+// Vivid platform palette (reused rather than the module's old muted indigo/red).
+const NEON = { cyan: '#00f5ff', green: '#00ff88', amber: '#ffd23f', orange: '#ff6b35', red: '#ff3366' };
+
+// Overall-condition scale used by ConditionSurveyForm - colour-coded the
+// same way condition ratings are everywhere else on the platform.
+const CONDITION_COLOR: Record<string, string> = {
+  'Good': NEON.green, 'Fair': NEON.amber, 'Poor': NEON.orange,
+  'Bad': NEON.red, 'Very Bad': NEON.red,
+};
 
 // Mirrors WRITABLE_TABLES in server/index.js (kept as a plain label map here
 // since this panel only needs table -> display name, not the write rules).
@@ -113,6 +125,28 @@ function PendingSubmissionsInner() {
     setSubmissions(updated);
   }
 
+  const columns: STColumn<SurveyPayload>[] = [
+    { key: 'link_id', label: 'Link ID' },
+    { key: 'survey_date', label: 'Survey Date', date: true },
+    { key: 'overall_condition', label: 'Condition', render: s => (
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', padding: '2px 9px', borderRadius: 999,
+          background: `${CONDITION_COLOR[s.overall_condition] ?? '#94a3b8'}1f`,
+          border: `1px solid ${CONDITION_COLOR[s.overall_condition] ?? '#94a3b8'}55`,
+          color: CONDITION_COLOR[s.overall_condition] ?? '#94a3b8', fontSize: 10, fontWeight: 800,
+        }}>{s.overall_condition}</span>
+      ) },
+    { key: 'iri_measured', label: 'IRI (m/km)', numeric: true, render: s => <NullableCell value={s.iri_measured}>{s.iri_measured}</NullableCell> },
+    { key: 'rutting_mm', label: 'Rutting (mm)', numeric: true, render: s => <NullableCell value={s.rutting_mm}>{s.rutting_mm}</NullableCell> },
+    // Role only (e.g. "Field team (NRMS)") - never the submitter's individual
+    // name; do not swap this for identity detail (platform-wide rule).
+    { key: 'surveyor_name', label: 'Submitted By (Role)' },
+    { key: 'submitted_at', label: 'Submitted', date: true, render: s => new Date(s.submitted_at).toLocaleString() },
+    { key: 'id', label: 'Remove', render: s => (
+        <button onClick={() => remove(s.id)} style={{ background:'none', border:'none', color: NEON.red, cursor:'pointer', fontSize:13, padding:0 }}>✕ Remove</button>
+      ) },
+  ];
+
   return (
     <div style={{ padding:'20px 24px' }}>
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
@@ -124,15 +158,15 @@ function PendingSubmissionsInner() {
         </div>
         <div style={{ display:'flex', gap:8 }}>
           <button onClick={() => downloadCsv(submissions)} disabled={!submissions.length} style={{
-            padding:'7px 14px', borderRadius:8, background: submissions.length ? '#6366f1' : 'rgba(255,255,255,0.05)',
-            border:'none', color: submissions.length ? '#fff' : '#475569', fontSize:12, cursor: submissions.length ? 'pointer' : 'default',
+            padding:'7px 14px', borderRadius:8, background: submissions.length ? NEON.cyan : 'rgba(255,255,255,0.05)',
+            border:'none', color: submissions.length ? '#04141a' : '#475569', fontWeight:700, fontSize:12, cursor: submissions.length ? 'pointer' : 'default',
           }}>
             Export CSV
           </button>
           <button onClick={clearAll} disabled={!submissions.length} style={{
-            padding:'7px 14px', borderRadius:8, background: submissions.length ? 'rgba(239,68,68,0.15)' : 'rgba(255,255,255,0.05)',
-            border: `1px solid ${submissions.length ? 'rgba(239,68,68,0.3)' : 'rgba(255,255,255,0.05)'}`,
-            color: submissions.length ? '#fca5a5' : '#475569', fontSize:12, cursor: submissions.length ? 'pointer' : 'default',
+            padding:'7px 14px', borderRadius:8, background: submissions.length ? `${NEON.red}26` : 'rgba(255,255,255,0.05)',
+            border: `1px solid ${submissions.length ? `${NEON.red}55` : 'rgba(255,255,255,0.05)'}`,
+            color: submissions.length ? NEON.red : '#475569', fontSize:12, cursor: submissions.length ? 'pointer' : 'default',
           }}>
             Clear All
           </button>
@@ -146,33 +180,13 @@ function PendingSubmissionsInner() {
           <div style={{ fontSize:11, marginTop:4 }}>Submit condition surveys from the Road Condition module</div>
         </div>
       ) : (
-        <div style={{ overflowX:'auto', border:'1px solid rgba(255,255,255,0.08)', borderRadius:8 }}>
-          <table style={{ width:'100%', borderCollapse:'collapse', fontSize:11, color:'#cbd5e1' }}>
-            <thead>
-              <tr style={{ background:'rgba(99,102,241,0.12)' }}>
-                {['Link ID','Date','Condition','IRI','Rut','Surveyor','Submitted',''].map(h => (
-                  <th key={h} style={{ padding:'8px 10px', color:'#94a3b8', fontWeight:700, textAlign:'left', whiteSpace:'nowrap', borderBottom:'1px solid rgba(255,255,255,0.08)' }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {submissions.map((s, i) => (
-                <tr key={s.id} style={{ background: i%2 ? 'rgba(255,255,255,0.02)' : 'transparent' }}>
-                  <td style={{ padding:'6px 10px', fontFamily:'monospace', fontSize:10 }}>{s.link_id}</td>
-                  <td style={{ padding:'6px 10px', whiteSpace:'nowrap' }}>{s.survey_date}</td>
-                  <td style={{ padding:'6px 10px' }}>{s.overall_condition}</td>
-                  <td style={{ padding:'6px 10px' }}>{s.iri_measured || '-'}</td>
-                  <td style={{ padding:'6px 10px' }}>{s.rutting_mm || '-'}</td>
-                  <td style={{ padding:'6px 10px', whiteSpace:'nowrap' }}>{s.surveyor_name}</td>
-                  <td style={{ padding:'6px 10px', color:'#64748b', whiteSpace:'nowrap' }}>{new Date(s.submitted_at).toLocaleString()}</td>
-                  <td style={{ padding:'6px 10px' }}>
-                    <button onClick={() => remove(s.id)} style={{ background:'none', border:'none', color:'#f87171', cursor:'pointer', fontSize:13, padding:0 }}>✕</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <SortableFilterableTable
+          columns={columns}
+          rows={submissions}
+          accent={NEON.cyan}
+          exportName="pending-survey-submissions"
+          initialSort="submitted_at"
+        />
       )}
 
       <SyncedCapturesPanel />
