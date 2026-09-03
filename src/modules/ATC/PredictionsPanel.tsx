@@ -9,6 +9,7 @@ import { TrendingUp, Zap, AlertTriangle, Activity, Clock } from 'lucide-react';
 import { hexRgb } from '../../lib/chart3d';
 import FeatureAnalyticsPanel from '../../shared/FeatureAnalyticsPanel';
 import { ESRI_TILE_URLS, ESRI_ATTRIBUTIONS } from '../../shared/mapSymbols';
+import { useSortableColumns, sortRows, SortableTh } from '../../shared/useSortableColumns';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface PredProps {
@@ -339,6 +340,101 @@ function LinkPopup({
   );
 }
 
+// ─── Congestion breakdown table (sortable, 4 rows: Critical/High/Medium/Low) ──
+interface CongestionRow {
+  level: string;
+  links: number;
+  lengthKm: number;
+  pct: number;
+  roadWeight: string;
+  action: string;
+}
+
+const sectionHead = (label: string, icon: React.ReactNode, color: string) => (
+  <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:12 }}>
+    <span style={{ color, filter:`drop-shadow(0 0 6px ${color})` }}>{icon}</span>
+    <span style={{ fontSize:13, fontWeight:800, color, letterSpacing:'0.04em',
+      textShadow:`0 0 14px rgba(${hexRgb(color)},0.5)` }}>{label}</span>
+    <div style={{ flex:1, height:1, background:`linear-gradient(90deg, rgba(${hexRgb(color)},0.4), transparent)` }}/>
+  </div>
+);
+
+function CongestionBreakdownTable({
+  features, forecastYr,
+}: { features: PredFeature[]; forecastYr: number }) {
+  const { sortKey, sortDir, cycleSort } = useSortableColumns<string>('links');
+
+  const rows: CongestionRow[] = useMemo(() => {
+    return ['Critical', 'High', 'Medium', 'Low'].map(level => {
+      const atLevel = features.filter(f => congestionAtYear(f.properties, forecastYr) === level);
+      const links = atLevel.length;
+      const lengthKm = atLevel.reduce((sum, f) => sum + (f.properties.length_km ?? 0), 0);
+      const pct = features.length ? (links / features.length) * 100 : 0;
+      const roadWeight = level === 'Critical' ? 'A/M class priority' : level === 'High' ? 'B class review' : '-';
+      const action = level === 'Critical' ? 'Immediate capacity upgrade'
+                   : level === 'High'     ? 'Plan capacity improvement'
+                   : level === 'Medium'   ? 'Monitor traffic growth'
+                   :                        'Routine maintenance';
+      return { level, links, lengthKm, pct, roadWeight, action };
+    });
+  }, [features, forecastYr]);
+
+  const sorted = sortRows(
+    rows, sortKey, sortDir,
+    sortKey === 'links' || sortKey === 'lengthKm' || sortKey === 'pct' ? 'numeric' : 'text',
+  );
+
+  return (
+    <div style={{ ...glass(C.orange), padding:14 }}>
+      {sectionHead('Congestion Risk Breakdown by Road Class', <AlertTriangle size={14}/>, C.orange)}
+      <div style={{ overflowX:'auto' }}>
+        <table style={{ width:'100%', borderCollapse:'collapse', fontSize:10 }}>
+          <thead>
+            <tr style={{ borderBottom:'1px solid rgba(255,107,53,0.2)' }}>
+              <SortableTh label="Risk Level" sortKeyName="level" activeKey={sortKey} dir={sortDir} onSort={k => cycleSort(k as string)} />
+              <SortableTh label="Links" sortKeyName="links" activeKey={sortKey} dir={sortDir} onSort={k => cycleSort(k as string)} />
+              <SortableTh label="Length (km)" sortKeyName="lengthKm" activeKey={sortKey} dir={sortDir} onSort={k => cycleSort(k as string)} />
+              <SortableTh label="% of Network" sortKeyName="pct" activeKey={sortKey} dir={sortDir} onSort={k => cycleSort(k as string)} />
+              <SortableTh label="Road Weight" sortKeyName="roadWeight" activeKey={sortKey} dir={sortDir} onSort={k => cycleSort(k as string)} />
+              <SortableTh label="Action" sortKeyName="action" activeKey={sortKey} dir={sortDir} onSort={k => cycleSort(k as string)} />
+            </tr>
+          </thead>
+          <tbody>
+            {sorted.map(row => {
+              const col = CONG[row.level]?.color ?? '#94a3b8';
+              return (
+                <tr key={row.level} style={{
+                  borderBottom:'1px solid rgba(255,255,255,0.04)',
+                  background: `rgba(${hexRgb(col)},0.05)`,
+                }}>
+                  <td style={{ padding:'6px 10px' }}>
+                    <div style={{ display:'flex', alignItems:'center', gap:7 }}>
+                      <span style={{ width:10, height:10, borderRadius:'50%',
+                        background:col, boxShadow:`0 0 6px ${col}`,
+                        display:'inline-block' }}/>
+                      <span style={{ fontWeight:800, color:col }}>{row.level}</span>
+                    </div>
+                  </td>
+                  <td style={{ padding:'6px 10px', fontWeight:700, color:'#fff' }}>{row.links}</td>
+                  <td style={{ padding:'6px 10px', fontWeight:700, color:col }}>{row.lengthKm.toFixed(1)}</td>
+                  <td style={{ padding:'6px 10px', color:'rgba(148,163,184,0.7)' }}>{row.pct.toFixed(1)}%</td>
+                  <td style={{ padding:'6px 10px', color:'rgba(148,163,184,0.5)', fontSize:9 }}>{row.roadWeight}</td>
+                  <td style={{ padding:'6px 10px', fontSize:9, color:'rgba(148,163,184,0.6)' }}>{row.action}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <div style={{ marginTop:8, fontSize:9, color:'rgba(100,116,139,0.4)' }}>
+        Congestion risk = predicted AADT ÷ design capacity (Uganda roads standard) ·
+        Capacity: M-class 15k, A-class 10k, B-class 5k, C-class 2.5k PCU/day ·
+        Model: XGBoost + LightGBM ensemble, spatial-lag features, trained 2018–2025
+      </div>
+    </div>
+  );
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function PredictionsPanel() {
   const [features,   setFeatures]   = useState<PredFeature[]>([]);
@@ -377,12 +473,15 @@ export default function PredictionsPanel() {
       const aadt = getAadtForYear(f.properties, forecastYr);
       return sum + aadt * (f.properties.length_km ?? 0);
     }, 0);
-    const atRisk = features.filter(f => {
+    const totalLengthKm = features.reduce((sum, f) => sum + (f.properties.length_km ?? 0), 0);
+    const atRiskFeatures = features.filter(f => {
       const r = congestionAtYear(f.properties, forecastYr);
       return r === 'High' || r === 'Critical';
-    }).length;
+    });
+    const atRisk = atRiskFeatures.length;
+    const atRiskLengthKm = atRiskFeatures.reduce((sum, f) => sum + (f.properties.length_km ?? 0), 0);
     const pctRisk = (atRisk / features.length * 100).toFixed(1);
-    return { totalVkm, atRisk, pctRisk };
+    return { totalVkm, totalLengthKm, atRisk, atRiskLengthKm, pctRisk };
   }, [features, forecastYr]);
 
   // ── Live KPIs (recomputed each minute tick) ──
@@ -392,29 +491,22 @@ export default function PredictionsPanel() {
     let maxVph = 0;
     let peakFeature: PredFeature | null = null;
     let congestedCount = 0;
+    let congestedLengthKm = 0;
     for (const f of features) {
       const vph = getCurrentVph(f.properties.aadt_predicted ?? 0, now);
       totalVph += vph;
       if (vph > maxVph) { maxVph = vph; peakFeature = f; }
       if (['High', 'Critical'].includes(getCurrentCongestion(vph, f.properties.road_class))) {
         congestedCount++;
+        congestedLengthKm += f.properties.length_km ?? 0;
       }
     }
-    return { totalVph, maxVph, peakFeature, congestedCount };
+    return { totalVph, maxVph, peakFeature, congestedCount, congestedLengthKm };
   }, [features, now]);
 
   const topCorridor = summary?.highest_growth_corridor_2040;
   const eatTimeStr  = formatEAT(now);
   const eatDayName  = DAY_NAMES[getEatDay(now)];
-
-  const sectionHead = (label: string, icon: React.ReactNode, color: string) => (
-    <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:12 }}>
-      <span style={{ color, filter:`drop-shadow(0 0 6px ${color})` }}>{icon}</span>
-      <span style={{ fontSize:13, fontWeight:800, color, letterSpacing:'0.04em',
-        textShadow:`0 0 14px rgba(${hexRgb(color)},0.5)` }}>{label}</span>
-      <div style={{ flex:1, height:1, background:`linear-gradient(90deg, rgba(${hexRgb(color)},0.4), transparent)` }}/>
-    </div>
-  );
 
   if (loading) {
     return (
@@ -436,7 +528,7 @@ export default function PredictionsPanel() {
         <div>
           <div style={{ fontSize:10, fontWeight:800, color:`rgba(${hexRgb(accentColor)},0.5)`,
             letterSpacing:'0.18em', textTransform:'uppercase' }}>
-            {liveMode ? 'REAL-TIME ESTIMATE · EAT CLOCK · PEAK FACTOR MODEL' : 'ST-GNN / XGBOOST ENSEMBLE · SPATIAL INTERPOLATION'}
+            {liveMode ? 'Real-Time Estimate · EAT Clock · Peak Factor Model' : 'ST-GNN / XGBoost Ensemble · Spatial Interpolation'}
           </div>
           <div style={{ fontSize:20, fontWeight:900, color: accentColor,
             textShadow:`0 0 20px rgba(${hexRgb(accentColor)},0.5)`, letterSpacing:'0.02em' }}>
@@ -470,7 +562,7 @@ export default function PredictionsPanel() {
               display:'inline-block',
               animation: liveMode ? 'livePulse 2s ease-in-out infinite' : 'none',
             }}/>
-            LIVE ESTIMATE
+            Live Estimate
           </button>
 
           {liveMode ? (
@@ -494,7 +586,7 @@ export default function PredictionsPanel() {
             <div style={{ ...glass(C.yellow), padding:'10px 16px', minWidth:220 }}>
               <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:6 }}>
                 <span style={{ fontSize:10, fontWeight:800, color:C.yellow, letterSpacing:'0.05em' }}>
-                  FORECAST YEAR
+                  Forecast Year
                 </span>
                 <span style={{ fontSize:16, fontWeight:900, color:'#fff' }}>{forecastYr}</span>
               </div>
@@ -532,7 +624,7 @@ export default function PredictionsPanel() {
             {
               label: 'Links congested now',
               value: liveKpis ? String(liveKpis.congestedCount) : '-',
-              sub:   `High + Critical · ${features.length} links total`,
+              sub:   liveKpis ? `High + Critical · ${liveKpis.congestedLengthKm.toFixed(0)} km affected` : `High + Critical · ${features.length} links total`,
               color: C.pink, icon: <AlertTriangle size={16}/>,
             },
             {
@@ -565,13 +657,13 @@ export default function PredictionsPanel() {
             {
               label: 'Vehicle-km/day',
               value: forecastKpis ? `${((forecastKpis.totalVkm)/1e6).toFixed(0)}M` : '-',
-              sub:   `Network total · ${forecastYr}`,
+              sub:   forecastKpis ? `Network total · ${forecastKpis.totalLengthKm.toFixed(0)} km · ${forecastYr}` : `Network total · ${forecastYr}`,
               color: C.cyan, icon: <Activity size={16}/>,
             },
             {
               label: 'Links at Capacity Risk',
               value: forecastKpis ? `${forecastKpis.pctRisk}%` : '-',
-              sub:   `High + Critical (${forecastKpis?.atRisk ?? 0} links)`,
+              sub:   `High + Critical (${forecastKpis?.atRisk ?? 0} links · ${(forecastKpis?.atRiskLengthKm ?? 0).toFixed(0)} km)`,
               color: C.pink, icon: <AlertTriangle size={16}/>,
             },
             {
@@ -692,58 +784,7 @@ export default function PredictionsPanel() {
 
       {/* ── Congestion breakdown table (forecast mode only) ── */}
       {!liveMode && (
-        <div style={{ ...glass(C.orange), padding:14 }}>
-          {sectionHead('Congestion Risk Breakdown by Road Class', <AlertTriangle size={14}/>, C.orange)}
-          <div style={{ overflowX:'auto' }}>
-            <table style={{ width:'100%', borderCollapse:'collapse', fontSize:10 }}>
-              <thead>
-                <tr style={{ borderBottom:'1px solid rgba(255,107,53,0.2)' }}>
-                  {['Risk Level','Links','% of Network','Road Weight','Action'].map(h => (
-                    <th key={h} style={{ padding:'5px 10px', textAlign:'left',
-                      fontSize:9, fontWeight:800, color:'rgba(255,107,53,0.7)',
-                      textTransform:'uppercase', letterSpacing:'0.07em' }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {['Critical','High','Medium','Low'].map(level => {
-                  const linksAtLevel = features.filter(
-                    f => congestionAtYear(f.properties, forecastYr) === level
-                  ).length;
-                  const pct = (linksAtLevel / features.length * 100).toFixed(1);
-                  const col = CONG[level]?.color ?? '#94a3b8';
-                  const action = level === 'Critical' ? 'Immediate capacity upgrade'
-                               : level === 'High'     ? 'Plan capacity improvement'
-                               : level === 'Medium'   ? 'Monitor traffic growth'
-                               :                        'Routine maintenance';
-                  return (
-                    <tr key={level} style={{ borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
-                      <td style={{ padding:'6px 10px' }}>
-                        <div style={{ display:'flex', alignItems:'center', gap:7 }}>
-                          <span style={{ width:10, height:10, borderRadius:'50%',
-                            background:col, boxShadow:`0 0 6px ${col}`,
-                            display:'inline-block' }}/>
-                          <span style={{ fontWeight:800, color:col }}>{level}</span>
-                        </div>
-                      </td>
-                      <td style={{ padding:'6px 10px', fontWeight:700, color:'#fff' }}>{linksAtLevel}</td>
-                      <td style={{ padding:'6px 10px', color:'rgba(148,163,184,0.7)' }}>{pct}%</td>
-                      <td style={{ padding:'6px 10px', color:'rgba(148,163,184,0.5)', fontSize:9 }}>
-                        {level === 'Critical' ? 'A/M class priority' : level === 'High' ? 'B class review' : '-'}
-                      </td>
-                      <td style={{ padding:'6px 10px', fontSize:9, color:'rgba(148,163,184,0.6)' }}>{action}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-          <div style={{ marginTop:8, fontSize:9, color:'rgba(100,116,139,0.4)' }}>
-            Congestion risk = predicted AADT ÷ design capacity (Uganda roads standard) ·
-            Capacity: M-class 15k, A-class 10k, B-class 5k, C-class 2.5k PCU/day ·
-            Model: XGBoost + LightGBM ensemble, spatial-lag features, trained 2018–2025
-          </div>
-        </div>
+        <CongestionBreakdownTable features={features} forecastYr={forecastYr} />
       )}
 
       {/* ── Live congestion distribution (live mode only) ── */}
@@ -752,10 +793,12 @@ export default function PredictionsPanel() {
           {sectionHead(`Live Congestion Distribution · ${eatTimeStr} EAT`, <Clock size={14}/>, C.green)}
           <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10 }}>
             {['Critical','High','Medium','Low'].map(level => {
-              const count = features.filter(f => {
+              const atLevel = features.filter(f => {
                 const vph = getCurrentVph(f.properties.aadt_predicted ?? 0, now);
                 return getCurrentCongestion(vph, f.properties.road_class) === level;
-              }).length;
+              });
+              const count = atLevel.length;
+              const lengthKm = atLevel.reduce((sum, f) => sum + (f.properties.length_km ?? 0), 0);
               const pct  = (count / features.length * 100).toFixed(1);
               const col  = CONG[level]?.color ?? '#94a3b8';
               return (
@@ -767,7 +810,7 @@ export default function PredictionsPanel() {
                   <div style={{ fontSize:24, fontWeight:900, color:col,
                     textShadow:`0 0 16px rgba(${hexRgb(col)},0.5)` }}>{count}</div>
                   <div style={{ fontSize:9, fontWeight:800, color:col, marginTop:3 }}>{level}</div>
-                  <div style={{ fontSize:9, color:'rgba(148,163,184,0.5)', marginTop:2 }}>{pct}% of network</div>
+                  <div style={{ fontSize:9, color:'rgba(148,163,184,0.5)', marginTop:2 }}>{pct}% of network · {lengthKm.toFixed(0)} km</div>
                 </div>
               );
             })}
