@@ -9,6 +9,14 @@ import { formatDate } from '../../utils/helpers';
 import { v4 as uuidv4 } from 'uuid';
 import { useVirtualRows } from '../../shared/useVirtualRows';
 import { useSortableColumns, sortRows, SortArrow, type ColumnType } from '../../shared/useSortableColumns';
+import { SearchableSelect } from '../../shared/SearchableSelect';
+
+// Inline equivalent of the .bms-input/.bms-select CSS classes, since
+// SearchableSelect takes a style prop rather than className.
+const bmsSelectStyle: React.CSSProperties = {
+  width: '100%', background: 'rgba(6,13,24,0.8)', border: '1px solid rgba(0,245,255,0.12)',
+  borderRadius: 8, padding: '8px 12px', fontSize: 13, color: '#e2eaf4',
+};
 
 const DOC_ROW_HEIGHT = 56;
 const DOC_COLUMN_COUNT = 7;
@@ -287,9 +295,9 @@ export default function DocumentStore() {
               onChange={e => setQuery(e.target.value)}
             />
           </div>
-          <select className="bms-input py-1.5 text-xs" value={typeFilter} onChange={e => setType(e.target.value)}>
+          <SearchableSelect value={typeFilter} onChange={setType} style={{ ...bmsSelectStyle, padding: '6px 12px', fontSize: 12, width: 160 }}>
             {fileTypes.map(t => <option key={t} value={t}>{t === 'all' ? 'All file types' : t}</option>)}
-          </select>
+          </SearchableSelect>
           <span className="record-badge ml-auto">{filtered.length.toLocaleString()} of {documents.length.toLocaleString()} shown</span>
         </div>
       </div>
@@ -374,7 +382,7 @@ function DocRow({ doc, query, onOpen }: { doc: BridgeDocument; query: string; on
             <div className="text-xs font-medium text-slate-200 max-w-[260px] truncate">{doc.name}</div>
             {doc.description && <div className="text-[10px] text-slate-500 max-w-[260px] truncate">{doc.description}</div>}
             {matchedInContent && (
-              <div className="text-[10px] text-emerald-400 mt-0.5">match found inside document text</div>
+              <div className="text-[10px] text-emerald-400 mt-0.5">Match found inside document text</div>
             )}
             {doc.keywords && doc.keywords.length > 0 && (
               <div className="flex items-center gap-1 mt-1 flex-wrap">
@@ -394,9 +402,9 @@ function DocRow({ doc, query, onOpen }: { doc: BridgeDocument; query: string; on
         {doc.extractionStatus === 'ok' ? (
           <span className="text-emerald-400">{doc.pageCount ?? 1} page{(doc.pageCount ?? 1) === 1 ? '' : 's'} · {(doc.wordCount ?? 0).toLocaleString()} words</span>
         ) : doc.extractionStatus === 'failed' ? (
-          <span className="text-red-400">extraction failed</span>
+          <span className="text-red-400">Extraction failed</span>
         ) : (
-          <span className="text-slate-500">{doc.fileType} - not extractable</span>
+          <span className="text-slate-500">{doc.fileType} - Not extractable</span>
         )}
       </td>
       <td className="px-4 py-3 text-xs text-slate-400">{doc.fileSize}</td>
@@ -472,7 +480,7 @@ function DocReader({ doc, onClose }: { doc: BridgeDocument; onClose: () => void 
             {Array.isArray(highlighted)
               ? highlighted.map((chunk, i) =>
                   i % 2 === 1
-                    ? <mark key={i} style={{ background: '#f59e0b', color: '#020202', padding: '0 2px', borderRadius: 2 }}>{chunk}</mark>
+                    ? <mark key={i} style={{ background: '#ffd23f', color: '#020202', padding: '0 2px', borderRadius: 2 }}>{chunk}</mark>
                     : <span key={i}>{chunk}</span>,
                 )
               : (pageText || 'No text on this page.')}
@@ -525,16 +533,16 @@ function DocUploadForm({
         <div className="p-5 space-y-4">
           <div>
             <label className="text-[10px] font-bold uppercase tracking-wide text-slate-500 block mb-1">Structure (optional)</label>
-            <select className="bms-input text-xs" value={structureId} onChange={e => setStructureId(e.target.value)}>
+            <SearchableSelect value={structureId} onChange={setStructureId} style={bmsSelectStyle} placeholder="Search structures…">
               <option value="">Unassigned / general reference</option>
               {structures.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-            </select>
+            </SearchableSelect>
           </div>
           <div>
             <label className="text-[10px] font-bold uppercase tracking-wide text-slate-500 block mb-1">Category</label>
-            <select className="bms-input text-xs" value={category} onChange={e => setCategory(e.target.value as DocumentCategory)}>
+            <SearchableSelect value={category} onChange={v => setCategory(v as DocumentCategory)} style={bmsSelectStyle}>
               {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
+            </SearchableSelect>
           </div>
           <div>
             <label className="text-[10px] font-bold uppercase tracking-wide text-slate-500 block mb-1">Description (optional)</label>
