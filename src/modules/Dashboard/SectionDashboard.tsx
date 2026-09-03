@@ -121,7 +121,6 @@ function SectionSignatureBlock({ sectionId, accent }: { sectionId: string; accen
 /* ── Section sub-tabs: Dashboard | Interactive Map | Exhaustive Tables |      */
 /* ── Deep Analytics | SQL Database & Schema | Data Capture                   */
 /* ─────────────────────────────────────────────────────────────────────────── */
-import { InsightGrid } from './InsightGrid';
 import { SchemaExplorer } from './SchemaExplorer';
 import { SectionMap } from './SectionMap';
 import { ExhaustiveTables } from './ExhaustiveTables';
@@ -190,7 +189,13 @@ function SectionSubTabs({ sectionId, accent }: { sectionId: string; accent: stri
           </button>
         ))}
       </div>
-      {tab === 'dashboard' && (<><SectionSignatureBlock sectionId={sid} accent={accent} /><InsightGrid sectionId={sid} accent={accent} /><SectionExtra sectionId={sid} slot="dashboard" /></>)}
+      {/* InsightGrid (auto-derived correlation/stat tiles) removed from here - it duplicated
+          DeepAnalysisTables' rigorous, better-labeled version (mean/median/stddev/95%-CI,
+          Pearson r with significance testing, one-way ANOVA, chi-square cross-tabs, CSV
+          export) over the same tables, in violation of the platform's formulas/summary-stats
+          -belong-only-in-Deep-Analytics rule. See the Deep Analytics tab for this section's
+          real correlation and distribution analysis. */}
+      {tab === 'dashboard' && (<><SectionSignatureBlock sectionId={sid} accent={accent} /><SectionExtra sectionId={sid} slot="dashboard" /></>)}
       {tab === 'map' && (
         hasMapExtra(sid)
           ? <SectionExtra sectionId={sid} slot="map" />
@@ -375,7 +380,7 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
     // standalone sidebar section (networkstory / roadnetwork) - keeping
     // them here too made RMS's own hub show byte-identical content to two
     // other sidebar entries. RMS's Dashboard/Map tabs fall back to the
-    // shared InsightGrid/SectionMap treatment like any other section.
+    // shared SectionSignatureBlock/SectionMap treatment like any other section.
     // Road Inventory is a records table, so it sits on Deep Analytics.
     analytics: [LazyRoadInventoryTbl],
   },
@@ -513,7 +518,7 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
   // Restored standalone legacy tabs - each keeps its own un-aliased sectionId
   // (see DEFS above) so it gets its own title/body card, with its existing
   // bespoke component slotted into Dashboard. Map/Tables/Analytics/SQL fall
-  // back to InsightGrid/ExhaustiveTables/etc.'s honest "not wired" empty
+  // back to ExhaustiveTables/DeepAnalysisTables/etc.'s honest "not wired" empty
   // state for these ids, same as any other unwired section - not a crash,
   // just no duplicate database table for content that's really local/static.
   //
@@ -533,9 +538,9 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
   // Analytics), matching exactly how the same component is slotted for its
   // primary sidebar section (e.g. BMS_Registry -> bms.analytics). Putting a
   // raw <table> on Dashboard would violate the platform's no-tables-on-
-  // Dashboard rule; falling through to InsightGrid's honest empty state on
-  // Dashboard here keeps that consistent no matter which route (sidebar vs.
-  // a cross-link pill) a user reaches the section through.
+  // Dashboard rule; the Dashboard tab here just falls through to its plain
+  // signature block instead, keeping that consistent no matter which route
+  // (sidebar vs. a cross-link pill) a user reaches the section through.
   registry:       { analytics: [BMS_Registry] },
   inspections:    { analytics: [BMS_Inspections] },
   priority:       { analytics: [LazyPriorityRanking] },

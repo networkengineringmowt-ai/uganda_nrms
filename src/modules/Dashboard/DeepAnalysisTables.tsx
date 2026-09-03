@@ -15,7 +15,7 @@ function prettyLabel(key: string): string {
   }).join(' ');
 }
 // Table names corrected to match scripts/etl_all.py's real load targets - see
-// the identical note in ExhaustiveTables.tsx / InsightGrid.tsx. The old names
+// the identical note in ExhaustiveTables.tsx. The old names
 // pointed at tables that were never created in the live project, so this
 // "analysed in full" view was always silently substituting the static
 // GeoJSON fallback below for a live query result. 'reserve'/'pim' dropped
