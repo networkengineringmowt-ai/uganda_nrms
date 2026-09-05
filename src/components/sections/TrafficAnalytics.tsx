@@ -27,8 +27,8 @@ interface StationFeature { properties: StationProps }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const C = {
-  cyan:'#64d2ff', green:'#30d158', orange:'#ff9f0a', purple:'#bf5af2',
-  yellow:'#ffd60a', pink:'#ff375f', blue:'#0a84ff', teal:'#66d4cf', amber:'#f59e0b',
+  cyan:'#00f5ff', green:'#00ff88', orange:'#ff6b35', purple:'#b967ff',
+  yellow:'#ffd23f', pink:'#ff2d78', blue:'#4d9fff', teal:'#00d4aa', amber:'#f59e0b',
 };
 const CONG_CLR: Record<string,string> = { Critical:'#ef4444', High:'#f97316', Medium:'#eab308', Low:'#22c55e' };
 
@@ -147,8 +147,8 @@ function GrowthTrajectory({ avgAadt }: { avgAadt: number }) {
       {/* COVID dip annotation */}
       {covidIdx>=0 && <>
         <line x1={xp(covidIdx)} x2={xp(covidIdx)} y1={PT} y2={PT+cH}
-          stroke="rgba(255, 214, 10,0.28)" strokeDasharray="3 2"/>
-        <text x={xp(covidIdx)+4} y={PT+14} fill="rgba(255, 214, 10,0.55)" fontSize={8}>COVID-19</text>
+          stroke="rgba(255, 210, 63,0.28)" strokeDasharray="3 2"/>
+        <text x={xp(covidIdx)+4} y={PT+14} fill="rgba(255, 210, 63,0.55)" fontSize={8}>COVID-19</text>
       </>}
       <path d={areaD} fill="url(#tgG)"/>
       <polyline points={pts.join(' ')} fill="none" stroke={C.teal} strokeWidth={2.2}
@@ -348,12 +348,12 @@ function MiniDonut({ items }: { items: { v:number; color:string }[] }) {
 
 // ─── 8 key vehicle classes for clustered charts ──────────────────────────────
 const KEY_CLASSES = [
-  { key:'mc', label:'Motorcycle', color:'#64d2ff' },
-  { key:'sc', label:'Car/Taxi',   color:'#30d158' },
-  { key:'sb', label:'Mini-bus',   color:'#ff9f0a' },
-  { key:'lb', label:'Bus',        color:'#bf5af2' },
-  { key:'lg', label:'Light Goods',color:'#ffd60a' },
-  { key:'lt', label:'Med. Goods', color:'#0a84ff' },
+  { key:'mc', label:'Motorcycle', color:'#00f5ff' },
+  { key:'sc', label:'Car/Taxi',   color:'#00ff88' },
+  { key:'sb', label:'Mini-bus',   color:'#ff6b35' },
+  { key:'lb', label:'Bus',        color:'#b967ff' },
+  { key:'lg', label:'Light Goods',color:'#ffd23f' },
+  { key:'lt', label:'Med. Goods', color:'#4d9fff' },
   { key:'ht', label:'Heavy Goods',color:'#f0abfc' },
   { key:'tt', label:'Articulated',color:'#fbbf24' },
 ];
@@ -368,7 +368,7 @@ function ClusterTip({ active, payload, label }: {
 }) {
   if (!active || !payload?.length) return null;
   return (
-    <div style={{ background:'rgba(10,16,30,0.92)', border:'1px solid rgba(100, 210, 255,0.18)',
+    <div style={{ background:'rgba(10,16,30,0.92)', border:'1px solid rgba(0, 245, 255,0.18)',
       borderRadius:8, padding:'8px 12px', fontSize:10 }}>
       <div style={{ fontWeight:800, color:'#fff', marginBottom:6 }}>{label}</div>
       {payload.map(p=>(
@@ -475,8 +475,8 @@ function MacroTab({ features }: { features: PredFeature[] }) {
 
   return (
     <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
-      <div style={{ fontSize:9.5, fontWeight:700, color:'#30d158' }}>
-        <span className="animate-pulse" style={{ display:'inline-block', width:6, height:6, borderRadius:'50%', background:'#30d158', marginRight:5 }} />
+      <div style={{ fontSize:9.5, fontWeight:700, color:'#00ff88' }}>
+        <span className="animate-pulse" style={{ display:'inline-block', width:6, height:6, borderRadius:'50%', background:'#00ff88', marginRight:5 }} />
         LIVE - all metrics now-cast to {new Date().toLocaleString('en-GB')} (reporting instant {nowT.toFixed(7)})
       </div>
       {/* ── KPI Stat-Card Strip ─────────────────────────────────────────── */}
@@ -1064,19 +1064,19 @@ export default function TrafficAnalytics() {
       <ModuleNavBar module="TIS" />
       {/* Header */}
       <div style={{ marginBottom:18 }}>
-        <div style={{ fontSize:9, fontWeight:800, color:'rgba(255, 214, 10,0.55)',
+        <div style={{ fontSize:9, fontWeight:800, color:'rgba(255, 210, 63,0.55)',
           letterSpacing:'0.18em', textTransform:'uppercase', marginBottom:3 }}>
           Uganda National Roads · Deep Analytics · ML Ensemble 2025–2040
         </div>
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end' }}>
-          <div style={{ fontSize:22, fontWeight:900, color:'#ffd60a', lineHeight:1.2,
-            textShadow:'0 0 22px rgba(255, 214, 10,0.4)' }}>
+          <div style={{ fontSize:22, fontWeight:900, color:'#ffd23f', lineHeight:1.2,
+            textShadow:'0 0 22px rgba(255, 210, 63,0.4)' }}>
             Traffic Analytics Dashboard
           </div>
           {/* Target dropdown */}
           <SearchableSelect value={target} onChange={v=>setTarget(v as RegionTarget)}
-            style={{ background:'rgba(255, 214, 10,0.08)', border:'1px solid rgba(255, 214, 10,0.3)',
-              borderRadius:8, color:'#ffd60a', fontSize:11, fontWeight:700,
+            style={{ background:'rgba(255, 210, 63,0.08)', border:'1px solid rgba(255, 210, 63,0.3)',
+              borderRadius:8, color:'#ffd23f', fontSize:11, fontWeight:700,
               padding:'5px 12px', cursor:'pointer', outline:'none', fontFamily:'inherit' }}>
             {(['GLOBAL','CENTRAL','EASTERN','SOUTHERN','WESTERN','NORTHERN','NORTH EASTERN'] as RegionTarget[]).map(r=>(
               <option key={r} value={r}>{TARGET_LABELS[r]}</option>
@@ -1099,9 +1099,9 @@ export default function TrafficAnalytics() {
               style={{ padding:'8px 14px', fontSize:10, fontWeight:800,
                 letterSpacing:'0.1em', cursor:'pointer', border:'none',
                 borderRadius:'8px 8px 0 0',
-                background: active?'rgba(255, 214, 10,0.12)':'transparent',
-                color: active?'#ffd60a':'rgba(148,163,184,0.5)',
-                borderBottom: active?'2px solid #ffd60a':'2px solid transparent',
+                background: active?'rgba(255, 210, 63,0.12)':'transparent',
+                color: active?'#ffd23f':'rgba(148,163,184,0.5)',
+                borderBottom: active?'2px solid #ffd23f':'2px solid transparent',
                 transition:'all .15s' }}>
               {t.label}
             </button>
