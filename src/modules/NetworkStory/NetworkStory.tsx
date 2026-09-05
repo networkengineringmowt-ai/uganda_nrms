@@ -40,7 +40,7 @@ interface Filters {
 export const C = {
   purple: '#bf5af2', cyan: '#64d2ff', green: '#30d158',
   blue: '#0a84ff',  yellow: '#ffd60a', orange: '#ff9f0a',
-  pink: '#ff375f',  teal: '#00d4aa',  indigo: '#7c6af7',
+  pink: '#ff375f',  teal: '#66d4cf',  indigo: '#7c6af7',
 };
 const NEON = [C.cyan, C.green, C.yellow, C.orange, C.pink, C.purple, C.teal, C.blue, C.indigo];
 export const ALL_REGIONS = ['Central', 'Western', 'Southern', 'Northern', 'Eastern', 'North Eastern'];
