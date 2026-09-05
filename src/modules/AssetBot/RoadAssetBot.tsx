@@ -14,7 +14,7 @@ const GLASS: React.CSSProperties = {
   WebkitBackdropFilter: 'blur(20px)',
   border: '1px solid rgba(255,255,255,0.1)',
 };
-const ACCENT = '#5e5ce6';
+const ACCENT = '#6366f1';
 
 // Escape HTML special characters before applying the lightweight **bold**
 // markdown transform, so untrusted/user-influenced message text can never
@@ -116,8 +116,8 @@ function MessageBubble({ msg, onNavigateSources }: { msg: BotMessage; onNavigate
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: isUser ? 'flex-end' : 'flex-start', marginBottom: 12 }}>
       <div style={{
         maxWidth: '90%', padding: '8px 12px', borderRadius: isUser ? '12px 12px 4px 12px' : '12px 12px 12px 4px',
-        background: isUser ? `rgba(94, 92, 230,0.25)` : 'rgba(255,255,255,0.06)',
-        border: `1px solid ${isUser ? 'rgba(94, 92, 230,0.4)' : 'rgba(255,255,255,0.08)'}`,
+        background: isUser ? `rgba(99, 102, 241,0.25)` : 'rgba(255,255,255,0.06)',
+        border: `1px solid ${isUser ? 'rgba(99, 102, 241,0.4)' : 'rgba(255,255,255,0.08)'}`,
         color: '#e2eaf4', fontSize: 12, lineHeight: 1.6,
       }}>
         {/* Render bold markdown-style text */}
@@ -141,7 +141,7 @@ function MessageBubble({ msg, onNavigateSources }: { msg: BotMessage; onNavigate
               onClick={onNavigateSources}
               style={{
                 padding: '2px 8px', borderRadius: 10, fontSize: 10, cursor: 'pointer',
-                background: 'rgba(94, 92, 230,0.15)', border: '1px solid rgba(94, 92, 230,0.3)',
+                background: 'rgba(99, 102, 241,0.15)', border: '1px solid rgba(99, 102, 241,0.3)',
                 color: ACCENT, fontWeight: 600,
               }}
             >
@@ -336,7 +336,7 @@ export default function RoadAssetBot() {
           width: 52, height: 52, borderRadius: '50%',
           background: `linear-gradient(135deg, ${ACCENT}, #818cf8)`,
           border: 'none', cursor: 'pointer',
-          boxShadow: `0 4px 24px rgba(94, 92, 230,0.55), 0 2px 8px rgba(0,0,0,0.4)`,
+          boxShadow: `0 4px 24px rgba(99, 102, 241,0.55), 0 2px 8px rgba(0,0,0,0.4)`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: 22, transition: 'transform 0.2s, box-shadow 0.2s',
           transform: open ? 'rotate(15deg)' : 'none',
@@ -364,7 +364,7 @@ export default function RoadAssetBot() {
           maxHeight: 'calc(100vh - 120px)',
           borderRadius: 16,
           display: 'flex', flexDirection: 'column',
-          boxShadow: '0 8px 48px rgba(0,0,0,0.7), 0 0 0 1px rgba(94, 92, 230,0.2)',
+          boxShadow: '0 8px 48px rgba(0,0,0,0.7), 0 0 0 1px rgba(99, 102, 241,0.2)',
           ...GLASS,
           animation: 'botSlideIn 0.22s ease-out',
         }}>
@@ -440,12 +440,12 @@ export default function RoadAssetBot() {
                 onClick={() => sendMessage(q.text)}
                 style={{
                   padding: '3px 9px', borderRadius: 12, fontSize: 10, cursor: 'pointer',
-                  background: 'rgba(94, 92, 230,0.12)', border: '1px solid rgba(94, 92, 230,0.25)',
+                  background: 'rgba(99, 102, 241,0.12)', border: '1px solid rgba(99, 102, 241,0.25)',
                   color: '#a5b4fc', fontWeight: 600, whiteSpace: 'nowrap',
                   transition: 'background 0.15s',
                 }}
-                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(94, 92, 230,0.25)'; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(94, 92, 230,0.12)'; }}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(99, 102, 241,0.25)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(99, 102, 241,0.12)'; }}
               >
                 {q.label}
               </button>
