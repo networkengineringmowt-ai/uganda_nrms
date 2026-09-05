@@ -22,11 +22,11 @@ interface Link {
 
 const DESIGN_LIFE = { paved: 20, unpaved: 7 };
 const BANDS = [
-  { label: '0–5 yrs',   min: 0,  max: 5,        color: '#30d158' },
-  { label: '6–10 yrs',  min: 6,  max: 10,       color: '#66d4cf' },
-  { label: '11–15 yrs', min: 11, max: 15,       color: '#ffd60a' },
-  { label: '16–20 yrs', min: 16, max: 20,       color: '#ff9f0a' },
-  { label: '>20 yrs',   min: 21, max: Infinity, color: '#ff375f' },
+  { label: '0–5 yrs',   min: 0,  max: 5,        color: '#00ff88' },
+  { label: '6–10 yrs',  min: 6,  max: 10,       color: '#00d4aa' },
+  { label: '11–15 yrs', min: 11, max: 15,       color: '#ffd23f' },
+  { label: '16–20 yrs', min: 16, max: 20,       color: '#ff6b35' },
+  { label: '>20 yrs',   min: 21, max: Infinity, color: '#ff2d78' },
 ];
 
 const yr = (v: number | string | null): number | null => {
@@ -112,11 +112,11 @@ export default function PavementAgePanel() {
     [aged]);
 
   const CARD: React.CSSProperties = {
-    background: 'rgba(8,8,8,0.7)', border: '1px solid rgba(255, 159, 10,0.16)',
+    background: 'rgba(8,8,8,0.7)', border: '1px solid rgba(255, 107, 53,0.16)',
     borderRadius: 10, padding: '12px 14px',
   };
   const SEL: React.CSSProperties = {
-    background: 'rgba(10,16,30,0.9)', color: '#e2e8f0', border: '1px solid rgba(255, 159, 10,0.3)',
+    background: 'rgba(10,16,30,0.9)', color: '#e2e8f0', border: '1px solid rgba(255, 107, 53,0.3)',
     borderRadius: 7, fontSize: 11, padding: '6px 9px',
   };
 
@@ -146,12 +146,12 @@ export default function PavementAgePanel() {
       {/* KPI cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 10, marginBottom: 14 }}>
         {([
-          ['Network avg age', stats.avg != null ? `${stats.avg.toFixed(1)} yrs` : '-', '#ff9f0a'],
-          ['Bituminous avg', stats.avgPaved != null ? `${stats.avgPaved.toFixed(1)} yrs` : '-', '#66d4cf'],
-          ['Unsealed avg', stats.avgUnpaved != null ? `${stats.avgUnpaved.toFixed(1)} yrs` : '-', '#ffd60a'],
-          ['Beyond design life', `${stats.overPct.toFixed(1)}%`, '#ff375f'],
-          ['km beyond life', `${Math.round(stats.overKm).toLocaleString()} km`, '#ff375f'],
-          ['Age data coverage', `${stats.coverage.toFixed(0)}%`, '#0a84ff'],
+          ['Network avg age', stats.avg != null ? `${stats.avg.toFixed(1)} yrs` : '-', '#ff6b35'],
+          ['Bituminous avg', stats.avgPaved != null ? `${stats.avgPaved.toFixed(1)} yrs` : '-', '#00d4aa'],
+          ['Unsealed avg', stats.avgUnpaved != null ? `${stats.avgUnpaved.toFixed(1)} yrs` : '-', '#ffd23f'],
+          ['Beyond design life', `${stats.overPct.toFixed(1)}%`, '#ff2d78'],
+          ['km beyond life', `${Math.round(stats.overKm).toLocaleString()} km`, '#ff2d78'],
+          ['Age data coverage', `${stats.coverage.toFixed(0)}%`, '#4d9fff'],
         ] as Array<[string, string, string]>).map(([label, v, color]) => (
           <div key={label} style={CARD}>
             <div style={{ fontSize: 19, fontWeight: 900, color, lineHeight: 1 }}>{v}</div>
@@ -192,7 +192,7 @@ export default function PavementAgePanel() {
           </div>
           <div style={{ padding: '0 8px 8px' }}>
             <SortableFilterableTable<typeof byRegion[number]>
-              accent="#ff9f0a"
+              accent="#ff6b35"
               exportName="pavement-age-by-region"
               initialSort="km"
               columns={[
@@ -202,13 +202,13 @@ export default function PavementAgePanel() {
                 { key: 'avg', label: 'Avg Age', numeric: true, render: r => (
                     <NullableCell value={r.avg}>
                       <span style={{ fontWeight: 800,
-                        color: (r.avg ?? 0) > 15 ? '#ff375f' : (r.avg ?? 0) > 10 ? '#ffd60a' : '#30d158' }}>
+                        color: (r.avg ?? 0) > 15 ? '#ff2d78' : (r.avg ?? 0) > 10 ? '#ffd23f' : '#00ff88' }}>
                         {r.avg != null ? `${r.avg.toFixed(1)} yrs` : '-'}
                       </span>
                     </NullableCell>
                   ) },
                 { key: 'overPct', label: 'Beyond Design Life', numeric: true, render: r => (
-                    <span style={{ color: r.overPct > 30 ? '#ff375f' : 'inherit' }}>{r.overPct.toFixed(1)}%</span>
+                    <span style={{ color: r.overPct > 30 ? '#ff2d78' : 'inherit' }}>{r.overPct.toFixed(1)}%</span>
                   ) },
               ] as STColumn<typeof byRegion[number]>[]}
               rows={byRegion}
@@ -226,7 +226,7 @@ export default function PavementAgePanel() {
         </div>
         <div style={{ padding: '0 8px 8px' }}>
           <SortableFilterableTable<typeof oldest[number]>
-            accent="#ff9f0a"
+            accent="#ff6b35"
             exportName="pavement-age-links"
             initialSort="age"
             columns={[
@@ -238,14 +238,14 @@ export default function PavementAgePanel() {
               { key: 'km', label: 'Length (km)', numeric: true, total: 'sum', render: r => r.km.toFixed(1) },
               { key: 'age', label: `Age (${CURRENT_YEAR})`, numeric: true, render: r => (
                   <NullableCell value={r.age}>
-                    <span style={{ fontWeight: 800, color: r.overLife ? '#ff375f' : '#ffd60a' }}>
+                    <span style={{ fontWeight: 800, color: r.overLife ? '#ff2d78' : '#ffd23f' }}>
                       {r.age} yrs{r.derived ? ' *' : ''}
                     </span>
                   </NullableCell>
                 ) },
               { key: 'remaining', label: 'Remaining Life', numeric: true, render: r => (
                   <NullableCell value={r.remaining}>
-                    <span style={{ color: r.remaining === 0 ? '#ff375f' : '#66d4cf' }}>
+                    <span style={{ color: r.remaining === 0 ? '#ff2d78' : '#00d4aa' }}>
                       {r.remaining === 0 ? 'Exceeded' : `${r.remaining} yrs`}
                     </span>
                   </NullableCell>
