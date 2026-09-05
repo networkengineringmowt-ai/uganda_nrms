@@ -226,7 +226,7 @@ export default function Analytics() {
             className={`px-4 py-2 text-xs font-semibold whitespace-nowrap transition-colors
               ${tab !== t.id ? 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50' : ''}`}
             style={tab === t.id
-              ? { background: 'rgba(100, 210, 255,0.15)', color: '#64d2ff', border: '1px solid rgba(100, 210, 255,0.3)', borderRadius: 8 }
+              ? { background: 'rgba(0, 245, 255,0.15)', color: '#00f5ff', border: '1px solid rgba(0, 245, 255,0.3)', borderRadius: 8 }
               : undefined}
           >{t.label}</button>
         ))}
@@ -280,8 +280,8 @@ function ConditionTab({ condData, condHistory }: { condData: any[]; condHistory:
                 <YAxis tick={{ ...TICK }} axisLine={false} tickLine={false} />
                 <Tooltip {...TT_NEON} />
                 <Legend wrapperStyle={{ fontSize:11, color:'#94a3b8' }} />
-                <Bar dataKey="bridges"  name="Bridges"  fill="#0a84ff" radius={[4,4,0,0]} animationDuration={1200} shape={<Bar3D />} />
-                <Bar dataKey="culverts" name="Culverts" fill="#64d2ff" radius={[4,4,0,0]} animationDuration={1200} shape={<Bar3D />} />
+                <Bar dataKey="bridges"  name="Bridges"  fill="#4d9fff" radius={[4,4,0,0]} animationDuration={1200} shape={<Bar3D />} />
+                <Bar dataKey="culverts" name="Culverts" fill="#00f5ff" radius={[4,4,0,0]} animationDuration={1200} shape={<Bar3D />} />
               </BarChart>
             </ResponsiveContainer>
           </Chart3DWrap>
@@ -363,8 +363,8 @@ function AgeTab({ ageData }: { ageData: any[] }) {
                 <YAxis tick={{ ...TICK }} axisLine={false} tickLine={false} />
                 <Tooltip {...TT_NEON} />
                 <Legend wrapperStyle={{ fontSize:11, color:'#94a3b8' }} />
-                <Bar dataKey="bridges"  name="Bridges"  stackId="age" fill="#0a84ff" radius={[0,0,0,0]} animationDuration={1200} shape={<Bar3D />} />
-                <Bar dataKey="culverts" name="Culverts" stackId="age" fill="#64d2ff" radius={[4,4,0,0]} animationDuration={1200} shape={<Bar3D />} />
+                <Bar dataKey="bridges"  name="Bridges"  stackId="age" fill="#4d9fff" radius={[0,0,0,0]} animationDuration={1200} shape={<Bar3D />} />
+                <Bar dataKey="culverts" name="Culverts" stackId="age" fill="#00f5ff" radius={[4,4,0,0]} animationDuration={1200} shape={<Bar3D />} />
               </BarChart>
             </ResponsiveContainer>
           </Chart3DWrap>
@@ -411,17 +411,17 @@ function CostTab({ costTrend, workOrders }: { costTrend: any[]; workOrders: any[
         <Chart3DWrap>
           <ResponsiveContainer width="100%" height={280}>
             <AreaChart data={costTrend} margin={{ top:4, right:12, left:0, bottom:0 }}>
-              <AreaGradDefs id="routine" color="#0a84ff" />
-              <AreaGradDefs id="rehab"   color="#ffd60a" />
-              <AreaGradDefs id="emerg"   color="#ff375f" />
+              <AreaGradDefs id="routine" color="#4d9fff" />
+              <AreaGradDefs id="rehab"   color="#ffd23f" />
+              <AreaGradDefs id="emerg"   color="#ff2d78" />
               <CartesianGrid stroke="rgba(148,163,184,0.06)" strokeDasharray="3 3" />
               <XAxis dataKey="year" tick={{ ...TICK }} axisLine={false} tickLine={false} />
               <YAxis tick={{ ...TICK }} axisLine={false} tickLine={false} tickFormatter={(v: number) => `${v}M`} />
               <Tooltip {...TT_NEON} formatter={(v: number) => [`${v} M UGX`]} />
               <Legend wrapperStyle={{ fontSize:11, color:'#94a3b8' }} />
-              <Area type="monotone" dataKey="Routine"   stroke="#0a84ff" fill="url(#routine)" strokeWidth={2} animationDuration={1200} filter="url(#routineglow)" />
-              <Area type="monotone" dataKey="Rehab"     stroke="#ffd60a" fill="url(#rehab)"   strokeWidth={2} animationDuration={1200} filter="url(#rehabglow)" />
-              <Area type="monotone" dataKey="Emergency" stroke="#ff375f" fill="url(#emerg)"   strokeWidth={2} animationDuration={1200} filter="url(#emerglow)" />
+              <Area type="monotone" dataKey="Routine"   stroke="#4d9fff" fill="url(#routine)" strokeWidth={2} animationDuration={1200} filter="url(#routineglow)" />
+              <Area type="monotone" dataKey="Rehab"     stroke="#ffd23f" fill="url(#rehab)"   strokeWidth={2} animationDuration={1200} filter="url(#rehabglow)" />
+              <Area type="monotone" dataKey="Emergency" stroke="#ff2d78" fill="url(#emerg)"   strokeWidth={2} animationDuration={1200} filter="url(#emerglow)" />
             </AreaChart>
           </ResponsiveContainer>
         </Chart3DWrap>
@@ -436,7 +436,7 @@ function CostTab({ costTrend, workOrders }: { costTrend: any[]; workOrders: any[
               <XAxis type="number" tick={{ ...TICK_SM }} tickFormatter={(v: number) => `${v}M`} axisLine={false} tickLine={false} />
               <YAxis type="category" dataKey="name" tick={{ fill:'rgba(148,163,184,0.5)', fontSize:11 }} axisLine={false} tickLine={false} />
               <Tooltip {...TT_NEON} formatter={(v: number) => [`${v} M UGX`]} />
-              <Bar dataKey="cost" fill="#0a84ff" radius={[0,4,4,0]} animationDuration={1200} shape={<Bar3D />} />
+              <Bar dataKey="cost" fill="#4d9fff" radius={[0,4,4,0]} animationDuration={1200} shape={<Bar3D />} />
             </BarChart>
           </ResponsiveContainer>
         </Chart3DWrap>
@@ -486,14 +486,14 @@ function RegionTab(_props: { roadData: any[] }) {
   const totalKm = useMemo(() => rows.reduce((a, r) => a + (r.length_km ?? 0), 0), [rows]);
 
   const columns: STColumn<RoadLinkRow>[] = [
-    { key: 'link_id', label: 'Link ID', render: r => <span style={{ color: '#64d2ff', fontFamily: 'monospace', fontSize: 9.5 }}>{r.link_id}</span> },
+    { key: 'link_id', label: 'Link ID', render: r => <span style={{ color: '#00f5ff', fontFamily: 'monospace', fontSize: 9.5 }}>{r.link_id}</span> },
     { key: 'link_name', label: 'Link Name' },
     { key: 'road_class', label: 'Class', render: r => <RoadClassPill cls={r.road_class} /> },
     { key: 'length_km', label: 'Km', numeric: true, render: r => r.length_km != null ? Number(r.length_km).toFixed(1) : <span style={{ color: 'rgba(148,163,184,0.5)', fontStyle: 'italic' }}>No data</span> },
     { key: 'region', label: 'Region' },
-    { key: 'nBridges', label: 'Bridges', numeric: true, render: r => <span style={{ color: '#0a84ff', fontWeight: 800 }}>{r.nBridges || 0}</span> },
-    { key: 'nCulverts', label: 'Major Culverts', numeric: true, render: r => <span style={{ color: '#66d4cf', fontWeight: 800 }}>{r.nCulverts || 0}</span> },
-    { key: 'critical', label: 'Critical', numeric: true, render: r => <span style={{ color: r.critical ? '#ff375f' : 'inherit', fontWeight: 700 }}>{r.critical || 0}</span> },
+    { key: 'nBridges', label: 'Bridges', numeric: true, render: r => <span style={{ color: '#4d9fff', fontWeight: 800 }}>{r.nBridges || 0}</span> },
+    { key: 'nCulverts', label: 'Major Culverts', numeric: true, render: r => <span style={{ color: '#00d4aa', fontWeight: 800 }}>{r.nCulverts || 0}</span> },
+    { key: 'critical', label: 'Critical', numeric: true, render: r => <span style={{ color: r.critical ? '#ff2d78' : 'inherit', fontWeight: 700 }}>{r.critical || 0}</span> },
     { key: 'poor', label: 'Poor', numeric: true, render: r => <span style={{ color: r.poor ? '#f97316' : 'inherit', fontWeight: 700 }}>{r.poor || 0}</span> },
     { key: 'names', label: 'Bridge Names', render: r => <span style={{ fontSize: 9.5, color: 'rgba(148,163,184,0.75)' }}>{r.names || '-'}</span> },
   ];
@@ -509,7 +509,7 @@ function RegionTab(_props: { roadData: any[] }) {
           Bridges &amp; major culverts on each FY25-26 network link · {state.structures.length.toLocaleString()} structures matched by link name
         </div>
       </div>
-      <SortableFilterableTable columns={columns} rows={rows} accent="#0a84ff" exportName="structures_by_road_link" initialSort="nBridges" />
+      <SortableFilterableTable columns={columns} rows={rows} accent="#4d9fff" exportName="structures_by_road_link" initialSort="nBridges" />
     </div>
   );
 }
@@ -527,7 +527,7 @@ function RadarTab({ radarData }: { radarData: any[] }) {
               <PolarGrid stroke="#334155" />
               <PolarAngleAxis dataKey="subject" tick={{ fill:'#94a3b8', fontSize:11 }} />
               <PolarRadiusAxis tick={{ ...TICK_SM }} axisLine={false} />
-              <Radar name="Avg Priority" dataKey="avgPriority" stroke="#0a84ff" fill="#0a84ff" fillOpacity={0.25} animationDuration={1200} />
+              <Radar name="Avg Priority" dataKey="avgPriority" stroke="#4d9fff" fill="#4d9fff" fillOpacity={0.25} animationDuration={1200} />
               <Tooltip {...TT_NEON} />
             </RadarChart>
           </ResponsiveContainer>
@@ -542,7 +542,7 @@ function RadarTab({ radarData }: { radarData: any[] }) {
               <PolarGrid stroke="#334155" />
               <PolarAngleAxis dataKey="subject" tick={{ fill:'#94a3b8', fontSize:11 }} />
               <PolarRadiusAxis tick={{ ...TICK_SM }} axisLine={false} tickFormatter={(v:number) => `${v}%`} />
-              <Radar name="Critical %" dataKey="critPct" stroke="#ff375f" fill="#ff375f" fillOpacity={0.25} animationDuration={1200} />
+              <Radar name="Critical %" dataKey="critPct" stroke="#ff2d78" fill="#ff2d78" fillOpacity={0.25} animationDuration={1200} />
               <Tooltip {...TT_NEON} formatter={(v:number) => [`${v}%`, 'Critical']} />
             </RadarChart>
           </ResponsiveContainer>
@@ -558,7 +558,7 @@ function RadarTab({ radarData }: { radarData: any[] }) {
               <XAxis dataKey="subject" tick={{ ...TICK }} axisLine={false} tickLine={false} />
               <YAxis tick={{ ...TICK }} axisLine={false} tickLine={false} tickFormatter={(v:number) => `${v}yr`} />
               <Tooltip {...TT_NEON} formatter={(v:number) => [`${v} yrs`, 'Avg Age']} />
-              <Bar dataKey="avgAge" fill="#bf5af2" radius={[4,4,0,0]} animationDuration={1200} shape={<Bar3D />} />
+              <Bar dataKey="avgAge" fill="#b967ff" radius={[4,4,0,0]} animationDuration={1200} shape={<Bar3D />} />
             </BarChart>
           </ResponsiveContainer>
         </Chart3DWrap>
