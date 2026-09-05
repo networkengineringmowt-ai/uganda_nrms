@@ -6,7 +6,7 @@
 // ── Neon colour palette ───────────────────────────────────────────────────────
 export const NEON = [
   '#64d2ff', '#30d158', '#ffd60a', '#ff9f0a',
-  '#ff375f', '#bf5af2', '#00d4aa', '#0a84ff',
+  '#ff375f', '#bf5af2', '#66d4cf', '#0a84ff',
 ] as const;
 
 export const REGION_NEON: Record<string, string> = {
