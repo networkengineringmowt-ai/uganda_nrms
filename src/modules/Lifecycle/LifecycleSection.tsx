@@ -516,7 +516,7 @@ export default function LifecycleSection() {
     <div style={{ display:'flex', flexDirection:'column', minHeight:'100%', fontFamily: "'Inter','Segoe UI',sans-serif" }}>
 
       {/* ─── Definition card ─── */}
-      <div style={{ background:'rgba(0,212,170,0.04)', border:'1px solid rgba(0,212,170,0.14)', borderRadius:12, padding:'14px 18px', marginBottom:14 }}>
+      <div style={{ background:'rgba(102, 212, 207,0.04)', border:'1px solid rgba(102, 212, 207,0.14)', borderRadius:12, padding:'14px 18px', marginBottom:14 }}>
         <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:8 }}>
           <span style={{ fontSize:26 }}>♻️</span>
           <div>
@@ -529,7 +529,7 @@ export default function LifecycleSection() {
         </p>
         <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
           {['ISO 55001','WLC Analysis','HDM-4 Modelled','MoWT Standards','AfDB Aligned','NDPIV Goals'].map((b: string)=>(
-            <span key={b} style={{ fontSize:9, fontWeight:700, color:'#00d4aa', background:'rgba(0,212,170,0.07)', border:'1px solid rgba(0,212,170,0.18)', borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
+            <span key={b} style={{ fontSize:9, fontWeight:700, color:'#66d4cf', background:'rgba(102, 212, 207,0.07)', border:'1px solid rgba(102, 212, 207,0.18)', borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
           ))}
         </div>
       </div>
