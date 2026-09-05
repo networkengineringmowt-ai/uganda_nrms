@@ -7,9 +7,9 @@ import 'leaflet/dist/leaflet.css';
 import SectionDashboard from '../Dashboard/SectionDashboard';
 
 const N = {
-  indigo: '#5e5ce6', cyan:   '#64d2ff', orange: '#ff9f0a',
-  teal:   '#66d4cf', blue:   '#0a84ff', purple: '#bf5af2',
-  green:  '#30d158', yellow: '#ffd60a', pink:   '#ff375f',
+  indigo: '#5e5ce6', cyan:   '#00f5ff', orange: '#ff6b35',
+  teal:   '#00d4aa', blue:   '#4d9fff', purple: '#b967ff',
+  green:  '#00ff88', yellow: '#ffd23f', pink:   '#ff2d78',
   gray:   '#94a3b8',
 };
 
@@ -23,13 +23,13 @@ export default function GisEnterpriseLegacyContent({ hideTabBar }: { hideTabBar?
       {!hideTabBar && (
         <div style={{ display: 'flex', gap: 6, marginBottom: 18 }}>
         {['dashboard', 'map'].map(t => (
-          <button key={t} onClick={() => setTab(t)} style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '5px 14px', borderRadius: 20, border: 'none', cursor: 'pointer', background: tab === t ? '#0a84ff' : 'rgba(10, 132, 255,0.08)', color: tab === t ? '#020202' : 'rgba(10, 132, 255,0.7)', transition: 'all .15s' }}>
+          <button key={t} onClick={() => setTab(t)} style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '5px 14px', borderRadius: 20, border: 'none', cursor: 'pointer', background: tab === t ? '#4d9fff' : 'rgba(77, 159, 255,0.08)', color: tab === t ? '#020202' : 'rgba(77, 159, 255,0.7)', transition: 'all .15s' }}>
             {t === 'map' ? 'GIS Map' : 'Dashboard'}
           </button>
         ))}
       </div>
       )}
-      {tab === 'dashboard' && <SectionDashboard sectionId="gisenterprise" accent="#0a84ff" />}
+      {tab === 'dashboard' && <SectionDashboard sectionId="gisenterprise" accent="#4d9fff" />}
       {tab === 'map' && (<>
       <div className="mb-6 flex items-end justify-between">
         <div>
@@ -47,10 +47,10 @@ export default function GisEnterpriseLegacyContent({ hideTabBar }: { hideTabBar?
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
         {[
           { v: '5',      l: 'ARCHITECTURE TIERS',   c: '#c084fc' },
-          { v: '1,014',  l: 'GIS ROAD LINKS',       c: '#64d2ff' },
+          { v: '1,014',  l: 'GIS ROAD LINKS',       c: '#00f5ff' },
           { v: '312',    l: 'BRIDGES MAPPED',       c: '#60a5fa' },
           { v: '234',    l: 'CULVERTS MAPPED',      c: '#38bdf8' },
-          { v: 'WMS/WFS',l: 'OGC SERVICES LIVE',    c: '#30d158' },
+          { v: 'WMS/WFS',l: 'OGC SERVICES LIVE',    c: '#00ff88' },
         ].map(k => (
           <div key={k.l} className="bg-slate-900/60 border border-slate-800 rounded-xl p-4" style={{ borderLeft: `3px solid ${k.c}` }}>
             <div className="text-2xl font-black" style={{ color: k.c }}>{k.v}</div>
@@ -77,7 +77,7 @@ export default function GisEnterpriseLegacyContent({ hideTabBar }: { hideTabBar?
         </div>
 
         {/* Tier 3 */}
-        <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5 backdrop-blur-md border-t-2 border-t-purple-500 shadow-[0_0_15px_rgba(191, 90, 242,0.15)]">
+        <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5 backdrop-blur-md border-t-2 border-t-purple-500 shadow-[0_0_15px_rgba(185, 103, 255,0.15)]">
           <div className="flex items-center gap-3 mb-3">
             <Server className="text-purple-400" size={20} />
             <h2 className="text-lg font-bold text-slate-200">Tier 3: Services (Logic)</h2>
