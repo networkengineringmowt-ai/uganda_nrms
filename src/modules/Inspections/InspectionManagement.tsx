@@ -8,13 +8,13 @@ import { SearchableSelect } from '../../shared/SearchableSelect';
 import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
 
 // Vivid platform palette (rule: reuse these, never invent muted colours).
-const NEON = { green: '#30d158', amber: '#ffd60a', orange: '#ff9f0a', red: '#ff453a', purple: '#bf5af2' };
+const NEON = { green: '#00ff88', amber: '#ffd23f', orange: '#ff6b35', red: '#ff3366', purple: '#b967ff' };
 
 // Equivalent of the plain .bms-select CSS class, as inline style -
 // SearchableSelect takes `style`, not `className`.
 const bmsSelectStyle = {
   appearance: 'none' as const, cursor: 'pointer', background: 'rgba(6,13,24,0.8)',
-  border: '1px solid rgba(100, 210, 255,0.12)', borderRadius: 8, padding: '8px 12px',
+  border: '1px solid rgba(0, 245, 255,0.12)', borderRadius: 8, padding: '8px 12px',
   fontSize: 13, color: '#e2eaf4', outline: 'none', width: '100%',
 };
 
@@ -116,7 +116,7 @@ export default function InspectionManagement() {
     <div className="flex flex-col h-full animate-fade-in">
 
       {/* ─── Definition card ─── */}
-      <div style={{ background:'rgba(191, 90, 242,0.04)', border:'1px solid rgba(191, 90, 242,0.14)', borderRadius:12, padding:'14px 18px', marginBottom:14 }}>
+      <div style={{ background:'rgba(185, 103, 255,0.04)', border:'1px solid rgba(185, 103, 255,0.14)', borderRadius:12, padding:'14px 18px', marginBottom:14 }}>
         <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:8 }}>
           <span style={{ fontSize:26 }}>🔍</span>
           <div>
@@ -129,7 +129,7 @@ export default function InspectionManagement() {
         </p>
         <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
           {['MoWT Standards','NBI Protocol','UNRA Bridges','Visual Survey','Annual Schedule','Field Data'].map((b: string)=>(
-            <span key={b} style={{ fontSize:9, fontWeight:700, color:'#bf5af2', background:'rgba(191, 90, 242,0.07)', border:'1px solid rgba(191, 90, 242,0.18)', borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
+            <span key={b} style={{ fontSize:9, fontWeight:700, color:'#b967ff', background:'rgba(185, 103, 255,0.07)', border:'1px solid rgba(185, 103, 255,0.18)', borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
           ))}
         </div>
       </div>
@@ -147,7 +147,7 @@ export default function InspectionManagement() {
           </div>
           <SearchableSelect value={typeFilter} onChange={v => setTypeFilter(v as typeof typeFilter)}
             style={{ appearance: 'none', cursor: 'pointer', background: 'rgba(6,13,24,0.8)',
-              border: '1px solid rgba(100, 210, 255,0.12)', borderRadius: 8, padding: '6px 12px',
+              border: '1px solid rgba(0, 245, 255,0.12)', borderRadius: 8, padding: '6px 12px',
               fontSize: 12, color: '#e2eaf4', outline: 'none' }}>
             <option value="all">All Types</option>
             <option value="Routine">Routine</option>
