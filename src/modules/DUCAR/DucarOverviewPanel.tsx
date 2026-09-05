@@ -29,7 +29,7 @@ function Chip({ label }: { label: string }) {
 const KPIs = [
   { label: 'Urban Roads',     value: '2,300 km',  sub: 'City & town roads',      color: '#ff9f0a' },
   { label: 'District Roads',  value: '16,500 km', sub: 'Feeder & rural links',   color: '#ffd60a' },
-  { label: 'Community Roads', value: '12,000 km', sub: 'Village access routes',  color: '#00d4aa' },
+  { label: 'Community Roads', value: '12,000 km', sub: 'Village access routes',  color: '#66d4cf' },
   { label: 'Paved Ratio',     value: '18%',        sub: 'Urban + district paved', color: '#bf5af2' },
   { label: 'Local Gov Units', value: '146',        sub: 'Districts & cities',     color: '#0a84ff' },
   { label: 'Annual Budget',   value: 'UGX 800 Bn', sub: 'FY25-26 envelope',      color: '#30d158' },
