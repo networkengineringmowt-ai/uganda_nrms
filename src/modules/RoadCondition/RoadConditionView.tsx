@@ -85,14 +85,14 @@ interface SelectedLinkData {
 const ACCENT = '#6366f1';
 const BG_CARD = 'rgba(15,23,42,0.55)';
 const CLASS_COLORS: Record<string, string> = {
-  A: '#00f5ff', B: '#00ff88', C: '#ffd23f', M: '#b967ff',
+  A: '#64d2ff', B: '#30d158', C: '#ffd60a', M: '#bf5af2',
 };
 const URGENCY_COLOR: Record<string, string> = {
-  now: '#ff2d78', urgent: '#ff6b35', soon: '#ffd23f', planned: '#00ff88',
+  now: '#ff375f', urgent: '#ff9f0a', soon: '#ffd60a', planned: '#30d158',
 };
 const DEFECT_COLOR: Record<string, string> = {
-  pothole: '#ff2d78', alligator_crack: '#ff6b35', longitudinal_crack: '#ffd23f',
-  transverse_crack: '#ffd23f', rutting: '#ff9500', raveling: '#94a3b8', good: '#00ff88',
+  pothole: '#ff375f', alligator_crack: '#ff9f0a', longitudinal_crack: '#ffd60a',
+  transverse_crack: '#ffd60a', rutting: '#ff9500', raveling: '#94a3b8', good: '#30d158',
 };
 const DEFECT_LABEL: Record<string, string> = {
   pothole: 'Pothole', alligator_crack: 'Alligator Crack', longitudinal_crack: 'Long. Crack',
@@ -384,7 +384,7 @@ function ConditionMap({
     if (mapLayer === 'surface') {
       const surfStr = cond?.surface || surface;
       const isPaved = surfStr.includes('asphalt') || surfStr.includes('bituminous') || surfStr.includes('paved');
-      return { color: isPaved ? '#00f5ff' : '#ff8c00', weight, opacity: 0.85,
+      return { color: isPaved ? '#64d2ff' : '#ff8c00', weight, opacity: 0.85,
         dashArray: isPaved ? undefined : '4 3' };
     }
     if (mapLayer === 'class') {
@@ -392,7 +392,7 @@ function ConditionMap({
       return { color: c, weight, opacity: 0.85 };
     }
     if (mapLayer === 'unsurveyed') {
-      return { color: isSurveyed ? '#475569' : '#ff6b35', weight, opacity: isSurveyed ? 0.2 : 0.95 };
+      return { color: isSurveyed ? '#475569' : '#ff9f0a', weight, opacity: isSurveyed ? 0.2 : 0.95 };
     }
     // IRI condition layer - use condLookup first (1014 links), then urgency, then class avg
     if (liveIri == null) {
@@ -494,7 +494,7 @@ function ConditionMap({
       { label: 'Not surveyed',   color: '#94a3b8' },
     ];
     if (mapLayer === 'surface') return [
-      { label: 'Paved (Bituminous)', color: '#00f5ff' },
+      { label: 'Paved (Bituminous)', color: '#64d2ff' },
       { label: 'Unsealed / Gravel',  color: '#ff8c00' },
     ];
     if (mapLayer === 'class') return [
@@ -504,7 +504,7 @@ function ConditionMap({
       { label: 'Class M - Grade-Separated Highway',color: CLASS_COLORS.M },
     ];
     if (mapLayer === 'unsurveyed') return [
-      { label: 'Not Surveyed',  color: '#ff6b35' },
+      { label: 'Not Surveyed',  color: '#ff9f0a' },
       { label: 'Surveyed (condLookup + ML)', color: '#475569' },
     ];
     return [
@@ -565,7 +565,7 @@ function ConditionMap({
                   key={m.info.link_id}
                   center={m.pos as L.LatLngExpression}
                   radius={6}
-                  fillColor={DEFECT_COLOR[m.info.dominant_defect] ?? '#4d9fff'}
+                  fillColor={DEFECT_COLOR[m.info.dominant_defect] ?? '#0a84ff'}
                   color="rgba(0,0,0,0.5)" weight={1} fillOpacity={0.9}>
                   <Popup>
                     <div style={{ fontSize: 11, minWidth: 140 }}>
@@ -786,7 +786,7 @@ function ConditionMap({
           {defectMarkers.length > 0 && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6, paddingTop: 6,
               borderTop: '1px solid rgba(148,163,184,0.1)' }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#ff2d78',
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#ff375f',
                 border: '1px solid rgba(0,0,0,0.5)', flexShrink: 0 }}/>
               <span style={{ fontSize: 9, color: '#94a3b8' }}>Defect hotspot</span>
             </div>
@@ -801,10 +801,10 @@ function ConditionMap({
 // ─── Condition KPI cards ──────────────────────────────────────────────────────
 function CondKPIs({ c24, c30, linksProjected, totalNetworkKm }: { c24: CondBand; c30: CondBand; linksProjected?: number; totalNetworkKm?: number }) {
   const bands = [
-    { key: 'good_pct' as const,      label: 'Good',      color: '#00ff88', sub: 'IRI < 3.5' },
-    { key: 'fair_pct' as const,      label: 'Fair',      color: '#ffd23f', sub: 'IRI 3.5–6.5' },
-    { key: 'poor_pct' as const,      label: 'Poor',      color: '#ff6b35', sub: 'IRI 6.5–9.0' },
-    { key: 'very_poor_pct' as const, label: 'Very Poor', color: '#ff2d78', sub: 'IRI > 9.0' },
+    { key: 'good_pct' as const,      label: 'Good',      color: '#30d158', sub: 'IRI < 3.5' },
+    { key: 'fair_pct' as const,      label: 'Fair',      color: '#ffd60a', sub: 'IRI 3.5–6.5' },
+    { key: 'poor_pct' as const,      label: 'Poor',      color: '#ff9f0a', sub: 'IRI 6.5–9.0' },
+    { key: 'very_poor_pct' as const, label: 'Very Poor', color: '#ff375f', sub: 'IRI > 9.0' },
   ];
   const netKm = totalNetworkKm ?? 21302;
   const notSurveyedPct = linksProjected != null
@@ -972,7 +972,7 @@ function PriorityTable({ triggers }: { triggers: TriggerItem[] }) {
               </span>
             ) },
           { key: 'iri', label: 'IRI (m/km)', numeric: true, render: t => (
-              <span style={{ color: t.iri >= 12 ? '#ff2d78' : t.iri >= 9 ? '#ff6b35' : t.iri >= 6.5 ? '#ffd23f' : '#00ff88', fontWeight: 700 }}>
+              <span style={{ color: t.iri >= 12 ? '#ff375f' : t.iri >= 9 ? '#ff9f0a' : t.iri >= 6.5 ? '#ffd60a' : '#30d158', fontWeight: 700 }}>
                 {t.iri.toFixed(1)}
               </span>
             ) },
@@ -997,9 +997,9 @@ function BudgetPlanner({ budget, total }: { budget: BudgetPt[]; total: number })
     Reconstruct: +((b.reconstruct_usd + b.regravelling_usd) / 1e6).toFixed(2),
   }));
   const STACKS = [
-    { k: 'Routine',     c: '#00ff88' }, { k: 'Reseal',      c: '#00f5ff' },
-    { k: 'Overlay',     c: '#ffd23f' }, { k: 'Rehab',       c: '#ff6b35' },
-    { k: 'Reconstruct', c: '#ff2d78' },
+    { k: 'Routine',     c: '#30d158' }, { k: 'Reseal',      c: '#64d2ff' },
+    { k: 'Overlay',     c: '#ffd60a' }, { k: 'Rehab',       c: '#ff9f0a' },
+    { k: 'Reconstruct', c: '#ff375f' },
   ];
   return (
     <div style={{ background: BG_CARD, backdropFilter: 'blur(20px)' }}
@@ -1154,7 +1154,7 @@ function renderCondFeature(f: SelectedLinkData): React.ReactNode {
           <AttributeRow label="Urgency"   value={f.urgency}   color={URGENCY_COLOR[f.urgency]??'#94a3b8'} />
           {f.treatment   && <AttributeRow label="Treatment"  value={f.treatment} />}
           {f.triggerYear && <AttributeRow label="Year"        value={String(f.triggerYear)} />}
-          {f.costUsd     && <AttributeRow label="Est. Cost"   value={`$${f.costUsd>=1e6?(f.costUsd/1e6).toFixed(1)+'M':(f.costUsd/1000).toFixed(0)+'k'}`} color="#ffd23f" />}
+          {f.costUsd     && <AttributeRow label="Est. Cost"   value={`$${f.costUsd>=1e6?(f.costUsd/1e6).toFixed(1)+'M':(f.costUsd/1000).toFixed(0)+'k'}`} color="#ffd60a" />}
         </>
       )}
 
@@ -1247,15 +1247,15 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
     ? Object.entries(defectSummary.defect_distribution)
         .map(([type, count]) => ({
           name: DEFECT_LABEL[type] ?? type, count,
-          fill: DEFECT_COLOR[type] ?? '#4d9fff',
+          fill: DEFECT_COLOR[type] ?? '#0a84ff',
         }))
         .sort((x, y) => y.count - x.count)
     : [];
 
   const severityPieData = defectSummary ? [
-    { name: 'High',   value: defectSummary.severity_distribution['High']   ?? 0, fill: '#ff2d78' },
-    { name: 'Medium', value: defectSummary.severity_distribution['Medium'] ?? 0, fill: '#ffd23f' },
-    { name: 'Low',    value: defectSummary.severity_distribution['Low']    ?? 0, fill: '#00ff88' },
+    { name: 'High',   value: defectSummary.severity_distribution['High']   ?? 0, fill: '#ff375f' },
+    { name: 'Medium', value: defectSummary.severity_distribution['Medium'] ?? 0, fill: '#ffd60a' },
+    { name: 'Low',    value: defectSummary.severity_distribution['Low']    ?? 0, fill: '#30d158' },
   ] : [];
 
   // ── BMS-pattern 4 main tabs (Dashboard | Map | Inventory | Analytics) ─────
@@ -1352,7 +1352,7 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
       {/* ══ BMS-style main tab bar ══════════════════════════════════════════════ */}
       {!embedded && <div style={{
         display:'flex', gap:2, padding:'0 14px', flexShrink:0,
-        borderBottom:'1px solid rgba(77,159,255,0.15)', background:'rgba(4,9,18,0.85)',
+        borderBottom:'1px solid rgba(10, 132, 255,0.15)', background:'rgba(4,9,18,0.85)',
       }}>
         {TABS.map(t => {
           const isActive = t.id === tab;
@@ -1361,8 +1361,8 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
               display:'flex', alignItems:'center', gap:6,
               padding:'10px 14px 11px', fontSize:11, fontWeight: isActive ? 800 : 500,
               background:'none', border:'none', cursor:'pointer', flexShrink:0,
-              color: isActive ? '#4d9fff' : 'rgba(148,163,184,0.70)',
-              borderBottom: isActive ? '2px solid #4d9fff' : '2px solid transparent',
+              color: isActive ? '#0a84ff' : 'rgba(148,163,184,0.70)',
+              borderBottom: isActive ? '2px solid #0a84ff' : '2px solid transparent',
               transition:'all 0.13s',
             }}>
               {t.label}
@@ -1384,8 +1384,8 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
                 display:'flex', alignItems:'center', gap:5,
                 padding:'5px 12px 7px', fontSize:10, fontWeight: isA ? 700 : 500,
                 background:'none', border:'none', cursor:'pointer',
-                color: isA ? '#4d9fff' : 'rgba(148,163,184,0.65)',
-                borderBottom: isA ? '2px solid #4d9fff' : '2px solid transparent',
+                color: isA ? '#0a84ff' : 'rgba(148,163,184,0.65)',
+                borderBottom: isA ? '2px solid #0a84ff' : '2px solid transparent',
                 transition:'all 0.13s',
               }}>
                 {st.label}
@@ -1445,10 +1445,10 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
             }
             const kpis = [
               { label: 'Model',           value: 'HDM-4 + MLP',                                                  unit: 'ensemble',  color: '#6366f1' },
-              { label: 'Model Accuracy',  value: `R²=${d.r_squared.toFixed(4)}`,                                 unit: 'goodness of fit', color: '#00ff88' },
-              { label: 'Links Projected', value: d.links_projected.toLocaleString(),                               unit: 'road links', color: '#00f5ff' },
-              { label: 'Budget 24–30',    value: `$${(d.total_maintenance_budget_2024_2030_usd/1e9).toFixed(2)}B`, unit: 'USD total',  color: '#ffd23f' },
-              { label: 'Interventions',   value: (d.intervention_schedule?.length ?? 0).toLocaleString(),         unit: 'triggers',   color: '#ff6b35' },
+              { label: 'Model Accuracy',  value: `R²=${d.r_squared.toFixed(4)}`,                                 unit: 'goodness of fit', color: '#30d158' },
+              { label: 'Links Projected', value: d.links_projected.toLocaleString(),                               unit: 'road links', color: '#64d2ff' },
+              { label: 'Budget 24–30',    value: `$${(d.total_maintenance_budget_2024_2030_usd/1e9).toFixed(2)}B`, unit: 'USD total',  color: '#ffd60a' },
+              { label: 'Interventions',   value: (d.intervention_schedule?.length ?? 0).toLocaleString(),         unit: 'triggers',   color: '#ff9f0a' },
             ];
             return (
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -1478,10 +1478,10 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {[
-                { label:'Paved - Excellent/Good', pct: a?.pavedFairToGoodPct ?? 94.2,         color:'#00ff88' },
-                { label:'Paved - Poor/Bad',       pct: 100-(a?.pavedFairToGoodPct ?? 94.2),   color:'#ff2d78' },
-                { label:'Unpaved - Fair/Good',    pct: a?.unpavedFairToGoodPct ?? 62,          color:'#ffd23f' },
-                { label:'Unpaved - Poor',         pct: 100-(a?.unpavedFairToGoodPct ?? 62),    color:'#ff6b35' },
+                { label:'Paved - Excellent/Good', pct: a?.pavedFairToGoodPct ?? 94.2,         color:'#30d158' },
+                { label:'Paved - Poor/Bad',       pct: 100-(a?.pavedFairToGoodPct ?? 94.2),   color:'#ff375f' },
+                { label:'Unpaved - Fair/Good',    pct: a?.unpavedFairToGoodPct ?? 62,          color:'#ffd60a' },
+                { label:'Unpaved - Poor',         pct: 100-(a?.unpavedFairToGoodPct ?? 62),    color:'#ff9f0a' },
               ].map(c => (
                 <div key={c.label}
                      className="rounded-xl p-4 border border-slate-700/30"
@@ -1516,7 +1516,7 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
             <Chart3DWrap>
               <ResponsiveContainer width="100%" height={220}>
                 <AreaChart data={wtssData} margin={{ top:8, right:20, left:8, bottom:0 }}>
-                  <AreaGradDefs id="rcGreen" color="#00ff88"/>
+                  <AreaGradDefs id="rcGreen" color="#30d158"/>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.06)"/>
                   <XAxis dataKey="year" tick={TICK} axisLine={false} tickLine={false}/>
                   <YAxis tick={TICK} axisLine={false} tickLine={false} width={52}
@@ -1527,8 +1527,8 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
                   ]}/>
                   <ReferenceLine y={5000} stroke="#475569" strokeDasharray="4 4"
                     label={{ value:'5,000 km', fill:'#64748b', fontSize:9 }}/>
-                  <Area type="monotone" dataKey="km" stroke="#00ff88" strokeWidth={2.5}
-                    fill="url(#rcGreen)" dot={{ fill:'#00ff88', r:4 }} animationDuration={1100}
+                  <Area type="monotone" dataKey="km" stroke="#30d158" strokeWidth={2.5}
+                    fill="url(#rcGreen)" dot={{ fill:'#30d158', r:4 }} animationDuration={1100}
                     filter="url(#rcGreenglow)"/>
                 </AreaChart>
               </ResponsiveContainer>
@@ -1557,7 +1557,7 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
               <div className="text-sm font-bold text-white mb-4">Paved km by Region (July 2025)</div>
               <div className="space-y-2">
                 {regionPaved.map(r => {
-                  const col = REGION_NEON[r.region] ?? '#4d9fff';
+                  const col = REGION_NEON[r.region] ?? '#0a84ff';
                   return (
                     <div key={r.region}>
                       <div className="flex justify-between text-[10px] mb-1">
@@ -1583,13 +1583,13 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
                 {[
                   { label:'Total Network',  col:'#94a3b8',
                     val: a ? `${a.totalNetworkKm.toLocaleString(undefined,{maximumFractionDigits:0})} km` : '21,137 km (mapped)' },
-                  { label:'Paved',          col:'#00ff88',
+                  { label:'Paved',          col:'#30d158',
                     val: a ? `${a.pavedKm.toLocaleString(undefined,{maximumFractionDigits:0})} km` : '6,405 km' },
-                  { label:'Paved Share',    col:'#00f5ff',
+                  { label:'Paved Share',    col:'#64d2ff',
                     val: a ? `${a.percentPaved.toFixed(1)}%` : '30.3%' },
                   { label:'Links Modelled', col: ACCENT,
                     val: d ? d.links_projected.toLocaleString() : '-' },
-                  { label:'Budget 24–30',   col:'#ffd23f',
+                  { label:'Budget 24–30',   col:'#ffd60a',
                     val: d ? `$${(d.total_maintenance_budget_2024_2030_usd/1e9).toFixed(2)}B` : '-' },
                 ].map(row => (
                   <div key={row.label}
@@ -1694,8 +1694,8 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
               <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.55)' }}>
                 All {allSurveyed.length.toLocaleString()} network links (FY25-26) · 2024 survey now-cast with the deterioration model · search / sort / filter
               </div>
-              <div style={{ fontSize: 9.5, fontWeight: 700, color: '#00ff88', marginTop: 2 }}>
-                <span className="animate-pulse" style={{ display:'inline-block', width:6, height:6, borderRadius:'50%', background:'#00ff88', marginRight:5 }} />
+              <div style={{ fontSize: 9.5, fontWeight: 700, color: '#30d158', marginTop: 2 }}>
+                <span className="animate-pulse" style={{ display:'inline-block', width:6, height:6, borderRadius:'50%', background:'#30d158', marginRight:5 }} />
                 LIVE - values as of {new Date().toLocaleString('en-GB')} (reporting instant {nowT.toFixed(7)})
               </div>
             </div>
@@ -1804,10 +1804,10 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
                         Condition {yr}
                       </div>
                       {([
-                        { label:'Good',          pct:cond.good_pct,      color:'#00ff88' },
-                        { label:'Fair',          pct:cond.fair_pct,      color:'#ffd23f' },
-                        { label:'Poor',          pct:cond.poor_pct,      color:'#ff6b35' },
-                        { label:'Very Poor',     pct:cond.very_poor_pct, color:'#ff2d78' },
+                        { label:'Good',          pct:cond.good_pct,      color:'#30d158' },
+                        { label:'Fair',          pct:cond.fair_pct,      color:'#ffd60a' },
+                        { label:'Poor',          pct:cond.poor_pct,      color:'#ff9f0a' },
+                        { label:'Very Poor',     pct:cond.very_poor_pct, color:'#ff375f' },
                         { label:'Not Surveyed',  pct: Math.max(0, 100 - cond.good_pct - cond.fair_pct - cond.poor_pct - cond.very_poor_pct), color:'#94a3b8' },
                       ]).map(b => (
                         <div key={b.label} className="mb-2">
@@ -1916,7 +1916,7 @@ function FWDRealSurveys() {
     : d0 > 400 ? ['Monitor', '#eab308'] : ['Sound', '#22c55e'];
   return (
     <div style={{ background: 'rgba(15,23,42,0.55)', borderRadius: 12,
-      border: '1px solid rgba(0,245,255,0.15)', padding: '14px 16px' }}>
+      border: '1px solid rgba(100, 210, 255,0.15)', padding: '14px 16px' }}>
       <div style={{ fontWeight: 800, color: '#e2eaf4', fontSize: 13, marginBottom: 2 }}>
         Measured FWD Deflection Surveys - G: repository (FWD/)
       </div>
@@ -1925,7 +1925,7 @@ function FWDRealSurveys() {
         Dynatest FWD · centre deflection D₀ (μm); classification: ≤400 Sound · 400–600 Monitor · 600–800 Weak · &gt;800 Failed
       </div>
       <SortableFilterableTable<FwdSurvey & { assessment: string }>
-        accent="#00f5ff"
+        accent="#64d2ff"
         exportName="fwd-deflection-surveys"
         columns={[
           { key: 'road', label: 'Road / Corridor' },
@@ -1991,9 +1991,9 @@ function FWDPanel() {
       <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10 }}>
         {[
           { label:'Links Tested', value:'8', unit:'of 1,014', color:ACCENT2 },
-          { label:'Avg Structural No.', value:'2.9', unit:'SN', color:'#00f5ff' },
+          { label:'Avg Structural No.', value:'2.9', unit:'SN', color:'#64d2ff' },
           { label:'Critical (RCI>0.5)', value:'2', unit:'links', color:'#ef4444' },
-          { label:'Avg E-mod', value:'1,989', unit:'MPa', color:'#b967ff' },
+          { label:'Avg E-mod', value:'1,989', unit:'MPa', color:'#bf5af2' },
         ].map(k => {
           const r = (h: string) => { const c=h.replace('#',''); return `${parseInt(c.slice(0,2),16)},${parseInt(c.slice(2,4),16)},${parseInt(c.slice(4,6),16)}`; };
           return (

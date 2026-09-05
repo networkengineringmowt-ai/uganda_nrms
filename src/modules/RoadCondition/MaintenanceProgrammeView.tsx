@@ -9,9 +9,9 @@ import { SearchableSelect } from '../../shared/SearchableSelect';
 import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
 
 const C = {
-  cyan: '#00f5ff', green: '#00ff88', yellow: '#ffd23f',
-  orange: '#ff6b35', purple: '#b967ff', blue: '#4d9fff',
-  red: '#ff3366', teal: '#00d4aa',
+  cyan: '#64d2ff', green: '#30d158', yellow: '#ffd60a',
+  orange: '#ff9f0a', purple: '#bf5af2', blue: '#0a84ff',
+  red: '#ff453a', teal: '#00d4aa',
 };
 
 interface MaintenanceProgramme {
@@ -148,7 +148,7 @@ export default function MaintenanceProgrammeView() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16, marginBottom: 28 }}>
         <div style={{
           background: 'rgba(15,15,15,0.7)',
-          border: `1px solid rgba(${data.network_summary.total_links > 900 ? '255,51,102' : '0,245,255'},0.2)`,
+          border: `1px solid rgba(${data.network_summary.total_links > 900 ? '255, 69, 58' : '100, 210, 255'},0.2)`,
           borderRadius: 12,
           padding: '16px 18px',
         }}>
@@ -160,36 +160,36 @@ export default function MaintenanceProgrammeView() {
 
         <div style={{
           background: 'rgba(15,15,15,0.7)',
-          border: `1px solid rgba(255,51,102,0.2)`,
+          border: `1px solid rgba(255, 69, 58,0.2)`,
           borderRadius: 12,
           padding: '16px 18px',
         }}>
           <div style={{ fontSize: 11, color: 'rgba(148,163,184,0.6)', marginBottom: 6 }}>Very Poor</div>
-          <div style={{ fontSize: 20, fontWeight: 900, color: '#ff3366' }}>
+          <div style={{ fontSize: 20, fontWeight: 900, color: '#ff453a' }}>
             {data.network_summary.condition_distribution['Very Poor'] || 0}
           </div>
         </div>
 
         <div style={{
           background: 'rgba(15,15,15,0.7)',
-          border: `1px solid rgba(255,107,53,0.2)`,
+          border: `1px solid rgba(255, 159, 10,0.2)`,
           borderRadius: 12,
           padding: '16px 18px',
         }}>
           <div style={{ fontSize: 11, color: 'rgba(148,163,184,0.6)', marginBottom: 6 }}>Total Cost</div>
-          <div style={{ fontSize: 20, fontWeight: 900, color: '#ff6b35' }}>
+          <div style={{ fontSize: 20, fontWeight: 900, color: '#ff9f0a' }}>
             ${data.network_summary.total_programme_cost_millions.toLocaleString('en-US', { maximumFractionDigits: 0 })}M
           </div>
         </div>
 
         <div style={{
           background: 'rgba(15,15,15,0.7)',
-          border: `1px solid rgba(0,255,136,0.2)`,
+          border: `1px solid rgba(48, 209, 88,0.2)`,
           borderRadius: 12,
           padding: '16px 18px',
         }}>
           <div style={{ fontSize: 11, color: 'rgba(148,163,184,0.6)', marginBottom: 6 }}>Top Intervention</div>
-          <div style={{ fontSize: 14, fontWeight: 700, color: '#00ff88' }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: '#30d158' }}>
             {Object.entries(data.intervention_types)
               .reduce((max, [type, info]) => info.count > max.count ? { type, count: info.count } : max, { type: '', count: 0 })
               .type || '-'}
@@ -202,7 +202,7 @@ export default function MaintenanceProgrammeView() {
         {/* Annual Budget */}
         <div style={{
           background: 'rgba(15,15,15,0.7)',
-          border: '1px solid rgba(0,245,255,0.15)',
+          border: '1px solid rgba(100, 210, 255,0.15)',
           borderRadius: 12,
           padding: 20,
         }}>
@@ -222,7 +222,7 @@ export default function MaintenanceProgrammeView() {
         {/* Condition Distribution */}
         <div style={{
           background: 'rgba(15,15,15,0.7)',
-          border: '1px solid rgba(185,103,255,0.15)',
+          border: '1px solid rgba(191, 90, 242,0.15)',
           borderRadius: 12,
           padding: 20,
         }}>
@@ -243,8 +243,8 @@ export default function MaintenanceProgrammeView() {
                   <Cell key={idx} fill={entry.color} />
                 ))}
               </Pie>
-              <Tooltip contentStyle={{ background: 'rgba(15,15,15,0.95)', border: '1px solid rgba(185,103,255,0.5)', borderRadius: 6 }}
-                labelStyle={{ color: '#b967ff' }} />
+              <Tooltip contentStyle={{ background: 'rgba(15,15,15,0.95)', border: '1px solid rgba(191, 90, 242,0.5)', borderRadius: 6 }}
+                labelStyle={{ color: '#bf5af2' }} />
             </PieChart>
           </ResponsiveContainer>
         </div>
@@ -253,7 +253,7 @@ export default function MaintenanceProgrammeView() {
       {/* Top Interventions */}
       <div style={{
         background: 'rgba(15,15,15,0.7)',
-        border: '1px solid rgba(255,107,53,0.15)',
+        border: '1px solid rgba(255, 159, 10,0.15)',
         borderRadius: 12,
         padding: 20,
         marginBottom: 28,
@@ -264,7 +264,7 @@ export default function MaintenanceProgrammeView() {
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.1)" />
             <XAxis type="number" stroke="rgba(148,163,184,0.4)" tick={{ fontSize: 10 }} />
             <YAxis type="category" dataKey="name" stroke="rgba(148,163,184,0.4)" tick={{ fontSize: 10 }} width={150} />
-            <Tooltip contentStyle={{ background: 'rgba(15,15,15,0.95)', border: '1px solid rgba(255,107,53,0.5)', borderRadius: 6 }}
+            <Tooltip contentStyle={{ background: 'rgba(15,15,15,0.95)', border: '1px solid rgba(255, 159, 10,0.5)', borderRadius: 6 }}
               labelStyle={{ color: C.orange }} formatter={(v) => `$${v}M`} />
             <Bar dataKey="cost" fill={C.orange} radius={[0, 4, 4, 0]} />
           </BarChart>
@@ -274,7 +274,7 @@ export default function MaintenanceProgrammeView() {
       {/* Priority Table */}
       <div style={{
         background: 'rgba(15,15,15,0.7)',
-        border: '1px solid rgba(77,159,255,0.15)',
+        border: '1px solid rgba(10, 132, 255,0.15)',
         borderRadius: 12,
         padding: 20,
       }}>
@@ -288,7 +288,7 @@ export default function MaintenanceProgrammeView() {
             <SearchableSelect value={filterClass} onChange={setFilterClass}
               style={{
                 background: 'rgba(15,15,15,0.8)',
-                border: `1px solid rgba(77,159,255,0.3)`,
+                border: `1px solid rgba(10, 132, 255,0.3)`,
                 borderRadius: 6,
                 padding: '6px 10px',
                 fontSize: 12,
@@ -303,7 +303,7 @@ export default function MaintenanceProgrammeView() {
             <SearchableSelect value={filterIntervention} onChange={setFilterIntervention}
               style={{
                 background: 'rgba(15,15,15,0.8)',
-                border: `1px solid rgba(77,159,255,0.3)`,
+                border: `1px solid rgba(10, 132, 255,0.3)`,
                 borderRadius: 6,
                 padding: '6px 10px',
                 fontSize: 12,
