@@ -16,12 +16,12 @@ const BASE = import.meta.env.BASE_URL;
 
 // ── Color palette ─────────────────────────────────────────────────────────────
 const C = {
-  data:     '#64d2ff',   // cyan  - Data Sources
-  etl:      '#bf5af2',   // purple - ETL / Processing
-  feature:  '#ffd60a',   // yellow - Feature Engineering
-  model:    '#ff9f0a',   // orange - ML Models
-  output:   '#30d158',   // green  - Outputs
-  decision: '#0a84ff',   // blue   - Decision Support
+  data:     '#00f5ff',   // cyan  - Data Sources
+  etl:      '#b967ff',   // purple - ETL / Processing
+  feature:  '#ffd23f',   // yellow - Feature Engineering
+  model:    '#ff6b35',   // orange - ML Models
+  output:   '#00ff88',   // green  - Outputs
+  decision: '#4d9fff',   // blue   - Decision Support
   bg:       'rgba(8,14,28,0.72)',
   card:     'rgba(15,23,42,0.80)',
   border:   'rgba(255,255,255,0.07)',
@@ -381,9 +381,9 @@ const MODEL_KEY_LABELS: Record<string, string> = {
   intervention_predictor:'Intervention Predictor',
 };
 const MODEL_KEY_COLORS: Record<string, string> = {
-  iri_deterioration:     '#64d2ff',
-  condition_classifier:  '#30d158',
-  intervention_predictor:'#ffd60a',
+  iri_deterioration:     '#00f5ff',
+  condition_classifier:  '#00ff88',
+  intervention_predictor:'#ffd23f',
 };
 
 function FeatureImportancePanel({ data }: { data: FeatData }) {
@@ -392,7 +392,7 @@ function FeatureImportancePanel({ data }: { data: FeatData }) {
   if (!modelData) return null;
 
   const maxImp = Math.max(...modelData.features.map(f => Math.max(0, f.importance_mean)));
-  const color = MODEL_KEY_COLORS[activeModel] ?? '#0a84ff';
+  const color = MODEL_KEY_COLORS[activeModel] ?? '#4d9fff';
 
   return (
     <div style={{ padding: '16px 20px' }}>
@@ -405,7 +405,7 @@ function FeatureImportancePanel({ data }: { data: FeatData }) {
               border: `1px solid ${activeModel === k
                 ? MODEL_KEY_COLORS[k] : 'rgba(148,163,184,0.2)'}`,
               background: activeModel === k
-                ? (MODEL_KEY_COLORS[k] ?? '#0a84ff') + '22' : 'transparent',
+                ? (MODEL_KEY_COLORS[k] ?? '#4d9fff') + '22' : 'transparent',
               color: activeModel === k ? MODEL_KEY_COLORS[k] : '#94a3b8',
               cursor: 'pointer',
             }}>
@@ -496,8 +496,8 @@ export default function MLArchitectureDiagram() {
         background: 'rgba(0,0,0,0.25)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ width: 32, height: 32, borderRadius: 9,
-            background: `linear-gradient(135deg, rgba(100, 210, 255,0.2), rgba(10, 132, 255,0.15))`,
-            border: `1px solid rgba(100, 210, 255,0.3)`,
+            background: `linear-gradient(135deg, rgba(0, 245, 255,0.2), rgba(77, 159, 255,0.15))`,
+            border: `1px solid rgba(0, 245, 255,0.3)`,
             display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Cpu size={15} style={{ color: C.data }}/>
           </div>
@@ -518,9 +518,9 @@ export default function MLArchitectureDiagram() {
             <button key={v} onClick={() => setView(v)} style={{
               padding: '5px 14px', borderRadius: 6, fontSize: 11, fontWeight: 700,
               border: 'none', cursor: 'pointer', transition: 'all 0.15s',
-              background: view === v ? 'rgba(100, 210, 255,0.12)' : 'transparent',
+              background: view === v ? 'rgba(0, 245, 255,0.12)' : 'transparent',
               color: view === v ? C.data : 'rgba(148,163,184,0.6)',
-              boxShadow: view === v ? `inset 0 0 0 1px rgba(100, 210, 255,0.25)` : 'none',
+              boxShadow: view === v ? `inset 0 0 0 1px rgba(0, 245, 255,0.25)` : 'none',
             }}>
               {v === 'arch' ? 'Architecture' : v === 'flow' ? 'Data Flow' : 'Feature Importance'}
             </button>
