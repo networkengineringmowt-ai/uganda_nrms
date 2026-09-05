@@ -57,7 +57,7 @@ const NODES: Node[] = [
     detail:'scripts/etl/ingest_all_sources.py + upload_to_supabase.py - reads ROMDAS MDB/CSV/xlsx, FWD xlsx, Maintenance plans, HDM4 network, Committed Projects; upserts into the Supabase Unified DB (41 tables).' },
   { id:'proc-analytics',label:'Analytics Engine',    sub:'Regional · Budget · ESAL',   layer:2, x:250,  y:235,  w:155, h:68, color:'#8b5cf6',
     detail:'compute_overloading.py, compute_growth_factors.py, build_master.py - generate ESAL risk scores, AADT growth factors, condition summaries, and budget alignment KPIs written back to the Unified DB.' },
-  { id:'proc-build',   label:'Vite Build',            sub:'npm run build',              layer:2, x:250,  y:340,  w:155, h:68, color:'#6366f1',
+  { id:'proc-build',   label:'Vite Build',            sub:'npm run build',              layer:2, x:250,  y:340,  w:155, h:68, color:'#5e5ce6',
     detail:'npm run build -- --outDir C:/tmp/vite_out. Produces hashed asset bundles. Runs after each commit to main. Output copied to /c/tmp/ghdep for deployment.' },
 
   // ── L3 - Agents (x=470) ───────────────────────────────────────────────────
@@ -69,7 +69,7 @@ const NODES: Node[] = [
     detail:'DataAuditEngine.ts - admin-only view. Checks which links have ROMDAS data, FWD, traffic counts, bridge inspections. Flags links with >3-year data gap.' },
 
   // ── L4 - Outputs (x=680) ──────────────────────────────────────────────────
-  { id:'out-pages',    label:'GitHub Pages Deploy',   sub:'gh-pages branch',            layer:4, x:680,  y:130,  w:160, h:68, color:'#6366f1',
+  { id:'out-pages',    label:'GitHub Pages Deploy',   sub:'gh-pages branch',            layer:4, x:680,  y:130,  w:160, h:68, color:'#5e5ce6',
     detail:'git push --force origin HEAD:gh-pages from /c/tmp/ghdep worktree. Cache-safe: old hashed bundles retained. Live URL: https://priscananjehe1996.github.io/uganda-roads/' },
   { id:'out-json',     label:'Public JSON Export',    sub:'central_network_db.json',    layer:4, x:680,  y:235,  w:160, h:68, color:'#14b8a6',
     detail:'export_unified_data.py writes public/data/*.json - per-link IRI summaries, table counts, AADT, ML metrics for fast client-side reads. A cached mirror of the Unified DB.' },
@@ -91,7 +91,7 @@ const NODES: Node[] = [
   // ── L7 - Platform Sections (x=1390) ───────────────────────────────────────
   { id:'sec-rms',      label:'RMS - Road Network',    sub:'tbl 001–005 · road_links',   layer:7, x:1390, y: 30,  w:180, h:50, color:'#00e5ff',
     detail:'RoadNetworkView.tsx / RMS - 1,014 national-road links, classes A/B/C/M. tbl-001-005 (inventory, length by class/region, surface type). Source: road_links + road_link_condition.' },
-  { id:'sec-reserve',  label:'Road Reserve Mgmt',     sub:'road_reserve_* · tbl 047–050',layer:7, x:1390, y: 92,  w:180, h:50, color:'#00d4aa',
+  { id:'sec-reserve',  label:'Road Reserve Mgmt',     sub:'road_reserve_* · tbl 047–050',layer:7, x:1390, y: 92,  w:180, h:50, color:'#66d4cf',
     detail:'RoadReserveSection.tsx - gazette & legal status, encroachment register, reserve mapping, and Road Reserve Usage permits (MOWT Form 2). Source: road_reserve_records / _encroachments / _gazette / _applications / _applicants.' },
   { id:'sec-pms',      label:'PMS - Condition',       sub:'tbl 006, 007, 038',          layer:7, x:1390, y:154,  w:180, h:50, color:'#fb923c',
     detail:'RoadConditionView.tsx - IRI/condition/urgency map. tbl-006 (IRI by class), tbl-007 (paved condition 2024), tbl-038 (ML predictions).' },
