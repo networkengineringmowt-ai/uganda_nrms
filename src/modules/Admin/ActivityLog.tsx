@@ -25,11 +25,11 @@ interface Ev {
 // Vivid platform palette (--neon-* in index.css) - reused rather than the
 // duller tailwind-style hexes this module used before.
 const TYPE_META: Record<string, { label: string; color: string }> = {
-  login:        { label: 'Login',        color: '#00ff88' },
-  login_failed: { label: 'Failed login', color: '#ff3366' },
+  login:        { label: 'Login',        color: '#30d158' },
+  login_failed: { label: 'Failed login', color: '#ff453a' },
   logout:       { label: 'Logout',       color: '#94a3b8' },
-  change:       { label: 'Change',       color: '#ffd23f' },
-  view:         { label: 'Page view',    color: '#4d9fff' },
+  change:       { label: 'Change',       color: '#ffd60a' },
+  view:         { label: 'Page view',    color: '#0a84ff' },
 };
 const meta = (t?: string) => TYPE_META[t ?? ''] ?? { label: t ?? 'event', color: '#64748b' };
 const when = (e: Ev) => e.at ?? e._logged ?? '';
@@ -101,13 +101,13 @@ export default function ActivityLog() {
   const perUserColumns: STColumn<{ user: string; role: string; login: number; login_failed: number; change: number; view: number; last: string }>[] = [
     { key: 'user', label: 'User' },
     { key: 'role', label: 'Level', render: r => (
-        <span style={{ fontWeight: 700, color: r.role === 'admin' ? '#ff3366' : r.role === 'super' ? '#ffd23f' : '#00ff88' }}>
+        <span style={{ fontWeight: 700, color: r.role === 'admin' ? '#ff453a' : r.role === 'super' ? '#ffd60a' : '#30d158' }}>
           {roleLabel(r.role)}
         </span>
       ) },
     { key: 'login', label: 'Logins', numeric: true },
     { key: 'login_failed', label: 'Failed Logins', numeric: true, render: r => (
-        <span style={{ color: r.login_failed ? '#ff3366' : 'inherit', fontWeight: r.login_failed ? 800 : 400 }}>{r.login_failed}</span>
+        <span style={{ color: r.login_failed ? '#ff453a' : 'inherit', fontWeight: r.login_failed ? 800 : 400 }}>{r.login_failed}</span>
       ) },
     { key: 'change', label: 'Changes', numeric: true },
     { key: 'view', label: 'Page Views', numeric: true },
@@ -169,7 +169,7 @@ export default function ActivityLog() {
   }
 
   const CARD: React.CSSProperties = {
-    background: 'rgba(8,14,28,0.7)', border: '1px solid rgba(77,159,255,0.14)',
+    background: 'rgba(8,14,28,0.7)', border: '1px solid rgba(10, 132, 255,0.14)',
     borderRadius: 10, padding: '12px 14px',
   };
   return (
@@ -184,21 +184,21 @@ export default function ActivityLog() {
         </div>
         {months.length > 0 && (
           <SearchableSelect value={month} onChange={v => void load(v)} style={{
-            background: 'rgba(10,16,30,0.9)', color: '#e2e8f0', border: '1px solid rgba(77,159,255,0.3)',
+            background: 'rgba(10,16,30,0.9)', color: '#e2e8f0', border: '1px solid rgba(10, 132, 255,0.3)',
             borderRadius: 7, fontSize: 11, padding: '6px 9px' }}>
             {months.map(m => <option key={m} value={m}>{m}</option>)}
           </SearchableSelect>
         )}
         <button onClick={() => void load(month || undefined)} style={{
           display: 'flex', alignItems: 'center', gap: 6, padding: '7px 11px', cursor: 'pointer',
-          background: 'rgba(77,159,255,0.12)', border: '1px solid rgba(77,159,255,0.3)',
-          borderRadius: 7, color: '#4d9fff', fontSize: 11, fontWeight: 700 }}>
+          background: 'rgba(10, 132, 255,0.12)', border: '1px solid rgba(10, 132, 255,0.3)',
+          borderRadius: 7, color: '#0a84ff', fontSize: 11, fontWeight: 700 }}>
           <RefreshCw size={12} className={loading ? 'animate-spin' : ''} /> Refresh
         </button>
         <button onClick={exportCsv} style={{
           display: 'flex', alignItems: 'center', gap: 6, padding: '7px 11px', cursor: 'pointer',
-          background: 'rgba(0,255,136,0.1)', border: '1px solid rgba(0,255,136,0.3)',
-          borderRadius: 7, color: '#00ff88', fontSize: 11, fontWeight: 700 }}>
+          background: 'rgba(48, 209, 88,0.1)', border: '1px solid rgba(48, 209, 88,0.3)',
+          borderRadius: 7, color: '#30d158', fontSize: 11, fontWeight: 700 }}>
           <Download size={12} /> CSV
         </button>
       </div>
@@ -216,9 +216,9 @@ export default function ActivityLog() {
       {/* Summary cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 10, marginBottom: 14 }}>
         {([
-          ['Logins', stats.login, '#00ff88'], ['Failed logins', stats.login_failed, '#ff3366'],
-          ['Changes', stats.change, '#ffd23f'], ['Page views', stats.view, '#4d9fff'],
-          ['Active users', stats.users, '#b967ff'],
+          ['Logins', stats.login, '#30d158'], ['Failed logins', stats.login_failed, '#ff453a'],
+          ['Changes', stats.change, '#ffd60a'], ['Page views', stats.view, '#0a84ff'],
+          ['Active users', stats.users, '#bf5af2'],
         ] as Array<[string, number, string]>).map(([label, n, color]) => (
           <div key={label} style={CARD}>
             <div style={{ fontSize: 22, fontWeight: 900, color, lineHeight: 1 }}>{n}</div>
@@ -235,7 +235,7 @@ export default function ActivityLog() {
         <SortableFilterableTable
           columns={perUserColumns}
           rows={perUserRows}
-          accent="#4d9fff"
+          accent="#0a84ff"
           exportName="activity-log-by-user"
           initialSort="last"
           emptyText="No events recorded yet."
@@ -252,20 +252,20 @@ export default function ActivityLog() {
           {['all', ...Object.keys(TYPE_META)].map(t => (
             <button key={t} onClick={() => setTypeFilter(t)} style={{
               padding: '4px 9px', borderRadius: 999, fontSize: 9.5, fontWeight: 800, cursor: 'pointer',
-              background: typeFilter === t ? `${t === 'all' ? '#4d9fff' : meta(t).color}22` : 'rgba(255,255,255,0.03)',
-              border: `1px solid ${typeFilter === t ? (t === 'all' ? '#4d9fff' : meta(t).color) : 'rgba(255,255,255,0.1)'}`,
-              color: typeFilter === t ? (t === 'all' ? '#4d9fff' : meta(t).color) : 'rgba(148,163,184,0.7)' }}>
+              background: typeFilter === t ? `${t === 'all' ? '#0a84ff' : meta(t).color}22` : 'rgba(255,255,255,0.03)',
+              border: `1px solid ${typeFilter === t ? (t === 'all' ? '#0a84ff' : meta(t).color) : 'rgba(255,255,255,0.1)'}`,
+              color: typeFilter === t ? (t === 'all' ? '#0a84ff' : meta(t).color) : 'rgba(148,163,184,0.7)' }}>
               {t === 'all' ? 'All' : meta(t).label}
             </button>
           ))}
           <input value={q} onChange={e => setQ(e.target.value)} placeholder="Search user / table / detail…"
-            style={{ background: 'rgba(10,16,30,0.9)', border: '1px solid rgba(77,159,255,0.25)', borderRadius: 7,
+            style={{ background: 'rgba(10,16,30,0.9)', border: '1px solid rgba(10, 132, 255,0.25)', borderRadius: 7,
               color: '#e2e8f0', fontSize: 11, padding: '6px 10px', width: 200 }} />
         </div>
         <SortableFilterableTable
           columns={trailColumns}
           rows={trailRows}
-          accent="#4d9fff"
+          accent="#0a84ff"
           exportName="activity-event-trail"
           initialSort="time"
           emptyText="Nothing matches the current filter."

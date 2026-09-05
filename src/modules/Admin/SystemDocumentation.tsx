@@ -272,12 +272,12 @@ export default function SystemDocumentation() {
 
   const TH: React.CSSProperties = {
     textAlign: 'left', padding: '4px 8px', fontSize: 9, fontWeight: 800, color: '#fff',
-    background: 'rgba(77,159,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.05em',
-    border: '1px solid rgba(77,159,255,0.25)',
+    background: 'rgba(10, 132, 255,0.25)', textTransform: 'uppercase', letterSpacing: '0.05em',
+    border: '1px solid rgba(10, 132, 255,0.25)',
   };
   const TD: React.CSSProperties = {
     padding: '4px 8px', fontSize: 10.5, color: 'rgba(203,213,225,0.88)',
-    border: '1px solid rgba(77,159,255,0.14)', verticalAlign: 'top',
+    border: '1px solid rgba(10, 132, 255,0.14)', verticalAlign: 'top',
   };
 
   return (
@@ -287,7 +287,7 @@ export default function SystemDocumentation() {
           style={{ width: 30, height: 30, borderRadius: 7, background: '#fff', padding: 2, objectFit: 'contain' }} />
         <div style={{ flex: 1, minWidth: 220 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <BookOpen size={15} color="#4d9fff" />
+            <BookOpen size={15} color="#0a84ff" />
             <span style={{ fontSize: 15, fontWeight: 900, color: '#e2eaf4' }}>System Documentation</span>
           </div>
           <div style={{ fontSize: 9.5, color: 'rgba(148,163,184,0.65)' }}>
@@ -295,7 +295,7 @@ export default function SystemDocumentation() {
           </div>
         </div>
         <input value={q} onChange={e => setQ(e.target.value)} placeholder="Search…"
-          style={{ background: 'rgba(10,16,30,0.9)', border: '1px solid rgba(77,159,255,0.25)', borderRadius: 7,
+          style={{ background: 'rgba(10,16,30,0.9)', border: '1px solid rgba(10, 132, 255,0.25)', borderRadius: 7,
             color: '#e2e8f0', fontSize: 11, padding: '7px 10px', width: 170 }} />
         <button onClick={downloadPdf} style={{
           display: 'flex', alignItems: 'center', gap: 6, padding: '8px 13px', cursor: 'pointer',
@@ -311,12 +311,12 @@ export default function SystemDocumentation() {
         const isOpen = q.trim() ? true : !closed[sec.id];
         return (
           <div key={sec.id} style={{ marginBottom: 6, background: 'rgba(8,14,28,0.7)',
-            border: '1px solid rgba(77,159,255,0.18)', borderRadius: 8, overflow: 'hidden' }}>
+            border: '1px solid rgba(10, 132, 255,0.18)', borderRadius: 8, overflow: 'hidden' }}>
             <button onClick={() => setClosed(o => ({ ...o, [sec.id]: isOpen }))} style={{
               width: '100%', display: 'flex', alignItems: 'center', gap: 7, padding: '7px 10px',
-              background: 'linear-gradient(90deg, rgba(10,61,98,0.55), rgba(77,159,255,0.12))',
+              background: 'linear-gradient(90deg, rgba(10,61,98,0.55), rgba(10, 132, 255,0.12))',
               border: 'none', cursor: 'pointer', textAlign: 'left' }}>
-              {isOpen ? <ChevronDown size={13} color="#4d9fff" /> : <ChevronRight size={13} color="rgba(148,163,184,0.6)" />}
+              {isOpen ? <ChevronDown size={13} color="#0a84ff" /> : <ChevronRight size={13} color="rgba(148,163,184,0.6)" />}
               <span style={{ fontSize: 11.5, fontWeight: 800, color: '#9bd0ff' }}>{sec.title}</span>
             </button>
             {isOpen && (
@@ -335,7 +335,7 @@ export default function SystemDocumentation() {
                             return (
                               <tr key={j}>
                                 <td style={{ ...TD, width: 210, fontWeight: 700, color: '#9bd0ff',
-                                  background: 'rgba(77,159,255,0.07)', whiteSpace: 'normal' }}>{k}</td>
+                                  background: 'rgba(10, 132, 255,0.07)', whiteSpace: 'normal' }}>{k}</td>
                                 <td style={TD}>{v}</td>
                               </tr>
                             );
@@ -351,7 +351,7 @@ export default function SystemDocumentation() {
                             <tr key={j}>{r.map((c, k2) => (
                               <td key={k2} style={{ ...TD, fontWeight: k2 === 0 ? 700 : 400,
                                 color: k2 === 0 ? '#9bd0ff' : (TD.color as string),
-                                background: k2 === 0 ? 'rgba(77,159,255,0.07)' : undefined }}>{c}</td>
+                                background: k2 === 0 ? 'rgba(10, 132, 255,0.07)' : undefined }}>{c}</td>
                             ))}</tr>
                           ))}
                         </tbody>
