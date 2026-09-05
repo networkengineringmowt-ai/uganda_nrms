@@ -362,9 +362,9 @@ export default function GISMapView() {
       {/* ── Top-right download toolbar ── (offset down to clear the global PageToolbar cluster) */}
       <div className="absolute z-[900] flex flex-col gap-1.5" style={{ top: 54, right: 16 }}>
         {[
-          { label: 'GeoJSON', fn: () => downloadGeoJSON(displayStructures, 'structures_filtered.geojson'), color: '#00f5ff' },
-          { label: 'KML',     fn: () => downloadKML(displayStructures, 'structures_filtered.kml'),         color: '#00ff88' },
-          { label: 'SHP ZIP', fn: () => downloadShapefileZip('all'),                                        color: '#b967ff' },
+          { label: 'GeoJSON', fn: () => downloadGeoJSON(displayStructures, 'structures_filtered.geojson'), color: '#64d2ff' },
+          { label: 'KML',     fn: () => downloadKML(displayStructures, 'structures_filtered.kml'),         color: '#30d158' },
+          { label: 'SHP ZIP', fn: () => downloadShapefileZip('all'),                                        color: '#bf5af2' },
         ].map(({ label, fn, color }) => (
           <button
             key={label}
@@ -735,7 +735,7 @@ const StructurePanel = memo(function StructurePanel({
                   {YEARS.map(yr => {
                     const hist = s.conditionHistory.find(h => h.year === yr);
                     const r = hist?.rating ?? s.conditionRating;
-                    const col = r <= 1 ? '#ff3366' : r === 2 ? '#ff6b35' : r === 3 ? '#ffd23f' : r === 4 ? '#00f5ff' : '#00ff88';
+                    const col = r <= 1 ? '#ff453a' : r === 2 ? '#ff9f0a' : r === 3 ? '#ffd60a' : r === 4 ? '#64d2ff' : '#30d158';
                     return (
                       <div key={yr} className="flex-1 flex flex-col items-center gap-1">
                         <span className="text-[9px] font-bold" style={{ color: col }}>{r}</span>
