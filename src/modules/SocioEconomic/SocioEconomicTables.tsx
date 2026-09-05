@@ -33,7 +33,7 @@ const STATUS_COLORS: Record<string, string> = {
   'under construction': DASH_C.yellow, 'early production': DASH_C.yellow,
   planned: DASH_C.blue, exploration: DASH_C.blue, 'exploration complete': DASH_C.blue,
   appraisal: DASH_C.blue, explored: DASH_C.blue,
-  standby: DASH_C.orange, mothballed: '#ff3366', no: DASH_C.gray,
+  standby: DASH_C.orange, mothballed: '#ff453a', no: DASH_C.gray,
 };
 function statusColor(text: string): string | undefined {
   return STATUS_COLORS[text.trim().toLowerCase()];
