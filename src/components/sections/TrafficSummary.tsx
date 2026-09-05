@@ -34,7 +34,7 @@ const REGION_CLR: Record<string,string> = {
 };
 const GLASS: React.CSSProperties = {
   background:'rgba(15,23,42,0.55)', backdropFilter:'blur(20px)',
-  WebkitBackdropFilter:'blur(20px)', border:'1px solid rgba(94, 92, 230,0.12)', borderRadius:14,
+  WebkitBackdropFilter:'blur(20px)', border:'1px solid rgba(99, 102, 241,0.12)', borderRadius:14,
 };
 
 // Growth factors 2016-2035 - BASE YEAR 2016 = 1.00 (all traffic statistics
@@ -164,13 +164,13 @@ function RoadLinksTab({ features }: { features: PredFeature[] }) {
       {/* Controls */}
       <div style={{ display:'flex', gap:8, alignItems:'center', flexWrap:'wrap' }}>
         <SearchableSelect value={classF} onChange={setClassF}
-          style={{ background:'rgba(94, 92, 230,0.08)', border:'1px solid rgba(94, 92, 230,0.25)',
+          style={{ background:'rgba(99, 102, 241,0.08)', border:'1px solid rgba(99, 102, 241,0.25)',
             borderRadius:8, color:C.cyan, fontSize:11, padding:'5px 10px', outline:'none', cursor:'pointer' }}>
           <option value="all">All Classes</option>
           {['A','B','C','M'].map(c=><option key={c} value={c}>Class {c}</option>)}
         </SearchableSelect>
         <SearchableSelect value={regionF} onChange={setRegionF}
-          style={{ background:'rgba(94, 92, 230,0.08)', border:'1px solid rgba(94, 92, 230,0.25)',
+          style={{ background:'rgba(99, 102, 241,0.08)', border:'1px solid rgba(99, 102, 241,0.25)',
             borderRadius:8, color:C.cyan, fontSize:11, padding:'5px 10px', outline:'none', cursor:'pointer' }}>
           {regions.map(r=><option key={r} value={r}>{r==='all'?'All Regions':r}</option>)}
         </SearchableSelect>
@@ -297,7 +297,7 @@ export default function TrafficSummary() {
     <div style={{ padding:'20px 22px 36px', fontFamily:"'Inter','Segoe UI',sans-serif", color:'#e2eaf4' }}>
       {/* Header */}
       <div style={{ marginBottom:18 }}>
-        <div style={{ fontSize:9, fontWeight:800, color:'rgba(94, 92, 230,0.55)',
+        <div style={{ fontSize:9, fontWeight:800, color:'rgba(99, 102, 241,0.55)',
           letterSpacing:'0.18em', textTransform:'uppercase', marginBottom:3 }}>
           Uganda National Roads · Department of National Roads / DNR 2025
         </div>
