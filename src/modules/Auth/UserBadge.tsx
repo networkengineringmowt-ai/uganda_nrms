@@ -6,8 +6,8 @@ const ROLE_COLORS: Record<string, string> = {
   admin: '#ef4444',   // everything
   super: '#f59e0b',   // dashboards & reports, read-only
   rms:   '#22c55e',   // NRMS field data entry
-  bms:   '#4d9fff',   // NBMS field data entry
-  tis:   '#00f5ff',   // NTIS field data entry
+  bms:   '#0a84ff',   // NBMS field data entry
+  tis:   '#64d2ff',   // NTIS field data entry
 };
 
 export function UserBadge() {
