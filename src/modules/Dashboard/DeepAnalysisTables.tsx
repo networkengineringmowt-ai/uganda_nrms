@@ -75,7 +75,7 @@ function heatStyle(t: number): React.CSSProperties {
 function SigBadge({ p }: { p: number }) {
   const stars = sigStars(p);
   return (
-    <span style={{ color: stars ? '#30d158' : '#94a3b8', fontWeight: 800 }}>{stars || 'n.s.'}</span>
+    <span style={{ color: stars ? '#00ff88' : '#94a3b8', fontWeight: 800 }}>{stars || 'n.s.'}</span>
   );
 }
 // "name" already catches surveyor_name/inspector_name/contact_name/etc.;
@@ -126,7 +126,7 @@ function DescriptiveStatsCard({ accent, nums, rows, sectionId }: { accent: strin
     { key: 'mode', label: 'Mode', numeric: true, render: r => r.mode != null ? fmtN(r.mode, 1) : '—' },
     { key: 'min', label: 'Min', numeric: true, render: r => fmtN(r.min, 1) },
     { key: 'p25', label: 'P25', numeric: true, render: r => fmtN(r.p25, 1) },
-    { key: 'median', label: 'Median', numeric: true, render: r => <span style={{ color: '#ffd60a', fontWeight: 800 }}>{fmtN(r.median, 1)}</span> },
+    { key: 'median', label: 'Median', numeric: true, render: r => <span style={{ color: '#ffd23f', fontWeight: 800 }}>{fmtN(r.median, 1)}</span> },
     { key: 'p75', label: 'P75', numeric: true, render: r => fmtN(r.p75, 1) },
     { key: 'max', label: 'Max', numeric: true, render: r => fmtN(r.max, 1) },
     { key: 'range', label: 'Range', numeric: true, render: r => fmtN(r.range, 1) },
@@ -334,7 +334,7 @@ function CrossRelationCard({ accent, a, b, rows, sectionId }: { accent: string; 
         </div>
         <div style={{ color: '#cbd5e1' }}>
           χ² = <b style={{ color: '#e2e8f0' }}>{fmtN(chi.chi2, 2)}</b>, df = {chi.df}, n = {fmtN(chi.n)}, p-value = {chi.p < 0.001 ? '<0.001' : chi.p.toFixed(3)}{' '}
-          (<span style={{ color: sigStars(chi.p) ? '#30d158' : '#94a3b8', fontWeight: 700 }}>{sigStars(chi.p) || 'not significant'}</span>),
+          (<span style={{ color: sigStars(chi.p) ? '#00ff88' : '#94a3b8', fontWeight: 700 }}>{sigStars(chi.p) || 'not significant'}</span>),
           Cramér's V = {chi.cramerV.toFixed(3)} ({chi.cramerV < 0.1 ? 'negligible' : chi.cramerV < 0.3 ? 'weak' : chi.cramerV < 0.5 ? 'moderate' : 'strong'} association)
         </div>
         <div style={{ fontSize: 10, color: '#475569', marginTop: 4 }}>Tests whether {prettyLabel(a)} and {prettyLabel(b)} are statistically independent, or whether one predicts the other. Cramér's V is the effect size (0 = no association, 1 = perfect).</div>
@@ -343,7 +343,7 @@ function CrossRelationCard({ accent, a, b, rows, sectionId }: { accent: string; 
   );
 }
 
-export function DeepAnalysisTables({ sectionId, accent = '#64d2ff' }: { sectionId: string; accent?: string }) {
+export function DeepAnalysisTables({ sectionId, accent = '#00f5ff' }: { sectionId: string; accent?: string }) {
   const [rows, setRows] = useState<Row[] | null>(null);
   useEffect(() => { let d = false; loadRows(sectionId).then(r => { if (!d) setRows(r); }); return () => { d = true; }; }, [sectionId]);
   const P = useMemo(() => {

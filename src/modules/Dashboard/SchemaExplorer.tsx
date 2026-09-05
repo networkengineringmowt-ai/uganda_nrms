@@ -291,7 +291,7 @@ function CodeBlock({ sql, accent }: { sql: string; accent: string }) {
   return (
     <div style={{ position: 'relative' }}>
       <button onClick={() => { try { navigator.clipboard.writeText(sql); setCopied(true); setTimeout(()=>setCopied(false), 1200); } catch {} }}
-        style={{ position: 'absolute', top: 6, right: 8, background: 'rgba(100, 210, 255,0.08)', border: '1px solid rgba(100, 210, 255,0.3)',
+        style={{ position: 'absolute', top: 6, right: 8, background: 'rgba(0, 245, 255,0.08)', border: '1px solid rgba(0, 245, 255,0.3)',
           borderRadius: 5, color: accent, fontSize: 9, fontWeight: 700, padding: '2px 8px', cursor: 'pointer' }}>
         {copied ? 'Copied' : 'Copy SQL'}
       </button>
@@ -301,7 +301,7 @@ function CodeBlock({ sql, accent }: { sql: string; accent: string }) {
   );
 }
 
-export function SchemaExplorer({ sectionId, accent = '#64d2ff' }: { sectionId: string; accent?: string }) {
+export function SchemaExplorer({ sectionId, accent = '#00f5ff' }: { sectionId: string; accent?: string }) {
   const [showAll, setShowAll] = useState(false);
   const dbStatus = useDbStatus();
   const own = useMemo(() => ALL_TABLES.filter(t => t.section === sectionId), [sectionId]);
@@ -326,10 +326,10 @@ export function SchemaExplorer({ sectionId, accent = '#64d2ff' }: { sectionId: s
               indication of whether the platform is actually connected. */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%',
-              background: dbStatus === 'connected' ? '#30d158' : dbStatus === 'offline' ? '#ff375f' : '#94a3b8',
-              boxShadow: dbStatus === 'connected' ? '0 0 6px #30d158' : dbStatus === 'offline' ? '0 0 6px #ff375f' : 'none' }}/>
+              background: dbStatus === 'connected' ? '#00ff88' : dbStatus === 'offline' ? '#ff2d78' : '#94a3b8',
+              boxShadow: dbStatus === 'connected' ? '0 0 6px #00ff88' : dbStatus === 'offline' ? '0 0 6px #ff2d78' : 'none' }}/>
             <span style={{ fontSize: 10, fontWeight: 700,
-              color: dbStatus === 'connected' ? '#30d158' : dbStatus === 'offline' ? '#ff375f' : '#94a3b8' }}>
+              color: dbStatus === 'connected' ? '#00ff88' : dbStatus === 'offline' ? '#ff2d78' : '#94a3b8' }}>
               {dbStatus === 'connected' ? 'Server: Live' : dbStatus === 'offline' ? 'Server: Unreachable' : 'Server: Checking…'}
             </span>
           </div>
@@ -350,9 +350,9 @@ export function SchemaExplorer({ sectionId, accent = '#64d2ff' }: { sectionId: s
             <span key={t.name} style={{ fontFamily: MONO, fontSize: 10, padding: '3px 8px', borderRadius: 6,
               border: '1px solid ' + (t.section === sectionId ? accent : 'rgba(255,255,255,0.12)'),
               color: t.section === sectionId ? accent : '#94a3b8',
-              background: t.section === sectionId ? 'rgba(100, 210, 255,0.08)' : 'transparent' }}>
+              background: t.section === sectionId ? 'rgba(0, 245, 255,0.08)' : 'transparent' }}>
               {t.name} <span style={{ color: '#475569' }}>PK {t.pk}</span>
-              {t.fks.map(fk => <span key={fk.col} style={{ color: '#bf5af2' }}> · FK {fk.col} → {fk.ref.split('(')[0]}</span>)}
+              {t.fks.map(fk => <span key={fk.col} style={{ color: '#b967ff' }}> · FK {fk.col} → {fk.ref.split('(')[0]}</span>)}
             </span>
           ))}
         </div>
@@ -379,7 +379,7 @@ export function SchemaExplorer({ sectionId, accent = '#64d2ff' }: { sectionId: s
         LINKING QUERIES - ALL JOINS SHOWN IN FULL
       </div>
       {queries.map(q => (
-        <div key={q.id} style={{ ...CARD, borderLeft: '3px solid #bf5af2' }}>
+        <div key={q.id} style={{ ...CARD, borderLeft: '3px solid #b967ff' }}>
           <div style={{ fontSize: 10.5, fontWeight: 700, color: '#e2e8f0', marginBottom: 6 }}>
             {q.title} <span style={{ color: '#475569', fontFamily: MONO }}>[{q.sections.join(' ⋈ ')}]</span>
           </div>

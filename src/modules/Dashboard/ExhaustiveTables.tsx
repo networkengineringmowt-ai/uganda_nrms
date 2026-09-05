@@ -88,7 +88,7 @@ const NO_DATA_STYLE: React.CSSProperties = {
   color: 'rgba(203,213,225,0.65)', fontWeight: 600, fontStyle: 'italic',
 };
 
-export function ExhaustiveTables({ sectionId, accent = '#64d2ff' }: { sectionId: string; accent?: string }) {
+export function ExhaustiveTables({ sectionId, accent = '#00f5ff' }: { sectionId: string; accent?: string }) {
   const [rows, setRows] = useState<Row[] | null>(null);
   useEffect(() => { let d = false; loadRows(sectionId).then(r => { if (!d) setRows(r); }); return () => { d = true; }; }, [sectionId]);
   const cols = useMemo(() => rows && rows.length ? Object.keys(rows[0]).filter(c => !PII_COL.test(c)) : [], [rows]);
