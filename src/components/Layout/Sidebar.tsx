@@ -28,9 +28,9 @@ interface Group {
 }
 
 const N = {
-  indigo: '#5e5ce6', cyan:   '#64d2ff', orange: '#ff9f0a',
-  teal:   '#66d4cf', blue:   '#0a84ff', purple: '#bf5af2',
-  green:  '#30d158', yellow: '#ffd60a', pink:   '#ff375f',
+  indigo: '#5e5ce6', cyan:   '#00f5ff', orange: '#ff6b35',
+  teal:   '#00d4aa', blue:   '#4d9fff', purple: '#b967ff',
+  green:  '#00ff88', yellow: '#ffd23f', pink:   '#ff2d78',
   gray:   '#94a3b8',
 };
 
@@ -166,11 +166,11 @@ export default function Sidebar() {
         backdropFilter: 'blur(28px) saturate(200%)',
         WebkitBackdropFilter: 'blur(28px) saturate(200%)',
         borderRight: '1px solid rgba(255,255,255,0.06)',
-        boxShadow: '4px 0 32px rgba(0,0,0,0.6), 1px 0 0 rgba(100, 210, 255,0.05)',
+        boxShadow: '4px 0 32px rgba(0,0,0,0.6), 1px 0 0 rgba(0, 245, 255,0.05)',
       }}
     >
       {/* Brand header */}
-      <div style={{ padding: '14px 14px 12px', borderBottom: '1px solid rgba(100, 210, 255,0.08)' }}>
+      <div style={{ padding: '14px 14px 12px', borderBottom: '1px solid rgba(0, 245, 255,0.08)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
           <img
             src={`${import.meta.env.BASE_URL}mowt.jpg`}
@@ -178,8 +178,8 @@ export default function Sidebar() {
             style={{
               width: 34, height: 34, borderRadius: 9, flexShrink: 0, objectFit: 'contain',
               background: '#fff', padding: 2,
-              border: '1px solid rgba(100, 210, 255,0.3)',
-              boxShadow: '0 0 16px rgba(100, 210, 255,0.15)',
+              border: '1px solid rgba(0, 245, 255,0.3)',
+              boxShadow: '0 0 16px rgba(0, 245, 255,0.15)',
             }}
           />
           <div style={{ minWidth: 0 }}>
@@ -192,13 +192,13 @@ export default function Sidebar() {
         </div>
         <div style={{
           marginTop: 9, height: 1,
-          background: 'linear-gradient(90deg, transparent, rgba(100, 210, 255,0.4), transparent)',
+          background: 'linear-gradient(90deg, transparent, rgba(0, 245, 255,0.4), transparent)',
           animation: 'scanLineAnim 3s ease-in-out infinite',
         }}/>
       </div>
 
       {/* Network summary strip */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', borderBottom: '1px solid rgba(100, 210, 255,0.08)' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', borderBottom: '1px solid rgba(0, 245, 255,0.08)' }}>
         <StatPill label="Roads"    value="21.3k" color={N.cyan} />
         <StatPill label="Bridges"  value={String(structures.filter(s=>s.type==='bridge').length)} color={N.blue} />
         <StatPill label="Critical" value={String(criticalCount)} color={N.pink} />
@@ -295,7 +295,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div style={{ padding: '8px 14px', borderTop: '1px solid rgba(100, 210, 255,0.08)', textAlign: 'center' }}>
+      <div style={{ padding: '8px 14px', borderTop: '1px solid rgba(0, 245, 255,0.08)', textAlign: 'center' }}>
         <div style={{ fontSize: 7.5, color: 'rgba(100,116,139,0.45)', letterSpacing: '0.05em' }}>
           Uganda NRMS v4.0 · DNR 2026 (FY25-26)
         </div>
@@ -304,11 +304,11 @@ export default function Sidebar() {
             when the database was completely unreachable. */}
         <div style={{ marginTop: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5 }}>
           <span style={{ width: 5, height: 5, borderRadius: '50%',
-            background: dbStatus === 'connected' ? '#30d158' : dbStatus === 'offline' ? '#ff375f' : '#94a3b8',
-            boxShadow: dbStatus === 'connected' ? '0 0 6px #30d158' : dbStatus === 'offline' ? '0 0 6px #ff375f' : 'none',
+            background: dbStatus === 'connected' ? '#00ff88' : dbStatus === 'offline' ? '#ff2d78' : '#94a3b8',
+            boxShadow: dbStatus === 'connected' ? '0 0 6px #00ff88' : dbStatus === 'offline' ? '0 0 6px #ff2d78' : 'none',
             animation: dbStatus !== 'offline' ? 'pulse 2s ease-in-out infinite' : 'none', display: 'inline-block' }}/>
           <span style={{ fontSize: 7.5,
-            color: dbStatus === 'connected' ? 'rgba(48, 209, 88,0.6)' : dbStatus === 'offline' ? 'rgba(255, 55, 95,0.75)' : 'rgba(148,163,184,0.6)' }}>
+            color: dbStatus === 'connected' ? 'rgba(0, 255, 136,0.6)' : dbStatus === 'offline' ? 'rgba(255, 45, 120,0.75)' : 'rgba(148,163,184,0.6)' }}>
             {dbStatus === 'connected' ? 'Database Connected' : dbStatus === 'offline' ? 'Database Offline' : 'Checking database…'}
           </span>
         </div>
@@ -321,7 +321,7 @@ function StatPill({ label, value, color }: { label: string; value: string; color
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '6px 4px',
       background: `rgba(${hexToRgb(color)}, 0.04)`,
-      borderRight: '1px solid rgba(100, 210, 255,0.05)' }}>
+      borderRight: '1px solid rgba(0, 245, 255,0.05)' }}>
       <span style={{ fontSize: 12, fontWeight: 900, lineHeight: 1, color,
         textShadow: `0 0 10px ${color}60` }}>{value}</span>
       <span style={{ fontSize: 6.5, color: 'rgba(100,116,139,0.55)', marginTop: 2,
