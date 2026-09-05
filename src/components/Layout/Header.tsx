@@ -25,7 +25,7 @@ const VIEW_TITLES: Record<string, { title: string; sub: string; color?: string }
   datacapture:   { title: 'Data Capture',                 sub: 'Field data entry · Writes to the live Supabase database', color: '#00d4aa' },
   pendingsurveys:{ title: 'Pending Submissions',          sub: 'Queued condition surveys awaiting export', color: '#ffd23f' },
   // Platform
-  network:       { title: 'Network Overview',              sub: 'Dashboard · Road Network Map · Network Story · Architecture', color: '#5e5ce6' },
+  network:       { title: 'Network Overview',              sub: 'Dashboard · Road Network Map · Network Story · Architecture', color: '#6366f1' },
   admin:         { title: 'Admin Tools',                   sub: 'Platform Mind Map · Data Audit · System Architecture',        color: '#00f5ff' },
   sources:       { title: 'Sources & Evidence',            sub: 'Evidence Catalogue · Tabular Summaries · Documents · Downloads', color: '#94a3b8' },
   platform:      { title: 'Platform Overview',            sub: 'Uganda National Roads Management Platform',             color: '#00f5ff' },
