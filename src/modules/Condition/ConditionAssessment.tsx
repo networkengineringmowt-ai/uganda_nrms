@@ -45,7 +45,7 @@ export default function ConditionAssessment() {
           </div>
           <SearchableSelect value={sortKey} onChange={v => setSortKey(v as typeof sortKey)}
             style={{ appearance: 'none', cursor: 'pointer', background: 'rgba(6,13,24,0.8)',
-              border: '1px solid rgba(100, 210, 255,0.12)', borderRadius: 8, padding: '6px 12px',
+              border: '1px solid rgba(0, 245, 255,0.12)', borderRadius: 8, padding: '6px 12px',
               fontSize: 12, color: '#e2eaf4', outline: 'none' }}>
             <option value="conditionRating">Sort: Worst First</option>
             <option value="priorityScore">Sort: Priority Score</option>
