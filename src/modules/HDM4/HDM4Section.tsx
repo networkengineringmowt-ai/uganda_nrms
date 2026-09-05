@@ -10,9 +10,9 @@ import { ModuleNavBar } from '../../shared/ModuleNavBar';
 import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
 
 const C = {
-  purple: '#bf5af2', cyan: '#64d2ff', green: '#30d158',
-  blue: '#0a84ff', yellow: '#ffd60a', orange: '#ff9f0a',
-  pink: '#ff375f', teal: '#66d4cf', red: '#ff453a',
+  purple: '#b967ff', cyan: '#00f5ff', green: '#00ff88',
+  blue: '#4d9fff', yellow: '#ffd23f', orange: '#ff6b35',
+  pink: '#ff2d78', teal: '#00d4aa', red: '#ff3366',
 };
 
 const card = (accent: string) => ({
@@ -181,7 +181,7 @@ export default function HDM4Section() {
       {/* ── BMS-style tab bar ── */}
       <div style={{
         display: 'flex', gap: 2, marginBottom: 20, flexShrink: 0,
-        borderBottom: '1px solid rgba(10, 132, 255,0.15)',
+        borderBottom: '1px solid rgba(77, 159, 255,0.15)',
         background: 'rgba(4,9,18,0.85)', marginLeft: -20, marginRight: -20, paddingLeft: 14,
       }}>
         {TABS.map(t => {
@@ -191,8 +191,8 @@ export default function HDM4Section() {
               display: 'flex', alignItems: 'center', gap: 6,
               padding: '10px 14px 11px', fontSize: 11, fontWeight: isActive ? 800 : 500,
               background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0,
-              color: isActive ? '#0a84ff' : 'rgba(148,163,184,0.70)',
-              borderBottom: isActive ? '2px solid #0a84ff' : '2px solid transparent',
+              color: isActive ? '#4d9fff' : 'rgba(148,163,184,0.70)',
+              borderBottom: isActive ? '2px solid #4d9fff' : '2px solid transparent',
               transition: 'all 0.13s',
             }}>
               {t.icon} {t.label}
@@ -205,7 +205,7 @@ export default function HDM4Section() {
             {activeTab === 'overview' && (
         <div style={{ padding:'16px 20px', overflowY:'auto', flex:1, display:'flex', flexDirection:'column', gap:14 }}>
           {/* Definition card */}
-          <div style={{ background:'rgba(100, 210, 255,0.04)', border:'1px solid rgba(100, 210, 255,0.14)', borderRadius:12, padding:'14px 18px' }}>
+          <div style={{ background:'rgba(0, 245, 255,0.04)', border:'1px solid rgba(0, 245, 255,0.14)', borderRadius:12, padding:'14px 18px' }}>
             <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:8 }}>
               <span style={{ fontSize:26 }}>🛣️</span>
               <div>
@@ -218,18 +218,18 @@ export default function HDM4Section() {
             </p>
             <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
               {['World Bank HDM-4','AfDB Compliant','NPV / EIRR','CE-SAL Modelled','MoWT Standards','FY 2025/26'].map((b: string)=>(
-                <span key={b} style={{ fontSize:9, fontWeight:700, color:'#64d2ff', background:'rgba(100, 210, 255,0.07)', border:'1px solid rgba(100, 210, 255,0.18)', borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
+                <span key={b} style={{ fontSize:9, fontWeight:700, color:'#00f5ff', background:'rgba(0, 245, 255,0.07)', border:'1px solid rgba(0, 245, 255,0.18)', borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
               ))}
             </div>
           </div>
           {/* KPI tiles */}
           <div style={{ display:'grid', gridTemplateColumns:'repeat(6,1fr)', gap:8, flexShrink:0 }}>
             {[
-              { label:'Network Analysed', value:'21,302', unit:'km', color:'#64d2ff' },
-              { label:'Network EIRR', value:'18.4', unit:'%', color:'#30d158' },
-              { label:'Total NPV', value:'847', unit:'UGX B', color:'#0a84ff' },
-              { label:'Avg Pavement Life', value:'8.2', unit:'yrs rem.', color:'#ffd60a' },
-              { label:'CE-SAL (M)', value:'2.8', unit:'M ESA', color:'#bf5af2' },
+              { label:'Network Analysed', value:'21,302', unit:'km', color:'#00f5ff' },
+              { label:'Network EIRR', value:'18.4', unit:'%', color:'#00ff88' },
+              { label:'Total NPV', value:'847', unit:'UGX B', color:'#4d9fff' },
+              { label:'Avg Pavement Life', value:'8.2', unit:'yrs rem.', color:'#ffd23f' },
+              { label:'CE-SAL (M)', value:'2.8', unit:'M ESA', color:'#b967ff' },
               { label:'Treatment Units', value:'1,240', unit:'segments', color:'#ff6b9d' },
             ].map((k: any)=>(
               <div key={k.label} style={{ background:`${k.color}10`, border:`1px solid ${k.color}38`, borderRadius:8, padding:'10px 12px' }}>
@@ -240,36 +240,36 @@ export default function HDM4Section() {
           </div>
           {/* Section heading */}
           <div style={{ display:'flex', alignItems:'center', gap:10, marginTop:2 }}>
-            <div style={{ flex:1, height:1, background:'rgba(100, 210, 255,0.10)' }} />
-            <span style={{ fontSize:9, fontWeight:800, color:'rgba(100, 210, 255,0.45)', letterSpacing:'0.14em', textTransform:'uppercase', whiteSpace:'nowrap' }}>Investment Analysis · 6 Views</span>
-            <div style={{ flex:1, height:1, background:'rgba(100, 210, 255,0.10)' }} />
+            <div style={{ flex:1, height:1, background:'rgba(0, 245, 255,0.10)' }} />
+            <span style={{ fontSize:9, fontWeight:800, color:'rgba(0, 245, 255,0.45)', letterSpacing:'0.14em', textTransform:'uppercase', whiteSpace:'nowrap' }}>Investment Analysis · 6 Views</span>
+            <div style={{ flex:1, height:1, background:'rgba(0, 245, 255,0.10)' }} />
           </div>
           {/* Charts */}
           <div style={{ display:'grid', gridTemplateColumns:'1fr 2fr', gap:12, flex:1, minHeight:220 }}>
-            <div style={{ background:'rgba(4,9,18,0.7)', border:'1px solid rgba(100, 210, 255,0.09)', borderRadius:10, padding:'12px 14px', display:'flex', flexDirection:'column' }}>
+            <div style={{ background:'rgba(4,9,18,0.7)', border:'1px solid rgba(0, 245, 255,0.09)', borderRadius:10, padding:'12px 14px', display:'flex', flexDirection:'column' }}>
               <div style={{ fontSize:10, fontWeight:700, color:'rgba(148,163,184,0.45)', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:8 }}>Treatment Mix</div>
               <ResponsiveContainer width="100%" height={150}>
                 <PieChart>
-                  <Pie data={[{name:'Routine',value:45,color:'#30d158'},{name:'Periodic',value:30,color:'#0a84ff'},{name:'Rehab',value:18,color:'#ffd60a'},{name:'Recon',value:7,color:'#ff4757'}]} cx="50%" cy="50%" innerRadius={38} outerRadius={60} paddingAngle={3} dataKey="value"
+                  <Pie data={[{name:'Routine',value:45,color:'#00ff88'},{name:'Periodic',value:30,color:'#4d9fff'},{name:'Rehab',value:18,color:'#ffd23f'},{name:'Recon',value:7,color:'#ff4757'}]} cx="50%" cy="50%" innerRadius={38} outerRadius={60} paddingAngle={3} dataKey="value"
                     label={renderSliceLabel} labelLine={{ stroke: 'rgba(148,163,184,0.4)' }}>
-                    {[{name:'Routine',value:45,color:'#30d158'},{name:'Periodic',value:30,color:'#0a84ff'},{name:'Rehab',value:18,color:'#ffd60a'},{name:'Recon',value:7,color:'#ff4757'}].map((_: any,i: number)=><Cell key={i} fill={[{name:'Routine',value:45,color:'#30d158'},{name:'Periodic',value:30,color:'#0a84ff'},{name:'Rehab',value:18,color:'#ffd60a'},{name:'Recon',value:7,color:'#ff4757'}][i].color} />)}
+                    {[{name:'Routine',value:45,color:'#00ff88'},{name:'Periodic',value:30,color:'#4d9fff'},{name:'Rehab',value:18,color:'#ffd23f'},{name:'Recon',value:7,color:'#ff4757'}].map((_: any,i: number)=><Cell key={i} fill={[{name:'Routine',value:45,color:'#00ff88'},{name:'Periodic',value:30,color:'#4d9fff'},{name:'Rehab',value:18,color:'#ffd23f'},{name:'Recon',value:7,color:'#ff4757'}][i].color} />)}
                   </Pie>
-                  <Tooltip contentStyle={{ background:'#0a0f1a', border:'1px solid rgba(100, 210, 255,0.18)', borderRadius:8, fontSize:11 }} formatter={(v: any)=>[`${v}%`,'Share']} />
+                  <Tooltip contentStyle={{ background:'#0a0f1a', border:'1px solid rgba(0, 245, 255,0.18)', borderRadius:8, fontSize:11 }} formatter={(v: any)=>[`${v}%`,'Share']} />
                 </PieChart>
               </ResponsiveContainer>
               <div style={{ display:'flex', flexWrap:'wrap', gap:'3px 8px', justifyContent:'center', marginTop:6 }}>
-                {[{name:'Routine',color:'#30d158'},{name:'Periodic',color:'#0a84ff'},{name:'Rehab',color:'#ffd60a'},{name:'Recon',color:'#ff4757'}].map((s: any)=><span key={s.name} style={{ fontSize:9, color:s.color, fontWeight:600 }}>● {s.name}</span>)}
+                {[{name:'Routine',color:'#00ff88'},{name:'Periodic',color:'#4d9fff'},{name:'Rehab',color:'#ffd23f'},{name:'Recon',color:'#ff4757'}].map((s: any)=><span key={s.name} style={{ fontSize:9, color:s.color, fontWeight:600 }}>● {s.name}</span>)}
               </div>
             </div>
-            <div style={{ background:'rgba(4,9,18,0.7)', border:'1px solid rgba(100, 210, 255,0.09)', borderRadius:10, padding:'12px 14px' }}>
+            <div style={{ background:'rgba(4,9,18,0.7)', border:'1px solid rgba(0, 245, 255,0.09)', borderRadius:10, padding:'12px 14px' }}>
               <div style={{ fontSize:10, fontWeight:700, color:'rgba(148,163,184,0.45)', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:8 }}>NPV by Road Class (UGX Billion)</div>
               <ResponsiveContainer width="100%" height={180}>
                 <BarChart data={[{cls:'Class A',npv:312,eirr:22},{cls:'Class B',npv:358,eirr:18},{cls:'Class C',npv:177,eirr:14}]} layout="vertical" margin={{ top:0, right:20, left:10, bottom:0 }}>
                   <XAxis type="number" tick={{ fill:'#64748b', fontSize:9 }} axisLine={false} tickLine={false} />
                   <YAxis type="category" dataKey="cls" tick={{ fill:'#94a3b8', fontSize:9 }} axisLine={false} tickLine={false} width={55} />
-                  <Tooltip contentStyle={{ background:'#0a0f1a', border:'1px solid rgba(100, 210, 255,0.18)', borderRadius:8, fontSize:11 }} />
-                  <Bar dataKey="npv" name="NPV (UGX B)" fill="#0a84ff" radius={[0,3,3,0]} barSize={14} />
-                  <Bar dataKey="eirr" name="EIRR %" fill="#30d158" radius={[0,3,3,0]} barSize={14} />
+                  <Tooltip contentStyle={{ background:'#0a0f1a', border:'1px solid rgba(0, 245, 255,0.18)', borderRadius:8, fontSize:11 }} />
+                  <Bar dataKey="npv" name="NPV (UGX B)" fill="#4d9fff" radius={[0,3,3,0]} barSize={14} />
+                  <Bar dataKey="eirr" name="EIRR %" fill="#00ff88" radius={[0,3,3,0]} barSize={14} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
