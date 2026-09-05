@@ -30,7 +30,7 @@ interface LinkRow {
   maintenance_station: string;
 }
 
-const C = { cyan: '#64d2ff', teal: '#00d4aa', yellow: '#ffd60a', gray: '#94a3b8' };
+const C = { cyan: '#64d2ff', teal: '#66d4cf', yellow: '#ffd60a', gray: '#94a3b8' };
 
 // Which measured 2022-23 feature subtypes belong to each inventory category.
 // Matched case-insensitively against the field-survey feature names.
@@ -181,7 +181,7 @@ export default function RoadInventory() {
         <div style={{
           display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
           padding: '7px 10px', marginBottom: 10, borderRadius: 8,
-          background: 'rgba(0,212,170,0.05)', border: '1px solid rgba(0,212,170,0.18)',
+          background: 'rgba(102, 212, 207,0.05)', border: '1px solid rgba(102, 212, 207,0.18)',
         }}>
           <span style={{ fontSize: 12, fontWeight: 900, color: '#e2eaf4' }}>{active.label}</span>
           <span style={{ fontSize: 10.5, color: 'rgba(203,213,225,0.75)' }}>{active.description}</span>
@@ -189,7 +189,7 @@ export default function RoadInventory() {
           <button onClick={() => setShowRef(v => !v)} style={{
             display: 'flex', alignItems: 'center', gap: 4, padding: '3px 9px',
             borderRadius: 6, fontSize: 9.5, fontWeight: 700, cursor: 'pointer',
-            background: 'rgba(0,212,170,0.1)', border: '1px solid rgba(0,212,170,0.3)', color: C.teal,
+            background: 'rgba(102, 212, 207,0.1)', border: '1px solid rgba(102, 212, 207,0.3)', color: C.teal,
           }}>
             <BookOpen size={10} /> Manual reference {showRef ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
           </button>
@@ -254,7 +254,7 @@ export default function RoadInventory() {
                 [`${inv.paved_point_records.toLocaleString()}`, 'all point records (survey)'],
               ].map(([v, l]) => (
                 <div key={l} style={{ padding: '6px 12px', borderRadius: 8,
-                  background: 'rgba(0,212,170,0.06)', border: '1px solid rgba(0,212,170,0.2)' }}>
+                  background: 'rgba(102, 212, 207,0.06)', border: '1px solid rgba(102, 212, 207,0.2)' }}>
                   <span style={{ fontSize: 13, fontWeight: 900, color: C.teal }}>{v}</span>
                   <span style={{ fontSize: 9, color: 'rgba(148,163,184,0.7)', marginLeft: 6 }}>{l}</span>
                 </div>
