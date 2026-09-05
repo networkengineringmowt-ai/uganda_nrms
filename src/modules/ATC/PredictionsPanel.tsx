@@ -49,16 +49,16 @@ interface PredSummary {
 
 // ─── Palette ──────────────────────────────────────────────────────────────────
 const C = {
-  cyan:   '#00f5ff', green:  '#00ff88', orange: '#ff6b35',
-  purple: '#b967ff', yellow: '#ffd23f', pink:   '#ff2d78',
-  blue:   '#4d9fff', teal:   '#00d4aa',
+  cyan:   '#64d2ff', green:  '#30d158', orange: '#ff9f0a',
+  purple: '#bf5af2', yellow: '#ffd60a', pink:   '#ff375f',
+  blue:   '#0a84ff', teal:   '#00d4aa',
 };
 
 const CONG: Record<string, { color: string; label: string }> = {
-  Low:      { color: '#00ff88', label: 'Low'      },
-  Medium:   { color: '#ffd23f', label: 'Medium'   },
-  High:     { color: '#ff6b35', label: 'High'     },
-  Critical: { color: '#ff2d78', label: 'Critical' },
+  Low:      { color: '#30d158', label: 'Low'      },
+  Medium:   { color: '#ffd60a', label: 'Medium'   },
+  High:     { color: '#ff9f0a', label: 'High'     },
+  Critical: { color: '#ff375f', label: 'Critical' },
 };
 
 const glass = (accent = C.cyan): React.CSSProperties => ({
@@ -390,7 +390,7 @@ function CongestionBreakdownTable({
       <div style={{ overflowX:'auto' }}>
         <table style={{ width:'100%', borderCollapse:'collapse', fontSize:10 }}>
           <thead>
-            <tr style={{ borderBottom:'1px solid rgba(255,107,53,0.2)' }}>
+            <tr style={{ borderBottom:'1px solid rgba(255, 159, 10,0.2)' }}>
               <SortableTh label="Risk Level" sortKeyName="level" activeKey={sortKey} dir={sortDir} onSort={k => cycleSort(k as string)} />
               <SortableTh label="Links" sortKeyName="links" activeKey={sortKey} dir={sortDir} onSort={k => cycleSort(k as string)} />
               <SortableTh label="Length (km)" sortKeyName="lengthKm" activeKey={sortKey} dir={sortDir} onSort={k => cycleSort(k as string)} />
