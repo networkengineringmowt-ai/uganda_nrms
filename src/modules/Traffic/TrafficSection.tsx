@@ -68,8 +68,8 @@ interface PredFeature { type: 'Feature'; geometry: any; properties: PredProps }
 // ─── Palette ──────────────────────────────────────────────────────────────────
 const C = {
   cyan:   '#64d2ff', green:  '#30d158', orange: '#ff9f0a', purple: '#bf5af2',
-  yellow: '#ffd60a', pink:   '#ff375f', blue:   '#0a84ff', teal:   '#00d4aa',
-  amber:  '#f59e0b', indigo: '#6366f1', atcCyan: '#00c3ff', tisCyan: '#ffcc33',
+  yellow: '#ffd60a', pink:   '#ff375f', blue:   '#0a84ff', teal:   '#66d4cf',
+  amber:  '#f59e0b', indigo: '#5e5ce6', atcCyan: '#00c3ff', tisCyan: '#ffcc33',
 };
 
 // ─── Station network constants (corrected figures) ────────────────────────────
@@ -110,7 +110,7 @@ const VC_CLASSES = SHARED_VC_CLASSES.map(c => ({ label: c.label, short: c.short,
 
 // ─── Vehicle class bar chart (SVG) ──────────────────────────────────────────
 const VC_BAR_COLORS = [
-  '#bf5af2','#64d2ff','#ffd60a','#ff8c00','#00d4aa','#0a84ff','#ff375f','#f59e0b','#94a3b8',
+  '#bf5af2','#64d2ff','#ffd60a','#ff8c00','#66d4cf','#0a84ff','#ff375f','#f59e0b','#94a3b8',
 ];
 function VehicleClassChart({ avgAadt }: { avgAadt: number }) {
   const classes = SHARED_VC_CLASSES.map((c, i) => ({
@@ -161,7 +161,7 @@ function VehicleClassChart({ avgAadt }: { avgAadt: number }) {
       {/* ADT total / excl. motorcycles row */}
       <div style={{ display:'flex', gap:12, marginTop:8 }}>
         {[
-          { label:'ADT Total (all vehicles)', value: Math.round(avgAadt).toLocaleString(), color:'#00d4aa' },
+          { label:'ADT Total (all vehicles)', value: Math.round(avgAadt).toLocaleString(), color:'#66d4cf' },
           { label:'ADT excl. Motorcycles', value: Math.round(avgAadt * 0.62).toLocaleString(), color:'#0a84ff' },
           { label:'Heavy Vehicle share', value:'16%', sub:'L.Trk + M.Trk + H.Trk + Artic', color:'#ff375f' },
           { label:'85th %ile Speed', value:'82 km/h', sub:'paved roads', color:'#ffd60a' },
@@ -271,7 +271,7 @@ function SparklineArea({ avgAadt }: { avgAadt: number }) {
       <circle cx={xp(9).toFixed(1)} cy={yp(values[9]).toFixed(1)} r={2.5} fill={C.teal} />
       <text x={xp(0)}  y={H-2} fill="rgba(148,163,184,0.4)"  fontSize={7} textAnchor="middle">2016</text>
       <text x={xp(4)}  y={H-2} fill="rgba(255, 214, 10,0.45)"  fontSize={7} textAnchor="middle">2020</text>
-      <text x={xp(9)}  y={H-2} fill="rgba(0,212,170,0.55)"   fontSize={7} textAnchor="end">2025</text>
+      <text x={xp(9)}  y={H-2} fill="rgba(102, 212, 207,0.55)"   fontSize={7} textAnchor="end">2025</text>
     </svg>
   );
 }
@@ -390,7 +390,7 @@ function MapLegend({ mode }: { mode: MapMode }) {
 // ─── KPI glass card ───────────────────────────────────────────────────────────
 const KPI_GLASS: React.CSSProperties = {
   background: 'rgba(10,15,30,0.88)',
-  border: '1px solid rgba(99,102,241,0.12)',
+  border: '1px solid rgba(94, 92, 230,0.12)',
   borderRadius: 10, padding: '10px 12px',
 };
 
@@ -422,7 +422,7 @@ function LinkClassTable({ features, surfMap: _surfMap }: { features: PredFeature
     { label: 'Cars & Taxis',       short: 'Cars',    color: '#64d2ff', idx: 1, key: 'vc1' as const },
     { label: 'Minibus (Matatu)',   short: 'Minibus', color: '#ffd60a', idx: 2, key: 'vc2' as const },
     { label: 'Bus (Coach/Large)',  short: 'Bus',     color: '#ff8c00', idx: 3, key: 'vc3' as const },
-    { label: 'Light Truck',        short: 'L.Trk',  color: '#00d4aa', idx: 4, key: 'vc4' as const },
+    { label: 'Light Truck',        short: 'L.Trk',  color: '#66d4cf', idx: 4, key: 'vc4' as const },
     { label: 'Medium Truck',       short: 'M.Trk',  color: '#0a84ff', idx: 5, key: 'vc5' as const },
     { label: 'Heavy Truck',        short: 'H.Trk',  color: '#ff375f', idx: 6, key: 'vc6' as const },
     { label: 'Articulated Truck',  short: 'Artic',  color: '#f59e0b', idx: 7, key: 'vc7' as const },
@@ -523,7 +523,7 @@ function LinkClassTable({ features, surfMap: _surfMap }: { features: PredFeature
       {/* ── Speed & Overloading summary banner ── */}
       <div style={{ display:'flex', gap:10, marginBottom:12, flexWrap:'wrap' }}>
         {[
-          { label:'ADT (all vehicles)', value: networkTotals.grandTotal.toLocaleString(), sub:'vehicles/day · all stations', color:'#00d4aa' },
+          { label:'ADT (all vehicles)', value: networkTotals.grandTotal.toLocaleString(), sub:'vehicles/day · all stations', color:'#66d4cf' },
           { label:'ADT (excl. motorcycles)', value: networkTotals.exclMoto.toLocaleString(), sub:'motorised non-moto · all stations', color:'#0a84ff' },
           { label:'85th %ile Speed (paved)', value:'82 km/h', sub:'national average · TIS speed surveys', color:'#ffd60a' },
           { label:'Mean Speed (paved)', value:'68 km/h', sub:'all vehicle types combined', color:'#a3e635' },
@@ -532,7 +532,7 @@ function LinkClassTable({ features, surfMap: _surfMap }: { features: PredFeature
           { label:'Road Accidents (est.)', value:'~4,500/yr', sub:'national roads · UNRA / Police data', color:'#c084fc' },
         ].map(k => (
           <div key={k.label} style={{
-            background:'rgba(8,14,28,0.6)', border:`1px solid rgba(${k.color === '#00d4aa' ? '0,212,170' : k.color === '#0a84ff' ? '10, 132, 255' : k.color === '#ffd60a' ? '255, 214, 10' : k.color === '#a3e635' ? '163,230,53' : k.color === '#fb923c' ? '251,146,60' : k.color === '#f87171' ? '248,113,113' : '192,132,252'},0.22)`,
+            background:'rgba(8,14,28,0.6)', border:`1px solid rgba(${k.color === '#66d4cf' ? '102, 212, 207' : k.color === '#0a84ff' ? '10, 132, 255' : k.color === '#ffd60a' ? '255, 214, 10' : k.color === '#a3e635' ? '163,230,53' : k.color === '#fb923c' ? '251,146,60' : k.color === '#f87171' ? '248,113,113' : '192,132,252'},0.22)`,
             borderRadius:8, padding:'8px 12px', minWidth:140, flex:'1 1 140px',
           }}>
             <div style={{ fontSize:7, fontWeight:700, color:'rgba(148,163,184,0.5)', textTransform:'uppercase', letterSpacing:'.08em', marginBottom:3 }}>{k.label}</div>
@@ -544,7 +544,7 @@ function LinkClassTable({ features, surfMap: _surfMap }: { features: PredFeature
 
       <div style={{
         marginBottom: 10, padding: '9px 14px', borderRadius: 8,
-        background: 'rgba(0,212,170,0.06)', border: '1px solid rgba(0,212,170,0.18)',
+        background: 'rgba(102, 212, 207,0.06)', border: '1px solid rgba(102, 212, 207,0.18)',
         display: 'flex', alignItems: 'center', gap: 10, fontSize: 10.5, flexWrap: 'wrap',
       }}>
         <span style={{ color: C.teal, fontWeight: 800 }}>Network Total (now-cast): {networkTotals.grandTotal.toLocaleString()} vpd</span>
@@ -987,7 +987,7 @@ export default function TrafficSection() {
           <TrafficKpi label="TIS Stations" value={String(stations.length || 298)} unit="active" color="#bf5af2" />
           <TrafficKpi label="Proj Growth 2040" value={`+${kpis.growthRatio.toFixed(0)}`} unit="%" color="#30d158" />
           <TrafficKpi label="Daily Volume" value={Math.round(kpis.totalAdt/1000).toLocaleString()} unit="K veh/day" color="#ffd60a" />
-          <TrafficKpi label="Paved Monitored" value={kpis.pavingIndex.toFixed(0)} unit="%" color="#00d4aa" />
+          <TrafficKpi label="Paved Monitored" value={kpis.pavingIndex.toFixed(0)} unit="%" color="#66d4cf" />
         </div>
       )}
 {activeTab === 'map' &&
@@ -1001,7 +1001,7 @@ export default function TrafficSection() {
           height: 50, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 12,
           padding: '0 14px',
           background: 'rgba(10,15,30,0.95)',
-          borderBottom: '1px solid rgba(99,102,241,0.1)',
+          borderBottom: '1px solid rgba(94, 92, 230,0.1)',
         }}>
           {/* Symbology */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
@@ -1149,7 +1149,7 @@ export default function TrafficSection() {
           height: 54, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 12,
           padding: '0 16px',
           background: 'rgba(10,15,30,0.95)',
-          borderTop: '1px solid rgba(99,102,241,0.1)',
+          borderTop: '1px solid rgba(94, 92, 230,0.1)',
         }}>
           {/* Date + EAT */}
           <div style={{ flexShrink: 0, minWidth: 180 }}>
@@ -1258,26 +1258,26 @@ export default function TrafficSection() {
         width: 280, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 8,
         padding: '10px 10px 14px',
         background: 'rgba(10,15,30,0.92)',
-        borderRight: '1px solid rgba(99,102,241,0.1)',
+        borderRight: '1px solid rgba(94, 92, 230,0.1)',
         overflowY: 'auto',
       }}>
         {/* Header */}
         <div style={{ padding: '4px 2px 2px' }}>
           <div style={{
-            fontSize: 8, fontWeight: 800, color: 'rgba(0,212,170,0.55)',
+            fontSize: 8, fontWeight: 800, color: 'rgba(102, 212, 207,0.55)',
             letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 2,
           }}>Uganda National Roads · Department of National Roads</div>
           <div style={{
             fontSize: 14, fontWeight: 900, color: C.teal, lineHeight: 1.2,
-            textShadow: `0 0 18px rgba(0,212,170,0.45)`,
+            textShadow: `0 0 18px rgba(102, 212, 207,0.45)`,
           }}>National Traffic Prediction</div>
           <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.5)', marginTop: 3, lineHeight: 1.5 }}>
             Multiparametric Network Diagnostics
-            <br /><span style={{ color: 'rgba(0,212,170,0.65)' }}>{dateStr}</span>
+            <br /><span style={{ color: 'rgba(102, 212, 207,0.65)' }}>{dateStr}</span>
           </div>
           <div style={{
             marginTop: 8, height: 1,
-            background: 'linear-gradient(90deg,transparent,rgba(0,212,170,0.28),transparent)',
+            background: 'linear-gradient(90deg,transparent,rgba(102, 212, 207,0.28),transparent)',
           }} />
         </div>
 
@@ -1316,9 +1316,9 @@ export default function TrafficSection() {
         </div>
 
         {/* KPI 3 – Sparkline trajectory */}
-        <div style={{ ...KPI_GLASS, borderColor: 'rgba(0,212,170,0.12)' }}>
+        <div style={{ ...KPI_GLASS, borderColor: 'rgba(102, 212, 207,0.12)' }}>
           <div style={{
-            fontSize: 8, fontWeight: 700, color: 'rgba(0,212,170,0.45)',
+            fontSize: 8, fontWeight: 700, color: 'rgba(102, 212, 207,0.45)',
             textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6,
           }}>Network Trajectory Envelope (2016 – Now)</div>
           {kpis && <SparklineArea avgAadt={kpis.avgAadt} />}
@@ -1392,7 +1392,7 @@ export default function TrafficSection() {
             }}>
               <div style={{
                 height: '100%', width: `${kpis?.pavingIndex ?? 0}%`,
-                background: 'linear-gradient(90deg,#bf5af2,#00d4aa)', borderRadius: 4,
+                background: 'linear-gradient(90deg,#bf5af2,#66d4cf)', borderRadius: 4,
               }} />
             </div>
           </div>
@@ -1428,7 +1428,7 @@ export default function TrafficSection() {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 16 }}>
                   {[
                     { label: 'Network AADT (avg)', value: kpis ? `${Math.round(kpis.avgAadt).toLocaleString()}` : '-', color: '#64d2ff', sub: 'vehicles / day / link' },
-                    { label: 'Survey Nodes', value: features.length.toLocaleString(), color: '#00d4aa', sub: 'links with TIS count' },
+                    { label: 'Survey Nodes', value: features.length.toLocaleString(), color: '#66d4cf', sub: 'links with TIS count' },
                     { label: 'TIS Stations', value: tcsStations.length.toString(), color: '#ffd60a', sub: 'manual + ATC' },
                     { label: 'Growth 2025→2040', value: kpis ? `+${kpis.growthRatio.toFixed(0)}%` : '-', color: '#30d158', sub: 'ML forecast' },
                   ].map(k => (
