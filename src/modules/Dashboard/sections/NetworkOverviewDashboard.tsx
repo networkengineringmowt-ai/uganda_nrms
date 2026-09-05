@@ -134,7 +134,7 @@ export default function NetworkOverviewDashboard() {
 
       <ChartGrid cols="4">
         <ChartBox title="Surface Type" accent={DASH_C.teal} height={190}>
-          <PieChartTile data={SURF_LBL.map((n, i) => ({ name: n, value: SURF_KM[i] }))} colors={['#00f5ff', '#00aacc', '#ff6b35', '#c2532a']} />
+          <PieChartTile data={SURF_LBL.map((n, i) => ({ name: n, value: SURF_KM[i] }))} colors={['#64d2ff', '#00aacc', '#ff9f0a', '#c2532a']} />
         </ChartBox>
         <ChartBox title="Paved Network %" subtitle="target 40% by 2027" accent={DASH_C.cyan} height={190}>
           <GaugeC value={pavedPctRounded} target={40} color={DASH_C.cyan} />
