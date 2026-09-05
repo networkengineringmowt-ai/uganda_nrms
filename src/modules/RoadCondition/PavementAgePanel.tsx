@@ -23,7 +23,7 @@ interface Link {
 const DESIGN_LIFE = { paved: 20, unpaved: 7 };
 const BANDS = [
   { label: '0–5 yrs',   min: 0,  max: 5,        color: '#30d158' },
-  { label: '6–10 yrs',  min: 6,  max: 10,       color: '#00d4aa' },
+  { label: '6–10 yrs',  min: 6,  max: 10,       color: '#66d4cf' },
   { label: '11–15 yrs', min: 11, max: 15,       color: '#ffd60a' },
   { label: '16–20 yrs', min: 16, max: 20,       color: '#ff9f0a' },
   { label: '>20 yrs',   min: 21, max: Infinity, color: '#ff375f' },
@@ -147,7 +147,7 @@ export default function PavementAgePanel() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 10, marginBottom: 14 }}>
         {([
           ['Network avg age', stats.avg != null ? `${stats.avg.toFixed(1)} yrs` : '-', '#ff9f0a'],
-          ['Bituminous avg', stats.avgPaved != null ? `${stats.avgPaved.toFixed(1)} yrs` : '-', '#00d4aa'],
+          ['Bituminous avg', stats.avgPaved != null ? `${stats.avgPaved.toFixed(1)} yrs` : '-', '#66d4cf'],
           ['Unsealed avg', stats.avgUnpaved != null ? `${stats.avgUnpaved.toFixed(1)} yrs` : '-', '#ffd60a'],
           ['Beyond design life', `${stats.overPct.toFixed(1)}%`, '#ff375f'],
           ['km beyond life', `${Math.round(stats.overKm).toLocaleString()} km`, '#ff375f'],
@@ -245,7 +245,7 @@ export default function PavementAgePanel() {
                 ) },
               { key: 'remaining', label: 'Remaining Life', numeric: true, render: r => (
                   <NullableCell value={r.remaining}>
-                    <span style={{ color: r.remaining === 0 ? '#ff375f' : '#00d4aa' }}>
+                    <span style={{ color: r.remaining === 0 ? '#ff375f' : '#66d4cf' }}>
                       {r.remaining === 0 ? 'Exceeded' : `${r.remaining} yrs`}
                     </span>
                   </NullableCell>

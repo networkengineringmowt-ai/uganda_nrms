@@ -11,7 +11,7 @@ import { SortableFilterableTable, type STColumn } from '../../shared/SortableFil
 const C = {
   cyan: '#64d2ff', green: '#30d158', yellow: '#ffd60a',
   orange: '#ff9f0a', purple: '#bf5af2', blue: '#0a84ff',
-  red: '#ff453a', teal: '#00d4aa',
+  red: '#ff453a', teal: '#66d4cf',
 };
 
 interface MaintenanceProgramme {
