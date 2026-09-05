@@ -57,7 +57,7 @@ const NODES: Node[] = [
     detail:'scripts/etl/ingest_all_sources.py + upload_to_supabase.py - reads ROMDAS MDB/CSV/xlsx, FWD xlsx, Maintenance plans, HDM4 network, Committed Projects; upserts into the Supabase Unified DB (41 tables).' },
   { id:'proc-analytics',label:'Analytics Engine',    sub:'Regional · Budget · ESAL',   layer:2, x:250,  y:235,  w:155, h:68, color:'#8b5cf6',
     detail:'compute_overloading.py, compute_growth_factors.py, build_master.py - generate ESAL risk scores, AADT growth factors, condition summaries, and budget alignment KPIs written back to the Unified DB.' },
-  { id:'proc-build',   label:'Vite Build',            sub:'npm run build',              layer:2, x:250,  y:340,  w:155, h:68, color:'#5e5ce6',
+  { id:'proc-build',   label:'Vite Build',            sub:'npm run build',              layer:2, x:250,  y:340,  w:155, h:68, color:'#6366f1',
     detail:'npm run build -- --outDir C:/tmp/vite_out. Produces hashed asset bundles. Runs after each commit to main. Output copied to /c/tmp/ghdep for deployment.' },
 
   // ── L3 - Agents (x=470) ───────────────────────────────────────────────────
@@ -69,7 +69,7 @@ const NODES: Node[] = [
     detail:'DataAuditEngine.ts - admin-only view. Checks which links have ROMDAS data, FWD, traffic counts, bridge inspections. Flags links with >3-year data gap.' },
 
   // ── L4 - Outputs (x=680) ──────────────────────────────────────────────────
-  { id:'out-pages',    label:'GitHub Pages Deploy',   sub:'gh-pages branch',            layer:4, x:680,  y:130,  w:160, h:68, color:'#5e5ce6',
+  { id:'out-pages',    label:'GitHub Pages Deploy',   sub:'gh-pages branch',            layer:4, x:680,  y:130,  w:160, h:68, color:'#6366f1',
     detail:'git push --force origin HEAD:gh-pages from /c/tmp/ghdep worktree. Cache-safe: old hashed bundles retained. Live URL: https://priscananjehe1996.github.io/uganda-roads/' },
   { id:'out-json',     label:'Public JSON Export',    sub:'central_network_db.json',    layer:4, x:680,  y:235,  w:160, h:68, color:'#14b8a6',
     detail:'export_unified_data.py writes public/data/*.json - per-link IRI summaries, table counts, AADT, ML metrics for fast client-side reads. A cached mirror of the Unified DB.' },
@@ -85,29 +85,29 @@ const NODES: Node[] = [
     detail:'Rule-based decision logic: maintenance treatment selection by IRI band, intervention timing, overloading enforcement triggers, and road-reserve permit suitability (MOWT Form 2 Part E: Suitable / Not Suitable). Drives recommendations surfaced in every downstream section.' },
 
   // ── L6 - Data Hub (x=1130) ────────────────────────────────────────────────
-  { id:'tbl-hub',      label:'Tabular Summaries Hub', sub:'100 cited tables · Data Hub', layer:6, x:1130, y:355,  w:195, h:88, color:'#64d2ff',
+  { id:'tbl-hub',      label:'Tabular Summaries Hub', sub:'100 cited tables · Data Hub', layer:6, x:1130, y:355,  w:195, h:88, color:'#00f5ff',
     detail:'src/modules/Sources/TabularSummaries.tsx - 100 tables sourced from the Unified DB plus official UNRA/MoWT/World Bank documents. Every table carries a source citation (tbl-001 … tbl-100) and is referenced across ALL platform sections via SourceTableButton. Now reads everything from the Supabase Unified DB.' },
 
   // ── L7 - Platform Sections (x=1390) ───────────────────────────────────────
   { id:'sec-rms',      label:'RMS - Road Network',    sub:'tbl 001–005 · road_links',   layer:7, x:1390, y: 30,  w:180, h:50, color:'#00e5ff',
     detail:'RoadNetworkView.tsx / RMS - 1,014 national-road links, classes A/B/C/M. tbl-001-005 (inventory, length by class/region, surface type). Source: road_links + road_link_condition.' },
-  { id:'sec-reserve',  label:'Road Reserve Mgmt',     sub:'road_reserve_* · tbl 047–050',layer:7, x:1390, y: 92,  w:180, h:50, color:'#66d4cf',
+  { id:'sec-reserve',  label:'Road Reserve Mgmt',     sub:'road_reserve_* · tbl 047–050',layer:7, x:1390, y: 92,  w:180, h:50, color:'#00d4aa',
     detail:'RoadReserveSection.tsx - gazette & legal status, encroachment register, reserve mapping, and Road Reserve Usage permits (MOWT Form 2). Source: road_reserve_records / _encroachments / _gazette / _applications / _applicants.' },
   { id:'sec-pms',      label:'PMS - Condition',       sub:'tbl 006, 007, 038',          layer:7, x:1390, y:154,  w:180, h:50, color:'#fb923c',
     detail:'RoadConditionView.tsx - IRI/condition/urgency map. tbl-006 (IRI by class), tbl-007 (paved condition 2024), tbl-038 (ML predictions).' },
-  { id:'sec-bms',      label:'BMS - Bridges',         sub:'tbl 011, 012, 072',          layer:7, x:1390, y:216,  w:180, h:50, color:'#0a84ff',
+  { id:'sec-bms',      label:'BMS - Bridges',         sub:'tbl 011, 012, 072',          layer:7, x:1390, y:216,  w:180, h:50, color:'#4d9fff',
     detail:'BMSSection.tsx - 546 bridges. tbl-011 (bridge inventory), tbl-012 (condition ratings 2024), tbl-072 (priority ranking). Source: structures + inspections.' },
-  { id:'sec-tis',      label:'TIS - Traffic',         sub:'tbl 008–010, 069',           layer:7, x:1390, y:278,  w:180, h:50, color:'#ffd60a',
+  { id:'sec-tis',      label:'TIS - Traffic',         sub:'tbl 008–010, 069',           layer:7, x:1390, y:278,  w:180, h:50, color:'#ffd23f',
     detail:'TrafficSection.tsx - AADT map, ATC dashboard, growth projections. tbl-008 (AADT by link), tbl-009 (vehicle composition), tbl-010 (ATC hourly), tbl-069 (TIS stations).' },
-  { id:'sec-ndpiv',    label:'NDPIV Projects',        sub:'tbl 014, 086',               layer:7, x:1390, y:340,  w:180, h:50, color:'#bf5af2',
+  { id:'sec-ndpiv',    label:'NDPIV Projects',        sub:'tbl 014, 086',               layer:7, x:1390, y:340,  w:180, h:50, color:'#b967ff',
     detail:'NdpivSection.tsx - NDP IV project map and table. tbl-014 (NDPIV project list), tbl-086 (funding allocations FY2025/26).' },
-  { id:'sec-oprc',     label:'OPRC Lots',             sub:'tbl 013, 085',               layer:7, x:1390, y:402,  w:180, h:50, color:'#30d158',
+  { id:'sec-oprc',     label:'OPRC Lots',             sub:'tbl 013, 085',               layer:7, x:1390, y:402,  w:180, h:50, color:'#00ff88',
     detail:'OprcSection.tsx - 6 OPRC lots. tbl-013 (contract details), tbl-085 (performance monitoring).' },
   { id:'sec-overload', label:'Overloading / ESAL',    sub:'tbl 023–028',                layer:7, x:1390, y:464,  w:180, h:50, color:'#ef4444',
     detail:'OverloadingSection.tsx - 1,020 links scored. tbl-023-028 (axle load distributions, ESAL factors, overloading frequency, risk index). Source: overloading_by_link.' },
   { id:'sec-lcm',      label:'Lifecycle Mgmt',        sub:'tbl 041–046',                layer:7, x:1390, y:526,  w:180, h:50, color:'#34d399',
     detail:'LifecycleSection.tsx - IRI deterioration curves, intervention history, LCCA. tbl-041-046. Source: lifecycle_links + lifecycle_interventions.' },
-  { id:'sec-budget',   label:'Budget & Maintenance',  sub:'tbl 020, 021, 074',          layer:7, x:1390, y:588,  w:180, h:50, color:'#ff375f',
+  { id:'sec-budget',   label:'Budget & Maintenance',  sub:'tbl 020, 021, 074',          layer:7, x:1390, y:588,  w:180, h:50, color:'#ff2d78',
     detail:'BudgetSection.tsx - maintenance expenditure, MTEF planning. tbl-020 (maintenance budget by FY), tbl-021 (development budget), tbl-074 (M&R needs). Source: budget_fy_summary + budget_alignment.' },
   { id:'sec-projects', label:'Projects & Works',      sub:'tbl 015–019',                layer:7, x:1390, y:650,  w:180, h:50, color:'#f472b6',
     detail:'ProjectTracker - execution tracking (Gantt/Kanban), physical vs financial progress. tbl-015-019. Source: project_tracker + projects.' },
