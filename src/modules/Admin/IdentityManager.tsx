@@ -15,10 +15,10 @@ import { SortableFilterableTable, type STColumn } from '../../shared/SortableFil
 // Vivid platform palette (--neon-* in index.css) - reused rather than the
 // duller tailwind-style hexes this module used before.
 const STATUS_META: Record<string, { label: string; color: string }> = {
-  pending:  { label: 'Pending Approval', color: '#ffd60a' },
-  active:   { label: 'Active',           color: '#30d158' },
-  revoked:  { label: 'Revoked',          color: '#ff375f' },
-  rejected: { label: 'Rejected',         color: '#ff453a' },
+  pending:  { label: 'Pending Approval', color: '#ffd23f' },
+  active:   { label: 'Active',           color: '#00ff88' },
+  revoked:  { label: 'Revoked',          color: '#ff2d78' },
+  rejected: { label: 'Rejected',         color: '#ff3366' },
 };
 
 export default function IdentityManager() {
@@ -53,7 +53,7 @@ export default function IdentityManager() {
     return !n || `${r.email} ${r.name ?? ''} ${r.role ?? ''}`.toLowerCase().includes(n);
   }), [rows, filter, q]);
 
-  const CARD: React.CSSProperties = { background: 'rgba(8,14,28,0.7)', border: '1px solid rgba(10, 132, 255,0.14)', borderRadius: 10, padding: '12px 14px' };
+  const CARD: React.CSSProperties = { background: 'rgba(8,14,28,0.7)', border: '1px solid rgba(77, 159, 255,0.14)', borderRadius: 10, padding: '12px 14px' };
   const btn = (bg: string): React.CSSProperties => ({ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 10px', borderRadius: 7, fontSize: 10.5, fontWeight: 700, cursor: 'pointer', border: `1px solid ${bg}55`, background: `${bg}1a`, color: bg });
 
   const columns: STColumn<DirEntry>[] = [
@@ -81,17 +81,17 @@ export default function IdentityManager() {
     { key: 'email', label: 'Actions', render: r => (
         <div style={{ display: 'flex', gap: 6 }}>
           {r.status === 'pending' && (<>
-            <button disabled={!!busy} onClick={() => act(r.email, 'approve', r.role)} style={btn('#30d158')}><UserCheck size={12} /> Approve</button>
-            <button disabled={!!busy} onClick={() => act(r.email, 'reject')} style={btn('#ff453a')}><UserX size={12} /> Reject</button>
+            <button disabled={!!busy} onClick={() => act(r.email, 'approve', r.role)} style={btn('#00ff88')}><UserCheck size={12} /> Approve</button>
+            <button disabled={!!busy} onClick={() => act(r.email, 'reject')} style={btn('#ff3366')}><UserX size={12} /> Reject</button>
           </>)}
           {r.status === 'active' && r.decidedBy !== 'roster (auto-accepted)' && (
-            <button disabled={!!busy} onClick={() => act(r.email, 'revoke')} style={btn('#ff375f')}><ShieldAlert size={12} /> Revoke</button>
+            <button disabled={!!busy} onClick={() => act(r.email, 'revoke')} style={btn('#ff2d78')}><ShieldAlert size={12} /> Revoke</button>
           )}
           {r.status === 'active' && r.decidedBy === 'roster (auto-accepted)' && (
             <span style={{ fontSize: 10, color: 'rgba(148,163,184,0.45)' }}>Roster · auto-accepted</span>
           )}
           {(r.status === 'revoked' || r.status === 'rejected') && (
-            <button disabled={!!busy} onClick={() => act(r.email, 'restore', r.role)} style={btn('#0a84ff')}><RotateCcw size={12} /> Restore</button>
+            <button disabled={!!busy} onClick={() => act(r.email, 'restore', r.role)} style={btn('#4d9fff')}><RotateCcw size={12} /> Restore</button>
           )}
         </div>
       ) },
@@ -107,14 +107,14 @@ export default function IdentityManager() {
             Stored in the G: Drive directory (directory/users.json) via the data-entry server.
           </div>
         </div>
-        <button onClick={() => void load()} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 11px', cursor: 'pointer', background: 'rgba(10, 132, 255,0.12)', border: '1px solid rgba(10, 132, 255,0.3)', borderRadius: 7, color: '#0a84ff', fontSize: 11, fontWeight: 700 }}>
+        <button onClick={() => void load()} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 11px', cursor: 'pointer', background: 'rgba(77, 159, 255,0.12)', border: '1px solid rgba(77, 159, 255,0.3)', borderRadius: 7, color: '#4d9fff', fontSize: 11, fontWeight: 700 }}>
           <RefreshCw size={12} className={loading ? 'animate-spin' : ''} /> Refresh
         </button>
       </div>
 
       {/* Counters */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px,1fr))', gap: 10, marginBottom: 14 }}>
-        {([['Pending', counts.pending, '#ffd60a'], ['Active', counts.active, '#30d158'], ['Revoked', counts.revoked, '#ff375f'], ['Rejected', counts.rejected, '#ff453a']] as Array<[string, number, string]>).map(([l, n, c]) => (
+        {([['Pending', counts.pending, '#ffd23f'], ['Active', counts.active, '#00ff88'], ['Revoked', counts.revoked, '#ff2d78'], ['Rejected', counts.rejected, '#ff3366']] as Array<[string, number, string]>).map(([l, n, c]) => (
           <div key={l} style={CARD}>
             <div style={{ fontSize: 22, fontWeight: 900, color: c, lineHeight: 1 }}>{n}</div>
             <div style={{ fontSize: 9.5, color: 'rgba(148,163,184,0.65)', marginTop: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{l}</div>
@@ -125,9 +125,9 @@ export default function IdentityManager() {
       {/* Controls */}
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 10, flexWrap: 'wrap' }}>
         {([['all', 'All'], ['pending', 'Pending'], ['active', 'Active'], ['revoked', 'Revoked']] as const).map(([f, label]) => (
-          <button key={f} onClick={() => setFilter(f)} style={{ padding: '4px 11px', borderRadius: 999, fontSize: 10, fontWeight: 800, cursor: 'pointer', letterSpacing: '0.02em', background: filter === f ? 'rgba(10, 132, 255,0.18)' : 'rgba(255,255,255,0.03)', border: `1px solid ${filter === f ? '#0a84ff' : 'rgba(255,255,255,0.1)'}`, color: filter === f ? '#0a84ff' : 'rgba(148,163,184,0.7)' }}>{label}</button>
+          <button key={f} onClick={() => setFilter(f)} style={{ padding: '4px 11px', borderRadius: 999, fontSize: 10, fontWeight: 800, cursor: 'pointer', letterSpacing: '0.02em', background: filter === f ? 'rgba(77, 159, 255,0.18)' : 'rgba(255,255,255,0.03)', border: `1px solid ${filter === f ? '#4d9fff' : 'rgba(255,255,255,0.1)'}`, color: filter === f ? '#4d9fff' : 'rgba(148,163,184,0.7)' }}>{label}</button>
         ))}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 'auto', background: 'rgba(10,16,30,0.9)', border: '1px solid rgba(10, 132, 255,0.25)', borderRadius: 7, padding: '5px 10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 'auto', background: 'rgba(10,16,30,0.9)', border: '1px solid rgba(77, 159, 255,0.25)', borderRadius: 7, padding: '5px 10px' }}>
           <Search size={12} style={{ color: 'rgba(148,163,184,0.6)' }} />
           <input value={q} onChange={e => setQ(e.target.value)} placeholder="Search email / name…" style={{ background: 'transparent', border: 'none', outline: 'none', color: '#e2e8f0', fontSize: 11.5, width: 180 }} />
         </div>
@@ -138,7 +138,7 @@ export default function IdentityManager() {
         <SortableFilterableTable
           columns={columns}
           rows={filtered}
-          accent="#0a84ff"
+          accent="#4d9fff"
           exportName="identity-directory"
           initialSort="name"
           emptyText="No users match the current filter."
