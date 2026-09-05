@@ -19,9 +19,9 @@ import SourceTableButton from '../../shared/SourceTableButton';
 
 // ─── Neon colours ─────────────────────────────────────────────────────────────
 const N = {
-  cyan:   '#00f5ff', green: '#00ff88', orange: '#ff6b35',
-  purple: '#b967ff', yellow:'#ffd23f', pink:  '#ff2d78',
-  blue:   '#4d9fff', teal:  '#00d4aa',
+  cyan:   '#64d2ff', green: '#30d158', orange: '#ff9f0a',
+  purple: '#bf5af2', yellow:'#ffd60a', pink:  '#ff375f',
+  blue:   '#0a84ff', teal:  '#00d4aa',
 };
 
 const COND_COLOR: Record<number,string> = {
@@ -194,9 +194,9 @@ export default function Dashboard() {
 
       {/* ── HEADER ──────────────────────────────────────────────────────── */}
       <div>
-        <div style={{fontSize:9,fontWeight:800,color:'rgba(0,245,255,0.4)',letterSpacing:'0.18em',textTransform:'uppercase'}}>
+        <div style={{fontSize:9,fontWeight:800,color:'rgba(100, 210, 255,0.4)',letterSpacing:'0.18em',textTransform:'uppercase'}}>
           BRIDGE MANAGEMENT SYSTEM</div>
-        <div style={{fontSize:18,fontWeight:900,color:N.cyan,textShadow:`0 0 18px rgba(0,245,255,0.45)`,letterSpacing:'0.02em'}}>
+        <div style={{fontSize:18,fontWeight:900,color:N.cyan,textShadow:`0 0 18px rgba(100, 210, 255,0.45)`,letterSpacing:'0.02em'}}>
           BMS Operations Dashboard</div>
         <div style={{display:'flex',alignItems:'center',gap:8,marginTop:2}}>
           <span style={{fontSize:10,color:'rgba(148,163,184,0.6)'}}>

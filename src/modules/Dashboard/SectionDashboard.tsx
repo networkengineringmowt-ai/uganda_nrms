@@ -181,7 +181,7 @@ function SectionSubTabs({ sectionId, accent }: { sectionId: string; accent: stri
         {tabs.map(t => (
           <button key={t.id} onClick={() => setTab(t.id)}
             style={{ padding: '9px 16px', fontSize: 11, fontWeight: 800, letterSpacing: '0.07em',
-              background: tab === t.id ? 'rgba(0,245,255,0.06)' : 'transparent',
+              background: tab === t.id ? 'rgba(100, 210, 255,0.06)' : 'transparent',
               border: 'none', borderBottom: tab === t.id ? '2px solid ' + accent : '2px solid transparent',
               cursor: 'pointer', fontFamily: 'inherit',
               color: tab === t.id ? accent : 'rgba(148,163,184,0.7)', borderRadius: '8px 8px 0 0' }}>

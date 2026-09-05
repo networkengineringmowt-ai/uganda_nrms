@@ -22,8 +22,8 @@ const THEME_FOR: Record<string, ThemeId> = {
 };
 // Canonical risk/condition scale (matches src/utils/helpers.ts RISK_SCALE_STOPS)
 const RISK_CLR: Record<string, string> = { Critical: '#ef4444', High: '#f97316', Medium: '#84cc16', Low: '#22c55e' };
-const CLASS_CLR: Record<string, string> = { A: '#00f5ff', B: '#00ff88', C: '#ffd23f', M: '#94a3b8' };
-const REGION_CLR: Record<string, string> = { Central: '#00f5ff', Eastern: '#ff6b35', Southern: '#ffd23f', Western: '#00ff88', Northern: '#b967ff', 'North Eastern': '#ff2d78' };
+const CLASS_CLR: Record<string, string> = { A: '#64d2ff', B: '#30d158', C: '#ffd60a', M: '#94a3b8' };
+const REGION_CLR: Record<string, string> = { Central: '#64d2ff', Eastern: '#ff9f0a', Southern: '#ffd60a', Western: '#30d158', Northern: '#bf5af2', 'North Eastern': '#ff375f' };
 const aadtClr = (v: number) => v >= 15000 ? '#ef4444' : v >= 5000 ? '#f97316' : v >= 1000 ? '#84cc16' : '#22c55e';
 
 function colorFor(theme: ThemeId, p: Record<string, unknown>): string {
@@ -33,10 +33,10 @@ function colorFor(theme: ThemeId, p: Record<string, unknown>): string {
   return aadtClr(Number(p.aadt_predicted ?? 0));
 }
 const LEGEND_ITEMS: Record<ThemeId, [string, string][]> = {
-  class: [['Class A', '#00f5ff'], ['Class B', '#00ff88'], ['Class C', '#ffd23f'], ['Unclassified', '#94a3b8']],
+  class: [['Class A', '#64d2ff'], ['Class B', '#30d158'], ['Class C', '#ffd60a'], ['Unclassified', '#94a3b8']],
   risk: [['Critical', '#ef4444'], ['High', '#f97316'], ['Medium', '#84cc16'], ['Low', '#22c55e']],
   aadt: [['15k+ AADT', '#ef4444'], ['5k-15k', '#f97316'], ['1k-5k', '#84cc16'], ['under 1k', '#22c55e']],
-  region: [['Central', '#00f5ff'], ['Eastern', '#ff6b35'], ['Southern', '#ffd23f'], ['Western', '#00ff88'], ['Northern', '#b967ff'], ['North Eastern', '#ff2d78']],
+  region: [['Central', '#64d2ff'], ['Eastern', '#ff9f0a'], ['Southern', '#ffd60a'], ['Western', '#30d158'], ['Northern', '#bf5af2'], ['North Eastern', '#ff375f']],
 };
 const TITLE_FOR: Record<string, string> = {
   rms: 'Network by Road Class', pms: 'Network by Condition Risk', tis: 'Network by Traffic Band + Stations',
@@ -123,7 +123,7 @@ function DetailPane({ selection, accent, onClose }: { selection: Selection; acce
   );
 }
 
-export function SectionMap({ sectionId, accent = '#00f5ff', fill = false }: { sectionId: string; accent?: string; fill?: boolean }) {
+export function SectionMap({ sectionId, accent = '#64d2ff', fill = false }: { sectionId: string; accent?: string; fill?: boolean }) {
   const [gj, setGj] = useState<any>(null);
   const [st, setSt] = useState<any[]>([]);
   const [selection, setSelection] = useState<Selection>(null);
