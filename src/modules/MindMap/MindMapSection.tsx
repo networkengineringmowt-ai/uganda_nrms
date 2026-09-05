@@ -85,7 +85,7 @@ const NODES: Node[] = [
     detail:'Rule-based decision logic: maintenance treatment selection by IRI band, intervention timing, overloading enforcement triggers, and road-reserve permit suitability (MOWT Form 2 Part E: Suitable / Not Suitable). Drives recommendations surfaced in every downstream section.' },
 
   // ── L6 - Data Hub (x=1130) ────────────────────────────────────────────────
-  { id:'tbl-hub',      label:'Tabular Summaries Hub', sub:'100 cited tables · Data Hub', layer:6, x:1130, y:355,  w:195, h:88, color:'#00f5ff',
+  { id:'tbl-hub',      label:'Tabular Summaries Hub', sub:'100 cited tables · Data Hub', layer:6, x:1130, y:355,  w:195, h:88, color:'#64d2ff',
     detail:'src/modules/Sources/TabularSummaries.tsx - 100 tables sourced from the Unified DB plus official UNRA/MoWT/World Bank documents. Every table carries a source citation (tbl-001 … tbl-100) and is referenced across ALL platform sections via SourceTableButton. Now reads everything from the Supabase Unified DB.' },
 
   // ── L7 - Platform Sections (x=1390) ───────────────────────────────────────
@@ -95,19 +95,19 @@ const NODES: Node[] = [
     detail:'RoadReserveSection.tsx - gazette & legal status, encroachment register, reserve mapping, and Road Reserve Usage permits (MOWT Form 2). Source: road_reserve_records / _encroachments / _gazette / _applications / _applicants.' },
   { id:'sec-pms',      label:'PMS - Condition',       sub:'tbl 006, 007, 038',          layer:7, x:1390, y:154,  w:180, h:50, color:'#fb923c',
     detail:'RoadConditionView.tsx - IRI/condition/urgency map. tbl-006 (IRI by class), tbl-007 (paved condition 2024), tbl-038 (ML predictions).' },
-  { id:'sec-bms',      label:'BMS - Bridges',         sub:'tbl 011, 012, 072',          layer:7, x:1390, y:216,  w:180, h:50, color:'#4d9fff',
+  { id:'sec-bms',      label:'BMS - Bridges',         sub:'tbl 011, 012, 072',          layer:7, x:1390, y:216,  w:180, h:50, color:'#0a84ff',
     detail:'BMSSection.tsx - 546 bridges. tbl-011 (bridge inventory), tbl-012 (condition ratings 2024), tbl-072 (priority ranking). Source: structures + inspections.' },
-  { id:'sec-tis',      label:'TIS - Traffic',         sub:'tbl 008–010, 069',           layer:7, x:1390, y:278,  w:180, h:50, color:'#ffd23f',
+  { id:'sec-tis',      label:'TIS - Traffic',         sub:'tbl 008–010, 069',           layer:7, x:1390, y:278,  w:180, h:50, color:'#ffd60a',
     detail:'TrafficSection.tsx - AADT map, ATC dashboard, growth projections. tbl-008 (AADT by link), tbl-009 (vehicle composition), tbl-010 (ATC hourly), tbl-069 (TIS stations).' },
-  { id:'sec-ndpiv',    label:'NDPIV Projects',        sub:'tbl 014, 086',               layer:7, x:1390, y:340,  w:180, h:50, color:'#b967ff',
+  { id:'sec-ndpiv',    label:'NDPIV Projects',        sub:'tbl 014, 086',               layer:7, x:1390, y:340,  w:180, h:50, color:'#bf5af2',
     detail:'NdpivSection.tsx - NDP IV project map and table. tbl-014 (NDPIV project list), tbl-086 (funding allocations FY2025/26).' },
-  { id:'sec-oprc',     label:'OPRC Lots',             sub:'tbl 013, 085',               layer:7, x:1390, y:402,  w:180, h:50, color:'#00ff88',
+  { id:'sec-oprc',     label:'OPRC Lots',             sub:'tbl 013, 085',               layer:7, x:1390, y:402,  w:180, h:50, color:'#30d158',
     detail:'OprcSection.tsx - 6 OPRC lots. tbl-013 (contract details), tbl-085 (performance monitoring).' },
   { id:'sec-overload', label:'Overloading / ESAL',    sub:'tbl 023–028',                layer:7, x:1390, y:464,  w:180, h:50, color:'#ef4444',
     detail:'OverloadingSection.tsx - 1,020 links scored. tbl-023-028 (axle load distributions, ESAL factors, overloading frequency, risk index). Source: overloading_by_link.' },
   { id:'sec-lcm',      label:'Lifecycle Mgmt',        sub:'tbl 041–046',                layer:7, x:1390, y:526,  w:180, h:50, color:'#34d399',
     detail:'LifecycleSection.tsx - IRI deterioration curves, intervention history, LCCA. tbl-041-046. Source: lifecycle_links + lifecycle_interventions.' },
-  { id:'sec-budget',   label:'Budget & Maintenance',  sub:'tbl 020, 021, 074',          layer:7, x:1390, y:588,  w:180, h:50, color:'#ff2d78',
+  { id:'sec-budget',   label:'Budget & Maintenance',  sub:'tbl 020, 021, 074',          layer:7, x:1390, y:588,  w:180, h:50, color:'#ff375f',
     detail:'BudgetSection.tsx - maintenance expenditure, MTEF planning. tbl-020 (maintenance budget by FY), tbl-021 (development budget), tbl-074 (M&R needs). Source: budget_fy_summary + budget_alignment.' },
   { id:'sec-projects', label:'Projects & Works',      sub:'tbl 015–019',                layer:7, x:1390, y:650,  w:180, h:50, color:'#f472b6',
     detail:'ProjectTracker - execution tracking (Gantt/Kanban), physical vs financial progress. tbl-015-019. Source: project_tracker + projects.' },
