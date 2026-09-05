@@ -12,7 +12,7 @@ import { SortableFilterableTable, type STColumn } from '../../shared/SortableFil
 const C = {
   purple: '#bf5af2', cyan: '#64d2ff', green: '#30d158',
   blue: '#0a84ff', yellow: '#ffd60a', orange: '#ff9f0a',
-  pink: '#ff375f', teal: '#00d4aa', red: '#ff453a',
+  pink: '#ff375f', teal: '#66d4cf', red: '#ff453a',
 };
 
 const card = (accent: string) => ({
