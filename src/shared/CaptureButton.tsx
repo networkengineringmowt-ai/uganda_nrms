@@ -15,7 +15,7 @@ interface Props {
   accent?: string;
 }
 
-export function CaptureButton({ capture = 'condition', label = 'field data', accent = '#66d4cf' }: Props) {
+export function CaptureButton({ capture = 'condition', label = 'field data', accent = '#00d4aa' }: Props) {
   const { dispatch } = useBMS();
   const { user } = useAuth();
   // super level is strictly view-and-reports - hide every entry point to input
@@ -28,7 +28,7 @@ export function CaptureButton({ capture = 'condition', label = 'field data', acc
     <button onClick={open} style={{
       display: 'flex', alignItems: 'center', gap: 12, width: '100%',
       padding: '14px 18px', marginBottom: 16, cursor: 'pointer', textAlign: 'left',
-      background: `linear-gradient(135deg, rgba(102, 212, 207,0.14), rgba(100, 210, 255,0.05))`,
+      background: `linear-gradient(135deg, rgba(0, 212, 170,0.14), rgba(0, 245, 255,0.05))`,
       border: `1px solid ${accent}66`, borderRadius: 12,
       boxShadow: `0 0 22px ${accent}1f`,
     }}>

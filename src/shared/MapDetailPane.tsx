@@ -40,7 +40,7 @@ export default function MapDetailPane({
   selectedTitle   = 'Selected Feature',
   onClose,
   width           = 340,
-  accent          = '#0a84ff',
+  accent          = '#4d9fff',
 }: MapDetailPaneProps) {
   const hasSelection = selectedFeature != null;
 
@@ -125,7 +125,7 @@ export default function MapDetailPane({
 // ── Helper card components used by section panes ─────────────────────────────
 
 export function StatCard({
-  label, value, unit, color = '#0a84ff', sub,
+  label, value, unit, color = '#4d9fff', sub,
 }: { label: string; value: string | number; unit?: string; color?: string; sub?: string }) {
   return (
     <div style={{
@@ -165,7 +165,7 @@ export function AttributeRow({
   );
 }
 
-export function SectionHeader({ title, accent = '#0a84ff' }: { title: string; accent?: string }) {
+export function SectionHeader({ title, accent = '#4d9fff' }: { title: string; accent?: string }) {
   return (
     <div style={{
       fontSize: 9, fontWeight: 800, letterSpacing: '0.1em',

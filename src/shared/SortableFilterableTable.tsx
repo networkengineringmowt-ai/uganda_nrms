@@ -45,7 +45,7 @@ interface Props<T> {
 }
 
 export function SortableFilterableTable<T extends Record<string, any>>({
-  columns, rows, accent = '#0a84ff', exportName = 'table-export',
+  columns, rows, accent = '#4d9fff', exportName = 'table-export',
   initialSort, emptyText = 'No rows match the current filter.', rowStyle,
 }: Props<T>) {
   const { sortKey, sortDir, cycleSort } = useSortableColumns(initialSort ?? null);
@@ -125,7 +125,7 @@ export function SortableFilterableTable<T extends Record<string, any>>({
         <button onClick={doExcelExport} disabled={xlsBusy} title="Excel with live formulas + column-note comments" style={{
           display: 'flex', alignItems: 'center', gap: 6, padding: '6px 13px',
           borderRadius: 7, fontSize: 10.5, fontWeight: 800, cursor: xlsBusy ? 'default' : 'pointer',
-          background: '#30d1581a', border: '1px solid #30d15855', color: '#30d158',
+          background: '#00ff881a', border: '1px solid #00ff8855', color: '#00ff88',
           opacity: xlsBusy ? 0.6 : 1,
         }}>
           <FileSpreadsheet size={12} /> {xlsBusy ? 'Generating…' : 'Excel'}

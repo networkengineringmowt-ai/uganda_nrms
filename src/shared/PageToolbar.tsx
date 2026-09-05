@@ -45,7 +45,7 @@ import {
 import { subscribeActiveSubTab, getActiveSubTab } from './activeSubTabStore';
 
 const CONTENT_PANE_ID = 'nrms-content-pane';
-const ACCENT = '#64d2ff';
+const ACCENT = '#00f5ff';
 const USED_KEY = 'dnr_toolbar_used';
 const HINT_KEY = 'dnr_toolbar_hint_seen';
 
@@ -600,7 +600,7 @@ export default function PageToolbar() {
               style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 width: 34, height: 34, borderRadius: '50%', flexShrink: 0,
-                background: expanded ? 'rgba(100, 210, 255,0.14)' : 'rgba(10,10,15,0.88)',
+                background: expanded ? 'rgba(0, 245, 255,0.14)' : 'rgba(10,10,15,0.88)',
                 border: `1px solid ${expanded ? ACCENT + '70' : 'rgba(255,255,255,0.14)'}`,
                 color: expanded ? ACCENT : 'rgba(226,234,244,0.85)',
                 cursor: 'pointer', backdropFilter: 'blur(10px)',
@@ -694,7 +694,7 @@ export default function PageToolbar() {
         }
 
         .pt-seg-btn:not(:disabled):hover {
-          background: rgba(100, 210, 255,0.10) !important;
+          background: rgba(0, 245, 255,0.10) !important;
           border-color: ${ACCENT}55 !important;
           transform: translateY(-1px);
         }
@@ -709,7 +709,7 @@ export default function PageToolbar() {
         }
 
         .pt-export-item:not(:disabled):hover {
-          background: rgba(100, 210, 255,0.08) !important;
+          background: rgba(0, 245, 255,0.08) !important;
           border-color: ${ACCENT}40 !important;
           box-shadow: 0 0 0 1px ${ACCENT}22, 0 0 14px ${ACCENT}1a;
         }

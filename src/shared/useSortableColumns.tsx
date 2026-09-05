@@ -66,7 +66,7 @@ export function useSortedRows<T extends Record<string, any>>(
 
 /** ↕ neutral / ↑ asc / ↓ desc - white when inactive, amber when the column drives the sort. */
 export function SortArrow({ active, dir }: { active: boolean; dir: SortDir }) {
-  const color = active && dir ? '#ffd60a' : 'rgba(255,255,255,0.55)';
+  const color = active && dir ? '#ffd23f' : 'rgba(255,255,255,0.55)';
   const glyph = active && dir === 'asc' ? '↑' : active && dir === 'desc' ? '↓' : '↕';
   return (
     // data-export-strip: the generic platform-wide table scanner
@@ -102,7 +102,7 @@ export function SortableTh({
         padding: '9px 12px', textAlign: align, fontSize: 9.5, fontWeight: 800,
         textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap',
         cursor: 'pointer', userSelect: 'none',
-        color: active ? '#ffd60a' : 'rgba(148,163,184,0.8)',
+        color: active ? '#ffd23f' : 'rgba(148,163,184,0.8)',
         ...style,
       }}
     >

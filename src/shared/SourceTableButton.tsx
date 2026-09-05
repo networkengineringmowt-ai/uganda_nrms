@@ -52,8 +52,8 @@ export function SourceTableButton({ anchor, label, inline = false, size = 'sm' }
         display:      'inline-flex',
         alignItems:   'center',
         gap:          4,
-        background:   'rgba(100, 210, 255,0.06)',
-        border:       '1px solid rgba(100, 210, 255,0.22)',
+        background:   'rgba(0, 245, 255,0.06)',
+        border:       '1px solid rgba(0, 245, 255,0.22)',
         borderRadius: 5,
         color:        '#7dd3fc',
         cursor:       'pointer',
@@ -63,13 +63,13 @@ export function SourceTableButton({ anchor, label, inline = false, size = 'sm' }
         lineHeight:   1.4,
       }}
       onMouseEnter={e => {
-        (e.currentTarget as HTMLButtonElement).style.background = 'rgba(100, 210, 255,0.14)';
-        (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(100, 210, 255,0.45)';
+        (e.currentTarget as HTMLButtonElement).style.background = 'rgba(0, 245, 255,0.14)';
+        (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(0, 245, 255,0.45)';
         (e.currentTarget as HTMLButtonElement).style.color = '#bfdbfe';
       }}
       onMouseLeave={e => {
-        (e.currentTarget as HTMLButtonElement).style.background = 'rgba(100, 210, 255,0.06)';
-        (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(100, 210, 255,0.22)';
+        (e.currentTarget as HTMLButtonElement).style.background = 'rgba(0, 245, 255,0.06)';
+        (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(0, 245, 255,0.22)';
         (e.currentTarget as HTMLButtonElement).style.color = '#7dd3fc';
       }}
     >

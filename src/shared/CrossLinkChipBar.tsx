@@ -27,8 +27,8 @@ export default function CrossLinkChipBar({ sectionId, navigate: navProp }: Props
     <div style={{
       display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap',
       padding: '6px 14px', flexShrink: 0,
-      background: 'rgba(100, 210, 255,0.025)',
-      borderBottom: '1px solid rgba(100, 210, 255,0.06)',
+      background: 'rgba(0, 245, 255,0.025)',
+      borderBottom: '1px solid rgba(0, 245, 255,0.06)',
     }}>
       <span style={{
         fontSize: 8, fontWeight: 800, color: 'rgba(148,163,184,0.45)',
@@ -44,18 +44,18 @@ export default function CrossLinkChipBar({ sectionId, navigate: navProp }: Props
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
             padding: '3px 9px', borderRadius: 5, cursor: 'pointer',
-            background: 'rgba(100, 210, 255,0.06)',
-            border: '1px solid rgba(100, 210, 255,0.18)',
-            color: '#66d4cf', fontSize: 9, fontWeight: 700,
+            background: 'rgba(0, 245, 255,0.06)',
+            border: '1px solid rgba(0, 245, 255,0.18)',
+            color: '#00d4aa', fontSize: 9, fontWeight: 700,
             transition: 'all 0.12s',
           }}
           onMouseEnter={e => {
-            (e.currentTarget as HTMLButtonElement).style.background = 'rgba(100, 210, 255,0.12)';
-            (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(100, 210, 255,0.35)';
+            (e.currentTarget as HTMLButtonElement).style.background = 'rgba(0, 245, 255,0.12)';
+            (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(0, 245, 255,0.35)';
           }}
           onMouseLeave={e => {
-            (e.currentTarget as HTMLButtonElement).style.background = 'rgba(100, 210, 255,0.06)';
-            (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(100, 210, 255,0.18)';
+            (e.currentTarget as HTMLButtonElement).style.background = 'rgba(0, 245, 255,0.06)';
+            (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(0, 245, 255,0.18)';
           }}
         >
           <ArrowRight size={9} />

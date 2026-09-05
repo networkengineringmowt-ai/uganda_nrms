@@ -14,7 +14,7 @@ import { lookup, type DictEntry } from './dataDictionary';
 
 const CARD: CSSProperties = {
   position: 'fixed', zIndex: 99999, maxWidth: 340, width: 'max-content',
-  background: 'rgba(8,13,26,0.98)', border: '1px solid rgba(10, 132, 255,0.35)',
+  background: 'rgba(8,13,26,0.98)', border: '1px solid rgba(77, 159, 255,0.35)',
   borderRadius: 10, padding: '11px 13px', boxShadow: '0 12px 40px rgba(0,0,0,0.6)',
   fontFamily: 'Inter, system-ui, sans-serif', pointerEvents: 'none',
   color: '#e2eaf4', lineHeight: 1.5,
@@ -31,7 +31,7 @@ function EntryCard({ e }: { e: DictEntry }) {
   return (
     <>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 4 }}>
-        <span style={{ fontWeight: 800, fontSize: 13, color: '#0a84ff' }}>{e.term}</span>
+        <span style={{ fontWeight: 800, fontSize: 13, color: '#4d9fff' }}>{e.term}</span>
         {e.unit && <span style={{ fontSize: 10, color: '#94a3b8' }}>({e.unit})</span>}
         <span style={{ marginLeft: 'auto', fontSize: 8.5, color: 'rgba(148,163,184,0.55)',
           textTransform: 'uppercase', letterSpacing: '0.08em' }}>{e.group}</span>
