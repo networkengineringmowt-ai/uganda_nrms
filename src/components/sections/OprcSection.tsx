@@ -152,11 +152,11 @@ export default function OprcSection() {
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
         <div style={{
           width: 32, height: 32, borderRadius: 9, flexShrink: 0,
-          background: 'linear-gradient(135deg, rgba(0,245,255,0.2), rgba(77,159,255,0.15))',
-          border: '1px solid rgba(0,245,255,0.3)',
+          background: 'linear-gradient(135deg, rgba(100, 210, 255,0.2), rgba(10, 132, 255,0.15))',
+          border: '1px solid rgba(100, 210, 255,0.3)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <TrendingUp size={15} style={{ color: '#00f5ff' }} />
+          <TrendingUp size={15} style={{ color: '#64d2ff' }} />
         </div>
         <div>
           <div style={{ fontSize: 16, fontWeight: 900, letterSpacing: '-0.01em' }}>OPRC — Roads Selected for Contracting</div>
@@ -168,8 +168,8 @@ export default function OprcSection() {
 
       {/* ── Summary cards - roads/km scoped, not fabricated contract metrics ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 14 }}>
-        <SummaryCard title="Roads Selected for OPRC" value={String(totalRoads)}              sub={`across ${lots.length} region scope${lots.length===1?'':'s'}`} accent="#00f5ff" />
-        <SummaryCard title="Network Length Scoped"    value={`${totalKm.toLocaleString()} km`} sub="pending contract award"                                       accent="#00ff88" />
+        <SummaryCard title="Roads Selected for OPRC" value={String(totalRoads)}              sub={`across ${lots.length} region scope${lots.length===1?'':'s'}`} accent="#64d2ff" />
+        <SummaryCard title="Network Length Scoped"    value={`${totalKm.toLocaleString()} km`} sub="pending contract award"                                       accent="#30d158" />
         <SummaryCard title="Contract Value"            value={totalValue > 0 ? `$${(totalValue/1e6).toFixed(0)}M` : 'TBD'} sub="set once lots are awarded"        accent="#f59e0b" />
       </div>
 
@@ -179,9 +179,9 @@ export default function OprcSection() {
           <button key={r} onClick={() => setRegionFilter(r)} style={{
             padding: '4px 12px', borderRadius: 20, fontSize: 11, fontWeight: 600,
             cursor: 'pointer',
-            background: regionFilter === r ? 'rgba(0,245,255,0.12)' : 'transparent',
-            border: `1px solid ${regionFilter === r ? 'rgba(0,245,255,0.45)' : 'rgba(255,255,255,0.1)'}`,
-            color: regionFilter === r ? '#00f5ff' : '#94a3b8',
+            background: regionFilter === r ? 'rgba(100, 210, 255,0.12)' : 'transparent',
+            border: `1px solid ${regionFilter === r ? 'rgba(100, 210, 255,0.45)' : 'rgba(255,255,255,0.1)'}`,
+            color: regionFilter === r ? '#64d2ff' : '#94a3b8',
             transition: 'all 0.15s',
           }}>{r}</button>
         ))}
@@ -299,10 +299,10 @@ export default function OprcSection() {
                   <ReTooltip contentStyle={TT_STYLE}
                     formatter={(v: number, name: string) => [name === 'roads' ? `${v} roads` : `${v} km`, name === 'roads' ? 'Roads Selected' : 'Network km']} />
                   <Legend iconSize={7} wrapperStyle={{ fontSize: 9, color: '#94a3b8' }} />
-                  <Bar yAxisId="roads" dataKey="roads" name="Roads Selected" fill="#00f5ff" radius={[3,3,0,0]} maxBarSize={18} shape={<Bar3D/>}>
+                  <Bar yAxisId="roads" dataKey="roads" name="Roads Selected" fill="#64d2ff" radius={[3,3,0,0]} maxBarSize={18} shape={<Bar3D/>}>
                     {clusterData.map((d, i) => <Cell key={i} fill={statusColor(d.status)} />)}
                   </Bar>
-                  <Bar yAxisId="km" dataKey="km" name="Network km" fill="rgba(0,245,255,0.45)" radius={[3,3,0,0]} maxBarSize={18} shape={<Bar3D/>}>
+                  <Bar yAxisId="km" dataKey="km" name="Network km" fill="rgba(100, 210, 255,0.45)" radius={[3,3,0,0]} maxBarSize={18} shape={<Bar3D/>}>
                     {clusterData.map((d, i) => <Cell key={i} fill={statusColor(d.status)} opacity={0.65} />)}
                   </Bar>
                 </BarChart>
@@ -350,7 +350,7 @@ function OprcDetailPane({
   selected: OprcLot | null;
   onClose: () => void;
 }) {
-  const accent = '#00f5ff';
+  const accent = '#64d2ff';
   const totalKm    = lots.reduce((s, l) => s + l.total_km, 0);
   const totalRoads = lots.reduce((s, l) => s + l.links, 0);
   const byRegion = [...lots].sort((a, b) => b.links - a.links).slice(0, 6);

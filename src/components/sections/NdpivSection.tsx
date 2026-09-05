@@ -185,11 +185,11 @@ export default function NdpivSection() {
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
         <div style={{
           width: 32, height: 32, borderRadius: 9, flexShrink: 0,
-          background: 'linear-gradient(135deg, rgba(185,103,255,0.25), rgba(59,130,246,0.2))',
-          border: '1px solid rgba(185,103,255,0.3)',
+          background: 'linear-gradient(135deg, rgba(191, 90, 242,0.25), rgba(59,130,246,0.2))',
+          border: '1px solid rgba(191, 90, 242,0.3)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <BarChart2 size={15} style={{ color: '#b967ff' }} />
+          <BarChart2 size={15} style={{ color: '#bf5af2' }} />
         </div>
         <div>
           <div style={{ fontSize: 16, fontWeight: 900, letterSpacing: '-0.01em' }}>NDP IV Investments</div>
@@ -201,9 +201,9 @@ export default function NdpivSection() {
 
       {/* ── Summary cards ──────────────────────────────────────────────────── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 14 }}>
-        <SummaryCard title="NDP IV Components"  value={String(projects.length)}              sub={`${totalKm.toLocaleString()} km total`}       accent="#b967ff" />
+        <SummaryCard title="NDP IV Components"  value={String(projects.length)}              sub={`${totalKm.toLocaleString()} km total`}       accent="#bf5af2" />
         <SummaryCard title="Roads Involved"      value={String(projects.reduce((s,p)=>s+p.road_links.length,0))} sub="road links across all components" accent="#3b82f6" />
-        <SummaryCard title="Total Budget"        value={totalBudget > 0 ? `$${(totalBudget/1e6).toFixed(0)}M` : 'TBD'} sub="costed per-project as FY26/27 firms up" accent="#00ff88" />
+        <SummaryCard title="Total Budget"        value={totalBudget > 0 ? `$${(totalBudget/1e6).toFixed(0)}M` : 'TBD'} sub="costed per-project as FY26/27 firms up" accent="#30d158" />
       </div>
 
       {/* ── Region filter pills ─────────────────────────────────────────────── */}
@@ -212,9 +212,9 @@ export default function NdpivSection() {
           <button key={r} onClick={() => setRegionFilter(r)} style={{
             padding: '4px 12px', borderRadius: 20, fontSize: 11, fontWeight: 600,
             cursor: 'pointer',
-            background: regionFilter === r ? 'rgba(185,103,255,0.15)' : 'transparent',
-            border: `1px solid ${regionFilter === r ? 'rgba(185,103,255,0.5)' : 'rgba(255,255,255,0.1)'}`,
-            color: regionFilter === r ? '#b967ff' : '#94a3b8',
+            background: regionFilter === r ? 'rgba(191, 90, 242,0.15)' : 'transparent',
+            border: `1px solid ${regionFilter === r ? 'rgba(191, 90, 242,0.5)' : 'rgba(255,255,255,0.1)'}`,
+            color: regionFilter === r ? '#bf5af2' : '#94a3b8',
             transition: 'all 0.15s',
           }}>{r}</button>
         ))}
@@ -280,7 +280,7 @@ export default function NdpivSection() {
                 data={corridorGeo}
                 style={feat => {
                   const status = String((feat?.properties as Record<string, unknown>)?.status ?? '');
-                  const color = STATUS_CLR[status] ?? '#b967ff';
+                  const color = STATUS_CLR[status] ?? '#bf5af2';
                   return { color, weight: 4, opacity: 0.78, dashArray: undefined };
                 }}
               />
@@ -378,7 +378,7 @@ function NdpivScopeTable({ projects }: { projects: NdpivProject[] }) {
       return <span style={{ fontSize: 8, padding: '2px 5px', borderRadius: 3, background: `${sc}20`, color: sc, fontWeight: 700, whiteSpace: 'nowrap' }}>{r.status}</span>;
     } },
   ];
-  return <SortableFilterableTable columns={columns} rows={rows} accent="#b967ff" exportName="ndpiv_component_scope" initialSort="total_km" />;
+  return <SortableFilterableTable columns={columns} rows={rows} accent="#bf5af2" exportName="ndpiv_component_scope" initialSort="total_km" />;
 }
 
 // ─── Reusable detail pane for NDPIV ─────────────────────────────────────────
@@ -389,7 +389,7 @@ function NdpivDetailPane({
   selected: NdpivProject | null;
   onClose: () => void;
 }) {
-  const accent = '#b967ff';
+  const accent = '#bf5af2';
   const statusCounts: Record<string, number> = {};
   let totalBudget = 0, totalKm = 0, totalLinks = 0;
   projects.forEach(p => {
@@ -402,7 +402,7 @@ function NdpivDetailPane({
   const renderDefault = (
     <div>
       <StatCard label="Total Components" value={projects.length} unit="NDPIV" color={accent} />
-      <StatCard label="Network Scope" value={`${Math.round(totalKm).toLocaleString()} km`} unit={`${totalLinks} roads`} color="#00ff88"
+      <StatCard label="Network Scope" value={`${Math.round(totalKm).toLocaleString()} km`} unit={`${totalLinks} roads`} color="#30d158"
         sub={totalBudget > 0 ? `$${(totalBudget/1e6).toFixed(0)}M budgeted` : 'per-project costing pending'} />
 
       <SectionHeader title="Status Distribution" accent={accent} />
@@ -464,7 +464,7 @@ function NdpivDetailPane({
             }/>
             <AttributeRow label="Length" value={`${p.total_km} km`} mono />
             <AttributeRow label="Funder" value={p.funder} mono />
-            <AttributeRow label="Budget" value={p.budget_usd > 0 ? `$${(p.budget_usd/1e6).toFixed(1)}M` : 'TBD'} color="#00ff88" mono />
+            <AttributeRow label="Budget" value={p.budget_usd > 0 ? `$${(p.budget_usd/1e6).toFixed(1)}M` : 'TBD'} color="#30d158" mono />
             <AttributeRow label="Region" value={p.region} />
 
             <SectionHeader title="Roads in This Component" accent={accent} />

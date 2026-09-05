@@ -23,18 +23,18 @@ interface StationFeature { properties: StationProps }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const C = {
-  cyan:'#00f5ff', green:'#00ff88', orange:'#ff6b35', yellow:'#ffd23f',
-  pink:'#ff2d78', teal:'#00d4aa', blue:'#4d9fff', amber:'#f59e0b',
+  cyan:'#64d2ff', green:'#30d158', orange:'#ff9f0a', yellow:'#ffd60a',
+  pink:'#ff375f', teal:'#66d4cf', blue:'#0a84ff', amber:'#f59e0b',
 };
 const CONG_CLR: Record<string,string> = { Critical:'#ef4444', High:'#f97316', Medium:'#eab308', Low:'#22c55e' };
 const CLASS_CLR: Record<string,string> = { A:C.cyan, B:C.green, C:C.amber, M:'#94a3b8' };
 const REGION_CLR: Record<string,string> = {
   Central:C.cyan, Eastern:C.orange, Southern:C.yellow, Western:C.green,
-  Northern:'#b967ff', 'North Eastern':C.pink,
+  Northern:'#bf5af2', 'North Eastern':C.pink,
 };
 const GLASS: React.CSSProperties = {
   background:'rgba(15,23,42,0.55)', backdropFilter:'blur(20px)',
-  WebkitBackdropFilter:'blur(20px)', border:'1px solid rgba(99,102,241,0.12)', borderRadius:14,
+  WebkitBackdropFilter:'blur(20px)', border:'1px solid rgba(94, 92, 230,0.12)', borderRadius:14,
 };
 
 // Growth factors 2016-2035 - BASE YEAR 2016 = 1.00 (all traffic statistics
@@ -153,8 +153,8 @@ function RoadLinksTab({ features }: { features: PredFeature[] }) {
           <button key={y} onClick={() => setYear(y)}
             style={{ padding:'3px 9px', borderRadius:6, border:'1px solid', fontSize:10,
               fontWeight:700, cursor:'pointer', transition:'all .15s',
-              background: year===y ? 'rgba(0,255,136,0.15)' : 'rgba(255,255,255,0.04)',
-              borderColor: year===y ? 'rgba(0,255,136,0.45)' : 'rgba(255,255,255,0.1)',
+              background: year===y ? 'rgba(48, 209, 88,0.15)' : 'rgba(255,255,255,0.04)',
+              borderColor: year===y ? 'rgba(48, 209, 88,0.45)' : 'rgba(255,255,255,0.1)',
               color: year===y ? C.green : 'rgba(148,163,184,0.55)' }}>
             {y}
           </button>
@@ -164,13 +164,13 @@ function RoadLinksTab({ features }: { features: PredFeature[] }) {
       {/* Controls */}
       <div style={{ display:'flex', gap:8, alignItems:'center', flexWrap:'wrap' }}>
         <SearchableSelect value={classF} onChange={setClassF}
-          style={{ background:'rgba(99,102,241,0.08)', border:'1px solid rgba(99,102,241,0.25)',
+          style={{ background:'rgba(94, 92, 230,0.08)', border:'1px solid rgba(94, 92, 230,0.25)',
             borderRadius:8, color:C.cyan, fontSize:11, padding:'5px 10px', outline:'none', cursor:'pointer' }}>
           <option value="all">All Classes</option>
           {['A','B','C','M'].map(c=><option key={c} value={c}>Class {c}</option>)}
         </SearchableSelect>
         <SearchableSelect value={regionF} onChange={setRegionF}
-          style={{ background:'rgba(99,102,241,0.08)', border:'1px solid rgba(99,102,241,0.25)',
+          style={{ background:'rgba(94, 92, 230,0.08)', border:'1px solid rgba(94, 92, 230,0.25)',
             borderRadius:8, color:C.cyan, fontSize:11, padding:'5px 10px', outline:'none', cursor:'pointer' }}>
           {regions.map(r=><option key={r} value={r}>{r==='all'?'All Regions':r}</option>)}
         </SearchableSelect>
@@ -242,8 +242,8 @@ function StationsTab({ stations, features }: { stations: StationFeature[]; featu
           <button key={y} onClick={() => setYear(y)}
             style={{ padding:'3px 9px', borderRadius:6, border:'1px solid', fontSize:10,
               fontWeight:700, cursor:'pointer', transition:'all .15s',
-              background: year===y ? 'rgba(0,212,170,0.15)' : 'rgba(255,255,255,0.04)',
-              borderColor: year===y ? 'rgba(0,212,170,0.45)' : 'rgba(255,255,255,0.1)',
+              background: year===y ? 'rgba(102, 212, 207,0.15)' : 'rgba(255,255,255,0.04)',
+              borderColor: year===y ? 'rgba(102, 212, 207,0.45)' : 'rgba(255,255,255,0.1)',
               color: year===y ? C.teal : 'rgba(148,163,184,0.55)' }}>
             {y}
           </button>
@@ -297,12 +297,12 @@ export default function TrafficSummary() {
     <div style={{ padding:'20px 22px 36px', fontFamily:"'Inter','Segoe UI',sans-serif", color:'#e2eaf4' }}>
       {/* Header */}
       <div style={{ marginBottom:18 }}>
-        <div style={{ fontSize:9, fontWeight:800, color:'rgba(99,102,241,0.55)',
+        <div style={{ fontSize:9, fontWeight:800, color:'rgba(94, 92, 230,0.55)',
           letterSpacing:'0.18em', textTransform:'uppercase', marginBottom:3 }}>
           Uganda National Roads · Department of National Roads / DNR 2025
         </div>
         <div style={{ fontSize:22, fontWeight:900, color:C.cyan, lineHeight:1.2,
-          textShadow:'0 0 22px rgba(0,245,255,0.35)' }}>
+          textShadow:'0 0 22px rgba(100, 210, 255,0.35)' }}>
           Traffic Summary Tables
         </div>
         <div style={{ fontSize:11, color:'rgba(148,163,184,0.5)', marginTop:4 }}>
@@ -356,7 +356,7 @@ export default function TrafficSummary() {
           <button key={t.id} onClick={() => setSubTab(t.id)}
             style={{ padding:'8px 16px', fontSize:11, fontWeight:700, cursor:'pointer',
               border:'none', borderRadius:'8px 8px 0 0',
-              background: subTab===t.id ? 'rgba(0,245,255,0.1)' : 'transparent',
+              background: subTab===t.id ? 'rgba(100, 210, 255,0.1)' : 'transparent',
               color: subTab===t.id ? C.cyan : 'rgba(148,163,184,0.5)',
               borderBottom: subTab===t.id ? `2px solid ${C.cyan}` : '2px solid transparent',
               transition:'all .15s' }}>
