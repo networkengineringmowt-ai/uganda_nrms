@@ -22,8 +22,8 @@ interface BridgeWork {
   compensation: string; report_period: string;
 }
 
-const C = { cyan: '#64d2ff', teal: '#66d4cf', blue: '#0a84ff', green: '#30d158',
-  yellow: '#ffd60a', orange: '#ff9f0a', red: '#ff453a', purple: '#bf5af2', gray: '#94a3b8' };
+const C = { cyan: '#00f5ff', teal: '#00d4aa', blue: '#4d9fff', green: '#00ff88',
+  yellow: '#ffd23f', orange: '#ff6b35', red: '#ff3366', purple: '#b967ff', gray: '#94a3b8' };
 
 const bn = (n?: number | null) => (n == null ? '-' : `${(n / 1e9).toFixed(2)} Bn`);
 function progColor(p: number | null): string {
@@ -76,10 +76,10 @@ export default function BridgeWorksSection() {
 
   return (
     <div style={{ padding: '22px 20px', minHeight: '100%',
-      background: 'radial-gradient(1200px 600px at 80% -10%, rgba(102, 212, 207,0.10), transparent), linear-gradient(180deg, rgba(8,14,28,0.5), transparent)' }}>
+      background: 'radial-gradient(1200px 600px at 80% -10%, rgba(0, 212, 170,0.10), transparent), linear-gradient(180deg, rgba(8,14,28,0.5), transparent)' }}>
 
       {/* ─── Definition card ─── */}
-      <div style={{ background:'rgba(102, 212, 207,0.04)', border:'1px solid rgba(102, 212, 207,0.14)', borderRadius:12, padding:'14px 18px', marginBottom:14 }}>
+      <div style={{ background:'rgba(0, 212, 170,0.04)', border:'1px solid rgba(0, 212, 170,0.14)', borderRadius:12, padding:'14px 18px', marginBottom:14 }}>
         <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:8 }}>
           <span style={{ fontSize:26 }}>🌉</span>
           <div>
@@ -92,7 +92,7 @@ export default function BridgeWorksSection() {
         </p>
         <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
           {['MoWT Programme','UNRA Contracts','URF Funded','AfDB Co-financed','PPDA Compliant'].map((b: string)=>(
-            <span key={b} style={{ fontSize:9, fontWeight:700, color:'#66d4cf', background:'rgba(102, 212, 207,0.07)', border:'1px solid rgba(102, 212, 207,0.18)', borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
+            <span key={b} style={{ fontSize:9, fontWeight:700, color:'#00d4aa', background:'rgba(0, 212, 170,0.07)', border:'1px solid rgba(0, 212, 170,0.18)', borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
           ))}
         </div>
       </div>
