@@ -14,7 +14,7 @@ const DownloadsView  = lazy(() => import('../Downloads/DownloadsView'));
 const C = {
   cyan: '#64d2ff', green: '#30d158', yellow: '#ffd60a',
   orange: '#ff9f0a', purple: '#bf5af2', blue: '#0a84ff',
-  pink: '#ff375f', teal: '#00d4aa', red: '#ff453a', gray: '#94a3b8',
+  pink: '#ff375f', teal: '#66d4cf', red: '#ff453a', gray: '#94a3b8',
 };
 
 function hexRgb(h: string) {
@@ -2500,7 +2500,7 @@ export default function TabularSummaries() {
           {/* ── SECTION 24: GEOJSON ROAD LINKS ─── */}
           <div style={{ fontSize: 10, fontWeight: 900, color: C.teal, textTransform: 'uppercase',
             letterSpacing: '0.12em', marginBottom: 10, marginTop: 20,
-            borderBottom: '1px solid rgba(0,212,170,0.1)', paddingBottom: 6 }}>
+            borderBottom: '1px solid rgba(102, 212, 207,0.1)', paddingBottom: 6 }}>
             §24 - GeoJSON Road Links (network2026.geojson - Full {geoLinks.length.toLocaleString()} rows)
           </div>
           {/* tbl-links-full */}
