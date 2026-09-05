@@ -51,7 +51,7 @@ interface PredSummary {
 const C = {
   cyan:   '#64d2ff', green:  '#30d158', orange: '#ff9f0a',
   purple: '#bf5af2', yellow: '#ffd60a', pink:   '#ff375f',
-  blue:   '#0a84ff', teal:   '#00d4aa',
+  blue:   '#0a84ff', teal:   '#66d4cf',
 };
 
 const CONG: Record<string, { color: string; label: string }> = {
