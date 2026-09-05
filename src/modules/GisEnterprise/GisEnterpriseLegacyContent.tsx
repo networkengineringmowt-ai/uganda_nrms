@@ -7,7 +7,7 @@ import 'leaflet/dist/leaflet.css';
 import SectionDashboard from '../Dashboard/SectionDashboard';
 
 const N = {
-  indigo: '#5e5ce6', cyan:   '#00f5ff', orange: '#ff6b35',
+  indigo: '#6366f1', cyan:   '#00f5ff', orange: '#ff6b35',
   teal:   '#00d4aa', blue:   '#4d9fff', purple: '#b967ff',
   green:  '#00ff88', yellow: '#ffd23f', pink:   '#ff2d78',
   gray:   '#94a3b8',
