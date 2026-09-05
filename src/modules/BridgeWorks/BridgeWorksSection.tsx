@@ -22,8 +22,8 @@ interface BridgeWork {
   compensation: string; report_period: string;
 }
 
-const C = { cyan: '#00f5ff', teal: '#00d4aa', blue: '#4d9fff', green: '#00ff88',
-  yellow: '#ffd23f', orange: '#ff6b35', red: '#ff3366', purple: '#b967ff', gray: '#94a3b8' };
+const C = { cyan: '#64d2ff', teal: '#00d4aa', blue: '#0a84ff', green: '#30d158',
+  yellow: '#ffd60a', orange: '#ff9f0a', red: '#ff453a', purple: '#bf5af2', gray: '#94a3b8' };
 
 const bn = (n?: number | null) => (n == null ? '-' : `${(n / 1e9).toFixed(2)} Bn`);
 function progColor(p: number | null): string {
