@@ -58,9 +58,9 @@ const DataAuditPanel  = lazy(() => import('./modules/DataAudit/DataAuditPanel'))
 // routes through this single component so there is only ever one nav layer.
 const SectionDashboard = lazy(() => import('./modules/Dashboard/SectionDashboard'));
 const SECTION_ACCENT: Record<string, string> = {
-  rms: '#64d2ff', roadcondition: '#ff9f0a', bms: '#0a84ff', roadreserve: '#00d4aa',
+  rms: '#64d2ff', roadcondition: '#ff9f0a', bms: '#0a84ff', roadreserve: '#66d4cf',
   traffic: '#64d2ff', projects: '#30d158', pim: '#ffd60a', budget: '#ff375f',
-  lifecycle: '#00d4aa', casestudies: '#00d4aa', sources: '#94a3b8', admin: '#64d2ff',
+  lifecycle: '#66d4cf', casestudies: '#66d4cf', sources: '#94a3b8', admin: '#64d2ff',
   gisenterprise: '#bf5af2', atc: '#ff9f0a', roadatlas: '#64d2ff', roadvideo: '#64d2ff',
   bridgeworks: '#0a84ff', downloads: '#94a3b8',
   ducar: '#30d158', socioeconomic: '#ffd60a',
@@ -69,7 +69,7 @@ const SECTION_ACCENT: Record<string, string> = {
   inspections: '#0a84ff', gismap: '#0a84ff', priority: '#ff375f',
   phototwin: '#0a84ff', trafficanalytics: '#64d2ff', trafficsummary: '#64d2ff',
   growthfactors: '#ff9f0a', overloading: '#ff9f0a', oprc: '#30d158',
-  ndpiv: '#ffd60a', hdm4: '#00d4aa', mlarchitecture: '#bf5af2', projecttracker: '#30d158',
+  ndpiv: '#ffd60a', hdm4: '#66d4cf', mlarchitecture: '#bf5af2', projecttracker: '#30d158',
 };
 function SectionHub({ sectionId }: { sectionId: string }) {
   return <SectionDashboard sectionId={sectionId} accent={SECTION_ACCENT[sectionId] ?? '#64d2ff'} />;
