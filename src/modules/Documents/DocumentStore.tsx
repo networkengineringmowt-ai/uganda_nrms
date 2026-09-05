@@ -14,7 +14,7 @@ import { SearchableSelect } from '../../shared/SearchableSelect';
 // Inline equivalent of the .bms-input/.bms-select CSS classes, since
 // SearchableSelect takes a style prop rather than className.
 const bmsSelectStyle: React.CSSProperties = {
-  width: '100%', background: 'rgba(6,13,24,0.8)', border: '1px solid rgba(100, 210, 255,0.12)',
+  width: '100%', background: 'rgba(6,13,24,0.8)', border: '1px solid rgba(0, 245, 255,0.12)',
   borderRadius: 8, padding: '8px 12px', fontSize: 13, color: '#e2eaf4',
 };
 
@@ -155,7 +155,7 @@ export default function DocumentStore() {
 
   const DocTh = ({ label, k }: { label: string; k: DocSortKey }) => (
     <th className="dt-sticky-th px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500 cursor-pointer select-none"
-      style={{ color: docSortKey === k ? '#ffd60a' : undefined }}
+      style={{ color: docSortKey === k ? '#ffd23f' : undefined }}
       onClick={() => cycleDocSort(k)}>
       {label}<SortArrow active={docSortKey === k} dir={docSortDir} />
     </th>
@@ -480,7 +480,7 @@ function DocReader({ doc, onClose }: { doc: BridgeDocument; onClose: () => void 
             {Array.isArray(highlighted)
               ? highlighted.map((chunk, i) =>
                   i % 2 === 1
-                    ? <mark key={i} style={{ background: '#ffd60a', color: '#020202', padding: '0 2px', borderRadius: 2 }}>{chunk}</mark>
+                    ? <mark key={i} style={{ background: '#ffd23f', color: '#020202', padding: '0 2px', borderRadius: 2 }}>{chunk}</mark>
                     : <span key={i}>{chunk}</span>,
                 )
               : (pageText || 'No text on this page.')}
