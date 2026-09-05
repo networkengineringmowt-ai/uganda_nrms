@@ -12,7 +12,7 @@ import { renderSliceLabel } from '../../shared/dashboardKit';
 const C = {
   cyan: '#64d2ff', green: '#30d158', yellow: '#ffd60a',
   orange: '#ff9f0a', purple: '#bf5af2', blue: '#0a84ff',
-  pink: '#ff375f', teal: '#00d4aa', red: '#ff453a',
+  pink: '#ff375f', teal: '#66d4cf', red: '#ff453a',
 };
 function hexRgb(h: string) {
   const c = h.replace('#','');
