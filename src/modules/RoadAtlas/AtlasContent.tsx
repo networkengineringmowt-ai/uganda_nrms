@@ -15,7 +15,7 @@ import { useDashboardBundle } from '../../hooks/useDashboardBundle';
 const TT = {
   contentStyle: {
     background: 'rgba(6,13,24,0.97)',
-    border: '1px solid rgba(0,245,255,0.15)',
+    border: '1px solid rgba(100, 210, 255,0.15)',
     borderRadius: 8, fontSize: 11,
   },
 };
@@ -37,7 +37,7 @@ function SectionHeading({ title, sub }: { title: string; sub?: string }) {
 
 // ─── Stat card ────────────────────────────────────────────────────────────────
 function StatCard({
-  label, value, unit, sub, color = '#00f5ff',
+  label, value, unit, sub, color = '#64d2ff',
 }: {
   label: string; value: string | number; unit?: string; sub?: string; color?: string;
 }) {
@@ -200,20 +200,20 @@ export default function AtlasContent() {
       {/* ── Network summary KPIs ── */}
       <SectionHeading title="Network Overview" sub="Current state of Uganda's national road network" />
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 48 }}>
-        <StatCard label="Total Network" value="21,137" unit="km" sub="1,014 road links · Jun 2025" color="#00f5ff" />
+        <StatCard label="Total Network" value="21,137" unit="km" sub="1,014 road links · Jun 2025" color="#64d2ff" />
         <StatCard
           label="Paved Stock"
           value={latestPaved ? latestPaved.km.toLocaleString(undefined, { maximumFractionDigits: 0 }) : '6,405'}
           unit="km"
           sub={latestPaved ? `${latestPaved.pct.toFixed(1)}% of network · FY${latestPaved.fy}` : '30.3% of network'}
-          color="#00ff88"
+          color="#30d158"
         />
         <StatCard
           label="Network Traffic"
           value={latestTraffic ? Math.round(latestTraffic.network_weighted_motorised_aadt ?? 0).toLocaleString() : '2,562'}
           unit="AADT"
           sub={latestTraffic ? `Motorised · ${latestTraffic.year}` : 'Motorised · 2025'}
-          color="#ffd23f"
+          color="#ffd60a"
         />
         <StatCard
           label="Growth Since 1986"
@@ -232,8 +232,8 @@ export default function AtlasContent() {
             <AreaChart data={pavedTimeline} margin={{ top: 4, right: 12, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="atlasGradPaved" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%"  stopColor="#00ff88" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#00ff88" stopOpacity={0} />
+                  <stop offset="5%"  stopColor="#30d158" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#30d158" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
@@ -241,7 +241,7 @@ export default function AtlasContent() {
               <YAxis tick={{ fill: '#64748b', fontSize: 9 }} axisLine={false} tickLine={false} width={48}
                 tickFormatter={(v: number) => `${(v / 1000).toFixed(0)}k`} />
               <Tooltip {...TT} formatter={(v: number) => [`${v.toLocaleString()} km`, 'Paved stock']} />
-              <Area type="monotone" dataKey="km" stroke="#00ff88" strokeWidth={2} fill="url(#atlasGradPaved)"
+              <Area type="monotone" dataKey="km" stroke="#30d158" strokeWidth={2} fill="url(#atlasGradPaved)"
                 dot={false} animationDuration={600} />
             </AreaChart>
           </ResponsiveContainer>
@@ -274,8 +274,8 @@ export default function AtlasContent() {
                     tickFormatter={(v: number) => v.toLocaleString()} />
                   <Tooltip {...TT} formatter={(v: number) => [`${v.toLocaleString()} AADT`, 'Motorised']} />
                   <Line type="monotone" dataKey="network_weighted_motorised_aadt"
-                    stroke="#ffd23f" strokeWidth={2.5}
-                    dot={{ r: 4, fill: '#ffd23f', strokeWidth: 0 }}
+                    stroke="#ffd60a" strokeWidth={2.5}
+                    dot={{ r: 4, fill: '#ffd60a', strokeWidth: 0 }}
                     animationDuration={600} />
                 </LineChart>
               </ResponsiveContainer>
@@ -292,9 +292,9 @@ export default function AtlasContent() {
             {latestValue && (
               <>
                 <StatCard label="Replacement Cost (CRC)" value={`${latestValue.crc.toFixed(0)}`} unit="UGX bn"
-                  sub={`FY ${latestValue.fy}`} color="#00f5ff" />
+                  sub={`FY ${latestValue.fy}`} color="#64d2ff" />
                 <StatCard label="Depreciated Value (CDRC)" value={`${latestValue.cdrc.toFixed(0)}`} unit="UGX bn"
-                  sub={`FY ${latestValue.fy}`} color="#00ff88" />
+                  sub={`FY ${latestValue.fy}`} color="#30d158" />
                 <StatCard label="Value Gap" value={`${latestValue.gap.toFixed(0)}`} unit="UGX bn"
                   sub="Maintenance backlog" color="#ef4444" />
               </>
@@ -313,15 +313,15 @@ export default function AtlasContent() {
                       `${v.toFixed(0)} UGX bn`,
                       name === 'crc' ? 'Replacement Cost' : name === 'cdrc' ? 'Depreciated Value' : 'Value Gap',
                     ]} />
-                  <Line type="monotone" dataKey="crc" stroke="#00f5ff" strokeWidth={2} dot={false} animationDuration={600} />
-                  <Line type="monotone" dataKey="cdrc" stroke="#00ff88" strokeWidth={2} dot={false} animationDuration={600} />
+                  <Line type="monotone" dataKey="crc" stroke="#64d2ff" strokeWidth={2} dot={false} animationDuration={600} />
+                  <Line type="monotone" dataKey="cdrc" stroke="#30d158" strokeWidth={2} dot={false} animationDuration={600} />
                   <Line type="monotone" dataKey="gap" stroke="#ef4444" strokeWidth={1.5} strokeDasharray="4 3" dot={false} animationDuration={600} />
                 </LineChart>
               </ResponsiveContainer>
               <div style={{ display: 'flex', gap: 20, marginTop: 12, fontSize: 10 }}>
                 {[
-                  { color: '#00f5ff', label: 'Replacement Cost (CRC)' },
-                  { color: '#00ff88', label: 'Depreciated Value (CDRC)' },
+                  { color: '#64d2ff', label: 'Replacement Cost (CRC)' },
+                  { color: '#30d158', label: 'Depreciated Value (CDRC)' },
                   { color: '#ef4444', label: 'Value Gap' },
                 ].map(l => (
                   <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'rgba(148,163,184,0.7)' }}>
@@ -351,7 +351,7 @@ export default function AtlasContent() {
                       `${v.toFixed(1)}${name === 'vci' ? '' : ' m/km'}`,
                       name === 'vci' ? 'VCI (0-100)' : 'Avg IRI',
                     ]} />
-                  <Bar dataKey="vci" fill="#4d9fff" radius={[4, 4, 0, 0]} animationDuration={600} />
+                  <Bar dataKey="vci" fill="#0a84ff" radius={[4, 4, 0, 0]} animationDuration={600} />
                 </BarChart>
               </ResponsiveContainer>
               {latestCondition && (
@@ -390,7 +390,7 @@ export default function AtlasContent() {
                     {r.averageObservedAdt !== undefined && (
                       <div>
                         <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Avg AADT</div>
-                        <div style={{ fontSize: 14, fontWeight: 800, color: '#ffd23f' }}>
+                        <div style={{ fontSize: 14, fontWeight: 800, color: '#ffd60a' }}>
                           {Math.round(r.averageObservedAdt).toLocaleString()}
                         </div>
                       </div>
@@ -398,7 +398,7 @@ export default function AtlasContent() {
                     {r.weightedAverageVci !== undefined && (
                       <div>
                         <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Avg VCI</div>
-                        <div style={{ fontSize: 14, fontWeight: 800, color: '#4d9fff' }}>
+                        <div style={{ fontSize: 14, fontWeight: 800, color: '#0a84ff' }}>
                           {r.weightedAverageVci.toFixed(1)}
                         </div>
                       </div>
@@ -406,7 +406,7 @@ export default function AtlasContent() {
                     {r.projects !== undefined && (
                       <div>
                         <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Projects</div>
-                        <div style={{ fontSize: 14, fontWeight: 800, color: '#00ff88' }}>{r.projects}</div>
+                        <div style={{ fontSize: 14, fontWeight: 800, color: '#30d158' }}>{r.projects}</div>
                       </div>
                     )}
                     {r.stressScore !== undefined && (
