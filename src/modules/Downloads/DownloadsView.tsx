@@ -37,7 +37,7 @@ export default function DownloadsView() {
       title: 'Shapefile - All Structures',
       description: 'Point shapefile with full attribute table. Compatible with ArcGIS, QGIS, MapInfo.',
       badge: 'SHP',
-      badgeColor: '#bf5af2',
+      badgeColor: '#b967ff',
       action: withFeedback('shp-all', () => downloadShapefileZip('all')),
       size: '~68 KB',
     },
@@ -46,7 +46,7 @@ export default function DownloadsView() {
       title: 'Shapefile - Bridges only',
       description: `${bridges.length} bridge point features with span, material, condition attributes.`,
       badge: 'SHP',
-      badgeColor: '#bf5af2',
+      badgeColor: '#b967ff',
       action: withFeedback('shp-brg', () => downloadShapefileZip('bridges')),
       size: '~41 KB',
     },
@@ -55,7 +55,7 @@ export default function DownloadsView() {
       title: 'Shapefile - Culverts only',
       description: `${culverts.length} major culvert point features.`,
       badge: 'SHP',
-      badgeColor: '#bf5af2',
+      badgeColor: '#b967ff',
       action: withFeedback('shp-cul', () => downloadShapefileZip('culverts')),
       size: '~29 KB',
     },
@@ -64,7 +64,7 @@ export default function DownloadsView() {
       title: 'GeoJSON - All Structures',
       description: 'Current app data as GeoJSON FeatureCollection. Live snapshot matching displayed structures.',
       badge: 'GeoJSON',
-      badgeColor: '#64d2ff',
+      badgeColor: '#00f5ff',
       action: withFeedback('geojson-all', () =>
         downloadGeoJSON(structures, `Department of National Roads_Structures_${new Date().toISOString().slice(0,10)}.geojson`)),
     },
@@ -73,7 +73,7 @@ export default function DownloadsView() {
       title: 'GeoJSON - Static (pre-built)',
       description: 'Server-generated GeoJSON with all 546 structures. Use for full dataset including offline.',
       badge: 'GeoJSON',
-      badgeColor: '#64d2ff',
+      badgeColor: '#00f5ff',
       action: withFeedback('geojson-static', () =>
         downloadStaticFile('/downloads/structures_all.geojson', 'structures_all.geojson')),
       size: '~683 KB',
@@ -83,7 +83,7 @@ export default function DownloadsView() {
       title: 'KML - Google Earth',
       description: 'Open in Google Earth Pro or Maps. Placemarks colour-coded by condition rating (1–5).',
       badge: 'KML',
-      badgeColor: '#30d158',
+      badgeColor: '#00ff88',
       action: withFeedback('kml', () =>
         downloadKML(structures, `Department of National Roads_Structures_${new Date().toISOString().slice(0,10)}.kml`)),
     },
@@ -95,7 +95,7 @@ export default function DownloadsView() {
       title: 'Full Structure Registry - CSV',
       description: `All ${structures.length} structures with 21 attribute columns. Opens in Excel.`,
       badge: 'CSV',
-      badgeColor: '#ffd60a',
+      badgeColor: '#ffd23f',
       action: withFeedback('csv-all', () =>
         downloadCSV(structures, `Department of National Roads_Structures_Registry_${new Date().toISOString().slice(0,10)}.csv`)),
     },
@@ -104,7 +104,7 @@ export default function DownloadsView() {
       title: 'Bridges CSV',
       description: `${bridges.length} bridge records with full physical and condition data.`,
       badge: 'CSV',
-      badgeColor: '#ffd60a',
+      badgeColor: '#ffd23f',
       action: withFeedback('csv-brg', () =>
         downloadCSV(bridges, `Department of National Roads_Bridges_${new Date().toISOString().slice(0,10)}.csv`)),
     },
@@ -113,7 +113,7 @@ export default function DownloadsView() {
       title: 'Culverts CSV',
       description: `${culverts.length} major culvert records.`,
       badge: 'CSV',
-      badgeColor: '#ffd60a',
+      badgeColor: '#ffd23f',
       action: withFeedback('csv-cul', () =>
         downloadCSV(culverts, `Department of National Roads_Culverts_${new Date().toISOString().slice(0,10)}.csv`)),
     },
@@ -122,7 +122,7 @@ export default function DownloadsView() {
       title: 'Full CSV - Static (pre-built)',
       description: 'Server-generated CSV matching the master dataset.',
       badge: 'CSV',
-      badgeColor: '#ffd60a',
+      badgeColor: '#ffd23f',
       action: withFeedback('csv-static', () =>
         downloadStaticFile('/downloads/structures_all.csv', 'structures_all.csv')),
       size: '~186 KB',
@@ -164,10 +164,10 @@ export default function DownloadsView() {
         {/* Stats strip */}
         <div className="ml-11 mt-4 flex flex-wrap gap-4">
           {[
-            { label: 'Total Structures', value: structures.length, color: '#64d2ff' },
-            { label: 'Bridges',   value: bridges.length,  color: '#0a84ff' },
-            { label: 'Culverts',  value: culverts.length, color: '#bf5af2' },
-            { label: 'Critical',  value: structures.filter(s => s.conditionRating === 1).length, color: '#ff375f' },
+            { label: 'Total Structures', value: structures.length, color: '#00f5ff' },
+            { label: 'Bridges',   value: bridges.length,  color: '#4d9fff' },
+            { label: 'Culverts',  value: culverts.length, color: '#b967ff' },
+            { label: 'Critical',  value: structures.filter(s => s.conditionRating === 1).length, color: '#ff2d78' },
           ].map(({ label, value, color }) => (
             <div key={label} className="bg-slate-900 border border-slate-700 rounded-lg px-4 py-2">
               <div className="text-xs text-slate-500 mb-0.5">{label}</div>
@@ -269,9 +269,9 @@ function ExportCardUI({ card, isDone }: { card: ExportCard; isDone: boolean }) {
         onClick={handleClick}
         className="mt-auto flex items-center justify-center gap-2 w-full py-2 px-4 rounded-lg text-sm font-semibold transition-all duration-150"
         style={{
-          background: clicked ? 'rgba(48, 209, 88,0.12)' : 'rgba(59,130,246,0.12)',
-          border: clicked ? '1px solid rgba(48, 209, 88,0.4)' : '1px solid rgba(59,130,246,0.35)',
-          color: clicked ? '#30d158' : '#60a5fa',
+          background: clicked ? 'rgba(0, 255, 136,0.12)' : 'rgba(59,130,246,0.12)',
+          border: clicked ? '1px solid rgba(0, 255, 136,0.4)' : '1px solid rgba(59,130,246,0.35)',
+          color: clicked ? '#00ff88' : '#60a5fa',
         }}
       >
         {clicked
