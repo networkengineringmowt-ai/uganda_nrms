@@ -35,7 +35,7 @@ const NETWORK_QUICK_NAV: Array<{ label: string; icon: React.ReactNode; view: Act
   { label: 'HDM-4 Analysis',         icon: <BarChart3 size={14}/>,   view: 'hdm4',                      color: '#bf5af2' },
   { label: 'NDPIV / Projects',       icon: <Layers size={14}/>,      view: 'projects',                  color: '#30d158' },
   { label: 'Budget & Maint.',        icon: <Database size={14}/>,    view: 'budget',                    color: '#ffd60a' },
-  { label: 'Lifecycle Mgmt',         icon: <Shield size={14}/>,      view: 'lifecycle',                 color: '#00d4aa' },
+  { label: 'Lifecycle Mgmt',         icon: <Shield size={14}/>,      view: 'lifecycle',                 color: '#66d4cf' },
   { label: 'Sources & Evidence',     icon: <BookOpen size={14}/>,    view: 'sources',                   color: '#94a3b8' },
 ];
 
@@ -209,7 +209,7 @@ export default function PlatformDashboard() {
         <span style={{ color: 'rgba(148,163,184,0.35)', margin: '0 6px' }}>|</span>
         <span style={{ color: 'rgba(148,163,184,0.7)' }}>Source: NDPIV FY25-26 (MoWT)</span>
         <span style={{ color: 'rgba(148,163,184,0.35)', margin: '0 6px' }}>|</span>
-        <span style={{ color: '#00d4aa', fontWeight: 800 }}>Mapped in GeoJSON: 21,137 km (1,014 links)</span>
+        <span style={{ color: '#66d4cf', fontWeight: 800 }}>Mapped in GeoJSON: 21,137 km (1,014 links)</span>
         <span style={{ color: 'rgba(148,163,184,0.35)', margin: '0 6px' }}>|</span>
         <span style={{ color: '#ffd60a' }}>Gap: 165 km (unmapped/rural)</span>
         <span style={{ color: 'rgba(148,163,184,0.35)', margin: '0 6px' }}>|</span>
@@ -442,7 +442,7 @@ export default function PlatformDashboard() {
 // ── Neon colour map ───────────────────────────────────────────────────────────
 const NEON_MAP: Record<string, string> = {
   blue:   '#0a84ff', green: '#30d158', amber: '#ffd60a',
-  purple: '#bf5af2', red:   '#ff375f', cyan:  '#64d2ff', teal: '#00d4aa',
+  purple: '#bf5af2', red:   '#ff375f', cyan:  '#64d2ff', teal: '#66d4cf',
 };
 function hexRgb(h: string): string {
   const c = h.replace('#','');
