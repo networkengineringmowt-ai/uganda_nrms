@@ -492,7 +492,7 @@ function RegionTab(_props: { roadData: any[] }) {
     { key: 'length_km', label: 'Km', numeric: true, render: r => r.length_km != null ? Number(r.length_km).toFixed(1) : <span style={{ color: 'rgba(148,163,184,0.5)', fontStyle: 'italic' }}>No data</span> },
     { key: 'region', label: 'Region' },
     { key: 'nBridges', label: 'Bridges', numeric: true, render: r => <span style={{ color: '#0a84ff', fontWeight: 800 }}>{r.nBridges || 0}</span> },
-    { key: 'nCulverts', label: 'Major Culverts', numeric: true, render: r => <span style={{ color: '#00d4aa', fontWeight: 800 }}>{r.nCulverts || 0}</span> },
+    { key: 'nCulverts', label: 'Major Culverts', numeric: true, render: r => <span style={{ color: '#66d4cf', fontWeight: 800 }}>{r.nCulverts || 0}</span> },
     { key: 'critical', label: 'Critical', numeric: true, render: r => <span style={{ color: r.critical ? '#ff375f' : 'inherit', fontWeight: 700 }}>{r.critical || 0}</span> },
     { key: 'poor', label: 'Poor', numeric: true, render: r => <span style={{ color: r.poor ? '#f97316' : 'inherit', fontWeight: 700 }}>{r.poor || 0}</span> },
     { key: 'names', label: 'Bridge Names', render: r => <span style={{ fontSize: 9.5, color: 'rgba(148,163,184,0.75)' }}>{r.names || '-'}</span> },
