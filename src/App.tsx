@@ -58,21 +58,21 @@ const DataAuditPanel  = lazy(() => import('./modules/DataAudit/DataAuditPanel'))
 // routes through this single component so there is only ever one nav layer.
 const SectionDashboard = lazy(() => import('./modules/Dashboard/SectionDashboard'));
 const SECTION_ACCENT: Record<string, string> = {
-  rms: '#00f5ff', roadcondition: '#ff6b35', bms: '#4d9fff', roadreserve: '#00d4aa',
-  traffic: '#00f5ff', projects: '#00ff88', pim: '#ffd23f', budget: '#ff2d78',
-  lifecycle: '#00d4aa', casestudies: '#00d4aa', sources: '#94a3b8', admin: '#00f5ff',
-  gisenterprise: '#b967ff', atc: '#ff6b35', roadatlas: '#00f5ff', roadvideo: '#00f5ff',
-  bridgeworks: '#4d9fff', downloads: '#94a3b8',
-  ducar: '#00ff88', socioeconomic: '#ffd23f',
-  ntis: '#00f5ff', npms: '#ff6b35',
-  networkstory: '#b967ff', roadnetwork: '#00f5ff', registry: '#4d9fff',
-  inspections: '#4d9fff', gismap: '#4d9fff', priority: '#ff2d78',
-  phototwin: '#4d9fff', trafficanalytics: '#00f5ff', trafficsummary: '#00f5ff',
-  growthfactors: '#ff6b35', overloading: '#ff6b35', oprc: '#00ff88',
-  ndpiv: '#ffd23f', hdm4: '#00d4aa', mlarchitecture: '#b967ff', projecttracker: '#00ff88',
+  rms: '#64d2ff', roadcondition: '#ff9f0a', bms: '#0a84ff', roadreserve: '#00d4aa',
+  traffic: '#64d2ff', projects: '#30d158', pim: '#ffd60a', budget: '#ff375f',
+  lifecycle: '#00d4aa', casestudies: '#00d4aa', sources: '#94a3b8', admin: '#64d2ff',
+  gisenterprise: '#bf5af2', atc: '#ff9f0a', roadatlas: '#64d2ff', roadvideo: '#64d2ff',
+  bridgeworks: '#0a84ff', downloads: '#94a3b8',
+  ducar: '#30d158', socioeconomic: '#ffd60a',
+  ntis: '#64d2ff', npms: '#ff9f0a',
+  networkstory: '#bf5af2', roadnetwork: '#64d2ff', registry: '#0a84ff',
+  inspections: '#0a84ff', gismap: '#0a84ff', priority: '#ff375f',
+  phototwin: '#0a84ff', trafficanalytics: '#64d2ff', trafficsummary: '#64d2ff',
+  growthfactors: '#ff9f0a', overloading: '#ff9f0a', oprc: '#30d158',
+  ndpiv: '#ffd60a', hdm4: '#00d4aa', mlarchitecture: '#bf5af2', projecttracker: '#30d158',
 };
 function SectionHub({ sectionId }: { sectionId: string }) {
-  return <SectionDashboard sectionId={sectionId} accent={SECTION_ACCENT[sectionId] ?? '#00f5ff'} />;
+  return <SectionDashboard sectionId={sectionId} accent={SECTION_ACCENT[sectionId] ?? '#64d2ff'} />;
 }
 
 // gismap/roadnetwork/networkstory used to bypass the 6-tab hub entirely

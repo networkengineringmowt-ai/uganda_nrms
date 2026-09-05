@@ -58,12 +58,12 @@ function Header() {
         </div>
       </div>
       <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#00ff88',
-          boxShadow: '0 0 6px #00ff88' }} />
+        <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#30d158',
+          boxShadow: '0 0 6px #30d158' }} />
         <span className="npms-header-user" style={{ fontSize: 9.5, color: '#8290a5', fontWeight: 700 }}>
           {user?.name ?? 'Authorised user'}
         </span>
-        <span className="npms-header-online" style={{ fontSize: 9.5, color: 'rgba(0,255,136,0.7)', fontWeight: 700 }}>Online</span>
+        <span className="npms-header-online" style={{ fontSize: 9.5, color: 'rgba(48, 209, 88,0.7)', fontWeight: 700 }}>Online</span>
         <button type="button" onClick={logout} style={{
           marginLeft: 6, padding: '5px 9px', borderRadius: 7, cursor: 'pointer',
           border: '1px solid rgba(148,163,184,0.2)', background: 'rgba(148,163,184,0.06)',
@@ -86,7 +86,7 @@ function ModuleSpinner() {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
       <div style={{ width: 30, height: 30, borderRadius: '50%',
-        border: '2px solid rgba(77,159,255,0.35)', borderTopColor: '#4d9fff',
+        border: '2px solid rgba(10, 132, 255,0.35)', borderTopColor: '#0a84ff',
         animation: 'bms-spin 0.8s linear infinite' }} />
     </div>
   );

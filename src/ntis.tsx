@@ -38,16 +38,16 @@ function NtisLiveBar() {
   const t = useTrafficLive();
   return (
     <LiveTicker
-      accent="#00f5ff"
+      accent="#64d2ff"
       asOf={t.asOf}
       ready={t.ready}
       title="Traffic nowcast · 1,014 links"
       metrics={[
-        { label: 'Network AADT',     value: kfmt(t.networkAADT), unit: 'veh/day', color: '#00f5ff', sub: 'km-weighted mean' },
-        { label: 'Trips today',      value: kfmt(t.tripsToday),  unit: 'veh',     color: '#00ff88', sub: 'since midnight' },
-        { label: 'Vehicle-km today', value: kfmt(t.vehicleKmToday), unit: 'v·km', color: '#ffd23f', sub: 'accruing live' },
-        { label: 'Daily ESAL',       value: kfmt(t.esalDay),     unit: 'ESAL',    color: '#ff6b35', sub: 'heavy-axle load' },
-        { label: 'Growth vs 2016',   value: '×' + t.growthVs2016.toFixed(3), color: '#b967ff', sub: 'live growth factor' },
+        { label: 'Network AADT',     value: kfmt(t.networkAADT), unit: 'veh/day', color: '#64d2ff', sub: 'km-weighted mean' },
+        { label: 'Trips today',      value: kfmt(t.tripsToday),  unit: 'veh',     color: '#30d158', sub: 'since midnight' },
+        { label: 'Vehicle-km today', value: kfmt(t.vehicleKmToday), unit: 'v·km', color: '#ffd60a', sub: 'accruing live' },
+        { label: 'Daily ESAL',       value: kfmt(t.esalDay),     unit: 'ESAL',    color: '#ff9f0a', sub: 'heavy-axle load' },
+        { label: 'Growth vs 2016',   value: '×' + t.growthVs2016.toFixed(3), color: '#bf5af2', sub: 'live growth factor' },
       ]}
     />
   );
@@ -58,13 +58,13 @@ function Header() {
     <header style={{
       display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0,
       padding: '8px 16px', background: 'rgba(2,2,2,0.9)',
-      borderBottom: '1px solid rgba(0,245,255,0.15)',
+      borderBottom: '1px solid rgba(100, 210, 255,0.15)',
     }}>
       <img src={`${import.meta.env.BASE_URL}mowt.jpg`} alt="MoWT"
         style={{ width: 32, height: 32, borderRadius: 8, objectFit: 'contain',
-          background: '#fff', padding: 2, border: '1px solid rgba(0,245,255,0.3)' }} />
+          background: '#fff', padding: 2, border: '1px solid rgba(100, 210, 255,0.3)' }} />
       <div style={{ lineHeight: 1.25 }}>
-        <div style={{ fontSize: 14, fontWeight: 900, color: '#00f5ff', letterSpacing: '0.04em' }}>
+        <div style={{ fontSize: 14, fontWeight: 900, color: '#64d2ff', letterSpacing: '0.04em' }}>
           Uganda National Traffic Information System
         </div>
         <div style={{ fontSize: 9.5, color: 'rgba(148,163,184,0.6)' }}>
@@ -72,9 +72,9 @@ function Header() {
         </div>
       </div>
       <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6 }}>
-        <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#00ff88',
-          boxShadow: '0 0 6px #00ff88' }} />
-        <span style={{ fontSize: 9.5, color: 'rgba(0,255,136,0.7)', fontWeight: 700 }}>System Online</span>
+        <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#30d158',
+          boxShadow: '0 0 6px #30d158' }} />
+        <span style={{ fontSize: 9.5, color: 'rgba(48, 209, 88,0.7)', fontWeight: 700 }}>System Online</span>
       </div>
     </header>
   );
@@ -84,7 +84,7 @@ function ModuleSpinner() {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
       <div style={{ width: 30, height: 30, borderRadius: '50%',
-        border: '2px solid rgba(75,99,130,0.4)', borderTopColor: '#00f5ff',
+        border: '2px solid rgba(75,99,130,0.4)', borderTopColor: '#64d2ff',
         animation: 'bms-spin 0.8s linear infinite' }} />
     </div>
   );
