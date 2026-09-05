@@ -12,7 +12,7 @@ const RATING_LABEL: Record<number, string> = {
   1: 'Critical', 2: 'Poor', 3: 'Fair', 4: 'Good', 5: 'Excellent',
 };
 const RATING_COLOR: Record<number, string> = {
-  1: '#ff3366', 2: '#ff6b35', 3: '#ffd23f', 4: '#00f5ff', 5: '#00ff88',
+  1: '#ff453a', 2: '#ff9f0a', 3: '#ffd60a', 4: '#64d2ff', 5: '#30d158',
 };
 
 interface Row {
@@ -81,7 +81,7 @@ export default function CriticalStructures() {
   return (
     <div style={{ padding: '12px 12px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-        <AlertTriangle size={16} style={{ color: '#ff3366' }} />
+        <AlertTriangle size={16} style={{ color: '#ff453a' }} />
         <div style={{ fontSize: 14, fontWeight: 900, color: '#e2eaf4' }}>Critical Structures</div>
       </div>
       <div style={{ fontSize: 11, color: 'rgba(148,163,184,0.7)', marginBottom: 14 }}>
@@ -91,7 +91,7 @@ export default function CriticalStructures() {
       <SortableFilterableTable
         columns={columns}
         rows={rows}
-        accent="#ff3366"
+        accent="#ff453a"
         exportName="critical-structures"
         initialSort="priorityRank"
       />
