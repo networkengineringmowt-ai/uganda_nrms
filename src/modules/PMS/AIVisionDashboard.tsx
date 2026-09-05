@@ -49,7 +49,7 @@ export default function AIVisionDashboard() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h2 style={{ color: '#64d2ff', marginBottom: 8, fontSize: 18, fontWeight: 900, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <h2 style={{ color: '#00f5ff', marginBottom: 8, fontSize: 18, fontWeight: 900, display: 'flex', alignItems: 'center', gap: 8 }}>
             <Cpu size={20} />
             CNN VISION & VCI PIPELINE
           </h2>
@@ -58,9 +58,9 @@ export default function AIVisionDashboard() {
           </p>
         </div>
         <div style={{ display: 'flex', gap: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(48, 209, 88,0.1)', border: '1px solid rgba(48, 209, 88,0.3)', padding: '6px 12px', borderRadius: 20 }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#30d158', boxShadow: '0 0 8px #30d158' }} />
-            <span style={{ fontSize: 11, color: '#30d158', fontWeight: 700 }}>Demonstration Model Ready</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(0, 255, 136,0.1)', border: '1px solid rgba(0, 255, 136,0.3)', padding: '6px 12px', borderRadius: 20 }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#00ff88', boxShadow: '0 0 8px #00ff88' }} />
+            <span style={{ fontSize: 11, color: '#00ff88', fontWeight: 700 }}>Demonstration Model Ready</span>
           </div>
         </div>
       </div>
@@ -69,10 +69,10 @@ export default function AIVisionDashboard() {
       <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr', gap: 20 }}>
         
         {/* Video Feed & Detection */}
-        <div style={{ background: 'rgba(15,30,50,0.6)', border: '1px solid rgba(100, 210, 255,0.15)', borderRadius: 8, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ padding: '12px 16px', background: 'rgba(4,9,18,0.8)', borderBottom: '1px solid rgba(100, 210, 255,0.1)', display: 'flex', justifyContent: 'space-between' }}>
+        <div style={{ background: 'rgba(15,30,50,0.6)', border: '1px solid rgba(0, 245, 255,0.15)', borderRadius: 8, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ padding: '12px 16px', background: 'rgba(4,9,18,0.8)', borderBottom: '1px solid rgba(0, 245, 255,0.1)', display: 'flex', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#e2eaf4', fontSize: 12, fontWeight: 700 }}>
-              <FileVideo size={16} color="#64d2ff" /> Frame Analysis Demo: A001_Link03
+              <FileVideo size={16} color="#00f5ff" /> Frame Analysis Demo: A001_Link03
             </div>
             <div style={{ color: 'rgba(148,163,184,0.7)', fontSize: 11, fontFamily: 'monospace' }}>
               CH 14+320 | Reference frame
@@ -102,8 +102,8 @@ export default function AIVisionDashboard() {
             {/* Simulated Scanner Line */}
             {analyzing && (
               <div style={{
-                position: 'absolute', top: 0, left: 0, width: '100%', height: 2, background: '#64d2ff',
-                boxShadow: '0 0 10px #64d2ff, 0 0 20px #64d2ff',
+                position: 'absolute', top: 0, left: 0, width: '100%', height: 2, background: '#00f5ff',
+                boxShadow: '0 0 10px #00f5ff, 0 0 20px #00f5ff',
                 animation: 'scan-line 2s infinite linear'
               }} />
             )}
@@ -137,12 +137,12 @@ export default function AIVisionDashboard() {
         {/* Inference Stats & VCI */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           
-          <div style={{ background: 'rgba(15,30,50,0.6)', border: '1px solid rgba(100, 210, 255,0.15)', borderRadius: 8, padding: 16 }}>
-            <h3 style={{ color: '#64d2ff', fontSize: 12, fontWeight: 700, marginBottom: 12, textTransform: 'uppercase' }}>Automated VCI Calculation</h3>
+          <div style={{ background: 'rgba(15,30,50,0.6)', border: '1px solid rgba(0, 245, 255,0.15)', borderRadius: 8, padding: 16 }}>
+            <h3 style={{ color: '#00f5ff', fontSize: 12, fontWeight: 700, marginBottom: 12, textTransform: 'uppercase' }}>Automated VCI Calculation</h3>
             
             {analyzing ? (
               <div style={{ textAlign: 'center', padding: '20px 0' }}>
-                <Activity size={32} color="#64d2ff" style={{ animation: 'pms-spin 1s infinite linear', marginBottom: 12 }} />
+                <Activity size={32} color="#00f5ff" style={{ animation: 'pms-spin 1s infinite linear', marginBottom: 12 }} />
                 <div style={{ fontSize: 11, color: 'rgba(148,163,184,0.7)' }}>Processing Frame... {progress}%</div>
               </div>
             ) : (
@@ -156,7 +156,7 @@ export default function AIVisionDashboard() {
                   <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.7)', marginBottom: 4 }}>Defect Deductions:</div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, background: 'rgba(0,0,0,0.2)', padding: '6px 8px', borderRadius: 4, marginBottom: 4 }}>
                     <span style={{ color: '#e2eaf4' }}>Base VCI</span>
-                    <span style={{ color: '#30d158' }}>100.0</span>
+                    <span style={{ color: '#00ff88' }}>100.0</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, background: 'rgba(239,68,68,0.1)', padding: '6px 8px', borderRadius: 4, marginBottom: 4 }}>
                     <span style={{ color: '#ef4444' }}>Pothole (x1)</span>
@@ -171,8 +171,8 @@ export default function AIVisionDashboard() {
             )}
           </div>
 
-          <div style={{ background: 'rgba(15,30,50,0.6)', border: '1px solid rgba(100, 210, 255,0.15)', borderRadius: 8, padding: 16, flex: 1 }}>
-            <h3 style={{ color: '#64d2ff', fontSize: 12, fontWeight: 700, marginBottom: 12, textTransform: 'uppercase' }}>System Telemetry</h3>
+          <div style={{ background: 'rgba(15,30,50,0.6)', border: '1px solid rgba(0, 245, 255,0.15)', borderRadius: 8, padding: 16, flex: 1 }}>
+            <h3 style={{ color: '#00f5ff', fontSize: 12, fontWeight: 700, marginBottom: 12, textTransform: 'uppercase' }}>System Telemetry</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: 11, color: 'rgba(148,163,184,0.9)' }}>
               <div><span style={{ color: 'rgba(148,163,184,0.5)' }}>Model:</span> ResNet50 + Faster R-CNN</div>
               <div><span style={{ color: 'rgba(148,163,184,0.5)' }}>Reference latency:</span> 42ms / frame</div>
@@ -182,7 +182,7 @@ export default function AIVisionDashboard() {
             
             <button 
               onClick={() => { setProgress(0); setAnalyzing(true); }}
-              style={{ width: '100%', marginTop: 24, padding: '8px', background: 'rgba(100, 210, 255,0.1)', border: '1px solid #64d2ff', color: '#64d2ff', borderRadius: 4, cursor: 'pointer', fontWeight: 700, fontSize: 11 }}>
+              style={{ width: '100%', marginTop: 24, padding: '8px', background: 'rgba(0, 245, 255,0.1)', border: '1px solid #00f5ff', color: '#00f5ff', borderRadius: 4, cursor: 'pointer', fontWeight: 700, fontSize: 11 }}>
               Rescan Frame
             </button>
           </div>

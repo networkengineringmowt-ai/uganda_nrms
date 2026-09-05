@@ -74,8 +74,8 @@ export interface SectionRow {
 }
 
 const band = (vci: number): [string, string] =>
-  vci >= 85 ? ['Very Good', '#30d158'] : vci >= 75 ? ['Good', '#7CFC00']
-  : vci >= 65 ? ['Fair', '#ffd60a'] : vci >= 55 ? ['Poor', '#ff8c00'] : ['Very Poor', '#ff375f'];
+  vci >= 85 ? ['Very Good', '#00ff88'] : vci >= 75 ? ['Good', '#7CFC00']
+  : vci >= 65 ? ['Fair', '#ffd23f'] : vci >= 55 ? ['Poor', '#ff8c00'] : ['Very Poor', '#ff2d78'];
 
 /** IRI → VCI proxy: 100 at IRI≤2, ~0 by IRI≥14 (linear), for a quick condition read. */
 export function iriToVci(iri: number): number {

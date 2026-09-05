@@ -13,7 +13,7 @@ function Spinner() {
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
       <div style={{
         width: 28, height: 28, borderRadius: '50%',
-        border: '2px solid rgba(10, 132, 255,0.35)', borderTopColor: '#0a84ff',
+        border: '2px solid rgba(77, 159, 255,0.35)', borderTopColor: '#4d9fff',
         animation: 'pms-spin 0.8s linear infinite',
       }} />
     </div>
@@ -52,7 +52,7 @@ export default function PMSSection() {
 
       <main style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
         <Suspense fallback={<Spinner />}>
-          <SectionDashboard sectionId="pms" accent="#0a84ff" />
+          <SectionDashboard sectionId="pms" accent="#4d9fff" />
         </Suspense>
       </main>
     </div>
