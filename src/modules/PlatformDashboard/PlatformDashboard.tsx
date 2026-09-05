@@ -28,14 +28,14 @@ const NETWORK_MODULE_HEALTH: { id: string; name: string; status: 'ok' | 'warn' |
 ];
 
 const NETWORK_QUICK_NAV: Array<{ label: string; icon: React.ReactNode; view: ActiveView; color: string }> = [
-  { label: 'RMS - Road Mgmt System', icon: <Shield size={14}/>,      view: 'rms' as ActiveView,         color: '#64d2ff' },
-  { label: 'Pavement Mgmt (PMS)',    icon: <Activity size={14}/>,    view: 'roadcondition',             color: '#ff9f0a' },
-  { label: 'Bridge Mgmt (BMS)',      icon: <NetworkIcon size={14}/>, view: 'bms',                       color: '#0a84ff' },
-  { label: 'Traffic Info (TIS)',     icon: <TrendingUp size={14}/>,  view: 'traffic',                   color: '#64d2ff' },
-  { label: 'HDM-4 Analysis',         icon: <BarChart3 size={14}/>,   view: 'hdm4',                      color: '#bf5af2' },
-  { label: 'NDPIV / Projects',       icon: <Layers size={14}/>,      view: 'projects',                  color: '#30d158' },
-  { label: 'Budget & Maint.',        icon: <Database size={14}/>,    view: 'budget',                    color: '#ffd60a' },
-  { label: 'Lifecycle Mgmt',         icon: <Shield size={14}/>,      view: 'lifecycle',                 color: '#66d4cf' },
+  { label: 'RMS - Road Mgmt System', icon: <Shield size={14}/>,      view: 'rms' as ActiveView,         color: '#00f5ff' },
+  { label: 'Pavement Mgmt (PMS)',    icon: <Activity size={14}/>,    view: 'roadcondition',             color: '#ff6b35' },
+  { label: 'Bridge Mgmt (BMS)',      icon: <NetworkIcon size={14}/>, view: 'bms',                       color: '#4d9fff' },
+  { label: 'Traffic Info (TIS)',     icon: <TrendingUp size={14}/>,  view: 'traffic',                   color: '#00f5ff' },
+  { label: 'HDM-4 Analysis',         icon: <BarChart3 size={14}/>,   view: 'hdm4',                      color: '#b967ff' },
+  { label: 'NDPIV / Projects',       icon: <Layers size={14}/>,      view: 'projects',                  color: '#00ff88' },
+  { label: 'Budget & Maint.',        icon: <Database size={14}/>,    view: 'budget',                    color: '#ffd23f' },
+  { label: 'Lifecycle Mgmt',         icon: <Shield size={14}/>,      view: 'lifecycle',                 color: '#00d4aa' },
   { label: 'Sources & Evidence',     icon: <BookOpen size={14}/>,    view: 'sources',                   color: '#94a3b8' },
 ];
 
@@ -160,7 +160,7 @@ export default function PlatformDashboard() {
     <div className="flex-1 overflow-y-auto p-3 space-y-3 animate-fade-in">
 
       {/* ─── Definition card ─── */}
-      <div style={{ background:'rgba(10, 132, 255,0.04)', border:'1px solid rgba(10, 132, 255,0.14)', borderRadius:12, padding:'14px 18px', marginBottom:2 }}>
+      <div style={{ background:'rgba(77, 159, 255,0.04)', border:'1px solid rgba(77, 159, 255,0.14)', borderRadius:12, padding:'14px 18px', marginBottom:2 }}>
         <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:8 }}>
           <span style={{ fontSize:26 }}>🗺️</span>
           <div>
@@ -173,27 +173,27 @@ export default function PlatformDashboard() {
         </p>
         <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
           {['NDPIV Aligned','ISO 55001','HDM-4 Powered','GIS Integrated','AfDB / World Bank','ML-Enhanced'].map((b: string)=>(
-            <span key={b} style={{ fontSize:9, fontWeight:700, color:'#0a84ff', background:'rgba(10, 132, 255,0.07)', border:'1px solid rgba(10, 132, 255,0.18)', borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
+            <span key={b} style={{ fontSize:9, fontWeight:700, color:'#4d9fff', background:'rgba(77, 159, 255,0.07)', border:'1px solid rgba(77, 159, 255,0.18)', borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
           ))}
         </div>
       </div>
       {/* ── Stat tiles (RMS-style animated KPI banner) ── */}
       <div className="grid grid-cols-2 lg:grid-cols-6 gap-2.5">
-        <StatTile label="Total Network" value="21302" unit="km" color="#0a84ff" onNav={nav}
+        <StatTile label="Total Network" value="21302" unit="km" color="#4d9fff" onNav={nav}
           tooltip="Official NDPIV FY 2025/26 figure · 6 regions · 23 maintenance stations · Source: MoWT/DNR"
           navChips={[{ label: 'Road Network', view: 'roadnetwork' }]} />
-        <StatTile label="Paved Roads" value="6405" unit="km" color="#30d158" onNav={nav}
+        <StatTile label="Paved Roads" value="6405" unit="km" color="#00ff88" onNav={nav}
           tooltip="6,405 km paved (bituminous + DBST) · 30.3% of national network"
           navChips={[{ label: 'Condition', view: 'roadcondition' }]} />
-        <StatTile label="Total Links" value="1014" unit="" color="#ffd60a" onNav={nav}
+        <StatTile label="Total Links" value="1014" unit="" color="#ffd23f" onNav={nav}
           tooltip={`${structures.filter(s => s.type === 'bridge').length || 546} bridges · ${networkSummary?.stations_count || 23} stations · GeoJSON-mapped (165 km gap)`}
           navChips={[{ label: 'GIS Map', view: 'roadnetwork' }]} />
-        <StatTile label="Avg Condition" value={String(networkSummary?.avg_iri_national || 3.31)} unit="IRI" color="#bf5af2" onNav={nav}
+        <StatTile label="Avg Condition" value={String(networkSummary?.avg_iri_national || 3.31)} unit="IRI" color="#b967ff" onNav={nav}
           tooltip="International Roughness Index - network-wide weighted average"
           navChips={[{ label: 'Traffic', view: 'traffic' }]} />
-        <StatTile label="Paved Condition" value={String(a?.pavedFairToGoodPct ?? 94.2)} unit="%" color="#30d158" onNav={nav}
+        <StatTile label="Paved Condition" value={String(a?.pavedFairToGoodPct ?? 94.2)} unit="%" color="#00ff88" onNav={nav}
           tooltip="Paved network rated fair-to-good · National roads assessment FY 2023/24" />
-        <StatTile label="Inspections Due" value={String(bridgeStats.overdue)} unit="" color="#ffd60a" onNav={nav}
+        <StatTile label="Inspections Due" value={String(bridgeStats.overdue)} unit="" color="#ffd23f" onNav={nav}
           tooltip="Structure inspections overdue across the network"
           navChips={[{ label: 'Inspections', view: 'inspections' }]} />
       </div>
@@ -201,17 +201,17 @@ export default function PlatformDashboard() {
       {/* ── Network figures consistency banner ── */}
       <div style={{
         display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center',
-        background: 'rgba(10, 132, 255,0.04)', border: '1px solid rgba(10, 132, 255,0.1)',
+        background: 'rgba(77, 159, 255,0.04)', border: '1px solid rgba(77, 159, 255,0.1)',
         borderRadius: 8, padding: '7px 12px', fontSize: 10,
       }}>
         <span style={{ color: 'rgba(148,163,184,0.5)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginRight: 6 }}>Network Figures</span>
-        <span style={{ color: '#0a84ff', fontWeight: 800 }}>Official: 21,302 km</span>
+        <span style={{ color: '#4d9fff', fontWeight: 800 }}>Official: 21,302 km</span>
         <span style={{ color: 'rgba(148,163,184,0.35)', margin: '0 6px' }}>|</span>
         <span style={{ color: 'rgba(148,163,184,0.7)' }}>Source: NDPIV FY25-26 (MoWT)</span>
         <span style={{ color: 'rgba(148,163,184,0.35)', margin: '0 6px' }}>|</span>
-        <span style={{ color: '#66d4cf', fontWeight: 800 }}>Mapped in GeoJSON: 21,137 km (1,014 links)</span>
+        <span style={{ color: '#00d4aa', fontWeight: 800 }}>Mapped in GeoJSON: 21,137 km (1,014 links)</span>
         <span style={{ color: 'rgba(148,163,184,0.35)', margin: '0 6px' }}>|</span>
-        <span style={{ color: '#ffd60a' }}>Gap: 165 km (unmapped/rural)</span>
+        <span style={{ color: '#ffd23f' }}>Gap: 165 km (unmapped/rural)</span>
         <span style={{ color: 'rgba(148,163,184,0.35)', margin: '0 6px' }}>|</span>
         <span style={{ color: 'rgba(148,163,184,0.5)', fontSize: 9 }}>Condition % based on surveyed links only</span>
       </div>
@@ -221,13 +221,13 @@ export default function PlatformDashboard() {
 
         {/* System Health */}
         <div>
-          <div style={{ fontSize: 11, fontWeight: 900, color: '#0a84ff',
+          <div style={{ fontSize: 11, fontWeight: 900, color: '#4d9fff',
             marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
             System Health - Module Status
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
             {NETWORK_MODULE_HEALTH.map(m => {
-              const color = m.status === 'ok' ? '#30d158' : m.status === 'warn' ? '#ffd60a' : '#94a3b8';
+              const color = m.status === 'ok' ? '#00ff88' : m.status === 'warn' ? '#ffd23f' : '#94a3b8';
               const Icon  = m.status === 'ok' ? CheckCircle : m.status === 'warn' ? AlertCircle : XCircle;
               return (
                 <button key={m.id} onClick={() => nav(m.view)} style={{
@@ -251,7 +251,7 @@ export default function PlatformDashboard() {
 
         {/* Quick Navigation grid */}
         <div>
-          <div style={{ fontSize: 11, fontWeight: 900, color: '#0a84ff',
+          <div style={{ fontSize: 11, fontWeight: 900, color: '#4d9fff',
             marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
             Quick Navigation - All Modules
           </div>
@@ -292,14 +292,14 @@ export default function PlatformDashboard() {
           <Chart3DWrap>
             <ResponsiveContainer width="100%" height={180}>
               <AreaChart data={pavedStock} margin={{ top: 4, right: 12, left: 0, bottom: 0 }}>
-                <AreaGradDefs id="pgPlatform" color="#30d158" />
+                <AreaGradDefs id="pgPlatform" color="#00ff88" />
                 <GlowDefs id="pgp" />
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.06)"/>
                 <XAxis dataKey="year" tick={{ fill:'rgba(148,163,184,0.5)', fontSize:9 }} axisLine={false} tickLine={false}/>
                 <YAxis tick={{ fill:'rgba(148,163,184,0.5)', fontSize:9 }} axisLine={false} tickLine={false} width={46}
                   tickFormatter={(v:number) => `${v.toLocaleString()}`}/>
                 <Tooltip {...TT_NEON} formatter={(v:number) => [`${v.toLocaleString()} km`, 'Paved stock']}/>
-                <Area type="monotone" dataKey="km" stroke="#30d158" strokeWidth={2} fill="url(#pgPlatform)" dot={{ fill:'#30d158', r:3 }} animationDuration={1000}/>
+                <Area type="monotone" dataKey="km" stroke="#00ff88" strokeWidth={2} fill="url(#pgPlatform)" dot={{ fill:'#00ff88', r:3 }} animationDuration={1000}/>
               </AreaChart>
             </ResponsiveContainer>
           </Chart3DWrap>
@@ -331,7 +331,7 @@ export default function PlatformDashboard() {
                 <XAxis dataKey="year" tick={{ fill:'rgba(148,163,184,0.5)', fontSize:9 }} axisLine={false} tickLine={false}/>
                 <YAxis tick={{ fill:'rgba(148,163,184,0.5)', fontSize:9 }} axisLine={false} tickLine={false} width={46}/>
                 <Tooltip {...TT_NEON} formatter={(v:number, name:string) => [v.toLocaleString(), name === 'motorised' ? 'Motorised AADT' : 'Non-motorised AADT']}/>
-                <Bar dataKey="motorised" fill="#0a84ff" radius={[4,4,0,0]} animationDuration={1000} shape={<Bar3D />}/>
+                <Bar dataKey="motorised" fill="#4d9fff" radius={[4,4,0,0]} animationDuration={1000} shape={<Bar3D />}/>
                 <Bar dataKey="nmot" fill="rgba(148,163,184,0.4)" radius={[4,4,0,0]} animationDuration={1000} shape={<Bar3D />}/>
               </BarChart>
             </ResponsiveContainer>
@@ -378,10 +378,10 @@ export default function PlatformDashboard() {
           <div className="text-sm font-bold text-white mb-4">Network Condition</div>
           <div className="space-y-3">
             {[
-              { label:'Paved fair-to-good',   pct: a?.pavedFairToGoodPct ?? 94.2,                     color:'#30d158' },
-              { label:'Paved poor',            pct: 100 - (a?.pavedFairToGoodPct ?? 94.2),             color:'#ff375f' },
-              { label:'Unpaved fair-to-good',  pct: a?.unpavedFairToGoodPct ?? 62.0,                   color:'#ffd60a' },
-              { label:'Unpaved poor',          pct: 100 - (a?.unpavedFairToGoodPct ?? 62.0),           color:'#ff375f' },
+              { label:'Paved fair-to-good',   pct: a?.pavedFairToGoodPct ?? 94.2,                     color:'#00ff88' },
+              { label:'Paved poor',            pct: 100 - (a?.pavedFairToGoodPct ?? 94.2),             color:'#ff2d78' },
+              { label:'Unpaved fair-to-good',  pct: a?.unpavedFairToGoodPct ?? 62.0,                   color:'#ffd23f' },
+              { label:'Unpaved poor',          pct: 100 - (a?.unpavedFairToGoodPct ?? 62.0),           color:'#ff2d78' },
             ].map(c => (
               <div key={c.label}>
                 <div className="flex justify-between text-[10px] text-slate-400 mb-1">
@@ -413,10 +413,10 @@ export default function PlatformDashboard() {
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { label:'Bridges',    value: structures.filter(s=>s.type==='bridge').length,  hex:'#0a84ff', view:'registry'    as ActiveView },
-            { label:'Culverts',   value: structures.filter(s=>s.type==='culvert').length, hex:'#64d2ff', view:'registry'    as ActiveView },
-            { label:'Critical',   value: bridgeStats.critical,                            hex:'#ff375f', view:'priority'    as ActiveView },
-            { label:'Insp. Due',  value: bridgeStats.overdue,                             hex:'#ffd60a', view:'inspections' as ActiveView },
+            { label:'Bridges',    value: structures.filter(s=>s.type==='bridge').length,  hex:'#4d9fff', view:'registry'    as ActiveView },
+            { label:'Culverts',   value: structures.filter(s=>s.type==='culvert').length, hex:'#00f5ff', view:'registry'    as ActiveView },
+            { label:'Critical',   value: bridgeStats.critical,                            hex:'#ff2d78', view:'priority'    as ActiveView },
+            { label:'Insp. Due',  value: bridgeStats.overdue,                             hex:'#ffd23f', view:'inspections' as ActiveView },
           ].map(item => {
             const rgb = hexRgb(item.hex);
             return (
@@ -441,8 +441,8 @@ export default function PlatformDashboard() {
 
 // ── Neon colour map ───────────────────────────────────────────────────────────
 const NEON_MAP: Record<string, string> = {
-  blue:   '#0a84ff', green: '#30d158', amber: '#ffd60a',
-  purple: '#bf5af2', red:   '#ff375f', cyan:  '#64d2ff', teal: '#66d4cf',
+  blue:   '#4d9fff', green: '#00ff88', amber: '#ffd23f',
+  purple: '#b967ff', red:   '#ff2d78', cyan:  '#00f5ff', teal: '#00d4aa',
 };
 function hexRgb(h: string): string {
   const c = h.replace('#','');
@@ -454,7 +454,7 @@ function BigKPI({ label, value, sub, icon, color, onClick }: {
   label: string; value: string; sub: string; icon: React.ReactNode;
   color: 'blue'|'green'|'amber'|'purple'|'red'; onClick?: ()=>void;
 }) {
-  const hex = NEON_MAP[color] ?? '#0a84ff';
+  const hex = NEON_MAP[color] ?? '#4d9fff';
   const rgb = hexRgb(hex);
   return (
     <div onClick={onClick} style={{
@@ -487,7 +487,7 @@ function BigKPI({ label, value, sub, icon, color, onClick }: {
 function SmallKPI({ label, value, sub, color, onClick }: {
   label: string; value: string; sub: string; color: 'green'|'amber'|'red'|'blue'; onClick?: ()=>void;
 }) {
-  const hex = NEON_MAP[color] ?? '#0a84ff';
+  const hex = NEON_MAP[color] ?? '#4d9fff';
   const rgb = hexRgb(hex);
   return (
     <div onClick={onClick} style={{
