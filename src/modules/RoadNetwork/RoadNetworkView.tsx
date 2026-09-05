@@ -70,7 +70,7 @@ interface NdpivData {
 
 // ── Colour palette ────────────────────────────────────────────────────────────
 const C = {
-  paved:   '#64d2ff',   // neon cyan  (charts/stats only)
+  paved:   '#00f5ff',   // neon cyan  (charts/stats only)
   unsealed:'#ff8c00',  // amber-orange (charts/stats only)
   bgVoid:  '#020508',
   glass:   'rgba(6,13,24,0.88)',
@@ -83,14 +83,14 @@ const ROAD_SYM    = ROAD_STYLES;                         // { paved, unpaved, un
 const PAVED_SHIMMER = ROAD_STYLES.shimmer;               // { color, weight, opacity }
 
 const REGION_COLORS: Record<string,string> = {
-  'Central':      '#64d2ff',
-  'Eastern':      '#ffd60a',
-  'Northern':     '#30d158',
-  'Western':      '#bf5af2',
-  'Southern':     '#ff375f',
-  'North Eastern':'#ff9f0a',
+  'Central':      '#00f5ff',
+  'Eastern':      '#ffd23f',
+  'Northern':     '#00ff88',
+  'Western':      '#b967ff',
+  'Southern':     '#ff2d78',
+  'North Eastern':'#ff6b35',
 };
-const CLASS_COLORS: Record<string,string> = { A:'#ff453a', B:'#ff9f0a', C:'#ffd60a', M:'#bf5af2' };
+const CLASS_COLORS: Record<string,string> = { A:'#ff3366', B:'#ff6b35', C:'#ffd23f', M:'#b967ff' };
 const CLASS_WEIGHT: Record<string,number> = { A:4, B:3, C:2, M:2.5 };
 
 // ── Structure icon helpers (bridges & culverts) ───────────────────────────────
@@ -101,7 +101,7 @@ function makeRNBridgeIcon(critical: boolean, _sz: number): L.DivIcon {
   if (structIconCache.has(key)) return structIconCache.get(key)!;
   const html = `<svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;display:block">
     <circle cx="6" cy="6" r="5" fill="#3B82F6" stroke="white" stroke-width="1.5"/>
-    ${critical ? `<circle cx="6" cy="6" r="5" fill="none" stroke="#ff375f" stroke-width="1.5" stroke-dasharray="3 2" opacity="0.9"/>` : ''}
+    ${critical ? `<circle cx="6" cy="6" r="5" fill="none" stroke="#ff2d78" stroke-width="1.5" stroke-dasharray="3 2" opacity="0.9"/>` : ''}
   </svg>`;
   const icon = L.divIcon({ className: '', html, iconSize: [12, 12], iconAnchor: [6, 6] });
   structIconCache.set(key, icon);
@@ -113,7 +113,7 @@ function makeRNCulvertIcon(critical: boolean, _sz: number): L.DivIcon {
   if (structIconCache.has(key)) return structIconCache.get(key)!;
   const html = `<svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;display:block">
     <rect x="1" y="1" width="10" height="10" rx="2" fill="#F59E0B" stroke="white" stroke-width="1.5"/>
-    ${critical ? `<rect x="0.75" y="0.75" width="10.5" height="10.5" rx="2.5" fill="none" stroke="#ff375f" stroke-width="1.5" stroke-dasharray="3 2" opacity="0.9"/>` : ''}
+    ${critical ? `<rect x="0.75" y="0.75" width="10.5" height="10.5" rx="2.5" fill="none" stroke="#ff2d78" stroke-width="1.5" stroke-dasharray="3 2" opacity="0.9"/>` : ''}
   </svg>`;
   const icon = L.divIcon({ className: '', html, iconSize: [12, 12], iconAnchor: [6, 6] });
   structIconCache.set(key, icon);
@@ -345,12 +345,12 @@ export default function RoadNetworkView({ defaultHistory }: { defaultHistory?: b
           <div style={{ position:'absolute', inset:0, zIndex:2000, display:'flex',
             alignItems:'center', justifyContent:'center',
             background:'rgba(2,5,8,0.85)', backdropFilter:'blur(8px)' }}>
-            <div style={{ textAlign:'center', color:'#64d2ff' }}>
-              <div style={{ width:32, height:32, border:'2px solid rgba(100, 210, 255,0.2)',
-                borderTopColor:'#64d2ff', borderRadius:'50%',
+            <div style={{ textAlign:'center', color:'#00f5ff' }}>
+              <div style={{ width:32, height:32, border:'2px solid rgba(0, 245, 255,0.2)',
+                borderTopColor:'#00f5ff', borderRadius:'50%',
                 animation:'spin-slow 1s linear infinite', margin:'0 auto 12px' }}/>
               <div style={{ fontSize:13, fontWeight:700 }}>Loading road network…</div>
-              <div style={{ fontSize:10, color:'rgba(100, 210, 255,0.5)', marginTop:4 }}>{netStatsLoad.totalLinks.toLocaleString()} links mapped · {(networkSummary?.official_total_km ?? netStatsLoad.officialKm).toLocaleString()} km official</div>
+              <div style={{ fontSize:10, color:'rgba(0, 245, 255,0.5)', marginTop:4 }}>{netStatsLoad.totalLinks.toLocaleString()} links mapped · {(networkSummary?.official_total_km ?? netStatsLoad.officialKm).toLocaleString()} km official</div>
             </div>
           </div>
         )}
@@ -437,10 +437,10 @@ export default function RoadNetworkView({ defaultHistory }: { defaultHistory?: b
                 <LegRow color={ROAD_SYM.unpaved.color} label="Unpaved / Gravel"  val={yearStats ? `${yearStats.unsKm.toFixed(0)} km` : ''} dash="4 3"/>
                 <LegRow color={ROAD_SYM.unknown.color} label="Unknown / Constr." val="" dash="2 4"/>
                 {yearStats && (
-                  <div style={{ marginTop:8, paddingTop:6, borderTop:'1px solid rgba(100, 210, 255,0.08)' }}>
-                    <div style={{ fontSize:9, color:'rgba(100, 210, 255,0.5)', marginBottom:3 }}>Paved proportion</div>
+                  <div style={{ marginTop:8, paddingTop:6, borderTop:'1px solid rgba(0, 245, 255,0.08)' }}>
+                    <div style={{ fontSize:9, color:'rgba(0, 245, 255,0.5)', marginBottom:3 }}>Paved proportion</div>
                     <div style={{ height:4, background:'rgba(255,255,255,0.06)', borderRadius:2 }}>
-                      <div style={{ height:'100%', borderRadius:2, background:`linear-gradient(90deg,${C.paved},#0a84ff)`,
+                      <div style={{ height:'100%', borderRadius:2, background:`linear-gradient(90deg,${C.paved},#4d9fff)`,
                         width:`${yearStats.pavPct.toFixed(1)}%`, transition:'width 0.4s' }}/>
                     </div>
                     <div style={{ marginTop:4, fontSize:10, fontWeight:800, color:C.paved }}>
@@ -476,16 +476,16 @@ export default function RoadNetworkView({ defaultHistory }: { defaultHistory?: b
                 <button key={m} onClick={() => setColorBy(m)} style={{
                   display:'block', width:'100%', textAlign:'left', marginBottom:3,
                   padding:'5px 8px', borderRadius:6, cursor:'pointer', fontSize:10, fontWeight:600,
-                  background: colorBy===m ? 'rgba(100, 210, 255,0.12)' : 'transparent',
-                  border: colorBy===m ? '1px solid rgba(100, 210, 255,0.3)' : '1px solid transparent',
-                  color: colorBy===m ? '#64d2ff' : 'rgba(148,163,184,0.7)',
+                  background: colorBy===m ? 'rgba(0, 245, 255,0.12)' : 'transparent',
+                  border: colorBy===m ? '1px solid rgba(0, 245, 255,0.3)' : '1px solid transparent',
+                  color: colorBy===m ? '#00f5ff' : 'rgba(148,163,184,0.7)',
                 }}>
                   {m === 'surface' ? 'Surface Type' : m === 'class' ? 'Road Class' : 'Region'}
                 </button>
               ))}
 
               {/* Filters */}
-              <div style={{ marginTop:8, paddingTop:6, borderTop:'1px solid rgba(100, 210, 255,0.08)' }}>
+              <div style={{ marginTop:8, paddingTop:6, borderTop:'1px solid rgba(0, 245, 255,0.08)' }}>
                 <div style={sectionHead}>Filter</div>
                 <div style={{ fontSize:9, color:'rgba(100,116,139,0.6)', marginBottom:3 }}>Surface</div>
                 <div style={{ display:'flex', gap:3, marginBottom:6 }}>
@@ -518,13 +518,13 @@ export default function RoadNetworkView({ defaultHistory }: { defaultHistory?: b
           <div style={{
             position:'absolute', bottom:0, left:0, right:0, zIndex:999,
             background:'rgba(2,5,8,0.92)', backdropFilter:'blur(16px)',
-            borderTop:'1px solid rgba(100, 210, 255,0.10)',
+            borderTop:'1px solid rgba(0, 245, 255,0.10)',
             padding:'10px 20px 12px',
           }}>
             {/* Year display */}
             <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:8 }}>
-              <span style={{ fontSize:28, fontWeight:900, color:'#64d2ff',
-                textShadow:'0 0 20px rgba(100, 210, 255,0.5)', fontVariantNumeric:'tabular-nums',
+              <span style={{ fontSize:28, fontWeight:900, color:'#00f5ff',
+                textShadow:'0 0 20px rgba(0, 245, 255,0.5)', fontVariantNumeric:'tabular-nums',
                 minWidth:60 }}>
                 {animYear}
               </span>
@@ -545,9 +545,9 @@ export default function RoadNetworkView({ defaultHistory }: { defaultHistory?: b
                 <ABtn onClick={() => { setAnimYear(ANIM_MIN); setPlaying(false); }}><SkipBack size={12}/></ABtn>
                 <button onClick={() => setPlaying(p => !p)} style={{
                   padding:'6px 16px', borderRadius:8, cursor:'pointer',
-                  background: playing ? 'rgba(255, 159, 10,0.15)' : 'rgba(100, 210, 255,0.12)',
-                  border: playing ? '1px solid rgba(255, 159, 10,0.4)' : '1px solid rgba(100, 210, 255,0.35)',
-                  color: playing ? '#ff9f0a' : '#64d2ff',
+                  background: playing ? 'rgba(255, 107, 53,0.15)' : 'rgba(0, 245, 255,0.12)',
+                  border: playing ? '1px solid rgba(255, 107, 53,0.4)' : '1px solid rgba(0, 245, 255,0.35)',
+                  color: playing ? '#ff6b35' : '#00f5ff',
                   display:'flex', alignItems:'center', gap:6, fontWeight:700, fontSize:12,
                 }}>
                   {playing ? <Pause size={13}/> : <Play size={13}/>}
@@ -558,7 +558,7 @@ export default function RoadNetworkView({ defaultHistory }: { defaultHistory?: b
                 {/* Speed */}
                 <div style={{ display:'flex', gap:3, marginLeft:8 }}>
                   {[{l:'1×',v:800},{l:'2×',v:400},{l:'5×',v:160}].map(s => (
-                    <button key={s.v} onClick={() => setSpeed(s.v)} style={filterBtn(speed===s.v, '#bf5af2')}>
+                    <button key={s.v} onClick={() => setSpeed(s.v)} style={filterBtn(speed===s.v, '#b967ff')}>
                       {s.l}
                     </button>
                   ))}
@@ -568,7 +568,7 @@ export default function RoadNetworkView({ defaultHistory }: { defaultHistory?: b
               {/* Paving progress */}
               {yearStats && (
                 <div style={{ textAlign:'right', minWidth:100 }}>
-                  <div style={{ fontSize:18, fontWeight:900, color:'#64d2ff' }}>
+                  <div style={{ fontSize:18, fontWeight:900, color:'#00f5ff' }}>
                     {yearStats.pavKm.toFixed(0)} km
                   </div>
                   <div style={{ fontSize:9, color:'rgba(100,116,139,0.6)' }}>paved · {yearStats.pavPct.toFixed(1)}%</div>
@@ -584,11 +584,11 @@ export default function RoadNetworkView({ defaultHistory }: { defaultHistory?: b
                     margin={{ top:0, right:0, bottom:0, left:0 }}>
                     <defs>
                       <linearGradient id="rnvGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%"  stopColor="#64d2ff" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#64d2ff" stopOpacity={0}/>
+                        <stop offset="5%"  stopColor="#00f5ff" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#00f5ff" stopOpacity={0}/>
                       </linearGradient>
                     </defs>
-                    <Area type="monotone" dataKey="cum_paved_km" stroke="#64d2ff" strokeWidth={1.5}
+                    <Area type="monotone" dataKey="cum_paved_km" stroke="#00f5ff" strokeWidth={1.5}
                       fill="url(#rnvGrad)" dot={false} animationDuration={200}/>
                     {/* Reference line for current year */}
                   </AreaChart>
@@ -634,9 +634,9 @@ export default function RoadNetworkView({ defaultHistory }: { defaultHistory?: b
               {selectedRaw && selected && (
                 <div style={{
                   width: 270, background:'rgba(6,13,24,0.97)', backdropFilter:'blur(16px)',
-                  border:'1px solid rgba(100, 210, 255,0.12)', borderRadius:10, padding:'10px 12px',
+                  border:'1px solid rgba(0, 245, 255,0.12)', borderRadius:10, padding:'10px 12px',
                 }}>
-                  <div style={{ fontSize:9, fontWeight:800, color:'rgba(100, 210, 255,0.5)',
+                  <div style={{ fontSize:9, fontWeight:800, color:'rgba(0, 245, 255,0.5)',
                     textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:8 }}>
                     GeoJSON Attributes · {selected.link_id}
                   </div>
@@ -668,10 +668,10 @@ export default function RoadNetworkView({ defaultHistory }: { defaultHistory?: b
         transform:'translateY(-50%)', zIndex:1001,
         padding:'10px 4px',
         background:'rgba(2,5,8,0.9)', backdropFilter:'blur(10px)',
-        border:'1px solid rgba(100, 210, 255,0.15)',
+        border:'1px solid rgba(0, 245, 255,0.15)',
         borderRight: sideOpen ? undefined : 'none',
         borderRadius: sideOpen ? '8px 0 0 8px' : '0 8px 8px 0',
-        color:'#64d2ff', cursor:'pointer', transition:'right 0.3s',
+        color:'#00f5ff', cursor:'pointer', transition:'right 0.3s',
       }}>
         {sideOpen ? <ChevronRight size={14}/> : <ChevronLeft size={14}/>}
       </button>
@@ -680,19 +680,19 @@ export default function RoadNetworkView({ defaultHistory }: { defaultHistory?: b
       {sideOpen && (
         <div style={{ width:420, flexShrink:0,
           background:'rgba(2,5,8,0.95)', backdropFilter:'blur(24px)',
-          borderLeft:'1px solid rgba(100, 210, 255,0.08)',
+          borderLeft:'1px solid rgba(0, 245, 255,0.08)',
           display:'flex', flexDirection:'column', overflow:'hidden' }}>
 
           {/* Tab header */}
-          <div style={{ display:'flex', borderBottom:'1px solid rgba(100, 210, 255,0.08)', flexShrink:0 }}>
+          <div style={{ display:'flex', borderBottom:'1px solid rgba(0, 245, 255,0.08)', flexShrink:0 }}>
             {[{id:'map' as const,icon:<Layers size={12}/>,label:'Network'},
               {id:'dashboard' as const,icon:<BarChart3 size={12}/>,label:'Dashboard'}].map(t => (
               <button key={t.id} onClick={() => setPanel(t.id)} style={{
                 flex:1, padding:'10px 8px', display:'flex', alignItems:'center', justifyContent:'center', gap:6,
                 fontSize:11, fontWeight:700, cursor:'pointer', border:'none',
-                background: panel===t.id ? 'rgba(100, 210, 255,0.06)' : 'transparent',
-                color: panel===t.id ? '#64d2ff' : 'rgba(100,116,139,0.6)',
-                borderBottom: panel===t.id ? '2px solid #64d2ff' : '2px solid transparent',
+                background: panel===t.id ? 'rgba(0, 245, 255,0.06)' : 'transparent',
+                color: panel===t.id ? '#00f5ff' : 'rgba(100,116,139,0.6)',
+                borderBottom: panel===t.id ? '2px solid #00f5ff' : '2px solid transparent',
                 transition:'all 0.2s',
               }}>
                 {t.icon}{t.label}
@@ -763,10 +763,10 @@ function NetworkStatsPanel({ stats, ndpiv, storyData, animYear, animMode, networ
 
       {/* Summary stats */}
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginBottom:14 }}>
-        <StatCard val={totalKm.toFixed(0)} unit="km" label="Total Network" color="#64d2ff"/>
-        <StatCard val={pavKm.toFixed(0)}   unit="km" label="Paved"         color="#30d158"/>
+        <StatCard val={totalKm.toFixed(0)} unit="km" label="Total Network" color="#00f5ff"/>
+        <StatCard val={pavKm.toFixed(0)}   unit="km" label="Paved"         color="#00ff88"/>
         <StatCard val={unsKm.toFixed(0)}   unit="km" label="Unsealed"      color="#ff8c00"/>
-        <StatCard val={`${pavPct.toFixed(1)}%`} unit="" label="Paved Share" color="#ffd60a"/>
+        <StatCard val={`${pavPct.toFixed(1)}%`} unit="" label="Paved Share" color="#ffd23f"/>
       </div>
       {/* GeoJSON vs Official coverage note */}
       <div style={{
@@ -779,13 +779,13 @@ function NetworkStatsPanel({ stats, ndpiv, storyData, animYear, animMode, networ
           <span>GeoJSON mapped:</span><span style={{ color: '#60a5fa', fontWeight: 700 }}>{netStats.totalKm.toLocaleString()} km (mapped) · {netStats.totalLinks.toLocaleString()} links</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', color: 'rgba(148,163,184,0.7)', marginBottom: 2 }}>
-          <span>Official Department of National Roads 2026:</span><span style={{ color: '#64d2ff', fontWeight: 700 }}>{(networkSummary?.official_total_km ?? netStats.officialKm).toLocaleString()} km</span>
+          <span>Official Department of National Roads 2026:</span><span style={{ color: '#00f5ff', fontWeight: 700 }}>{(networkSummary?.official_total_km ?? netStats.officialKm).toLocaleString()} km</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', color: 'rgba(148,163,184,0.5)' }}>
           <span>Unmapped gap:</span><span style={{ color: '#fb923c', fontWeight: 700 }}>{Math.max(0, (networkSummary?.official_total_km ?? netStats.officialKm) - netStats.totalKm).toLocaleString()} km</span>
         </div>
       </div>
-      {ndpiv && <div style={{ fontSize:8, color:'rgba(100, 210, 255,0.35)', marginBottom:8 }}>Network inventory · FY 2025/26</div>}
+      {ndpiv && <div style={{ fontSize:8, color:'rgba(0, 245, 255,0.35)', marginBottom:8 }}>Network inventory · FY 2025/26</div>}
 
       {/* Paved proportion bar */}
       <div style={{ marginBottom:16 }}>
@@ -795,7 +795,7 @@ function NetworkStatsPanel({ stats, ndpiv, storyData, animYear, animMode, networ
         <div style={{ height:8, borderRadius:4, background:'rgba(255,255,255,0.05)', overflow:'hidden' }}>
           <div style={{ height:'100%', background:`linear-gradient(90deg,${C.paved},#00b8ff)`,
             width:`${pavPct}%`, borderRadius:4, transition:'width 0.5s',
-            boxShadow:`0 0 8px rgba(100, 210, 255,0.4)` }}/>
+            boxShadow:`0 0 8px rgba(0, 245, 255,0.4)` }}/>
         </div>
         <div style={{ display:'flex', justifyContent:'space-between', marginTop:3, fontSize:9 }}>
           <span style={{ color:C.paved }}>{pavPct.toFixed(1)}%</span>
@@ -853,7 +853,7 @@ function NetworkStatsPanel({ stats, ndpiv, storyData, animYear, animMode, networ
               <div style={{ textAlign:'right' }}>
                 <span style={{ color:C.paved, fontSize:9, fontWeight:700 }}>{r.paved_km.toFixed(0)}</span>
                 <span style={{ color:'rgba(100,116,139,0.4)', fontSize:8 }}> / {tot.toFixed(0)} km</span>
-                <span style={{ color:'rgba(100, 210, 255,0.5)', fontSize:8 }}> · {(r.paved_km/tot*100).toFixed(0)}%</span>
+                <span style={{ color:'rgba(0, 245, 255,0.5)', fontSize:8 }}> · {(r.paved_km/tot*100).toFixed(0)}%</span>
               </div>
             </div>
             <div style={{ height:5, background:'rgba(255,255,255,0.05)', borderRadius:3, overflow:'hidden' }}>
@@ -891,10 +891,10 @@ function DashboardPanel({ stats, storyData, networkSummary }: {
       </div>
 
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginBottom:16 }}>
-        <KpiCard val={(networkSummary?.official_total_km || 21302).toLocaleString()} unit="km" label="Total Network" sub="1,018 links · National inventory FY25-26" color="#64d2ff"/>
-        <KpiCard val="6,405" unit="km" label="Paved Roads" sub="30.3% of network" color="#30d158"/>
+        <KpiCard val={(networkSummary?.official_total_km || 21302).toLocaleString()} unit="km" label="Total Network" sub="1,018 links · National inventory FY25-26" color="#00f5ff"/>
+        <KpiCard val="6,405" unit="km" label="Paved Roads" sub="30.3% of network" color="#00ff88"/>
         <KpiCard val="14,732" unit="km" label="Unsealed Roads" sub="69.7% of network" color="#ff8c00"/>
-        <KpiCard val={`+${growth.toFixed(0)}%`} unit="" label="Growth Since 1986" sub={`+${(cp2025-cp1986).toFixed(0)} km paved`} color="#ffd60a"/>
+        <KpiCard val={`+${growth.toFixed(0)}%`} unit="" label="Growth Since 1986" sub={`+${(cp2025-cp1986).toFixed(0)} km paved`} color="#ffd23f"/>
       </div>
 
       {/* Cumulative paved chart */}
@@ -909,8 +909,8 @@ function DashboardPanel({ stats, storyData, networkSummary }: {
               margin={{ top:4, right:4, bottom:0, left:0 }}>
               <defs>
                 <linearGradient id="dashGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%"  stopColor="#64d2ff" stopOpacity={0.25}/>
-                  <stop offset="95%" stopColor="#64d2ff" stopOpacity={0}/>
+                  <stop offset="5%"  stopColor="#00f5ff" stopOpacity={0.25}/>
+                  <stop offset="95%" stopColor="#00f5ff" stopOpacity={0}/>
                 </linearGradient>
               </defs>
               <XAxis dataKey="year" tick={{ fill:'#64748b', fontSize:8 }} tickLine={false} axisLine={false}
@@ -918,11 +918,11 @@ function DashboardPanel({ stats, storyData, networkSummary }: {
               <YAxis tick={{ fill:'#64748b', fontSize:8 }} tickLine={false} axisLine={false}
                 tickFormatter={v => `${(v/1000).toFixed(0)}k`} width={28}/>
               <RechartsTip
-                contentStyle={{ background:'rgba(6,13,24,0.95)', border:'1px solid rgba(100, 210, 255,0.2)', borderRadius:8, fontSize:10 }}
-                labelStyle={{ color:'#64d2ff' }}
+                contentStyle={{ background:'rgba(6,13,24,0.95)', border:'1px solid rgba(0, 245, 255,0.2)', borderRadius:8, fontSize:10 }}
+                labelStyle={{ color:'#00f5ff' }}
                 formatter={(v: number) => [`${v.toLocaleString()} km`, 'Paved']}
               />
-              <Area type="monotone" dataKey="cum_paved_km" stroke="#64d2ff" strokeWidth={2}
+              <Area type="monotone" dataKey="cum_paved_km" stroke="#00f5ff" strokeWidth={2}
                 fill="url(#dashGrad)" dot={false}/>
             </AreaChart>
           </ResponsiveContainer>
@@ -944,7 +944,7 @@ function DashboardPanel({ stats, storyData, networkSummary }: {
               <YAxis type="category" dataKey="region" tick={{ fill:'#94a3b8', fontSize:9 }}
                 tickLine={false} axisLine={false} width={54}/>
               <RechartsTip
-                contentStyle={{ background:'rgba(6,13,24,0.95)', border:'1px solid rgba(100, 210, 255,0.2)', borderRadius:8, fontSize:10 }}
+                contentStyle={{ background:'rgba(6,13,24,0.95)', border:'1px solid rgba(0, 245, 255,0.2)', borderRadius:8, fontSize:10 }}
                 formatter={(v: number, name: string) => [`${v.toFixed(0)} km`, name === 'paved_km' ? 'Paved' : 'Unsealed']}
               />
               <Bar dataKey="paved_km" stackId="a" radius={[0,0,0,0]} maxBarSize={14}>
@@ -965,18 +965,18 @@ function DashboardPanel({ stats, storyData, networkSummary }: {
         <div style={{ display:'flex', justifyContent:'space-between', fontSize:9, color:'rgba(148,163,184,0.6)', marginBottom:6 }}>
           <span>{storyData.by_region.length} regions · {storyData.by_region.reduce((s,r)=>s+r.links,0).toLocaleString()} links</span>
           <span>
-            <span style={{ color:'#30d158', fontWeight:700 }}>{storyData.by_region.reduce((s,r)=>s+r.paved_km,0).toFixed(0)} km paved</span>
+            <span style={{ color:'#00ff88', fontWeight:700 }}>{storyData.by_region.reduce((s,r)=>s+r.paved_km,0).toFixed(0)} km paved</span>
             {' + '}
             <span style={{ color:C.unsealed, fontWeight:700 }}>{storyData.by_region.reduce((s,r)=>s+r.unpaved_km,0).toFixed(0)} km unsealed</span>
             {' = '}
-            <span style={{ color:'#ffd60a', fontWeight:700 }}>
+            <span style={{ color:'#ffd23f', fontWeight:700 }}>
               {(storyData.by_region.reduce((s,r)=>s+r.paved_km,0) /
                 storyData.by_region.reduce((s,r)=>s+r.paved_km+r.unpaved_km,0)*100).toFixed(1)}% paved
             </span>
           </span>
         </div>
         <SortableFilterableTable<RegionEntry & { pavedPct: number }>
-          accent="#64d2ff"
+          accent="#00f5ff"
           exportName="region-station-breakdown"
           initialSort="paved_km"
           columns={[
@@ -1002,11 +1002,11 @@ function DashboardPanel({ stats, storyData, networkSummary }: {
       <div style={{ marginBottom:16 }}>
         <div style={sectionHead}>Vision 2040 & NDP Programs</div>
         {[
-          { prog:'Vision 2040',   target:'100% paved', year:'2040', color:'#ffd60a', desc:'All national roads bituminous, expressways to key cities' },
-          { prog:'NDP IV',        target:'+2,000 km',  year:'2026', color:'#64d2ff', desc:'21 major road projects · dual carriageways to Gulu, Mbale' },
-          { prog:'NDP III',       target:'+1,700 km',  year:'2025', color:'#30d158', desc:'Completed · 5,360→6,405 km paved · OPRC contracts' },
-          { prog:'NDP II',        target:'+1,100 km',  year:'2020', color:'#bf5af2', desc:'Completed · Kampala-Jinja, Northern Bypass, Kabale-Katuna' },
-          { prog:'RSDP',          target:'+900 km',    year:'2013', color:'#ff9f0a', desc:'Road Sector Dev. Programme · World Bank co-financed' },
+          { prog:'Vision 2040',   target:'100% paved', year:'2040', color:'#ffd23f', desc:'All national roads bituminous, expressways to key cities' },
+          { prog:'NDP IV',        target:'+2,000 km',  year:'2026', color:'#00f5ff', desc:'21 major road projects · dual carriageways to Gulu, Mbale' },
+          { prog:'NDP III',       target:'+1,700 km',  year:'2025', color:'#00ff88', desc:'Completed · 5,360→6,405 km paved · OPRC contracts' },
+          { prog:'NDP II',        target:'+1,100 km',  year:'2020', color:'#b967ff', desc:'Completed · Kampala-Jinja, Northern Bypass, Kabale-Katuna' },
+          { prog:'RSDP',          target:'+900 km',    year:'2013', color:'#ff6b35', desc:'Road Sector Dev. Programme · World Bank co-financed' },
         ].map(p => (
           <div key={p.prog} style={{ marginBottom:8, padding:'8px 10px',
             background:`rgba(${hexRgb(p.color)},0.04)`,
@@ -1033,12 +1033,12 @@ function DashboardPanel({ stats, storyData, networkSummary }: {
           { year:2025, km:6405, label:'Current - 6,405 km (30.3%)' },
         ].map(m => (
           <div key={m.year} style={{ display:'flex', gap:10, marginBottom:8, alignItems:'flex-start' }}>
-            <div style={{ fontSize:10, fontWeight:900, color:'rgba(100, 210, 255,0.6)',
+            <div style={{ fontSize:10, fontWeight:900, color:'rgba(0, 245, 255,0.6)',
               minWidth:36, fontVariantNumeric:'tabular-nums' }}>{m.year}</div>
             <div style={{ flex:1 }}>
               <div style={{ fontSize:10, color:'#e2eaf4' }}>{m.label}</div>
               <div style={{ height:2, background:'rgba(255,255,255,0.05)', borderRadius:1, marginTop:3 }}>
-                <div style={{ height:'100%', background:'linear-gradient(90deg,#64d2ff,#00b8ff)',
+                <div style={{ height:'100%', background:'linear-gradient(90deg,#00f5ff,#00b8ff)',
                   width:`${(m.km/6405*100)}%`, borderRadius:1 }}/>
               </div>
             </div>
@@ -1058,14 +1058,14 @@ function DashboardPanel({ stats, storyData, networkSummary }: {
 const glassStyle: React.CSSProperties = {
   background: C.glass,
   backdropFilter: 'blur(20px) saturate(160%)',
-  border: '1px solid rgba(100, 210, 255,0.10)',
+  border: '1px solid rgba(0, 245, 255,0.10)',
   borderRadius: 12,
 };
 const sectionHead: React.CSSProperties = {
-  fontSize: 8, fontWeight: 900, color: 'rgba(100, 210, 255,0.45)',
+  fontSize: 8, fontWeight: 900, color: 'rgba(0, 245, 255,0.45)',
   textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8,
 };
-function filterBtn(active: boolean, accent = '#64d2ff'): React.CSSProperties {
+function filterBtn(active: boolean, accent = '#00f5ff'): React.CSSProperties {
   return {
     flex:1, padding:'3px 5px', borderRadius:5, cursor:'pointer', fontSize:9, fontWeight:700,
     background: active ? `rgba(${hexRgb(accent)},0.12)` : 'rgba(255,255,255,0.04)',
@@ -1131,9 +1131,9 @@ function ModeBtn({ active, onClick, icon, label }: { active:boolean; onClick:()=
       flex:1, padding:'5px 8px', borderRadius:6, cursor:'pointer',
       display:'flex', alignItems:'center', justifyContent:'center', gap:4,
       fontSize:10, fontWeight:700,
-      background: active ? 'rgba(100, 210, 255,0.12)' : 'transparent',
-      border: active ? '1px solid rgba(100, 210, 255,0.3)' : '1px solid rgba(255,255,255,0.05)',
-      color: active ? '#64d2ff' : 'rgba(100,116,139,0.6)',
+      background: active ? 'rgba(0, 245, 255,0.12)' : 'transparent',
+      border: active ? '1px solid rgba(0, 245, 255,0.3)' : '1px solid rgba(255,255,255,0.05)',
+      color: active ? '#00f5ff' : 'rgba(100,116,139,0.6)',
     }}>{icon}{label}</button>
   );
 }
