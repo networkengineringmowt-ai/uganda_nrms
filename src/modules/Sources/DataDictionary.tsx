@@ -24,7 +24,7 @@ export default function DataDictionary() {
   return (
     <div style={{ padding: '16px 18px', color: '#e2eaf4' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-        <BookOpen size={18} style={{ color: '#4d9fff' }} />
+        <BookOpen size={18} style={{ color: '#0a84ff' }} />
         <div style={{ fontSize: 17, fontWeight: 900 }}>Data Dictionary</div>
         <span style={{ fontSize: 11, color: 'rgba(148,163,184,0.6)' }}>{DICTIONARY.length} terms · {DICT_GROUPS.length} groups</span>
       </div>
@@ -43,19 +43,19 @@ export default function DataDictionary() {
         {['all', ...DICT_GROUPS].map(g => (
           <button key={g} onClick={() => setGroup(g)} style={{
             padding: '5px 11px', borderRadius: 999, fontSize: 10.5, fontWeight: 700, cursor: 'pointer',
-            background: group === g ? 'rgba(77,159,255,0.18)' : 'rgba(255,255,255,0.03)',
-            border: `1px solid ${group === g ? '#4d9fff' : 'rgba(255,255,255,0.1)'}`,
-            color: group === g ? '#4d9fff' : 'rgba(148,163,184,0.75)' }}>{g === 'all' ? 'All' : g}</button>
+            background: group === g ? 'rgba(10, 132, 255,0.18)' : 'rgba(255,255,255,0.03)',
+            border: `1px solid ${group === g ? '#0a84ff' : 'rgba(255,255,255,0.1)'}`,
+            color: group === g ? '#0a84ff' : 'rgba(148,163,184,0.75)' }}>{g === 'all' ? 'All' : g}</button>
         ))}
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(330px, 1fr))', gap: 12 }}>
         {rows.map(e => (
-          <div key={e.key} style={{ background: 'rgba(13,20,38,0.7)', border: '1px solid rgba(77,159,255,0.14)',
+          <div key={e.key} style={{ background: 'rgba(13,20,38,0.7)', border: '1px solid rgba(10, 132, 255,0.14)',
             borderRadius: 12, padding: '13px 15px' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 3 }}>
-              <span style={{ fontWeight: 800, fontSize: 14, color: '#4d9fff' }}>{e.term}</span>
-              {e.abbr && e.abbr !== e.term && <span style={{ fontSize: 9, fontWeight: 800, color: '#00f5ff', background: 'rgba(0,245,255,0.1)', padding: '1px 6px', borderRadius: 5 }}>{e.abbr}</span>}
+              <span style={{ fontWeight: 800, fontSize: 14, color: '#0a84ff' }}>{e.term}</span>
+              {e.abbr && e.abbr !== e.term && <span style={{ fontSize: 9, fontWeight: 800, color: '#64d2ff', background: 'rgba(100, 210, 255,0.1)', padding: '1px 6px', borderRadius: 5 }}>{e.abbr}</span>}
               {e.unit && <span style={{ fontSize: 10, color: '#94a3b8' }}>({e.unit})</span>}
               <span style={{ marginLeft: 'auto', fontSize: 8.5, color: 'rgba(148,163,184,0.5)',
                 textTransform: 'uppercase', letterSpacing: '0.07em' }}>{e.group}</span>
