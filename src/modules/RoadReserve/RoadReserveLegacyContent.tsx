@@ -22,9 +22,9 @@ import { SortableFilterableTable, type STColumn } from '../../shared/SortableFil
 
 // ── Color palette (matches platform convention) ──────────────────────────────
 const C = {
-  purple: '#bf5af2', cyan: '#64d2ff', green: '#30d158',
-  blue: '#0a84ff', yellow: '#ffd60a', orange: '#ff9f0a',
-  pink: '#ff375f', teal: '#66d4cf', red: '#ff453a', gray: '#94a3b8',
+  purple: '#b967ff', cyan: '#00f5ff', green: '#00ff88',
+  blue: '#4d9fff', yellow: '#ffd23f', orange: '#ff6b35',
+  pink: '#ff2d78', teal: '#00d4aa', red: '#ff3366', gray: '#94a3b8',
 };
 
 const card = (accent: string) => ({
@@ -276,7 +276,7 @@ export default function RoadReserveLegacyContent({ initialTab, hideTabBar }: { i
       {!hideTabBar && (
         <div style={{
         display: 'flex', gap: 2, marginBottom: 20, flexShrink: 0,
-        borderBottom: '1px solid rgba(10, 132, 255,0.15)',
+        borderBottom: '1px solid rgba(77, 159, 255,0.15)',
         background: 'rgba(8,8,8,0.85)', marginLeft: -20, marginRight: -20, paddingLeft: 14,
       }}>
         {TABS.map(t => {
@@ -286,8 +286,8 @@ export default function RoadReserveLegacyContent({ initialTab, hideTabBar }: { i
               display: 'flex', alignItems: 'center', gap: 6,
               padding: '10px 14px 11px', fontSize: 11, fontWeight: isActive ? 800 : 500,
               background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0,
-              color: isActive ? '#0a84ff' : 'rgba(148,163,184,0.70)',
-              borderBottom: isActive ? '2px solid #0a84ff' : '2px solid transparent',
+              color: isActive ? '#4d9fff' : 'rgba(148,163,184,0.70)',
+              borderBottom: isActive ? '2px solid #4d9fff' : '2px solid transparent',
               transition: 'all 0.13s',
             }}>
               {t.icon} {t.label}
@@ -297,7 +297,7 @@ export default function RoadReserveLegacyContent({ initialTab, hideTabBar }: { i
       </div>
       )}
 
-          {activeTab === 'dashboard' && <SectionDashboard sectionId="roadreserve" accent="#66d4cf" />}
+          {activeTab === 'dashboard' && <SectionDashboard sectionId="roadreserve" accent="#00d4aa" />}
       {activeTab === 'overview' && (
         <OverviewTab kpis={kpis} onNavigate={(view) => dispatch({ type: 'SET_ACTIVE_VIEW', payload: view as any })} />
       )}
@@ -477,7 +477,7 @@ function ReserveMapTab() {
     <div style={{ display: 'flex', gap: 14, height: 'calc(100vh - 260px)', minHeight: 520 }}>
       {/* Map */}
       <div style={{ flex: 1, position: 'relative', borderRadius: 12, overflow: 'hidden',
-        border: '1px solid rgba(102, 212, 207,0.2)' }}>
+        border: '1px solid rgba(0, 212, 170,0.2)' }}>
         <MapContainer center={[1.4, 32.3]} zoom={7} zoomControl={false}
           style={{ width: '100%', height: '100%', background: '#0a0a0a' }}>
           <ZoomControl position="bottomright" />
