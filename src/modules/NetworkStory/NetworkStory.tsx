@@ -38,9 +38,9 @@ interface Filters {
 
 // ── Colour palette ─────────────────────────────────────────────────────────────
 export const C = {
-  purple: '#bf5af2', cyan: '#64d2ff', green: '#30d158',
-  blue: '#0a84ff',  yellow: '#ffd60a', orange: '#ff9f0a',
-  pink: '#ff375f',  teal: '#66d4cf',  indigo: '#7c6af7',
+  purple: '#b967ff', cyan: '#00f5ff', green: '#00ff88',
+  blue: '#4d9fff',  yellow: '#ffd23f', orange: '#ff6b35',
+  pink: '#ff2d78',  teal: '#00d4aa',  indigo: '#7c6af7',
 };
 const NEON = [C.cyan, C.green, C.yellow, C.orange, C.pink, C.purple, C.teal, C.blue, C.indigo];
 export const ALL_REGIONS = ['Central', 'Western', 'Southern', 'Northern', 'Eastern', 'North Eastern'];
@@ -824,7 +824,7 @@ const PROJECT_GALLERY = [
     stat: '51 km · USD 476M',
     desc: "Uganda's first expressway. The 2.3 km Nambigirwa viaduct soars over pristine papyrus wetlands connecting Kampala to Entebbe International Airport.",
     img: `${import.meta.env.BASE_URL}media/kee_nambigirwa.jpg`,
-    accent: '#64d2ff',
+    accent: '#00f5ff',
   },
   {
     id: 'kee2',
@@ -833,7 +833,7 @@ const PROJECT_GALLERY = [
     stat: '2.3 km elevated span',
     desc: 'The elevated viaduct crosses ecologically sensitive Lake Victoria wetlands on reinforced concrete piers - the longest bridge-road in Uganda.',
     img: `${import.meta.env.BASE_URL}media/kee_aerial2.png`,
-    accent: '#30d158',
+    accent: '#00ff88',
   },
   {
     id: 'nbp',
@@ -842,7 +842,7 @@ const PROJECT_GALLERY = [
     stat: '22 km · USD 108M',
     desc: 'Dual-carriageway ring road diverting heavy through-traffic from the Kampala CBD, with four major interchanges and grade separations.',
     img: `${import.meta.env.BASE_URL}media/northern_bypass.png`,
-    accent: '#bf5af2',
+    accent: '#b967ff',
   },
   {
     id: 'flyover',
@@ -851,7 +851,7 @@ const PROJECT_GALLERY = [
     stat: 'Jinja Rd · USD 34M',
     desc: 'Grade-separated interchange in the heart of Kampala CBD managing the confluence of Jinja Road and Kampala Road serving 3.5 million daily users.',
     img: `${import.meta.env.BASE_URL}media/kampala_flyover.png`,
-    accent: '#ffd60a',
+    accent: '#ffd23f',
   },
   {
     id: 'flyover2',
@@ -860,7 +860,7 @@ const PROJECT_GALLERY = [
     stat: 'Urban road upgrades',
     desc: "Aerial view of Kampala's upgraded arterial network - a city transformed by two decades of sustained investment in road infrastructure.",
     img: `${import.meta.env.BASE_URL}media/kampala_flyover2.png`,
-    accent: '#ff9f0a',
+    accent: '#ff6b35',
   },
   {
     id: 'bukakata',
@@ -869,7 +869,7 @@ const PROJECT_GALLERY = [
     stat: 'Bukakata – Bussi Island',
     desc: 'Drone survey of the Bukakata ferry terminal - the critical water-road interface connecting the mainland to the Ssese Islands on Lake Victoria.',
     img: `${import.meta.env.BASE_URL}media/bukakata_lake.jpg`,
-    accent: '#0a84ff',
+    accent: '#4d9fff',
   },
 ] as const;
 
