@@ -17,7 +17,7 @@ export function AccessPending() {
     return () => clearInterval(t);
   }, [revoked, refreshAccess]);
 
-  const accent = revoked ? '#ff375f' : '#ffd60a';
+  const accent = revoked ? '#ff2d78' : '#ffd23f';
   async function check() { setChecking(true); try { await refreshAccess(); } finally { setChecking(false); } }
 
   return (
