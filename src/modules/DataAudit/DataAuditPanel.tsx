@@ -93,10 +93,10 @@ export default function DataAuditPanel() {
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
         <div style={{
           width: 40, height: 40, borderRadius: 11,
-          background: 'rgba(0,245,255,0.1)', border: '1px solid rgba(0,245,255,0.25)',
+          background: 'rgba(100, 210, 255,0.1)', border: '1px solid rgba(100, 210, 255,0.25)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <ShieldCheck size={20} style={{ color: '#00f5ff' }} />
+          <ShieldCheck size={20} style={{ color: '#64d2ff' }} />
         </div>
         <div>
           <div style={{ fontSize: 18, fontWeight: 900, color: '#e2eaf4' }}>Data Audit</div>
@@ -111,8 +111,8 @@ export default function DataAuditPanel() {
           style={{
             marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6,
             padding: '7px 14px', borderRadius: 8, fontSize: 11, fontWeight: 700,
-            background: 'rgba(0,245,255,0.1)', border: '1px solid rgba(0,245,255,0.25)',
-            color: '#00f5ff', cursor: loading ? 'default' : 'pointer',
+            background: 'rgba(100, 210, 255,0.1)', border: '1px solid rgba(100, 210, 255,0.25)',
+            color: '#64d2ff', cursor: loading ? 'default' : 'pointer',
           }}
         >
           <RefreshCw size={12} style={{ animation: loading ? 'spin 1s linear infinite' : 'none' }} />
@@ -141,7 +141,7 @@ export default function DataAuditPanel() {
         background: 'rgba(8,14,28,0.55)', border: '1px solid rgba(255,255,255,0.07)',
         borderRadius: 12, padding: '14px 16px', marginBottom: 20,
       }}>
-        <div style={{ fontSize: 10, fontWeight: 900, color: 'rgba(0,245,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>
+        <div style={{ fontSize: 10, fontWeight: 900, color: 'rgba(100, 210, 255,0.6)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>
           Network Stats - Single Source of Truth (network2026.geojson)
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 10 }}>
@@ -172,7 +172,7 @@ export default function DataAuditPanel() {
           <SortableFilterableTable
             columns={auditColumns}
             rows={results}
-            accent="#00f5ff"
+            accent="#64d2ff"
             exportName="data_audit_results"
             initialSort="status"
             rowStyle={r => ({
