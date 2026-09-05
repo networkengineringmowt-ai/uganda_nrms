@@ -5,7 +5,7 @@ import { SortableFilterableTable, type STColumn } from '../../shared/SortableFil
 import { NullableCell } from '../../shared/tableFormatting';
 
 // Vivid platform palette (reused rather than the module's old muted indigo/red).
-const NEON = { cyan: '#00f5ff', green: '#00ff88', amber: '#ffd23f', orange: '#ff6b35', red: '#ff3366' };
+const NEON = { cyan: '#64d2ff', green: '#30d158', amber: '#ffd60a', orange: '#ff9f0a', red: '#ff453a' };
 
 // Overall-condition scale used by ConditionSurveyForm - colour-coded the
 // same way condition ratings are everywhere else on the platform.

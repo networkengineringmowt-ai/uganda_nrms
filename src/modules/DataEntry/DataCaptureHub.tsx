@@ -24,7 +24,7 @@ const CAPTURES: { id: CaptureId; title: string; table: string; desc: string; ico
   { id: 'reserve-permit', title: 'Road Reserve Permit',    table: 'road_reserve_applications',   desc: 'MOWT Form 2 - temporary use application',        icon: <ClipboardList size={18} />, live: false },
 ];
 
-const C = { teal: '#00d4aa', cyan: '#00f5ff', gray: '#94a3b8' };
+const C = { teal: '#00d4aa', cyan: '#64d2ff', gray: '#94a3b8' };
 
 export default function DataCaptureHub() {
   const { isAuthenticated, user } = useAuth();
