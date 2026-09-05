@@ -182,7 +182,7 @@ export default function OverloadingSection() {
   }, [esalBreak]);
   const donutTotal = donutData.reduce((a, b) => a + b.value, 0);
 
-  const DONUT_COLORS = ['#ef4444','#f97316','#eab308','#22c55e','#0a84ff'];
+  const DONUT_COLORS = ['#ef4444','#f97316','#eab308','#22c55e','#4d9fff'];
 
   // Regional chart data sorted by ESALs
   const regionChart = byRegion.map(r => ({
@@ -219,7 +219,7 @@ export default function OverloadingSection() {
     },
     {
       key: 'hgv_pct', label: 'HGV %', numeric: true,
-      render: r => <span style={{ color: '#ffd60a', fontFamily: 'monospace' }}>{r.hgv_pct.toFixed(1)}%</span>,
+      render: r => <span style={{ color: '#ffd23f', fontFamily: 'monospace' }}>{r.hgv_pct.toFixed(1)}%</span>,
     },
     {
       key: 'estimated_daily_esals', label: 'Daily ESALs', numeric: true, total: 'sum',
@@ -257,7 +257,7 @@ export default function OverloadingSection() {
     },
     {
       key: 'hpct', label: 'HGV %', numeric: true,
-      render: r => <span style={{ color: '#ffd60a', fontFamily: 'monospace' }}>{r.hpct.toFixed(1)}%</span>,
+      render: r => <span style={{ color: '#ffd23f', fontFamily: 'monospace' }}>{r.hpct.toFixed(1)}%</span>,
     },
     {
       key: 'esal', label: 'Daily ESALs', numeric: true, total: 'sum',
@@ -461,7 +461,7 @@ export default function OverloadingSection() {
       {/* ── Full-network ESAL ranking - every link, not just the top 20 ── */}
       <div className="bms-card">
         <div className="text-sm font-bold text-white mb-1 flex items-center gap-2">
-          <Truck size={15} style={{ color: '#64d2ff' }}/>
+          <Truck size={15} style={{ color: '#00f5ff' }}/>
           Full Network Ranking - All {allRanked.length.toLocaleString()} Links
         </div>
         <div className="text-[10px] text-slate-500 mb-4">
@@ -471,7 +471,7 @@ export default function OverloadingSection() {
         <SortableFilterableTable
           columns={allRankedColumns}
           rows={allRanked}
-          accent="#64d2ff"
+          accent="#00f5ff"
           exportName="full-network-esal-ranking"
           initialSort="esal"
           emptyText="No network risk-ranking data available."

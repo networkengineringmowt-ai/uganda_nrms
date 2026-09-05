@@ -125,7 +125,7 @@ export default function TrafficProjectionTable() {
   const columnCount = SNAPSHOT_YEARS.length + 6;
 
   const HeadCell = ({ label, k, style: st, rowSpan }: { label: React.ReactNode; k: string; style?: React.CSSProperties; rowSpan?: number }) => (
-    <th rowSpan={rowSpan} style={{ ...st, cursor: 'pointer', userSelect: 'none', color: sortKey === k ? '#ffd60a' : st?.color }} onClick={() => cycleSort(k)}>
+    <th rowSpan={rowSpan} style={{ ...st, cursor: 'pointer', userSelect: 'none', color: sortKey === k ? '#ffd23f' : st?.color }} onClick={() => cycleSort(k)}>
       {label}<SortArrow active={sortKey === k} dir={sortDir} />
     </th>
   );
@@ -174,7 +174,7 @@ export default function TrafficProjectionTable() {
           </div>
           <button onClick={exportCSV} style={{
             display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:8, fontSize:10, fontWeight:700,
-            background:'rgba(100, 210, 255,0.1)', border:'1px solid rgba(100, 210, 255,0.3)', color:'#64d2ff', cursor:'pointer',
+            background:'rgba(0, 245, 255,0.1)', border:'1px solid rgba(0, 245, 255,0.3)', color:'#00f5ff', cursor:'pointer',
           }}>
             <Download size={12}/> Export Full CSV (2016–2040)
           </button>
@@ -213,15 +213,15 @@ export default function TrafficProjectionTable() {
               <HeadCell label="Region" k="region" style={TH} rowSpan={2} />
               <HeadCell label="km" k="length_km" style={TH} rowSpan={2} />
               {SNAPSHOT_YEARS.map(y => (
-                <HeadCell key={y} label={y} k={`year-${y}`} style={{ ...TH, textAlign:'center', minWidth:52, color: y===2026?'#64d2ff':'#94a3b8',
-                  background: y===2026?'rgba(100, 210, 255,0.06)':undefined }} />
+                <HeadCell key={y} label={y} k={`year-${y}`} style={{ ...TH, textAlign:'center', minWidth:52, color: y===2026?'#00f5ff':'#94a3b8',
+                  background: y===2026?'rgba(0, 245, 255,0.06)':undefined }} />
               ))}
               <th style={TH} rowSpan={2}>Detail</th>
             </tr>
             <tr>
               {SNAPSHOT_YEARS.map(y => (
                 <th key={y} style={{ ...TH, fontSize:7.5, textAlign:'center', background:'rgba(15,15,15,0.97)',
-                  color: y===2026?'rgba(100, 210, 255,0.55)':'rgba(148,163,184,0.35)' }}>
+                  color: y===2026?'rgba(0, 245, 255,0.55)':'rgba(148,163,184,0.35)' }}>
                   Total AADT
                 </th>
               ))}
@@ -238,7 +238,7 @@ export default function TrafficProjectionTable() {
                 <>
                   <tr key={l.link_id} style={{ background: i%2===0?'rgba(15,15,15,0.3)':'transparent',
                     borderBottom:'1px solid rgba(255,255,255,0.03)' }}>
-                    <td style={{ padding:'5px 8px', color:'#64d2ff', fontFamily:'monospace', fontSize:9, whiteSpace:'nowrap' }}>{l.link_id}</td>
+                    <td style={{ padding:'5px 8px', color:'#00f5ff', fontFamily:'monospace', fontSize:9, whiteSpace:'nowrap' }}>{l.link_id}</td>
                     <td style={{ padding:'5px 8px', color:'#e2eaf4', maxWidth:200, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{l.link_name}</td>
                     <td style={{ padding:'5px 8px' }}><RoadClassPill cls={l.road_class} /></td>
                     <td style={{ padding:'5px 8px', color:'#94a3b8' }}>{l.region}</td>
@@ -299,7 +299,7 @@ export default function TrafficProjectionTable() {
           {VC_CLASSES.map(c => (
             <div key={c.key} style={{ fontSize:9, display:'flex', gap:4, alignItems:'center' }}>
               <span style={{ color:'rgba(148,163,184,0.5)' }}>{c.label}:</span>
-              <span style={{ color:'#64d2ff', fontWeight:700 }}>{(c.growth*100).toFixed(1)}%/yr</span>
+              <span style={{ color:'#00f5ff', fontWeight:700 }}>{(c.growth*100).toFixed(1)}%/yr</span>
             </div>
           ))}
         </div>
