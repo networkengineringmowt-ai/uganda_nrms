@@ -37,8 +37,8 @@ interface SelectedLink {
 type ViewType = 'PAVE' | '360';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
-const ACCENT      = '#ff6b35';
-const ACCENT_RGB  = '255,107,53';
+const ACCENT      = '#ff9f0a';
+const ACCENT_RGB  = '255, 159, 10';
 const MAP_CENTER: [number, number] = [1.3733, 32.2903];
 const MAP_ZOOM    = 8;
 const TILE_URL    = ESRI_TILE_URLS.imagery;
@@ -63,7 +63,7 @@ function frameUrl(year: string, key: string, type: ViewType, frame: number): str
 // ── Line style helpers ────────────────────────────────────────────────────────
 const styleNoVideo  = (): L.PathOptions => ({ color: 'rgba(100,116,139,0.25)', weight: 1.5, opacity: 0.5  });
 const styleVideo    = (): L.PathOptions => ({ color: ACCENT,                   weight: 4,   opacity: 0.9, interactive: true  });
-const styleSelected = (): L.PathOptions => ({ color: '#ffd23f',                weight: 6,   opacity: 1,   interactive: true  });
+const styleSelected = (): L.PathOptions => ({ color: '#ffd60a',                weight: 6,   opacity: 1,   interactive: true  });
 const styleHover    = (): L.PathOptions => ({ color: ACCENT,                   weight: 6,   opacity: 1,   interactive: true  });
 
 // ── Top bar ───────────────────────────────────────────────────────────────────
@@ -244,28 +244,28 @@ export default function RoadVideoView() {
   function renderStatus() {
     if (serverOnline === null) {
       return (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, color: '#ffd23f' }}>
-          <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ffd23f' }}/>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, color: '#ffd60a' }}>
+          <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ffd60a' }}/>
           Connecting…
         </div>
       );
     }
     if (serverOnline) {
       return (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, color: '#00ff88' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, color: '#30d158' }}>
           <Wifi size={11}/> Online
         </div>
       );
     }
     return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, color: '#ff3366' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, color: '#ff453a' }}>
         <WifiOff size={11}/> Offline
         <button
           onClick={probeServer}
           style={{
             display: 'flex', alignItems: 'center', gap: 4,
             padding: '2px 8px', borderRadius: 6, cursor: 'pointer', fontSize: 10, fontWeight: 700,
-            background: 'rgba(255,51,102,0.1)', border: '1px solid rgba(255,51,102,0.3)', color: '#ff3366',
+            background: 'rgba(255, 69, 58,0.1)', border: '1px solid rgba(255, 69, 58,0.3)', color: '#ff453a',
           }}
         >
           <RefreshCw size={9}/> Retry
@@ -458,9 +458,9 @@ export default function RoadVideoView() {
                         display: 'flex', alignItems: 'center', gap: 5,
                         padding: '3px 9px', borderRadius: 7, fontSize: 10, fontWeight: 700,
                         cursor: avail ? 'pointer' : 'default', opacity: avail ? 1 : 0.3,
-                        background: active ? 'rgba(0,245,255,0.1)' : 'rgba(255,255,255,0.04)',
-                        border: active ? '1px solid rgba(0,245,255,0.3)' : '1px solid rgba(255,255,255,0.08)',
-                        color: active ? '#00f5ff' : 'rgba(148,163,184,0.7)',
+                        background: active ? 'rgba(100, 210, 255,0.1)' : 'rgba(255,255,255,0.04)',
+                        border: active ? '1px solid rgba(100, 210, 255,0.3)' : '1px solid rgba(255,255,255,0.08)',
+                        color: active ? '#64d2ff' : 'rgba(148,163,184,0.7)',
                         transition: 'all 0.15s',
                       }}
                     >
@@ -488,8 +488,8 @@ export default function RoadVideoView() {
               {serverOnline === false && (
                 <div style={{
                   padding: '8px 12px', borderRadius: 8, flexShrink: 0,
-                  background: 'rgba(255,51,102,0.08)', border: '1px solid rgba(255,51,102,0.2)',
-                  display: 'flex', alignItems: 'center', gap: 8, fontSize: 10, color: 'rgba(255,51,102,0.8)',
+                  background: 'rgba(255, 69, 58,0.08)', border: '1px solid rgba(255, 69, 58,0.2)',
+                  display: 'flex', alignItems: 'center', gap: 8, fontSize: 10, color: 'rgba(255, 69, 58,0.8)',
                 }}>
                   <AlertCircle size={12}/>
                   <span style={{ flex: 1 }}>Video server not reachable. Connect to the internal network and retry.</span>
@@ -498,8 +498,8 @@ export default function RoadVideoView() {
                     style={{
                       display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0,
                       padding: '3px 8px', borderRadius: 6, cursor: 'pointer',
-                      background: 'rgba(255,51,102,0.12)', border: '1px solid rgba(255,51,102,0.35)',
-                      color: '#ff3366', fontSize: 10, fontWeight: 700,
+                      background: 'rgba(255, 69, 58,0.12)', border: '1px solid rgba(255, 69, 58,0.35)',
+                      color: '#ff453a', fontSize: 10, fontWeight: 700,
                     }}
                   >
                     <RefreshCw size={9}/> Retry
@@ -562,8 +562,8 @@ export default function RoadVideoView() {
                     <div style={{
                       position: 'absolute', top: 8, right: 8,
                       padding: '3px 8px', borderRadius: 6,
-                      background: 'rgba(2,5,8,0.78)', border: '1px solid rgba(0,245,255,0.2)',
-                      fontSize: 9, fontWeight: 800, color: '#00f5ff',
+                      background: 'rgba(2,5,8,0.78)', border: '1px solid rgba(100, 210, 255,0.2)',
+                      fontSize: 9, fontWeight: 800, color: '#64d2ff',
                     }}>
                       {viewType === 'PAVE' ? 'PAVEMENT' : '360°'}
                     </div>
