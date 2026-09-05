@@ -5,9 +5,9 @@ import { SearchableSelect } from '../../shared/SearchableSelect';
 import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
 
 const C = {
-  cyan: '#64d2ff', green: '#30d158', yellow: '#ffd60a',
-  orange: '#ff9f0a', purple: '#bf5af2', blue: '#0a84ff',
-  pink: '#ff375f', teal: '#66d4cf', red: '#ff453a', gray: '#94a3b8',
+  cyan: '#00f5ff', green: '#00ff88', yellow: '#ffd23f',
+  orange: '#ff6b35', purple: '#b967ff', blue: '#4d9fff',
+  pink: '#ff2d78', teal: '#00d4aa', red: '#ff3366', gray: '#94a3b8',
 };
 function hexRgb(h: string) {
   const c = h.replace('#','');
@@ -1022,7 +1022,7 @@ export default function SourcesCatalogueSection() {
         const cat = s.category ?? 'A';
         return (
           <span title={`Category ${cat} - ${CATEGORY_LABEL[cat]}`} style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, fontWeight: 900,
-            background: 'rgba(100, 210, 255,0.08)', color: C.cyan }}>
+            background: 'rgba(0, 245, 255,0.08)', color: C.cyan }}>
             {cat} - {CATEGORY_LABEL[cat]}
           </span>
         );
@@ -1070,14 +1070,14 @@ export default function SourcesCatalogueSection() {
       {/* ââ BMS-style tab bar âââââââââââââââââââââââââââââââââââââââââââââââ */}
       <div style={{
         display: 'flex', gap: 2, padding: '0 14px', flexShrink: 0,
-        borderBottom: '1px solid rgba(10, 132, 255,0.15)',
+        borderBottom: '1px solid rgba(77, 159, 255,0.15)',
         background: 'rgba(4,9,18,0.85)',
       }}>
         <button style={{
           display:'flex', alignItems:'center', gap:6,
           padding:'10px 14px 11px', fontSize:11, fontWeight:800,
           background:'none', border:'none', cursor:'default', flexShrink:0,
-          color:'#0a84ff', borderBottom:'2px solid #0a84ff',
+          color:'#4d9fff', borderBottom:'2px solid #4d9fff',
         }}>
           Evidence Catalogue
         </button>
@@ -1104,13 +1104,13 @@ export default function SourcesCatalogueSection() {
         {/* Note: Standards & Evidence consolidated here from RMS */}
         <div style={{
           padding: '8px 14px', borderRadius: 8, marginBottom: 14,
-          background: 'rgba(100, 210, 255,0.04)', border: '1px solid rgba(100, 210, 255,0.15)',
+          background: 'rgba(0, 245, 255,0.04)', border: '1px solid rgba(0, 245, 255,0.15)',
           fontSize: 10, color: 'rgba(148,163,184,0.7)',
         }}>
-          <strong style={{ color: '#64d2ff' }}>International Standards &amp; Research Publications</strong>
+          <strong style={{ color: '#00f5ff' }}>International Standards &amp; Research Publications</strong>
           {' '}(HDM-4, ISO 55001, SATCC TRH4, AASHTO, PIARC, World Bank RAMP, AfDB IAMP, and 50+ research papers)
-          are catalogued here as <strong style={{ color: '#64d2ff' }}>Category B â Standards</strong> and
-          {' '}<strong style={{ color: '#bf5af2' }}>Category C â Research</strong>. Use the category filter below to browse.
+          are catalogued here as <strong style={{ color: '#00f5ff' }}>Category B â Standards</strong> and
+          {' '}<strong style={{ color: '#b967ff' }}>Category C â Research</strong>. Use the category filter below to browse.
         </div>
 
         {/* Stats */}
@@ -1149,7 +1149,7 @@ export default function SourcesCatalogueSection() {
               <button key={cat.id} onClick={() => setCategoryFilter(cat.id as any)} style={{
                 fontSize: 9, padding: '3px 9px', borderRadius: 5, border: 'none', cursor: 'pointer',
                 fontWeight: 700,
-                background: categoryFilter === cat.id ? 'rgba(100, 210, 255,0.15)' : 'rgba(255,255,255,0.03)',
+                background: categoryFilter === cat.id ? 'rgba(0, 245, 255,0.15)' : 'rgba(255,255,255,0.03)',
                 color: categoryFilter === cat.id ? C.cyan : 'rgba(148,163,184,0.5)',
               }}>{cat.label}</button>
             ))}

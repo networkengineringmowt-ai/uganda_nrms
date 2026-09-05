@@ -12,9 +12,9 @@ const DocumentStore = lazy(() => import('../Documents/DocumentStore'));
 const DownloadsView  = lazy(() => import('../Downloads/DownloadsView'));
 
 const C = {
-  cyan: '#64d2ff', green: '#30d158', yellow: '#ffd60a',
-  orange: '#ff9f0a', purple: '#bf5af2', blue: '#0a84ff',
-  pink: '#ff375f', teal: '#66d4cf', red: '#ff453a', gray: '#94a3b8',
+  cyan: '#00f5ff', green: '#00ff88', yellow: '#ffd23f',
+  orange: '#ff6b35', purple: '#b967ff', blue: '#4d9fff',
+  pink: '#ff2d78', teal: '#00d4aa', red: '#ff3366', gray: '#94a3b8',
 };
 
 function hexRgb(h: string) {
@@ -29,7 +29,7 @@ const GLASS: React.CSSProperties = {
 };
 
 type Tab = 'tables' | 'documents' | 'downloads';
-const CLASS_COLORS_TS: Record<string, string> = { A:'#64d2ff', B:'#30d158', C:'#ffd60a', M:'#bf5af2' };
+const CLASS_COLORS_TS: Record<string, string> = { A:'#00f5ff', B:'#00ff88', C:'#ffd23f', M:'#b967ff' };
 
 // ── Data constants (real DNR GIS / TIS / BMS data) ──────────────────────────
 const CONDITION_DIST = [
@@ -62,7 +62,7 @@ const TRAFFIC_TOP_COLUMNS: STColumn<typeof TRAFFIC_TOP[number]>[] = [
   { key: 'name', label: 'Corridor' },
   { key: 'cls', label: 'Class', render: r => (
       <span style={{ fontSize: 8, padding: '1px 5px', borderRadius: 3, fontWeight: 800,
-        background: r.cls === 'A' ? 'rgba(100, 210, 255,0.1)' : 'rgba(10, 132, 255,0.1)',
+        background: r.cls === 'A' ? 'rgba(0, 245, 255,0.1)' : 'rgba(77, 159, 255,0.1)',
         color: r.cls === 'A' ? C.cyan : C.blue }}>Class {r.cls}</span>
     ) },
   { key: 'aadt', label: 'AADT (veh/day)', numeric: true, render: r => r.aadt.toLocaleString() },
@@ -157,7 +157,7 @@ const MAINT_STATIONS_COLUMNS: STColumn<typeof MAINT_STATIONS[number]>[] = [
   { key: 'region', label: 'Region' },
   { key: 'type', label: 'Station Type', render: r => (
       <span style={{ fontSize: 9, padding: '2px 7px', borderRadius: 4, fontWeight: 800,
-        background: r.type === 'Regional HQ' ? 'rgba(191, 90, 242,0.12)' : 'rgba(10, 132, 255,0.12)',
+        background: r.type === 'Regional HQ' ? 'rgba(185, 103, 255,0.12)' : 'rgba(77, 159, 255,0.12)',
         color: r.type === 'Regional HQ' ? C.purple : C.blue }}>{r.type}</span>
     ) },
   { key: 'km_resp', label: 'Km Responsibility', numeric: true, total: 'sum', render: r => r.km_resp.toLocaleString() },
@@ -268,12 +268,12 @@ const HIST_NETWORK_ROWS = HIST_NETWORK.map((r, i) => ({
 const HIST_NETWORK_COLUMNS: STColumn<typeof HIST_NETWORK_ROWS[number]>[] = [
   { key: 'year', label: 'Year', numeric: true },
   { key: 'paved_km', label: 'Paved (km)', numeric: true, total: 'sum',
-    render: r => <span style={{ color: '#30d158' }}>{r.paved_km.toLocaleString()}</span> },
+    render: r => <span style={{ color: '#00ff88' }}>{r.paved_km.toLocaleString()}</span> },
   { key: 'total_km', label: 'Total (km)', numeric: true, render: r => r.total_km.toLocaleString() },
   { key: 'pct_paved', label: '% Paved', numeric: true, render: r => `${r.pct_paved}%` },
   { key: 'gain', label: 'Annual Gain (Paved km)', numeric: true, render: r => r.gain == null
       ? <span style={{ color: 'rgba(148,163,184,0.4)' }}>No prior survey</span>
-      : <span style={{ color: r.gain > 0 ? '#30d158' : '#ff9f0a' }}>{r.gain > 0 ? '+' : ''}{r.gain}</span> },
+      : <span style={{ color: r.gain > 0 ? '#00ff88' : '#ff6b35' }}>{r.gain > 0 ? '+' : ''}{r.gain}</span> },
 ];
 
 // ── §9 Axle Load & Overloading ────────────────────────────────────────────────
@@ -1030,7 +1030,7 @@ const CAT_B_STANDARDS_COLUMNS: STColumn<typeof CAT_B_STANDARDS[number]>[] = [
   { key: 'module', label: 'Applies To Module' },
   { key: 'status', label: 'Status', render: r => (
       <span style={{ fontSize: 9, padding: '2px 7px', borderRadius: 4, fontWeight: 800,
-        background: r.status === 'Active' ? 'rgba(48, 209, 88,0.12)' : 'rgba(148,163,184,0.12)',
+        background: r.status === 'Active' ? 'rgba(0, 255, 136,0.12)' : 'rgba(148,163,184,0.12)',
         color: r.status === 'Active' ? C.green : C.gray }}>{r.status}</span>
     ) },
   { key: 'notes', label: 'Notes', width: 260 },
@@ -1107,8 +1107,8 @@ function Th({ children }: { children: React.ReactNode }) {
   return (
     <th style={{
       padding: '7px 11px', textAlign: 'left', fontSize: 7.5, fontWeight: 900,
-      color: 'rgba(100, 210, 255,0.65)', textTransform: 'uppercase', letterSpacing: '0.1em',
-      borderBottom: '1px solid rgba(100, 210, 255,0.1)', whiteSpace: 'nowrap',
+      color: 'rgba(0, 245, 255,0.65)', textTransform: 'uppercase', letterSpacing: '0.1em',
+      borderBottom: '1px solid rgba(0, 245, 255,0.1)', whiteSpace: 'nowrap',
     }}>{children}</th>
   );
 }
@@ -1263,7 +1263,7 @@ function AdtProjectionTable() {
               );
               if (!isOpen) return [mainRow];
               const expandRow = (
-                <tr key={`${link.link_id}-expand`} style={{ background: 'rgba(100, 210, 255,0.03)' }}>
+                <tr key={`${link.link_id}-expand`} style={{ background: 'rgba(0, 245, 255,0.03)' }}>
                   <td colSpan={3 + ADT_PROJECTION_YEARS.length} style={{ padding: '8px 14px 12px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                     <div style={{ fontSize: 8, color: 'rgba(148,163,184,0.55)', marginBottom: 6 }}>
                       Vehicle-class breakdown - base AADT {link.base_aadt.toLocaleString()} ({link.base_year}), projected per-class via <code>projectAADTByClass</code>
@@ -1441,7 +1441,7 @@ export default function TabularSummaries() {
           el.scrollIntoView({ behavior: 'smooth', block: 'start' });
           // Flash a highlight ring so user sees which table they landed on
           el.style.transition = 'box-shadow 0.4s';
-          el.style.boxShadow  = '0 0 0 3px rgba(100, 210, 255,0.55), 0 0 28px rgba(100, 210, 255,0.35)';
+          el.style.boxShadow  = '0 0 0 3px rgba(0, 245, 255,0.55), 0 0 28px rgba(0, 245, 255,0.35)';
           setTimeout(() => { el.style.boxShadow = ''; }, 2400);
         }
         // Clear the one-shot anchor so re-mounting doesn't re-scroll
@@ -1471,7 +1471,7 @@ export default function TabularSummaries() {
       {/* ── Network Coverage banner ── */}
       <div style={{
         padding: '10px 14px', borderRadius: 8, marginBottom: 14, marginTop: 4,
-        background: 'rgba(100, 210, 255,0.05)', border: '1px solid rgba(100, 210, 255,0.15)',
+        background: 'rgba(0, 245, 255,0.05)', border: '1px solid rgba(0, 245, 255,0.15)',
         fontSize: 10, color: '#94a3b8',
       }}>
         <div style={{ fontWeight: 800, color: C.cyan, marginBottom: 3, fontSize: 9.5, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Network Coverage (single source of truth)</div>
@@ -1482,7 +1482,7 @@ export default function TabularSummaries() {
       {/* ── BMS-style tab bar ── */}
       <div style={{
         display: 'flex', gap: 2, marginBottom: 20, flexShrink: 0,
-        borderBottom: '1px solid rgba(10, 132, 255,0.15)',
+        borderBottom: '1px solid rgba(77, 159, 255,0.15)',
         background: 'rgba(4,9,18,0.85)', marginLeft: -18, marginRight: -18, paddingLeft: 14,
       }}>
         {TABS.map(t => (
@@ -1490,8 +1490,8 @@ export default function TabularSummaries() {
             display: 'flex', alignItems: 'center', gap: 6,
             padding: '10px 14px 11px', fontSize: 11, fontWeight: tab === t.id ? 800 : 500,
             background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0,
-            color: tab === t.id ? '#0a84ff' : 'rgba(148,163,184,0.70)',
-            borderBottom: tab === t.id ? '2px solid #0a84ff' : '2px solid transparent',
+            color: tab === t.id ? '#4d9fff' : 'rgba(148,163,184,0.70)',
+            borderBottom: tab === t.id ? '2px solid #4d9fff' : '2px solid transparent',
             transition: 'all 0.13s',
           }}>
             {t.icon} {t.label}
@@ -1511,7 +1511,7 @@ export default function TabularSummaries() {
           {/* ── SECTION 1: ROAD NETWORK ─── */}
           <div style={{ fontSize: 10, fontWeight: 900, color: C.cyan, textTransform: 'uppercase',
             letterSpacing: '0.12em', marginBottom: 10, marginTop: 4,
-            borderBottom: '1px solid rgba(100, 210, 255,0.1)', paddingBottom: 6 }}>
+            borderBottom: '1px solid rgba(0, 245, 255,0.1)', paddingBottom: 6 }}>
             § 1 - Road Network
           </div>
 
@@ -1626,7 +1626,7 @@ export default function TabularSummaries() {
           {/* ── SECTION 2: CONDITION ─── */}
           <div style={{ fontSize: 10, fontWeight: 900, color: C.green, textTransform: 'uppercase',
             letterSpacing: '0.12em', marginBottom: 10, marginTop: 20,
-            borderBottom: '1px solid rgba(48, 209, 88,0.1)', paddingBottom: 6 }}>
+            borderBottom: '1px solid rgba(0, 255, 136,0.1)', paddingBottom: 6 }}>
             § 2 - Road Condition
           </div>
 
@@ -1732,7 +1732,7 @@ export default function TabularSummaries() {
           {/* ── SECTION 4: BRIDGES ─── */}
           <div style={{ fontSize: 10, fontWeight: 900, color: C.blue, textTransform: 'uppercase',
             letterSpacing: '0.12em', marginBottom: 10, marginTop: 20,
-            borderBottom: '1px solid rgba(10, 132, 255,0.1)', paddingBottom: 6 }}>
+            borderBottom: '1px solid rgba(77, 159, 255,0.1)', paddingBottom: 6 }}>
             § 4 - Bridges & Structures
           </div>
 
@@ -1782,7 +1782,7 @@ export default function TabularSummaries() {
           {/* ── SECTION 5: OPRC / PROJECTS ─── */}
           <div style={{ fontSize: 10, fontWeight: 900, color: C.purple, textTransform: 'uppercase',
             letterSpacing: '0.12em', marginBottom: 10, marginTop: 20,
-            borderBottom: '1px solid rgba(191, 90, 242,0.1)', paddingBottom: 6 }}>
+            borderBottom: '1px solid rgba(185, 103, 255,0.1)', paddingBottom: 6 }}>
             § 5 - OPRC Contracts & Projects
           </div>
 
@@ -1799,11 +1799,11 @@ export default function TabularSummaries() {
                     <Td mono align="right">{r.km}</Td>
                     <Td>{r.contractor}</Td>
                     <Td><span style={{ fontSize:8, padding:'1px 6px', borderRadius:3,
-                      background: r.status==='Active'?'rgba(48, 209, 88,0.1)':r.status==='Suspended'?'rgba(239,68,68,0.1)':'rgba(148,163,184,0.1)',
-                      color: r.status==='Active'?'#30d158':r.status==='Suspended'?'#ef4444':'#94a3b8',
+                      background: r.status==='Active'?'rgba(0, 255, 136,0.1)':r.status==='Suspended'?'rgba(239,68,68,0.1)':'rgba(148,163,184,0.1)',
+                      color: r.status==='Active'?'#00ff88':r.status==='Suspended'?'#ef4444':'#94a3b8',
                       fontWeight:800 }}>{r.status}</span></Td>
                     <Td mono align="right">
-                      <span style={{ color: r.score>=85?'#22c55e':r.score>=75?'#ffd60a':'#f97316', fontWeight:800 }}>{r.score}/100</span>
+                      <span style={{ color: r.score>=85?'#22c55e':r.score>=75?'#ffd23f':'#f97316', fontWeight:800 }}>{r.score}/100</span>
                     </Td>
                   </tr>
                 ))}
@@ -1827,7 +1827,7 @@ export default function TabularSummaries() {
                       <div style={{ display:'flex', alignItems:'center', gap:5 }}>
                         <div style={{ flex:1, height:5, background:'rgba(255,255,255,0.08)', borderRadius:3, minWidth:60 }}>
                           <div style={{ height:'100%', borderRadius:3, width:`${r.progress}%`,
-                            background: r.progress>70?'#22c55e':r.progress>40?'#ffd60a':'#f97316' }}/>
+                            background: r.progress>70?'#22c55e':r.progress>40?'#ffd23f':'#f97316' }}/>
                         </div>
                         <span style={{ fontSize:8.5, color:'#e2eaf4', minWidth:28 }}>{r.progress}%</span>
                       </div>
@@ -1842,7 +1842,7 @@ export default function TabularSummaries() {
           {/* ── SECTION 6: INFRA ─── */}
           <div style={{ fontSize: 10, fontWeight: 900, color: C.orange, textTransform: 'uppercase',
             letterSpacing: '0.12em', marginBottom: 10, marginTop: 20,
-            borderBottom: '1px solid rgba(255, 159, 10,0.1)', paddingBottom: 6 }}>
+            borderBottom: '1px solid rgba(255, 107, 53,0.1)', paddingBottom: 6 }}>
             § 6 - Infrastructure Overlays
           </div>
 
@@ -1869,8 +1869,8 @@ export default function TabularSummaries() {
                     <Td mono align="right">{r.lon.toFixed(3)}</Td>
                     <Td mono align="right">{r.capacity_t}</Td>
                     <Td><span style={{ fontSize:8, padding:'1px 5px', borderRadius:3, fontWeight:800,
-                      background:r.status==='Operational'?'rgba(48, 209, 88,0.1)':'rgba(239,68,68,0.1)',
-                      color:r.status==='Operational'?'#30d158':'#ef4444' }}>{r.status}</span></Td>
+                      background:r.status==='Operational'?'rgba(0, 255, 136,0.1)':'rgba(239,68,68,0.1)',
+                      color:r.status==='Operational'?'#00ff88':'#ef4444' }}>{r.status}</span></Td>
                     <Td mono align="right">{r.daily_trucks || '-'}</Td>
                   </tr>
                 ))}
@@ -1904,7 +1904,7 @@ export default function TabularSummaries() {
                 {AIRPORTS.map(r => (
                   <tr key={r.name}><Td>{r.name}</Td>
                     <Td><span style={{ fontSize:8, padding:'1px 5px', borderRadius:3, fontWeight:800,
-                      background:r.class==='International'?'rgba(100, 210, 255,0.1)':r.class==='Domestic'?'rgba(10, 132, 255,0.1)':'rgba(148,163,184,0.08)',
+                      background:r.class==='International'?'rgba(0, 245, 255,0.1)':r.class==='Domestic'?'rgba(77, 159, 255,0.1)':'rgba(148,163,184,0.08)',
                       color:r.class==='International'?C.cyan:r.class==='Domestic'?C.blue:'#94a3b8' }}>{r.class}</span></Td>
                     <Td>{r.region}</Td>
                     <Td mono align="right">{r.runway_m}</Td>
@@ -1925,8 +1925,8 @@ export default function TabularSummaries() {
                   <tr key={r.name}><Td>{r.name}</Td>
                     <Td mono align="right">{r.km}</Td>
                     <Td><span style={{ fontSize:8, padding:'1px 5px', borderRadius:3, fontWeight:800,
-                      background:r.status==='Existing'?'rgba(48, 209, 88,0.1)':'rgba(148,163,184,0.08)',
-                      color:r.status==='Existing'?'#30d158':'#94a3b8' }}>{r.status}</span></Td>
+                      background:r.status==='Existing'?'rgba(0, 255, 136,0.1)':'rgba(148,163,184,0.08)',
+                      color:r.status==='Existing'?'#00ff88':'#94a3b8' }}>{r.status}</span></Td>
                     <Td>{r.gauge}</Td><Td>{r.operator}</Td>
                   </tr>
                 ))}
@@ -1937,7 +1937,7 @@ export default function TabularSummaries() {
           {/* ── SECTION 7: BUDGET & MAINTENANCE ─── */}
           <div style={{ fontSize: 10, fontWeight: 900, color: C.pink, textTransform: 'uppercase',
             letterSpacing: '0.12em', marginBottom: 10, marginTop: 20,
-            borderBottom: '1px solid rgba(255, 55, 95,0.1)', paddingBottom: 6 }}>
+            borderBottom: '1px solid rgba(255, 45, 120,0.1)', paddingBottom: 6 }}>
             § 7 - Budget & Maintenance Backlog
           </div>
 
@@ -2355,7 +2355,7 @@ export default function TabularSummaries() {
           {/* tbl-082 */}
           <TablePanel id="tbl-082" title="Active Road Construction Contracts (FY 2024/25)" accent={C.orange} source="DNR contracts department" chartTab="projecttracker" chartLabel="📊 Projects →" onNavigate={navigate}>
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Contract</Th><Th>km</Th><Th>Contractor</Th><Th>Cost (Bn UGX)</Th><Th>Progress %</Th><Th>Start</Th></tr></thead>
-            <tbody>{ACTIVE_CONTRACTS.map(r=><tr key={r.contract}><Td>{r.contract}</Td><Td align="right" mono>{r.km}</Td><Td>{r.contractor}</Td><Td align="right" mono style={{ color:C.orange }}>{r.cost_bn}</Td><Td align="right" mono><div style={{ background:`rgba(48, 209, 88,0.08)`, borderRadius:4, padding:'1px 6px' }}><span style={{ color:r.progress_pct>60?C.green:r.progress_pct>30?C.yellow:C.orange }}>{r.progress_pct}%</span></div></Td><Td mono>{r.yr}</Td></tr>)}</tbody></table>
+            <tbody>{ACTIVE_CONTRACTS.map(r=><tr key={r.contract}><Td>{r.contract}</Td><Td align="right" mono>{r.km}</Td><Td>{r.contractor}</Td><Td align="right" mono style={{ color:C.orange }}>{r.cost_bn}</Td><Td align="right" mono><div style={{ background:`rgba(0, 255, 136,0.08)`, borderRadius:4, padding:'1px 6px' }}><span style={{ color:r.progress_pct>60?C.green:r.progress_pct>30?C.yellow:C.orange }}>{r.progress_pct}%</span></div></Td><Td mono>{r.yr}</Td></tr>)}</tbody></table>
           </TablePanel>
           {/* tbl-083 */}
           <TablePanel id="tbl-083" title="Completed Road Rehabilitation by Financial Year 2020–2025" accent={C.orange} source="DNR project completion records">
@@ -2455,7 +2455,7 @@ export default function TabularSummaries() {
           {/* ── SECTION 21: GLOBAL RMS CASE STUDIES ─── */}
           <div style={{ fontSize: 10, fontWeight: 900, color: C.green, textTransform: 'uppercase',
             letterSpacing: '0.12em', marginBottom: 10, marginTop: 20,
-            borderBottom: '1px solid rgba(48, 209, 88,0.1)', paddingBottom: 6 }}>
+            borderBottom: '1px solid rgba(0, 255, 136,0.1)', paddingBottom: 6 }}>
             §21 - Global RMS Case Studies (15 Countries)
           </div>
           {/* tbl-101 */}
@@ -2470,7 +2470,7 @@ export default function TabularSummaries() {
           {/* ── SECTION 22: CATEGORY B STANDARDS ─── */}
           <div style={{ fontSize: 10, fontWeight: 900, color: C.blue, textTransform: 'uppercase',
             letterSpacing: '0.12em', marginBottom: 10, marginTop: 20,
-            borderBottom: '1px solid rgba(10, 132, 255,0.1)', paddingBottom: 6 }}>
+            borderBottom: '1px solid rgba(77, 159, 255,0.1)', paddingBottom: 6 }}>
             §22 - International Standards & Frameworks (Category B - {CAT_B_STANDARDS.length} standards)
           </div>
           {/* tbl-102 */}
@@ -2485,7 +2485,7 @@ export default function TabularSummaries() {
           {/* ── SECTION 23: CATEGORY C RESEARCH ─── */}
           <div style={{ fontSize: 10, fontWeight: 900, color: C.purple, textTransform: 'uppercase',
             letterSpacing: '0.12em', marginBottom: 10, marginTop: 20,
-            borderBottom: '1px solid rgba(191, 90, 242,0.1)', paddingBottom: 6 }}>
+            borderBottom: '1px solid rgba(185, 103, 255,0.1)', paddingBottom: 6 }}>
             §23 - Research Literature (Category C - {CAT_C_RESEARCH.length} papers)
           </div>
           {/* tbl-103 */}
@@ -2500,7 +2500,7 @@ export default function TabularSummaries() {
           {/* ── SECTION 24: GEOJSON ROAD LINKS ─── */}
           <div style={{ fontSize: 10, fontWeight: 900, color: C.teal, textTransform: 'uppercase',
             letterSpacing: '0.12em', marginBottom: 10, marginTop: 20,
-            borderBottom: '1px solid rgba(102, 212, 207,0.1)', paddingBottom: 6 }}>
+            borderBottom: '1px solid rgba(0, 212, 170,0.1)', paddingBottom: 6 }}>
             §24 - GeoJSON Road Links (network2026.geojson - Full {geoLinks.length.toLocaleString()} rows)
           </div>
           {/* tbl-links-full */}
@@ -2520,7 +2520,7 @@ export default function TabularSummaries() {
 
           {/* Export note */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px',
-            background: 'rgba(100, 210, 255,0.05)', border: '1px solid rgba(100, 210, 255,0.15)',
+            background: 'rgba(0, 245, 255,0.05)', border: '1px solid rgba(0, 245, 255,0.15)',
             borderRadius: 8, marginTop: 8 }}>
             <ExternalLink size={12} style={{ color: C.cyan, flexShrink: 0 }} />
             <span style={{ fontSize: 10, color: 'rgba(148,163,184,0.7)' }}>
