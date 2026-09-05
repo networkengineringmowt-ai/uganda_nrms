@@ -30,7 +30,7 @@ function Hdr({ children, accent = DASH_C.cyan }: { children: React.ReactNode; ac
 // aadtHeat/percentageColor in tableFormatting.tsx) rather than DASH_C.red,
 // which is aliased to the pink swatch in this module's palette.
 const SEVERITY_COLORS: Record<string, string> = {
-  critical: '#ff453a', severe: '#ff453a', 'severely insecure': '#ff453a',
+  critical: '#ff3366', severe: '#ff3366', 'severely insecure': '#ff3366',
   high: DASH_C.orange, 'medium-high': DASH_C.orange, 'low-med': DASH_C.yellow,
   medium: DASH_C.yellow, moderate: DASH_C.yellow, 'low-medium': DASH_C.yellow,
   'low-moderate': DASH_C.yellow, 'moderately secure': DASH_C.yellow, 'borderline insecure': DASH_C.yellow,

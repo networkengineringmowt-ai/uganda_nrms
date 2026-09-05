@@ -151,7 +151,7 @@ export default function SocioEconomicDashboard() {
   return (
     <div>
       <div style={{
-        background: 'rgba(100, 210, 255,0.04)', border: '1px solid rgba(100, 210, 255,0.14)',
+        background: 'rgba(0, 245, 255,0.04)', border: '1px solid rgba(0, 245, 255,0.14)',
         borderRadius: 12, padding: '14px 18px', marginBottom: 16,
       }}>
         <div style={{ fontSize: 15, fontWeight: 900, color: '#e2e8f0', letterSpacing: '-0.02em', marginBottom: 4 }}>
@@ -165,8 +165,8 @@ export default function SocioEconomicDashboard() {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10 }}>
           {['UBOS 2024', 'NDPIV Aligned', '146 Districts', 'World Bank Data', 'UNHS Sourced'].map(b => (
             <span key={b} style={{
-              fontSize: 9, fontWeight: 700, color: '#64d2ff', background: 'rgba(100, 210, 255,0.07)',
-              border: '1px solid rgba(100, 210, 255,0.18)', borderRadius: 20, padding: '2px 8px',
+              fontSize: 9, fontWeight: 700, color: '#00f5ff', background: 'rgba(0, 245, 255,0.07)',
+              border: '1px solid rgba(0, 245, 255,0.18)', borderRadius: 20, padding: '2px 8px',
               textTransform: 'uppercase', letterSpacing: '0.07em',
             }}>{b}</span>
           ))}
