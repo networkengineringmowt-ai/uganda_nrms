@@ -5,17 +5,17 @@
 
 // ── Neon colour palette ───────────────────────────────────────────────────────
 export const NEON = [
-  '#64d2ff', '#30d158', '#ffd60a', '#ff9f0a',
-  '#ff375f', '#bf5af2', '#66d4cf', '#0a84ff',
+  '#00f5ff', '#00ff88', '#ffd23f', '#ff6b35',
+  '#ff2d78', '#b967ff', '#00d4aa', '#4d9fff',
 ] as const;
 
 export const REGION_NEON: Record<string, string> = {
-  Central:          '#64d2ff',
-  Eastern:          '#ffd60a',
-  Northern:         '#30d158',
-  Western:          '#bf5af2',
-  Southern:         '#ff375f',
-  'North Eastern':  '#ff9f0a',
+  Central:          '#00f5ff',
+  Eastern:          '#ffd23f',
+  Northern:         '#00ff88',
+  Western:          '#b967ff',
+  Southern:         '#ff2d78',
+  'North Eastern':  '#ff6b35',
 };
 
 // ── Colour helpers ────────────────────────────────────────────────────────────
@@ -38,8 +38,8 @@ export const AX_LINE = { stroke: 'rgba(148,163,184,0.08)' } as const;
 
 // Neon tooltip styles
 export const TT_NEON = {
-  contentStyle: { background: 'rgba(2,2,2,0.97)', border: '1px solid rgba(100, 210, 255,0.2)', borderRadius: 10 },
-  labelStyle:   { color: '#64d2ff', fontSize: 11, fontWeight: 700 },
+  contentStyle: { background: 'rgba(2,2,2,0.97)', border: '1px solid rgba(0, 245, 255,0.2)', borderRadius: 10 },
+  labelStyle:   { color: '#00f5ff', fontSize: 11, fontWeight: 700 },
   itemStyle:    { color: '#94a3b8', fontSize: 10 },
 } as const;
 
