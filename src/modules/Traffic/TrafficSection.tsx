@@ -69,7 +69,7 @@ interface PredFeature { type: 'Feature'; geometry: any; properties: PredProps }
 const C = {
   cyan:   '#00f5ff', green:  '#00ff88', orange: '#ff6b35', purple: '#b967ff',
   yellow: '#ffd23f', pink:   '#ff2d78', blue:   '#4d9fff', teal:   '#00d4aa',
-  amber:  '#f59e0b', indigo: '#5e5ce6', atcCyan: '#00c3ff', tisCyan: '#ffcc33',
+  amber:  '#f59e0b', indigo: '#6366f1', atcCyan: '#00c3ff', tisCyan: '#ffcc33',
 };
 
 // ─── Station network constants (corrected figures) ────────────────────────────
@@ -390,7 +390,7 @@ function MapLegend({ mode }: { mode: MapMode }) {
 // ─── KPI glass card ───────────────────────────────────────────────────────────
 const KPI_GLASS: React.CSSProperties = {
   background: 'rgba(10,15,30,0.88)',
-  border: '1px solid rgba(94, 92, 230,0.12)',
+  border: '1px solid rgba(99, 102, 241,0.12)',
   borderRadius: 10, padding: '10px 12px',
 };
 
@@ -1001,7 +1001,7 @@ export default function TrafficSection() {
           height: 50, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 12,
           padding: '0 14px',
           background: 'rgba(10,15,30,0.95)',
-          borderBottom: '1px solid rgba(94, 92, 230,0.1)',
+          borderBottom: '1px solid rgba(99, 102, 241,0.1)',
         }}>
           {/* Symbology */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
@@ -1149,7 +1149,7 @@ export default function TrafficSection() {
           height: 54, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 12,
           padding: '0 16px',
           background: 'rgba(10,15,30,0.95)',
-          borderTop: '1px solid rgba(94, 92, 230,0.1)',
+          borderTop: '1px solid rgba(99, 102, 241,0.1)',
         }}>
           {/* Date + EAT */}
           <div style={{ flexShrink: 0, minWidth: 180 }}>
@@ -1258,7 +1258,7 @@ export default function TrafficSection() {
         width: 280, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 8,
         padding: '10px 10px 14px',
         background: 'rgba(10,15,30,0.92)',
-        borderRight: '1px solid rgba(94, 92, 230,0.1)',
+        borderRight: '1px solid rgba(99, 102, 241,0.1)',
         overflowY: 'auto',
       }}>
         {/* Header */}

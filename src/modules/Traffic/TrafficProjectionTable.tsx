@@ -250,13 +250,13 @@ export default function TrafficProjectionTable() {
                     ))}
                     <td style={{ padding:'5px 8px' }}>
                       <button onClick={() => setExpId(isExp ? null : l.link_id)}
-                        style={{ fontSize:9, padding:'2px 7px', borderRadius:4, background:'rgba(94, 92, 230,0.1)', border:'1px solid rgba(94, 92, 230,0.3)', color:'#a5b4fc', cursor:'pointer' }}>
+                        style={{ fontSize:9, padding:'2px 7px', borderRadius:4, background:'rgba(99, 102, 241,0.1)', border:'1px solid rgba(99, 102, 241,0.3)', color:'#a5b4fc', cursor:'pointer' }}>
                         {isExp ? '▲ Hide' : '▼ VC'}
                       </button>
                     </td>
                   </tr>
                   {isExp && (
-                    <tr key={`${l.link_id}-vc`} style={{ background:'rgba(94, 92, 230,0.04)' }}>
+                    <tr key={`${l.link_id}-vc`} style={{ background:'rgba(99, 102, 241,0.04)' }}>
                       <td colSpan={5} style={{ padding:'8px 10px', fontSize:9, color:'rgba(148,163,184,0.6)' }}>
                         Vehicle class breakdown (2026):
                       </td>

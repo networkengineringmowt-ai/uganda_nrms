@@ -62,7 +62,7 @@ const VC_LABELS: Record<string, string> = {
 };
 
 const VC_COLORS: Record<string, string> = {
-  total:      '#5e5ce6',
+  total:      '#6366f1',
   motorcycle: '#00f5ff',
   car:        '#00ff88',
   hgv:        '#ff6b35',
@@ -95,7 +95,7 @@ function mefTextColor(mef: number | undefined): string {
 const CARD: React.CSSProperties = {
   background: 'rgba(15,15,15,0.55)',
   backdropFilter: 'blur(20px)',
-  border: '1px solid rgba(94, 92, 230,0.12)',
+  border: '1px solid rgba(99, 102, 241,0.12)',
   borderRadius: 14,
   padding: '16px 20px',
 };
@@ -231,7 +231,7 @@ function SeasonalBars({
     );
   }
 
-  const colors = ['#5e5ce6', '#00f5ff', '#00ff88', '#ff6b35', '#ffd23f', '#b967ff'];
+  const colors = ['#6366f1', '#00f5ff', '#00ff88', '#ff6b35', '#ffd23f', '#b967ff'];
 
   return (
     <Chart3DWrap>
@@ -490,7 +490,7 @@ export default function GrowthFactorsPanel() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center',
         height: '100%', background: '#0a0f1e',
         color: 'rgba(148,163,184,0.35)', fontSize: 13, fontFamily: "'Inter','Segoe UI',sans-serif" }}>
-        Run <code style={{ marginLeft: 6, color: '#5e5ce6' }}>python scripts/compute_growth_factors.py</code>&nbsp;to generate data.
+        Run <code style={{ marginLeft: 6, color: '#6366f1' }}>python scripts/compute_growth_factors.py</code>&nbsp;to generate data.
       </div>
     );
   }
@@ -507,8 +507,8 @@ export default function GrowthFactorsPanel() {
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
         <div style={{ width: 40, height: 40, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: 'rgba(94, 92, 230,0.15)', border: '1px solid rgba(94, 92, 230,0.3)' }}>
-          <TrendingUp size={20} style={{ color: '#5e5ce6' }} />
+          background: 'rgba(99, 102, 241,0.15)', border: '1px solid rgba(99, 102, 241,0.3)' }}>
+          <TrendingUp size={20} style={{ color: '#6366f1' }} />
         </div>
         <div>
           <h1 style={{ fontSize: 18, fontWeight: 800, color: '#fff', margin: 0 }}>Growth Factors</h1>
@@ -524,7 +524,7 @@ export default function GrowthFactorsPanel() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <span style={{ fontSize: 9, fontWeight: 700, color: 'rgba(148,163,184,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Region</span>
             <SearchableSelect value={selectedRegion} onChange={setSelectedRegion}
-              style={{ background: 'rgba(94, 92, 230,0.1)', border: '1px solid rgba(94, 92, 230,0.25)',
+              style={{ background: 'rgba(99, 102, 241,0.1)', border: '1px solid rgba(99, 102, 241,0.25)',
                 borderRadius: 7, color: '#e2eaf4', fontSize: 11, fontWeight: 600,
                 padding: '3px 8px', cursor: 'pointer', outline: 'none', fontFamily: 'inherit' }}>
               <option value="all">All Regions</option>
@@ -536,7 +536,7 @@ export default function GrowthFactorsPanel() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <span style={{ fontSize: 9, fontWeight: 700, color: 'rgba(148,163,184,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Class</span>
             <SearchableSelect value={selectedVC} onChange={setSelectedVC}
-              style={{ background: 'rgba(94, 92, 230,0.1)', border: '1px solid rgba(94, 92, 230,0.25)',
+              style={{ background: 'rgba(99, 102, 241,0.1)', border: '1px solid rgba(99, 102, 241,0.25)',
                 borderRadius: 7, color: '#e2eaf4', fontSize: 11, fontWeight: 600,
                 padding: '3px 8px', cursor: 'pointer', outline: 'none', fontFamily: 'inherit' }}>
               {data.vehicle_classes.map(vc => (
@@ -549,7 +549,7 @@ export default function GrowthFactorsPanel() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <span style={{ fontSize: 9, fontWeight: 700, color: 'rgba(148,163,184,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Year</span>
             <SearchableSelect value={String(selectedYear)} onChange={v => setSelectedYear(Number(v))}
-              style={{ background: 'rgba(94, 92, 230,0.1)', border: '1px solid rgba(94, 92, 230,0.25)',
+              style={{ background: 'rgba(99, 102, 241,0.1)', border: '1px solid rgba(99, 102, 241,0.25)',
                 borderRadius: 7, color: '#e2eaf4', fontSize: 11, fontWeight: 600,
                 padding: '3px 8px', cursor: 'pointer', outline: 'none', fontFamily: 'inherit' }}>
               {availableYears.map(y => <option key={y} value={y}>{y}</option>)}
@@ -564,7 +564,7 @@ export default function GrowthFactorsPanel() {
           {
             label: 'Links Analysed',
             value: [...new Set(data.top_growing_roads.map(r => r.link_id))].length.toLocaleString(),
-            sub: 'with multi-year data', color: '#5e5ce6',
+            sub: 'with multi-year data', color: '#6366f1',
           },
           {
             label: 'Year Range',
@@ -594,7 +594,7 @@ export default function GrowthFactorsPanel() {
       {/* ── Monthly MEF heatmap ─────────────────────────────────────────────── */}
       <div style={CARD}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-          <Activity size={14} style={{ color: '#5e5ce6' }} />
+          <Activity size={14} style={{ color: '#6366f1' }} />
           <div>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>
               Monthly Expansion Factors (MEF) - {effectiveYear}{isNearest ? ' (nearest survey year)' : ''}
