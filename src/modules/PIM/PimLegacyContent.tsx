@@ -10,9 +10,9 @@ import SectionDashboard from '../Dashboard/SectionDashboard';
 import { renderSliceLabel } from '../../shared/dashboardKit';
 
 const C = {
-  cyan: '#64d2ff', green: '#30d158', yellow: '#ffd60a',
-  orange: '#ff9f0a', purple: '#bf5af2', blue: '#0a84ff',
-  pink: '#ff375f', teal: '#66d4cf', red: '#ff453a',
+  cyan: '#00f5ff', green: '#00ff88', yellow: '#ffd23f',
+  orange: '#ff6b35', purple: '#b967ff', blue: '#4d9fff',
+  pink: '#ff2d78', teal: '#00d4aa', red: '#ff3366',
 };
 function hexRgb(h: string) {
   const c = h.replace('#','');
@@ -196,7 +196,7 @@ export default function PimLegacyContent({ initialTab, hideTabBar }: { initialTa
       {!hideTabBar && (
         <div style={{
         display: 'flex', gap: 2, marginBottom: 18, flexShrink: 0,
-        borderBottom: '1px solid rgba(10, 132, 255,0.15)',
+        borderBottom: '1px solid rgba(77, 159, 255,0.15)',
         background: 'rgba(8,8,8,0.85)', marginLeft: -20, marginRight: -20, paddingLeft: 14,
       }}>
         {TABS.map(t => {
@@ -206,8 +206,8 @@ export default function PimLegacyContent({ initialTab, hideTabBar }: { initialTa
               display: 'flex', alignItems: 'center', gap: 6,
               padding: '10px 14px 11px', fontSize: 11, fontWeight: isA ? 800 : 500,
               background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0,
-              color: isA ? '#0a84ff' : 'rgba(148,163,184,0.70)',
-              borderBottom: isA ? '2px solid #0a84ff' : '2px solid transparent',
+              color: isA ? '#4d9fff' : 'rgba(148,163,184,0.70)',
+              borderBottom: isA ? '2px solid #4d9fff' : '2px solid transparent',
               transition: 'all 0.13s',
             }}>{t.icon} {t.label}</button>
           );
