@@ -24,7 +24,7 @@ import { SortableFilterableTable, type STColumn } from '../../shared/SortableFil
 const C = {
   purple: '#bf5af2', cyan: '#64d2ff', green: '#30d158',
   blue: '#0a84ff', yellow: '#ffd60a', orange: '#ff9f0a',
-  pink: '#ff375f', teal: '#00d4aa', red: '#ff453a', gray: '#94a3b8',
+  pink: '#ff375f', teal: '#66d4cf', red: '#ff453a', gray: '#94a3b8',
 };
 
 const card = (accent: string) => ({
@@ -297,7 +297,7 @@ export default function RoadReserveLegacyContent({ initialTab, hideTabBar }: { i
       </div>
       )}
 
-          {activeTab === 'dashboard' && <SectionDashboard sectionId="roadreserve" accent="#00d4aa" />}
+          {activeTab === 'dashboard' && <SectionDashboard sectionId="roadreserve" accent="#66d4cf" />}
       {activeTab === 'overview' && (
         <OverviewTab kpis={kpis} onNavigate={(view) => dispatch({ type: 'SET_ACTIVE_VIEW', payload: view as any })} />
       )}
@@ -477,7 +477,7 @@ function ReserveMapTab() {
     <div style={{ display: 'flex', gap: 14, height: 'calc(100vh - 260px)', minHeight: 520 }}>
       {/* Map */}
       <div style={{ flex: 1, position: 'relative', borderRadius: 12, overflow: 'hidden',
-        border: '1px solid rgba(0,212,170,0.2)' }}>
+        border: '1px solid rgba(102, 212, 207,0.2)' }}>
         <MapContainer center={[1.4, 32.3]} zoom={7} zoomControl={false}
           style={{ width: '100%', height: '100%', background: '#0a0a0a' }}>
           <ZoomControl position="bottomright" />
