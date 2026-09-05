@@ -35,8 +35,8 @@ const RoadSafetyDashboard = lazy(() => import('./RoadSafetyDashboard'));
 function TabSpinner() {
   return (
     <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100%' }}>
-      <div style={{ width:24, height:24, borderRadius:'50%', border:'2px solid rgba(0,245,255,0.15)',
-        borderTopColor:'#00f5ff', animation:'ts-spin .8s linear infinite' }}/>
+      <div style={{ width:24, height:24, borderRadius:'50%', border:'2px solid rgba(100, 210, 255,0.15)',
+        borderTopColor:'#64d2ff', animation:'ts-spin .8s linear infinite' }}/>
     </div>
   );
 }
@@ -68,8 +68,8 @@ interface PredFeature { type: 'Feature'; geometry: any; properties: PredProps }
 
 // ─── Palette ──────────────────────────────────────────────────────────────────
 const C = {
-  cyan:   '#00f5ff', green:  '#00ff88', orange: '#ff6b35', purple: '#b967ff',
-  yellow: '#ffd23f', pink:   '#ff2d78', blue:   '#4d9fff', teal:   '#00d4aa',
+  cyan:   '#64d2ff', green:  '#30d158', orange: '#ff9f0a', purple: '#bf5af2',
+  yellow: '#ffd60a', pink:   '#ff375f', blue:   '#0a84ff', teal:   '#00d4aa',
   amber:  '#f59e0b', indigo: '#6366f1', atcCyan: '#00c3ff', tisCyan: '#ffcc33',
 };
 
@@ -191,8 +191,8 @@ function SparklineArea({ avgAadt }: { avgAadt: number }) {
         </linearGradient>
       </defs>
       <line x1={xp(4).toFixed(1)} x2={xp(4).toFixed(1)} y1={PT} y2={PT+cH}
-        stroke="rgba(255,210,63,0.25)" strokeDasharray="2 2" />
-      <text x={xp(4).toFixed(1)} y={PT+6} fill="rgba(255,210,63,0.5)" fontSize={6} textAnchor="middle">COVID</text>
+        stroke="rgba(255, 214, 10,0.25)" strokeDasharray="2 2" />
+      <text x={xp(4).toFixed(1)} y={PT+6} fill="rgba(255, 214, 10,0.5)" fontSize={6} textAnchor="middle">COVID</text>
       <path d={areaD} fill="url(#spkG)" />
       <polyline points={pts.join(' ')} fill="none" stroke={C.teal} strokeWidth={1.8}
         strokeLinejoin="round" strokeLinecap="round"
@@ -200,7 +200,7 @@ function SparklineArea({ avgAadt }: { avgAadt: number }) {
       <circle cx={xp(4).toFixed(1)} cy={yp(values[4]).toFixed(1)} r={2.5} fill={C.yellow} />
       <circle cx={xp(9).toFixed(1)} cy={yp(values[9]).toFixed(1)} r={2.5} fill={C.teal} />
       <text x={xp(0)}  y={H-2} fill="rgba(148,163,184,0.4)"  fontSize={7} textAnchor="middle">2016</text>
-      <text x={xp(4)}  y={H-2} fill="rgba(255,210,63,0.45)"  fontSize={7} textAnchor="middle">2020</text>
+      <text x={xp(4)}  y={H-2} fill="rgba(255, 214, 10,0.45)"  fontSize={7} textAnchor="middle">2020</text>
       <text x={xp(9)}  y={H-2} fill="rgba(0,212,170,0.55)"   fontSize={7} textAnchor="end">2025</text>
     </svg>
   );
@@ -340,14 +340,14 @@ function LinkClassTable({ features, surfMap: _surfMap }: { features: PredFeature
   const TIS_YEAR  = 2025;   // survey year of the raw TIS AADT readings
   const nowT = useNowTick(1000);
   const VCOLS = [
-    { label: 'Motorcycles',         short: 'Moto',  color: '#b967ff', idx: 0, key: 'vc0' as const },
-    { label: 'Saloon Cars & Taxis', short: 'Cars',  color: '#00f5ff', idx: 1, key: 'vc1' as const },
-    { label: 'Light Goods',         short: 'LGV',   color: '#00ff88', idx: 2, key: 'vc2' as const },
-    { label: 'Small Buses',         short: 'S.Bus', color: '#ffd23f', idx: 3, key: 'vc3' as const },
+    { label: 'Motorcycles',         short: 'Moto',  color: '#bf5af2', idx: 0, key: 'vc0' as const },
+    { label: 'Saloon Cars & Taxis', short: 'Cars',  color: '#64d2ff', idx: 1, key: 'vc1' as const },
+    { label: 'Light Goods',         short: 'LGV',   color: '#30d158', idx: 2, key: 'vc2' as const },
+    { label: 'Small Buses',         short: 'S.Bus', color: '#ffd60a', idx: 3, key: 'vc3' as const },
     { label: 'Medium Buses',        short: 'M.Bus', color: '#ff8c00', idx: 4, key: 'vc4' as const },
-    { label: 'Large Buses',         short: 'L.Bus', color: '#ff6b35', idx: 5, key: 'vc5' as const },
+    { label: 'Large Buses',         short: 'L.Bus', color: '#ff9f0a', idx: 5, key: 'vc5' as const },
     { label: 'Light Trucks',        short: 'L.Trk', color: '#00d4aa', idx: 6, key: 'vc6' as const },
-    { label: 'Heavy Trucks',        short: 'H.Trk', color: '#ff2d78', idx: 7, key: 'vc7' as const },
+    { label: 'Heavy Trucks',        short: 'H.Trk', color: '#ff375f', idx: 7, key: 'vc7' as const },
     { label: 'Truck Trailers',      short: 'Artic', color: '#f59e0b', idx: 8, key: 'vc8' as const },
   ];
 
@@ -423,8 +423,8 @@ function LinkClassTable({ features, surfMap: _surfMap }: { features: PredFeature
           <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.55)', marginTop: 3 }}>
             Base year {BASE_YEAR} · TIS {TIS_YEAR} readings back-cast to {BASE_YEAR} per class · compound growth applied · {features.length} links · network length {networkLengthKm.toFixed(0)} km · click a column to sort
           </div>
-          <div style={{ fontSize: 9.5, fontWeight: 700, color: '#00ff88', marginTop: 3 }}>
-            <span className="animate-pulse" style={{ display:'inline-block', width:6, height:6, borderRadius:'50%', background:'#00ff88', marginRight:5 }} />
+          <div style={{ fontSize: 9.5, fontWeight: 700, color: '#30d158', marginTop: 3 }}>
+            <span className="animate-pulse" style={{ display:'inline-block', width:6, height:6, borderRadius:'50%', background:'#30d158', marginRight:5 }} />
             LIVE - projected to {new Date().toLocaleString('en-GB')} (reporting instant {nowT.toFixed(7)})
           </div>
         </div>
@@ -633,7 +633,7 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
         /* ── LIVE badge blink ── */
         @keyframes liveBlink { 0%,100%{opacity:1} 50%{opacity:.25} }
         /* ── Timeline play glow ── */
-        @keyframes playGlow { 0%,100%{box-shadow:0 0 12px rgba(0,255,136,.35)} 50%{box-shadow:0 0 22px rgba(0,255,136,.65)} }
+        @keyframes playGlow { 0%,100%{box-shadow:0 0 12px rgba(48, 209, 88,.35)} 50%{box-shadow:0 0 22px rgba(48, 209, 88,.65)} }
 
         /* ── Pill filter buttons ── */
         .tpill {
@@ -681,7 +681,7 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
       {!hideTabBar && (
         <div style={{
         display: 'flex', gap: 2, padding: '0 14px', flexShrink: 0,
-        borderBottom: '1px solid rgba(77,159,255,0.15)',
+        borderBottom: '1px solid rgba(10, 132, 255,0.15)',
         background: 'rgba(8,8,8,0.85)',
       }}>
         {MAIN_TABS.map(t => {
@@ -691,8 +691,8 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
               display: 'flex', alignItems: 'center', gap: 6,
               padding: '10px 14px 11px', fontSize: 11, fontWeight: isActive ? 800 : 500,
               background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0,
-              color: isActive ? '#4d9fff' : 'rgba(148,163,184,0.70)',
-              borderBottom: isActive ? '2px solid #4d9fff' : '2px solid transparent',
+              color: isActive ? '#0a84ff' : 'rgba(148,163,184,0.70)',
+              borderBottom: isActive ? '2px solid #0a84ff' : '2px solid transparent',
               transition: 'all 0.13s',
             }}>
               {t.icon}
@@ -705,8 +705,8 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
 
       {/* ══ Sub-tab bar - Counts & Analysis ══════════════════════════════════ */}
         {activeTab === 'dashboard' && (
-          <Suspense fallback={<div style={{padding:'1.5rem',color:'#00f5ff',textAlign:'center',opacity:0.7,fontSize:'12px'}}>Loading dashboard…</div>}>
-            <SectionDashboard sectionId="traffic" accent="#00f5ff" />
+          <Suspense fallback={<div style={{padding:'1.5rem',color:'#64d2ff',textAlign:'center',opacity:0.7,fontSize:'12px'}}>Loading dashboard…</div>}>
+            <SectionDashboard sectionId="traffic" accent="#64d2ff" />
           </Suspense>
         )}
       {activeTab === 'counts' && (
@@ -721,8 +721,8 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
                 display:'flex', alignItems:'center', gap:5,
                 padding:'5px 12px 7px', fontSize:10, fontWeight: isA ? 700 : 500,
                 background:'none', border:'none', cursor:'pointer',
-                color: isA ? '#4d9fff' : 'rgba(148,163,184,0.65)',
-                borderBottom: isA ? '2px solid #4d9fff' : '2px solid transparent',
+                color: isA ? '#0a84ff' : 'rgba(148,163,184,0.65)',
+                borderBottom: isA ? '2px solid #0a84ff' : '2px solid transparent',
                 transition:'all 0.13s',
               }}>
                 {t.label}
@@ -745,8 +745,8 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
                 display:'flex', alignItems:'center', gap:5,
                 padding:'5px 12px 7px', fontSize:10, fontWeight: isA ? 700 : 500,
                 background:'none', border:'none', cursor:'pointer',
-                color: isA ? '#4d9fff' : 'rgba(148,163,184,0.65)',
-                borderBottom: isA ? '2px solid #4d9fff' : '2px solid transparent',
+                color: isA ? '#0a84ff' : 'rgba(148,163,184,0.65)',
+                borderBottom: isA ? '2px solid #0a84ff' : '2px solid transparent',
                 transition:'all 0.13s',
               }}>
                 {t.label}
@@ -778,7 +778,7 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
             }}>Symbology</span>
             <SearchableSelect value={mode} onChange={v => setMode(v as MapMode)}
               style={{
-                background: 'rgba(0,245,255,0.08)', border: '1px solid rgba(0,245,255,0.28)',
+                background: 'rgba(100, 210, 255,0.08)', border: '1px solid rgba(100, 210, 255,0.28)',
                 borderRadius: 7, color: C.cyan, fontSize: 11, fontWeight: 700,
                 padding: '3px 8px', cursor: 'pointer', outline: 'none', fontFamily: 'inherit',
               }}>
@@ -799,9 +799,9 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
             {(['all','paved','unsealed'] as SurfFilter[]).map(sf => (
               <button key={sf} className="tpill" onClick={() => setSurfFilter(sf)}
                 style={{
-                  borderColor: surfFilter === sf ? 'rgba(0,245,255,0.4)' : 'rgba(255,255,255,0.1)',
+                  borderColor: surfFilter === sf ? 'rgba(100, 210, 255,0.4)' : 'rgba(255,255,255,0.1)',
                   color: surfFilter === sf ? C.cyan : 'rgba(148,163,184,0.5)',
-                  background: surfFilter === sf ? 'rgba(0,245,255,0.1)' : 'transparent',
+                  background: surfFilter === sf ? 'rgba(100, 210, 255,0.1)' : 'transparent',
                 }}>
                 {sf === 'all' ? 'All' : sf === 'paved' ? 'Paved' : 'Unsealed'}
               </button>
@@ -883,7 +883,7 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
             <div style={{
               position: 'absolute', top: 12, left: 12, zIndex: 900,
               background: 'rgba(10,15,30,0.92)',
-              border: '1px solid rgba(255,210,63,0.35)',
+              border: '1px solid rgba(255, 214, 10,0.35)',
               borderRadius: 10, padding: '5px 12px', backdropFilter: 'blur(12px)',
             }}>
               <span style={{ fontSize: 11, fontWeight: 900, color: C.yellow }}>Year {timelineYear}</span>
@@ -934,18 +934,18 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
           <div style={{
             display: 'flex', alignItems: 'center', gap: 5,
             padding: '3px 8px', borderRadius: 6,
-            background: 'rgba(0,255,136,0.08)',
-            border: '1px solid rgba(0,255,136,0.2)',
+            background: 'rgba(48, 209, 88,0.08)',
+            border: '1px solid rgba(48, 209, 88,0.2)',
             flexShrink: 0,
           }}>
             <span style={{
               width: 6, height: 6, borderRadius: '50%',
-              background: '#00ff88',
-              boxShadow: '0 0 8px #00ff88',
+              background: '#30d158',
+              boxShadow: '0 0 8px #30d158',
               display: 'inline-block',
               animation: 'liveBlink 1.8s ease-in-out infinite',
             }} />
-            <span style={{ fontSize: 8, fontWeight: 900, color: '#00ff88', letterSpacing: '0.1em' }}>
+            <span style={{ fontSize: 8, fontWeight: 900, color: '#30d158', letterSpacing: '0.1em' }}>
               LIVE
             </span>
           </div>
@@ -960,7 +960,7 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
             }}
             style={{
               width: 32, height: 32, borderRadius: '50%', border: 'none', cursor: 'pointer',
-              background: isPlaying ? 'rgba(0,255,136,0.15)' : 'rgba(255,255,255,0.08)',
+              background: isPlaying ? 'rgba(48, 209, 88,0.15)' : 'rgba(255,255,255,0.08)',
               color: isPlaying ? C.green : 'rgba(148,163,184,0.7)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
               animation: isPlaying ? 'playGlow 2s ease-in-out infinite' : 'none',
@@ -991,12 +991,12 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
           <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
             <div style={{
               width: 90, height: 6, borderRadius: 3,
-              background: 'linear-gradient(90deg,#00ff88,#ffd23f,#ff6b35,#ff2d78)',
+              background: 'linear-gradient(90deg,#30d158,#ffd60a,#ff9f0a,#ff375f)',
             }} />
             <div style={{ display: 'flex', justifyContent: 'space-between', width: 90 }}>
-              <span style={{ fontSize: 7, color: 'rgba(0,255,136,0.6)' }}>Low</span>
+              <span style={{ fontSize: 7, color: 'rgba(48, 209, 88,0.6)' }}>Low</span>
               <span style={{ fontSize: 7, color: 'rgba(148,163,184,0.3)' }}>← ADT →</span>
-              <span style={{ fontSize: 7, color: 'rgba(255,45,120,0.6)' }}>High</span>
+              <span style={{ fontSize: 7, color: 'rgba(255, 55, 95,0.6)' }}>High</span>
             </div>
           </div>
         </div>
@@ -1048,14 +1048,14 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
         </div>
 
         {/* KPI 1 – Total Network ADT */}
-        <div style={{ ...KPI_GLASS, borderColor: 'rgba(0,245,255,0.14)' }}>
+        <div style={{ ...KPI_GLASS, borderColor: 'rgba(100, 210, 255,0.14)' }}>
           <div style={{
-            fontSize: 8, fontWeight: 700, color: 'rgba(0,245,255,0.45)',
+            fontSize: 8, fontWeight: 700, color: 'rgba(100, 210, 255,0.45)',
             textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 2,
           }}>Total Network ADT</div>
           <div style={{
             fontSize: 26, fontWeight: 900, color: C.cyan, lineHeight: 1,
-            textShadow: `0 0 22px rgba(0,245,255,0.4)`,
+            textShadow: `0 0 22px rgba(100, 210, 255,0.4)`,
           }}>
             {kpis ? `${Math.round(kpis.totalAdt / 1000)}k` : '-'}
           </div>
@@ -1065,14 +1065,14 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
         </div>
 
         {/* KPI 2 – Network Growth Ratio */}
-        <div style={{ ...KPI_GLASS, borderColor: 'rgba(0,255,136,0.14)' }}>
+        <div style={{ ...KPI_GLASS, borderColor: 'rgba(48, 209, 88,0.14)' }}>
           <div style={{
-            fontSize: 8, fontWeight: 700, color: 'rgba(0,255,136,0.45)',
+            fontSize: 8, fontWeight: 700, color: 'rgba(48, 209, 88,0.45)',
             textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 2,
           }}>Network Growth Ratio 2025 → 2040</div>
           <div style={{
             fontSize: 26, fontWeight: 900, color: C.green, lineHeight: 1,
-            textShadow: `0 0 22px rgba(0,255,136,0.4)`,
+            textShadow: `0 0 22px rgba(48, 209, 88,0.4)`,
           }}>
             {kpis ? `+${kpis.growthRatio.toFixed(0)}%` : '-'}
           </div>
@@ -1131,9 +1131,9 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
         </div>
 
         {/* KPI 5 – Survey Nodes */}
-        <div style={{ ...KPI_GLASS, borderColor: 'rgba(77,159,255,0.14)' }}>
+        <div style={{ ...KPI_GLASS, borderColor: 'rgba(10, 132, 255,0.14)' }}>
           <div style={{
-            fontSize: 7, fontWeight: 700, color: 'rgba(77,159,255,0.45)',
+            fontSize: 7, fontWeight: 700, color: 'rgba(10, 132, 255,0.45)',
             textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2,
           }}>Total Survey Nodes</div>
           <div style={{ fontSize: 22, fontWeight: 900, color: C.blue, lineHeight: 1 }}>
@@ -1143,9 +1143,9 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
         </div>
 
         {/* KPI 6 – Surface Paving Index */}
-        <div style={{ ...KPI_GLASS, borderColor: 'rgba(185,103,255,0.14)' }}>
+        <div style={{ ...KPI_GLASS, borderColor: 'rgba(191, 90, 242,0.14)' }}>
           <div style={{
-            fontSize: 8, fontWeight: 700, color: 'rgba(185,103,255,0.45)',
+            fontSize: 8, fontWeight: 700, color: 'rgba(191, 90, 242,0.45)',
             textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4,
           }}>Surface Paving Index</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -1153,12 +1153,12 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
               {kpis ? `${kpis.pavingIndex.toFixed(0)}%` : '-'}
             </div>
             <div style={{
-              flex: 1, height: 7, background: 'rgba(185,103,255,0.1)',
+              flex: 1, height: 7, background: 'rgba(191, 90, 242,0.1)',
               borderRadius: 4, overflow: 'hidden',
             }}>
               <div style={{
                 height: '100%', width: `${kpis?.pavingIndex ?? 0}%`,
-                background: 'linear-gradient(90deg,#b967ff,#00d4aa)', borderRadius: 4,
+                background: 'linear-gradient(90deg,#bf5af2,#00d4aa)', borderRadius: 4,
               }} />
             </div>
           </div>
@@ -1193,10 +1193,10 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 16 }}>
                   {[
-                    { label: 'Network AADT (avg)', value: kpis ? `${Math.round(kpis.avgAadt).toLocaleString()}` : '-', color: '#00f5ff', sub: 'vehicles / day / link' },
+                    { label: 'Network AADT (avg)', value: kpis ? `${Math.round(kpis.avgAadt).toLocaleString()}` : '-', color: '#64d2ff', sub: 'vehicles / day / link' },
                     { label: 'Survey Nodes', value: features.length.toLocaleString(), color: '#00d4aa', sub: 'links with TIS count' },
-                    { label: 'TIS Stations', value: tcsStations.length.toString(), color: '#ffd23f', sub: 'manual + ATC' },
-                    { label: 'Growth 2025→2040', value: kpis ? `+${kpis.growthRatio.toFixed(0)}%` : '-', color: '#00ff88', sub: 'ML forecast' },
+                    { label: 'TIS Stations', value: tcsStations.length.toString(), color: '#ffd60a', sub: 'manual + ATC' },
+                    { label: 'Growth 2025→2040', value: kpis ? `+${kpis.growthRatio.toFixed(0)}%` : '-', color: '#30d158', sub: 'ML forecast' },
                   ].map(k => (
                     <div key={k.label} style={{ background:'rgba(8,8,8,0.55)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:10, padding:'12px 14px' }}>
                       <div style={{ fontSize:8, fontWeight:700, color:'rgba(148,163,184,0.45)', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:4 }}>{k.label}</div>
@@ -1278,7 +1278,7 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
           </div>
         )}
 
-      {activeTab === 'roadsafety' && <Suspense fallback={<div style={{padding:'1.5rem',color:'#ff3366',textAlign:'center',opacity:0.7,fontSize:'12px'}}>Loading…</div>}><RoadSafetyDashboard /></Suspense>}
+      {activeTab === 'roadsafety' && <Suspense fallback={<div style={{padding:'1.5rem',color:'#ff453a',textAlign:'center',opacity:0.7,fontSize:'12px'}}>Loading…</div>}><RoadSafetyDashboard /></Suspense>}
 
     </div>
   );

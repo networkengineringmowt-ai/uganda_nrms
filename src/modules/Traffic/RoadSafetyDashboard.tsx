@@ -13,8 +13,8 @@ import { NullableCell } from '../../shared/tableFormatting';
 
 // ── palette ────────────────────────────────────────────────────────────────────
 const C = {
-  red: '#ff3366', orange: '#ff6b35', yellow: '#ffd23f',
-  green: '#00ff88', cyan: '#00f5ff', blue: '#4d9fff',
+  red: '#ff453a', orange: '#ff9f0a', yellow: '#ffd60a',
+  green: '#30d158', cyan: '#64d2ff', blue: '#0a84ff',
   gray: '#475569',
 } as const;
 

@@ -115,7 +115,7 @@ export default function SeasonalFactorsTable() {
     { key: 'class', label: 'Vehicle Class' },
     {
       key: 'annualGrowthRate', label: 'Growth %/Yr', numeric: true,
-      render: r => <span style={{ color: '#00f5ff', fontWeight: 700 }}>{r.annualGrowthRate.toFixed(1)}%</span>,
+      render: r => <span style={{ color: '#64d2ff', fontWeight: 700 }}>{r.annualGrowthRate.toFixed(1)}%</span>,
     },
     ...MONTHS.map((m, i) => {
       const s = seasonForMonth(i);
@@ -188,7 +188,7 @@ export default function SeasonalFactorsTable() {
       <SortableFilterableTable
         columns={columns}
         rows={tableRows}
-        accent="#00f5ff"
+        accent="#64d2ff"
         exportName="uganda-roads-seasonal-mef"
         initialSort="region"
         emptyText="No seasonal factor data for this region / vehicle-class combination."

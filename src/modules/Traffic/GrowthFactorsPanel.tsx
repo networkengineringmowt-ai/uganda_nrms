@@ -63,11 +63,11 @@ const VC_LABELS: Record<string, string> = {
 
 const VC_COLORS: Record<string, string> = {
   total:      '#6366f1',
-  motorcycle: '#00f5ff',
-  car:        '#00ff88',
-  hgv:        '#ff6b35',
-  bus:        '#ffd23f',
-  nmt:        '#b967ff',
+  motorcycle: '#64d2ff',
+  car:        '#30d158',
+  hgv:        '#ff9f0a',
+  bus:        '#ffd60a',
+  nmt:        '#bf5af2',
 };
 
 // ─── Colour helpers ───────────────────────────────────────────────────────────
@@ -87,7 +87,7 @@ function mefTextColor(mef: number | undefined): string {
   const dev = mef - 1.0;
   const intensity = Math.min(1, Math.abs(dev) / 0.15);
   if (intensity < 0.3) return 'rgba(148,163,184,0.6)';
-  return dev < 0 ? '#00ff88' : '#ff6b35';
+  return dev < 0 ? '#30d158' : '#ff9f0a';
 }
 
 // ─── Shared styles ────────────────────────────────────────────────────────────
@@ -192,7 +192,7 @@ function MonthlyHeatmap({
           { color: 'rgba(0,200,136,0.7)', label: '< 0.85 low traffic' },
           { color: 'rgba(0,80,60,0.4)',   label: '0.85–1.0' },
           { color: 'rgba(148,163,184,0.1)', label: '1.0 baseline' },
-          { color: 'rgba(255,107,53,0.4)', label: '1.0–1.15' },
+          { color: 'rgba(255, 159, 10,0.4)', label: '1.0–1.15' },
           { color: 'rgba(255,40,10,0.7)',  label: '> 1.15 peak' },
         ].map(({ color, label }) => (
           <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -231,7 +231,7 @@ function SeasonalBars({
     );
   }
 
-  const colors = ['#6366f1', '#00f5ff', '#00ff88', '#ff6b35', '#ffd23f', '#b967ff'];
+  const colors = ['#6366f1', '#64d2ff', '#30d158', '#ff9f0a', '#ffd60a', '#bf5af2'];
 
   return (
     <Chart3DWrap>
@@ -373,7 +373,7 @@ function TopRoadsTable({ data }: { data: GFTopRoad[] }) {
       render: road => {
         const pct     = road.cagr_total * 100;
         const isPos   = pct >= 0;
-        const color   = isPos ? '#00ff88' : '#ff6b35';
+        const color   = isPos ? '#30d158' : '#ff9f0a';
         const absCAGR = Math.abs(pct);
         return (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'flex-end' }}>
@@ -409,7 +409,7 @@ function TopRoadsTable({ data }: { data: GFTopRoad[] }) {
     <SortableFilterableTable
       columns={columns}
       rows={data}
-      accent="#ffd23f"
+      accent="#ffd60a"
       exportName="top-growing-roads"
       initialSort="cagr_total"
       emptyText="No road-level growth data available."
@@ -569,17 +569,17 @@ export default function GrowthFactorsPanel() {
           {
             label: 'Year Range',
             value: `${data.year_range[0]}–${data.year_range[1]}`,
-            sub: 'survey years', color: '#00f5ff',
+            sub: 'survey years', color: '#64d2ff',
           },
           {
             label: 'Regions',
             value: String(data.regions.filter(r => r !== 'Unknown').length),
-            sub: 'Department of National Roads maintenance regions', color: '#00ff88',
+            sub: 'Department of National Roads maintenance regions', color: '#30d158',
           },
           {
             label: 'Vehicle Classes',
             value: String(data.vehicle_classes.length),
-            sub: 'incl. NMT', color: '#ffd23f',
+            sub: 'incl. NMT', color: '#ffd60a',
           },
         ].map(kpi => (
           <div key={kpi.label} style={{ ...CARD, borderColor: `${kpi.color}22` }}>
@@ -614,7 +614,7 @@ export default function GrowthFactorsPanel() {
       {/* ── Seasonal factors ────────────────────────────────────────────────── */}
       <div style={CARD}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-          <BarChart2 size={14} style={{ color: '#00f5ff' }} />
+          <BarChart2 size={14} style={{ color: '#64d2ff' }} />
           <div>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>
               Seasonal Factors by Region - {effectiveYear}{isNearest ? ' (nearest survey year)' : ''}
@@ -635,7 +635,7 @@ export default function GrowthFactorsPanel() {
       {/* ── Annual growth line chart ─────────────────────────────────────────── */}
       <div style={CARD}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-          <TrendingUp size={14} style={{ color: '#00ff88' }} />
+          <TrendingUp size={14} style={{ color: '#30d158' }} />
           <div>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>
               Year-on-Year Growth Rate
@@ -656,7 +656,7 @@ export default function GrowthFactorsPanel() {
       {/* ── Top growing roads ────────────────────────────────────────────────── */}
       <div style={CARD}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-          <ArrowUpDown size={14} style={{ color: '#ffd23f' }} />
+          <ArrowUpDown size={14} style={{ color: '#ffd60a' }} />
           <div>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>
               Top Growing Roads - by CAGR (Total Traffic)
