@@ -55,11 +55,11 @@ interface CaseStudy {
 // ── Region colour map ─────────────────────────────────────────────────────────
 
 const REGION_COLOR: Record<string, string> = {
-  Africa: '#00ff88',
-  Europe: '#4d9fff',
-  'Asia-Pacific': '#ffd23f',
-  Americas: '#ff6b35',
-  'Middle East': '#b967ff',
+  Africa: '#30d158',
+  Europe: '#0a84ff',
+  'Asia-Pacific': '#ffd60a',
+  Americas: '#ff9f0a',
+  'Middle East': '#bf5af2',
 };
 
 // ── Case studies data - 150+ countries ───────────────────────────────────────
@@ -1246,7 +1246,7 @@ interface LessonTheme {
 const LESSONS: LessonTheme[] = [
   {
     theme: 'Data Collection',
-    color: '#00f5ff',
+    color: '#64d2ff',
     icon: '',
     lessons: [
       { point: 'Mobile-first field surveys reduce cost by 30-40%', source: 'KeNHA (Kenya)', detail: 'GPS + KoboToolbox-style apps enable twice-yearly surveys at a fraction of traditional ROMDAS cost.' },
@@ -1257,7 +1257,7 @@ const LESSONS: LessonTheme[] = [
   },
   {
     theme: 'Database Management',
-    color: '#4d9fff',
+    color: '#0a84ff',
     icon: '',
     lessons: [
       { point: 'Single source of truth prevents conflicting decisions', source: 'SANRAL (South Africa)', detail: 'iRAMS as the single authoritative database prevented the duplication and inconsistency that plagued earlier systems.' },
@@ -1267,7 +1267,7 @@ const LESSONS: LessonTheme[] = [
   },
   {
     theme: 'HDM-4 & Analytical Tools',
-    color: '#b967ff',
+    color: '#bf5af2',
     icon: '',
     lessons: [
       { point: 'Local calibration improves HDM-4 accuracy by 15-25%', source: 'TANROADS (Tanzania)', detail: 'Uganda-specific calibration for tropical rainfall, overloading and laterite surfaces should be prioritised.' },
@@ -1277,7 +1277,7 @@ const LESSONS: LessonTheme[] = [
   },
   {
     theme: 'Performance-Based Contracting',
-    color: '#00ff88',
+    color: '#30d158',
     icon: '',
     lessons: [
       { point: 'Output-based contracts deliver 15-20% cost savings', source: 'DNIT/Brazil (CREMA), ERA Ethiopia', detail: 'CREMA and PBRMC contracts consistently outperform input-based contracts when baseline condition is established.' },
@@ -1287,7 +1287,7 @@ const LESSONS: LessonTheme[] = [
   },
   {
     theme: 'Funding Models',
-    color: '#ffd23f',
+    color: '#ffd60a',
     icon: '',
     lessons: [
       { point: 'Ring-fenced road funds prevent budget raiding', source: 'Highways England (UK), Trafikverket', detail: 'Dedicated infrastructure funds insulated from annual budget cycles produce better long-term outcomes.' },
@@ -1297,7 +1297,7 @@ const LESSONS: LessonTheme[] = [
   },
   {
     theme: 'Technology Adoption',
-    color: '#ff6b35',
+    color: '#ff9f0a',
     icon: '',
     lessons: [
       { point: 'AI image recognition reduces inspection costs by 40%', source: 'MLIT (Japan), NHAI (India)', detail: 'CNN-based crack and pothole detection from road video reduces manual review effort significantly.' },
@@ -1337,7 +1337,7 @@ const S = {
     display: 'flex',
     gap: 2,
     padding: '0 14px',
-    borderBottom: '1px solid rgba(0,245,255,0.15)',
+    borderBottom: '1px solid rgba(100, 210, 255,0.15)',
     background: 'rgba(2,2,2,0.6)',
     flexShrink: 0,
   },
@@ -1348,8 +1348,8 @@ const S = {
     cursor: 'pointer',
     fontSize: 11,
     fontWeight: active ? 700 : 400,
-    color: active ? '#00f5ff' : 'rgba(148,163,184,0.7)',
-    borderBottom: active ? '2px solid #00f5ff' : '2px solid transparent',
+    color: active ? '#64d2ff' : 'rgba(148,163,184,0.7)',
+    borderBottom: active ? '2px solid #64d2ff' : '2px solid transparent',
     display: 'flex',
     alignItems: 'center',
     gap: 6,
@@ -1441,7 +1441,7 @@ function WorldMapTab() {
                   <div><span style={{ color: 'rgba(148,163,184,0.6)' }}>Network: </span>
                     <strong>{cs.networkKm.toLocaleString()} km</strong></div>
                   <div><span style={{ color: 'rgba(148,163,184,0.6)' }}>System: </span>
-                    <span style={{ color: '#00f5ff' }}>{cs.system}</span></div>
+                    <span style={{ color: '#64d2ff' }}>{cs.system}</span></div>
                   <div><span style={{ color: 'rgba(148,163,184,0.6)' }}>Paved: </span>
                     <strong>{cs.pavedPct}%</strong></div>
                 </div>
@@ -1458,7 +1458,7 @@ function WorldMapTab() {
         right: 16,
         zIndex: 1000,
         background: 'rgba(2,2,2,0.88)',
-        border: '1px solid rgba(0,245,255,0.15)',
+        border: '1px solid rgba(100, 210, 255,0.15)',
         borderRadius: 10,
         padding: '10px 14px',
         display: 'flex',
@@ -1517,7 +1517,7 @@ function CaseStudiesTab() {
         <div style={{
           display: 'flex', alignItems: 'center', gap: 6,
           background: 'rgba(8,8,8,0.8)',
-          border: '1px solid rgba(0,245,255,0.15)',
+          border: '1px solid rgba(100, 210, 255,0.15)',
           borderRadius: 8, padding: '5px 10px', flex: '0 0 auto',
         }}>
           <Search size={12} color="rgba(148,163,184,0.5)" />
@@ -1536,7 +1536,7 @@ function CaseStudiesTab() {
         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
           {REGIONS.map(r => {
             const active = regionFilter === r;
-            const color = r === 'All' ? '#00f5ff' : REGION_COLOR[r];
+            const color = r === 'All' ? '#64d2ff' : REGION_COLOR[r];
             return (
               <button
                 key={r}
@@ -1641,7 +1641,7 @@ function CaseStudiesTab() {
                   {/* Metrics */}
                   <div style={{ marginBottom: 12 }}>
                     <div style={{ ...S.label, marginBottom: 4 }}>Key Metrics</div>
-                    <p style={{ margin: 0, fontSize: 10, color: '#00ff88', fontWeight: 600 }}>{cs.metrics}</p>
+                    <p style={{ margin: 0, fontSize: 10, color: '#30d158', fontWeight: 600 }}>{cs.metrics}</p>
                   </div>
 
                   {/* DNR lessons box */}
@@ -1693,17 +1693,17 @@ const comparisonColumns: STColumn<CaseStudy>[] = [
   { key: 'region', label: 'Region', render: cs => <span style={S.badge(REGION_COLOR[cs.region])}>{cs.region}</span> },
   {
     key: 'networkKm', label: 'Network (km)', numeric: true,
-    render: cs => <span style={{ color: '#00f5ff', fontWeight: 600 }}>{cs.networkKm.toLocaleString()}</span>,
+    render: cs => <span style={{ color: '#64d2ff', fontWeight: 600 }}>{cs.networkKm.toLocaleString()}</span>,
   },
   { key: 'system', label: 'System' },
   { key: 'pavedPct', label: 'Paved (%)', numeric: true, render: cs => <PercentCell value={cs.pavedPct} /> },
   {
     key: 'rmsYears', label: 'RMS Yrs', numeric: true,
-    render: cs => <span style={{ color: '#ffd23f', fontWeight: 600 }}>{cs.rmsYears}</span>,
+    render: cs => <span style={{ color: '#ffd60a', fontWeight: 600 }}>{cs.rmsYears}</span>,
   },
   {
     key: 'budgetPerKmUsd', label: 'Budget/km (USD)', numeric: true,
-    render: cs => <span style={{ color: '#b967ff', fontWeight: 600 }}>{cs.budgetPerKmUsd.toLocaleString()}</span>,
+    render: cs => <span style={{ color: '#bf5af2', fontWeight: 600 }}>{cs.budgetPerKmUsd.toLocaleString()}</span>,
   },
   { key: 'metrics', label: 'Key Metric', render: cs => <>{cs.metrics.split(';')[0]}</> },
 ];
@@ -1754,7 +1754,7 @@ function AnalyticsTab() {
         <SortableFilterableTable
           columns={comparisonColumns}
           rows={CASE_STUDIES}
-          accent="#00f5ff"
+          accent="#64d2ff"
           exportName="global-case-studies-comparison"
         />
       </div>
@@ -1782,9 +1782,9 @@ function LessonsTab() {
           display: 'flex', alignItems: 'center', gap: 10,
           flex: '0 0 auto',
         }}>
-          <Lightbulb size={16} color="#ffd23f" />
+          <Lightbulb size={16} color="#ffd60a" />
           <div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: '#ffd23f' }}>{totalLessons}</div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: '#ffd60a' }}>{totalLessons}</div>
             <div style={S.label}>Total Lessons</div>
           </div>
         </div>
@@ -1794,9 +1794,9 @@ function LessonsTab() {
           display: 'flex', alignItems: 'center', gap: 10,
           flex: '0 0 auto',
         }}>
-          <Globe size={16} color="#00f5ff" />
+          <Globe size={16} color="#64d2ff" />
           <div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: '#00f5ff' }}>{totalCountries}</div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: '#64d2ff' }}>{totalCountries}</div>
             <div style={S.label}>Countries Analysed</div>
           </div>
         </div>
@@ -1806,9 +1806,9 @@ function LessonsTab() {
           display: 'flex', alignItems: 'center', gap: 10,
           flex: '0 0 auto',
         }}>
-          <BookOpen size={16} color="#00ff88" />
+          <BookOpen size={16} color="#30d158" />
           <div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: '#00ff88' }}>{LESSONS.length}</div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: '#30d158' }}>{LESSONS.length}</div>
             <div style={S.label}>Themes</div>
           </div>
         </div>
@@ -1888,16 +1888,16 @@ function LessonsTab() {
       <div style={{
         marginTop: 18,
         padding: '12px 16px',
-        background: 'rgba(0,245,255,0.04)',
-        border: '1px solid rgba(0,245,255,0.12)',
+        background: 'rgba(100, 210, 255,0.04)',
+        border: '1px solid rgba(100, 210, 255,0.12)',
         borderRadius: 10,
         fontSize: 11,
         color: 'rgba(148,163,184,0.7)',
         textAlign: 'center',
       }}>
-        <strong style={{ color: '#00f5ff' }}>{totalLessons} total lessons</strong> synthesised from{' '}
-        <strong style={{ color: '#00ff88' }}>{totalCountries} countries</strong> analysed across{' '}
-        <strong style={{ color: '#ffd23f' }}>{LESSONS.length} themes</strong> - all directly applicable to DNR's Road Management System.
+        <strong style={{ color: '#64d2ff' }}>{totalLessons} total lessons</strong> synthesised from{' '}
+        <strong style={{ color: '#30d158' }}>{totalCountries} countries</strong> analysed across{' '}
+        <strong style={{ color: '#ffd60a' }}>{LESSONS.length} themes</strong> - all directly applicable to DNR's Road Management System.
       </div>
     </div>
   );
@@ -1920,7 +1920,7 @@ const AM_COMPONENTS = [
   'Digital/AI Integration',
 ];
 
-const SCORE_COLORS = ['#ef4444', '#f97316', '#22c55e', '#00ff88'];
+const SCORE_COLORS = ['#ef4444', '#f97316', '#22c55e', '#30d158'];
 const SCORE_LABELS = ['Missing', 'Partial', 'Implemented', 'Best Practice'];
 
 function computeScores(cs: CaseStudy): number[] {
@@ -1995,18 +1995,18 @@ function RadarPanel({ countries, onClose }: { countries: CaseStudy[]; onClose: (
     countries.forEach(cs => { entry[cs.country] = computeScores(cs)[i]; });
     return entry;
   });
-  const colors = ['#00f5ff', '#ff6b35'];
+  const colors = ['#64d2ff', '#ff9f0a'];
   return (
     <div style={{
       position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 9999,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }} onClick={onClose}>
       <div style={{
-        background: 'rgba(8,8,8,0.97)', border: '1px solid rgba(0,245,255,0.2)',
+        background: 'rgba(8,8,8,0.97)', border: '1px solid rgba(100, 210, 255,0.2)',
         borderRadius: 16, padding: 24, width: 540, maxWidth: '95vw',
       }} onClick={e => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <div style={{ fontWeight: 800, fontSize: 13, color: '#00f5ff' }}>
+          <div style={{ fontWeight: 800, fontSize: 13, color: '#64d2ff' }}>
             AM Component Radar - {countries.map(c => c.flag + ' ' + c.country).join(' vs ')}
           </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 16 }}></button>
@@ -2097,8 +2097,8 @@ function LiteratureMatrixTab() {
           style={{
             display: 'flex', alignItems: 'center', gap: 5,
             padding: '5px 12px', borderRadius: 7, cursor: 'pointer',
-            background: 'rgba(0,245,255,0.1)', border: '1px solid rgba(0,245,255,0.25)',
-            color: '#00f5ff', fontSize: 10, fontWeight: 700,
+            background: 'rgba(100, 210, 255,0.1)', border: '1px solid rgba(100, 210, 255,0.25)',
+            color: '#64d2ff', fontSize: 10, fontWeight: 700,
           }}
         >
           <Download size={12} /> Download CSV
@@ -2108,9 +2108,9 @@ function LiteratureMatrixTab() {
           style={{
             display: 'flex', alignItems: 'center', gap: 5,
             padding: '5px 12px', borderRadius: 7, cursor: 'pointer',
-            background: compareMode ? 'rgba(255,107,53,0.15)' : 'rgba(8,8,8,0.7)',
-            border: `1px solid ${compareMode ? 'rgba(255,107,53,0.4)' : 'rgba(255,255,255,0.1)'}`,
-            color: compareMode ? '#ff6b35' : 'rgba(148,163,184,0.7)', fontSize: 10, fontWeight: 700,
+            background: compareMode ? 'rgba(255, 159, 10,0.15)' : 'rgba(8,8,8,0.7)',
+            border: `1px solid ${compareMode ? 'rgba(255, 159, 10,0.4)' : 'rgba(255,255,255,0.1)'}`,
+            color: compareMode ? '#ff9f0a' : 'rgba(148,163,184,0.7)', fontSize: 10, fontWeight: 700,
           }}
         >
           Compare {compareMode ? `(${compareA ? '1' : '0'}/2 selected)` : '2 Countries'}
@@ -2118,7 +2118,7 @@ function LiteratureMatrixTab() {
         <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginLeft: 4 }}>
           {REGIONS.map(r => {
             const active = regionFilter === r;
-            const color  = r === 'All' ? '#00f5ff' : REGION_COLOR[r];
+            const color  = r === 'All' ? '#64d2ff' : REGION_COLOR[r];
             return (
               <button key={r} onClick={() => setRegionFilter(r)} style={{
                 padding: '3px 9px', borderRadius: 14, fontSize: 9, fontWeight: active ? 700 : 400,
@@ -2167,7 +2167,7 @@ function LiteratureMatrixTab() {
               const avg = avgNum.toFixed(1);
               const isCompA = compareA?.id === cs.id;
               const isCompB = compareB?.id === cs.id;
-              const highlight = isCompA ? 'rgba(0,245,255,0.08)' : isCompB ? 'rgba(255,107,53,0.08)' : '';
+              const highlight = isCompA ? 'rgba(100, 210, 255,0.08)' : isCompB ? 'rgba(255, 159, 10,0.08)' : '';
               return (
                 <tr
                   key={cs.id}
@@ -2189,7 +2189,7 @@ function LiteratureMatrixTab() {
                         <div style={{ fontSize: 8, color: '#64748b' }}>{cs.agency}</div>
                       </div>
                       {(isCompA || isCompB) && (
-                        <span style={{ fontSize: 8, fontWeight: 700, color: isCompA ? '#00f5ff' : '#ff6b35', marginLeft: 2 }}>
+                        <span style={{ fontSize: 8, fontWeight: 700, color: isCompA ? '#64d2ff' : '#ff9f0a', marginLeft: 2 }}>
                           {isCompA ? 'A' : 'B'}
                         </span>
                       )}
@@ -2213,14 +2213,14 @@ function LiteratureMatrixTab() {
                       </div>
                     </td>
                   ))}
-                  <td style={{ ...tdStyle, textAlign: 'center', fontWeight: 700, fontSize: 11, color: '#00f5ff' }}>{avg}</td>
+                  <td style={{ ...tdStyle, textAlign: 'center', fontWeight: 700, fontSize: 11, color: '#64d2ff' }}>{avg}</td>
                 </tr>
               );
             })}
           </tbody>
           <tfoot>
-            <tr style={{ background: 'rgba(0,245,255,0.06)', position: 'sticky', bottom: 0, borderTop: '2px solid rgba(0,245,255,0.2)' }}>
-              <td style={{ ...tdStyle, position: 'sticky', left: 0, background: 'rgba(8,20,32,0.97)', fontWeight: 800, color: '#00f5ff', paddingLeft: 10 }}>
+            <tr style={{ background: 'rgba(100, 210, 255,0.06)', position: 'sticky', bottom: 0, borderTop: '2px solid rgba(100, 210, 255,0.2)' }}>
+              <td style={{ ...tdStyle, position: 'sticky', left: 0, background: 'rgba(8,20,32,0.97)', fontWeight: 800, color: '#64d2ff', paddingLeft: 10 }}>
                 Column Average ({rows.length} countries)
               </td>
               <td style={tdStyle} />
@@ -2236,7 +2236,7 @@ function LiteratureMatrixTab() {
                   </div>
                 </td>
               ))}
-              <td style={{ ...tdStyle, textAlign: 'center', fontWeight: 800, fontSize: 11, color: '#00f5ff' }}>
+              <td style={{ ...tdStyle, textAlign: 'center', fontWeight: 800, fontSize: 11, color: '#64d2ff' }}>
                 {(colAverages.reduce((a, b) => a + b, 0) / colAverages.length).toFixed(1)}
               </td>
             </tr>
@@ -2274,14 +2274,14 @@ export default function GlobalCaseStudiesLegacyContent({ initialTab, hideTabBar 
       {!hideTabBar && (
       <div style={{
         padding: '14px 18px 10px',
-        borderBottom: '1px solid rgba(0,245,255,0.1)',
+        borderBottom: '1px solid rgba(100, 210, 255,0.1)',
         background: 'rgba(2,2,2,0.8)',
         flexShrink: 0,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Globe size={18} color="#00f5ff" />
+          <Globe size={18} color="#64d2ff" />
           <div>
-            <div style={{ fontWeight: 800, fontSize: 15, color: '#00f5ff', letterSpacing: '-0.01em' }}>
+            <div style={{ fontWeight: 800, fontSize: 15, color: '#64d2ff', letterSpacing: '-0.01em' }}>
               Global Road Management - Case Studies
             </div>
             <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.6)', marginTop: 1 }}>
