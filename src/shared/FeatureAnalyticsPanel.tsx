@@ -232,7 +232,7 @@ function PanelHeader({
 // ─── Feature renderers ────────────────────────────────────────────────────────
 
 function RoadLinkPanel({ f, onClose }: { f: RoadLinkFeature; onClose: () => void }) {
-  const accent = '#5e5ce6';
+  const accent = '#6366f1';
   const congColor = f.congestionRisk ? (CONGESTION_COLORS[f.congestionRisk] ?? '#94a3b8') : '#94a3b8';
   return (
     <>
@@ -451,7 +451,7 @@ export default function FeatureAnalyticsPanel({
   if (!feature) return null;
 
   const accentMap = {
-    'road-link':   '#5e5ce6',
+    'road-link':   '#6366f1',
     'bridge':      STRUCTURE_STYLES.bridge.color,
     'culvert':     STRUCTURE_STYLES.culvert.color,
     'atc-station': '#00c3ff',

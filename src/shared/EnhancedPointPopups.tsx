@@ -31,7 +31,7 @@ export function AirportPopup({ properties, coordinates }: Omit<PopupProps, 'type
     }}>
       {/* Header */}
       <div style={{
-        background: 'linear-gradient(135deg, #818cf8 0%, #5e5ce6 100%)',
+        background: 'linear-gradient(135deg, #818cf8 0%, #6366f1 100%)',
         color: 'white',
         padding: '12px 14px',
         borderBottom: '2px solid #4f46e5',

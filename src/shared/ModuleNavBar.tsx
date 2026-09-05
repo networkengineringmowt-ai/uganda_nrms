@@ -40,8 +40,8 @@ export function ModuleNavBar({ module }: Props) {
       </button>
       <button onClick={goSummary} style={{
         ...BTN,
-        background: 'rgba(94, 92, 230,0.08)',
-        border: '1px solid rgba(94, 92, 230,0.2)',
+        background: 'rgba(99, 102, 241,0.08)',
+        border: '1px solid rgba(99, 102, 241,0.2)',
         color: '#818cf8',
       }}>
         ↗ Summary
