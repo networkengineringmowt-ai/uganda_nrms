@@ -31,7 +31,7 @@ const COST_TREAT = ['Routine', 'Resealing', 'Overlay', 'Rehab', 'Reconstruct'];
 const COST_PER_KM = [4.5, 118, 320, 780, 1450]; // mn UGX/km
 
 const REG_LBL = ['Central', 'Northern', 'Eastern', 'Western', 'Southern', 'North Eastern'];
-const REG_COL = ['#64d2ff', '#30d158', '#ffd60a', '#bf5af2', '#ff375f', '#ff9f0a'];
+const REG_COL = ['#00f5ff', '#00ff88', '#ffd23f', '#b967ff', '#ff2d78', '#ff6b35'];
 const BUD_REG = [470, 360, 420, 240, 230, 122]; // sums to 1,842
 const BUD_REG_SPENT = [320, 245, 286, 163, 156, 83];
 const REG_UNPAVED = [2586, 3020, 3430, 1720, 2160, 1981]; // network unpaved km, used to derive regional backlog split

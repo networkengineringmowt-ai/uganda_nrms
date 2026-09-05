@@ -5,9 +5,9 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import { GaugeC, RankList } from '../../../shared/dashboardKit';
 
 type Row = Record<string, unknown>;
-const CARD = 'rgba(15,23,42,0.5)'; const HL = '#64d2ff';
+const CARD = 'rgba(15,23,42,0.5)'; const HL = '#00f5ff';
 const SEV: Record<string, string> = { good: '#22c55e', warn: '#f59e0b', bad: '#f43f5e', info: '#38bdf8' };
-const PAL = ['#64d2ff', '#30d158', '#ffd60a', '#ff9f0a', '#bf5af2', '#0a84ff', '#66d4cf', '#ff375f', '#a3e635', '#f0abfc', '#fbbf24'];
+const PAL = ['#00f5ff', '#00ff88', '#ffd23f', '#ff6b35', '#b967ff', '#4d9fff', '#00d4aa', '#ff2d78', '#a3e635', '#f0abfc', '#fbbf24'];
 const num = (v: unknown): number | null => { if (typeof v === 'number' && isFinite(v)) return v; if (typeof v === 'string' && v !== '' && isFinite(Number(v))) return Number(v); return null; };
 const fmtN = (n: number, d = 0) => n.toLocaleString(undefined, { maximumFractionDigits: d });
 const key = (rows: Row[], re: RegExp) => rows.length ? (Object.keys(rows[0]).find(c => re.test(c) && rows.some(r => r[c] != null && r[c] !== '')) ?? null) : null;

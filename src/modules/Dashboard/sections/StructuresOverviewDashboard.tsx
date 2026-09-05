@@ -28,7 +28,7 @@ import {
 const TOTAL_STRUCT = 998; // 546 bridges + 452 culverts
 const STR_TYPE = [546, 372, 43, 37];
 const STR_TYPE_LBL = ['Bridges', 'Pipe Culverts', 'Concrete Box Culverts', 'Other Culverts'];
-const STR_TYPE_COLORS = ['#64d2ff', '#00aacc', '#006688', '#003344'];
+const STR_TYPE_COLORS = ['#00f5ff', '#00aacc', '#006688', '#003344'];
 
 const STR_COND = [711, 197, 53, 37];
 const COND_LBL = ['Good', 'Fair', 'Poor', 'Critical'];
