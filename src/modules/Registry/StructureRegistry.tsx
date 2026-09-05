@@ -12,7 +12,7 @@ import { SortableFilterableTable, type STColumn } from '../../shared/SortableFil
 // style object - SearchableSelect takes `style`, not `className`.
 const filterSelectStyle: CSSProperties = {
   appearance: 'none', cursor: 'pointer', background: 'rgba(6,13,24,0.8)',
-  border: '1px solid rgba(100, 210, 255,0.12)', borderRadius: 8, padding: '6px 12px',
+  border: '1px solid rgba(0, 245, 255,0.12)', borderRadius: 8, padding: '6px 12px',
   fontSize: 12, color: '#e2eaf4', outline: 'none',
 };
 
@@ -208,7 +208,7 @@ export default function StructureRegistry() {
         <SortableFilterableTable
           columns={columns}
           rows={filtered}
-          accent="#64d2ff"
+          accent="#00f5ff"
           exportName="structure-registry"
           initialSort="priorityRank"
         />
