@@ -12,7 +12,7 @@ const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: 'works',     label: 'Works & Maintenance', icon: <Wrench size={13}/> },
 ];
 
-const ACC = '#ff9f0a';
+const ACC = '#ff6b35';
 
 function Chip({ label }: { label: string }) {
   return (
@@ -27,12 +27,12 @@ function Chip({ label }: { label: string }) {
 }
 
 const KPIs = [
-  { label: 'Urban Roads',     value: '2,300 km',  sub: 'City & town roads',      color: '#ff9f0a' },
-  { label: 'District Roads',  value: '16,500 km', sub: 'Feeder & rural links',   color: '#ffd60a' },
-  { label: 'Community Roads', value: '12,000 km', sub: 'Village access routes',  color: '#66d4cf' },
-  { label: 'Paved Ratio',     value: '18%',        sub: 'Urban + district paved', color: '#bf5af2' },
-  { label: 'Local Gov Units', value: '146',        sub: 'Districts & cities',     color: '#0a84ff' },
-  { label: 'Annual Budget',   value: 'UGX 800 Bn', sub: 'FY25-26 envelope',      color: '#30d158' },
+  { label: 'Urban Roads',     value: '2,300 km',  sub: 'City & town roads',      color: '#ff6b35' },
+  { label: 'District Roads',  value: '16,500 km', sub: 'Feeder & rural links',   color: '#ffd23f' },
+  { label: 'Community Roads', value: '12,000 km', sub: 'Village access routes',  color: '#00d4aa' },
+  { label: 'Paved Ratio',     value: '18%',        sub: 'Urban + district paved', color: '#b967ff' },
+  { label: 'Local Gov Units', value: '146',        sub: 'Districts & cities',     color: '#4d9fff' },
+  { label: 'Annual Budget',   value: 'UGX 800 Bn', sub: 'FY25-26 envelope',      color: '#00ff88' },
 ];
 
 function OverviewTab() {
@@ -40,15 +40,15 @@ function OverviewTab() {
     <div style={{ padding: 24, overflowY: 'auto', maxHeight: '100%' }}>
       {/* Definition card */}
       <div style={{
-        background: 'rgba(255, 159, 10,0.05)',
-        border: '1px solid rgba(255, 159, 10,0.2)',
+        background: 'rgba(255, 107, 53,0.05)',
+        border: '1px solid rgba(255, 107, 53,0.2)',
         borderRadius: 10, padding: '18px 22px', marginBottom: 24,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
           <div style={{
             width: 36, height: 36, borderRadius: 8,
-            background: 'rgba(255, 159, 10,0.1)',
-            border: '1px solid rgba(255, 159, 10,0.3)',
+            background: 'rgba(255, 107, 53,0.1)',
+            border: '1px solid rgba(255, 107, 53,0.3)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <Building2 size={18} color={ACC} />
@@ -96,7 +96,7 @@ function OverviewTab() {
           { icon: <Users size={14}/>, title: 'Community Access', items: ['12,000 km community tracks','Village connectivity (2 km RAI target)','Labour-based maintenance contracts','Women & youth employment programmes'] },
           { icon: <Wrench size={14}/>, title: 'Works Delivery', items: ['UNRA-aligned maintenance standards','Force Account & contractor mix','Equipment pools per region','Emergency repair mobilisation'] },
         ].map(s => (
-          <div key={s.title} style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255, 159, 10,0.1)', borderRadius: 8, padding: '14px 16px' }}>
+          <div key={s.title} style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255, 107, 53,0.1)', borderRadius: 8, padding: '14px 16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10, color: ACC }}>
               {s.icon}
               <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>{s.title}</span>
