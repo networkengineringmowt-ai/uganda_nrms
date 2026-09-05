@@ -31,10 +31,10 @@ const RAW_DICTIONARY: DictEntry[] = [
     range: '0 (perfect) – 20+ (impassable)', source: 'ROMDAS laser profilometer survey, carried forward by the deterioration model',
     description: 'The world-standard measure of longitudinal road roughness - the accumulated suspension travel (mm) a quarter-car experiences per km driven. Lower is smoother. Drives ride quality, vehicle operating cost and the maintenance trigger.',
     values: [
-      { value: '< 3.5', meaning: 'Good - smooth, recently surfaced', color: '#00ff88' },
-      { value: '3.5 – 6.5', meaning: 'Fair - routine maintenance', color: '#ffd23f' },
+      { value: '< 3.5', meaning: 'Good - smooth, recently surfaced', color: '#30d158' },
+      { value: '3.5 – 6.5', meaning: 'Fair - routine maintenance', color: '#ffd60a' },
       { value: '6.5 – 9.0', meaning: 'Poor - periodic maintenance due', color: '#ff8c00' },
-      { value: '> 9.0', meaning: 'Very Poor - rehabilitation/reconstruction', color: '#ff2d78' },
+      { value: '> 9.0', meaning: 'Very Poor - rehabilitation/reconstruction', color: '#ff375f' },
     ],
   },
   {
@@ -42,11 +42,11 @@ const RAW_DICTIONARY: DictEntry[] = [
     range: '0 (failed) – 100 (perfect)', source: 'Visual defect survey, weighted-deduction model (UNRA AMS manual)',
     description: 'A 0–100 score of surface condition from visible distress (cracking, ravelling, potholes, rutting, edge break). 100 = no distress; deductions are taken per defect type and severity. The headline pavement-health indicator.',
     values: [
-      { value: '≥ 85', meaning: 'Very Good', color: '#00ff88' },
+      { value: '≥ 85', meaning: 'Very Good', color: '#30d158' },
       { value: '75 – 84', meaning: 'Good', color: '#7CFC00' },
-      { value: '65 – 74', meaning: 'Fair', color: '#ffd23f' },
+      { value: '65 – 74', meaning: 'Fair', color: '#ffd60a' },
       { value: '55 – 64', meaning: 'Poor', color: '#ff8c00' },
-      { value: '< 55', meaning: 'Very Poor', color: '#ff2d78' },
+      { value: '< 55', meaning: 'Very Poor', color: '#ff375f' },
     ],
   },
   {
@@ -78,7 +78,7 @@ const RAW_DICTIONARY: DictEntry[] = [
     key: 'surface_type', term: 'Surface Type', group: 'Pavement Condition', aliases: ['surface', 'surface_cat', 'surface_ty'],
     description: 'The running-surface material of the road link.',
     values: [
-      { value: 'Bituminous / Paved', meaning: 'Sealed asphalt or surface-dressed (DBST) - the paved network', color: '#00f5ff' },
+      { value: 'Bituminous / Paved', meaning: 'Sealed asphalt or surface-dressed (DBST) - the paved network', color: '#64d2ff' },
       { value: 'Unsealed / Gravel', meaning: 'Gravel or earth wearing course - the unpaved network', color: '#ff8c00' },
       { value: 'Concrete', meaning: 'Rigid Portland-cement concrete pavement', color: '#94a3b8' },
     ],
@@ -90,10 +90,10 @@ const RAW_DICTIONARY: DictEntry[] = [
     source: 'DNR functional classification (NDPIV)',
     description: 'Functional classification of the national road, setting design standard, target condition and maintenance priority.',
     values: [
-      { value: 'A', meaning: 'Class A - international trunk / primary corridor', color: '#00f5ff' },
-      { value: 'B', meaning: 'Class B - national link road', color: '#00ff88' },
-      { value: 'C', meaning: 'Class C - district/feeder collector', color: '#ffd23f' },
-      { value: 'M', meaning: 'Class M - grade-separated highway / motorway (controlled access)', color: '#b967ff' },
+      { value: 'A', meaning: 'Class A - international trunk / primary corridor', color: '#64d2ff' },
+      { value: 'B', meaning: 'Class B - national link road', color: '#30d158' },
+      { value: 'C', meaning: 'Class C - district/feeder collector', color: '#ffd60a' },
+      { value: 'M', meaning: 'Class M - grade-separated highway / motorway (controlled access)', color: '#bf5af2' },
     ],
   },
   {
@@ -140,10 +140,10 @@ const RAW_DICTIONARY: DictEntry[] = [
     key: 'congestion_risk', term: 'Congestion Risk', group: 'Traffic',
     description: 'Predicted demand ÷ design capacity for the link (capacities: M 15k, A 10k, B 5k, C 2.5k PCU/day).',
     values: [
-      { value: 'Low', meaning: '< 40% of capacity - free flow', color: '#00ff88' },
-      { value: 'Medium', meaning: '40–70% - monitor growth', color: '#ffd23f' },
+      { value: 'Low', meaning: '< 40% of capacity - free flow', color: '#30d158' },
+      { value: 'Medium', meaning: '40–70% - monitor growth', color: '#ffd60a' },
       { value: 'High', meaning: '70–90% - plan capacity improvement', color: '#ff8c00' },
-      { value: 'Critical', meaning: '> 90% - immediate upgrade', color: '#ff2d78' },
+      { value: 'Critical', meaning: '> 90% - immediate upgrade', color: '#ff375f' },
     ],
   },
 
@@ -168,20 +168,20 @@ const RAW_DICTIONARY: DictEntry[] = [
     source: 'Bridge inspection (BMS element ratings)',
     description: 'Element and overall condition rating from the bridge inspection. Element ratings (substructure, superstructure, deck/roadway, approaches, waterway) roll up to the overall structure rating.',
     values: [
-      { value: 'Very Good / 5', meaning: 'As-new, no action', color: '#00ff88' },
+      { value: 'Very Good / 5', meaning: 'As-new, no action', color: '#30d158' },
       { value: 'Good / 4', meaning: 'Minor defects, routine maintenance', color: '#7CFC00' },
-      { value: 'Fair / 3', meaning: 'Moderate defects, monitor', color: '#ffd23f' },
+      { value: 'Fair / 3', meaning: 'Moderate defects, monitor', color: '#ffd60a' },
       { value: 'Poor / 2', meaning: 'Significant defects, repair needed', color: '#ff8c00' },
-      { value: 'Critical / 1', meaning: 'Severe - urgent intervention / load restriction', color: '#ff2d78' },
+      { value: 'Critical / 1', meaning: 'Severe - urgent intervention / load restriction', color: '#ff375f' },
     ],
   },
   {
     key: 'scour_risk', term: 'Scour Risk', group: 'Bridges',
     description: 'Risk that river flow erodes material from around bridge foundations/abutments - the leading cause of bridge failure. Rated from waterway inspection and hydraulic exposure.',
     values: [
-      { value: 'Low', meaning: 'Stable bed, protected foundations', color: '#00ff88' },
-      { value: 'Medium', meaning: 'Some exposure, monitor at floods', color: '#ffd23f' },
-      { value: 'High', meaning: 'Active scour - countermeasures needed', color: '#ff2d78' },
+      { value: 'Low', meaning: 'Stable bed, protected foundations', color: '#30d158' },
+      { value: 'Medium', meaning: 'Some exposure, monitor at floods', color: '#ffd60a' },
+      { value: 'High', meaning: 'Active scour - countermeasures needed', color: '#ff375f' },
     ],
   },
   {
@@ -202,10 +202,10 @@ const RAW_DICTIONARY: DictEntry[] = [
     key: 'urgency', term: 'Intervention Urgency', group: 'Maintenance',
     description: 'When the ML intervention model schedules works for the link, from condition and deterioration rate.',
     values: [
-      { value: 'now', meaning: 'Immediate - condition past trigger', color: '#ff2d78' },
+      { value: 'now', meaning: 'Immediate - condition past trigger', color: '#ff375f' },
       { value: 'urgent', meaning: 'This financial year', color: '#ff8c00' },
-      { value: 'soon', meaning: 'Within the medium-term plan (1–3 yr)', color: '#ffd23f' },
-      { value: 'planned', meaning: 'Monitored, in the long-term programme', color: '#00ff88' },
+      { value: 'soon', meaning: 'Within the medium-term plan (1–3 yr)', color: '#ffd60a' },
+      { value: 'planned', meaning: 'Monitored, in the long-term programme', color: '#30d158' },
     ],
   },
   {

@@ -117,8 +117,8 @@ export function MapLegend({ title, items, position = 'bottomright' }: Props) {
 // ── Pre-built legend item sets (ESRI convention order) ────────────────────────
 // ROAD NETWORK LEGEND - by functional class then surface variant
 export const LEGEND_ROAD_NETWORK: LegendItem[] = [
-  { color: '#00f5ff', label: 'Class A - National Road' },
-  { color: '#00ff88', label: 'Class B - National Road' },
+  { color: '#64d2ff', label: 'Class A - National Road' },
+  { color: '#30d158', label: 'Class B - National Road' },
   { color: '#f59e0b', label: 'Class C - District Road' },
   { color: '#94a3b8', label: 'Class M - Grade-Separated Highway', dash: true },
   { color: '#C8A84B', label: 'Unpaved / Gravel', dash: true },
@@ -150,10 +150,10 @@ export const LEGEND_CONDITION: LegendItem[] = [
 
 // TRAFFIC VOLUME LEGEND - AADT (Annual Average Daily Traffic) correct app thresholds
 export const LEGEND_TRAFFIC: LegendItem[] = [
-  { color: '#00ff88', label: 'AADT < 2,000   Low', circle: true },
-  { color: '#ffd23f', label: 'AADT 2k–8k   Medium', circle: true },
-  { color: '#ff6b35', label: 'AADT 8k–15k  High', circle: true },
-  { color: '#ff2d78', label: 'AADT > 15k   Very High', circle: true },
+  { color: '#30d158', label: 'AADT < 2,000   Low', circle: true },
+  { color: '#ffd60a', label: 'AADT 2k–8k   Medium', circle: true },
+  { color: '#ff9f0a', label: 'AADT 8k–15k  High', circle: true },
+  { color: '#ff375f', label: 'AADT > 15k   Very High', circle: true },
 ];
 
 // INFRASTRUCTURE LEGEND - ESRI order: lines → airports → ground transport → maintenance
@@ -188,8 +188,8 @@ export const LEGEND_CONGESTION: LegendItem[] = [
 
 // 1. Road lines by functional class (colors match app CLASS_COLORS)
 export const LEGEND_ROAD_CLASSES: LegendItem[] = [
-  { color: '#00f5ff', label: 'Class A - National Road' },
-  { color: '#00ff88', label: 'Class B - National Road' },
+  { color: '#64d2ff', label: 'Class A - National Road' },
+  { color: '#30d158', label: 'Class B - National Road' },
   { color: '#f59e0b', label: 'Class C - District Road' },
   { color: '#94a3b8', label: 'Class M - Grade-Separated Highway', dash: true },
   { color: '#C8A84B', label: 'Unpaved / Gravel', dash: true },

@@ -75,12 +75,12 @@ const CONDITION_LABEL: Record<number, string> = {
   1: 'Very Poor', 2: 'Poor', 3: 'Fair', 4: 'Good', 5: 'Very Good',
 };
 const CONDITION_COLOR: Record<number, string> = {
-  1: '#ff2d78', 2: '#ff6b35', 3: '#ffd23f', 4: '#00ff88', 5: '#00f5ff',
+  1: '#ff375f', 2: '#ff9f0a', 3: '#ffd60a', 4: '#30d158', 5: '#64d2ff',
 };
 
 // ─── Sparkline (SVG line + area) ──────────────────────────────────────────────
 
-function Sparkline({ data, color = '#00f5ff' }: { data: number[]; color?: string }) {
+function Sparkline({ data, color = '#64d2ff' }: { data: number[]; color?: string }) {
   if (data.length < 2) return null;
   const min = Math.min(...data);
   const max = Math.max(...data);
@@ -232,7 +232,7 @@ function PanelHeader({
 // ─── Feature renderers ────────────────────────────────────────────────────────
 
 function RoadLinkPanel({ f, onClose }: { f: RoadLinkFeature; onClose: () => void }) {
-  const accent = '#6366f1';
+  const accent = '#5e5ce6';
   const congColor = f.congestionRisk ? (CONGESTION_COLORS[f.congestionRisk] ?? '#94a3b8') : '#94a3b8';
   return (
     <>
@@ -241,7 +241,7 @@ function RoadLinkPanel({ f, onClose }: { f: RoadLinkFeature; onClose: () => void
       <Row label="Class"   value={f.roadClass} />
       <Row label="Length"  value={`${f.lengthKm.toFixed(1)} km`} />
       <Row label="Surface" value={f.surface}
-        color={f.surface === 'Bituminous' || f.surface === 'Paved' ? '#00f5ff' : '#ffd23f'} />
+        color={f.surface === 'Bituminous' || f.surface === 'Paved' ? '#64d2ff' : '#ffd60a'} />
       {f.aadt !== undefined && <Row label="AADT 2025" value={`${f.aadt.toLocaleString()} veh/day`} />}
       {f.congestionRisk && (
         <Row label="Congestion" value={
@@ -255,10 +255,10 @@ function RoadLinkPanel({ f, onClose }: { f: RoadLinkFeature; onClose: () => void
         } color={congColor} />
       )}
       {f.forecast2030 !== undefined && (
-        <Row label="Forecast 2030" value={`${f.forecast2030.toLocaleString()} veh/day`} color="#ffd23f" />
+        <Row label="Forecast 2030" value={`${f.forecast2030.toLocaleString()} veh/day`} color="#ffd60a" />
       )}
       {f.forecast2040 !== undefined && (
-        <Row label="Forecast 2040" value={`${f.forecast2040.toLocaleString()} veh/day`} color="#ff6b35" />
+        <Row label="Forecast 2040" value={`${f.forecast2040.toLocaleString()} veh/day`} color="#ff9f0a" />
       )}
     </>
   );
@@ -311,8 +311,8 @@ function CulvertPanel({ f, onClose }: { f: CulvertFeature; onClose: () => void }
 // ─── Vehicle class bars ───────────────────────────────────────────────────────
 
 const VC_COLORS = [
-  '#00f5ff', '#00ff88', '#ffd23f', '#ff6b35', '#b967ff',
-  '#ff2d78', '#4d9fff', '#00d4aa', '#f0abfc', '#fbbf24', '#a3e635',
+  '#64d2ff', '#30d158', '#ffd60a', '#ff9f0a', '#bf5af2',
+  '#ff375f', '#0a84ff', '#66d4cf', '#f0abfc', '#fbbf24', '#a3e635',
 ];
 
 function VehicleClassBars({ classes }: { classes: { label: string; count: number }[] }) {
@@ -382,11 +382,11 @@ function AtcPanel({ f, onClose }: { f: AtcStationFeature; onClose: () => void })
       {f.region && <Row label="Region" value={f.region} />}
       <Row label="AADT 2025" value={`${f.aadt.toLocaleString()} veh/day`} color={accent} />
       {f.lightPct !== undefined && (
-        <Row label="Light vehicles" value={`${f.lightPct.toFixed(0)}%`} color="#4d9fff" />
+        <Row label="Light vehicles" value={`${f.lightPct.toFixed(0)}%`} color="#0a84ff" />
       )}
       {f.heavyPct !== undefined && (
         <Row label="Heavy vehicles" value={`${f.heavyPct.toFixed(0)}%`}
-          color={f.heavyPct > 30 ? '#ff6b35' : '#ffd23f'} />
+          color={f.heavyPct > 30 ? '#ff9f0a' : '#ffd60a'} />
       )}
 
       {/* 24 h telemetry health */}
@@ -404,18 +404,18 @@ function AtcPanel({ f, onClose }: { f: AtcStationFeature; onClose: () => void })
       {f.growthTrend && f.growthTrend.length >= 2 && (
         <div style={{ marginTop: 14 }}>
           <div style={{
-            fontSize: 9, fontWeight: 700, color: 'rgba(0,255,136,0.6)',
+            fontSize: 9, fontWeight: 700, color: 'rgba(48, 209, 88,0.6)',
             textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6,
           }}>
             AADT Growth 2016 – 2025
           </div>
-          <Sparkline data={f.growthTrend} color="#00ff88" />
+          <Sparkline data={f.growthTrend} color="#30d158" />
           <div style={{
             display: 'flex', justifyContent: 'space-between',
             fontSize: 8, color: 'rgba(148,163,184,0.35)', marginTop: 4,
           }}>
             <span>2016</span>
-            <span style={{ color: 'rgba(255,210,63,0.55)' }}>COVID '20</span>
+            <span style={{ color: 'rgba(255, 214, 10,0.55)' }}>COVID '20</span>
             <span>2025</span>
           </div>
         </div>
@@ -451,7 +451,7 @@ export default function FeatureAnalyticsPanel({
   if (!feature) return null;
 
   const accentMap = {
-    'road-link':   '#6366f1',
+    'road-link':   '#5e5ce6',
     'bridge':      STRUCTURE_STYLES.bridge.color,
     'culvert':     STRUCTURE_STYLES.culvert.color,
     'atc-station': '#00c3ff',

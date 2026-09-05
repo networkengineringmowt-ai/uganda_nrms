@@ -11,7 +11,7 @@ const rgb = (hex: string): string => {
 };
 
 /** Glassmorphism - translucent frosted panel with backdrop blur. */
-export function glass(accent = '#00f5ff', radius = 16): CSSProperties {
+export function glass(accent = '#64d2ff', radius = 16): CSSProperties {
   return {
     background: 'rgba(255,255,255,0.055)',
     backdropFilter: 'blur(14px) saturate(150%)',
@@ -35,7 +35,7 @@ export function neu(radius = 18, raised = true): CSSProperties {
 }
 
 /** Liquid Glass - Apple-style: heavier blur, specular highlight, accent bleed. */
-export function liquidGlass(accent = '#00f5ff', radius = 22): CSSProperties {
+export function liquidGlass(accent = '#64d2ff', radius = 22): CSSProperties {
   return {
     background: `linear-gradient(135deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.045) 42%, rgba(${rgb(accent)},0.10) 100%)`,
     backdropFilter: 'blur(22px) saturate(180%) brightness(1.06)',

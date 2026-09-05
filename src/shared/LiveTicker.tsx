@@ -16,7 +16,7 @@ export interface LiveMetric {
 }
 
 export function LiveTicker({
-  metrics, accent = '#00f5ff', asOf, title = 'Predictive Live Engine', ready = true,
+  metrics, accent = '#64d2ff', asOf, title = 'Predictive Live Engine', ready = true,
 }: {
   metrics: LiveMetric[];
   accent?: string;
@@ -41,12 +41,12 @@ export function LiveTicker({
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <span style={{
             width: 7, height: 7, borderRadius: '50%',
-            background: ready ? '#00ff88' : '#ffd23f',
-            boxShadow: `0 0 8px ${ready ? '#00ff88' : '#ffd23f'}`,
+            background: ready ? '#30d158' : '#ffd60a',
+            boxShadow: `0 0 8px ${ready ? '#30d158' : '#ffd60a'}`,
             animation: 'live-pulse 1.4s ease-in-out infinite',
           }} />
           <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.1em',
-            color: ready ? 'rgba(0,255,136,0.85)' : 'rgba(255,210,63,0.85)' }}>
+            color: ready ? 'rgba(48, 209, 88,0.85)' : 'rgba(255, 214, 10,0.85)' }}>
             {ready ? 'LIVE' : 'SYNCING'}
           </span>
         </div>

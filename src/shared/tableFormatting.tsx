@@ -11,8 +11,8 @@
 // Covers both the single-letter trunk-road classes (A/B/C/M) and the
 // word-form classes used in a few datasets (District/Urban/Community).
 const ROAD_CLASS_COLORS: Record<string, string> = {
-  A: '#00f5ff', B: '#00ff88', C: '#ffd23f', M: '#b967ff',
-  Trunk: '#00f5ff', District: '#00ff88', Urban: '#ff6b35', Community: '#94a3b8',
+  A: '#64d2ff', B: '#30d158', C: '#ffd60a', M: '#bf5af2',
+  Trunk: '#64d2ff', District: '#30d158', Urban: '#ff9f0a', Community: '#94a3b8',
 };
 
 export function roadClassColor(cls: string | null | undefined): string {
@@ -40,11 +40,11 @@ export function RoadClassPill({ cls }: { cls: string | null | undefined }) {
 // thousands of virtualized cells and matches the threshold-based colouring
 // style already used elsewhere in the codebase (e.g. IRI thresholds).
 const AADT_BUCKETS: Array<{ max: number; bg: string; fg: string }> = [
-  { max: 500,    bg: 'rgba(0,212,170,0.10)',  fg: '#00d4aa' },   // very light
-  { max: 2000,   bg: 'rgba(0,255,136,0.10)',  fg: '#00ff88' },   // light
-  { max: 5000,   bg: 'rgba(255,210,63,0.14)', fg: '#ffd23f' },   // moderate
-  { max: 10000,  bg: 'rgba(255,107,53,0.16)', fg: '#ff6b35' },   // heavy
-  { max: Infinity, bg: 'rgba(255,51,102,0.18)', fg: '#ff3366' }, // very heavy
+  { max: 500,    bg: 'rgba(102, 212, 207,0.10)',  fg: '#66d4cf' },   // very light
+  { max: 2000,   bg: 'rgba(48, 209, 88,0.10)',  fg: '#30d158' },   // light
+  { max: 5000,   bg: 'rgba(255, 214, 10,0.14)', fg: '#ffd60a' },   // moderate
+  { max: 10000,  bg: 'rgba(255, 159, 10,0.16)', fg: '#ff9f0a' },   // heavy
+  { max: Infinity, bg: 'rgba(255, 69, 58,0.18)', fg: '#ff453a' }, // very heavy
 ];
 
 export function aadtHeat(value: number | null | undefined): { bg: string; fg: string } {
@@ -73,10 +73,10 @@ export function AadtHeatCell({ value }: { value: number | null | undefined }) {
 // `invert` for fields where lower is better.
 export function percentageColor(value: number, invert = false): string {
   const v = invert ? 100 - value : value;
-  if (v >= 75) return '#00ff88';
-  if (v >= 50) return '#ffd23f';
-  if (v >= 25) return '#ff6b35';
-  return '#ff3366';
+  if (v >= 75) return '#30d158';
+  if (v >= 50) return '#ffd60a';
+  if (v >= 25) return '#ff9f0a';
+  return '#ff453a';
 }
 
 export function PercentCell({ value, invert }: { value: number | null | undefined; invert?: boolean }) {
@@ -136,6 +136,6 @@ export function ConditionLabelBadge({ label }: { label: string | null | undefine
 // ─── Critical-row left border ─────────────────────────────────────────────────
 export function criticalRowStyle(isCritical: boolean): React.CSSProperties {
   return {
-    borderLeft: isCritical ? '3px solid #ff3366' : '3px solid transparent',
+    borderLeft: isCritical ? '3px solid #ff453a' : '3px solid transparent',
   };
 }

@@ -156,8 +156,8 @@ export function SearchableSelect({ value, onChange, children, style, disabled, p
               onMouseEnter={() => setHighlight(i)}
               style={{
                 padding: '7px 11px', fontSize: 11.5, cursor: 'pointer', whiteSpace: 'nowrap',
-                background: i === highlight ? 'rgba(77,159,255,0.16)' : 'transparent',
-                color: o.value === value ? '#4d9fff' : '#e2eaf4', fontWeight: o.value === value ? 700 : 400,
+                background: i === highlight ? 'rgba(10, 132, 255,0.16)' : 'transparent',
+                color: o.value === value ? '#0a84ff' : '#e2eaf4', fontWeight: o.value === value ? 700 : 400,
               }}
             >
               {o.label}

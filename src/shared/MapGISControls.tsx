@@ -38,7 +38,7 @@ export default function MapGISControls({
   homeZoom = 7,
   bounds = UGANDA_BOUNDS,
   position = 'bottomright',
-  accent = '#00f5ff',
+  accent = '#64d2ff',
   style,
 }: MapGISControlsProps) {
   const map = useMap();
@@ -157,7 +157,7 @@ export default function MapGISControls({
 const toolbarStyle: CSSProperties = {
   display: 'flex', gap: 2, padding: 4, borderRadius: 8,
   background: 'rgba(6,13,24,0.9)', backdropFilter: 'blur(12px)',
-  border: '1px solid rgba(0,245,255,0.15)',
+  border: '1px solid rgba(100, 210, 255,0.15)',
 };
 
 function GBtn({ children, onClick, title, active, accent }: {
