@@ -13,9 +13,9 @@ import { useTableSort } from '../../shared/useTableSort';
 import { useNetworkStats } from '../../shared/useNetworkStats';
 
 const C = {
-  cyan: '#64d2ff', green: '#30d158', yellow: '#ffd60a',
-  orange: '#ff9f0a', purple: '#bf5af2', blue: '#0a84ff',
-  pink: '#ff375f', teal: '#66d4cf', red: '#ff453a',
+  cyan: '#00f5ff', green: '#00ff88', yellow: '#ffd23f',
+  orange: '#ff6b35', purple: '#b967ff', blue: '#4d9fff',
+  pink: '#ff2d78', teal: '#00d4aa', red: '#ff3366',
 };
 function hexRgb(h: string) {
   const c = h.replace('#','');
@@ -165,9 +165,9 @@ export default function BudgetSection({ embedded }: { embedded?: boolean } = {})
     <div style={{ padding: '8px 14px', flex: 1 }}>
       {!embedded && <ModuleNavBar module="Budget" />}
             {/* Definition card */}
-      <div style={{ background: 'rgba(255, 55, 95,0.04)', border: '1px solid rgba(255, 55, 95,0.15)', borderRadius: 14, padding: '14px 20px', marginBottom: 16 }}>
+      <div style={{ background: 'rgba(255, 45, 120,0.04)', border: '1px solid rgba(255, 45, 120,0.15)', borderRadius: 14, padding: '14px 20px', marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
-          <div style={{ width: 44, height: 44, borderRadius: 12, flexShrink: 0, background: 'linear-gradient(135deg, rgba(255, 55, 95,0.2), rgba(255, 69, 58,0.1))', border: '1px solid rgba(255, 55, 95,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: 44, height: 44, borderRadius: 12, flexShrink: 0, background: 'linear-gradient(135deg, rgba(255, 45, 120,0.2), rgba(255, 51, 102,0.1))', border: '1px solid rgba(255, 45, 120,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <DollarSign size={20} style={{ color: C.pink }} />
           </div>
           <div style={{ flex: 1 }}>
@@ -179,7 +179,7 @@ export default function BudgetSection({ embedded }: { embedded?: boolean } = {})
             </div>
             <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 5 }}>
               {['URF Work Plan', 'NDPIV Aligned', 'MoWT Rates', 'HDM-4 Cost Models', 'FY 2025/26'].map(tag => (
-                <span key={tag} style={{ fontSize: 8, padding: '2px 8px', borderRadius: 4, fontWeight: 700, background: 'rgba(255, 55, 95,0.1)', border: '1px solid rgba(255, 55, 95,0.25)', color: C.pink }}>{tag}</span>
+                <span key={tag} style={{ fontSize: 8, padding: '2px 8px', borderRadius: 4, fontWeight: 700, background: 'rgba(255, 45, 120,0.1)', border: '1px solid rgba(255, 45, 120,0.25)', color: C.pink }}>{tag}</span>
               ))}
             </div>
           </div>
@@ -203,7 +203,7 @@ export default function BudgetSection({ embedded }: { embedded?: boolean } = {})
 {/* ── BMS-style tab bar ── */}
       <div style={{
         display: 'flex', gap: 2, padding: '0 0 0 0', marginBottom: 10, flexShrink: 0,
-        borderBottom: '1px solid rgba(10, 132, 255,0.15)',
+        borderBottom: '1px solid rgba(77, 159, 255,0.15)',
         background: 'rgba(4,9,18,0.85)', marginLeft: -14, marginRight: -14, paddingLeft: 14,
       }}>
         {TABS.map(t => {
@@ -213,8 +213,8 @@ export default function BudgetSection({ embedded }: { embedded?: boolean } = {})
               display: 'flex', alignItems: 'center', gap: 6,
               padding: '10px 14px 11px', fontSize: 11, fontWeight: isA ? 800 : 500,
               background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0,
-              color: isA ? '#0a84ff' : 'rgba(148,163,184,0.70)',
-              borderBottom: isA ? '2px solid #0a84ff' : '2px solid transparent',
+              color: isA ? '#4d9fff' : 'rgba(148,163,184,0.70)',
+              borderBottom: isA ? '2px solid #4d9fff' : '2px solid transparent',
               transition: 'all 0.13s',
             }}>{t.label}</button>
           );
