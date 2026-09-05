@@ -30,7 +30,7 @@ interface LinkRow {
   maintenance_station: string;
 }
 
-const C = { cyan: '#00f5ff', teal: '#00d4aa', yellow: '#ffd23f', gray: '#94a3b8' };
+const C = { cyan: '#64d2ff', teal: '#00d4aa', yellow: '#ffd60a', gray: '#94a3b8' };
 
 // Which measured 2022-23 feature subtypes belong to each inventory category.
 // Matched case-insensitively against the field-survey feature names.

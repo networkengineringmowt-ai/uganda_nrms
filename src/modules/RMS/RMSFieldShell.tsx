@@ -26,13 +26,13 @@ export default function RMSFieldShell() {
       {/* Top app bar */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px',
-        background: 'rgba(8,14,28,0.92)', borderBottom: '1px solid rgba(0,245,255,0.12)',
+        background: 'rgba(8,14,28,0.92)', borderBottom: '1px solid rgba(100, 210, 255,0.12)',
         flexShrink: 0,
       }}>
         <img src={`${import.meta.env.BASE_URL}mowt.jpg`} alt="MoWT"
           style={{ width: 30, height: 30, borderRadius: 8, background: '#fff', padding: 2, objectFit: 'contain' }} />
         <div style={{ minWidth: 0, flex: 1 }}>
-          <div style={{ fontSize: 12, fontWeight: 900, color: '#00f5ff', letterSpacing: '0.08em' }}>
+          <div style={{ fontSize: 12, fontWeight: 900, color: '#64d2ff', letterSpacing: '0.08em' }}>
             UGROADS · FIELD CAPTURE
           </div>
           <div style={{ fontSize: 9.5, color: 'rgba(148,163,184,0.7)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -53,7 +53,7 @@ export default function RMSFieldShell() {
         <div style={{ maxWidth: 760, margin: '0 auto', width: '100%' }}>
           <Suspense fallback={
             <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}>
-              <div style={{ width: 26, height: 26, borderRadius: '50%', border: '2px solid #1e293b', borderTopColor: '#00f5ff', animation: 'spin 1s linear infinite' }} />
+              <div style={{ width: 26, height: 26, borderRadius: '50%', border: '2px solid #1e293b', borderTopColor: '#64d2ff', animation: 'spin 1s linear infinite' }} />
             </div>
           }>
             {tab === 'capture' && <MobiCapCapture />}
@@ -65,7 +65,7 @@ export default function RMSFieldShell() {
       {/* Bottom tab bar - large touch targets */}
       <div style={{
         display: 'flex', flexShrink: 0,
-        background: 'rgba(8,14,28,0.96)', borderTop: '1px solid rgba(0,245,255,0.12)',
+        background: 'rgba(8,14,28,0.96)', borderTop: '1px solid rgba(100, 210, 255,0.12)',
         paddingBottom: 'env(safe-area-inset-bottom)',
       }}>
         {([
@@ -78,9 +78,9 @@ export default function RMSFieldShell() {
               onClick={() => { setTab(t.id); logEvent('view', { view: `field-${t.id}` }); }} style={{
               flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
               padding: '10px 4px 12px', minHeight: 56, cursor: 'pointer',
-              background: active ? 'rgba(0,245,255,0.08)' : 'transparent',
-              border: 'none', borderTop: active ? '2px solid #00f5ff' : '2px solid transparent',
-              color: active ? '#00f5ff' : 'rgba(148,163,184,0.7)',
+              background: active ? 'rgba(100, 210, 255,0.08)' : 'transparent',
+              border: 'none', borderTop: active ? '2px solid #64d2ff' : '2px solid transparent',
+              color: active ? '#64d2ff' : 'rgba(148,163,184,0.7)',
               fontSize: 10.5, fontWeight: active ? 800 : 600,
             }}>
               {t.icon}{t.label}
