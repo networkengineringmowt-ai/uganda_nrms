@@ -87,7 +87,7 @@ export default function MaintenanceWorks() {
         </p>
         <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
           {['URF Work Plan','PPDA Compliant','HDM-4 Standards','Force Account','Community Works','FY 2025/26'].map((b: string)=>(
-            <span key={b} style={{ fontSize:9, fontWeight:700, color:'#ffd60a', background:'rgba(255,215,63,0.07)', border:'1px solid rgba(255,215,63,0.18)', borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
+            <span key={b} style={{ fontSize:9, fontWeight:700, color:'#ffd23f', background:'rgba(255,215,63,0.07)', border:'1px solid rgba(255,215,63,0.18)', borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
           ))}
         </div>
       </div>
@@ -126,7 +126,7 @@ export default function MaintenanceWorks() {
       {/* Table */}
       <div className="flex-1 mowt-table-wrap p-3">
         <SortableFilterableTable<WorkOrder>
-          accent="#ffd60a"
+          accent="#ffd23f"
           exportName="maintenance-work-orders"
           initialSort="startDate"
           columns={[
