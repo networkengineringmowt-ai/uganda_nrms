@@ -82,7 +82,7 @@ interface SelectedLinkData {
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-const ACCENT = '#5e5ce6';
+const ACCENT = '#6366f1';
 const BG_CARD = 'rgba(15,23,42,0.55)';
 const CLASS_COLORS: Record<string, string> = {
   A: '#00f5ff', B: '#00ff88', C: '#ffd23f', M: '#b967ff',
@@ -687,9 +687,9 @@ function ConditionMap({
             position: 'absolute', top: 50, left: 10, zIndex: 999,
             width: 240, maxHeight: 'calc(100% - 120px)', overflowY: 'auto',
             background: 'rgba(10,15,30,0.96)', backdropFilter: 'blur(16px)',
-            border: '1px solid rgba(94, 92, 230,0.25)', borderRadius: 10,
+            border: '1px solid rgba(99, 102, 241,0.25)', borderRadius: 10,
             padding: '12px 14px',
-            boxShadow: '0 6px 32px rgba(0,0,0,0.5), inset 1px 0 0 rgba(94, 92, 230,0.15)',
+            boxShadow: '0 6px 32px rgba(0,0,0,0.5), inset 1px 0 0 rgba(99, 102, 241,0.15)',
           }}>
             <div style={{ fontSize: 10, fontWeight: 800, color: ACCENT,
               textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>
@@ -1150,7 +1150,7 @@ function renderCondFeature(f: SelectedLinkData): React.ReactNode {
 
       {f.urgency && (
         <>
-          <SectionHeader title="Intervention" accent="#5e5ce6" />
+          <SectionHeader title="Intervention" accent="#6366f1" />
           <AttributeRow label="Urgency"   value={f.urgency}   color={URGENCY_COLOR[f.urgency]??'#94a3b8'} />
           {f.treatment   && <AttributeRow label="Treatment"  value={f.treatment} />}
           {f.triggerYear && <AttributeRow label="Year"        value={String(f.triggerYear)} />}
@@ -1408,7 +1408,7 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
             />
           </div>
           <MapDetailPane
-            width={340} accent="#5e5ce6"
+            width={340} accent="#6366f1"
             defaultTitle="Road Condition"
             defaultSubtitle="Click any road segment to inspect"
             defaultContent={<ConditionDefaultPane det={det} />}
@@ -1427,7 +1427,7 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
       {/* ── Network Coverage banner ─────────────────────────────────────── */}
       <div style={{
         padding: '5px 12px', borderRadius: 8, marginBottom: 8,
-        background: 'rgba(94, 92, 230,0.06)', border: '1px solid rgba(94, 92, 230,0.18)',
+        background: 'rgba(99, 102, 241,0.06)', border: '1px solid rgba(99, 102, 241,0.18)',
         fontSize: 10, color: '#94a3b8',
       }}>
         <span style={{ fontWeight: 800, color: '#a5b4fc', fontSize: 9, letterSpacing: '0.06em', textTransform: 'uppercase', marginRight: 8 }}>NDPIV FY25-26</span>
@@ -1444,7 +1444,7 @@ export default function RoadConditionView({ activeTab, embedded = false }: RoadC
               return `${parseInt(c.slice(0,2),16)},${parseInt(c.slice(2,4),16)},${parseInt(c.slice(4,6),16)}`;
             }
             const kpis = [
-              { label: 'Model',           value: 'HDM-4 + MLP',                                                  unit: 'ensemble',  color: '#5e5ce6' },
+              { label: 'Model',           value: 'HDM-4 + MLP',                                                  unit: 'ensemble',  color: '#6366f1' },
               { label: 'Model Accuracy',  value: `R²=${d.r_squared.toFixed(4)}`,                                 unit: 'goodness of fit', color: '#00ff88' },
               { label: 'Links Projected', value: d.links_projected.toLocaleString(),                               unit: 'road links', color: '#00f5ff' },
               { label: 'Budget 24–30',    value: `$${(d.total_maintenance_budget_2024_2030_usd/1e9).toFixed(2)}B`, unit: 'USD total',  color: '#ffd23f' },
