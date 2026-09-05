@@ -76,7 +76,7 @@
 }
 .card-lift:hover {
   transform: translateY(-2px) !important;
-  box-shadow: 0 8px 30px rgba(100, 210, 255,0.15) !important;
+  box-shadow: 0 8px 30px rgba(0, 245, 255,0.15) !important;
 }
 
 /* View/tab fade in */
@@ -127,8 +127,8 @@ select option {
 }
 select:focus {
   outline: none !important;
-  border-color: rgba(100, 210, 255,0.5) !important;
-  box-shadow: 0 0 0 2px rgba(100, 210, 255,0.15) !important;
+  border-color: rgba(0, 245, 255,0.5) !important;
+  box-shadow: 0 0 0 2px rgba(0, 245, 255,0.15) !important;
 }
 
 /* ── Compact spacing - tighter global layout ───────────────────────────────── */
@@ -233,11 +233,11 @@ select:focus {
   background: rgba(8,14,28,0.4);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(100, 210, 255,0.15);
+  background: rgba(0, 245, 255,0.15);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 210, 255,0.3);
+  background: rgba(0, 245, 255,0.3);
 }
 
 /* Dark mode select / dropdown */
@@ -280,7 +280,7 @@ tbody tr {
   transition: background 0.15s ease, transform 0.15s ease;
 }
 tbody tr:hover {
-  background: rgba(100, 210, 255, 0.06) !important;
+  background: rgba(0, 245, 255, 0.06) !important;
 }
 
 /* Cards / chips / glass panels - subtle lift on hover */
@@ -293,20 +293,20 @@ input, select {
   transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
 }
 input:focus {
-  box-shadow: 0 0 0 2px rgba(100, 210, 255, 0.25);
+  box-shadow: 0 0 0 2px rgba(0, 245, 255, 0.25);
 }
 
 /* Scrollbars: always visible & easy to grab (fixes hidden horizontal scroll) */
 ::-webkit-scrollbar { width: 11px; height: 11px; }
 ::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 6px; }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, rgba(100, 210, 255,0.35), rgba(10, 132, 255,0.35));
+  background: linear-gradient(135deg, rgba(0, 245, 255,0.35), rgba(77, 159, 255,0.35));
   border-radius: 6px; border: 2px solid rgba(4,9,18,0.9);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, rgba(100, 210, 255,0.6), rgba(10, 132, 255,0.6));
+  background: linear-gradient(135deg, rgba(0, 245, 255,0.6), rgba(77, 159, 255,0.6));
 }
-* { scrollbar-width: thin; scrollbar-color: rgba(100, 210, 255,0.4) rgba(255,255,255,0.04); }
+* { scrollbar-width: thin; scrollbar-color: rgba(0, 245, 255,0.4) rgba(255,255,255,0.04); }
 
 /* KPI chips shimmer in */
 @keyframes ugPopIn {
