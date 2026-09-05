@@ -3,9 +3,9 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGri
 import { Construction, CheckCircle2, Clock, AlertTriangle, TrendingUp, DollarSign } from 'lucide-react';
 
 const C = {
-  cyan: '#64d2ff', green: '#30d158', yellow: '#ffd60a',
-  orange: '#ff9f0a', purple: '#bf5af2', blue: '#0a84ff',
-  pink: '#ff375f', teal: '#66d4cf', red: '#ff453a', gray: '#94a3b8',
+  cyan: '#00f5ff', green: '#00ff88', yellow: '#ffd23f',
+  orange: '#ff6b35', purple: '#b967ff', blue: '#4d9fff',
+  pink: '#ff2d78', teal: '#00d4aa', red: '#ff3366', gray: '#94a3b8',
 };
 function hexRgb(h: string) {
   const c = h.replace('#','');

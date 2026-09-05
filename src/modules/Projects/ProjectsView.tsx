@@ -79,7 +79,7 @@ const UNDER_CONSTRUCTION: UCorridor[] = [
 // Inline equivalent of the .bms-input CSS class, since SearchableSelect
 // takes a style prop rather than className (see index.css .bms-input).
 const bmsInputStyle: React.CSSProperties = {
-  background: 'rgba(6,13,24,0.8)', border: '1px solid rgba(100, 210, 255,0.12)',
+  background: 'rgba(6,13,24,0.8)', border: '1px solid rgba(0, 245, 255,0.12)',
   borderRadius: 8, padding: '4px 10px', color: '#e2eaf4',
 };
 
@@ -427,7 +427,7 @@ export default function ProjectsView() {
       <div className="flex-1 flex items-center justify-center p-8">
 
         {/* ─── Definition card ─── */}
-        <div style={{ background:'rgba(48, 209, 88,0.04)', border:'1px solid rgba(48, 209, 88,0.14)', borderRadius:12, padding:'14px 18px', marginBottom:14 }}>
+        <div style={{ background:'rgba(0, 255, 136,0.04)', border:'1px solid rgba(0, 255, 136,0.14)', borderRadius:12, padding:'14px 18px', marginBottom:14 }}>
           <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:8 }}>
             <span style={{ fontSize:26 }}>🏗️</span>
             <div>
@@ -440,7 +440,7 @@ export default function ProjectsView() {
           </p>
           <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
             {['UNRA Capital Works','AfDB Funded','NERAMP Lots','World Bank IDA','PPDA Compliant','NDPIV Aligned'].map((b: string)=>(
-              <span key={b} style={{ fontSize:9, fontWeight:700, color:'#30d158', background:'rgba(48, 209, 88,0.07)', border:'1px solid rgba(48, 209, 88,0.18)', borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
+              <span key={b} style={{ fontSize:9, fontWeight:700, color:'#00ff88', background:'rgba(0, 255, 136,0.07)', border:'1px solid rgba(0, 255, 136,0.18)', borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
             ))}
           </div>
         </div>
@@ -460,7 +460,7 @@ export default function ProjectsView() {
       {/* ── BMS-style tab bar - FIRST (matches BMS pattern) ── */}
       <div style={{
         display: 'flex', gap: 2, padding: '0 14px', flexShrink: 0,
-        borderBottom: '1px solid rgba(10, 132, 255,0.15)',
+        borderBottom: '1px solid rgba(77, 159, 255,0.15)',
         background: 'rgba(4,9,18,0.85)',
       }}>
         {([
@@ -475,8 +475,8 @@ export default function ProjectsView() {
               display: 'flex', alignItems: 'center', gap: 6,
               padding: '10px 14px 11px', fontSize: 11, fontWeight: isActive ? 800 : 500,
               background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0,
-              color: isActive ? '#0a84ff' : 'rgba(148,163,184,0.70)',
-              borderBottom: isActive ? '2px solid #0a84ff' : '2px solid transparent',
+              color: isActive ? '#4d9fff' : 'rgba(148,163,184,0.70)',
+              borderBottom: isActive ? '2px solid #4d9fff' : '2px solid transparent',
               transition: 'all 0.13s',
             }}>
               <span style={{ fontSize: 12 }}>{t.icon}</span>
@@ -496,7 +496,7 @@ export default function ProjectsView() {
             position: 'absolute', top: 10, left: 54, zIndex: 1000,
             display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center',
             background: 'rgba(8,14,28,0.88)', backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(100, 210, 255,0.2)', borderRadius: 9, padding: '6px 10px',
+            border: '1px solid rgba(0, 245, 255,0.2)', borderRadius: 9, padding: '6px 10px',
           }}>
             <div className="relative" style={{ minWidth: 170 }}>
               <Search size={11} className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-500" />
@@ -680,7 +680,7 @@ export default function ProjectsView() {
           defaultContent={
             <div>
               <StatCard label="Total Projects" value={projects.length} color="#f59e0b" />
-              <StatCard label="Total km"        value={`${stats.totalKm.toFixed(0)} km`} color="#64d2ff" />
+              <StatCard label="Total km"        value={`${stats.totalKm.toFixed(0)} km`} color="#00f5ff" />
               <StatCard label="Ongoing"         value={stats.ongoing}  color="#3b82f6" sub="active construction" />
               <StatCard label="Planned"         value={stats.planned}  color="#a855f7" sub="in pipeline" />
               <StatCard label="Completed"       value={stats.complete} color="#22c55e" sub="works complete" />
@@ -788,20 +788,20 @@ export default function ProjectsView() {
 
           {/* NDP IV Card */}
           <div style={{
-            background: 'rgba(10, 132, 255,0.05)',
-            border: '1px solid rgba(10, 132, 255,0.25)',
-            borderLeft: '3px solid #0a84ff',
+            background: 'rgba(77, 159, 255,0.05)',
+            border: '1px solid rgba(77, 159, 255,0.25)',
+            borderLeft: '3px solid #4d9fff',
             borderRadius: 8, padding: '8px 12px',
           }}>
-            <div style={{ fontSize: 9, fontWeight: 900, color: '#0a84ff', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 5 }}>
+            <div style={{ fontSize: 9, fontWeight: 900, color: '#4d9fff', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 5 }}>
               📋 NDP IV Targets · FY 2025/26 – 2029/30
             </div>
             <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.8)', lineHeight: 1.5 }}>
-              <span style={{ color: '#30d158', fontWeight: 700 }}>1,200+ km</span>
+              <span style={{ color: '#00ff88', fontWeight: 700 }}>1,200+ km</span>
               {' '}new paved roads (upgrading gravel-to-bituminous)
             </div>
             <div style={{ fontSize: 9, color: 'rgba(148,163,184,0.8)', lineHeight: 1.5, marginTop: 2 }}>
-              <span style={{ color: '#64d2ff', fontWeight: 700 }}>Key priorities:</span>
+              <span style={{ color: '#00f5ff', fontWeight: 700 }}>Key priorities:</span>
               {' '}Albertine oil roads · GKMA improvements · Northern Bypass Ph 2 · border connectivity
             </div>
             <div style={{ fontSize: 8, color: 'rgba(100,116,139,0.5)', marginTop: 4 }}>
@@ -891,7 +891,7 @@ export default function ProjectsView() {
             National Development Plan IV · FY 2025/26 – 2029/30 · links matched from master network register
           </div>
           <SortableFilterableTable
-            accent="#0a84ff"
+            accent="#4d9fff"
             exportName="ndpiv-projects"
             columns={ndpivColumns}
             rows={ndpivRows}
@@ -910,7 +910,7 @@ export default function ProjectsView() {
             <div key={uc.id} style={{ background: 'rgba(8,14,28,0.55)', border: '1px solid rgba(245,158,11,0.2)', borderLeft: '4px solid #f59e0b', borderRadius: 10, padding: '12px 16px', marginBottom: 10 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                 <span style={{ fontSize: 12, fontWeight: 900, color: '#f59e0b' }}>{uc.lot}</span>
-                <span style={{ fontSize: 10, background: 'rgba(48, 209, 88,0.1)', border: '1px solid rgba(48, 209, 88,0.2)', borderRadius: 4, padding: '1px 6px', color: '#30d158', fontWeight: 700 }}>{uc.status}</span>
+                <span style={{ fontSize: 10, background: 'rgba(0, 255, 136,0.1)', border: '1px solid rgba(0, 255, 136,0.2)', borderRadius: 4, padding: '1px 6px', color: '#00ff88', fontWeight: 700 }}>{uc.status}</span>
               </div>
               <div style={{ fontSize: 12, fontWeight: 700, color: '#e2eaf4', marginBottom: 4 }}>{uc.name}</div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
