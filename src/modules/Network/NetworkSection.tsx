@@ -6,8 +6,8 @@
  *   3. Network Story       - scrollytelling 1986-to-now narrative
  *
  * Follows the exact BMS tab-bar pattern:
- *   borderBottom '1px solid rgba(10, 132, 255,0.15)'
- *   active:   color '#0a84ff', borderBottom '2px solid #0a84ff', fontWeight 800
+ *   borderBottom '1px solid rgba(77, 159, 255,0.15)'
+ *   active:   color '#4d9fff', borderBottom '2px solid #4d9fff', fontWeight 800
  *   inactive: color 'rgba(148,163,184,0.70)', borderBottom '2px solid transparent'
  */
 import { lazy, Suspense, useState } from 'react';
@@ -23,7 +23,7 @@ function Spinner() {
     <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100%' }}>
       <div style={{
         width: 28, height: 28, borderRadius: '50%',
-        border: '2px solid rgba(10, 132, 255,0.18)', borderTopColor: '#0a84ff',
+        border: '2px solid rgba(77, 159, 255,0.18)', borderTopColor: '#4d9fff',
         animation: 'net-spin .8s linear infinite',
       }}/>
     </div>
@@ -78,7 +78,7 @@ export default function NetworkSection() {
       {/* ── BMS-style main tab bar ─────────────────────────────────────────── */}
       <div style={{
         display: 'flex', gap: 2, padding: '0 14px', flexShrink: 0,
-        borderBottom: '1px solid rgba(10, 132, 255,0.15)',
+        borderBottom: '1px solid rgba(77, 159, 255,0.15)',
         background: 'rgba(4,9,18,0.85)',
       }}>
         {MAIN_TABS.map(t => {
@@ -88,8 +88,8 @@ export default function NetworkSection() {
               display: 'flex', alignItems: 'center', gap: 6,
               padding: '10px 14px 11px', fontSize: 11, fontWeight: isActive ? 800 : 500,
               background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0,
-              color: isActive ? '#0a84ff' : 'rgba(148,163,184,0.70)',
-              borderBottom: isActive ? '2px solid #0a84ff' : '2px solid transparent',
+              color: isActive ? '#4d9fff' : 'rgba(148,163,184,0.70)',
+              borderBottom: isActive ? '2px solid #4d9fff' : '2px solid transparent',
               transition: 'all 0.13s',
             }}>
               {t.icon}
