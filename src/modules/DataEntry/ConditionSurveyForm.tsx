@@ -144,7 +144,7 @@ function SurveyFormInner({ onClose }: Props) {
         <div style={{ fontSize:36, marginBottom:12 }}>{ok ? '✅' : '💾'}</div>
         <div style={{ color: ok ? '#4ade80' : '#fbbf24', fontSize:16, fontWeight:700 }}>Survey Submitted</div>
         <div style={{ color:'#94a3b8', fontSize:12, marginTop:6, maxWidth:300, marginInline:'auto' }}>{sync || 'Queued locally.'}</div>
-        <button onClick={onClose} style={{ marginTop:18, padding:'8px 20px', borderRadius:8, background:'#6366f1', border:'none', color:'#fff', cursor:'pointer', fontSize:13 }}>Done</button>
+        <button onClick={onClose} style={{ marginTop:18, padding:'8px 20px', borderRadius:8, background:'#5e5ce6', border:'none', color:'#fff', cursor:'pointer', fontSize:13 }}>Done</button>
       </div>
     );
   }
@@ -214,7 +214,7 @@ function SurveyFormInner({ onClose }: Props) {
 
       <div style={{ display:'flex', gap:8, justifyContent:'flex-end', marginTop:4 }}>
         <button type="button" onClick={onClose} style={{ padding:'8px 18px', borderRadius:8, background:'rgba(255,255,255,0.07)', border:'1px solid rgba(255,255,255,0.1)', color:'#94a3b8', cursor:'pointer', fontSize:12 }}>Cancel</button>
-        <button type="submit" disabled={busy} style={{ padding:'8px 20px', borderRadius:8, background: busy ? '#475569' : '#6366f1', border:'none', color:'#fff', fontWeight:600, cursor: busy ? 'default' : 'pointer', fontSize:12 }}>{busy ? 'Syncing…' : 'Submit & Sync'}</button>
+        <button type="submit" disabled={busy} style={{ padding:'8px 20px', borderRadius:8, background: busy ? '#475569' : '#5e5ce6', border:'none', color:'#fff', fontWeight:600, cursor: busy ? 'default' : 'pointer', fontSize:12 }}>{busy ? 'Syncing…' : 'Submit & Sync'}</button>
       </div>
     </form>
   );
@@ -238,7 +238,7 @@ export function ConditionSurveyModal({ open, onClose }: { open: boolean; onClose
     }} onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
       <div style={{
         width:520, maxHeight:'90vh', overflowY:'auto',
-        background:'rgba(10,16,30,0.97)', border:'1px solid rgba(99,102,241,0.3)',
+        background:'rgba(10,16,30,0.97)', border:'1px solid rgba(94, 92, 230,0.3)',
         borderRadius:14, boxShadow:'0 8px 48px rgba(0,0,0,0.7)',
       }}>
         <ConditionSurveyForm onClose={onClose} />

@@ -24,7 +24,7 @@ const CAPTURES: { id: CaptureId; title: string; table: string; desc: string; ico
   { id: 'reserve-permit', title: 'Road Reserve Permit',    table: 'road_reserve_applications',   desc: 'MOWT Form 2 - temporary use application',        icon: <ClipboardList size={18} />, live: false },
 ];
 
-const C = { teal: '#00d4aa', cyan: '#64d2ff', gray: '#94a3b8' };
+const C = { teal: '#66d4cf', cyan: '#64d2ff', gray: '#94a3b8' };
 
 export default function DataCaptureHub() {
   const { isAuthenticated, user } = useAuth();
@@ -91,18 +91,18 @@ export default function DataCaptureHub() {
             <button key={c.id} disabled={!c.live} onClick={() => c.live && setActive(c.id)} style={{
               display: 'flex', alignItems: 'flex-start', gap: 11, padding: '14px 15px', textAlign: 'left',
               cursor: c.live ? 'pointer' : 'not-allowed', opacity: c.live ? 1 : 0.5,
-              background: on ? `rgba(0,212,170,0.14)` : 'rgba(15,23,42,0.7)',
+              background: on ? `rgba(102, 212, 207,0.14)` : 'rgba(15,23,42,0.7)',
               border: `1px solid ${on ? C.teal : 'rgba(255,255,255,0.1)'}`, borderRadius: 12,
             }}>
               <div style={{ width: 34, height: 34, borderRadius: 9, flexShrink: 0, color: C.teal,
-                background: 'rgba(0,212,170,0.12)', border: '1px solid rgba(0,212,170,0.3)',
+                background: 'rgba(102, 212, 207,0.12)', border: '1px solid rgba(102, 212, 207,0.3)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{c.icon}</div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 12.5, fontWeight: 800, color: '#e2eaf4', display: 'flex', alignItems: 'center', gap: 6 }}>
                   {c.title}
                   <span style={{ fontSize: 8, fontWeight: 800, padding: '1px 6px', borderRadius: 999,
-                    color: c.live ? C.teal : C.gray, background: c.live ? 'rgba(0,212,170,0.15)' : 'rgba(148,163,184,0.12)',
-                    border: `1px solid ${c.live ? 'rgba(0,212,170,0.4)' : 'rgba(148,163,184,0.25)'}` }}>
+                    color: c.live ? C.teal : C.gray, background: c.live ? 'rgba(102, 212, 207,0.15)' : 'rgba(148,163,184,0.12)',
+                    border: `1px solid ${c.live ? 'rgba(102, 212, 207,0.4)' : 'rgba(148,163,184,0.25)'}` }}>
                     {c.live ? 'LIVE' : 'SOON'}
                   </span>
                 </div>
@@ -116,7 +116,7 @@ export default function DataCaptureHub() {
 
       {/* Active capture form */}
       {active === 'condition' && (
-        <div style={{ background: 'rgba(8,14,28,0.6)', border: `1px solid rgba(0,212,170,0.25)`, borderRadius: 14, maxWidth: 640 }}>
+        <div style={{ background: 'rgba(8,14,28,0.6)', border: `1px solid rgba(102, 212, 207,0.25)`, borderRadius: 14, maxWidth: 640 }}>
           <ConditionSurveyForm onClose={() => setActive(null)} />
         </div>
       )}
