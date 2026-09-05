@@ -18,7 +18,7 @@ function Spinner() {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
       <div style={{ width: 30, height: 30, borderRadius: '50%',
-        border: '2px solid rgba(120,120,120,0.4)', borderTopColor: '#00f5ff',
+        border: '2px solid rgba(120,120,120,0.4)', borderTopColor: '#64d2ff',
         animation: 'bms-spin 0.8s linear infinite' }} />
     </div>
   );
@@ -38,15 +38,15 @@ export default function LifecycleView() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#000', overflow: 'hidden' }}>
       {/* Tab bar */}
       <div style={{ display: 'flex', gap: 4, padding: '4px 10px', flexShrink: 0,
-        background: 'rgba(2,2,2,0.9)', borderBottom: '1px solid rgba(0,245,255,0.1)' }}>
+        background: 'rgba(2,2,2,0.9)', borderBottom: '1px solid rgba(100, 210, 255,0.1)' }}>
         {TABS.map(({ id, label, icon: Icon }) => (
           <button key={id} onClick={() => setTab(id)} style={{
             display: 'inline-flex', alignItems: 'center', gap: 5,
             padding: '5px 12px', borderRadius: 6, cursor: 'pointer',
             fontSize: 10.5, fontWeight: 700, transition: 'all 0.12s',
-            background: tab === id ? 'rgba(0,245,255,0.12)' : 'transparent',
-            border: `1px solid ${tab === id ? 'rgba(0,245,255,0.35)' : 'transparent'}`,
-            color: tab === id ? '#00f5ff' : 'rgba(148,163,184,0.7)',
+            background: tab === id ? 'rgba(100, 210, 255,0.12)' : 'transparent',
+            border: `1px solid ${tab === id ? 'rgba(100, 210, 255,0.35)' : 'transparent'}`,
+            color: tab === id ? '#64d2ff' : 'rgba(148,163,184,0.7)',
           }}>
             <Icon size={12} />
             {label}

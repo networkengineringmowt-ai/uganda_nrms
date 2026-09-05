@@ -20,9 +20,9 @@ import { RoadClassPill } from '../../shared/tableFormatting';
 
 // ── Palette ──────────────────────────────────────────────────────────────────
 const C = {
-  teal: '#14b8a6', cyan: '#00f5ff', green: '#00ff88', yellow: '#ffd23f',
-  orange: '#f97316', red: '#ef4444', purple: '#a855f7', blue: '#4d9fff',
-  gray: '#6b7280', pink: '#ff2d78', dark: '#0a0f1e',
+  teal: '#14b8a6', cyan: '#64d2ff', green: '#30d158', yellow: '#ffd60a',
+  orange: '#f97316', red: '#ef4444', purple: '#a855f7', blue: '#0a84ff',
+  gray: '#6b7280', pink: '#ff375f', dark: '#0a0f1e',
 };
 // Ordered by intervention severity - canonical risk/condition scale
 const INT_COLORS: Record<IntType, string> = {
@@ -539,7 +539,7 @@ export default function LifecycleSection() {
       {/* ── BMS-style tab bar ─────────────────────────────────────────────── */}
       <div style={{
         display: 'flex', gap: 2, padding: '0 14px', flexShrink: 0,
-        borderBottom: '1px solid rgba(77,159,255,0.15)',
+        borderBottom: '1px solid rgba(10, 132, 255,0.15)',
         background: 'rgba(4,9,18,0.85)',
       }}>
         {([
@@ -552,8 +552,8 @@ export default function LifecycleSection() {
               display: 'flex', alignItems: 'center', gap: 6,
               padding: '10px 14px 11px', fontSize: 11, fontWeight: isActive ? 800 : 500,
               background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0,
-              color: isActive ? '#4d9fff' : 'rgba(148,163,184,0.70)',
-              borderBottom: isActive ? '2px solid #4d9fff' : '2px solid transparent',
+              color: isActive ? '#0a84ff' : 'rgba(148,163,184,0.70)',
+              borderBottom: isActive ? '2px solid #0a84ff' : '2px solid transparent',
               transition: 'all 0.13s',
             }}>
               {t.label}
@@ -565,17 +565,17 @@ export default function LifecycleSection() {
       {/* ── Network coverage banner (always visible) ───────────────────────── */}
       <div style={{
         flexShrink: 0, padding: '5px 14px',
-        background: 'linear-gradient(180deg, rgba(0,245,255,0.05), transparent)',
-        borderBottom: '1px solid rgba(0,245,255,0.08)',
+        background: 'linear-gradient(180deg, rgba(100, 210, 255,0.05), transparent)',
+        borderBottom: '1px solid rgba(100, 210, 255,0.08)',
         display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap', fontSize: 10,
       }}>
         <span style={{ color: 'rgba(148,163,184,0.5)', fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
           Network Coverage:
         </span>
-        <span style={{ color: '#00f5ff', fontWeight: 800 }}>{OFFICIAL_NETWORK_KM.toLocaleString()} km</span>
+        <span style={{ color: '#64d2ff', fontWeight: 800 }}>{OFFICIAL_NETWORK_KM.toLocaleString()} km</span>
         <span style={{ color: 'rgba(148,163,184,0.55)' }}>total official network</span>
         <span style={{ color: 'rgba(148,163,184,0.25)' }}>·</span>
-        <span style={{ color: '#00ff88', fontWeight: 800 }}>{allLinks.length || '…'} links</span>
+        <span style={{ color: '#30d158', fontWeight: 800 }}>{allLinks.length || '…'} links</span>
         <span style={{ color: 'rgba(148,163,184,0.55)' }}>mapped in GeoJSON ({Math.round(statsAll.totalKm).toLocaleString()} km)</span>
         <span style={{ color: 'rgba(148,163,184,0.25)' }}>·</span>
         <span style={{ color: '#fb923c', fontWeight: 700 }}>{(OFFICIAL_NETWORK_KM - Math.round(statsAll.totalKm)).toLocaleString()} km gap</span>
@@ -785,7 +785,7 @@ export default function LifecycleSection() {
                     <AttributeRow label="Year"       value={String(lastInt.year)} />
                     <AttributeRow label="Type"       value={lastInt.type} color={INT_COLORS[classifyInt(lastInt.type)] ?? C.gray} />
                     <AttributeRow label="IRI after"  value={`${lastInt.iriAfter} m/km`} color={conditionColor(lastInt.iriAfter)} />
-                    <AttributeRow label="Cost"       value={`UGX ${lastInt.costMUgx.toLocaleString()}M`} color="#ffd23f" />
+                    <AttributeRow label="Cost"       value={`UGX ${lastInt.costMUgx.toLocaleString()}M`} color="#ffd60a" />
                   </>
                 )}
 
@@ -866,7 +866,7 @@ function AllLinksTable({
 
       {/* Table - every matching link, sortable/searchable, CSV+Excel export built in */}
       <SortableFilterableTable<LinkDef>
-        accent="#4d9fff"
+        accent="#0a84ff"
         exportName="lifecycle-all-links"
         initialSort="id"
         columns={[
@@ -877,7 +877,7 @@ function AllLinksTable({
           { key: 'region', label: 'Region' },
           { key: 'station', label: 'Station', render: l => l.station ?? '-' },
           { key: 'surface', label: 'Surface', render: l => (
-              <span style={{ color: l.surface === 'Bituminous' ? '#00f5ff' : '#ff8c00' }}>
+              <span style={{ color: l.surface === 'Bituminous' ? '#64d2ff' : '#ff8c00' }}>
                 {l.surface === 'Bituminous' ? 'Paved' : 'Unsealed'}
               </span>
             ) },
@@ -893,8 +893,8 @@ function AllLinksTable({
           { key: 'dominantDefect', label: 'Action', render: l => (
               <button onClick={() => onSelect(l.id)} style={{
                 padding: '3px 9px', borderRadius: 5, fontSize: 9, fontWeight: 700,
-                background: 'rgba(77,159,255,0.12)', border: '1px solid rgba(77,159,255,0.3)',
-                color: '#4d9fff', cursor: 'pointer',
+                background: 'rgba(10, 132, 255,0.12)', border: '1px solid rgba(10, 132, 255,0.3)',
+                color: '#0a84ff', cursor: 'pointer',
               }}>Open →</button>
             ) },
         ] as STColumn<LinkDef>[]}
