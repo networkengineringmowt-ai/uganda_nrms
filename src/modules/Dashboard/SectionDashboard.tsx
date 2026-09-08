@@ -297,6 +297,7 @@ function PimFrameworkLegacy() { return <LazyPimLegacy initialTab="pim" hideTabBa
 function PimPppLegacy() { return <LazyPimLegacy initialTab="ppp" hideTabBar />; }
 function PimDonorLegacy() { return <LazyPimLegacy initialTab="donor" hideTabBar />; }
 function PimNdpivLegacy() { return <LazyPimLegacy initialTab="ndpiv" hideTabBar />; }
+function PimIbpLegacy() { return <LazyPimLegacy initialTab="ibp" hideTabBar />; }
 
 // - GIS Enterprise legacy content --------------------
 const LazyGisLegacy = lazy(() => import('../GisEnterprise/GisEnterpriseLegacyContent'));
@@ -353,7 +354,6 @@ const SE_Map = lazy(() => import('../SocioEconomic/SocioEconomicMap'));
 const RA_View = lazy(() => import('../RoadAtlas/RoadAtlasView'));
 const RV_View = lazy(() => import('../RoadVideoView/RoadVideoView'));
 const BUD_Section = lazy(() => import('../Budget/BudgetSection'));
-const BUD_MaintenanceStrategy = lazy(() => import('../Budget/MaintenanceStrategySection'));
 const LC_Section = lazy(() => import('../Lifecycle/LifecycleSection'));
 const PROJ_View = lazy(() => import('../Projects/ProjectsView'));
 
@@ -435,6 +435,7 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
     // donor/budget tables and pages sit on Deep Analytics.
     dashboard: [PimFrameworkLegacy, SE_Dashboard, PimNdpivLegacy],
     map: [SE_Map],
+    tables: [PimIbpLegacy],
     analytics: [PimBudgetLegacy, SE_Analytics, PimPppLegacy, PimDonorLegacy, SE_Tables],
   },
   gis: {
@@ -498,7 +499,7 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
     dashboard: [ATC_Predictions],
   },
   budget: {
-    analytics: [BUD_Section, BUD_MaintenanceStrategy],
+    analytics: [BUD_Section],
   },
   lifecycle: {
     // HDM-4 was its own standalone row for the model that literally powers
