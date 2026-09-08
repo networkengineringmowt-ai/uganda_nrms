@@ -354,6 +354,7 @@ const SE_Map = lazy(() => import('../SocioEconomic/SocioEconomicMap'));
 const RA_View = lazy(() => import('../RoadAtlas/RoadAtlasView'));
 const RV_View = lazy(() => import('../RoadVideoView/RoadVideoView'));
 const BUD_Section = lazy(() => import('../Budget/BudgetSection'));
+const BUD_MaintenanceStrategy = lazy(() => import('../Budget/MaintenanceStrategySection'));
 const LC_Section = lazy(() => import('../Lifecycle/LifecycleSection'));
 const PROJ_View = lazy(() => import('../Projects/ProjectsView'));
 
@@ -499,7 +500,7 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
     dashboard: [ATC_Predictions],
   },
   budget: {
-    analytics: [BUD_Section],
+    analytics: [BUD_Section, BUD_MaintenanceStrategy],
   },
   lifecycle: {
     // HDM-4 was its own standalone row for the model that literally powers
