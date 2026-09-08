@@ -1,13 +1,15 @@
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useState, useEffect, useMemo } from 'react';
 const BudgetSection = lazy(() => import('../Budget/BudgetSection'));
 import {
-  BarChart, Bar, PieChart, Pie, Cell, LineChart, Line,
+  BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend,
 } from 'recharts';
-import { DollarSign, Globe, Building2, TrendingUp, FileText, LayoutDashboard } from 'lucide-react';
+import { DollarSign, Globe, Building2, TrendingUp, FileText, LayoutDashboard, Landmark } from 'lucide-react';
 import { ModuleNavBar } from '../../shared/ModuleNavBar';
 import SectionDashboard from '../Dashboard/SectionDashboard';
 import { renderSliceLabel } from '../../shared/dashboardKit';
+import { SortableFilterableTable, type STColumn } from '../../shared/SortableFilterableTable';
+import { NULL_ZERO_STYLE } from '../../shared/tableFormatting';
 
 const C = {
   cyan: '#00f5ff', green: '#00ff88', yellow: '#ffd23f',
@@ -27,19 +29,6 @@ const card = (a: string) => ({
 const TK = { fontSize: 9, fill: 'rgba(148,163,184,0.6)' };
 
 // ── Data ─────────────────────────────────────────────────────────────────────
-const BUDGET_BY_YEAR = [
-  { fy: '2015/16', roads: 1420, bridges: 180, total: 1600, donor: 680, gou: 920 },
-  { fy: '2016/17', roads: 1580, bridges: 210, total: 1790, donor: 820, gou: 970 },
-  { fy: '2017/18', roads: 1750, bridges: 240, total: 1990, donor: 980, gou: 1010 },
-  { fy: '2018/19', roads: 1890, bridges: 260, total: 2150, donor: 1050, gou: 1100 },
-  { fy: '2019/20', roads: 2020, bridges: 290, total: 2310, donor: 1200, gou: 1110 },
-  { fy: '2020/21', roads: 1680, bridges: 220, total: 1900, donor: 850, gou: 1050 },
-  { fy: '2021/22', roads: 2100, bridges: 310, total: 2410, donor: 1250, gou: 1160 },
-  { fy: '2022/23', roads: 2380, bridges: 340, total: 2720, donor: 1380, gou: 1340 },
-  { fy: '2023/24', roads: 2560, bridges: 380, total: 2940, donor: 1490, gou: 1450 },
-  { fy: '2024/25', roads: 2780, bridges: 420, total: 3200, donor: 1600, gou: 1600 },
-];
-
 const DONOR_BREAKDOWN = [
   { name: 'World Bank / IDA',     value: 28, color: C.blue   },
   { name: 'AfDB',                 value: 22, color: C.green  },
@@ -130,8 +119,91 @@ const TABS = [
   { id: 'ppp',    label: 'PPP Projects',  icon: <Building2 size={13}/> },
   { id: 'donor',  label: 'Donor Funding', icon: <Globe size={13}/> },
   { id: 'ndpiv',  label: 'NDP IV Targets', icon: <TrendingUp size={13}/> },
+  { id: 'ibp',    label: 'IBP Project Register', icon: <Landmark size={13}/> },
 ] as const;
 type TabId = typeof TABS[number]['id'];
+
+// ── IBP (Integrated Bank of Projects) - Ministry of Finance, Planning &
+// Economic Development national investment-planning register, pulled from
+// the real public IBP portfolio API (ibp-api.finance.go.ug). Covers every
+// UNRA + Ministry of Works and Transport vote-level project registered in
+// IBP - not a roads-only filter, since a handful of MoWT entries are
+// multi-modal (airports, rail, port); those stay visible via the Vote/
+// Department columns rather than being silently dropped. `fy` is the real
+// Ugandan fiscal year (Jul-Jun) each project's last IBP submission falls
+// in, derived from `last_submission_date` - IBP's public API has no
+// separate multi-year funding-projection field, so this is the one real,
+// non-fabricated per-project year signal it exposes.
+interface IbpProject extends Record<string, unknown> {
+  code: string; name: string; vote: string; department: string;
+  phase: string; status: string; cost_ugx_bn: number; last_submission_date: string; fy: string;
+}
+const IBP_STATUS_COLOR: Record<string, string> = {
+  APPROVED: C.green, CONDITIONALLY_APPROVED: '#84cc16', ASSIGNED: C.blue,
+  SUBMITTED: C.teal, REVISED: C.yellow, DRAFT: '#64748b', REJECTED: C.red,
+};
+const IBP_STATUS_LABEL: Record<string, string> = {
+  APPROVED: 'Approved', CONDITIONALLY_APPROVED: 'Conditionally Approved', ASSIGNED: 'Assigned',
+  SUBMITTED: 'Submitted', REVISED: 'Revised', DRAFT: 'Draft', REJECTED: 'Rejected',
+};
+function IbpStatusBadge({ status }: { status: string | null | undefined }) {
+  if (!status) return <span style={NULL_ZERO_STYLE}>No data</span>;
+  const color = IBP_STATUS_COLOR[status] ?? '#64748b';
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', padding: '2px 9px', borderRadius: 999,
+      background: `${color}1f`, border: `1px solid ${color}55`, color, fontSize: 10, fontWeight: 800,
+    }}>{IBP_STATUS_LABEL[status] ?? status}</span>
+  );
+}
+// Sort key: most recent FY first (FY2025/26 -> 2025).
+function fySortKey(fy: string): number {
+  const m = /FY(\d{4})/.exec(fy);
+  return m ? Number(m[1]) : 0;
+}
+
+// ── Maintenance Strategy (network-wide priority register + URF funding) ──
+// Pulled from her 2026 Maintenance Strategy source workbooks
+// (maintenance_backlog_oprc_ppp_workbook_v9_strategy.xlsx for the 5-year
+// FY26/27-FY30/31 forward strategy and 338-link priority register; Budgets/
+// Consolidated.xlsx for real URF annual work plans FY2024/25 & FY2025/26 and
+// regional disbursement FY2023/24). Scope: Uganda Road Fund routine/periodic
+// MAINTENANCE funding only - not the full capital budget (donor-funded new
+// construction/upgrading/PPP projects are tracked separately in the IBP
+// register above).
+interface MaintenanceLink extends Record<string, unknown> {
+  link_id: string; road_no: string; road_class: string; link_name: string;
+  surface_type: string; length_km: number; maintenance_station: string | null;
+  region: string; vci_pct: number | null; vci_rating: string | null;
+  recommended_intervention: string | null; priority_score: number | null;
+  priority_rank: number | null; scheduled_fy: string | null;
+  indicative_base_cost_ugx_bn: number | null; asset_value_at_risk_ugx_bn: number | null;
+  priority_band: string | null;
+}
+interface AnnualProgrammeRow { fy: string; links: number; programme_cost_bn: number; asset_value_at_risk_bn: number; funding_gap_bn: number; }
+interface WorkplanRow { fy: string; category: string; planned_exp_ugx_bn: number; }
+interface RegionalDisbursementSummary { fy: string; region: string; disbursed_ugx_bn: number; }
+interface MaintenanceStrategyData {
+  kpis: { total_links: number; total_programme_cost_bn: number; asset_value_at_risk_bn: number; links_with_existing_path: number; reconstruction_links: number };
+  annual_programme: AnnualProgrammeRow[];
+  annual_maintenance_workplan: WorkplanRow[];
+  regional_disbursement_2023_24_summary: RegionalDisbursementSummary[];
+  links: MaintenanceLink[];
+  meta: { sources: string[]; note: string };
+}
+const PRIORITY_BAND_COLOR: Record<string, string> = {
+  'Priority 1': C.red, 'Priority 2': C.orange, 'Priority 3': C.yellow, 'Priority 4': C.green,
+};
+function PriorityBandBadge({ band }: { band: string | null | undefined }) {
+  if (!band) return <span style={NULL_ZERO_STYLE}>No data</span>;
+  const color = PRIORITY_BAND_COLOR[band] ?? '#64748b';
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', padding: '2px 9px', borderRadius: 999,
+      background: `${color}1f`, border: `1px solid ${color}55`, color, fontSize: 10, fontWeight: 800,
+    }}>{band}</span>
+  );
+}
 
 const CT = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
@@ -146,8 +218,104 @@ const CT = ({ active, payload, label }: any) => {
   );
 };
 
-export default function PimLegacyContent({ initialTab, hideTabBar }: { initialTab?: 'dashboard' | 'budget' | 'pim' | 'ppp' | 'donor' | 'ndpiv'; hideTabBar?: boolean } = {}) {
+export default function PimLegacyContent({ initialTab, hideTabBar }: { initialTab?: TabId; hideTabBar?: boolean } = {}) {
   const [tab, setTab] = useState<TabId>(initialTab || 'dashboard');
+  const [ibpProjects, setIbpProjects] = useState<IbpProject[]>([]);
+  const [ibpFY, setIbpFY] = useState<string>('all');
+  const [maint, setMaint] = useState<MaintenanceStrategyData | null>(null);
+  const [maintFY, setMaintFY] = useState<string>('all');
+
+  useEffect(() => {
+    fetch(`${import.meta.env.BASE_URL}ibp_projects.json`)
+      .then(r => r.json())
+      .then(setIbpProjects)
+      .catch(() => {/* IBP register optional */});
+    fetch(`${import.meta.env.BASE_URL}maintenance_strategy.json`)
+      .then(r => r.json())
+      .then(setMaint)
+      .catch(() => {/* Maintenance strategy register optional */});
+  }, []);
+
+  const ibpFYs = useMemo(
+    () => [...new Set(ibpProjects.map(p => p.fy))].sort((a, b) => fySortKey(b) - fySortKey(a)),
+    [ibpProjects],
+  );
+  const ibpRows = useMemo(
+    () => ibpFY === 'all' ? ibpProjects : ibpProjects.filter(p => p.fy === ibpFY),
+    [ibpProjects, ibpFY],
+  );
+  const ibpColumns: STColumn<IbpProject>[] = useMemo(() => [
+    { key: 'code', label: 'IBP Code' },
+    { key: 'name', label: 'Project Name' },
+    { key: 'vote', label: 'Vote' },
+    { key: 'department', label: 'Department' },
+    { key: 'fy', label: 'Financial Year' },
+    { key: 'phase', label: 'Phase' },
+    { key: 'status', label: 'Status', render: r => <IbpStatusBadge status={r.status} /> },
+    {
+      key: 'cost_ugx_bn', label: 'Cost (UGX Bn)', numeric: true,
+      render: r => typeof r.cost_ugx_bn === 'number'
+        ? r.cost_ugx_bn.toLocaleString(undefined, { maximumFractionDigits: 1 })
+        : <span style={NULL_ZERO_STYLE}>No data</span>,
+    },
+    { key: 'last_submission_date', label: 'Last Submitted' },
+  ], []);
+
+  const maintLinks = maint?.links ?? [];
+  const maintFYs = useMemo(
+    () => [...new Set(maintLinks.map(l => l.scheduled_fy).filter((v): v is string => !!v))].sort(),
+    [maintLinks],
+  );
+  const maintRows = useMemo(
+    () => maintFY === 'all' ? maintLinks : maintLinks.filter(l => l.scheduled_fy === maintFY),
+    [maintLinks, maintFY],
+  );
+  const maintColumns: STColumn<MaintenanceLink>[] = useMemo(() => [
+    { key: 'road_no', label: 'Road No' },
+    { key: 'link_name', label: 'Link Name' },
+    { key: 'region', label: 'Region' },
+    { key: 'surface_type', label: 'Surface' },
+    { key: 'length_km', label: 'Length (km)', numeric: true, render: r => r.length_km?.toLocaleString(undefined, { maximumFractionDigits: 1 }) },
+    {
+      key: 'vci_pct', label: 'VCI (%)', numeric: true,
+      render: r => typeof r.vci_pct === 'number'
+        ? `${r.vci_pct.toLocaleString(undefined, { maximumFractionDigits: 0 })} (${r.vci_rating ?? '—'})`
+        : <span style={NULL_ZERO_STYLE}>No data</span>,
+    },
+    { key: 'recommended_intervention', label: 'Recommended Intervention' },
+    { key: 'priority_band', label: 'Priority Band', render: r => <PriorityBandBadge band={r.priority_band} /> },
+    { key: 'priority_score', label: 'Priority Score', numeric: true, render: r => typeof r.priority_score === 'number' ? r.priority_score.toLocaleString(undefined, { maximumFractionDigits: 1 }) : <span style={NULL_ZERO_STYLE}>No data</span> },
+    { key: 'scheduled_fy', label: 'Scheduled FY' },
+    {
+      key: 'indicative_base_cost_ugx_bn', label: 'Cost (UGX Bn)', numeric: true,
+      render: r => typeof r.indicative_base_cost_ugx_bn === 'number'
+        ? r.indicative_base_cost_ugx_bn.toLocaleString(undefined, { maximumFractionDigits: 2 })
+        : <span style={NULL_ZERO_STYLE}>No data</span>,
+    },
+    {
+      key: 'asset_value_at_risk_ugx_bn', label: 'Asset Value at Risk (UGX Bn)', numeric: true,
+      render: r => typeof r.asset_value_at_risk_ugx_bn === 'number'
+        ? r.asset_value_at_risk_ugx_bn.toLocaleString(undefined, { maximumFractionDigits: 1 })
+        : <span style={NULL_ZERO_STYLE}>No data</span>,
+    },
+  ], []);
+
+  const workplanByFY = useMemo(() => {
+    const rows = maint?.annual_maintenance_workplan ?? [];
+    const fys = [...new Set(rows.map(r => r.fy))];
+    const cats = [...new Set(rows.filter(r => r.category !== 'TOTAL').map(r => r.category))];
+    return cats.map(cat => {
+      const rec: Record<string, string | number> = { category: cat };
+      for (const fy of fys) {
+        rec[fy] = rows.find(r => r.fy === fy && r.category === cat)?.planned_exp_ugx_bn ?? 0;
+      }
+      return rec;
+    });
+  }, [maint]);
+  const workplanFYs = useMemo(
+    () => [...new Set((maint?.annual_maintenance_workplan ?? []).map(r => r.fy))],
+    [maint],
+  );
 
   return (
     <div style={{ padding: '20px 18px', minHeight: '100%' }}>
@@ -286,38 +454,126 @@ export default function PimLegacyContent({ initialTab, hideTabBar }: { initialTa
           <Suspense fallback={<div style={{ padding: 24, color: 'rgba(148,163,184,0.7)', fontSize: 12 }}>Loading budget &amp; maintenance…</div>}>
             <BudgetSection embedded />
           </Suspense>
-          <div style={card(C.cyan)}>
-            <div style={{ fontSize: 11, fontWeight: 900, color: C.cyan, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14 }}>
-              Department of National Roads Budget Allocation 2015/16–2024/25 (UGX Billions)
-            </div>
-            <ResponsiveContainer width="100%" height={280}>
-              <BarChart data={BUDGET_BY_YEAR} margin={{ top: 8, right: 12, left: 0, bottom: 20 }}>
-                <CartesianGrid stroke="rgba(255,255,255,0.05)" strokeDasharray="3 3"/>
-                <XAxis dataKey="fy" tick={{ ...TK, fontSize: 8 }} angle={-30} textAnchor="end"/>
-                <YAxis tick={TK} label={{ value: 'UGX Bn', angle: -90, position: 'insideLeft', style: { fontSize: 9, fill: 'rgba(148,163,184,0.5)' } }}/>
-                <Tooltip content={<CT/>}/>
-                <Legend wrapperStyle={{ fontSize: 10, color: 'rgba(148,163,184,0.7)' }}/>
-                <Bar dataKey="donor" name="Donor/External" stackId="a" fill={C.blue} radius={[0,0,0,0]}/>
-                <Bar dataKey="gou" name="GoU Own Revenue" stackId="a" fill={C.yellow} radius={[4,4,0,0]}/>
-              </BarChart>
-            </ResponsiveContainer>
+
+          <div style={{ fontSize: 13, fontWeight: 900, color: '#e2eaf4', marginTop: 4 }}>
+            National Roads Maintenance Strategy (2026)
           </div>
-          <div style={card(C.purple)}>
-            <div style={{ fontSize: 11, fontWeight: 900, color: C.purple, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14 }}>
-              Roads vs Bridges Budget Split (UGX Bn)
-            </div>
-            <ResponsiveContainer width="100%" height={200}>
-              <LineChart data={BUDGET_BY_YEAR} margin={{ top: 8, right: 12, left: 0, bottom: 20 }}>
-                <CartesianGrid stroke="rgba(255,255,255,0.05)" strokeDasharray="3 3"/>
-                <XAxis dataKey="fy" tick={{ ...TK, fontSize: 8 }} angle={-30} textAnchor="end"/>
-                <YAxis tick={TK}/>
-                <Tooltip content={<CT/>}/>
-                <Legend wrapperStyle={{ fontSize: 10, color: 'rgba(148,163,184,0.7)' }}/>
-                <Line type="monotone" dataKey="roads" name="Roads" stroke={C.cyan} strokeWidth={2} dot={{ r: 3 }}/>
-                <Line type="monotone" dataKey="bridges" name="Bridges" stroke={C.orange} strokeWidth={2} dot={{ r: 3 }}/>
-              </LineChart>
-            </ResponsiveContainer>
+          <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.55)', maxWidth: 900, marginTop: -8 }}>
+            Uganda Road Fund (URF) routine/periodic maintenance funding and the network-wide maintenance priority register - not
+            the full national roads capital budget (donor-funded new construction, upgrading and PPP expressway projects are
+            tracked separately in the IBP Project Register tab above). Source: her 2026 Maintenance Strategy workbooks - the
+            5-year FY26/27–FY30/31 forward strategy and 338-link priority register, plus real URF annual work plans (FY2024/25,
+            FY2025/26) and regional disbursement (FY2023/24).
           </div>
+
+          {maint && (
+            <>
+              {/* KPI strip */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+                {[
+                  { label: 'Links Needing Intervention', value: maint.kpis.total_links.toLocaleString(), sub: 'Network-wide, FY26/27–FY30/31', color: C.yellow },
+                  { label: '5-Year Programme Cost', value: `UGX ${maint.kpis.total_programme_cost_bn.toLocaleString(undefined, { maximumFractionDigits: 0 })} Bn`, sub: 'Indicative base cost', color: C.cyan },
+                  { label: 'Asset Value at Risk', value: `UGX ${maint.kpis.asset_value_at_risk_bn.toLocaleString(undefined, { maximumFractionDigits: 0 })} Bn`, sub: 'If unaddressed', color: C.red },
+                  { label: 'Reconstruction-Level Links', value: maint.kpis.reconstruction_links.toLocaleString(), sub: 'Most severe intervention tier', color: C.orange },
+                ].map(k => (
+                  <div key={k.label} style={{ background: `rgba(${hexRgb(k.color)},0.06)`,
+                    border: `1px solid rgba(${hexRgb(k.color)},0.2)`, borderRadius: 10, padding: '12px 14px' }}>
+                    <div style={{ fontSize: 18, fontWeight: 900, color: k.color, lineHeight: 1 }}>{k.value}</div>
+                    <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(148,163,184,0.5)', marginTop: 4, textTransform: 'uppercase' }}>{k.label}</div>
+                    <div style={{ fontSize: 9, color: 'rgba(100,116,139,0.5)' }}>{k.sub}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div style={card(C.cyan)}>
+                <div style={{ fontSize: 11, fontWeight: 900, color: C.cyan, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14 }}>
+                  5-Year Forward Maintenance Programme (FY26/27–FY30/31, UGX Bn)
+                </div>
+                <ResponsiveContainer width="100%" height={260}>
+                  <BarChart data={maint.annual_programme} margin={{ top: 8, right: 12, left: 0, bottom: 20 }}>
+                    <CartesianGrid stroke="rgba(255,255,255,0.05)" strokeDasharray="3 3"/>
+                    <XAxis dataKey="fy" tick={TK}/>
+                    <YAxis tick={TK} label={{ value: 'UGX Bn', angle: -90, position: 'insideLeft', style: { fontSize: 9, fill: 'rgba(148,163,184,0.5)' } }}/>
+                    <Tooltip content={<CT/>}/>
+                    <Legend wrapperStyle={{ fontSize: 10, color: 'rgba(148,163,184,0.7)' }}/>
+                    <Bar dataKey="programme_cost_bn" name="Programme Cost" fill={C.cyan} radius={[4,4,0,0]}/>
+                    <Bar dataKey="funding_gap_bn" name="Funding Gap" fill={C.red} radius={[4,4,0,0]}/>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div style={card(C.yellow)}>
+                <div style={{ fontSize: 11, fontWeight: 900, color: C.yellow, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14 }}>
+                  URF Annual Maintenance Work Plan by Category (UGX Bn)
+                </div>
+                <ResponsiveContainer width="100%" height={280}>
+                  <BarChart data={workplanByFY} layout="vertical" margin={{ top: 8, right: 20, left: 10, bottom: 8 }}>
+                    <CartesianGrid stroke="rgba(255,255,255,0.05)" strokeDasharray="3 3"/>
+                    <XAxis type="number" tick={TK}/>
+                    <YAxis type="category" dataKey="category" tick={{ ...TK, fontSize: 9 }} width={190}/>
+                    <Tooltip content={<CT/>}/>
+                    <Legend wrapperStyle={{ fontSize: 10, color: 'rgba(148,163,184,0.7)' }}/>
+                    {workplanFYs.map((fy, i) => (
+                      <Bar key={fy} dataKey={fy} name={fy} fill={[C.yellow, C.blue, C.green][i % 3]} radius={[0,4,4,0]}/>
+                    ))}
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div style={card(C.green)}>
+                <div style={{ fontSize: 11, fontWeight: 900, color: C.green, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14 }}>
+                  Regional Maintenance Disbursement, FY2023/24 (UGX Bn)
+                </div>
+                <ResponsiveContainer width="100%" height={220}>
+                  <BarChart data={maint.regional_disbursement_2023_24_summary} margin={{ top: 8, right: 12, left: 0, bottom: 20 }}>
+                    <CartesianGrid stroke="rgba(255,255,255,0.05)" strokeDasharray="3 3"/>
+                    <XAxis dataKey="region" tick={{ ...TK, fontSize: 8 }} angle={-20} textAnchor="end"/>
+                    <YAxis tick={TK}/>
+                    <Tooltip content={<CT/>}/>
+                    <Bar dataKey="disbursed_ugx_bn" name="Disbursed" fill={C.green} radius={[4,4,0,0]}/>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div style={{ fontSize: 13, fontWeight: 900, color: '#e2eaf4', marginTop: 4 }}>
+                Network-Wide Maintenance Priority Register ({maint.kpis.total_links} links)
+              </div>
+
+              {/* Scheduled-FY buttons */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                {(['all', ...maintFYs]).map(fy => {
+                  const isActive = fy === maintFY;
+                  const n = fy === 'all' ? maintLinks.length : maintLinks.filter(l => l.scheduled_fy === fy).length;
+                  return (
+                    <button key={fy} onClick={() => setMaintFY(fy)} style={{
+                      display: 'flex', alignItems: 'center', gap: 6,
+                      padding: '7px 13px', fontSize: 11, fontWeight: isActive ? 800 : 600,
+                      borderRadius: 999, cursor: 'pointer',
+                      background: isActive ? `rgba(${hexRgb(C.cyan)},0.18)` : 'rgba(255,255,255,0.04)',
+                      border: isActive ? `1px solid rgba(${hexRgb(C.cyan)},0.55)` : '1px solid rgba(255,255,255,0.08)',
+                      color: isActive ? C.cyan : 'rgba(148,163,184,0.75)',
+                      transition: 'all 0.13s',
+                    }}>
+                      {fy === 'all' ? 'All Years' : fy}
+                      <span style={{
+                        fontSize: 9, fontWeight: 800, padding: '1px 6px', borderRadius: 999,
+                        background: isActive ? `rgba(${hexRgb(C.cyan)},0.25)` : 'rgba(255,255,255,0.06)',
+                        color: isActive ? C.cyan : 'rgba(148,163,184,0.6)',
+                      }}>{n}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <SortableFilterableTable
+                accent={C.cyan}
+                exportName={`maintenance-priority-register${maintFY === 'all' ? '' : `-${maintFY.replace('/', '-')}`}`}
+                columns={maintColumns}
+                rows={maintRows}
+                emptyText="No links scheduled in this financial year."
+              />
+            </>
+          )}
         </div>
       )}
 
@@ -422,6 +678,60 @@ export default function PimLegacyContent({ initialTab, hideTabBar }: { initialTa
               Vision 2040 long-term target: 17,000 km paved national road network.
             </div>
           </div>
+        </div>
+      )}
+
+      {/* IBP Project Register */}
+      {tab === 'ibp' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ fontSize: 14, fontWeight: 900, color: '#e2eaf4' }}>Integrated Bank of Projects (IBP) - National Portfolio</div>
+          <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.55)', maxWidth: 900 }}>
+            Every Uganda National Roads Authority and Ministry of Works and Transport vote-level project registered in IBP, matched by
+            government Vote rather than by keyword - so a small number of non-road MoWT entries (airports, rail, port and aviation-training
+            projects) remain visible via the Vote/Department columns rather than being silently filtered out. Source: Integrated Bank of
+            Projects, Ministry of Finance, Planning &amp; Economic Development (ibp.finance.go.ug). Financial Year = the real Ugandan FY
+            (Jul–Jun) each project's most recent IBP submission falls in.
+          </div>
+
+          {/* Financial-year buttons */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            {(['all', ...ibpFYs]).map(fy => {
+              const isActive = fy === ibpFY;
+              const n = fy === 'all' ? ibpProjects.length : ibpProjects.filter(p => p.fy === fy).length;
+              return (
+                <button key={fy} onClick={() => setIbpFY(fy)} style={{
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  padding: '7px 13px', fontSize: 11, fontWeight: isActive ? 800 : 600,
+                  borderRadius: 999, cursor: 'pointer',
+                  background: isActive ? `rgba(${hexRgb(C.yellow)},0.18)` : 'rgba(255,255,255,0.04)',
+                  border: isActive ? `1px solid rgba(${hexRgb(C.yellow)},0.55)` : '1px solid rgba(255,255,255,0.08)',
+                  color: isActive ? C.yellow : 'rgba(148,163,184,0.75)',
+                  transition: 'all 0.13s',
+                }}>
+                  {fy === 'all' ? 'All Years' : fy}
+                  <span style={{
+                    fontSize: 9, fontWeight: 800, padding: '1px 6px', borderRadius: 999,
+                    background: isActive ? `rgba(${hexRgb(C.yellow)},0.25)` : 'rgba(255,255,255,0.06)',
+                    color: isActive ? C.yellow : 'rgba(148,163,184,0.6)',
+                  }}>{n}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          <div style={{ fontSize: 10, color: 'rgba(148,163,184,0.55)' }}>
+            {ibpRows.length} project{ibpRows.length === 1 ? '' : 's'} ·{' '}
+            {ibpRows.reduce((s, p) => s + (p.cost_ugx_bn || 0), 0).toLocaleString(undefined, { maximumFractionDigits: 0 })} UGX Bn total appraised cost
+            {ibpFY !== 'all' ? ` · ${ibpFY}` : ' · all years on record'}
+          </div>
+
+          <SortableFilterableTable
+            accent={C.yellow}
+            exportName={`ibp-portfolio${ibpFY === 'all' ? '' : `-${ibpFY.replace('/', '-')}`}`}
+            columns={ibpColumns}
+            rows={ibpRows}
+            emptyText="No IBP projects submitted in this financial year."
+          />
         </div>
       )}
     </div>
