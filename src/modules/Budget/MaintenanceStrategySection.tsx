@@ -106,17 +106,23 @@ export default function MaintenanceStrategySection() {
       .catch(() => setError('Maintenance strategy dataset could not be loaded.'));
   }, []);
 
-  if (error) return <div style={{ padding: 20, color: C.orange, fontSize: 12 }}>{error}</div>;
-  if (!data) return <div style={{ padding: 20, color: 'rgba(148,163,184,0.6)', fontSize: 12 }}>Loading maintenance strategy data…</div>;
-
-  const no = data.networkOverview;
+  // Hooks must run unconditionally on every render (including while data is
+  // still loading/errored) - a previous version called useMemo AFTER the
+  // early returns below, which changed the hook count between renders and
+  // crashed the whole app with React error #310 once the data fetch started
+  // succeeding. Keep every hook above any conditional return.
   const assetSeries = useMemo(() => {
+    if (!data) return [];
     const byFy: Record<string, any> = {};
     data.assetValues.paved.forEach(r => { byFy[r.fy] = { ...(byFy[r.fy] || {}), fy: r.fy, pavedCdrc: r.cdrcMnUsd }; });
     data.assetValues.unpaved.forEach(r => { byFy[r.fy] = { ...(byFy[r.fy] || {}), fy: r.fy, unpavedCdrc: r.cdrcMnUsd }; });
     return Object.values(byFy);
   }, [data]);
 
+  if (error) return <div style={{ padding: 20, color: C.orange, fontSize: 12 }}>{error}</div>;
+  if (!data) return <div style={{ padding: 20, color: 'rgba(148,163,184,0.6)', fontSize: 12 }}>Loading maintenance strategy data…</div>;
+
+  const no = data.networkOverview;
   const bridgeRows = data.bridges.map(b => ({ ...b, e: b.coordinates.e, s: b.coordinates.s }));
   const culvertRows = data.majorCulverts.map(c => ({ ...c, e: c.coordinates.e, s: c.coordinates.s }));
 
