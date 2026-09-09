@@ -2050,7 +2050,7 @@ export default function TabularSummaries() {
 
           {/* ══ §10: Road Safety ═════════════════════════════════════════════════ */}
           <SectionHeader icon={<Shield size={15} style={{ color: C.red }}/>} accent={C.red}
-            title="Road Safety" sub="UNRA / Uganda Police Force accident statistics · National Road Safety Authority · 2025"/>
+            title="Road Safety" sub="MoWT / Uganda Police Force accident statistics · National Road Safety Authority · 2025"/>
           {/* tbl-029 */}
           <TablePanel id="tbl-029" title="Road Accidents by Road Class (2025)" accent={C.red} source="Uganda Police Force / NRSA 2025">
             <table style={{ width:'100%', borderCollapse:'collapse' }}><thead><tr><Th>Class</Th><Th>Network km</Th><Th>Fatalities</Th><Th>Injuries</Th><Th>Accidents</Th><Th>Rate / 100 km</Th></tr></thead>
