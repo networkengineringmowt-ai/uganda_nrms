@@ -104,21 +104,9 @@ export default function DrainageDashboard() {
   return (
     <div style={{ width: '100%' }}>
 
-        {/* ── Definition Card ── */}
-        <div style={{background:'rgba(6,182,212,0.04)',border:'1px solid rgba(6,182,212,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'flex-start',gap:16}}>
-          <div style={{fontSize:36,lineHeight:1,flexShrink:0}}>🌊</div>
-          <div style={{flex:1}}>
-            <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
-              <span style={{fontSize:18,fontWeight:800,color:'rgba(6,182,212,1)',letterSpacing:-0.5}}>Drainage Infrastructure Dashboard</span>
-              <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>Culverts · Cross Drains · Flood Risk · MoWT Standards</span>
-            </div>
-            <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Section-level drainage infrastructure dashboard - tracking culvert condition, cross-drain capacity, side-drain maintenance needs, and flood vulnerability for Uganda's national road network against MoWT drainage design standards.</p>
-            <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
-              {["Culverts","Cross Drains","Side Drains","Flood Risk","Maintenance Need","MoWT Standards"].map(b=>(
-                <span key={b} style={{background:'rgba(6,182,212,0.12)',color:'rgba(6,182,212,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
-              ))}
-            </div>
-          </div>
+        <div style={{background:'rgba(6,182,212,0.04)',border:'1px solid rgba(6,182,212,0.14)',borderRadius:10,padding:'10px 16px',marginBottom:16,display:'flex',alignItems:'center',gap:10,flexWrap:'wrap'}}>
+          <span style={{fontSize:15,fontWeight:800,color:'rgba(6,182,212,1)',letterSpacing:-0.3}}>Drainage Infrastructure Dashboard</span>
+          <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>Culverts · Cross Drains · Flood Risk · MoWT Standards</span>
         </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 8, marginBottom: 12 }}>
         <Kpi label='Total drainage structures' value={rows.length} sev='info' />

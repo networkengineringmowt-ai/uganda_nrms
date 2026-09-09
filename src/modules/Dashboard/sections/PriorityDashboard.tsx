@@ -117,22 +117,10 @@ export default function PriorityDashboard() {
   const top = scored; // full ranked list (already sorted desc by score) - no cap; RankList scrolls
   return (
     <div style={{ width: '100%' }}>
-      {/* ── Definition Card ── */}
-      <div style={{background:'rgba(239,68,68,0.04)',border:'1px solid rgba(239,68,68,0.14)',borderRadius:16,padding:'20px 24px',marginBottom:24,display:'flex',alignItems:'flex-start',gap:16}}>
-        <div style={{fontSize:36,lineHeight:1,flexShrink:0}}>🎯</div>
-        <div style={{flex:1}}>
-          <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
-            <span style={{fontSize:18,fontWeight:800,color:'rgba(239,68,68,1)',letterSpacing:-0.5}}>Priority Works Dashboard</span>
-            <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>HDM-4 Ranking · URF · PCI · Traffic Score · Budget Optimised</span>
-          </div>
-          <p style={{fontSize:12,color:'#94a3b8',margin:'0 0 10px',lineHeight:1.6}}>Priority works ranking dashboard for Uganda national road sections - combining HDM-4 economic analysis, PCI condition scores, AADT traffic weighting, social impact factors, and URF budget constraints to optimise maintenance priorities.</p>
-          <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
-            {["HDM-4 Priority","URF Ranking","PCI Weighted","Traffic Score","Social Impact","Budget Optimised"].map(b=>(
-              <span key={b} style={{background:'rgba(239,68,68,0.12)',color:'rgba(239,68,68,0.9)',fontSize:9,fontWeight:700,borderRadius:20,padding:'2px 8px',textTransform:'uppercase' as const,letterSpacing:0.5}}>{b}</span>
-            ))}
-          </div>
+      <div style={{background:'rgba(239,68,68,0.04)',border:'1px solid rgba(239,68,68,0.14)',borderRadius:10,padding:'10px 16px',marginBottom:16,display:'flex',alignItems:'center',gap:10,flexWrap:'wrap'}}>
+          <span style={{fontSize:15,fontWeight:800,color:'rgba(239,68,68,1)',letterSpacing:-0.3}}>Priority Works Dashboard</span>
+          <span style={{fontSize:11,color:'#94a3b8',fontWeight:500}}>HDM-4 Ranking · URF · PCI · Traffic Score · Budget Optimised</span>
         </div>
-      </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 8, marginBottom: 12 }}>
         <Kpi label='Links ranked' value={scored.length} sev='info' />

@@ -51,7 +51,7 @@ const REG_CAT_BUDGET = [
   [40, 44, 32, 4, 2],      // North Eastern
 ];
 
-const FUNDING_SRC_LBL = ['GoU (UNRA)', 'World Bank/IDA', 'AfDB/AfDF', 'Other Donors'];
+const FUNDING_SRC_LBL = ['GoU (MoWT)', 'World Bank/IDA', 'AfDB/AfDF', 'Other Donors'];
 const FUNDING_SRC_BN = [820, 480, 340, 202]; // sums to 1,842
 const FUNDING_SRC_COLORS = [DASH_C.cyan, DASH_C.green, DASH_C.yellow, DASH_C.orange];
 
