@@ -84,14 +84,14 @@ export default function BridgeWorksSection() {
           <span style={{ fontSize:26 }}>🌉</span>
           <div>
             <div style={{ fontSize:15, fontWeight:900, color:'#e2e8f0', letterSpacing:'-0.02em' }}>Bridge Works Programme</div>
-            <div style={{ fontSize:10, color:'rgba(148,163,184,0.55)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.08em' }}>MoWT Bridge Construction · UNRA</div>
+            <div style={{ fontSize:10, color:'rgba(148,163,184,0.55)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.08em' }}>MoWT Bridge Construction</div>
           </div>
         </div>
         <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>
           Active and completed bridge construction, rehabilitation, and maintenance contracts across Uganda's road network - tracking lot progress, contractor performance, disbursements, and physical completion against MoWT programme targets.
         </p>
         <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
-          {['MoWT Programme','UNRA Contracts','URF Funded','AfDB Co-financed','PPDA Compliant'].map((b: string)=>(
+          {['MoWT Programme','MoWT Contracts','URF Funded','AfDB Co-financed','PPDA Compliant'].map((b: string)=>(
             <span key={b} style={{ fontSize:9, fontWeight:700, color:'#00d4aa', background:'rgba(0, 212, 170,0.07)', border:'1px solid rgba(0, 212, 170,0.18)', borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
           ))}
         </div>
