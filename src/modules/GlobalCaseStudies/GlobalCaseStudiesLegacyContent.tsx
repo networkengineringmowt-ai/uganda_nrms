@@ -398,7 +398,7 @@ const CASE_STUDIES: CaseStudy[] = [
     lessonsDNR:'Sudan\'s desert highway deterioration models - focused on thermal cracking and wind abrasion - are relevant for Uganda\'s dry Northern region roads.',
     dataApproach:'Annual ROMDAS on main roads; visual on secondary', funding:'Government + Islamic Development Bank + Arab Fund', metrics:'65% paved; 71% main roads in good condition' },
 
-  { id:37, agency:'UNRA / DNR', country:'Uganda', flag:'', networkKm:21302, system:'DNR RMS Engine', pavedPct:30, rmsYears:6, budgetPerKmUsd:12500, region:'Africa', lat:1.37, lng:32.29,
+  { id:37, agency:'MoWT / DNR', country:'Uganda', flag:'', networkKm:21302, system:'DNR RMS Engine', pavedPct:30, rmsYears:6, budgetPerKmUsd:12500, region:'Africa', lat:1.37, lng:32.29,
     keyFeatures:['Official network: 21,302 km (NDPIV FY25-26)','ML-powered IRI prediction (PyTorch, R²=0.93)','1,014 links in GeoJSON; 6 active OPRC lots','25 ATC + 298 TIS traffic monitoring stations'],
     lessonsDNR:'This is the DNR platform itself - the benchmarks shown here represent Uganda\'s current asset management maturity and the targets set by this system.',
     dataApproach:'ROMDAS annual surveys; ATC + TIS traffic counts; bridge inspections; satellite imagery', funding:'GoU Road Fund + World Bank + AfDB + JICA', metrics:'Official: 21,302 km | Mapped: 21,137 km (1,014 links) | Paved: 6,405 km (30.3%)' },
