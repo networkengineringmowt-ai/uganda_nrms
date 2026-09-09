@@ -107,7 +107,7 @@ const ENCROACHMENT_RECORDS: EncroachmentRecord[] = [
   { id: 'ENC-2026-009', link_id: 'C310_Link01', road_no: 'C310', location: 'Lira – Otuke road',           chainage_km: 33.2, type: 'Utility',     date_reported: '2026-03-19', status: 'Active',        region: 'Northern', road_class: 'C', notes: 'Water pipeline laid through culvert headwall without permit' },
   { id: 'ENC-2026-010', link_id: 'A001_Link03', road_no: 'A001', location: 'Jinja – Iganga corridor',     chainage_km: 76.8, type: 'Cultivation', date_reported: '2025-10-02', status: 'Resolved',      region: 'Eastern',  road_class: 'A', notes: 'Banana plantation cleared from drainage easement' },
   { id: 'ENC-2026-011', link_id: 'B045_Link01', road_no: 'B045', location: 'Hoima – Kigumba',             chainage_km: 41.0, type: 'Structure',   date_reported: '2026-04-01', status: 'Active',        region: 'Western',  road_class: 'B', notes: 'Roadside market stalls erected on shoulder during trading days' },
-  { id: 'ENC-2026-012', link_id: 'A104_Link04', road_no: 'A104', location: 'Gulu – Atiak',                chainage_km: 58.3, type: 'Billboard',   date_reported: '2026-01-05', status: 'Evicted',       region: 'Northern', road_class: 'A', notes: 'Illegal signage removed following joint DNR/UNRA operation' },
+  { id: 'ENC-2026-012', link_id: 'A104_Link04', road_no: 'A104', location: 'Gulu – Atiak',                chainage_km: 58.3, type: 'Billboard',   date_reported: '2026-01-05', status: 'Evicted',       region: 'Northern', road_class: 'A', notes: 'Illegal signage removed following DNR enforcement operation' },
 ];
 
 interface GazetteRecord {
