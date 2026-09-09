@@ -99,13 +99,9 @@ function LoadingScreen() {
         <div>
           <div className="text-white font-bold text-lg">Uganda National Roads Management Platform</div>
           <div className="text-slate-500 text-sm mt-1">Dept. of National Roads · Ministry of Works &amp; Transport</div>
-          <div className="text-slate-600 text-xs mt-0.5">Initializing platform · Fetching network data from unified database · DNR GIS Jun 2025</div>
         </div>
-        <div className="flex justify-center gap-1.5">
-          {[0, 1, 2].map(i => (
-            <div key={i} className="w-2 h-2 rounded-full bg-blue-500 animate-bounce"
-              style={{ animationDelay: `${i * 0.15}s` }} />
-          ))}
+        <div className="flex justify-center">
+          <div className="w-6 h-6 rounded-full border-2 border-slate-700 border-t-blue-500 animate-spin" />
         </div>
       </div>
     </div>
