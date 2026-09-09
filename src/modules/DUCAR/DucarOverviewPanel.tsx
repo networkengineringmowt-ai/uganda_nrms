@@ -94,7 +94,7 @@ function OverviewTab() {
           { icon: <Map size={14}/>, title: 'Urban Roads', items: ['City road networks (Kampala, Gulu, Mbarara, Jinja)','Town roads in 22 municipalities','Road lighting, drainage & walkways','Traffic signal infrastructure'] },
           { icon: <Route size={14}/>, title: 'District Feeder Roads', items: ['16,500 km district road network','Market & agricultural access routes','Bi-annual grading & gravelling','District Road Committees oversight'] },
           { icon: <Users size={14}/>, title: 'Community Access', items: ['12,000 km community tracks','Village connectivity (2 km RAI target)','Labour-based maintenance contracts','Women & youth employment programmes'] },
-          { icon: <Wrench size={14}/>, title: 'Works Delivery', items: ['UNRA-aligned maintenance standards','Force Account & contractor mix','Equipment pools per region','Emergency repair mobilisation'] },
+          { icon: <Wrench size={14}/>, title: 'Works Delivery', items: ['MoWT-aligned maintenance standards','Force Account & contractor mix','Equipment pools per region','Emergency repair mobilisation'] },
         ].map(s => (
           <div key={s.title} style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255, 107, 53,0.1)', borderRadius: 8, padding: '14px 16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10, color: ACC }}>
