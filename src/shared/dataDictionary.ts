@@ -630,7 +630,7 @@ const RAW_DICTIONARY: DictEntry[] = [
   { key: 'web_mercator', term: 'Web Mercator', group: 'GIS & Spatial', description: 'The projection (EPSG:3857) used by web tile maps; preserves shape locally but distorts area toward the poles.' },
 
   // ── Network classification ──────────────────────────────────────────────────
-  { key: 'national_road', term: 'National Road', group: 'Network Classification', description: 'A road of strategic/inter-regional importance managed by UNRA, forming the primary network (≈21,000+ km).' },
+  { key: 'national_road', term: 'National Road', group: 'Network Classification', description: 'A road of strategic/inter-regional importance managed by MoWT, forming the primary network (≈21,000+ km).' },
   { key: 'district_road', term: 'District Road', group: 'Network Classification', description: 'A road connecting district centres and feeding the national network, managed by district local governments.' },
   { key: 'paved_road', term: 'Paved Road', aliases:['sealed road'], group: 'Network Classification', description: 'A road with a bituminous or concrete surfacing; ≈30% of the national network.' },
   { key: 'unpaved_road', term: 'Unpaved Road', aliases:['gravel road','earth road'], group: 'Network Classification', description: 'A road with a gravel or earth running surface; ≈70% of the national network, maintained by grading/regravelling.' },
