@@ -528,8 +528,8 @@ function LinkClassTable({ features, surfMap: _surfMap }: { features: PredFeature
           { label:'85th %ile Speed (paved)', value:'82 km/h', sub:'national average · TIS speed surveys', color:'#ffd23f' },
           { label:'Mean Speed (paved)', value:'68 km/h', sub:'all vehicle types combined', color:'#a3e635' },
           { label:'85th %ile Speed (unpaved)', value:'57 km/h', sub:'gravel / earth surface', color:'#fb923c' },
-          { label:'Overloading Rate', value:'23%', sub:'axle-load violations · UNRA weigh-in-motion', color:'#f87171' },
-          { label:'Road Accidents (est.)', value:'~4,500/yr', sub:'national roads · UNRA / Police data', color:'#c084fc' },
+          { label:'Overloading Rate', value:'23%', sub:'axle-load violations · MoWT weigh-in-motion', color:'#f87171' },
+          { label:'Road Accidents (est.)', value:'~4,500/yr', sub:'national roads · MoWT / Police data', color:'#c084fc' },
         ].map(k => (
           <div key={k.label} style={{
             background:'rgba(8,14,28,0.6)', border:`1px solid rgba(${k.color === '#00d4aa' ? '0, 212, 170' : k.color === '#4d9fff' ? '77, 159, 255' : k.color === '#ffd23f' ? '255, 210, 63' : k.color === '#a3e635' ? '163,230,53' : k.color === '#fb923c' ? '251,146,60' : k.color === '#f87171' ? '248,113,113' : '192,132,252'},0.22)`,
@@ -570,8 +570,8 @@ function LinkClassTable({ features, surfMap: _surfMap }: { features: PredFeature
         Growth rates (p.a.): Moto 4.5% · Cars 3.2% · Minibus 2.8% · Bus 2.0% · L.Trk 3.5% · M.Trk 3.0% · H.Trk 2.5% · Artic 2.2% · Other 1.0%.
         Blended total ≈ 3.2% p.a. aligned with UNRA historical growth factor series. &nbsp;·&nbsp;
         <b style={{ color: '#94a3b8' }}>Speed:</b> 85th %ile 82 km/h (paved) / 57 km/h (unpaved); Mean 68 / 45 km/h. &nbsp;·&nbsp;
-        <b style={{ color: '#94a3b8' }}>Overloading:</b> 23% axle-load violation rate (UNRA weigh-in-motion surveys). &nbsp;·&nbsp;
-        <b style={{ color: '#94a3b8' }}>Accidents:</b> ~4,500 crashes / year on national roads (UNRA / Uganda Police data, where available).
+        <b style={{ color: '#94a3b8' }}>Overloading:</b> 23% axle-load violation rate (MoWT weigh-in-motion surveys). &nbsp;·&nbsp;
+        <b style={{ color: '#94a3b8' }}>Accidents:</b> ~4,500 crashes / year on national roads (MoWT / Uganda Police data, where available).
       </div>
     </div>
   );
