@@ -165,7 +165,7 @@ export default function PlatformDashboard() {
           <span style={{ fontSize:26 }}>🗺️</span>
           <div>
             <div style={{ fontSize:15, fontWeight:900, color:'#e2e8f0', letterSpacing:'-0.02em' }}>Uganda National Roads Management System</div>
-            <div style={{ fontSize:10, color:'rgba(148,163,184,0.55)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.08em' }}>MoWT · UNRA · URF · AfDB / World Bank</div>
+            <div style={{ fontSize:10, color:'rgba(148,163,184,0.55)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.08em' }}>MoWT · URF · AfDB / World Bank</div>
           </div>
         </div>
         <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>
