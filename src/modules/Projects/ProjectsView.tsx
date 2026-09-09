@@ -432,14 +432,14 @@ export default function ProjectsView() {
             <span style={{ fontSize:26 }}>🏗️</span>
             <div>
               <div style={{ fontSize:15, fontWeight:900, color:'#e2e8f0', letterSpacing:'-0.02em' }}>Road Projects & Capital Works</div>
-              <div style={{ fontSize:10, color:'rgba(148,163,184,0.55)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.08em' }}>UNRA · MoWT · AfDB / World Bank · PPDA</div>
+              <div style={{ fontSize:10, color:'rgba(148,163,184,0.55)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.08em' }}>MoWT · AfDB / World Bank · PPDA</div>
             </div>
           </div>
           <p style={{ fontSize:11, color:'rgba(148,163,184,0.72)', lineHeight:1.6, margin:0 }}>
-            Active and planned road construction and rehabilitation projects across Uganda - tracking UNRA capital works, AfDB-funded corridors, NERAMP rehabilitation lots, northern bypass, and expressway programmes with real-time progress and disbursement monitoring.
+            Active and planned road construction and rehabilitation projects across Uganda - tracking MoWT capital works, AfDB-funded corridors, NERAMP rehabilitation lots, northern bypass, and expressway programmes with real-time progress and disbursement monitoring.
           </p>
           <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginTop:10 }}>
-            {['UNRA Capital Works','AfDB Funded','NERAMP Lots','World Bank IDA','PPDA Compliant','NDPIV Aligned'].map((b: string)=>(
+            {['MoWT Capital Works','AfDB Funded','NERAMP Lots','World Bank IDA','PPDA Compliant','NDPIV Aligned'].map((b: string)=>(
               <span key={b} style={{ fontSize:9, fontWeight:700, color:'#00ff88', background:'rgba(0, 255, 136,0.07)', border:'1px solid rgba(0, 255, 136,0.18)', borderRadius:20, padding:'2px 8px', textTransform:'uppercase', letterSpacing:'0.07em' }}>{b}</span>
             ))}
           </div>
