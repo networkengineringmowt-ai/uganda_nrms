@@ -601,23 +601,19 @@ export default function SectionDashboard({ sectionId, accent }: { sectionId: str
 
   return (
     <div style={{ padding: '6px 8px', width: '100%' }}>
-      {/* Compact definition strip - always visible above the 6-tab bar */}
+      {/* Compact section header - icon + title, above the 6-tab bar */}
       <div style={{
         background: `rgba(255,255,255,0.02)`, border: `1px solid ${accent}26`,
-        borderRadius: 10, padding: '10px 14px', marginBottom: 10,
+        borderRadius: 10, padding: '8px 14px', marginBottom: 10,
+        display: 'flex', alignItems: 'center', gap: 10,
       }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-          <div style={{
-            width: 26, height: 26, borderRadius: 7, flexShrink: 0, fontSize: 13,
-            background: `linear-gradient(135deg,${accent}33,rgba(0,0,0,0))`,
-            border: `1px solid ${accent}55`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', color: accent,
-          }}>{def.icon}</div>
-          <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, minWidth: 0, rowGap: 4 }}>
-            <span style={{ fontSize: 13, fontWeight: 900, color: '#e2eaf4', flexShrink: 0 }}>{def.title}</span>
-            <span style={{ fontSize: 11.5, color: 'rgba(203,213,225,0.85)', lineHeight: 1.5, flex: '1 1 320px', minWidth: 260 }}>{def.body}</span>
-          </div>
-        </div>
+        <div style={{
+          width: 24, height: 24, borderRadius: 6, flexShrink: 0, fontSize: 12,
+          background: `linear-gradient(135deg,${accent}33,rgba(0,0,0,0))`,
+          border: `1px solid ${accent}55`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', color: accent,
+        }}>{def.icon}</div>
+        <span style={{ fontSize: 13, fontWeight: 900, color: '#e2eaf4' }}>{def.title}</span>
       </div>
 
       {/* Section Sub-Tabs: Dashboard | Interactive Map | Exhaustive Tables | Deep Analytics | SQL Database & Schema | Data Capture */}
