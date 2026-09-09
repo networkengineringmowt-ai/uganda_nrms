@@ -11,7 +11,7 @@ const DEFS: Record<string, { title: string; body: string; icon: string }> = {
   atc:          { icon: '📡', title: 'ATC Traffic Counters',                 body: '25 Automatic Traffic Counters (15 legacy + 10 new) providing real-time classified volume data across the national road network.' },
   ntis:         { icon: '📈', title: 'National Traffic Information System',  body: 'AADT trends, growth forecasting, axle-load monitoring, and road safety analysis for Uganda\'s national corridors.' },
   npms:         { icon: '🗺',  title: 'National PMS',                         body: 'Strategic-level pavement performance indicators and network-wide condition distribution across all road classes.' },
-  nbms:         { icon: '🗂',  title: 'National BMS',                         body: 'Consolidated bridge and structure data across all road agencies - UNRA, URF, district, and urban authorities.' },
+  nbms:         { icon: '🗂',  title: 'National BMS',                         body: 'Consolidated bridge and structure data across all road agencies - MoWT, URF, district, and urban authorities.' },
   network:      { icon: '🌐', title: 'Network Overview',                     body: 'The classified road network: national, district, urban, and community access roads, total extent and agency responsibilities.' },
   roadreserve:  { icon: '📏', title: 'Road Reserve Management',              body: 'Surveyed road reserve boundaries, encroachment detection, gazette status, and reserve width compliance monitoring.' },
   gisenterprise:{ icon: '🗺',  title: 'GIS Enterprise',                      body: 'Spatial data infrastructure, GIS layers, aerial imagery, and geospatial analysis tools for road asset management.' },
