@@ -500,7 +500,15 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
     dashboard: [ATC_Predictions],
   },
   budget: {
-    analytics: [BUD_Section, BUD_MaintenanceStrategy],
+    // BUD_MaintenanceStrategy (MaintenanceStrategySection.tsx) intentionally
+    // unwired here: it duplicates BUD_Section's own "Maintenance Strategy"
+    // sub-tab (same bridges/culverts/asset-value/rates/priority-register
+    // content, added in a separate concurrent pass), so stacking both on
+    // this same page showed the same figures twice. Removing the second
+    // render leaves one working version here. PimLegacyContent.tsx's
+    // separate Budget & Maintenance Trends tab (different location,
+    // different framing) is unaffected and intentionally kept.
+    analytics: [BUD_Section],
   },
   lifecycle: {
     // HDM-4 was its own standalone row for the model that literally powers
