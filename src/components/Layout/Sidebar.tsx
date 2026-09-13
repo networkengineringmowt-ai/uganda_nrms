@@ -57,7 +57,6 @@ const SECTIONS: Record<string, Section> = {
   bridgeworks:   { id: 'bridgeworks',   label: 'Bridge Works Programme',    icon: <Hammer size={14}/>,       color: N.blue   },
   downloads:     { id: 'downloads',     label: 'Downloads',                 icon: <Download size={14}/>,     color: N.gray   },
   ducar:         { id: 'ducar',         label: 'DUCAR Roads',                icon: <Leaf size={14}/>,         color: N.green  },
-  socioeconomic: { id: 'socioeconomic', label: 'Socio-Economic Analysis',   icon: <BarChart3 size={14}/>,    color: N.yellow },
 
   // Restored from history - these were standalone sidebar tabs before the
   // 6-tab hub consolidation folded their content into a parent section's
@@ -130,7 +129,7 @@ const GROUPS: Group[] = [
     'trafficanalytics', 'trafficsummary', 'growthfactors', 'overloading',
   ] },
   { id: 'planning',  label: 'Planning & Investment', icon: <Building2 size={15}/>,    color: N.green,  items: [
-    'projects', 'pim', 'socioeconomic', 'budget', 'lifecycle', 'oprc', 'ndpiv',
+    'projects', 'pim', 'budget', 'lifecycle', 'oprc', 'ndpiv',
     'hdm4', 'projecttracker',
   ] },
   { id: 'knowledge', label: 'Knowledge & Admin',     icon: <Shield size={15}/>,       color: N.purple, items: [
