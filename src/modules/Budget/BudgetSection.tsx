@@ -537,7 +537,7 @@ export default function BudgetSection({ embedded }: { embedded?: boolean } = {})
       {tab === 'strategy' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div style={{ background: 'rgba(0,245,255,0.04)', border: '1px solid rgba(0,245,255,0.15)', borderRadius: 10, padding: '10px 16px', fontSize: 10.5, color: 'rgba(203,213,225,0.85)', lineHeight: 1.6 }}>
-            Extracted from real MoWT/UNRA Maintenance Strategy planning workbooks (2016-2026): 2026 intervention
+            Extracted from real MoWT Maintenance Strategy planning workbooks (2016-2026): 2026 intervention
             rates, FY2017/18-2025/26 asset values, and a {stratLinks.length.toLocaleString()}-link intervention-need register.
             Cost-need and priority figures are model outputs (RandomForest classifier + regressor, 5-fold cross-validated;
             composite priority score combines real severity, cost and age) - not fabricated, and every gap in the source
