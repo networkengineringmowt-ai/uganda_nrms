@@ -117,8 +117,8 @@ export default function StructuresOverviewDashboard() {
       <SectionHdr accent={DASH_C.purple}>Structures & Bridge Management · 21 Views</SectionHdr>
 
       <ChartGrid cols="3">
-        <ChartBox title="Structures by Type" subtitle={`${TOTAL_STRUCT} total`} accent={DASH_C.cyan} height={210}>
-          <DonutChart data={STR_TYPE_LBL.map((n, i) => ({ name: n, value: STR_TYPE[i], color: STR_TYPE_COLORS[i] }))} />
+        <ChartBox title="Culverts by Type" subtitle={`${STR_TYPE[1] + STR_TYPE[2] + STR_TYPE[3]} culverts total`} accent={DASH_C.cyan} height={210}>
+          <DonutChart data={STR_TYPE_LBL.slice(1).map((n, i) => ({ name: n, value: STR_TYPE[i + 1], color: STR_TYPE_COLORS[i + 1] }))} />
         </ChartBox>
         <ChartBox title="Structure Condition Distribution" accent={DASH_C.green} height={210}>
           <DonutChart data={COND_LBL.map((n, i) => ({ name: n, value: STR_COND[i], color: DASHBOARD_COND_COLORS[i] }))} />
@@ -164,10 +164,14 @@ export default function StructuresOverviewDashboard() {
         </ChartBox>
       </ChartGrid>
 
-      <ChartGrid cols="3">
-        <ChartBox title="Span Length Distribution by Type" subtitle="metres" accent={DASH_C.cyan} height={210}>
+      <ChartGrid cols="4">
+        <ChartBox title="Bridge Span Length Distribution" subtitle="metres" accent={DASH_C.cyan} height={210}>
           <BoxPlotApprox data={[
             quartiles(BRIDGE_SPANS, 'Bridges', DASH_C.cyan),
+          ]} unit="m" />
+        </ChartBox>
+        <ChartBox title="Culvert Span Length Distribution" subtitle="metres" accent={DASH_C.purple} height={210}>
+          <BoxPlotApprox data={[
             quartiles(BOX_CULVERT_SPANS, 'Box Culverts', DASH_C.yellow),
             quartiles(CULVERT_SPANS, 'Culverts', DASH_C.orange),
           ]} unit="m" />
@@ -186,17 +190,17 @@ export default function StructuresOverviewDashboard() {
       </ChartGrid>
 
       <ChartGrid cols="3">
-        <ChartBox title="Structure Portfolio by Type" subtitle="treemap, sized by count" accent={DASH_C.purple} height={200}>
-          <TreemapC data={STR_TYPE_LBL.map((n, i) => ({ name: n, size: STR_TYPE[i] }))} colors={REGION_COLORS} />
+        <ChartBox title="Culvert Portfolio by Type" subtitle="treemap, sized by count" accent={DASH_C.purple} height={200}>
+          <TreemapC data={STR_TYPE_LBL.slice(1).map((n, i) => ({ name: n, size: STR_TYPE[i + 1] }))} colors={REGION_COLORS} />
         </ChartBox>
         <ChartBox title="Condition Mix by Region" subtitle="good % vs critical %" accent={DASH_C.teal} height={200}>
           <RadarTile data={REGION_COND_MIX} series={[{ key: 'goodPct', name: 'Good %', color: '#22c55e' }, { key: 'criticalPct', name: 'Critical %', color: '#ef4444' }]} maxValue={100} />
         </ChartBox>
-        <ChartBox title="Structure Portfolio Breakdown" subtitle="waterfall, count" accent={DASH_C.blue} height={200}>
+        <ChartBox title="Culvert Portfolio Breakdown" subtitle="waterfall, count" accent={DASH_C.blue} height={200}>
           <WaterfallC steps={[
-            { name: 'Total', delta: TOTAL_STRUCT, isTotal: true }, { name: '−Box Culverts', delta: -STR_TYPE[1] },
-            { name: '−Culverts', delta: -STR_TYPE[2] }, { name: '−Drifts/Causeway', delta: -STR_TYPE[3] },
-            { name: '=Bridges', delta: STR_TYPE[0], isTotal: true },
+            { name: 'Total Culverts', delta: STR_TYPE[1] + STR_TYPE[2] + STR_TYPE[3], isTotal: true },
+            { name: '−Concrete Box Culverts', delta: -STR_TYPE[2] }, { name: '−Other Culverts', delta: -STR_TYPE[3] },
+            { name: '=Pipe Culverts', delta: STR_TYPE[1], isTotal: true },
           ]} />
         </ChartBox>
       </ChartGrid>
