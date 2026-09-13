@@ -63,7 +63,7 @@ const SECTION_ACCENT: Record<string, string> = {
   lifecycle: '#00d4aa', casestudies: '#00d4aa', sources: '#94a3b8', admin: '#00f5ff',
   gisenterprise: '#b967ff', atc: '#ff6b35', roadatlas: '#00f5ff', roadvideo: '#00f5ff',
   bridgeworks: '#4d9fff', downloads: '#94a3b8',
-  ducar: '#00ff88', socioeconomic: '#ffd23f',
+  ducar: '#00ff88',
   ntis: '#00f5ff', npms: '#ff6b35',
   networkstory: '#b967ff', roadnetwork: '#00f5ff', registry: '#4d9fff',
   inspections: '#4d9fff', gismap: '#4d9fff', priority: '#ff2d78',
@@ -201,7 +201,6 @@ function AppShell() {
                 {activeView === 'roadatlas'        && <SectionHub sectionId="roadatlas" />}
                 {activeView === 'roadvideo'        && <SectionHub sectionId="roadvideo" />}
                 {activeView === 'ducar'            && <SectionHub sectionId="ducar" />}
-                {activeView === 'socioeconomic'    && <SectionHub sectionId="socioeconomic" />}
                 {activeView === 'admin' && (
                   <Suspense fallback={<ModuleSpinner />}>
                     <RequireAdmin label="Admin Tools">
