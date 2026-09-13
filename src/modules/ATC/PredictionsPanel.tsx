@@ -782,10 +782,9 @@ export default function PredictionsPanel() {
         )}
       </div>
 
-      {/* ── Congestion breakdown table (forecast mode only) ── */}
-      {!liveMode && (
-        <CongestionBreakdownTable features={features} forecastYr={forecastYr} />
-      )}
+      {/* Congestion breakdown table moved to the Deep Analytics tab
+          (ATCCongestionAnalytics below) - Dashboard tabs are KPI/chart-only
+          platform-wide, no raw tables. */}
 
       {/* ── Live congestion distribution (live mode only) ── */}
       {liveMode && (
@@ -822,6 +821,48 @@ export default function PredictionsPanel() {
         </div>
       )}
 
+    </div>
+  );
+}
+
+/**
+ * ATCCongestionAnalytics - the Deep Analytics-tab counterpart to
+ * PredictionsPanel's Dashboard tab. Dashboard tabs are KPI/chart-only
+ * platform-wide, so the sortable Congestion Risk Breakdown table (a real
+ * <table>) lives here instead, with its own forecast-year control, rather
+ * than on the Dashboard tab above.
+ */
+export function ATCCongestionAnalytics() {
+  const [features, setFeatures] = useState<PredFeature[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [forecastYr, setForecastYr] = useState<number>(CURRENT_YEAR);
+
+  useEffect(() => {
+    const base = import.meta.env.BASE_URL;
+    fetch(`${base}data/traffic_predictions.geojson`)
+      .then(r => r.json())
+      .then(gj => { setFeatures((gj.features ?? []) as PredFeature[]); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div style={{ padding:20, color:'rgba(148,163,184,0.6)', fontSize:12 }}>Loading congestion forecast…</div>;
+
+  return (
+    <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
+      <div style={{ ...glass(C.yellow), padding:'10px 16px', maxWidth:280 }}>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:6 }}>
+          <span style={{ fontSize:10, fontWeight:800, color:C.yellow, letterSpacing:'0.05em' }}>
+            Forecast Year
+          </span>
+          <span style={{ fontSize:16, fontWeight:900, color:'#fff' }}>{forecastYr}</span>
+        </div>
+        <input type="range" min={2025} max={2040} step={1}
+          value={forecastYr}
+          onChange={e => setForecastYr(Number(e.target.value))}
+          style={{ width:'100%', accentColor: C.yellow, cursor:'pointer' }}
+        />
+      </div>
+      <CongestionBreakdownTable features={features} forecastYr={forecastYr} />
     </div>
   );
 }
