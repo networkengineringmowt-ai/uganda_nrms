@@ -1273,7 +1273,7 @@ export default function TrafficLegacyContent({ initialTab, hideTabBar }: { initi
               emptyText="No monitoring stations available."
             />
             <div style={{ marginTop: 10, fontSize: 9, color: 'rgba(148,163,184,0.3)' }}>
-              Source: TIS 2025 AADT analysis.xlsx · TCS_Combined sheet · real Link IDs from network2026.geojson
+              Source: TIS 2025 Annual AADT Count Survey · real road-link IDs from the national network register
             </div>
           </div>
         )}
