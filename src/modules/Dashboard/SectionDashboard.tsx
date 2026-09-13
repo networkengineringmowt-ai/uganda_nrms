@@ -236,6 +236,7 @@ const LazyNdpiv = lazy(() => import('../../components/sections/NdpivSection'));
 // - ATC legacy content -------------------- (previously orphaned - never
 // imported anywhere in the app before this fix)
 const ATC_Predictions = lazy(() => import('../ATC/PredictionsPanel'));
+const ATC_CongestionAnalytics = lazy(() => import('../ATC/PredictionsPanel').then(m => ({ default: m.ATCCongestionAnalytics })));
 
 // - RMS legacy content --------------------
 const LazyRoadNetworkMap = lazy(() => import('../RoadNetwork/RoadNetworkView'));
@@ -483,11 +484,13 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
   documents: {
     analytics: [DOC_Store],
   },
-  socioeconomic: {
-    dashboard: [SE_Dashboard],
-    map: [SE_Map],
-    analytics: [SE_Analytics, SE_Tables],
-  },
+  // Socio-Economic Analysis was removed as its own standalone sidebar row -
+  // per the comment on 'pim' above, its content was always meant to live
+  // only inside Public Investment's tabs (SE_Dashboard/SE_Map/SE_Analytics/
+  // SE_Tables above), not also duplicated under a second row showing the
+  // exact same components. Nothing else referenced this section id, so no
+  // deep-link mirror entry is needed here (unlike registry/inspections/etc,
+  // which keep a standalone row).
   roadatlas: {
     map: [RA_View],
   },
@@ -503,7 +506,12 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
   atc: {
     // Real-time congestion/AADT forecasting for the 25-station ATC network -
     // was a fully-built, never-imported orphan component before this fix.
+    // The sortable Congestion Risk Breakdown table used to render inline on
+    // this Dashboard tab (behind a forecast/live toggle) - moved to its own
+    // Deep Analytics component (ATCCongestionAnalytics) since Dashboard tabs
+    // are KPI/chart-only platform-wide, no raw tables.
     dashboard: [ATC_Predictions],
+    analytics: [ATC_CongestionAnalytics],
   },
   budget: {
     // BUD_MaintenanceStrategy (MaintenanceStrategySection.tsx) intentionally
@@ -561,7 +569,7 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
   registry:       { analytics: [BMS_Registry] },
   inspections:    { analytics: [BMS_Inspections] },
   priority:       { analytics: [LazyPriorityRanking] },
-  phototwin:      { dashboard: [BMS_PhotoTwin] },
+  phototwin:      { tables: [BMS_PhotoTwin] },
   trafficanalytics:{ analytics: [LazyTrafficAnalyticsPg] },
   trafficsummary: { analytics: [LazyTrafficSummaryPg] },
   growthfactors:  { analytics: [LazyGrowthFactors] },
@@ -569,7 +577,7 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
   oprc:           { dashboard: [LazyOprc] },
   ndpiv:          { dashboard: [LazyNdpiv] },
   hdm4:           { analytics: [LazyHDM4Section] },
-  mlarchitecture: { dashboard: [LazyMLArchitecture] },
+  mlarchitecture: { analytics: [LazyMLArchitecture] },
   projecttracker: { dashboard: [LazyProjectTracker] },
 };
 
