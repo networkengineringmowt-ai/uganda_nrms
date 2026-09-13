@@ -410,16 +410,22 @@ const SECTION_EXTRAS: Record<string, Partial<Record<ExtraSlot, React.ComponentTy
     analytics: [PmsInventoryLegacy, PmsAnalyticsViewLegacy, PmsAgeLegacy, PmsFwdLegacy, PMS_LifecycleView, PMS_PavementCatalogue, PMS_AIVisionDashboard, PMS_DigitalTwin],
   },
   bms: {
-    // GISMap, Registry, Inspections, BridgeWorks and PhotoTwin were each
-    // their own standalone sidebar row for content that's really a facet of
-    // Bridge Management - folded back in here (nav decluttering) so Bridge
+    // GISMap, Registry, Inspections and PhotoTwin were each their own
+    // standalone sidebar row for content that's really a facet of Bridge
+    // Management - folded back in here (nav decluttering) so Bridge
     // Management is the one place to find all of it, instead of six rows.
-    // BridgeWorks and the Analytics module are both chart/KPI panels, so
-    // both sit on Dashboard; Registry/Inspections/Maintenance are records
-    // tables and Condition/Critical/Priority are table-led analysis, so all
-    // five sit on Deep Analytics. PhotoTwin is a photo viewer, not a chart
-    // or table, so it stays on Exhaustive Tables where it already was.
-    dashboard: [BMS_BridgeWorks, BMS_Analytics],
+    // BridgeWorks is NOT folded in here: it's bridge CONSTRUCTION/contract
+    // programme content (MoWT contracts, disbursements, physical progress),
+    // a different domain from Bridge MANAGEMENT (inventory/inspection/
+    // condition) - it stays only on its own dedicated "Bridge Works
+    // Programme" sidebar row (see SECTION_EXTRAS.bridgeworks below) rather
+    // than also appearing here, where it read as out-of-place/duplicated
+    // content on the Bridge Management Dashboard tab.
+    // Registry/Inspections/Maintenance are records tables and Condition/
+    // Critical/Priority are table-led analysis, so all five sit on Deep
+    // Analytics. PhotoTwin is a photo viewer, not a chart or table, so it
+    // stays on Exhaustive Tables where it already was.
+    dashboard: [BMS_Analytics],
     map: [BMS_GISMap],
     tables: [BMS_PhotoTwin],
     analytics: [BMS_Maintenance, BMS_Registry, BMS_Inspections, BMS_Condition, BMS_Critical, LazyPriorityRanking],
