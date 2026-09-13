@@ -70,11 +70,11 @@ const NODES: Node[] = [
 
   // ── L4 - Outputs (x=680) ──────────────────────────────────────────────────
   { id:'out-pages',    label:'GitHub Pages Deploy',   sub:'gh-pages branch',            layer:4, x:680,  y:130,  w:160, h:68, color:'#6366f1',
-    detail:'git push --force origin HEAD:gh-pages from /c/tmp/ghdep worktree. Cache-safe: old hashed bundles retained. Live URL: https://priscananjehe1996.github.io/uganda-roads/' },
+    detail:'git push --force origin HEAD:gh-pages from a dedicated deploy worktree. Cache-safe: old hashed bundles retained.' },
   { id:'out-json',     label:'Public JSON Export',    sub:'central_network_db.json',    layer:4, x:680,  y:235,  w:160, h:68, color:'#14b8a6',
     detail:'export_unified_data.py writes public/data/*.json - per-link IRI summaries, table counts, AADT, ML metrics for fast client-side reads. A cached mirror of the Unified DB.' },
   { id:'out-db',       label:'Unified DB · Supabase', sub:'Postgres · 41 tables',       layer:4, x:680,  y:340,  w:160, h:68, color:'#3ecf8e',
-    detail:'Supabase Postgres (project vbidhkvzjigatfygnycg) - the single source of truth. 41 tables across all layers: RMS, BMS, TIS, PMS, Road Reserve (incl. road_reserve_applications/applicants MOWT Form 2), AI/ML analytics, lifecycle, budgeting. Reads via the anon key (src/lib/supabase.ts); privileged writes via the service_role server. Schema: supabase_schema.sql.' },
+    detail:'Managed Supabase Postgres project - the single source of truth. 41 tables across all layers: RMS, BMS, TIS, PMS, Road Reserve (incl. road_reserve_applications/applicants MOWT Form 2), AI/ML analytics, lifecycle, budgeting. Reads via a public anon key; privileged writes via the service_role server.' },
 
   // ── L5 - Algorithms · Queries · Decision Trees (x=900) ────────────────────
   { id:'alg-engine',   label:'Algorithm Library',     sub:'HDM-4 · ESAL · LCCA',        layer:5, x:900,  y:165,  w:170, h:66, color:'#a78bfa',
