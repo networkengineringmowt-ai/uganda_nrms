@@ -73,7 +73,7 @@ hosted, and the deployed site will use it.
 ## Branding (already applied)
 - `custom/uganda_roads/settings.py` — extends GeoNode, registers the branding app,
   centres the default map on Uganda, sets CORS for the GitHub Pages origins.
-- `custom/uganda_roads/templates/site_base.html` — MoWT logo + title header, DNR/UNRA footer.
+- `custom/uganda_roads/templates/site_base.html` — MoWT logo + title header, DNR footer.
 - `custom/uganda_roads/static/css/mowt-theme.css` — palette matching the React platform.
 - `custom/uganda_roads/static/uganda_roads/img/mowt.jpg` — Ministry logo.
 

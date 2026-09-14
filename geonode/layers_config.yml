@@ -18,7 +18,7 @@ layers:
     alt_source: "8. Shapefiles/nationalroads.shp"
     style: road_network
     abstract: >
-      The classified national road network managed by UNRA/DNR — ~21,302 km
+      The classified national road network managed by MoWT's Directorate of National Roads (DNR) — ~21,302 km
       across 1,013 links. Symbolised by road class (A/B/C/M).
     keywords: [road network, links, classification]
 
@@ -70,7 +70,7 @@ layers:
     title: Maintenance Stations
     source: "8. Shapefiles/MoWT_Stations/MoWT_Stations.shp"
     style: traffic_stations
-    abstract: UNRA/MoWT maintenance station network (23 stations).
+    abstract: MoWT maintenance station network (23 stations).
 
   # ── Administrative & context ───────────────────────────────────────────────
   - name: districts
