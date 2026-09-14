@@ -1,7 +1,7 @@
 {# ════════════════════════════════════════════════════════════════════════════
    MoWT-branded base template override for GeoNode.
    Extends GeoNode's geonode_base and injects the Uganda NRMS branding:
-   MoWT logo + title in the header, MoWT theme CSS, and a DNR/UNRA footer.
+   MoWT logo + title in the header, MoWT theme CSS, and a DNR footer.
    ════════════════════════════════════════════════════════════════════════════ #}
 {% extends "geonode_base.html" %}
 {% load static %}
@@ -37,7 +37,7 @@
   <footer class="footer mowt-footer">
     <div>
       <strong>Uganda National Roads Management System — GIS Enterprise</strong><br/>
-      Ministry of Works and Transport · Directorate of National Roads (UNRA)<br/>
+      Ministry of Works and Transport · Directorate of National Roads<br/>
       OGC services: <a href="/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities">WMS</a> ·
       <a href="/geoserver/ows?service=wfs&version=2.0.0&request=GetCapabilities">WFS</a>
     </div>
