@@ -54,7 +54,7 @@ def report_pdf(request):
     attrs = spec.setdefault("attributes", {})
     attrs.setdefault("title", "Uganda National Roads Management System")
     attrs.setdefault("subtitle", "Ministry of Works and Transport · Directorate of National Roads")
-    attrs.setdefault("credits", "GeoNode · GeoServer · MoWT/UNRA")
+    attrs.setdefault("credits", "GeoNode · GeoServer · MoWT")
     spec.setdefault("layout", "A4 landscape")
     spec["outputFormat"] = "pdf"
 

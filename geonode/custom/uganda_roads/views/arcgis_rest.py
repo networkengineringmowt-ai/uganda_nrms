@@ -65,7 +65,7 @@ def _service_root(request, service: str):
         "currentVersion": 11.2,
         "serviceDescription": "Uganda National Roads — GIS Enterprise (GeoNode)",
         "mapName": service,
-        "copyrightText": "Ministry of Works and Transport · DNR / UNRA",
+        "copyrightText": "Ministry of Works and Transport · Directorate of National Roads",
         "spatialReference": {"wkid": 4326, "latestWkid": 4326},
         "singleFusedMapCache": False,
         "capabilities": "Map,Query,Data",
