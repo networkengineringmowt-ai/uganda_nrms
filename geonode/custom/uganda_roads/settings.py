@@ -19,7 +19,7 @@ THEME = {
     "primary": os.getenv("GEONODE_PRIMARY_COLOR", "#00f5ff"),
     "accent": os.getenv("GEONODE_ACCENT_COLOR", "#ffd23f"),
     "logo": "uganda_roads/img/mowt.jpg",
-    "footer": "Ministry of Works and Transport · UNRA · Directorate of National Roads",
+    "footer": "Ministry of Works and Transport · Directorate of National Roads",
 }
 
 # Register the branding app + tell Django where our templates/static live.
